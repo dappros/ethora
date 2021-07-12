@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ethora</string>
+    <string name="facebook_app_id">404321904154112</string>
+    <string name="fb_login_protocol_scheme">fb404321904154112</string>
 </resources>

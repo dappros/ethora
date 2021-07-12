@@ -1,0 +1,1 @@
+export const APP_TOKEN = "APPLICATION TOKEN GOES HERE";

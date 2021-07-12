@@ -1,0 +1,63 @@
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import * as GlobalTheme from '../../config/globalTheme';
+
+const {
+    primaryColor
+} = GlobalTheme.commonColors
+
+const {
+    regularFont,
+    mediumFont,
+} = GlobalTheme.textStyles
+
+export default {
+    container:{
+        flex:1,
+        backgroundColor:'white'
+    },
+    emptyChatContainer:{
+        flex:1,
+        alignItems:'center', 
+        marginTop:hp('10%')
+    },
+    noChatText:{
+        color:primaryColor,
+        fontSize:hp('2.5%'),
+        fontFamily:mediumFont
+    },
+    descText:{
+        color:'#121212',
+        fontSize:hp('1.8%'),
+        textAlign:'center',
+        fontFamily:mediumFont
+    },
+    button1:{
+        color:'#FFFFFF',
+        fontSize:hp('1.8%'),
+        fontFamily:regularFont
+    },
+    button2:{
+        color:primaryColor,
+        fontSize:hp('1.8%'),
+        fontFamily:regularFont
+    },
+    button1Container:{
+        width:wp('35%'),
+        height:hp('6%'),
+        backgroundColor:primaryColor,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:3,
+        marginRight:12
+    },
+    button2Container:{
+        width:wp('35%'),
+        height:hp('6%'),
+        borderColor:primaryColor,
+        borderWidth:1,
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:3,
+        marginLeft:12
+    }
+}
