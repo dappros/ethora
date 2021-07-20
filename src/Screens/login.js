@@ -82,7 +82,7 @@ class Login extends Component {
     GoogleSignin.configure({
       forceCodeForRefreshToken: true,
       webClientId:
-        '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
+        '972933470054-9p4r0768jd3dp1lova8bihkui5nft7sr.apps.googleusercontent.com',
     });
     const onAuthStateChanged = user => {
       this.setState({

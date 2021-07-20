@@ -12,6 +12,7 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+#import <Firebase.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -52,6 +53,10 @@ static void InitializeFlipper(UIApplication *application) {
   [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
 
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
+
   return YES;
 }
 
@@ -59,6 +64,7 @@ static void InitializeFlipper(UIApplication *application) {
             openURL:(NSURL *)url
             options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
+
   [[FBSDKApplicationDelegate sharedInstance] application:application
                                                  openURL:url
                                                  options:options];

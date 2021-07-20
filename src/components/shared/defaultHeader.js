@@ -235,6 +235,10 @@ class HeaderComponent extends Component{
                 this.props.navigation.navigate('QRGenScreenComponent');
                 break;
 
+            case 'mint':
+                this.hideMenu();
+                this.props.navigation.navigate('MintItemsComponent');
+
             case "tutorial":
                 AsyncStorage.setItem('@skipForever', "0")
                 this.hideMenu();
@@ -293,6 +297,7 @@ class HeaderComponent extends Component{
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('settings')}>Settings</MenuItem> */}
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('account')}>Account</MenuItem> */}
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('scan')}>Scan</MenuItem>
+                                <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('mint')}>Mint items</MenuItem>
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('myQr')}>My QR</MenuItem> */}
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('tutorial')}>Tutorial</MenuItem>
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('logOut')}>Log out</MenuItem>
