@@ -66,4 +66,4 @@ Currently (2021) Dappros is a privately owned company that offers an open-source
 
 ### Contact
 
-<a href="https://www.dappros.com/contact-us/">Contact us</a> if you’re interested to find out more or contribute to the project.
+Drop us <a href="https://www.dappros.com/contact-us/">a line</a> if you’re interested to find out more or contribute to the project.
