@@ -1,4 +1,4 @@
-__V21.07.29 (implemented for Cyber Cars only)__
+**V21.07.29 (implemented for Cyber Cars only)**
 
 New features
 * NFT details screen
