@@ -1,4 +1,4 @@
-**V21.07.29 (implemented for Cyber Cars only)**
+**v21.07.29 (implemented for selected clients such as Cyber Cars and Golden Key only)**
 
 New features
 * NFT details screen
