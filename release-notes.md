@@ -1,10 +1,10 @@
-##v21.07.29##
+## v21.07.29
 
-#New features#
+### New features
 * NFT details screen
 * added Gzip compression for API responses
 
-#UI/UX improvements#
+### UI/UX improvements
 * users can edit their firstname and lastname in the Profile
 * users can open attached files in the chat in full size mode
 * the text of system messages about the token or item transfers is aligned to the center of the screen
@@ -14,7 +14,7 @@
 * 50 symbols for Items name
 * 30 symbols for Chat name
 
-#Bugs#
+### Bugs
 * fixed issue with uploading files from Gallery (iOS)
 * fixed issue: user isn't able to scroll transaction after NFT minting
 * fixed issue: transactions history doesn't display due to wrong timestamp
