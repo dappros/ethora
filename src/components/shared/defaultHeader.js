@@ -9,21 +9,29 @@ import {sendSearchText} from '../../actions/searchAction';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import * as XmppConstant from '../../constants/xmppConstants';
 import {setRosterAction, setRecentRealtimeChatAction, finalMessageArrivalAction, participantsUpdateAction} from '../../actions/chatAction';
-import * as DapprosConstants from '../../constants/dapprosConstants';
+import {coinsMainName} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { xmpp } from '../../helpers/xmppCentral';
-import * as GlobalTheme from '../../config/globalTheme';
+import {
+    logoPath,
+    appTitle, 
+    commonColors,
+    textStyles,
+    coinImagePath,
+    navbarLogoShow,
+    tutorialShowInMenu
+} from '../../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
-const {mediumFont} = GlobalTheme.textStyles
+const {primaryColor} = commonColors;
+const {mediumFont} = textStyles
 class HeaderComponent extends Component{
     constructor(props){
         super(props)
         this.state = {
             balance:0,
             name:"",
-            tokenName:DapprosConstants.tokenName,
+            tokenName:coinsMainName,
             tokenDetails:[],
             showModal:false,
             text:null,
@@ -55,7 +63,7 @@ class HeaderComponent extends Component{
         // let balance="0"
         // if(this.props.walletReducer.balance){
         //     this.props.walletReducer.balance.map((item)=>{
-        //         if(item.tokenName===DapprosConstants.tokenName){
+        //         if(item.tokenName===coinsMainName){
         //             if(item.balance.hasOwnProperty("_hex")){
         //                 balance =  parseInt(item.balance._hex, 16);
         //             }else balance = item.balance;
@@ -93,9 +101,8 @@ class HeaderComponent extends Component{
         if(this.props.walletReducer.balance!==undefined&&this.props.walletReducer.balance){
             let balance = 0
             let tokenName = "";
-            // let tokenDetails = this.props.walletReducer.balance;
             this.props.walletReducer.balance.map((item,index)=>{
-                if(item.tokenName===DapprosConstants.tokenName){
+                if(item.tokenName===coinsMainName){
                     if(parseInt(item.balance) !== this.state.balance){
                         balance = Math.round(item.balance*100)/100;
                         tokenName = item.tokenName;
@@ -106,39 +113,6 @@ class HeaderComponent extends Component{
                     }
                 }
             })
-
-            // if(this.props.walletReducer.balance!==undefined&&this.props.walletReducer.balance.length>0){
-            //     tokenDetails = this.props.walletReducer.balance
-            //     for(let i=0;i<this.props.walletReducer.balance.length;i++){
-                   
-            //         if(this.props.walletReducer.balance[i].tokenName===DapprosConstants.tokenName){
-            //             console.log("aldkncvnsfd")
-            //             if(this.props.walletReducer.balance[i].balance.hasOwnProperty("_hex")){
-            //                 balance = parseInt(this.props.walletReducer.balance[i].balance._hex,16);
-            //                 // alert(this.props.walletReducer.balance[i].balance._hex);
-            //                 if(this.state.balance!==balance){
-            //                     this.setState({
-            //                         balance,
-            //                         tokenName,
-            //                         tokenDetails
-            //                     })
-            //                 }
-            //             }else
-            //             if(this.props.walletReducer.balance[i].balance!==prevState.balance){
-            //                 balance = Math.round(this.props.walletReducer.balance[i].balance*100)/100
-            //                 console.log(balance,"dsbfdds")
-            //                 tokenName = this.props.walletReducer.balance[i].tokenName
-            //                 this.setState({
-            //                     balance,
-            //                     tokenName,
-            //                     tokenDetails
-            //                 })
-            //             }
-            //         }
-            //     }
-                   
-            // }
-            
         }
 
         if(this.props.walletReducer.transactions&&this.props.walletReducer.transactions.length!=prevProps.walletReducer.transactions.length){
@@ -156,20 +130,6 @@ class HeaderComponent extends Component{
             balance:roundBalance
         })
     }
-
-    //send or transfer token
-    // tokenTransferFunc =()=>{
-    //     let bodyData = {}
-    //     if(this.state.tokenName==="Ether D"){
-    //         bodyData = {"toWallet":"0xE9C8687550f9FeC26881FC77f5390fE61cB4FaF3", amount:1}
-    //     }else{
-    //         bodyData = {"tokenId":"ERC20", "tokenName":this.state.tokenName,"toWallet":"0xE9C8687550f9FeC26881FC77f5390fE61cB4FaF3","amount":1}
-    //     }
-        
-    //     let token = this.props.loginReducer.token
-
-    //     this.props.transferTokens(bodyData, token)
-    // }
 
     updateSearch(text){
         this.setState({text})
@@ -270,17 +230,21 @@ class HeaderComponent extends Component{
                     <View style={{flex:1, flexDirection:'row', alignItems:'center', height:hp('10%'), margin:8, marginRight:wp("0%")}}>
                         <TouchableOpacity onPress={()=>this.props.navigation.navigate("ChatHomeComponent")} style={{ flex:0.1, justifyContent:'center', alignItems:'center', margin:5, marginLeft:wp("3%"), marginRight:18}}>
                             <View style={{height:hp('7%'), width:hp('7%'), borderRadius:hp('7%')/2, borderWidth:1, borderColor:"#FFFF", justifyContent:'center', alignItems:'center'}}>
-                            <Image style={{width:hp('7%'), height:hp('7%')}} source={require('../../assets/Logo-Landscape.png')} />
+                            {   
+                                navbarLogoShow? 
+                                <Image style={{width:hp('7%'), height:hp('7%')}} source={logoPath} />:
+                                null
+                            }
                             </View>
                         </TouchableOpacity>
                         <View style={{ flex:0.6, justifyContent: 'center', alignItems:'flex-start',marginLeft:wp('2.13%')}}>
-                            <Text style={{fontSize:hp('3%'), color:"#ffff", fontFamily:mediumFont}}>GK Connect</Text>
+                            <Text style={{fontSize:hp('3%'), color:"#ffff", fontFamily:mediumFont}}>{appTitle}</Text>
                         </View>
                         <View style={{ flex:0.3, flexDirection:'row'}}>
 
                             <TouchableOpacity onPress={()=>this.onPressGem()} style={[styles.diamondContainer]}>
                                 <View style={{backgroundColor:"#FFFFFF",width:wp('14%'),height:wp('12%'),borderRadius:5,justifyContent:'center',alignItems:'center',}}>
-                                <Image source={require("../../assets/GKCOIN.png")} style={styles.gkcIconStyle}/>
+                                <Image source={coinImagePath} style={styles.gkcIconStyle}/>
                                 <Text style={{color:primaryColor, fontFamily:mediumFont, fontSize:hp('1.97%')}}>{this.state.balance}</Text>
                                 </View>
                             </TouchableOpacity>
@@ -299,7 +263,11 @@ class HeaderComponent extends Component{
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('scan')}>Scan</MenuItem>
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('mint')}>Mint items</MenuItem>
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('myQr')}>My QR</MenuItem> */}
-                                <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('tutorial')}>Tutorial</MenuItem>
+                                {
+                                    tutorialShowInMenu?
+                                    <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('tutorial')}>Tutorial</MenuItem>:
+                                    null
+                                }
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('logOut')}>Log out</MenuItem>
                             </Menu>
                             </TouchableOpacity>

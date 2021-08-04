@@ -29,27 +29,26 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {sha256} from 'react-native-sha256';
-import {APP_TOKEN} from '../config/token';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import fetchFunction from '../config/api';
 import * as connectionURL from '../config/url';
-import * as GlobalTheme from '../config/globalTheme';
 import { AppleButton, appleAuth, appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import 'react-native-get-random-values';
 import { v4 as uuid } from 'uuid'
+import {logoPath, appTitle, APP_TOKEN, commonColors, textStyles} from "../../docs/config"
 
 const hitAPI = new fetchFunction();
 
   const {
     primaryColor,
     secondaryColor
-  } = GlobalTheme.commonColors;
+  } = commonColors;
 
   const {
     mediumFont,
     lightFont,
     boldFont
-  } = GlobalTheme.textStyles
+  } = textStyles
   
 class Login extends Component {
   constructor(props) {
@@ -82,7 +81,7 @@ class Login extends Component {
     GoogleSignin.configure({
       forceCodeForRefreshToken: true,
       webClientId:
-        '972933470054-9p4r0768jd3dp1lova8bihkui5nft7sr.apps.googleusercontent.com',
+        '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
     });
     const onAuthStateChanged = user => {
       this.setState({
@@ -377,12 +376,10 @@ class Login extends Component {
         }}>
         <View style={[{justifyContent: 'center', flex: 1, margin: hp('1.2%')}]}>
           <View style={styles.loginScreenContainer}>
-            <ScrollView
-              contentContainerStyle={{justifyContent: 'center', flex: 1}}>
               <View style={styles.loginFormView}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                   <Image
-                    source={require('../assets/Logo-Landscape.png')}
+                    source={logoPath}
                     style={{width: wp('30%'), height: wp('30%')}}
                   />
                   <Text
@@ -392,7 +389,7 @@ class Login extends Component {
                       marginTop: hp('1.84%'),
                       fontSize: hp('3.44%'),
                     }}>
-                    GK Connect
+                    {appTitle}
                   </Text>
                 </View>
 
@@ -500,36 +497,6 @@ class Login extends Component {
                   ) : null}
                 </View>
 
-                <View style={{marginTop: hp('8.62%'), alignItems: 'center', justifyContent:"flex-end"}}>
-                  <Text
-                    style={{
-                      fontSize: hp("1.47%"),
-                      color: '#FFFFFF',
-                      fontFamily: lightFont,
-                      marginBottom: hp('1.84%'),
-                    }}>
-                    Not a member of GoldenKey?
-                  </Text>
-                  <View>
-                    <CommonButton
-                      style={{
-                        backgroundColor: primaryColor,
-                        width: wp('65.6%'),
-                        height: hp('6.15%'),
-                        borderRadius: 5,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}
-                      onPress={() => this.openMembership()}
-                      buttonText="Join GoldenKey"
-                      textStyle={{
-                        fontSize: hp('1.97'),
-                        color: '#FFFFFF',
-                        fontFamily: boldFont,
-                      }}
-                    />
-                  </View>
-                </View>
                 <View
                   style={{
                     justifyContent: 'flex-end',
@@ -560,7 +527,6 @@ class Login extends Component {
                   </View>
                 </View>
               </View>
-            </ScrollView>
           </View>
         </View>
       </SafeAreaView>

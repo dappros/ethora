@@ -1,5 +1,6 @@
 import * as schemaTypes from '../../constants/realmConstants';
-const Realm = require('realm');
+// const Realm = require('realm');
+import Realm from 'realm';
 
 const MessageSchema = {
     name:schemaTypes.MESSAGE_SCHEMA,
@@ -59,12 +60,13 @@ const TransactionSchema={
 }
 
 export const databaseOptions = {
-    path: 'ETHORA.realm',
+    path: 'ethoraTest.realm',
     schema:[MessageSchema, ChatListSchema, TransactionSchema],
     schemaVersion: 0, //optional
 }
 
 export const realm = new Realm(databaseOptions);
+console.log(realm,"thisisrealm")
 
 export const deleteAllRealm =()=> {
     realm.write(()=>{

@@ -39,9 +39,8 @@ import {
   activeChatState,
   retrieveOtherUserVcard,
 } from '../helpers/xmppStanzaRequestMessages';
-import {APP_TOKEN} from '../config/token';
-import {tokenName} from '../constants/dapprosConstants';
-import * as GlobalTheme from '../config/globalTheme';
+import {APP_TOKEN} from '../../docs/config';
+import {coinsMainName} from '../../docs/config';
 import * as xmppConstants from '../../src/constants/xmppConstants';
 import { Player} from '@react-native-community/audio-toolkit';
 import DocumentPicker from 'react-native-document-picker';
@@ -52,9 +51,10 @@ import RNFetchBlob from 'rn-fetch-blob'
 import downloadFile from '../helpers/downloadFileLogic';
 import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
+import {commonColors, textStyles} from '../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
-const {boldFont, regularFont} = GlobalTheme.textStyles;
+const {primaryColor} = commonColors;
+const {boldFont, regularFont} = textStyles;
 
 const {xml} = require('@xmpp/client');
 const hitAPI = new fetchFunction;
@@ -127,7 +127,6 @@ class Chat extends Component {
   //fucntion to get chat archive of a room
 
   async componentDidMount() {
-    let tokenName = null;
     let firstName = '';
     let lastName = '';
     let chatRoomDetails = this.props.ChatReducer.chatRoomDetails;
@@ -168,7 +167,7 @@ class Chat extends Component {
     //action call to fetch walletBalance
     await this.props.fetchWalletBalance(
       walletAddress,
-      tokenName,
+      coinsMainName,
       this.props.loginReducer.token,
       true,
     );
@@ -414,7 +413,7 @@ class Chat extends Component {
 
           await this.props.fetchWalletBalance(
             walletAddress,
-            tokenName,
+            coinsMainName,
             APP_TOKEN,
             false,
           );
@@ -622,7 +621,15 @@ class Chat extends Component {
           }
 					this.addMessage(messageObject,this.state.loadMessageIndex,false)
 				}
-        updateRosterList({counter: 0, jid: recentRealtimeChat.room_name});
+        updateRosterList({
+          counter: 0,
+          jid: recentRealtimeChat.room_name,
+          lastUserName: null,
+          lastUserText: null,
+          participants: null,
+          createdAt: null,
+          name: null
+        });
       }
 
       //message composing update

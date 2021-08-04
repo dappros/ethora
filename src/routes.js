@@ -5,6 +5,7 @@ import {
   View,
   Image,
   SafeAreaView,
+  Platform,
   Alert,
   AppState
 } from 'react-native';
@@ -24,8 +25,8 @@ import Profile from './Screens/profileScreen';
 import AnotherProfile from './Screens/anotherUserProfileScreen';
 import Settings from './Screens/settingsScreen';
 import AppIntro from './Screens/AppIntro';
-import Account from './Screens/Account';
-
+import MintItems from './Screens/mintItems';
+// import Account from './Screens/Account';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import PushNotification from 'react-native-push-notification';
@@ -59,6 +60,7 @@ import {
   vcardRetrievalRequest,
   get_archive_by_room,
   updateVCard,
+  setSubscriptions
 } from './helpers/xmppStanzaRequestMessages';
 import * as xmppConstant from './constants/xmppConstants';
 import {underscoreManipulation} from './helpers/underscoreLogic';
@@ -67,9 +69,8 @@ import {realm} from './components/realmModels/allSchemas';
 import * as schemaTypes from './constants/realmConstants';
 import * as types from './constants/types';
 import store from './config/store';
-import * as GlobalTheme from './config/globalTheme';
-
-const {secondaryColor} = GlobalTheme.commonColors;
+import {commonColors, logoPath} from '../docs/config';
+const {secondaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
 const subscriptionsStanzaID = 'subscriptions';
@@ -88,6 +89,31 @@ import {
 const Stack = createStackNavigator();
 let pushToken = '';
 let obj;
+
+const checkDefaultRoom = [
+  // {exist:false, name:"3981a2b9c1ef7fce8dbf5e3d44fefc58746dee11b3de35655e166c25142612ba"}, //Communication
+  // {exist:false, name:"680c3097aabc902bb129eaa23a974408856fbdccb7630cfd074ddf0639fc8ec0"}, //Workplace Readiness
+  {
+    exist: false,
+    name:
+      '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
+  }, //GK Leadership
+  // {exist:false, name:"91bfaa5cbfaab8a5661c0c5e15e54196d4ed4f76bb86b6cef07d337ff5c7fd41"}, //Career Development
+  {
+    exist: false,
+    name:
+      'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
+  }, //Global
+  {
+    exist: false,
+    name:
+      'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
+  }, //Southern Africa
+  // {exist:false, name:"c67531e3ec3d5090acc25d6768140ad37789000fb4c5e254af6be5538c49ee56"}, //Life Skills
+  // {exist:false, name:"cf5f45da57a2ca0e4a581d40099751bcb4919fbb984b547e1d9d12c8ca710412"}, //Personal Finance
+  // {exist:false, name:"d677190e0a9990e7d5fa9e4c1bbde44271fb8959c4acb6d43e02ed991128b4bf"}, //Service
+  // {exist:false, name:"ec75f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865"}, //Leadership
+];
 
 //realm listeners
 function realmMessageObjListener(message, changes) {
@@ -192,6 +218,26 @@ function chatComponent({navigation}) {
         }}
         name="Chat"
         component={Chat}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function mintitemsComponent({navigation}) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="MintItems"
+        component={MintItems}
+        options={{
+          header: () => (
+            <HeaderComponent
+              pushToken={pushToken}
+              navigation={navigation}
+              screenName="ChatHome"
+            />
+          ),
+        }}
       />
     </Stack.Navigator>
   );
@@ -307,27 +353,27 @@ function settingsComponent({navigation}) {
 }
 
 
-function accountComponent({navigation}) {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        options={{
-          header: () => (
-            <HeaderComponent
-              pushToken={pushToken}
-              navigation={navigation}
-              screenName="Account"
-            />
-          ),
-          headerLeft: null,
-        }}
-        name="Account"
-        initialParams={navigation}
-        component={Account}
-      />
-    </Stack.Navigator>
-  );
-}
+// function accountComponent({navigation}) {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen
+//         options={{
+//           header: () => (
+//             <HeaderComponent
+//               pushToken={pushToken}
+//               navigation={navigation}
+//               screenName="Account"
+//             />
+//           ),
+//           headerLeft: null,
+//         }}
+//         name="Account"
+//         initialParams={navigation}
+//         component={Account}
+//       />
+//     </Stack.Navigator>
+//   );
+// }
 
 
 
@@ -694,6 +740,38 @@ class Routes extends Component {
           });
           // }
         }
+        if(stanza?.children[2]?.children[0]?.name ==='invite') {
+          console.log(stanza, 'invite')
+
+          const jid =  stanza.children[3].attrs.jid;
+          // console.log(jid, 'dsfjkdshjfksdu439782374')
+          const subscribe = xml(
+            'iq',
+            {
+              from:
+                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+              to: jid ,
+              type: 'set',
+              id: newSubscription,
+            },
+            xml(
+              'subscribe',
+              {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: this.state.manipulatedWalletAddress,
+              },
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+            ),
+          );
+
+          xmpp.send(subscribe);
+          fetchRosterlist(
+            this.state.manipulatedWalletAddress,
+            subscriptionsStanzaID,
+          );
+        }
+
 
         //capture archived message of a room
         if (stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:2') {
@@ -825,7 +903,89 @@ class Routes extends Component {
         const rosterFromXmpp = stanza.children[0].children;
         let rosterListArray = [];
 
+        let nonMemberchat = {
+          name:"f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5",
+          exist:false
+        }
+
         rosterFromXmpp.map(item => {
+          //check if the default rooms already subscribed, if not then subscibe it
+          const rosterObject = {
+            name: 'Loading...',
+            jid: item.attrs.jid,
+            participants: 0,
+            avatar: 'https://placeimg.com/140/140/any',
+            counter: 0,
+            lastUserText: '',
+            lastUserName: '',
+            createdAt: new Date(),
+          };
+          
+          if(item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
+            nonMemberchat.exist = true;
+          }
+
+          // switch (item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0]) {
+          //   case checkDefaultRoom[0].name:
+          //     checkDefaultRoom[0].exist = true;
+          //     break;
+
+          //   case checkDefaultRoom[1].name:
+          //     checkDefaultRoom[1].exist = true;
+          //     break;
+
+          //   case checkDefaultRoom[2].name:
+          //     checkDefaultRoom[2].exist = true;
+          //     break;
+
+          //   // case checkDefaultRoom[3].name:
+          //   //     checkDefaultRoom[3].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[4].name:
+          //   //     checkDefaultRoom[4].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[5].name:
+          //   //     checkDefaultRoom[5].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[6].name:
+          //   //     checkDefaultRoom[6].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[7].name:
+          //   //     checkDefaultRoom[7].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[8].name:
+          //   //     checkDefaultRoom[8].exist=true;
+          //   //     break;
+
+          //   // case checkDefaultRoom[9].name:
+          //   //     checkDefaultRoom[9].exist=true;
+          //   //     break;
+          // }
+          let exist = false;
+          fetchChatListRealm().then(chatListFromRealm => {
+            
+            if(chatListFromRealm.length){
+              chatListFromRealm.map(chat=>{
+                if(chat.jid === item.attrs.jid){
+                  exist = true;
+                }else{
+                  exist = false;
+                }
+              })
+            }else{
+              exist = false;
+            }
+          }).then(()=>{
+            if(!exist){
+              insertRosterList(rosterObject);
+              rosterListArray.push(rosterObject);
+            }
+          })
 
           //presence is sent to every contact in roster
           const presence = xml(
@@ -848,6 +1008,29 @@ class Routes extends Component {
             getRoomInfo(manipulatedWalletAddress, item.attrs.jid);
           }, 3000);
         });
+
+        if(!nonMemberchat.exist){
+          const subscribe = xml(
+            'iq',
+            {
+              from:
+                this.state.manipulatedWalletAddress +
+                '@' +
+                xmppConstant.DOMAIN,
+              to: nonMemberchat.name + xmppConstant.CONFERENCEDOMAIN,
+              type: 'set',
+              id: newSubscription,
+            },
+            xml(
+              'subscribe',
+              {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+            ),
+          );
+
+          xmpp.send(subscribe);
+        }
 
         this.props.setRosterAction(rosterListArray);
       }
@@ -981,13 +1164,50 @@ class Routes extends Component {
         this.state.manipulatedWalletAddress,
         subscriptionsStanzaID,
       );
+      newOnline = false;
       commonDiscover(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
       // discoverProfileSupport(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
       vcardRetrievalRequest(this.state.manipulatedWalletAddress);
     });
   }
 
-  async componentDidUpdate(prevProps) {    
+  subscribeToPremium(){
+    checkDefaultRoom.map(item => {
+      if (!item.exist) {
+        const subscribe = xml(
+          'iq',
+          {
+            from:
+              this.state.manipulatedWalletAddress +
+              '@' +
+              xmppConstant.DOMAIN,
+            to: item.name + xmppConstant.CONFERENCEDOMAIN,
+            type: 'set',
+            id: newSubscription,
+          },
+          xml(
+            'subscribe',
+            {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
+            xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+            xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+          ),
+        );
+
+        xmpp.send(subscribe);
+      }
+    });
+
+  }
+
+  async componentDidUpdate(prevProps) {
+
+    //check if premium
+    if(this.props.AccountReducer.isPremium && this.props.AccountReducer.isPremium!==prevProps.AccountReducer.isPremium){
+      const isPremium = this.props.AccountReducer.isPremium;
+      // this.subscribeToPremium()
+      console.log(isPremium,"ascadfcadf")
+    }
+    
 
     if (this.props.loginReducer.token !== prevProps.loginReducer.token) {
       if (this.props.loginReducer.token === 'loading') {
@@ -1031,7 +1251,7 @@ class Routes extends Component {
       return (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
           <Image
-            source={require('./assets/Logo-Landscape.png')}
+            source={logoPath}
             style={{height: 100, width: 100}}
           />
         </View>
@@ -1066,6 +1286,11 @@ class Routes extends Component {
             name="ChatHomeComponent"
             component={chatHomeComponent}
           />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="MintItemsComponent"
+            component={mintitemsComponent}
+          /> 
           <Stack.Screen
             options={{headerShown: false}}
             name="QRScreenComponent"
@@ -1106,11 +1331,11 @@ class Routes extends Component {
             name="QRGenScreenComponent"
             component={QRGenScreenComponent}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             options={{headerShown: false}}
             name="AccountComponent"
             component={accountComponent}
-          />   
+          />    */}
         </Stack.Navigator>
       );
     }

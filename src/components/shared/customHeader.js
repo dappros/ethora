@@ -6,13 +6,13 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import {fetchchatRoomDetails, shouldCountAction} from '../../actions/chatAction';
 import {fetchRosterList} from '../../components/realmModels/chatList';
 import { connect } from 'react-redux';
-import * as GlobalTheme from '../../config/globalTheme';
+import {commonColors, textStyles} from '../../../docs/config';
 
-const {primaryDarkColor} = GlobalTheme.commonColors;
+const {primaryDarkColor} = commonColors;
 
 const {
 mediumFont
-} = GlobalTheme.textStyles
+} = textStyles
 
 class CustomHeader extends Component {
   constructor(props) {

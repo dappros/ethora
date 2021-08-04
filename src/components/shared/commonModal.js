@@ -8,7 +8,6 @@ import {
   View,
   Image
 } from "react-native";
-import LinearGradient from 'react-native-linear-gradient';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,16 +15,16 @@ import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import {transferTokens} from '../../actions/wallet';
 import { connect } from "react-redux";
 import QRGenerator from '../../Screens/qrCodeGenerator';
-import * as DapprosConstants from '../../constants/dapprosConstants';
+import {coinsMainName} from '../../../docs/config';
 import { ActivityIndicator } from "react-native";
-import * as GlobalTheme from '../../config/globalTheme';
+import {commonColors, textStyles, coinImagePath} from '../../../docs/config';
 import PrivacyPolicy from './PrivacyPolicy';
 
-const {primaryColor, secondaryColor} = GlobalTheme.commonColors;
+const {primaryColor, secondaryColor} = commonColors;
 const {
   regularFont,
   semiBoldFont
-} = GlobalTheme.textStyles;
+} = textStyles;
 
   const QRCodeComponent = (props) =>{
     return(
@@ -41,22 +40,22 @@ const {
       <Text style={styles.tokenTransferHeaderText}>Reward <Text style={{fontFamily:regularFont, fontSize:hp('1.5%'), fontWeight:"bold"}}>{props.name}</Text> with coins</Text>
       <View style={styles.coinSetContainer}>
         <Pressable onPress={()=>props.tokenTransferFunc(1)} style={{justifyContent:'center', alignItems:'center', borderWidth:props.tokenAmount===1?1:null, borderColor:props.tokenAmount===1?'#A1A9B4':null, padding:5}}>
-          <Image source={require("../../assets/GKCOIN.png")} style={styles.gkcIconStyle}/>
+          <Image source={coinImagePath} style={styles.gkcIconStyle}/>
           <Text>1</Text>
         </Pressable>
 
         <Pressable onPress={()=>props.tokenTransferFunc(3)} style={{justifyContent:'center', alignItems:'center', borderWidth:props.tokenAmount===3?1:null, borderColor:props.tokenAmount===3?'#A1A9B4':null, padding:5}}>
-          <Image source={require("../../assets/GKCOIN.png")} style={styles.gkcIconStyle}/>
+          <Image source={coinImagePath} style={styles.gkcIconStyle}/>
           <Text>3</Text>
         </Pressable>
 
         <Pressable onPress={()=>props.tokenTransferFunc(5)} style={{justifyContent:'center', alignItems:'center', borderWidth:props.tokenAmount===5?1:null, borderColor:props.tokenAmount===5?'#A1A9B4':null, padding:5}}>
-          <Image source={require("../../assets/GKCOIN.png")} style={styles.gkcIconStyle}/>
+          <Image source={coinImagePath} style={styles.gkcIconStyle}/>
           <Text>5</Text>
         </Pressable>
 
         <Pressable onPress={()=>props.tokenTransferFunc(7)} style={{justifyContent:'center', alignItems:'center', borderWidth:props.tokenAmount===7?1:null, borderColor:props.tokenAmount===7?'#A1A9B4':null, padding:5}}>
-          <Image source={require("../../assets/GKCOIN.png")} style={styles.gkcIconStyle}/>
+          <Image source={coinImagePath} style={styles.gkcIconStyle}/>
           <Text>7</Text>
         </Pressable>
       </View>
@@ -123,7 +122,7 @@ class CommonModal extends Component {
   state = {
     modalVisible: false,
     tokenAmount:null,
-    tokenName:DapprosConstants.tokenName,
+    tokenName:coinsMainName,
     tokenState:{type:null,amnt:null}
   };
 
@@ -185,11 +184,11 @@ class CommonModal extends Component {
           "toWallet": walletAddress,
           "amount": amt,
           "tokenId": "ERC20",
-          "tokenName": DapprosConstants.tokenName
+          "tokenName": coinsMainName
         }
 
         tokenList.map(item=>{
-          if(item.tokenName === DapprosConstants.tokenName){
+          if(item.tokenName === coinsMainName){
           if(item.balance.hasOwnProperty("_hex")){
             walletBalance = parseInt(item.balance._hex,16);
           }else{
@@ -206,7 +205,7 @@ class CommonModal extends Component {
             alert("Not enough token");
           }
         }else{
-          alert("You do not have enough " + DapprosConstants.tokenName);
+          alert("You do not have enough " + coinsMainName);
         }
       }
 

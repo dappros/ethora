@@ -11,16 +11,15 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import {connect} from 'react-redux';
 import {fetchTransaction} from '../actions/wallet';
 import {queryAllTransactions} from '../components/realmModels/transaction';
-import * as DapprosConstants from '../constants/dapprosConstants';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
+const {primaryColor} = commonColors;
 
 const {
   lightFont,
   semiBoldFont,
   boldFont
-} = GlobalTheme.textStyles;
+} = textStyles;
 
 const renderTabBar = props => {
   return (
@@ -155,7 +154,7 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          <Image source={require("../assets/GKCOIN.png")} style={styles.tokenIconStyle} />
+          <Image source={coinImagePath} style={styles.tokenIconStyle} />
           <Text
             style={{
               fontFamily: semiBoldFont,
@@ -362,7 +361,7 @@ class TransactionScreen extends Component {
   componentDidMount() {
     const initialData = this.props.loginReducer.initialData;
     const walletAddress = initialData.walletAddress;
-    queryAllTransactions(DapprosConstants.tokenName).then(transactions => {
+    queryAllTransactions(coinsMainName).then(transactions => {
       let balance = 0;
       if (transactions.length > 0) {
         transactions.map(item => {
@@ -391,7 +390,7 @@ class TransactionScreen extends Component {
       prevProps.walletReducer.transactions !==
       this.props.walletReducer.transactions
     ) {
-      queryAllTransactions(DapprosConstants.tokenName).then(transactions => {
+      queryAllTransactions(coinsMainName).then(transactions => {
         let balance = 0;
         if (transactions.length > 0) {
           transactions.map(item => {

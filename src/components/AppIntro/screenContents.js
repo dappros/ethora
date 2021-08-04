@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet, Image} from 'react-native';
 import React from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import * as GlobalTheme from '../../config/globalTheme';
+import {textStyles} from '../../../docs/config';
 
 const screenNameArray=["screen0","screen1","screen2","screen3","common"]
 const {
 lightFont,
 boldFont,
-} = GlobalTheme.textStyles
+} = textStyles
 
 
 

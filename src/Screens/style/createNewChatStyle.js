@@ -1,9 +1,9 @@
 
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import * as GlobalTheme from '../../config/globalTheme';
+import {commonColors, textStyles} from '../../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
-const {regularFont, lightFont} = GlobalTheme.textStyles;
+const {primaryColor} = commonColors;
+const {regularFont, lightFont} = textStyles;
 
 export default {
     container:{

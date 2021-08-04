@@ -15,9 +15,7 @@ import {
 } from 'react-native-responsive-screen';
 
 import Color from '../constants/colors';
-import * as GlobalTheme from '../config/globalTheme';
-
-const {primaryColor} = GlobalTheme.commonColors;
+import {coinImagePath} from '../../docs/config';
 
 import { MessageText, MessageImage, Time, utils } from 'react-native-gifted-chat';
 
@@ -156,7 +154,7 @@ export default class Bubble extends React.Component {
             {/* {this.props.currentMessage.tokenAmount} */}
             {this.props.currentMessage.tokenAmount} 
           </Text>
-          <Image source={require('../assets/GKCOIN.png')} style={styles[position].tokenIconStyle} />
+          <Image source={coinImagePath} style={styles[position].tokenIconStyle} />
         </View>
       )
     }

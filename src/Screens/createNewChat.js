@@ -12,9 +12,9 @@ import * as xmppConstants from '../constants/xmppConstants';
 import { sha256 } from 'react-native-sha256';
 import {roomConfigurationForm, fetchRosterlist} from '../helpers/xmppStanzaRequestMessages';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
-import * as GlobalTheme from '../config/globalTheme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-const {primaryColor} = GlobalTheme.commonColors;
+import {commonColors} from '../../docs/config';
+
+const {primaryColor} = commonColors;
 
 const { xml } = require("@xmpp/client");
 
@@ -81,47 +81,7 @@ class CreateNewGroup extends Component {
     })
   }
 
-  async checkUserPremium(callback){
-    let isPremium = false;
-    try {
-      isPremium = await AsyncStorage.getItem('isPremium');
-      // console.log(Boolean(Number(isPremium)),"AsyncValue");
-      callback(Boolean(Number(isPremium)));
-    } catch(e) {
-      // error reading value
-      callback(Boolean(Number(isPremium)));
-    }
-  }
-
-  async checkIfPremiumRoom (roomHash, callback){
-    let isPremiumRoom = false
-    await checkDefaultRoom.map(item=>{
-      console.log(item.name, roomHash, "checkthissss")
-      if(item.name === roomHash){
-        isPremiumRoom = true
-        Alert.alert("Not Allowed", "You need to be a premium member to join this room",[
-          {
-            text:"Ok",
-            onPress: ()=>this.setState({
-              isLoading:false
-            })
-          }
-        ])
-      }
-    })
-  
-    if(isPremiumRoom){
-      callback(true)
-    }
-    else{
-      console.log("notPremium")
-      callback(false)
-    }
-  
-  }
-
   createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation){
-
     let message = xml('presence', 
     {
       id:"CreateRoom",
@@ -179,17 +139,7 @@ class CreateNewGroup extends Component {
       if(chatName===""){
         alert('Please fill Chat Name');
       }else{
-        this.checkUserPremium(callback => {
-          if(callback){
-            this.createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation)
-          }else{
-            this.checkIfPremiumRoom(roomHash, isPremiumRoomCheck=>{
-              if(!isPremiumRoomCheck){
-                this.createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation);
-              }
-            })
-          }
-        })
+        this.createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation)
       }
     });
     

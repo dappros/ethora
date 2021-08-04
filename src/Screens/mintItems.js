@@ -19,7 +19,7 @@ import {
 } from 'react-native-responsive-screen';
 import {launchImageLibrary} from 'react-native-image-picker';
 import CustomHeader from '../components/shared/customHeader';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles} from '../../docs/config';
 import {Alert} from 'react-native';
 import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
@@ -32,8 +32,9 @@ import Modal from 'react-native-modal';
 import { logOut } from '../actions/auth';
 import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
-const {primaryColor} = GlobalTheme.commonColors;
-const {regularFont, lightFont} = GlobalTheme.textStyles;
+
+const {primaryColor} = commonColors;
+const {regularFont, lightFont} = textStyles;
 
 
 const hitAPI = new fetchFunction();
