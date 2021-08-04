@@ -1,5 +1,4 @@
-const isDev = true;
-export const SERVICE = isDev?"wss://z.okey.com.ua:5443/ws":"wss://rtc-gk.dappros.com:5443/ws";// dev
-export const DOMAIN = isDev?"z.okey.com.ua":"rtc-gk.dappros.com"; //dev
-export const CONFERENCEDOMAIN = isDev?"@conference.z.okey.com.ua":"@conference.rtc-gk.dappros.com"//dev
-export const CONF_WITHOUT = isDev?"conference.z.okey.com.ua":"conference.rtc-gk.dappros.com"
+export const SERVICE = "wss://dev.dxmpp.com:5443/ws";
+export const DOMAIN = "dev.dxmpp.com";
+export const CONFERENCEDOMAIN = "@conference.dev.dxmpp.com";
+export const CONF_WITHOUT = "conference.dev.dxmpp.com";

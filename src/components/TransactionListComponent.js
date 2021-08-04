@@ -3,14 +3,14 @@ import { Text, View, TouchableOpacity, ScrollView, Image, Platform, StyleSheet }
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Divider } from 'react-native-elements';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles, coinImagePath} from '../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
+const {primaryColor} = commonColors;
 const {
     lightFont,
     semiBoldFont,
     boldFont
-} = GlobalTheme.textStyles;
+} = textStyles;
 
 
 const TransactionListComponent=(props)=>{
@@ -85,7 +85,7 @@ const TransactionListComponent=(props)=>{
                     <Text style={{fontFamily: lightFont, fontSize:hp('1.6%')}}>Balance: {props.item.balance}</Text>
                 </View>
                 <View style={{flex:0.2, flexDirection:'row', alignItems:'center'}}>
-                    <Image source={require('../assets/GKCOIN.png')} style={styles.tokenIconStyle} />
+                    <Image source={coinImagePath} style={styles.tokenIconStyle} />
                     <Text style={{fontFamily: semiBoldFont, fontSize:hp('1.7%'), margin:5}}>{props.item.value}</Text>
                     <AntIcon name={props.item.from===props.walletAddress?'arrowup':'arrowdown'} color={props.item.from===props.walletAddress?'#CB4141':'#69CB41'} size={hp('1.7%')} style={{margin:5}} />
                     {   props.item.from===props.item.to&&

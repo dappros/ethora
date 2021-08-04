@@ -15,7 +15,7 @@ import styles from './style/chatHomeStyle';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {setCurrentChatDetails, shouldCountAction, participantsUpdateAction, updatedRoster} from '../actions/chatAction';
 import {logOut} from '../actions/auth';
-import {getEmailList, setISPremium} from '../actions/accountAction';
+import {getEmailList} from '../actions/accountAction';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {fetchRosterList, updateRosterList} from '../components/realmModels/chatList';
 import {xmpp} from '../helpers/xmppCentral';
@@ -24,20 +24,20 @@ import * as connectionURL from '../config/url'
 import fetchFunction from '../config/api'
 import {gkHubspotToken} from '../config/token';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles} from '../../docs/config';
 
 const hitAPI = new fetchFunction
 
 const _ = require('lodash');
 
-const {primaryColor} = GlobalTheme.commonColors;
+const {primaryColor} = commonColors;
 
 const {
     thinFont,
     regularFont,
     mediumFont,
     semiBoldFont
-} = GlobalTheme.textStyles
+} = textStyles
 class ChatHome extends Component {
     constructor(props) {
         super(props);
@@ -58,8 +58,6 @@ class ChatHome extends Component {
             lastUserText:"",
             pushChatName:"",
             pushChatJID:"",
-            isPremium:false,
-            isCheckPremium:false
         };
     }
 
@@ -79,20 +77,7 @@ class ChatHome extends Component {
         this._menu.show();
     };
 
-    componentWillUnmount(){
-        this.setState({
-            isCheckPremium:false
-        })
-    }
-
     async componentDidMount(){
-        //call email list api
-        let isPremium = false;
-        try {
-            isPremium = await AsyncStorage.getItem('isPremium');
-          } catch(e) {
-            // error reading value
-          }
           
         const {token} = this.props.loginReducer;
         this.props.getEmailList(token);
@@ -129,7 +114,6 @@ class ChatHome extends Component {
                     pushChatName,
                     pushChatJID,
                     loading,
-                    isPremium
                 })
             }
         })
@@ -137,9 +121,6 @@ class ChatHome extends Component {
     }
 
   	async componentDidUpdate(prevProps, prevState){
-        const prevEmailList = prevProps.AccountReducer.emailList;
-        const prevIsPremium = prevProps.AccountReducer.isPremium
-        const {emailList, isPremium} = this.props.AccountReducer;
 
         if(xmpp){
 
@@ -233,7 +214,9 @@ class ChatHome extends Component {
                                 lastUserName:from, 
                                 lastUserText:text, 
                                 counter:item.counter, 
-                                createdAt:recentRealtimeChat.createdAt
+                                createdAt:recentRealtimeChat.createdAt,
+                                participants: null,
+                                name: null
                             }
                         )
                     }
@@ -270,52 +253,6 @@ class ChatHome extends Component {
 
                 })
             }
-        }
-
-        if(isPremium!=prevIsPremium && isPremium){
-            this.setState({
-                isPremium:true
-            })
-        }
-
-        //check for emailListUpdate
-        if(emailList.length && !this.state.isCheckPremium && !this.state.isPremium){
-            //call hubspot api
-            emailList.map(item => {
-                const url = connectionURL.gkHubspotContacts+"/"+item.email+"/profile?hapikey="+gkHubspotToken;
-                hitAPI.fetchHubspotContact(url, ()=>{
-                    this.props.logOut
-                }, data => {
-                    if(data){
-                    const hubspotProfile = data["list-memberships"];
-                    hubspotProfile.map( async item => {
-                        if(item["static-list-id"] === 46){
-                            if(item["is-member"]){
-                                let isPremiumMember = true;
-                                this.props.setISPremium(true);
-                                try{
-                                    await AsyncStorage.setItem('isPremium', "1");
-                                }catch(error){
-                                    console.log(error);
-                                }
-
-                                this.setState({
-                                    isCheckPremium:true,
-                                    isPremium: isPremiumMember
-                                })
-                                
-                            }
-                        }
-                    })
-                    }
-                    else{
-                        this.setState({
-                            isCheckPremium: true,
-                            isPremium: false
-                        })
-                    }
-                })
-            })
         }
 
   	}
@@ -413,7 +350,15 @@ class ChatHome extends Component {
                 item.counter = 0;
             }
         })
-        updateRosterList({counter:0,jid:chat_jid})
+        updateRosterList({
+            counter:0,
+            jid:chat_jid,
+            lastUserName: null,
+            lastUserText: null,
+            participants: null,
+            createdAt: null,
+            name: null
+        })
         this.setState({
             rosterListArray
         })
@@ -535,6 +480,5 @@ module.exports = connect(mapStateToProps, {
     participantsUpdateAction,
     updatedRoster,
     getEmailList,
-    setISPremium,
     logOut
 })(ChatHome)

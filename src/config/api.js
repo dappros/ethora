@@ -31,7 +31,6 @@ export default class ConnectionAPI {
 
   async fetchGet(url, token, logOut, callback) {
 
-    console.log("asdasfadgd")
     const configAxios = {
       url:url,
       method: 'get',
@@ -48,6 +47,7 @@ export default class ConnectionAPI {
             callback(response.data)
           })
           .catch(error => {
+            console.log(error,url)
             console.log(error.response)
             let title = "";
             let description = "";
@@ -143,9 +143,10 @@ export default class ConnectionAPI {
       },
       data: JSON.stringify(data),
     };
-
+    console.log(JSON.stringify(data))
     this.checkNetworkState(callbackState =>{
       if(callbackState){
+        console.log(callbackState,"callbackstate")
         try {
           axios(configAxios)
             .then(function(response) {
@@ -153,7 +154,7 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              console.log(error.response,"Asdasdasd")
+              console.log(error.response.data,"Asdasdasd")
               callback(error.response.data);
 
               let title = "";
@@ -462,7 +463,6 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              console.log(error.response,"Asdasdasd")
               callback(error.response.data);
 
               let title = "";

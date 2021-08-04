@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  TextInput,
   TouchableOpacity,
   Text,
 } from 'react-native';
@@ -10,10 +9,11 @@ import QRCode from 'react-native-qrcode-svg';
 import Share from 'react-native-share';
 import RNFS from "react-native-fs"
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import * as GlobalTheme from '../config/globalTheme';
+import {logoPath} from '../../docs/config';
+import {commonColors, textStyles} from '../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
-const {mediumFont} = GlobalTheme.textStyles;
+const {primaryColor} = commonColors;
+const {mediumFont} = textStyles;
 
 // const obj
 class App extends Component {
@@ -72,7 +72,7 @@ class App extends Component {
           //Background Color of the QR Code (Optional)
           backgroundColor="white"
           //Logo of in the center of QR Code (Optional)
-          logo={require('../assets/Logo-Landscape.png')}
+          logo={logoPath}
           //Center Logo size  (Optional)
           logoSize={30}
           //Center Logo margin (Optional)

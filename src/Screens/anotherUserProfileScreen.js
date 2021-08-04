@@ -19,10 +19,10 @@ import {
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import CustomHeader from '../components/shared/customHeader';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles, coinImagePath} from '../../docs/config';
 
-const {primaryColor, primaryDarkColor} = GlobalTheme.commonColors;
-const {regularFont} = GlobalTheme.textStyles
+const {primaryColor, primaryDarkColor} = commonColors;
+const {regularFont} = textStyles;
 
 const handleSlide = (type, translateX, textColorAnim) => {
     textColorAnim.setValue(0);
@@ -53,7 +53,7 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
       {/* Token Image and symbol container */}
       <View style={styles.tokenTextAndSymbolContainer}>
         <View style={{flexDirection:"row", justifyContent:"flex-start", alignItems:"center", alignSelf:"flex-start"}}>
-          <Image source={require("../assets/GKCOIN.png")} style={styles.tokenIconStyle} /> 
+          <Image source={coinImagePath} style={styles.tokenIconStyle} /> 
           <Text
             style={{
               fontFamily: regularFont,

@@ -11,7 +11,7 @@ function checkRoomExist(jid,callback){
 }
 
 export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
-
+    console.log("calledddddd")
     try{
     queryRoomAllMessages(chatsObject.jid).then(chats=>{
         const lastUserName = chats.length?chats[chats.length-1].name:"";
@@ -30,7 +30,7 @@ export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
         checkRoomExist(chatsObject.jid, callback=>{
             
             if(!callback){
-                    
+                console.log(callback,"affgjhj")
                 realm.write(()=>{
                     realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatListObject)
                     resolve(chatListObject);
@@ -49,13 +49,15 @@ export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
 })
 
 export const updateRosterList = (data) => new Promise((resolve,reject)=>{
+    console.log(realm,"fromupdate")
     realm.write(()=>{
+
         const chatList = realm.objectForPrimaryKey(schemaTypes.CHAT_LIST_SCHEMA, data.jid);
         if(data.lastUserName&&data.lastUserText){
             chatList.lastUserText = data.lastUserText;
             chatList.lastUserName = data.lastUserName;
         }
-        if(data.chatList){
+        if(data.counter){
         chatList.counter = data.counter;
         }
         if(data.participants){
@@ -73,6 +75,7 @@ export const updateRosterList = (data) => new Promise((resolve,reject)=>{
 
 export const fetchRosterList = () => new Promise((resolve, reject)=>{
     const rosterList = realm.objects(schemaTypes.CHAT_LIST_SCHEMA)
+    console.log(realm,"asdadfsfgdfg");
     rosterList.isValid()?rosterList.isEmpty?
     resolve(Array.from(rosterList)):reject("is empty"):reject("not valid")
 })

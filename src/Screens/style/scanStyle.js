@@ -3,14 +3,14 @@ import { Dimensions } from 'react-native';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 const deviceWidth = Dimensions.get('screen').width;
 const deviceHeight = Dimensions.get('screen').height;
-import * as GlobalTheme from '../../config/globalTheme';
+import {commonColors, textStyles} from '../../../docs/config';
 
-const {primaryColor} = GlobalTheme.commonColors;
+const {primaryColor} = commonColors;
 
 const {
   mediumFont,
   regularFont
-} = GlobalTheme.textStyles
+} = textStyles
 
 
 const styles = {

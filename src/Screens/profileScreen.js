@@ -21,23 +21,22 @@ import {fetchTransaction} from '../actions/wallet';
 import {CommonTextInput} from '../components/shared/customTextInputs';
 import {connect} from 'react-redux';
 import TransactionListTab from '../components/TransactionListComponent';
-import * as DapprosConstants from '../constants/dapprosConstants';
 import {queryAllTransactions} from '../components/realmModels/transaction';
 import {updateVCard} from '../helpers/xmppStanzaRequestMessages';
 import Modal from 'react-native-modal';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
 
 const {
   primaryColor,
   primaryDarkColor
-} = GlobalTheme.commonColors;
+} = commonColors;
 
 const {
   mediumFont,
   regularFont,
   boldFont,
   lightFont
-} = GlobalTheme.textStyles;
+} = textStyles;
 
 
 const renderItem = ({item, index}) => (
@@ -60,7 +59,7 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
     <View style={{flexDirection: 'row', justifyContent: 'center', padding: 10}}>
       <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
         <View style={{flexDirection:"row", justifyContent:"flex-start", alignItems:"center", alignSelf:"flex-start"}}>
-        <Image source={require("../assets/GKCOIN.png")} style={styles.tokenIconStyle} /> 
+        <Image source={coinImagePath} style={styles.tokenIconStyle} /> 
           <Text
             style={{
               fontFamily: regularFont,
@@ -224,7 +223,7 @@ class ProfileScreen extends Component {
       }else coinBalance = coinBalance + parseFloat(item.balance);
     });
 
-    queryAllTransactions(DapprosConstants.tokenName).then(transactions => {
+    queryAllTransactions(coinsMainName).then(transactions => {
       let balance = 0;
       if (transactions.length > 0) {
         transactions.map(item => {
@@ -273,7 +272,7 @@ class ProfileScreen extends Component {
       prevProps.walletReducer.transactions !==
       this.props.walletReducer.transactions
     ) {
-      queryAllTransactions(DapprosConstants.tokenName).then(transactions => {
+      queryAllTransactions(coinsMainName).then(transactions => {
         let balance = 0;
         if (transactions.length > 0) {
           transactions.map(item => {

@@ -4,13 +4,12 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import * as GlobalTheme from '../../config/globalTheme';
+import {textStyles} from '../../../docs/config';
 
 const {
     mediumFont,
-    lightFont,
     boldFont
-} = GlobalTheme.textStyles
+} = textStyles
 
 const heading1 = "Ethora and Dappros Platform Terms & Privacy Policy";
 const body1 = "You are about to use a product based on the Ethora engine, Dappros Platform and Ethereum technologies. Our platform provides technology for ecosystems built on the principles of openness, transparency and decentralization. By design, certain information such as user profiles, rankings, and the transactions of digital assets will be available to the whole ecosystem or to the public. You should not attempt to use this product for secure or emergency communications. You should not share information or content here that you may not be comfortable or authorized to share with the public. Please carefully read our Terms of Service and Privacy Policy provided below and make sure you agree with them before proceeding to use this product."

@@ -1,5 +1,5 @@
 import * as xmppConfig from '../constants/xmppConstants';
-
+const { client } = require("@xmpp/client");
 export let xmpp;
 
 export const xmppConnect=(walletAddress,password)=>{
@@ -9,8 +9,6 @@ export const xmppConnect=(walletAddress,password)=>{
     username: walletAddress,
     password: password,
   });
-
-  
   xmpp.start();
 
 

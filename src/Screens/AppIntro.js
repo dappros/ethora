@@ -23,19 +23,19 @@ import {isSkipForever} from '../actions/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {connect} from 'react-redux';
 import ViewPager from '@react-native-community/viewpager';
-import * as GlobalTheme from '../config/globalTheme';
+import {commonColors, textStyles} from '../../docs/config';
 
 const pagination = ['chats', 'qr', 'tokens', 'sharing'];
 
 const {
   lightFont,
   mediumFont,
-} = GlobalTheme.textStyles
+} = textStyles
 
 const {
   primaryColor,
   secondaryColor
-} = GlobalTheme.commonColors
+} = commonColors
 class AppIntro extends Component {
   constructor(props) {
     super(props);

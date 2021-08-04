@@ -134,45 +134,6 @@ class qrcodescreen extends Component {
     this.openChat(e.data);
   };
 
-  async checkUserPremium(callback){
-    let isPremium = false;
-    try {
-      isPremium = await AsyncStorage.getItem('isPremium');
-      // console.log(Boolean(Number(isPremium)),"AsyncValue");
-      callback(Boolean(Number(isPremium)));
-    } catch(e) {
-      // error reading value
-      callback(Boolean(Number(isPremium)));
-    }
-  }
-
-async checkIfPremiumRoom (chat_jid, callback){
-  let isPremiumRoom = false
-  await checkDefaultRoom.map(item=>{
-    console.log(item.name, chat_jid, "checkthissss")
-    if(item.name === chat_jid.split("@")[0]){
-      isPremiumRoom = true
-      Alert.alert("Not Allowed", "You need to be a premium member to join this room",[
-        {
-          text:"Ok",
-          onPress: ()=>this.setState({
-            isLoading:false
-          })
-        }
-      ])
-    }
-  })
-
-  if(isPremiumRoom){
-    callback(true)
-  }
-  else{
-    console.log("notPremium")
-    callback(false)
-  }
-
-}
-
 subscribeRoomAndOpenChat(chat_jid){
   const subscribe = xml(
     'iq',
@@ -215,13 +176,7 @@ subscribeRoomAndOpenChat(chat_jid){
       if(callback){
         this.subscribeRoomAndOpenChat(chat_jid)
       }else{
-        this.checkIfPremiumRoom(chat_jid, isPremiumRoomCheck=>{
-          console.log(isPremiumRoomCheck,"isthispremium")
-          if(!isPremiumRoomCheck){
-            this.subscribeRoomAndOpenChat(chat_jid);
-          }
-        });
-
+        this.subscribeRoomAndOpenChat(chat_jid);
       }
     })
 
