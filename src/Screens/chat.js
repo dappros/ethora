@@ -324,6 +324,7 @@ class Chat extends Component {
         message_id: m._id,
         walletFromJid,
         token,
+        jid,
         senderName: this.state.name,
       };
     } else {
@@ -332,6 +333,8 @@ class Chat extends Component {
         amnt: null,
         name: m.user.name,
         message_id: m._id,
+        jid,
+
         senderName: this.state.name,
       };
     }
@@ -339,6 +342,7 @@ class Chat extends Component {
       showModal: true,
       modalType: 'tokenTransfer',
       extraData,
+
     });
   }
 
@@ -1031,6 +1035,7 @@ class Chat extends Component {
           extraData={this.state.extraData}
           submitExtra={this.submitExtraDataXMPP}
           closeModal={this.closeModal}
+          navigation={this.props.navigation}
         />
       </View>
     );

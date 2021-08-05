@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "androidClear": "react-native run-android"
   },
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.1.2",
