@@ -493,6 +493,19 @@ class Routes extends Component {
     // write_logs("Query : " + message);
     xmpp.send(message);
   };
+  getStoredItems = async () => {
+    try {
+      const value = await AsyncStorage.getItem('rosterListHashMap');
+      if (value !== null) {
+        // value previously stored
+        console.log(JSON.parse(value), 'parsedValue from home2');
+        return JSON.parse(value);
+      }
+    } catch (e) {
+      // error reading value
+      console.log(e, 'error reading');
+    }
+  };
 
   //xmpp listeners
   async xmppListener() {
@@ -997,6 +1010,7 @@ class Routes extends Component {
         console.log(stanza, 'in fetchroster stanza');
         const rosterFromXmpp = stanza.children[0].children;
         let rosterListArray = [];
+        let rosterMap = await this.getStoredItems();
 
         let nonMemberchat = {
           name:"f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5",
@@ -1014,6 +1028,7 @@ class Routes extends Component {
             lastUserText: '',
             lastUserName: '',
             createdAt: new Date(),
+            // pri
           };
           
           if(item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
@@ -1066,11 +1081,17 @@ class Routes extends Component {
             
             if(chatListFromRealm.length){
               chatListFromRealm.map(chat=>{
-                if(chat.jid === item.attrs.jid){
-                  exist = true;
-                }else{
-                  exist = false;
+                if (!!rosterMap) {
+                  rosterObject.priority = rosterMap[item.attrs.jid];
+                  // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
+                  insertRosterList(rosterObject);
                 }
+    
+                // if(chat.jid === item.attrs.jid){
+                //   exist = true;
+                // }else{
+                //   exist = false;
+                // }
               })
             }else{
               exist = false;
