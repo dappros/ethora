@@ -23,9 +23,28 @@ import {connect} from 'react-redux';
 import TransactionListTab from '../components/TransactionListComponent';
 import {queryAllTransactions} from '../components/realmModels/transaction';
 import {updateVCard} from '../helpers/xmppStanzaRequestMessages';
-import Modal from 'react-native-modal';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+import * as connectionURL from '../config/url';
 
+import {
+  getUserProfileData,
+  setUserInitialData,
+  saveInitialData,
+  saveInitialDataAction
+} from '../actions/auth';
+import Modal from 'react-native-modal';
+import axios from 'axios';
+
+import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+export const changeUserName = async (data, token) => {
+  console.log(data, 'datainnewname');
+  return await axios.put(connectionURL.registerUserURL, data, {
+    headers: {
+      // 'Content-Type': 'multipart/form-data',
+      Authorization: token,
+      'Accept-encoding': 'gzip, deflate',
+    },
+  });
+};
 const {
   primaryColor,
   primaryDarkColor
@@ -123,6 +142,7 @@ class ProfileScreen extends Component {
       isDescriptionEditable: false,
       userAvatar: '',
       modalVisible: false,
+      modalTypeForEditing: 'name',
     };
   }
 
@@ -324,6 +344,53 @@ class ProfileScreen extends Component {
     });
   };
 
+  onNamePressed = () => {
+    this.setState({
+      modalTypeForEditing: 'name',
+      modalVisible: true,
+    });
+  };
+  onNameChange = (type, text) => {
+    this.setState({
+      [type]: text,
+    });
+  };
+  setNewName = () => {
+    changeUserName(
+      {firstName: this.state.firstName, lastName: this.state.lastName},
+      this.props.loginReducer.token,
+    )
+      .then(res =>
+        // this.props.setUserInitialData({
+        //   firstName: this.state.firstName,
+        //   lastName: this.state.lastName,
+        //   image: this.props.loginReducer.initialData.image,
+        //   username: this.props.loginReducer.initialData.username,
+
+        //   password: this.props.loginReducer.initialData.password,
+
+        //   walletAddress: this.props.loginReducer.initialData.walletAddress,
+        // }),
+        saveInitialData(
+          { firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            image: this.props.loginReducer.initialData.image,
+            username: this.props.loginReducer.initialData.username,
+  
+            password: this.props.loginReducer.initialData.password,
+  
+            walletAddress: this.props.loginReducer.initialData.walletAddress,},
+          callback => {
+            this.props.saveInitialDataAction(callback);
+            // dispatch(loginUserSuccess(data));
+          },
+        )
+      )
+      .catch(e => console.log(e, 'nameerror'));
+    // this.props.getUserProfileData(this.props.loginReducer.token)
+
+    this.setState({modalVisible: false});
+  };
   onDescriptionPressed = () => {
     this.setState({
       isDescriptionEditable: !this.state.isDescriptionEditable,
@@ -342,6 +409,145 @@ class ProfileScreen extends Component {
       isDescriptionEditable: !this.state.isDescriptionEditable,
       modalVisible: false,
     });
+  };
+  modalContent = () => {
+    if (this.state.modalTypeForEditing === 'description') {
+      return this.state.isDescriptionEditable ? (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'white',
+            borderRadius: 8,
+            paddingVertical: 20,
+          }}>
+          <CommonTextInput
+            maxLength={128}
+            containerStyle={{
+              borderWidth: 0.5,
+              // borderTopWidth: 0,
+              borderColor: primaryColor,
+              backgroundColor: 'white',
+              width: wp('81%'),
+              height: hp('6.8%'),
+              // padding: hp('2.4'),
+              paddingLeft: wp('3.73'),
+              borderRadius: 0,
+              marginBottom: 10,
+              // marginTop: 10
+            }}
+            fontsStyle={{
+              fontFamily: lightFont,
+              fontSize: hp('1.6%'),
+              color: 'black',
+            }}
+            value={this.state.description}
+            onChangeText={text => this.onDescriptionChange(text)}
+            placeholder="Enter your description"
+            placeholderTextColor={primaryColor}
+          />
+
+          <TouchableOpacity
+            onPress={() => this.setDescription(this.state.description)}
+            style={{
+              backgroundColor: primaryColor,
+              borderRadius: 5,
+              height: hp('4.3'),
+              padding: 4,
+            }}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                flex: 1,
+              }}>
+              <Text style={styles.createButtonText}>Done editing</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : null;
+    }
+
+    if (this.state.modalTypeForEditing === 'name') {
+      return (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'white',
+            borderRadius: 8,
+            paddingVertical: 20,
+          }}>
+          <CommonTextInput
+            maxLength={15}
+            containerStyle={{
+              borderWidth: 0.5,
+              // borderTopWidth: 0,
+              borderColor: primaryColor,
+              backgroundColor: 'white',
+              width: wp('81%'),
+              height: hp('6.8%'),
+              // padding: hp('2.4'),
+              paddingLeft: wp('3.73'),
+              borderRadius: 0,
+              marginBottom: 10,
+              // marginTop: 10
+            }}
+            fontsStyle={{
+              fontFamily: lightFont,
+              fontSize: hp('1.6%'),
+              color: 'black',
+            }}
+            value={this.state.firstName}
+            onChangeText={text => this.onNameChange('firstName', text)}
+            placeholder="Enter your firstname"
+            placeholderTextColor={primaryColor}
+          />
+          <CommonTextInput
+            maxLength={15}
+            containerStyle={{
+              borderWidth: 0.5,
+              // borderTopWidth: 0,
+              borderColor: primaryColor,
+              backgroundColor: 'white',
+              width: wp('81%'),
+              height: hp('6.8%'),
+              // padding: hp('2.4'),
+              paddingLeft: wp('3.73'),
+              borderRadius: 0,
+              marginBottom: 10,
+              // marginTop: 10
+            }}
+            fontsStyle={{
+              fontFamily: lightFont,
+              fontSize: hp('1.6%'),
+              color: 'black',
+            }}
+            value={this.state.lastName}
+            onChangeText={text => this.onNameChange('lastName', text)}
+            placeholder="Enter your lastname"
+            placeholderTextColor={primaryColor}
+          />
+          <TouchableOpacity
+            onPress={() => this.setNewName()}
+            style={{
+              backgroundColor: primaryColor,
+              borderRadius: 5,
+              height: hp('4.3'),
+              padding: 4,
+            }}>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                flex: 1,
+              }}>
+              <Text style={styles.createButtonText}>Done editing</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      );
+    }
   };
   render() {
     let {
@@ -406,14 +612,16 @@ class ProfileScreen extends Component {
                 height: hp('75%'),
               }}>
               <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
-                <Text
-                  style={{
-                    fontSize: hp('2.216%'),
-                    fontFamily: mediumFont,
-                    color: '#000000',
-                  }}>
-                  {firstName} {lastName}
-                </Text>
+              <TouchableOpacity onPress={this.onNamePressed}>
+                  <Text
+                    style={{
+                      fontSize: hp('2.216%'),
+                      fontFamily: mediumFont,
+                      color: '#000000',
+                    }}>
+                    {firstName} {lastName}
+                  </Text>
+                </TouchableOpacity>
                 <View
                   style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
                   <View
@@ -527,59 +735,7 @@ class ProfileScreen extends Component {
                 onRequestClose={() => {
                   Alert.alert('Modal has been closed.');
                 }}>
-                {this.state.isDescriptionEditable ? (
-                  <View
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: 'white',
-                      borderRadius: 8,
-                      paddingVertical: 20,
-                    }}>
-                    <CommonTextInput
-                      containerStyle={{
-                        borderWidth: 0.5,
-                        borderColor: primaryColor,
-                        backgroundColor: primaryColor+'26', 
-                        width: wp('81%'),
-                        height: hp('6.8%'),
-                        paddingLeft: wp('3.73'),
-                        borderRadius: 5,
-                        marginBottom: 10,
-                      }}
-                      fontsStyle={{
-                        fontFamily: lightFont,
-                        fontSize: hp('1.6%'),
-                        color: 'black',
-                      }}
-                      onChangeText={text => this.onDescriptionChange(text)}
-                      placeholder="Enter your description"
-                      placeholderTextColor={primaryColor}
-                    />
-
-                    <TouchableOpacity
-                      onPress={() =>
-                        this.setDescription(this.state.description)
-                      }
-                      style={{
-                        backgroundColor: primaryColor,
-                        borderRadius: 5,
-                        height: hp('4.3'),
-                        padding: 4,
-                      }}>
-                      <View
-                        style={{
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          flex: 1,
-                        }}>
-                        <Text >
-                          Done editing
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                ) : null}
+                {this.modalContent()}
               </Modal>
             </View>
           </View>
@@ -599,6 +755,11 @@ module.exports = connect(
   mapStateToProps,
   {
     fetchTransaction,
+    // fetchWalletBalance,
+    getUserProfileData,
+    setUserInitialData,
+    saveInitialData,
+    saveInitialDataAction
   },
 )(ProfileScreen);
 
