@@ -198,6 +198,7 @@ class HeaderComponent extends Component{
             case 'mint':
                 this.hideMenu();
                 this.props.navigation.navigate('MintItemsComponent');
+                break;
 
             case "tutorial":
                 AsyncStorage.setItem('@skipForever', "0")
