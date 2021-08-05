@@ -4,8 +4,10 @@ Mobile app engine and platform for social tokenized communities.
 ### Core features
 * iOS & Android
 * Social sign-in & Crypto wallets
-* Coins (ERC-20 tokens) & Items / NFT (ERC-721 tokens)
-* Ethereum powered transactions ledger
+* Coins (ERC-20 tokens)
+* NFT Items (ERC-721 tokens)
+* "Crypto likes" (sending tokens to messages)
+* Ethereum blockchain powered immutable transactions ledger
 * Crowd-sourced rooms and spaces, p2p QR-code / public key - based invites system
 * Chat & Social profiles
 * Push notifications
