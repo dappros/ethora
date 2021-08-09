@@ -35,7 +35,9 @@ const ChatListSchema={
         counter:'int',
         lastUserText:'string',
         lastUserName:'string',
-        createdAt:'date?'
+        createdAt:'date?',
+        priority: {type: 'int', optional: true}
+
     }
 }
 

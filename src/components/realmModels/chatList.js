@@ -11,7 +11,6 @@ function checkRoomExist(jid,callback){
 }
 
 export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
-    console.log("calledddddd")
     try{
     queryRoomAllMessages(chatsObject.jid).then(chats=>{
         const lastUserName = chats.length?chats[chats.length-1].name:"";
@@ -25,19 +24,21 @@ export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
             counter:chatsObject.counter,
             lastUserName:lastUserName,
             lastUserText:lastUserText,
-            createdAt:createdAt
+            createdAt:createdAt,
+            priority: chatsObject.priority
         }
         checkRoomExist(chatsObject.jid, callback=>{
             
             if(!callback){
-                console.log(callback,"affgjhj")
                 realm.write(()=>{
                     realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatListObject)
                     resolve(chatListObject);
                 });
             }
             else {
-                resolve(chatListObject);
+                let chat = updateChatRoom(chatsObject.jid, 'priority', chatsObject.priority)
+                resolve(chat)
+    
             }
         })
     })
@@ -47,6 +48,15 @@ export const insertRosterList = (chatsObject) => new Promise((resolve,reject)=>{
 
     
 })
+export const updateChatRoom = (jid, property, value) => new Promise((resolve,reject)=>{
+    realm.write(()=>{
+        const chatRoom = realm.objectForPrimaryKey(schemaTypes.CHAT_LIST_SCHEMA,jid);
+
+           chatRoom[property] = value
+        resolve();
+    })
+})
+
 
 export const updateRosterList = (data) => new Promise((resolve,reject)=>{
     console.log(realm,"fromupdate")
@@ -69,9 +79,18 @@ export const updateRosterList = (data) => new Promise((resolve,reject)=>{
         if(data.name){
             chatList.name = data.name
         }
+        if(data.priority) {
+            chatList.priority = data.priority
+        }
+
         resolve();
     })
 })
+export const getChatRoom = (jid) => new Promise((resolve,reject)=>{
+    const chatList = realm.objectForPrimaryKey(schemaTypes.CHAT_LIST_SCHEMA,jid);
+    resolve(chatList)
+})
+
 
 export const fetchRosterList = () => new Promise((resolve, reject)=>{
     const rosterList = realm.objects(schemaTypes.CHAT_LIST_SCHEMA)

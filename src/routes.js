@@ -484,6 +484,28 @@ class Routes extends Component {
       }
     }
   }
+  getArchive = () => {
+    let message = xml(
+      'iq',
+      {type: 'set', id: this.state.manipulatedWalletAddress},
+      xml('query', {xmlns: 'urn:xmpp:mam:2', queryid: 'userArchive'}),
+    );
+    // write_logs("Query : " + message);
+    xmpp.send(message);
+  };
+  getStoredItems = async () => {
+    try {
+      const value = await AsyncStorage.getItem('rosterListHashMap');
+      if (value !== null) {
+        // value previously stored
+        console.log(JSON.parse(value), 'parsedValue from home2');
+        return JSON.parse(value);
+      }
+    } catch (e) {
+      // error reading value
+      console.log(e, 'error reading');
+    }
+  };
 
   //xmpp listeners
   async xmppListener() {
@@ -522,6 +544,16 @@ class Routes extends Component {
       console.log(stanza, 'stanza');
       let featureList = {};
       if (stanza.is('iq')) {
+        if (
+          stanza?.children[0]?.attrs?.queryid === 'userArchive'  &&
+          stanza?.children[0]?.attrs?.complete 
+        ) {
+          console.log(stanza, 'archiveksdlfsdfdsfjsdlfjkls')
+          fetchRosterlist(
+            this.state.manipulatedWalletAddress,
+            subscriptionsStanzaID,
+          );
+        }
         if (stanza.attrs.id === 'disco1') {
           stanza.children[0].children.map(item => {
             if (item.name === 'feature') {
@@ -712,6 +744,82 @@ class Routes extends Component {
 
       if (stanza.name === 'message') {
         //capture message composing
+        if (
+          stanza?.children[0]?.children[0]?.children[0]?.children[2]
+            ?.children[0]?.name === 'invite'
+        ) {
+          let jid =
+            stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
+              ?.jid;
+              console.log(jid, 'messageforвапвminvid')
+          const subscribe = xml(
+            'iq',
+            {
+              from:
+                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+              to: jid,
+              type: 'set',
+              id: 'inviteFromArchive',
+            },
+            xml(
+              'subscribe',
+              {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: this.state.manipulatedWalletAddress,
+              },
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+            ),
+          );
+
+          xmpp.send(subscribe);
+          const presence = xml(
+            'presence',
+            {
+              from:
+                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+              to: jid + '/' + this.state.manipulatedWalletAddress,
+            },
+            xml('x', 'http://jabber.org/protocol/muc'),
+          );
+          xmpp.send(presence);
+          // fetchRosterlist(
+          //   this.state.manipulatedWalletAddress,
+          //   subscriptionsStanzaID,
+          // );
+        }
+        if(stanza?.children[2]?.children[0]?.name ==='invite') {
+          console.log(stanza, 'invite')
+
+          const jid =  stanza.children[3].attrs.jid;
+          // console.log(jid, 'dsfjkdshjfksdu439782374')
+          const subscribe = xml(
+            'iq',
+            {
+              from:
+                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+              to: jid ,
+              type: 'set',
+              id: newSubscription,
+            },
+            xml(
+              'subscribe',
+              {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: this.state.manipulatedWalletAddress,
+              },
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+            ),
+          );
+
+          xmpp.send(subscribe);
+          // fetchRosterlist(
+          //   this.state.manipulatedWalletAddress,
+          //   subscriptionsStanzaID,
+          // );
+        }
+
         if (stanza.attrs.id === types.IS_COMPOSING) {
           const mucRoom = stanza.attrs.from.split('/')[0];
           console.log('captured');
@@ -902,6 +1010,7 @@ class Routes extends Component {
         console.log(stanza, 'in fetchroster stanza');
         const rosterFromXmpp = stanza.children[0].children;
         let rosterListArray = [];
+        let rosterMap = await this.getStoredItems();
 
         let nonMemberchat = {
           name:"f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5",
@@ -919,6 +1028,7 @@ class Routes extends Component {
             lastUserText: '',
             lastUserName: '',
             createdAt: new Date(),
+            // pri
           };
           
           if(item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
@@ -971,11 +1081,17 @@ class Routes extends Component {
             
             if(chatListFromRealm.length){
               chatListFromRealm.map(chat=>{
-                if(chat.jid === item.attrs.jid){
-                  exist = true;
-                }else{
-                  exist = false;
+                if (!!rosterMap) {
+                  rosterObject.priority = rosterMap[item.attrs.jid];
+                  // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
+                  insertRosterList(rosterObject);
                 }
+    
+                // if(chat.jid === item.attrs.jid){
+                //   exist = true;
+                // }else{
+                //   exist = false;
+                // }
               })
             }else{
               exist = false;
@@ -1154,12 +1270,9 @@ class Routes extends Component {
 
     xmpp.on('online', async address => {
       xmpp.reconnect.delay = 2000;
-      xmpp.send(
-        xml('presence', {
-          from: this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-          to: xmppConstant.DOMAIN,
-        }),
-      );
+      xmpp.send(xml("presence"));
+      this.getArchive();
+
       fetchRosterlist(
         this.state.manipulatedWalletAddress,
         subscriptionsStanzaID,
