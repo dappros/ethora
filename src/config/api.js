@@ -44,6 +44,7 @@ export default class ConnectionAPI {
         try{
           axios(configAxios)
           .then(response => {
+            console.log(response,"adgdgjfhjndfg")
             callback(response.data)
           })
           .catch(error => {
@@ -143,7 +144,6 @@ export default class ConnectionAPI {
       },
       data: JSON.stringify(data),
     };
-    console.log(JSON.stringify(data))
     this.checkNetworkState(callbackState =>{
       if(callbackState){
         console.log(callbackState,"callbackstate")
@@ -154,7 +154,7 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              console.log(error.response.data,"Asdasdasd")
+              console.log(error)
               callback(error.response.data);
 
               let title = "";

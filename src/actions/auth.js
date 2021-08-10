@@ -3,8 +3,8 @@ import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
-import * as token from '../config/token';
 import {LoginManager} from 'react-native-fbsdk-next';
+import {APP_TOKEN} from '../../docs/config';
 
 const hitAPI = new fetchFunction();
 
@@ -205,7 +205,7 @@ const registerUserWordpress = dataObject => {
       hitAPI.fetchPost(
         connectionURL.registerUserURL,
         dataObject,
-        token.APP_TOKEN,
+        APP_TOKEN,
         () => {
           dispatch(logOut());
         },
@@ -245,7 +245,7 @@ export const registerUser = (dataObject, ssoUserData) => {
       hitAPI.fetchPost(
         connectionURL.registerUserURL,
         dataObject,
-        token.APP_TOKEN,
+        APP_TOKEN,
         () => {
           dispatch(logOut());
         },
@@ -273,7 +273,7 @@ export const checkInDb = async email => {
     url: 'http://18.222.34.175/v1/users/checkEmail/' + email,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: token.APP_TOKEN,
+      Authorization: APP_TOKEN,
     },
   };
 
