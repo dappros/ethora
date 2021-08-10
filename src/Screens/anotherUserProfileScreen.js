@@ -104,7 +104,7 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
 );
 const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
   <AssetItem
-    image={item.imagePreview}
+    image={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -574,7 +574,7 @@ function AnotherProfile(props) {
         })
       : null;
     itemsData.map(item => {
-      // console.log(item.balance, 'ssssssssss');
+      console.log(item, 'ssssssssss');
 
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
@@ -747,21 +747,7 @@ function AnotherProfile(props) {
                         Transactions ({transactionCount})
                       </Animated.Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{marginLeft: 20}}
-                      onLayout={event =>
-                        setXTabThree(event.nativeEvent.layout.x)
-                      }
-                      onPress={() => setActiveTab(2)}>
-                      <Animated.Text
-                        style={{
-                          fontSize: hp('1.97%'),
-                          fontFamily: boldFont,
-                          color: activeTab === 2 ? '#000000' : '#0000004D',
-                        }}>
-                        Garage
-                      </Animated.Text>
-                    </TouchableOpacity>
+                  
                   </View>
                 </SkeletonContent>
 
