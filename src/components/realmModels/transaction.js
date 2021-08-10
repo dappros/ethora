@@ -9,8 +9,8 @@ function checkTransactionExist(transactionHash,callback){
 }
 
 export const insertTransaction = (data) => new Promise((resolve,reject)=>{
-
     data.map(item=>{
+        if (!item.nftTotal) item.nftTotal = '0';
 
         const data={
             blockNumber:item.blockNumber?item.blockNumber:"N/A",
@@ -25,7 +25,11 @@ export const insertTransaction = (data) => new Promise((resolve,reject)=>{
             tokenName:item.tokenName?item.tokenName:'N/A',
             transactionHash:item.transactionHash?item.transactionHash:'N/A',
             type:item.type?item.type:'N/A',
-            value:item.value?item.value:'N/A'
+            value:item.value?item.value:'N/A',
+            nftTotal: item.nftTotal,
+            receiverBalance: item.receiverBalance,
+            senderBalance: item.senderBalance,
+            nftPreview: item.nftPreview ? item.nftPreview : 'null',
         }
         checkTransactionExist(item.transactionHash,callback=>{
             if(!callback){
@@ -33,6 +37,7 @@ export const insertTransaction = (data) => new Promise((resolve,reject)=>{
                 item.timestamp = date;
                 item.tokenId = item.tokenId===undefined?"Ether":item.tokenId;
                 item.tokenName = !item.tokenName?"Ether":item.tokenName;
+                item.nftPreview = item.nftPreview ? item.nftPreview : 'null';
                 realm.write(()=>{
                     realm.create(schemaTypes.TRANSACTION_SCHEMA, data)
                     resolve(true)
@@ -46,6 +51,6 @@ export const insertTransaction = (data) => new Promise((resolve,reject)=>{
 })
 
 export const queryAllTransactions = (tokenName) => new Promise((resolve,reject)=>{
-    let transactions = realm.objects(schemaTypes.TRANSACTION_SCHEMA).filtered(`tokenName="${tokenName}" SORT(timestamp ASC)`);
+    let transactions = realm.objects(schemaTypes.TRANSACTION_SCHEMA).filtered(`tokenName!="${' '}" SORT(timestamp ASC)`);
     resolve(Array.from(transactions));
 })

@@ -45,7 +45,7 @@ const TransactionSchema={
     name: schemaTypes.TRANSACTION_SCHEMA,
     primaryKey:"transactionHash",
     properties:{
-        blockNumber:'int',
+        // blockNumber:'int',
         from:'string',
         fromFirstName:'string',
         fromLastName:'string',
@@ -54,12 +54,18 @@ const TransactionSchema={
         timestamp:'date',
         to:'string',
         tokenId:'string',
+        nftTotal: 'string',
+        receiverBalance: 'string',
+        // _id: 'string',
         tokenName:'string',
         transactionHash:'string',
+        senderBalance: 'string',
         type:'string',
-        value:'int'
+        value:'int',
+        nftPreview: 'string'
     }
 }
+
 
 export const databaseOptions = {
     path: 'ethoraTest.realm',

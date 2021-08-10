@@ -542,11 +542,18 @@ class Chat extends Component {
         const receiverName = this.props.walletReducer.tokenTransferSuccess
           .receiverName;
         const amount = this.props.walletReducer.tokenTransferSuccess.amount;
+        const tokenName = this.props.walletReducer.tokenTransferSuccess
+          .tokenName;
+          console.log(
+            this.props.walletReducer.tokenTransferSuccess,
+            'tradjnsakdjsdfjdskjf',
+          );
         let message = systemMessage({
           senderName,
           receiverName,
           amount,
           receiverMessageId,
+          tokenName
         });
         this.submitMessage(message, message[0].system);
         this.props.transferTokensSuccess({
@@ -555,6 +562,8 @@ class Chat extends Component {
           receiverName: '',
           amount: 0,
           receiverMessageId: '',
+          tokenName: '',
+          
         });
       }
 

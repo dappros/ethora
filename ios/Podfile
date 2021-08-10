@@ -6,14 +6,7 @@ platform :ios, '10.0'
 target 'ethora' do
   config = use_native_modules!
 
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
-
-  use_react_native!(
-    :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => false
-  )
+  use_react_native!(:path => config["reactNativePath"])
 
   target 'ethoraTests' do
     inherit! :complete
@@ -23,10 +16,9 @@ target 'ethora' do
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable the next line.
-  use_flipper!()
-
+  # you should disable these next few lines.
+  use_flipper!({ 'Flipper-Folly' => '2.5.3', 'Flipper' => '0.87.0', 'Flipper-RSocket' => '1.3.1' })
   post_install do |installer|
-    react_native_post_install(installer)
+    flipper_post_install(installer)
   end
 end

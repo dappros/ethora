@@ -107,7 +107,7 @@ const TransactionList = (params,tabIndex) => {
                 <ScrollView>
                     {transactions.map(item=>{
                         let showHeader = false;
-                        const transactionTimeStamp = item.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
+                        const transactionTimeStamp = item?.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
                         if(currentHeaderDate===null){
                             currentHeaderDate = transactionTimeStamp;
                             showHeader = true;
@@ -131,7 +131,7 @@ const TransactionList = (params,tabIndex) => {
                     {
                         transactions.map(item=>{
                             let showHeader = false;
-                            const transactionTimeStamp = item.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
+                            const transactionTimeStamp = item?.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
                             if(currentHeaderDate===null){
                                 currentHeaderDate = transactionTimeStamp;
                                 showHeader = true;
@@ -156,7 +156,7 @@ const TransactionList = (params,tabIndex) => {
                     {
                         transactions.map(item=>{
                             let showHeader = false;
-                            const transactionTimeStamp = item.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
+                            const transactionTimeStamp = item?.timestamp instanceof Date?item.timestamp: new Date(item.timestamp);
                             if(currentHeaderDate===null){
                                 currentHeaderDate = transactionTimeStamp
                                 showHeader = true;
