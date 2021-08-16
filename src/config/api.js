@@ -463,7 +463,8 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              callback(error.response.data);
+              console.log(error.response,"Asdasdasd")
+              callback(error.response);
 
               let title = "";
               let description = "";
@@ -543,5 +544,4 @@ export default class ConnectionAPI {
       }
     })
   }
-
 }

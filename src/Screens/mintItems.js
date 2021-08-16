@@ -1,37 +1,41 @@
-import React, {useEffect, Fragment, useState} from 'react';
+import React, {Component, useEffect, Fragment, useState} from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   ScrollView,
+  ImageBackground,
   StyleSheet,
+  Image,
   ActivityIndicator,
   PermissionsAndroid,
   Linking,
 } from 'react-native';
 import {useSelector, useDispatch, connect} from 'react-redux';
 import {fetchTransaction, fetchWalletBalance} from '../actions/wallet';
+
 import styles from './style/createNewChatStyle';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import CustomHeader from '../components/shared/customHeader';
-import {commonColors, textStyles} from '../../docs/config';
 import {Alert} from 'react-native';
 import * as connectionURL from '../config/url';
+import * as token from '../config/token';
 import fetchFunction from '../config/api';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-simple-toast';
-import {PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {Platform} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 import { logOut } from '../actions/auth';
 import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
+import {commonColors, textStyles} from '../../docs/config';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -48,9 +52,9 @@ const options = {
 };
 
 export const uploadToFilesApi = async (file, token, callback) => {
-
+  console.log(file, token, 'asdkasldh8q9e')
     hitAPI.fileUpload(
-      connectionURL.filesURL,
+      connectionURL.fileUpload,
       file,
       token,
       async() => {
@@ -106,7 +110,7 @@ function MintItems(props) {
         } else if (response.customButton) {
           console.log('User tapped custom button: ', response.customButton);
         } else {
-          console.log(response,"Asdasdcas§cd")
+          console.log(response,"filesresponse")
           const data = new FormData();
           data.append('files', {
             name: response.fileName,
@@ -121,6 +125,7 @@ function MintItems(props) {
         const res = await DocumentPicker.pick({
           type: [DocumentPicker.types.allFiles],
         });
+        console.log(res, 'formsasss')
         const data = new FormData();
         data.append('files', {
           name: res.name,
@@ -207,13 +212,12 @@ function MintItems(props) {
   };
 
   const sendFiles = data => {
-
     setLoading(true);
     uploadToFilesApi(data, loginReducerData.token, resp=>{
-      console.log(resp.results[0].locationPreview,"Asdsgdfbghdfhg");
+      console.log(JSON.stringify(resp),"sdfasdfadf");
       setFileId(resp.results[0]['_id']);
       setLoading(false);
-      setAvatarSource(resp.results[0].locationPreview)
+      setAvatarSource(resp.results[0].location)
     })
     
   };
@@ -306,7 +310,7 @@ function MintItems(props) {
               placeholder="Item Name"
               placeholderTextColor={primaryColor}
               style={classes.itemNameInput}
-              maxLength={120}
+              maxLength={50}
             />
           </View>
 
@@ -400,7 +404,7 @@ function MintItems(props) {
                     color={primaryColor}
                     name="caretdown"
                     size={hp('2%')}
-                    style={{marginRight: 5, marginBottom: 2, }}
+                    style={{marginRight: 5, marginBottom: 2}}
                   />
                 </TouchableOpacity>
               </>
@@ -430,9 +434,10 @@ function MintItems(props) {
           </TouchableOpacity>
           <View style={classes.checkboxContainer}>
             <CheckBox
+
               value={isSelected}
               onValueChange={setSelection}
-              style={{marginRight: 3}}
+              style={{marginRight: 3, color: primaryColor}}
             />
             <Text style={{color: primaryColor}}>
               By proceeding I confirm that I have the rights to distribute the
@@ -472,7 +477,6 @@ function MintItems(props) {
               setSelectedValue(2), setModalVisible(false);
             }}
             style={classes.rarityItems}>
-            
             <Text
               style={{
                 fontSize: hp('2.23%'),
@@ -489,7 +493,6 @@ function MintItems(props) {
               setSelectedValue(3), setModalVisible(false);
             }}
             style={classes.rarityItems}>
-            
             <Text
               style={{
                 fontSize: hp('2.23%'),
@@ -506,7 +509,6 @@ function MintItems(props) {
               setSelectedValue(4), setModalVisible(false);
             }}
             style={classes.rarityItems}>
-            
             <Text
               style={{
                 fontSize: hp('2.23%'),
@@ -523,7 +525,6 @@ function MintItems(props) {
               setSelectedValue(5), setModalVisible(false);
             }}
             style={classes.rarityItems}>
-            
             <Text
               style={{
                 fontSize: hp('2.23%'),

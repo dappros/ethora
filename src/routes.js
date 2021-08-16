@@ -26,6 +26,8 @@ import AnotherProfile from './Screens/anotherUserProfileScreen';
 import Settings from './Screens/settingsScreen';
 import AppIntro from './Screens/AppIntro';
 import MintItems from './Screens/mintItems';
+import NftItemHistory from './Screens/NftItemHistory';
+
 // import Account from './Screens/Account';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
@@ -303,6 +305,25 @@ function profileComponent({navigation}) {
         name="Profile"
         initialParams={navigation}
         component={Profile}
+      />
+    </Stack.Navigator>
+  );
+}
+function NftItemHistoryComponent({navigation}) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="NftItemHistory"
+        component={NftItemHistory}
+        options={{
+          header: () => (
+            <HeaderComponent
+              pushToken={pushToken}
+              navigation={navigation}
+              screenName="ChatHome"
+            />
+          ),
+        }}
       />
     </Stack.Navigator>
   );
@@ -1398,6 +1419,11 @@ class Routes extends Component {
             options={{headerShown: false}}
             name="ChatHomeComponent"
             component={chatHomeComponent}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="NftItemHistoryComponent"
+            component={NftItemHistoryComponent}
           />
           <Stack.Screen
             options={{headerShown: false}}

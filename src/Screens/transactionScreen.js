@@ -8,10 +8,12 @@ import {
 } from 'react-native-responsive-screen';
 import {Divider} from 'react-native-elements';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import {fetchTransaction} from '../actions/wallet';
 import {queryAllTransactions} from '../components/realmModels/transaction';
 import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+
 
 const {primaryColor} = commonColors;
 
@@ -20,6 +22,7 @@ const {
   semiBoldFont,
   boldFont
 } = textStyles;
+
 
 const renderTabBar = props => {
   return (
@@ -154,7 +157,18 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          <Image source={coinImagePath} style={styles.tokenIconStyle} />
+        {props.item.nftPreview !== 'null' ? (
+            <Image
+              source={{uri: props.item.nftPreview}}
+              style={styles.imagePreviewStyle}
+            />
+          ) : (
+            <Image
+              source={coinImagePath}
+              style={styles.tokenIconStyle}
+            />
+          )}
+
           <Text
             style={{
               fontFamily: semiBoldFont,
@@ -365,18 +379,33 @@ class TransactionScreen extends Component {
       let balance = 0;
       if (transactions.length > 0) {
         transactions.map(item => {
-          if (item.from === walletAddress && item.from !== item.to) {
-            item.balance = balance - item.value;
+          if (item.tokenId === 'NFT') {
+            if (
+              item.from === this.state.walletAddress &&
+              item.from !== item.to
+            ) {
+              balance = balance;
+              item.balance = item.senderBalance + '/' + item.nftTotal;
+            } else {
+
+              item.balance = item.receiverBalance + '/' + item.nftTotal;
+            }
+          
+            return item;
+          } else if (
+            item.from === this.state.walletAddress &&
+            item.from !== item.to
+          ) {
+            item.balance = item.senderBalance;
             balance = balance - item.value;
-          } else if (item.from === item.to) {
-            item.balance = balance;
-            balance = balance;
+      
           } else {
-            item.balance = balance + item.value;
+            item.balance = item.receiverBalance;
             balance = balance + item.value;
           }
         });
       }
+      // console.log(transactions, 'transindidmount');
 
       this.setState({
         transactionObject: transactions.reverse(),
@@ -391,24 +420,38 @@ class TransactionScreen extends Component {
       this.props.walletReducer.transactions
     ) {
       queryAllTransactions(coinsMainName).then(transactions => {
+        // console.log(transactions, 'thisistransacts');
         let balance = 0;
         if (transactions.length > 0) {
+          console.log('entered');
           transactions.map(item => {
-            if (
+            if (item.tokenId === 'NFT') {
+              if (
+                item.from === this.state.walletAddress &&
+                item.from !== item.to
+              ) {
+                balance = balance;
+                item.balance = item.senderBalance + '/' + item.nftTotal;
+              } else {
+
+                item.balance = item.receiverBalance + '/' + item.nftTotal;
+              }
+            
+              return item;
+            } else if (
               item.from === this.state.walletAddress &&
               item.from !== item.to
             ) {
-              item.balance = balance - item.value;
+              item.balance = item.senderBalance;
               balance = balance - item.value;
-            } else if (item.from === item.to) {
-              item.balance = balance
-              balance = balance;
+        
             } else {
-              item.balance = balance + item.value;
+              item.balance = item.receiverBalance;
               balance = balance + item.value;
             }
           });
         }
+        console.log(transactions, 'transindidmount');
 
         this.setState({
           transactionObject: transactions.reverse(),
@@ -478,6 +521,17 @@ class TransactionScreen extends Component {
   }
 }
 
+const styles = StyleSheet.create({
+  tokenIconStyle:{
+    height: hp("3%"),
+    width: hp("3%")
+  },
+  imagePreviewStyle: {
+    height: hp('5%'),
+    width: hp('7%'),
+  },
+})
+
 const mapStateToProps = state => {
   return {
     ...state,
@@ -490,11 +544,3 @@ module.exports = connect(
     fetchTransaction,
   },
 )(TransactionScreen);
-
-
-const styles = StyleSheet.create({
-  tokenIconStyle:{
-    height: hp("3%"),
-    width: hp("3%")
-  }
-})

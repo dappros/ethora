@@ -24,3 +24,6 @@ export const addOrDeleteEmail = urlDefault+"users/emails";
 export const checkEmailExist = urlDefault+"users/checkEmail/";
 
 export const fileUpload = urlDefault+"files/";
+export const nftTransferURL = urlDefault+ 'tokens/items'
+export const itemTransferURL = urlDefault+ 'tokens/transfer/items';
+
