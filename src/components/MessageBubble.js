@@ -291,19 +291,33 @@ startAnimation=()=>{
                 this.renderUsername():null
             }
             <TouchableWithoutFeedback onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
-              <View>
-                {this.renderBubbleContent()}
-                <View style={[
-                styles[position].bottom,
-                bottomContainerStyle && bottomContainerStyle[position],
+            <View>
+              {this.renderBubbleContent()}
+              <View
+                style={[
+                  styles[position].bottom,
+                  bottomContainerStyle && bottomContainerStyle[position],
                 ]}>
-                  <View style={{flexDirection:position==="left"?"row-reverse":"row", alignItems:"center"}}>
-                    {this.renderTokenCount()}
-                    {this.renderTime()}
-                    {this.renderTicks()}
-                  </View>
+                <View
+                  style={{
+                    flexDirection: position === 'left' ? 'row-reverse' : 'row',
+                    alignItems: 'center',
+                  }}>
+                  {this.renderTime()}
+                  {this.renderTicks()}
                 </View>
               </View>
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: position === 'left' ? 0 : '80%',
+                  // [position]: 0
+                }}>
+                {this.renderTokenCount()}
+              </View>
+            </View>
+
             </TouchableWithoutFeedback>
           </Animated.View>
         {this.renderQuickReplies()}
@@ -324,6 +338,8 @@ const styles = {
           marginRight: 60,
           minHeight: 20,
           justifyContent: 'flex-end',
+      minWidth: 100
+
       },
       tokenContainerStyle:{
         flexDirection:"row",
@@ -364,6 +380,8 @@ const styles = {
           marginLeft: 60,
           minHeight: 20,
           justifyContent: 'flex-end',
+      minWidth: 100
+
       },
       containerToNext: {
         borderBottomRightRadius: 3,

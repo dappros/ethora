@@ -69,7 +69,7 @@ export default class Message extends React.Component {
     if (this.props.renderSystemMessage) {
         return this.props.renderSystemMessage(props);
     }
-    return <SystemMessage {...props}/>;
+    return <SystemMessage {...props} textStyle={{textAlign: 'center'}}/>;
   }
 
   render() {
