@@ -445,6 +445,36 @@ class Chat extends Component {
       viewPosition: 0,
     });
   }
+  onLongPressAvatar(m) {
+    let extraData = {};
+    if (!m._id.includes(xmppConstants.CONFERENCEDOMAIN)) {
+      const jid = m._id.split('@' + xmppConstants.DOMAIN)[0];
+      const walletFromJid = reverseUnderScoreManipulation(jid);
+      const token = this.props.loginReducer.token;
+      extraData = {
+        type: 'transfer',
+        amnt: null,
+        name: m.name,
+        message_id: m._id,
+        walletFromJid,
+        token,
+        senderName: this.state.name,
+      };
+    } else {
+      extraData = {
+        type: 'transfer',
+        amnt: null,
+        name: m.name,
+        message_id: m._id,
+        senderName: this.state.name,
+      };
+    }
+    this.setState({
+      showModal: true,
+      modalType: 'tokenTransfer',
+      extraData,
+    });
+  }
 
   //lifecycle when the component gets updated
   async componentDidUpdate(prevProps, prevState) {
@@ -1035,7 +1065,7 @@ class Chat extends Component {
           renderMessage={this.renderMessage}
           renderAvatarOnTop={true}
           onLongPress={(e, m) => this.onLongPressMessage(e, m)}
-          onLongPressAvatar={e => this.onLongPressMessage(e)}
+          onLongPressAvatar={e => this.onLongPressAvatar(e)}
           renderMessageImage = {this.renderMessageImage}
         />
         <ModalList

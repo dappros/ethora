@@ -34,7 +34,7 @@ import {fetchRosterlist, roomConfigurationForm, get_archive_by_room, setSubscrip
 import { sha256 } from 'react-native-sha256';
 const {xml} = require('@xmpp/client');
 import {xmpp} from '../../helpers/xmppCentral';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../../docs/config';
+import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../../docs/config';
 
 
 const {primaryColor, secondaryColor} = commonColors;
@@ -911,8 +911,8 @@ class CommonModal extends Component {
                   />
                 </View>
 
-                {this.state.itemsData.length ? <Seperator /> : null}
-                {this.state.itemsData.length > 0 ? (
+                {this.state.itemsData.length && itemsTransfersAllowed ? <Seperator /> : null}
+                {this.state.itemsData.length > 0  && itemsTransfersAllowed? (
                   <SendItem
                     displayItems={() => this.setState({displayItems: true})}
                   />
