@@ -845,33 +845,33 @@ class Chat extends Component {
     formatedSize = this.formatBytes(parseFloat(size), 2);
     console.log(formatedSize);
     return(
-      <View
-      style={{
-        borderRadius: 5,
-        padding: 5,
-        width:hp("22%"),
-        height:hp("22%"),
-        justifyContent:"center"
-      }}
-      >
-        <TouchableOpacity onPress={()=>this.startDownload(props)} style={styles.downloadContainer}>
+      <TouchableOpacity
+      onPress={() => this.startDownload(props)}
 
-          <View style={styles.sizeContainer}>
-          <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
-          <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
-          </View>
+        style={{
+          borderRadius: 5,
+          // padding: 5,
+          width: hp('24%'),
+          height: hp('24%'),
+          justifyContent: 'center',
+        }}>
+        <View
+          style={styles.downloadContainer}>
+          {/* <View style={styles.sizeContainer}>
+            <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
+            <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
+          </View> */}
           <FastImage
-          style={styles.messageImageContainer}
-          source={{
-            // @ts-ignore
-            uri: props.currentMessage.image,
-            priority: FastImage.priority.normal
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-
-        </TouchableOpacity>
-      </View>
+            style={styles.messageImageContainer}
+            source={{
+              // @ts-ignore
+              uri: props.currentMessage.image,
+              priority: FastImage.priority.normal,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+        </View>
+      </TouchableOpacity>
     )
   }
 
@@ -1060,8 +1060,8 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   messageImageContainer:{
-    width:hp("20%"),
-    height:hp("20%"),
+    width:hp("22%"),
+    height:hp("22%"),
     borderRadius:5
   },
   sizeContainer:{
