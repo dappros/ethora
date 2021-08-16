@@ -158,7 +158,7 @@ class HeaderComponent extends Component{
 
     onPressGem = async () =>{
         await this.openWallet()
-        this.props.navigation.navigate('TransactionComponent')
+        this.props.navigation.navigate('ProfileComponent')
     }
 
     openKebabItem = (type) => {

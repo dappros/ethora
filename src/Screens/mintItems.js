@@ -32,14 +32,13 @@ import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 import {Platform} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
-import { logOut } from '../actions/auth';
+import {logOut} from '../actions/auth';
 import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
 import {commonColors, textStyles} from '../../docs/config';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
-
 
 const hitAPI = new fetchFunction();
 const options = {
@@ -52,22 +51,22 @@ const options = {
 };
 
 export const uploadToFilesApi = async (file, token, callback) => {
-  console.log(file, token, 'asdkasldh8q9e')
-    hitAPI.fileUpload(
-      connectionURL.fileUpload,
-      file,
-      token,
-      async() => {
-        logOut();
-      },
-      val => {
-        console.log("Progress Val: ",val)
-      },
-      async response => {
-        callback(response)
-        console.log(response,"thisisit")
-      }
-    )
+  console.log(file, token, 'asdkasldh8q9e', connectionURL.fileUpload);
+  hitAPI.fileUpload(
+    connectionURL.fileUpload,
+    file,
+    token,
+    async () => {
+      logOut();
+    },
+    val => {
+      console.log('Progress Val: ', val);
+    },
+    async response => {
+      callback(response);
+      console.log(response, 'thisisit');
+    },
+  );
 };
 
 function MintItems(props) {
@@ -81,10 +80,8 @@ function MintItems(props) {
   const [open, setOpen] = useState(false);
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
-  const [
-    walletAddress,
-    setWalletAddress,
-  ] = loginReducerData.initialData.walletAddress;
+  const [walletAddress, setWalletAddress] =
+    loginReducerData.initialData.walletAddress;
   const [isModalVisible, setModalVisible] = useState(false);
   // const [value, setValue] = useState(1);
   const [items, setItems] = useState([
@@ -100,8 +97,8 @@ function MintItems(props) {
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
-  const setChatAvatar = async(type) => {
-    if(type==="image"){
+  const setChatAvatar = async type => {
+    if (type === 'image') {
       launchImageLibrary(options, response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
@@ -110,30 +107,41 @@ function MintItems(props) {
         } else if (response.customButton) {
           console.log('User tapped custom button: ', response.customButton);
         } else {
-          console.log(response,"filesresponse")
+          console.log(response, 'filesresponse');
           const data = new FormData();
           data.append('files', {
             name: response.fileName,
             type: response.type,
-            uri: response.uri
+            uri: response.uri,
           });
-          sendFiles(data)
+          sendFiles(data);
         }
+      });
+    }else if (type === 'photo') {
+      launchCamera(options, response => {
+        console.log(response)
+        const data = new FormData();
+        data.append('files', {
+          name: response.fileName,
+          type: response.type,
+          uri: response.uri,
+        });
+        sendFiles(data);
       })
-    }else{
-      try{
+    } else {
+      try {
         const res = await DocumentPicker.pick({
           type: [DocumentPicker.types.allFiles],
         });
-        console.log(res, 'formsasss')
+        console.log(res, 'formsasss');
         const data = new FormData();
         data.append('files', {
           name: res.name,
           type: res.type,
-          uri: res.uri
+          uri: res.uri,
         });
         sendFiles(data);
-      }catch(err){
+      } catch (err) {
         if (DocumentPicker.isCancel(err)) {
           // User cancelled the picker, exit any dialogs or menus and move on
         } else {
@@ -213,25 +221,32 @@ function MintItems(props) {
 
   const sendFiles = data => {
     setLoading(true);
-    uploadToFilesApi(data, loginReducerData.token, resp=>{
-      console.log(JSON.stringify(resp),"sdfasdfadf");
+    uploadToFilesApi(data, loginReducerData.token, resp => {
+      console.log(JSON.stringify(resp), 'sdfasdfadf');
       setFileId(resp.results[0]['_id']);
       setLoading(false);
-      setAvatarSource(resp.results[0].location)
-    })
-    
+      setAvatarSource(resp.results[0].location);
+    });
   };
 
   const createNftItem = () => {
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
-    hitAPI.fetchPost(connectionURL.nftTransferURL, item, loginReducerData.token, callback=>{
-      props.fetchWalletBalance(
-        loginReducerData.initialData.walletAddress,
-        null,
-        loginReducerData.token,
-        true,
-      )
-    })
+    hitAPI.fetchPost(
+      connectionURL.nftTransferURL,
+      item,
+      loginReducerData.token,
+      async() => {
+        console.log('minted failed')
+    }, async data => {
+      console.log(data, 'createddskldjfdsflk')
+        props.fetchWalletBalance(
+          loginReducerData.initialData.walletAddress,
+          null,
+          loginReducerData.token,
+          true,
+        );
+      },
+    );
   };
 
   const clearData = () => {
@@ -280,19 +295,20 @@ function MintItems(props) {
   };
   const chooseImageOption = () => {
     Alert.alert('Choose a file', '', [
+      Platform.OS === 'ios'
+        ? {text: 'Take a photo', onPress: () => setChatAvatar('photo')}
+        : null,
+      {text: 'Open from files', onPress: () => setChatAvatar('files')},
       {text: 'Dismiss', onPress: () => console.log('dismissed')},
-      Platform.OS==="ios"?
-      {text: 'Open from gallery', onPress: ()=> setChatAvatar("image")}
-      :null,
-      {text: 'Open from files', onPress: () => setChatAvatar("files")},
-      {
-        text: cameraPermission
-          ? 'Take a photo'
-          : 'Allow to use camera in the settings',
-        onPress: () => {
-          cameraPermission ? setChatAvatar(false) : Linking.openSettings();
-        },
-      },
+
+      // {
+      //   text: cameraPermission
+      //     ? 'Take a photo'
+      //     : 'Allow to use camera in the settings',
+      //   onPress: () => {
+      //     cameraPermission ? setChatAvatar(false) : Linking.openSettings();
+      //   },
+      // },
     ]);
   };
 
@@ -338,7 +354,10 @@ function MintItems(props) {
                 {avatarSource !== null ? (
                   <FastImage
                     onPress={setChatAvatar}
-                    source={{uri:avatarSource, priority:FastImage.priority.normal}}
+                    source={{
+                      uri: avatarSource,
+                      priority: FastImage.priority.normal,
+                    }}
                     resizeMode={FastImage.resizeMode.cover}
                     style={{
                       width: wp('50%'),
@@ -434,7 +453,8 @@ function MintItems(props) {
           </TouchableOpacity>
           <View style={classes.checkboxContainer}>
             <CheckBox
-
+              onCheckColor={primaryColor}
+              onTintColor={primaryColor}
               value={isSelected}
               onValueChange={setSelection}
               style={{marginRight: 3, color: primaryColor}}
@@ -584,8 +604,9 @@ const classes = StyleSheet.create({
     borderBottomColor: primaryColor,
     borderBottomWidth: 1,
     width: '100%',
-    justifyContent: 'center', alignItems: 'center'
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 const mapStateToProps = state => {
   return {
@@ -593,10 +614,7 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    fetchTransaction,
-    fetchWalletBalance,
-  },
-)(MintItems);
+module.exports = connect(mapStateToProps, {
+  fetchTransaction,
+  fetchWalletBalance,
+})(MintItems);

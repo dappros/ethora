@@ -49,7 +49,7 @@ const QRCodeComponent = props => {
 
 const RenderAssetItem = ({item, index, itemTransferFunc, selectedItem}) => (
   <AssetItem
-    image={item.imagePreview}
+    image={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -342,30 +342,35 @@ class CommonModal extends Component {
     this.setState({selectedItem: item});
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     // console.log(this.props.extraData, 'modal')
     // this.onDirectMessagePress();
+    if(prevState.modalVisible !== this.state.modalVisible && this.state.modalVisible) {
+      this.props.fetchWalletBalance(
+        this.props.loginReducer.initialData.walletAddress,
+        null,
+        this.props.loginReducer.token,
+        true,
+      );
+      const tokenList = this.props.walletReducer.balance.filter(
+        item => item.tokenType === 'NFT' && item.balance > 0,
+      );
+      this.setState(
+        {
+          // tokenState: this.props.extraData,
+          itemsData: tokenList.reverse(),
+        },
+        // console.log(this.state.itemsData, 'itemsmmsmsm'),
+      );
+    }
+   
   }
 
   componentDidMount() {
     let modalVisible = this.props.show;
     this.setModalVisible(modalVisible);
-    this.props.fetchWalletBalance(
-      this.props.loginReducer.initialData.walletAddress,
-      null,
-      this.props.loginReducer.token,
-      true,
-    );
-    const tokenList = this.props.walletReducer.balance.filter(
-      item => item.tokenType === 'NFT' && item.balance > 0,
-    );
-    this.setState(
-      {
-        // tokenState: this.props.extraData,
-        itemsData: tokenList.reverse(),
-      },
-      // console.log(this.state.itemsData, 'itemsmmsmsm'),
-    );
+   
+    
     if (this.props.extraData) {
       if (this.props.extraData && this.props.extraData.type === 'receive') {
         this.setState(

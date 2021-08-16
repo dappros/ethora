@@ -11,7 +11,6 @@ function checkTransactionExist(transactionHash,callback){
 export const insertTransaction = (data) => new Promise((resolve,reject)=>{
     data.map(item=>{
         if (!item.nftTotal) item.nftTotal = '0';
-
         const data={
             blockNumber:item.blockNumber?item.blockNumber:"N/A",
             from:item.from?item.from:'N/A',
@@ -30,6 +29,8 @@ export const insertTransaction = (data) => new Promise((resolve,reject)=>{
             receiverBalance: item.receiverBalance,
             senderBalance: item.senderBalance,
             nftPreview: item.nftPreview ? item.nftPreview : 'null',
+            nftFileUrl: item.nftFileUrl ? item.nftFileUrl : 'null',
+
         }
         checkTransactionExist(item.transactionHash,callback=>{
             if(!callback){

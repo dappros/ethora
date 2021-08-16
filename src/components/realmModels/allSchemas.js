@@ -62,7 +62,8 @@ const TransactionSchema={
         senderBalance: 'string',
         type:'string',
         value:'int',
-        nftPreview: 'string'
+        nftPreview: 'string',
+        nftFileUrl: 'string'
     }
 }
 

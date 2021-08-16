@@ -1079,7 +1079,7 @@ class ProfileScreen extends Component {
                 position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'rgb(20, 68, 148)',
+                backgroundColor: primaryDarkColor,
                 borderRadius: hp('10.46%') / 2,
               }}>
               {/* {this.state.userAvatar ? (
