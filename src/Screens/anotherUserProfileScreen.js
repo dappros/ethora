@@ -22,7 +22,7 @@ import {
 import CustomHeader from '../components/shared/customHeader';
 import {CommonButton} from '../components/shared/customButtons';
 import {Swipeable} from 'react-native-gesture-handler';
-import {commonColors, textStyles, coinImagePath} from '../../docs/config';
+import {commonColors, textStyles, coinImagePath, itemsTransfersAllowed} from '../../docs/config';
 
 
 const {primaryColor, primaryDarkColor} = commonColors;
@@ -318,7 +318,7 @@ const loadTabContent = props => {
               </Text>
             </Animated.Text>
           </TouchableOpacity>
-          <TouchableOpacity
+            {itemsTransfersAllowed && <TouchableOpacity
             // onLayout={event =>
             //   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
             // }
@@ -332,7 +332,7 @@ const loadTabContent = props => {
               }}>
               Items ({itemsBalance})
             </Animated.Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
           {/* </View> */}
         </View>
         <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
@@ -579,7 +579,7 @@ function AnotherProfile(props) {
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);
-    setAssetCount(updatedItemsBalance + updatedCoinBalance);
+    setAssetCount((itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance);
 
     return () => {};
   }, [itemsData, coinData]);

@@ -188,7 +188,7 @@ class CreateNewGroup extends Component {
                         
                     </View>
                 </TouchableOpacity>
-                <TextInput onChangeText={(chatName)=>this.setState({chatName})} placeholder="Chat name" placeholderTextColor={primaryColor} style={styles.textInputOuter} />
+                <TextInput onChangeText={(chatName)=>this.setState({chatName})} placeholder="Chat name" placeholderTextColor={primaryColor} style={styles.textInputOuter} maxLength={30} />
             </View>
 
                 <TextInput scrollEnabled placeholder="Short description about the chat" placeholderTextColor={primaryColor} multiline style={styles.textFieldouter} numberOfLines={5} />

@@ -9,7 +9,7 @@ import {sendSearchText} from '../../actions/searchAction';
 import Menu, { MenuItem } from 'react-native-material-menu';
 import * as XmppConstant from '../../constants/xmppConstants';
 import {setRosterAction, setRecentRealtimeChatAction, finalMessageArrivalAction, participantsUpdateAction} from '../../actions/chatAction';
-import {coinsMainName} from '../../../docs/config';
+import {coinsMainName, itemsMintingAllowed} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { xmpp } from '../../helpers/xmppCentral';
@@ -158,7 +158,7 @@ class HeaderComponent extends Component{
 
     onPressGem = async () =>{
         await this.openWallet()
-        this.props.navigation.navigate('TransactionComponent')
+        this.props.navigation.navigate('ProfileComponent')
     }
 
     openKebabItem = (type) => {
@@ -262,7 +262,7 @@ class HeaderComponent extends Component{
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('settings')}>Settings</MenuItem> */}
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('account')}>Account</MenuItem> */}
                                 <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('scan')}>Scan</MenuItem>
-                                <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('mint')}>Mint items</MenuItem>
+                                {itemsMintingAllowed && <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('mint')}>Mint items</MenuItem>}
                                 {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('myQr')}>My QR</MenuItem> */}
                                 {
                                     tutorialShowInMenu?

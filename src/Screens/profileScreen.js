@@ -41,7 +41,7 @@ import * as connectionURL from '../config/url';
 import {Swipeable} from 'react-native-gesture-handler';
 import {Alert} from 'react-native';
 import axios from 'axios';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../docs/config';
 
 
 
@@ -403,7 +403,7 @@ class ProfileScreen extends Component {
                   </Text>
                 </Animated.Text>
               </TouchableOpacity>
-              <TouchableOpacity
+             {itemsTransfersAllowed&&  <TouchableOpacity
                 onLayout={event =>
                   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
                 }
@@ -422,7 +422,7 @@ class ProfileScreen extends Component {
                   }}>
                   Items ({this.state.itemsBalance})
                 </Animated.Text>
-              </TouchableOpacity>
+              </TouchableOpacity>}
             </View>
             <Animated.View
               style={{
@@ -609,8 +609,8 @@ class ProfileScreen extends Component {
     Linking.getInitialURL().then(url => {
       console.log(url);
     });
-    setTimeout(() => {
-      this.coinRef.measure((fx, fy, width, height, px, py) => {
+   setTimeout(() => {
+    itemsTransfersAllowed &&   this.coinRef.measure((fx, fy, width, height, px, py) => {
         if (this.props.route.params.viewItems) {
           this.setState({activeAssetTab: 1}, () => this.handleCoinSlide(px));
         }
@@ -811,7 +811,7 @@ class ProfileScreen extends Component {
         itemsData: itemsData.reverse(),
         coinBalance,
         coinData,
-        assetCount: +parseFloat(coinBalance).toFixed(0) + itemsBalance,
+        assetCount: +parseFloat(coinBalance).toFixed(0) + (itemsTransfersAllowed ? itemsBalance : 0 ) ,
         itemsBalance,
       });
     }
@@ -1079,7 +1079,7 @@ class ProfileScreen extends Component {
                 position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: 'rgb(20, 68, 148)',
+                backgroundColor: primaryDarkColor,
                 borderRadius: hp('10.46%') / 2,
               }}>
               {/* {this.state.userAvatar ? (

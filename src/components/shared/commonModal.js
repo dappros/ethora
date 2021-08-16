@@ -34,7 +34,7 @@ import {fetchRosterlist, roomConfigurationForm, get_archive_by_room, setSubscrip
 import { sha256 } from 'react-native-sha256';
 const {xml} = require('@xmpp/client');
 import {xmpp} from '../../helpers/xmppCentral';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../../docs/config';
+import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../../docs/config';
 
 
 const {primaryColor, secondaryColor} = commonColors;
@@ -49,7 +49,7 @@ const QRCodeComponent = props => {
 
 const RenderAssetItem = ({item, index, itemTransferFunc, selectedItem}) => (
   <AssetItem
-    image={item.imagePreview}
+    image={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -342,30 +342,35 @@ class CommonModal extends Component {
     this.setState({selectedItem: item});
   };
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     // console.log(this.props.extraData, 'modal')
     // this.onDirectMessagePress();
+    if(prevState.modalVisible !== this.state.modalVisible && this.state.modalVisible) {
+      this.props.fetchWalletBalance(
+        this.props.loginReducer.initialData.walletAddress,
+        null,
+        this.props.loginReducer.token,
+        true,
+      );
+      const tokenList = this.props.walletReducer.balance.filter(
+        item => item.tokenType === 'NFT' && item.balance > 0,
+      );
+      this.setState(
+        {
+          // tokenState: this.props.extraData,
+          itemsData: tokenList.reverse(),
+        },
+        // console.log(this.state.itemsData, 'itemsmmsmsm'),
+      );
+    }
+   
   }
 
   componentDidMount() {
     let modalVisible = this.props.show;
     this.setModalVisible(modalVisible);
-    this.props.fetchWalletBalance(
-      this.props.loginReducer.initialData.walletAddress,
-      null,
-      this.props.loginReducer.token,
-      true,
-    );
-    const tokenList = this.props.walletReducer.balance.filter(
-      item => item.tokenType === 'NFT' && item.balance > 0,
-    );
-    this.setState(
-      {
-        // tokenState: this.props.extraData,
-        itemsData: tokenList.reverse(),
-      },
-      // console.log(this.state.itemsData, 'itemsmmsmsm'),
-    );
+   
+    
     if (this.props.extraData) {
       if (this.props.extraData && this.props.extraData.type === 'receive') {
         this.setState(
@@ -906,8 +911,8 @@ class CommonModal extends Component {
                   />
                 </View>
 
-                {this.state.itemsData.length ? <Seperator /> : null}
-                {this.state.itemsData.length > 0 ? (
+                {this.state.itemsData.length && itemsTransfersAllowed ? <Seperator /> : null}
+                {this.state.itemsData.length > 0  && itemsTransfersAllowed? (
                   <SendItem
                     displayItems={() => this.setState({displayItems: true})}
                   />

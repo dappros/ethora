@@ -73,7 +73,7 @@ export default DownloadFile = async(props, callback) => {
         .then(res => {
             console.log(res,"fileDownload")
             // alert('File downloaded successfully');
-            Toast.show('File downloaded successfully', Toast.LONG);
+            // Toast.show('File downloaded successfully', Toast.LONG);
             closeModal;
             if (Platform.OS === "ios") {
                 console.log("asdfsfasdf")

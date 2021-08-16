@@ -50,8 +50,7 @@ const TransactionListComponent = props => {
   let firstName = '';
   let lastName = '';
   // console.log(props.item)
-  // console.log(props.item.balance)
-  console.log(props.item, 'dsfdsfdsf')
+  
   if (props.item.from === props.walletAddress) {
     firstName = props.item.toFirstName
       ? props.item.toFirstName === 'N/A'
@@ -154,9 +153,9 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftPreview && props.item.nftPreview !== 'null' ? (
+          {props.item.nftFileUrl !== 'null' ? (
             <Image
-              source={{uri: props.item.nftPreview}}
+              source={{uri: props.item.nftFileUrl}}
               style={styles.imagePreviewStyle}
             />
           ) : (
