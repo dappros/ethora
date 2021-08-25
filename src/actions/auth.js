@@ -153,7 +153,7 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     dispatch(fetchingCommonRequest());
     try {
       console.log("in try")
-      hitAPI.fetchPost(connectionURL.loginURL, bodyData, null, () => {
+      hitAPI.fetchPost(connectionURL.loginURL, bodyData, APP_TOKEN, () => {
         dispatch(logOut());
       }, data => {
         if (data.success) {

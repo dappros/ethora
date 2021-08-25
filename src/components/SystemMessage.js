@@ -14,3 +14,16 @@ export const systemMessage=(data)=>{
         }]
     )
 }
+export const joinSystemMessage=(data)=>{
+    return(
+        [{
+            _id: 1,
+            text: `${data.username} has joined the chat`,
+            createdAt: new Date(),
+            system: true,
+            tokenAmount:0,
+            // receiverMessageId:data.receiverMessageId,
+            // tokenName: data.tokenName
+        }]
+    )
+}

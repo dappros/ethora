@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   Platform,
   Alert,
-  AppState
+  AppState,
 } from 'react-native';
 
 import Toast from 'react-native-simple-toast';
@@ -39,7 +39,7 @@ import {
   updateUserAvatar,
   updateUserProfile,
   setOtherUserVcard,
-  logOut
+  logOut,
 } from './actions/auth';
 
 import {insertMessages} from './components/realmModels/messages';
@@ -52,6 +52,7 @@ import {
   tokenAmountUpdateAction,
   setPushNotificationData,
   updateMessageComposingState,
+  setRoomRoles,
 } from './actions/chatAction';
 import {xmppConnect, xmpp} from './helpers/xmppCentral';
 import {
@@ -62,7 +63,7 @@ import {
   vcardRetrievalRequest,
   get_archive_by_room,
   updateVCard,
-  setSubscriptions
+  setSubscriptions,
 } from './helpers/xmppStanzaRequestMessages';
 import * as xmppConstant from './constants/xmppConstants';
 import {underscoreManipulation} from './helpers/underscoreLogic';
@@ -85,8 +86,9 @@ let profilePhoto = '';
 import {
   insertRosterList,
   updateRosterList,
-  fetchRosterList as fetchChatListRealm
+  fetchRosterList as fetchChatListRealm,
 } from './components/realmModels/chatList';
+import {joinSystemMessage} from './components/SystemMessage';
 
 const Stack = createStackNavigator();
 let pushToken = '';
@@ -97,19 +99,16 @@ const checkDefaultRoom = [
   // {exist:false, name:"680c3097aabc902bb129eaa23a974408856fbdccb7630cfd074ddf0639fc8ec0"}, //Workplace Readiness
   {
     exist: false,
-    name:
-      '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
+    name: '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
   }, //GK Leadership
   // {exist:false, name:"91bfaa5cbfaab8a5661c0c5e15e54196d4ed4f76bb86b6cef07d337ff5c7fd41"}, //Career Development
   {
     exist: false,
-    name:
-      'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
+    name: 'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
   }, //Global
   {
     exist: false,
-    name:
-      'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
+    name: 'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
   }, //Southern Africa
   // {exist:false, name:"c67531e3ec3d5090acc25d6768140ad37789000fb4c5e254af6be5538c49ee56"}, //Life Skills
   // {exist:false, name:"cf5f45da57a2ca0e4a581d40099751bcb4919fbb984b547e1d9d12c8ca710412"}, //Personal Finance
@@ -373,7 +372,6 @@ function settingsComponent({navigation}) {
   );
 }
 
-
 // function accountComponent({navigation}) {
 //   return (
 //     <Stack.Navigator>
@@ -396,8 +394,6 @@ function settingsComponent({navigation}) {
 //   );
 // }
 
-
-
 class Routes extends Component {
   constructor(props) {
     super(props);
@@ -408,9 +404,11 @@ class Routes extends Component {
       password: '',
       username: '',
       isSkipForever: 'false',
+      roomRolesMap: {},
     };
     this.configurePush();
     obj = this;
+    this.rolesMap = {};
   }
 
   configurePush = () => {
@@ -418,13 +416,13 @@ class Routes extends Component {
     let mucId = '';
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
-      onRegister: function(token) {
+      onRegister: function (token) {
         console.log('TOKEN:', token);
         pushToken = token.token;
       },
 
       // (required) Called when a remote is received or opened, or local notification is opened
-      onNotification: function(notification) {
+      onNotification: function (notification) {
         console.log('NOTIFICATION:', notification);
         msgId = notification.data.msgId;
         mucId = notification.data.mucId;
@@ -436,7 +434,7 @@ class Routes extends Component {
       },
 
       // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
-      onAction: function(notification) {
+      onAction: function (notification) {
         console.log('ACTION:', notification.action);
         console.log('NOTIFICATION:', notification);
 
@@ -444,7 +442,7 @@ class Routes extends Component {
       },
 
       // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-      onRegistrationError: function(err) {
+      onRegistrationError: function (err) {
         console.error(err.message, err);
       },
 
@@ -470,9 +468,6 @@ class Routes extends Component {
     });
   };
 
-
-
-
   async componentDidMount() {
     this.props.getUserToken();
     const isSkipForever = await AsyncStorage.getItem('@skipForever');
@@ -491,20 +486,20 @@ class Routes extends Component {
   }
 
   _handleAppStateChange = nextAppState => {
-    if(nextAppState === "active"){
-      if(xmpp){
-        if(xmpp.status === "disconnected"){
+    if (nextAppState === 'active') {
+      if (xmpp) {
+        if (xmpp.status === 'disconnected') {
           NetInfo.fetch().then(state => {
-            console.log("Connection type", state.type);
-            console.log("Is connected?", state.isConnected);
-            if(state.isConnected){
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+            if (state.isConnected) {
               xmpp.start();
             }
           });
         }
       }
     }
-  }
+  };
   getArchive = () => {
     let message = xml(
       'iq',
@@ -513,6 +508,47 @@ class Routes extends Component {
     );
     // write_logs("Query : " + message);
     xmpp.send(message);
+  };
+  submitMessage = async (messageObject, chatJID) => {
+    // let messageText = messageString[0].text;
+    // let tokenAmount = messageString[0].tokenAmount
+    //   ? messageString[0].tokenAmount
+    //   : '0';
+    // let receiverMessageId = messageString[0].receiverMessageId
+    //   ? messageString[0].receiverMessageId
+    //   : '0';
+
+    //xml for the message to send
+    console.log(messageObject, 'kdsljfdsklfjdsklfioewuruowe');
+    const message = xml(
+      'message',
+      {
+        id: 'sendMessage',
+        type: 'groupchat',
+        from: this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+        to: chatJID,
+      },
+      xml('body', {}, messageObject[0].text),
+      xml('data', {
+        xmlns: 'http://' + xmppConstant.DOMAIN,
+        senderJID:
+          this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+        senderFirstName: this.props.loginReducer.initialData.firstName,
+        senderLastName: this.props.loginReducer.initialData.lastName,
+        senderWalletAddress: this.props.loginReducer.initialData.walletAddress,
+        isSystemMessage: true,
+        tokenAmount: 0,
+        receiverMessageId: '',
+        // mucname: this.state.chatRoomDetails.chat_name,
+        photoURL: null,
+      }),
+    );
+
+    //call to send message to the xmpp server
+    await xmpp.send(message);
+
+    //function call to add message to gifted chat
+    // this.addMessage(messageString,this.state.loadMessageIndex,false)
   };
   getStoredItems = async () => {
     try {
@@ -534,21 +570,26 @@ class Routes extends Component {
 
     xmpp.on('error', err => {
       // xmpp.reconnect.start();
-      if(err.message === "not-authorized - Invalid username or password"){
+      if (err.message === 'not-authorized - Invalid username or password') {
         xmpp.stop().catch(console.error);
         Alert.alert(
           'User Not found',
-          'User account not found. Please sign in again.',[{
-            text:'Ok',
-            onPress:() => this.props.logOut()
-          }]
-        )
+          'User account not found. Please sign in again.',
+          [
+            {
+              text: 'Ok',
+              onPress: () => this.props.logOut(),
+            },
+          ],
+        );
       }
 
-      if(err.message === "WebSocket ECONNERROR wss://rtc-cc.dappros.com:5443/ws"){
+      if (
+        err.message === 'WebSocket ECONNERROR wss://rtc-cc.dappros.com:5443/ws'
+      ) {
         xmpp.stop();
       }
-      console.log(err.message,"xmpperror")
+      console.log(err.message, 'xmpperror');
     });
 
     xmpp.on('offline', () => {
@@ -557,19 +598,19 @@ class Routes extends Component {
 
     // xmpp.reconnect.start();
 
-    xmpp.reconnect.on('reconnecting',()=>{
+    xmpp.reconnect.on('reconnecting', () => {
       // console.log("reconnecting...")
-    })
+    });
 
     xmpp.on('stanza', async stanza => {
       console.log(stanza, 'stanza');
       let featureList = {};
       if (stanza.is('iq')) {
         if (
-          stanza?.children[0]?.attrs?.queryid === 'userArchive'  &&
-          stanza?.children[0]?.attrs?.complete 
+          stanza?.children[0]?.attrs?.queryid === 'userArchive' &&
+          stanza?.children[0]?.attrs?.complete
         ) {
-          console.log(stanza, 'archiveksdlfsdfdsfjsdlfjkls')
+          console.log(stanza, 'archiveksdlfsdfdsfjsdlfjkls');
           fetchRosterlist(
             this.state.manipulatedWalletAddress,
             subscriptionsStanzaID,
@@ -597,28 +638,28 @@ class Routes extends Component {
           const roomName = stanza.children[0].children[0].attrs.name;
           const roomJID = stanza.attrs.from;
           let exist = false;
-          fetchChatListRealm().then(chatList=>{
-            if(chatList.length){
-              chatList.map(chat=>{
-                if(chat.jid === roomJID && chat.name === roomName){
-                  exist = true;
-                }else{
-                  exist = false;
-                }
-              })
-            }else{
-              exist = false;
-            }
-          }).then(()=>{
-            if(!exist){
-              updateRosterList({jid: roomJID, name: roomName}).then(() => {
-                //roasterUpdatedAction
-                this.props.updatedRoster(true);
-              });
-            }
-          })
-
-
+          fetchChatListRealm()
+            .then(chatList => {
+              if (chatList.length) {
+                chatList.map(chat => {
+                  if (chat.jid === roomJID && chat.name === roomName) {
+                    exist = true;
+                  } else {
+                    exist = false;
+                  }
+                });
+              } else {
+                exist = false;
+              }
+            })
+            .then(() => {
+              if (!exist) {
+                updateRosterList({jid: roomJID, name: roomName}).then(() => {
+                  //roasterUpdatedAction
+                  this.props.updatedRoster(true);
+                });
+              }
+            });
         }
 
         //check new user join room
@@ -692,9 +733,9 @@ class Routes extends Component {
         //   this.props.finalMessageArrivalAction(true);
         // }
 
-        if(stanza.attrs.id === "GetArchive"){
-          if(stanza.children[0].name === "fin"){
-            console.log("finevent",stanza)
+        if (stanza.attrs.id === 'GetArchive') {
+          if (stanza.children[0].name === 'fin') {
+            console.log('finevent', stanza);
             this.props.finalMessageArrivalAction(true);
           }
         }
@@ -704,41 +745,62 @@ class Routes extends Component {
           const chat_jid = stanza.attrs.from;
           const numberOfParticipants = stanza.children[0].children.length;
           let exist = false;
-          fetchChatListRealm().then(chatList=>{
-            if(chatList.length){
-              chatList.map(chat=>{
-                if(chat.participants === numberOfParticipants){
-                  exist = true
-                }else{
-                  exist = false
-                }
-              })
-            }else{
-              exist = false
-            }
-
-          }).then(()=>{
-            if(!exist){
-              updateRosterList({
-                jid: chat_jid,
-                participants: numberOfParticipants,
-              }).then(() => {
-                this.props.participantsUpdateAction(true);
-              });
-            }
-          })
-
+          fetchChatListRealm()
+            .then(chatList => {
+              if (chatList.length) {
+                chatList.map(chat => {
+                  if (chat.participants === numberOfParticipants) {
+                    exist = true;
+                  } else {
+                    exist = false;
+                  }
+                });
+              } else {
+                exist = false;
+              }
+            })
+            .then(() => {
+              if (!exist) {
+                updateRosterList({
+                  jid: chat_jid,
+                  participants: numberOfParticipants,
+                }).then(() => {
+                  this.props.participantsUpdateAction(true);
+                });
+              }
+            });
         }
       }
 
       if (stanza.is('presence')) {
-
         //catch when "you have joined too many conference issue"
-        if(stanza.attrs.type === "error"){
-          if(stanza.children[1].attrs.code === "500"){
-            console.log(stanza.children[1].children[1].children[0], "xmpperrorr");
+        if (stanza.attrs.type === 'error') {
+          console.log(
+            stanza.children[1].children[1].children[0],
+            'fdsmlfnsdddsdffslfmn',
+          );
+          // stanza.children[1].children[1].children[0] ===
+          //   'You have been banned from this room' && 
+          //   Alert.alert(' You have been banned from this room');
+          if (stanza.children[1].attrs.code === '500') {
+            console.log(
+              stanza.children[1].children[1].children[0],
+              'xmpperrorr',
+            );
             xmpp.reconnect.stop();
           }
+        }
+        if (stanza.attrs.id === 'roomPresence') {
+          // console.log(stanza.children[0].children[0].attrs.role, 'roooadfjsklfjdfssdljf')
+          // console.log(stanza.attrs.from.split('/')[0], 'roooadfjsklfjdfssdfslkdfkjljf')
+          let roomJID = stanza.attrs.from.split('/')[0];
+          let userJID = stanza.attrs.to.split('/')[0];
+
+          let role = stanza.children[0].children[0].attrs.role;
+          console.log(userJID, 'dskljfsdlkfjdfdsfsf');
+          this.rolesMap[roomJID] = role;
+          this.props.setRoomRoles(this.rolesMap);
+          // console.log(this.props.ChatReducer, 'reducadklsmads;kld')
         }
 
         if (stanza.attrs.id === 'CreateRoom') {
@@ -772,7 +834,7 @@ class Routes extends Component {
           let jid =
             stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
               ?.jid;
-              console.log(jid, 'messageforвапвminvid')
+          console.log(jid, 'messageforвапвminvid');
           const subscribe = xml(
             'iq',
             {
@@ -809,17 +871,17 @@ class Routes extends Component {
           //   subscriptionsStanzaID,
           // );
         }
-        if(stanza?.children[2]?.children[0]?.name ==='invite') {
-          console.log(stanza, 'invite')
+        if (stanza?.children[2]?.children[0]?.name === 'invite') {
+          console.log(stanza, 'invite');
 
-          const jid =  stanza.children[3].attrs.jid;
+          const jid = stanza.children[3].attrs.jid;
           // console.log(jid, 'dsfjkdshjfksdu439782374')
           const subscribe = xml(
             'iq',
             {
               from:
                 this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-              to: jid ,
+              to: jid,
               type: 'set',
               id: newSubscription,
             },
@@ -844,9 +906,10 @@ class Routes extends Component {
         if (stanza.attrs.id === types.IS_COMPOSING) {
           const mucRoom = stanza.attrs.from.split('/')[0];
           console.log('captured');
-          
+
           const fullName = stanza.children[1].attrs.fullName;
-          const manipulatedWalletAddress = stanza.children[1].attrs.manipulatedWalletAddress;
+          const manipulatedWalletAddress =
+            stanza.children[1].attrs.manipulatedWalletAddress;
           await this.props.updateMessageComposingState({
             state: true,
             username: fullName,
@@ -861,7 +924,8 @@ class Routes extends Component {
           const mucRoom = stanza.attrs.from.split('/')[0];
           // username = stanza.attrs.from.split('/')[1];
           // if(this.state.username!==username){
-          const manipulatedWalletAddress = stanza.children[1].attrs.manipulatedWalletAddress;
+          const manipulatedWalletAddress =
+            stanza.children[1].attrs.manipulatedWalletAddress;
           await this.props.updateMessageComposingState({
             state: false,
             manipulatedWalletAddress,
@@ -869,17 +933,17 @@ class Routes extends Component {
           });
           // }
         }
-        if(stanza?.children[2]?.children[0]?.name ==='invite') {
-          console.log(stanza, 'invite')
+        if (stanza?.children[2]?.children[0]?.name === 'invite') {
+          console.log(stanza, 'invite');
 
-          const jid =  stanza.children[3].attrs.jid;
+          const jid = stanza.children[3].attrs.jid;
           // console.log(jid, 'dsfjkdshjfksdu439782374')
           const subscribe = xml(
             'iq',
             {
               from:
                 this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-              to: jid ,
+              to: jid,
               type: 'set',
               id: newSubscription,
             },
@@ -901,7 +965,6 @@ class Routes extends Component {
           );
         }
 
-
         //capture archived message of a room
         if (stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:2') {
           const singleMessageDetailArray =
@@ -917,10 +980,10 @@ class Routes extends Component {
           let receiverMessageId = '';
           let userAvatar = '';
           let isMediafile = false;
-          let imageLocation = "";
-          let imageLocationPreview = "";
-          let mimetype = "";
-          let size = "";
+          let imageLocation = '';
+          let imageLocationPreview = '';
+          let mimetype = '';
+          let size = '';
 
           await singleMessageDetailArray.forEach(item => {
             if (item.name === 'body') {
@@ -945,7 +1008,7 @@ class Routes extends Component {
 
               userAvatar = item.attrs.photoURL ? item.attrs.photoURL : null;
 
-              isMediafile = item.attrs.isMediafile === 'true'?true:false;
+              isMediafile = item.attrs.isMediafile === 'true' ? true : false;
 
               imageLocation = item.attrs.location;
 
@@ -958,25 +1021,28 @@ class Routes extends Component {
           });
 
           if (isSystemMessage === 'false') {
-            if(isMediafile){
+            if (isMediafile) {
               messageObject = {
                 _id: _messageId,
-                text:'',
-                createdAt: new Date(parseInt(_messageId.substring(0,13))),
+                text: '',
+                createdAt: new Date(parseInt(_messageId.substring(0, 13))),
                 system: false,
-                user:{
+                user: {
                   _id,
                   name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null
+                  avatar: userAvatar !== 'false' ? userAvatar : null,
                 },
-                image:mimetype==="application/pdf"?"https://image.flaticon.com/icons/png/128/174/174339.png":imageLocationPreview,
+                image:
+                  mimetype === 'application/pdf'
+                    ? 'https://image.flaticon.com/icons/png/128/174/174339.png'
+                    : imageLocationPreview,
                 realImageURL: imageLocation,
-                localURL:"",
+                localURL: '',
                 isStoredFile: false,
                 mimetype: mimetype,
-                size: size
-              }
-            }else{
+                size: size,
+              };
+            } else {
               messageObject = {
                 _id: _messageId,
                 text,
@@ -985,7 +1051,7 @@ class Routes extends Component {
                 user: {
                   _id,
                   name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null,
+                  avatar: userAvatar !== 'false' ? userAvatar : null,
                 },
               };
             }
@@ -1034,9 +1100,9 @@ class Routes extends Component {
         let rosterMap = await this.getStoredItems();
 
         let nonMemberchat = {
-          name:"f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5",
-          exist:false
-        }
+          name: 'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5',
+          exist: false,
+        };
 
         rosterFromXmpp.map(item => {
           //check if the default rooms already subscribed, if not then subscibe it
@@ -1051,8 +1117,11 @@ class Routes extends Component {
             createdAt: new Date(),
             // pri
           };
-          
-          if(item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
+
+          if (
+            item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] ===
+            nonMemberchat.name
+          ) {
             nonMemberchat.exist = true;
           }
 
@@ -1098,69 +1167,82 @@ class Routes extends Component {
           //   //     break;
           // }
           let exist = false;
-          fetchChatListRealm().then(chatListFromRealm => {
-            
-            if(chatListFromRealm.length){
-              chatListFromRealm.map(chat=>{
-                if (!!rosterMap) {
-                  rosterObject.priority = rosterMap[item.attrs.jid];
-                  // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
-                  insertRosterList(rosterObject);
-                }
-    
-                // if(chat.jid === item.attrs.jid){
-                //   exist = true;
-                // }else{
-                //   exist = false;
-                // }
-              })
-            }else{
-              exist = false;
-            }
-          }).then(()=>{
-            if(!exist){
-              insertRosterList(rosterObject);
-              rosterListArray.push(rosterObject);
-            }
-          })
+          fetchChatListRealm()
+            .then(chatListFromRealm => {
+              if (chatListFromRealm.length) {
+                chatListFromRealm.map(chat => {
+                  if (!!rosterMap) {
+                    rosterObject.priority = rosterMap[item.attrs.jid];
+                    // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
+                    insertRosterList(rosterObject);
+                  }
+
+                  // if(chat.jid === item.attrs.jid){
+                  //   exist = true;
+                  // }else{
+                  //   exist = false;
+                  // }
+                });
+              } else {
+                exist = false;
+              }
+            })
+            .then(() => {
+              if (!exist) {
+                insertRosterList(rosterObject);
+                rosterListArray.push(rosterObject);
+              }
+            });
 
           //presence is sent to every contact in roster
           const presence = xml(
             'presence',
             {
+              id: 'roomPresence',
               from:
                 this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
               to: item.attrs.jid + '/' + this.state.manipulatedWalletAddress,
             },
+            // xml('data', {
+            //   senderName: this.props.loginReducer.initialData.firstName + ' ' + this.props.loginReducer.initialData.lastName
+            // }),
             xml('x', 'http://jabber.org/protocol/muc'),
           );
 
           xmpp.send(presence);
+          let message = joinSystemMessage({
+            username:
+              this.props.loginReducer.initialData.firstName +
+              ' ' +
+              this.props.loginReducer.initialData.lastName,
+          });
+          // this.submitMessage(message, item.attrs.jid);
           const manipulatedWalletAddress = this.state.manipulatedWalletAddress;
           get_list_of_subscribers(
             item.attrs.jid,
             this.state.manipulatedWalletAddress,
           );
-          setTimeout(function() {
+          setTimeout(function () {
             getRoomInfo(manipulatedWalletAddress, item.attrs.jid);
           }, 3000);
         });
 
-        if(!nonMemberchat.exist){
+        if (!nonMemberchat.exist) {
           const subscribe = xml(
             'iq',
             {
               from:
-                this.state.manipulatedWalletAddress +
-                '@' +
-                xmppConstant.DOMAIN,
+                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
               to: nonMemberchat.name + xmppConstant.CONFERENCEDOMAIN,
               type: 'set',
               id: newSubscription,
             },
             xml(
               'subscribe',
-              {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
+              {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: this.state.manipulatedWalletAddress,
+              },
               xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
               xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
             ),
@@ -1190,10 +1272,10 @@ class Routes extends Component {
           let messageObject = {};
           let userAvatar = '';
           let isMediafile = false;
-          let imageLocation = "";
-          let imageLocationPreview = "";
-          let mimetype = "";
-          let size = "";
+          let imageLocation = '';
+          let imageLocationPreview = '';
+          let mimetype = '';
+          let size = '';
           stanza.children.map(item => {
             if (item.name === 'body') {
               text = item.children[0];
@@ -1205,7 +1287,8 @@ class Routes extends Component {
             }
 
             if (item.name === 'data') {
-              user_name = item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
+              user_name =
+                item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
 
               _id = item.attrs.senderJID;
 
@@ -1223,7 +1306,7 @@ class Routes extends Component {
 
               userAvatar = item.attrs.photoURL ? item.attrs.photoURL : null;
 
-              isMediafile = item.attrs.isMediafile === 'true'?true:false;
+              isMediafile = item.attrs.isMediafile === 'true' ? true : false;
 
               imageLocation = item.attrs.location;
 
@@ -1232,30 +1315,32 @@ class Routes extends Component {
               mimetype = item.attrs.mimetype;
 
               size = item.attrs.size;
-
             }
           });
 
           if (isSystemMessage === 'false') {
-            if(isMediafile){
+            if (isMediafile) {
               messageObject = {
                 _id: _messageId,
-                text:'',
-                createdAt: new Date(parseInt(_messageId.substring(0,13))),
+                text: '',
+                createdAt: new Date(parseInt(_messageId.substring(0, 13))),
                 system: false,
-                user:{
+                user: {
                   _id,
                   name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null
+                  avatar: userAvatar !== 'false' ? userAvatar : null,
                 },
-                image:mimetype==="application/pdf"?"https://image.flaticon.com/icons/png/128/174/174339.png":imageLocationPreview,
+                image:
+                  mimetype === 'application/pdf'
+                    ? 'https://image.flaticon.com/icons/png/128/174/174339.png'
+                    : imageLocationPreview,
                 realImageURL: imageLocation,
-                localURL:"",
-                isStoredFile:false,
+                localURL: '',
+                isStoredFile: false,
                 mimetype: mimetype,
-                size: size
-              }
-            }else{
+                size: size,
+              };
+            } else {
               messageObject = {
                 _id: _messageId,
                 text,
@@ -1264,7 +1349,7 @@ class Routes extends Component {
                 user: {
                   _id,
                   name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null,
+                  avatar: userAvatar !== 'false' ? userAvatar : null,
                 },
               };
             }
@@ -1291,13 +1376,13 @@ class Routes extends Component {
 
     xmpp.on('online', async address => {
       xmpp.reconnect.delay = 2000;
-      xmpp.send(xml("presence"));
+      xmpp.send(xml('presence'));
       this.getArchive();
 
-      fetchRosterlist(
-        this.state.manipulatedWalletAddress,
-        subscriptionsStanzaID,
-      );
+      // fetchRosterlist(
+      //   this.state.manipulatedWalletAddress,
+      //   subscriptionsStanzaID,
+      // );
       newOnline = false;
       commonDiscover(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
       // discoverProfileSupport(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
@@ -1305,23 +1390,24 @@ class Routes extends Component {
     });
   }
 
-  subscribeToPremium(){
+  subscribeToPremium() {
     checkDefaultRoom.map(item => {
       if (!item.exist) {
         const subscribe = xml(
           'iq',
           {
             from:
-              this.state.manipulatedWalletAddress +
-              '@' +
-              xmppConstant.DOMAIN,
+              this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
             to: item.name + xmppConstant.CONFERENCEDOMAIN,
             type: 'set',
             id: newSubscription,
           },
           xml(
             'subscribe',
-            {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
+            {
+              xmlns: 'urn:xmpp:mucsub:0',
+              nick: this.state.manipulatedWalletAddress,
+            },
             xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
             xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
           ),
@@ -1330,18 +1416,18 @@ class Routes extends Component {
         xmpp.send(subscribe);
       }
     });
-
   }
 
   async componentDidUpdate(prevProps) {
-
     //check if premium
-    if(this.props.AccountReducer.isPremium && this.props.AccountReducer.isPremium!==prevProps.AccountReducer.isPremium){
+    if (
+      this.props.AccountReducer.isPremium &&
+      this.props.AccountReducer.isPremium !== prevProps.AccountReducer.isPremium
+    ) {
       const isPremium = this.props.AccountReducer.isPremium;
       // this.subscribeToPremium()
-      console.log(isPremium,"ascadfcadf")
+      console.log(isPremium, 'ascadfcadf');
     }
-    
 
     if (this.props.loginReducer.token !== prevProps.loginReducer.token) {
       if (this.props.loginReducer.token === 'loading') {
@@ -1384,10 +1470,7 @@ class Routes extends Component {
     if (this.state.userToken === 'loading') {
       return (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Image
-            source={logoPath}
-            style={{height: 100, width: 100}}
-          />
+          <Image source={logoPath} style={{height: 100, width: 100}} />
         </View>
       );
     }
@@ -1429,7 +1512,7 @@ class Routes extends Component {
             options={{headerShown: false}}
             name="MintItemsComponent"
             component={mintitemsComponent}
-          /> 
+          />
           <Stack.Screen
             options={{headerShown: false}}
             name="QRScreenComponent"
@@ -1493,23 +1576,21 @@ const mapStateToProps = state => {
     ...state,
   };
 };
-module.exports = connect(
-  mapStateToProps,
-  {
-    getUserToken,
-    finalMessageArrivalAction,
-    participantsUpdateAction,
-    setRosterAction,
-    setRecentRealtimeChatAction,
-    updatedRoster,
-    fetchWalletBalance,
-    tokenAmountUpdateAction,
-    setPushNotificationData,
-    updateUserDescription,
-    updateUserAvatar,
-    updateMessageComposingState,
-    updateUserProfile,
-    setOtherUserVcard,
-    logOut
-  },
-)(Routes);
+module.exports = connect(mapStateToProps, {
+  getUserToken,
+  finalMessageArrivalAction,
+  participantsUpdateAction,
+  setRosterAction,
+  setRecentRealtimeChatAction,
+  updatedRoster,
+  fetchWalletBalance,
+  tokenAmountUpdateAction,
+  setPushNotificationData,
+  updateUserDescription,
+  updateUserAvatar,
+  updateMessageComposingState,
+  updateUserProfile,
+  setOtherUserVcard,
+  setRoomRoles,
+  logOut,
+})(Routes);

@@ -24,7 +24,8 @@ const initialState = {
     isRosterUpdated:false,
     tokenAmountUpdate:false,
     pushData:{msgId:"",mucId:""},
-    isComposing:{state:false,username:""}
+    isComposing:{state:false,username:""},
+    roomRoles: {}
 }
 
 const chatReducer = (state=initialState, action) => {
@@ -41,7 +42,8 @@ const chatReducer = (state=initialState, action) => {
         case types.UPDATED_ROASTER:
             return {...state, isRosterUpdated:action.payload}
     
-
+        case types.SET_ROOM_ROLES:
+            return {...state, roomRoles:action.payload}
         case types.SET_RECENT_REALTIME_CHAT:
             return {...state, recentRealtimeChat:action.payload}
 

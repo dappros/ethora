@@ -28,14 +28,27 @@ import {Swipeable} from 'react-native-gesture-handler';
 import {TouchableWithoutFeedback} from 'react-native';
 import PrivacyPolicy from './PrivacyPolicy';
 import * as xmppConstants from '../../constants/xmppConstants';
-import {setCurrentChatDetails, shouldCountAction} from '../../actions/chatAction';
+import {
+  setCurrentChatDetails,
+  shouldCountAction,
+} from '../../actions/chatAction';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
-import {fetchRosterlist, roomConfigurationForm, get_archive_by_room, setSubscriptions} from '../../helpers/xmppStanzaRequestMessages';
-import { sha256 } from 'react-native-sha256';
+import {
+  fetchRosterlist,
+  roomConfigurationForm,
+  get_archive_by_room,
+  setSubscriptions,
+} from '../../helpers/xmppStanzaRequestMessages';
+import {sha256} from 'react-native-sha256';
 const {xml} = require('@xmpp/client');
 import {xmpp} from '../../helpers/xmppCentral';
-import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../../docs/config';
-
+import {
+  commonColors,
+  textStyles,
+  coinImagePath,
+  coinsMainName,
+  itemsTransfersAllowed,
+} from '../../../docs/config';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, semiBoldFont} = textStyles;
@@ -205,10 +218,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 1 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image
-            source={coinImagePath}
-            style={styles.gkcIconStyle}
-          />
+          <Image source={coinImagePath} style={styles.gkcIconStyle} />
           <Text>1</Text>
         </Pressable>
 
@@ -221,10 +231,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 3 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image
-            source={coinImagePath}
-            style={styles.gkcIconStyle}
-          />
+          <Image source={coinImagePath} style={styles.gkcIconStyle} />
           <Text>3</Text>
         </Pressable>
 
@@ -237,10 +244,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 5 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image
-            source={coinImagePath}
-            style={styles.gkcIconStyle}
-          />
+          <Image source={coinImagePath} style={styles.gkcIconStyle} />
           <Text>5</Text>
         </Pressable>
 
@@ -253,10 +257,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 7 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image
-            source={coinImagePath}
-            style={styles.gkcIconStyle}
-          />
+          <Image source={coinImagePath} style={styles.gkcIconStyle} />
           <Text>7</Text>
         </Pressable>
       </View>
@@ -292,7 +293,10 @@ const SendItem = props => {
 
 const DirectMessage = props => {
   return (
-    <TouchableOpacity onPress={() => {props.onPress()}}>
+    <TouchableOpacity
+      onPress={() => {
+        props.onPress();
+      }}>
       <View style={styles.sendItemAndDMContainer}>
         <View style={styles.sendItemAndDMIconContainer}>
           <Icon name="send" size={15} color="black" />
@@ -305,10 +309,10 @@ const DirectMessage = props => {
 
 const ReportAndBlockButton = props => {
   const textLabel =
-    props.type === '0' ? 'Report this message' : 'Block this user';
+    props.type === '0' ? 'Report this message' : 'Ban this user';
   const iconName = props.type === '0' ? 'report-problem' : 'block';
   return (
-    <TouchableOpacity onPress={() => {}}>
+    <TouchableOpacity onPress={props.onPress}>
       <View style={styles.reportAndBlockContainer}>
         <View style={styles.blockIcon}>
           <MaterialIcons name={iconName} size={15} color="#fff" />
@@ -345,7 +349,10 @@ class CommonModal extends Component {
   componentDidUpdate(prevProps, prevState) {
     // console.log(this.props.extraData, 'modal')
     // this.onDirectMessagePress();
-    if(prevState.modalVisible !== this.state.modalVisible && this.state.modalVisible) {
+    if (
+      prevState.modalVisible !== this.state.modalVisible &&
+      this.state.modalVisible
+    ) {
       this.props.fetchWalletBalance(
         this.props.loginReducer.initialData.walletAddress,
         null,
@@ -355,6 +362,7 @@ class CommonModal extends Component {
       const tokenList = this.props.walletReducer.balance.filter(
         item => item.tokenType === 'NFT' && item.balance > 0,
       );
+      // this.banUser()
       this.setState(
         {
           // tokenState: this.props.extraData,
@@ -363,14 +371,12 @@ class CommonModal extends Component {
         // console.log(this.state.itemsData, 'itemsmmsmsm'),
       );
     }
-   
   }
 
   componentDidMount() {
     let modalVisible = this.props.show;
     this.setModalVisible(modalVisible);
-   
-    
+
     if (this.props.extraData) {
       if (this.props.extraData && this.props.extraData.type === 'receive') {
         this.setState(
@@ -403,7 +409,6 @@ class CommonModal extends Component {
           from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
           to:
             combinedWalletAddress +
-            
             xmppConstants.CONFERENCEDOMAIN +
             '/' +
             username,
@@ -421,7 +426,7 @@ class CommonModal extends Component {
       message = xml(
         'iq',
         {
-          to: combinedWalletAddress +  xmppConstants.CONFERENCEDOMAIN,
+          to: combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN,
           from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
           id: 'setOwner',
           type: 'get',
@@ -456,7 +461,7 @@ class CommonModal extends Component {
         'iq',
         {
           from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
-          to: combinedWalletAddress +  xmppConstants.CONFERENCEDOMAIN,
+          to: combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN,
           type: 'set',
           id: 'subscription',
         },
@@ -472,7 +477,7 @@ class CommonModal extends Component {
       );
 
       xmpp.send(message);
-     
+
       // subscribe(
       //   this.state.manipulatedWalletAddress,
       //   roomHash,
@@ -492,31 +497,46 @@ class CommonModal extends Component {
       // );
     });
   }
-   sendInvite =(username, chatName, to) => {
-
-    const stanza = xml('message', {'from': username + '@' + xmppConstants.DOMAIN, 'to':chatName },
-        xml('x', 'http://jabber.org/protocol/muc#user',
-            xml('invite', {'to': to + '@' + xmppConstants.DOMAIN},
-                xml('reason', {}, 'Hey, this is the place with amazing cookies!')
-            )
-        )
-
+  sendInvite = (username, chatName, to) => {
+    const stanza = xml(
+      'message',
+      {from: username + '@' + xmppConstants.DOMAIN, to: chatName},
+      xml(
+        'x',
+        'http://jabber.org/protocol/muc#user',
+        xml(
+          'invite',
+          {to: to + '@' + xmppConstants.DOMAIN},
+          xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
+        ),
+      ),
     );
 
     xmpp.send(stanza);
-}
+  };
 
   onDirectMessagePress = async () => {
     const otherUserWalletAddress = this.props.extraData?.walletFromJid;
     const myWalletAddress = this.props.loginReducer.initialData.walletAddress;
-    const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress].sort().join('_')
-      
-    const roomJid = combinedWalletAddress +  xmppConstants.CONFERENCEDOMAIN
-    const combinedUsersName = [ this.props.loginReducer.initialData.firstName,  this.props.extraData.name.split(' ')[0]].sort().join(' and ')
-      // this.props.loginReducer.initialData.firstName +
-      // ' and ' +
-      // this.props.extraData.name.split(' ')[0];
-    console.log(combinedWalletAddress,  underscoreManipulation(myWalletAddress), 'combined');
+    const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
+      .sort()
+      .join('_');
+
+    const roomJid = combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN;
+    const combinedUsersName = [
+      this.props.loginReducer.initialData.firstName,
+      this.props.extraData.name.split(' ')[0],
+    ]
+      .sort()
+      .join(' and ');
+    // this.props.loginReducer.initialData.firstName +
+    // ' and ' +
+    // this.props.extraData.name.split(' ')[0];
+    console.log(
+      combinedWalletAddress,
+      underscoreManipulation(myWalletAddress),
+      'combined',
+    );
     this.createChatRoom(
       underscoreManipulation(myWalletAddress),
       combinedWalletAddress.toLowerCase(),
@@ -530,10 +550,9 @@ class CommonModal extends Component {
     //    this.props.loginReducer.initialData.username,
     //  );
 
-  
-    this.props.navigation.navigate('ChatHomeComponent')
+    this.props.navigation.navigate('ChatHomeComponent');
 
-    this.props.shouldCountAction(false)
+    this.props.shouldCountAction(false);
     get_archive_by_room(roomJid.toLowerCase());
 
     this.props.setCurrentChatDetails(
@@ -543,16 +562,18 @@ class CommonModal extends Component {
       // true
     );
     setTimeout(() => {
-      this.sendInvite(underscoreManipulation(myWalletAddress), roomJid.toLowerCase(), underscoreManipulation(otherUserWalletAddress))
+      this.sendInvite(
+        underscoreManipulation(myWalletAddress),
+        roomJid.toLowerCase(),
+        underscoreManipulation(otherUserWalletAddress),
+      );
+    }, 3000);
+    //  setTimeout(()=> {
 
-    }, 3000)
-      //  setTimeout(()=> {
-       
-      //   console.log('2000')
+    //   console.log('2000')
 
-      //  }, 2000)
-     this.closeModal()
-
+    //  }, 2000)
+    this.closeModal();
   };
 
   static getDerivedStateFromProps(nextProp, prevState) {
@@ -693,6 +714,45 @@ class CommonModal extends Component {
           : 'Please choose the item',
       );
     }
+  };
+
+  banUser = () => {
+    //   <iq from='kinghenryv@shakespeare.lit/throne'
+    //     id='ban1'
+    //     to=
+    //     type='set'>
+    //   <query xmlns='http://jabber.org/protocol/muc#admin'>
+    //     <item affiliation='outcast'
+    //           jid='earlofcambridge@shakespeare.lit'/>
+    //   </query>
+    // </iq>
+    const bannedUserWalletAddres = underscoreManipulation(
+      this.props.extraData?.walletFromJid,
+    );
+    const senderWalletAddres = underscoreManipulation(
+      this.props.loginReducer.initialData.walletAddress,
+    );
+    const roomJID = this.props.extraData.roomJID;
+    // console.log(roomJID, senderWalletAddres, bannedUserWalletAddres,'roomJidddddd')
+    const message = xml(
+      'iq',
+      {
+        id: 'ban_user',
+        to: roomJID,
+        from: senderWalletAddres + '@' + xmppConstants.DOMAIN,
+        type: 'set',
+      },
+      xml(
+        'query',
+        'http://jabber.org/protocol/muc#owner',
+        xml('item', {
+          affiliation: 'outcast',
+          jid: bannedUserWalletAddres + '@' + xmppConstants.DOMAIN,
+        }),
+      ),
+    );
+    xmpp.send(message);
+    this.closeModal();
   };
 
   renderNftItems = () => {
@@ -911,18 +971,26 @@ class CommonModal extends Component {
                   />
                 </View>
 
-                {this.state.itemsData.length && itemsTransfersAllowed ? <Seperator /> : null}
-                {this.state.itemsData.length > 0  && itemsTransfersAllowed? (
+                {this.state.itemsData.length && itemsTransfersAllowed ? (
+                  <Seperator />
+                ) : null}
+                {this.state.itemsData.length > 0 && itemsTransfersAllowed ? (
                   <SendItem
                     displayItems={() => this.setState({displayItems: true})}
                   />
                 ) : null}
 
                 <Seperator />
-                <DirectMessage onPress={this.onDirectMessagePress}/>
-                {/* <Seperator/> 
-                <ReportAndBlockButton type="0" /> 
-                <ReportAndBlockButton type="1" />  */}
+                <DirectMessage onPress={this.onDirectMessagePress} />
+                {this.props.ChatReducer.roomRoles[
+                  this.props.extraData.roomJID
+                ] !== 'participant' && (
+                  <>
+                    <Seperator />
+                    <ReportAndBlockButton  onPress={this.banUser} type="1" />
+                  </> 
+                )}
+                {/* <ReportAndBlockButton type="0" />  */}
               </View>
             </View>
           </Modal>
@@ -1130,13 +1198,9 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    transferTokens,
-    setCurrentChatDetails,
-    shouldCountAction,
-    fetchWalletBalance
-
-  },
-)(CommonModal);
+module.exports = connect(mapStateToProps, {
+  transferTokens,
+  setCurrentChatDetails,
+  shouldCountAction,
+  fetchWalletBalance,
+})(CommonModal);

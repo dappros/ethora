@@ -8,17 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ethoraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ethoraTests.m */; };
-		06A6A4B926C272DF00FFAED7 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B326C272DE00FFAED7 /* Montserrat-Bold.ttf */; };
-		06A6A4BA26C272DF00FFAED7 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B426C272DE00FFAED7 /* Montserrat-Light.ttf */; };
-		06A6A4BB26C272DF00FFAED7 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B526C272DE00FFAED7 /* Montserrat-Medium.ttf */; };
-		06A6A4BC26C272DF00FFAED7 /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B626C272DE00FFAED7 /* Montserrat-Thin.ttf */; };
-		06A6A4BD26C272DF00FFAED7 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B726C272DE00FFAED7 /* Montserrat-Regular.ttf */; };
-		06A6A4BE26C272DF00FFAED7 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 06A6A4B826C272DE00FFAED7 /* Montserrat-SemiBold.ttf */; };
-		0D7E3744DFB80F4A7D9FCFC9 /* libPods-ethora.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5E8DD3E36BB3D34AB2949DA /* libPods-ethora.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		347DC4F4DF514A590BB36ECD /* libPods-ethora-ethoraTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 616121839732DD3D826A0076 /* libPods-ethora-ethoraTests.a */; };
 		4E6DC31D268DDE370095986C /* BridgeHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E6DC31C268DDE370095986C /* BridgeHeader.swift */; };
 		4E6DC31F268DE6950095986C /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E6DC31E268DE6950095986C /* BootSplash.storyboard */; };
 		4E8F11AC2689B14B00462560 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E8F11AB2689B14B00462560 /* GoogleService-Info.plist */; };
@@ -41,20 +33,12 @@
 		00E356EE1AD99517003FC87E /* ethoraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ethoraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ethoraTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethoraTests.m; sourceTree = "<group>"; };
-		06A6A4B326C272DE00FFAED7 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Bold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Bold.ttf"; sourceTree = "<group>"; };
-		06A6A4B426C272DE00FFAED7 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Light.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Light.ttf"; sourceTree = "<group>"; };
-		06A6A4B526C272DE00FFAED7 /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Medium.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Medium.ttf"; sourceTree = "<group>"; };
-		06A6A4B626C272DE00FFAED7 /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Thin.ttf"; sourceTree = "<group>"; };
-		06A6A4B726C272DE00FFAED7 /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
-		06A6A4B826C272DE00FFAED7 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Montserrat-SemiBold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
-		0EC8515E10C9631D05B108E3 /* Pods-ethora.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.debug.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ethora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ethora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ethora/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ethora/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = ethora/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ethora/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ethora/main.m; sourceTree = "<group>"; };
-		188475FD57132DCF42683560 /* Pods-ethora-ethoraTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.release.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.release.xcconfig"; sourceTree = "<group>"; };
 		19C66B0329D64B1181F15619 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		2903DDBBF8454F238CDEF4F8 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		32537A0665BFD12026FF5C3E /* Pods-ethora-ethoraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.debug.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -81,7 +65,6 @@
 		8603E948C94C47318B4B30EA /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		872B7F2D9C044C1E9BEBE284 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		8B9F994D5A074F15B2DE86F8 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
-		9993A01F902F4AE5C70A2D4A /* Pods-ethora-ethoraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.debug.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9FBFD66296BD41A2A971C604 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		A0077CC6804C41B1A1DA1F85 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		A3917BAE401241C7BDC45B91 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
@@ -92,7 +75,6 @@
 		CAF1081BF8AEFC7F3B48E6BC /* Pods-ethora.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.debug.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.debug.xcconfig"; sourceTree = "<group>"; };
 		E7810885E8C81BB1EBC9A6B7 /* libPods-ethora.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ethora.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F5E8DD3E36BB3D34AB2949DA /* libPods-ethora.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ethora.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,12 +174,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				06A6A4B326C272DE00FFAED7 /* Montserrat-Bold.ttf */,
-				06A6A4B426C272DE00FFAED7 /* Montserrat-Light.ttf */,
-				06A6A4B526C272DE00FFAED7 /* Montserrat-Medium.ttf */,
-				06A6A4B726C272DE00FFAED7 /* Montserrat-Regular.ttf */,
-				06A6A4B826C272DE00FFAED7 /* Montserrat-SemiBold.ttf */,
-				06A6A4B626C272DE00FFAED7 /* Montserrat-Thin.ttf */,
 				4E6DC31E268DE6950095986C /* BootSplash.storyboard */,
 				4E6DC31C268DDE370095986C /* BridgeHeader.swift */,
 				4E6DC320268DE7E20095986C /* bhiden.gif */,
@@ -254,7 +230,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ethoraTests" */;
 			buildPhases = (
-				2DE9E7FD5B9F6423AD8688F7 /* [CP] Check Pods Manifest.lock */,
+				2DE9E7FD5B9F6423AD8688F7 /* [CP-User] [RNFB] Core Configuration */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
@@ -283,7 +259,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				823F29E586801F2C153A8B18 /* [CP] Embed Pods Frameworks */,
 				A3AA11FE5DB8B8F3C9F0D281 /* [CP] Copy Pods Resources */,
-				EC904132B8D4546750BD8639 /* [CP-User] [RNFB] Core Configuration */,
+				EC904132B8D4546750BD8639 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -342,12 +318,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06A6A4B926C272DF00FFAED7 /* Montserrat-Bold.ttf in Resources */,
-				06A6A4BA26C272DF00FFAED7 /* Montserrat-Light.ttf in Resources */,
-				06A6A4BB26C272DF00FFAED7 /* Montserrat-Medium.ttf in Resources */,
-				06A6A4BC26C272DF00FFAED7 /* Montserrat-Thin.ttf in Resources */,
-				06A6A4BD26C272DF00FFAED7 /* Montserrat-Regular.ttf in Resources */,
-				06A6A4BE26C272DF00FFAED7 /* Montserrat-SemiBold.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				4E8F11AC2689B14B00462560 /* GoogleService-Info.plist in Resources */,
@@ -389,7 +359,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		2DE9E7FD5B9F6423AD8688F7 /* [CP] Check Pods Manifest.lock */ = {
+		2DE9E7FD5B9F6423AD8688F7 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -400,13 +370,12 @@
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
 				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP-User] [RNFB] Core Configuration";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-ethora-ethoraTests-checkManifestLockResult.txt",
 			);
-			name = "[CP-User] [RNFB] Core Configuration";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
@@ -485,7 +454,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		EC904132B8D4546750BD8639 /* [CP-User] [RNFB] Core Configuration */ = {
+		EC904132B8D4546750BD8639 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (

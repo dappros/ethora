@@ -66,7 +66,12 @@ export const setRosterAction = (rosterData) => {
             dispatch(setRoster(rosterData))
         }
     }
+    
 }
+export const setRoomRoles = (data) => ({
+    type: types.SET_ROOM_ROLES,
+    payload:data
+})
 
 export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateChatScreen,tokenAmount,receiverMessageId) => {
     return dispatch => {
