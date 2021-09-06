@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, createRef} from 'react';
 import {
   Platform,
   View,
@@ -7,6 +7,8 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  Pressable,
+  Button,
 } from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
@@ -43,6 +45,8 @@ import {systemMessage} from '../components/SystemMessage';
 import {xmpp} from '../helpers/xmppCentral';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {updateRosterList} from '../components/realmModels/chatList';
@@ -66,6 +70,18 @@ import downloadFile from '../helpers/downloadFileLogic';
 import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
 import {commonColors, textStyles} from '../../docs/config';
+import {RNCamera} from 'react-native-camera';
+import VideoRecorder from 'react-native-beautiful-video-recorder';
+
+import Modal from 'react-native-modal';
+
+import AudioRecorderPlayer, {
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  AudioEncoderAndroidType,
+  AudioSet,
+  AudioSourceAndroidType,
+} from 'react-native-audio-recorder-player';
 
 const {primaryColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
@@ -134,8 +150,19 @@ class Chat extends Component {
       composingUsername: '',
       userAvatar: '',
       progressVal: 0,
+      playTime: '00:00:00',
+      duration: '00:00:00',
+      recordSecs: 0,
+      recordTime: '00:00:00',
+      currentPositionSec: 0,
+      currentDurationSec: 0,
+      recording: false,
     };
+    this.audioRecorderPlayer = new AudioRecorderPlayer();
+    this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
+    this.cameraRef = createRef()
   }
+
 
   //fucntion to get chat archive of a room
 
@@ -214,6 +241,8 @@ class Chat extends Component {
           createdAt: item.createdAt,
           system: item.system,
           image: item.image,
+          audio: item.audio,
+
           isStoredFile: item.isStoredFile,
           localURL: item.localURL,
           realImageURL: item.realImageURL,
@@ -428,7 +457,7 @@ class Chat extends Component {
             anotherUserFirstname: firstName,
             anotherUserLastname: lastName,
             anotherUserWalletAddress: walletAddress,
-            isPrevious: false,
+            isPreviousUser: false,
           });
 
           await this.props.fetchWalletBalance(
@@ -442,6 +471,85 @@ class Chat extends Component {
         }
       });
     }
+  };
+  onStartRecord = async () => {
+    const dirs = RNFetchBlob.fs.dirs;
+    const path = Platform.select({
+      ios: 'hello.m4a',
+      android: `${dirs.CacheDir}/hello.mp3`,
+    });
+    const result = await this.audioRecorderPlayer.startRecorder(path);
+
+    this.setState({
+      recording: true,
+    });
+    console.log(result, 'sdfnksdfjlsdj;f');
+  };
+  onStopRecord = async () => {
+    // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
+    // const dirs = RNFetchBlob.fs.dirs;
+
+    // const res = await DocumentPicker.pick({
+    //   type: [DocumentPicker.types.allFiles],
+    // });
+    // console.log(res, 'resfdfsd')
+    const result = await this.audioRecorderPlayer.stopRecorder();
+    this.setState({
+      recording: false,
+    });
+    console.log(result, 'ressslsllsl');
+    const {token} = this.props.loginReducer;
+    const filesApiURL = connectionURL.fileUpload;
+    const FormData = require('form-data');
+    let data = new FormData();
+
+    // let correctpath = '';
+    // const str1 = 'file://';
+    // const str2 = res.uri;
+    // correctpath = str2.replace(str1, '');
+
+    data.append('files', {
+      uri: result,
+      type: 'audio/mpeg',
+      name: 'sound.mp3',
+    });
+    hitAPI.fileUpload(
+      filesApiURL,
+      data,
+      token,
+      async () => {
+        logOut();
+      },
+      val => {
+        console.log('Progress:', val);
+        this.setState({
+          progressVal: val,
+        });
+      },
+      async response => {
+        if (response.results.length) {
+          // alert(JSON.stringify(data));
+          this.submitMediaMessage(response.results);
+          console.log(response, 'dsfjdksfklsdjfkdsjlfj');
+        }
+      },
+    );
+  };
+  onStartPlay = async () => {
+    console.log('onStartPlay');
+    const msg = await this.audioRecorderPlayer.startPlayer();
+    console.log(msg);
+    this.audioRecorderPlayer.addPlayBackListener(e => {
+      this.setState({
+        currentPositionSec: e.currentPosition,
+        currentDurationSec: e.duration,
+        playTime: this.audioRecorderPlayer.mmssss(
+          Math.floor(e.currentPosition),
+        ),
+        duration: this.audioRecorderPlayer.mmssss(Math.floor(e.duration)),
+      });
+      return;
+    });
   };
 
   scrollToMessage(messageID) {
@@ -540,6 +648,8 @@ class Chat extends Component {
               text: chatsLastObject.text,
               createdAt: chatsLastObject.createdAt,
               image: chatsLastObject.image,
+              audio: chatsLastObject.audio,
+
               realImageURL: chatsLastObject.realImageURL,
               localURL: chatsLastObject.localURL,
               isStoredFile: chatsLastObject.isStoredFile,
@@ -635,6 +745,7 @@ class Chat extends Component {
             },
           ];
         } else {
+          console.log(recentRealtimeChat.mimetype, 'asfdsklfjlksdjfkldsjf');
           messageObject = [
             {
               _id: recentRealtimeChat.message_id,
@@ -642,6 +753,8 @@ class Chat extends Component {
               createdAt: recentRealtimeChat.createdAt,
               system: false,
               image: recentRealtimeChat.image,
+              audio: recentRealtimeChat.audio,
+
               realImageURL: recentRealtimeChat.realImageURL,
               localURL: recentRealtimeChat.localURL,
               isStoredFile: recentRealtimeChat.isStoredFile,
@@ -787,8 +900,9 @@ class Chat extends Component {
   }
 
   submitMediaMessage = props => {
-    console.log(props, 'media message');
     props.map(async item => {
+      console.log(item, 'media messsdfsdfage');
+
       const message = xml(
         'message',
         {
@@ -850,6 +964,7 @@ class Chat extends Component {
       },
     );
   };
+  
 
   startDownload = props => {
     const {isStoredFile, mimetype, localURL} = props.currentMessage;
@@ -868,6 +983,12 @@ class Chat extends Component {
             if (Platform.OS === 'android') {
               console.log(localURL, 'Asfadsfsfbvdfbdfghbdfghbfg');
               RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+
+              // if (mimetype === 'audio/mpeg') {
+              //   new Player(localURL).play();
+              // } else {
+              //   RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+              // }
             }
           } else {
             this.downloadFunction(props);
@@ -890,6 +1011,13 @@ class Chat extends Component {
       this.downloadFunction(props);
     }
   };
+  takePicture = async () => {
+    if (this.camera) {
+      const options = {quality: 0.5, base64: true};
+      const data = await this.camera.takePictureAsync(options);
+      console.log(data.uri);
+    }
+  };
 
   formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -906,25 +1034,117 @@ class Chat extends Component {
       unit: sizes[i],
     };
   }
-
+  
+  videoRecord = async () => {
+    if (this.cameraRef?.current) {
+      this.cameraRef.current.open({maxLength: 30}, data => {
+        console.log('captured datafdsfsdf', data); // data.uri is the file path
+      });
+    }
+  };
+  RenderCam = () => {
+    return (
+      <View>
+        <VideoRecorder ref={this.cameraRef} />
+        <TouchableOpacity
+          onPress={this.videoRecord}
+          style={{
+            width: wp('25%'),
+            height: hp('5%'),
+            backgroundColor: primaryColor,
+            borderRadius: 4,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontFamily: regularFont,
+              fontSize: hp('1.8%'),
+            }}>
+            Record
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
   renderMessageImage = props => {
-    console.log(props, 'currentMessage..........');
-    const {image, mimetype, size} = props.currentMessage;
+    console.log(props.position, 'currentMessage...df.......');
+    const {image, realImageURL, mimetype, size} = props.currentMessage;
     let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = this.formatBytes(parseFloat(size), 2);
-    console.log(formatedSize, 'fsdfljkdsfk');
-    return (
-      <TouchableOpacity
-        onPress={() => this.startDownload(props)}
-        style={{
-          borderRadius: 5,
-          // padding: 5,
-          width: hp('24%'),
-          height: hp('24%'),
-          justifyContent: 'center',
-          position: 'relative',
-        }}>
-       { mimetype === 'video/mp4' && <View
+    if (mimetype === 'video/mp4' || mimetype === 'image/jpeg') {
+      return (
+        <TouchableOpacity
+          onPress={() => this.startDownload(props)}
+          style={{
+            borderRadius: 5,
+            // padding: 5,
+            width: hp('24%'),
+            height: hp('24%'),
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+          {mimetype === 'video/mp4' && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 10,
+                height: 30,
+                // width: 100,
+                left: 10,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                zIndex: 9999,
+                padding: 5,
+                borderRadius: 5,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <Ionicons
+                name="arrow-down-outline"
+                size={hp('1.7%')}
+                color={'white'}
+              />
+              <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                {formatedSize.size + ' ' + formatedSize.unit}
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.downloadContainer}>
+            {/* <View style={styles.sizeContainer}>
+    <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
+    <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
+  </View> */}
+
+            <FastImage
+              style={styles.messageImageContainer}
+              source={{
+                // @ts-ignore
+                uri: props.currentMessage.image,
+                priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+        </TouchableOpacity>
+      );
+    } else if (mimetype === 'audio/mpeg') {
+      // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
+      return (
+        <TouchableOpacity
+          onPress={() => this.startDownload(props)}
+          style={{
+            borderRadius: 5,
+            // padding: 5,
+            width: wp('10%'),
+            height: hp('5%'),
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+          {/* {mimetype === 'video/mp4' && (
+        <View
           style={{
             position: 'absolute',
             top: 10,
@@ -936,104 +1156,198 @@ class Chat extends Component {
             padding: 5,
             borderRadius: 5,
             flexDirection: 'row',
-            alignItems: 'center'
+            alignItems: 'center',
           }}>
-             <Ionicons name="arrow-down-outline" size={hp('1.7%')} color={'white'} />
-          <Text style={{color: 'white', fontSize: hp('1.6%')}}>{formatedSize.size +  ' ' + formatedSize.unit}</Text>
-        </View>}
-        <View style={styles.downloadContainer}>
-          {/* <View style={styles.sizeContainer}>
-            <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
-            <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
-          </View> */}
-
-          <FastImage
-            style={styles.messageImageContainer}
-            source={{
-              // @ts-ignore
-              uri: props.currentMessage.image,
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
+          <Ionicons
+            name="arrow-down-outline"
+            size={hp('1.7%')}
+            color={'white'}
           />
+          <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+            {formatedSize.size + ' ' + formatedSize.unit}
+          </Text>
         </View>
-      </TouchableOpacity>
-    );
+      )} */}
+
+          <View style={styles.downloadContainer}>
+            {/* <View style={styles.sizeContainer}>
+          <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
+          <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
+        </View> */}
+
+            <View
+              style={{
+                marginTop: 10,
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+                width: '100%',
+                // position: 'absolute',
+                // left: props.position === 'left' ? '150%': null,
+                // zIndex: 10000
+              }}>
+              <AntDesign
+                name="play"
+                size={hp('3%')}
+                color={'white'}
+                style={{
+                  marginRight: props.position === 'left' ? 'auto' : 0,
+                  marginLeft: 10,
+                }}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    }
   };
 
   renderAttachment() {
     return (
-      <Actions
-        containerStyle={{
-          width: hp('4%'),
-          height: hp('4%'),
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginLeft: 3,
-          marginRight: 3,
-          marginBottom: 3,
-        }}
-        icon={() => <Entypo name="attachment" size={hp('3%')} />}
-        options={{
-          'Upload File': async () => {
-            try {
-              const res = await DocumentPicker.pick({
-                type: [DocumentPicker.types.allFiles],
-              });
-              // console.log(
-              //   res,
-              //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
-              // );
-              const {token} = this.props.loginReducer;
-              const filesApiURL = connectionURL.fileUpload;
-              const FormData = require('form-data');
-              let data = new FormData();
-
-              let correctpath = '';
-              const str1 = 'file://';
-              const str2 = res.uri;
-              correctpath = str2.replace(str1, '');
-
-              data.append('files', {
-                uri: res.uri,
-                type: res.type,
-                name: res.name,
-              });
-
-              hitAPI.fileUpload(
-                filesApiURL,
-                data,
-                token,
-                async () => {
-                  logOut();
-                },
-                val => {
-                  console.log('Progress:', val);
-                  this.setState({
-                    progressVal: val,
+      <View style={{position: 'relative'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            // position: 'absolute',
+            // left: 0
+            // width: hp('100%'),
+          }}>
+          <Actions
+            containerStyle={{
+              width: hp('4%'),
+              height: hp('4%'),
+              alignItems: 'center',
+              justifyContent: 'center',
+              // marginLeft: 3,
+              // marginRight: 3,
+              // marginBottom: 3,
+            }}
+            icon={() => <Entypo name="attachment" size={hp('3%')} />}
+            options={{
+              'Upload File': async () => {
+                try {
+                  const res = await DocumentPicker.pick({
+                    type: [DocumentPicker.types.allFiles],
                   });
-                },
-                async response => {
-                  if (response.results.length) {
-                    // alert(JSON.stringify(data));
-                    this.submitMediaMessage(response.results);
+                  // console.log(
+                  //   res,
+                  //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
+                  // );
+                  const {token} = this.props.loginReducer;
+                  const filesApiURL = connectionURL.fileUpload;
+                  // const FormData = require('form-data');
+                  let data = new FormData();
+
+                  let correctpath = '';
+                  const str1 = 'file://';
+                  const str2 = res.uri;
+                  // correctpath = str2.replace(str1, '');
+
+                  data.append('files', {
+                    uri: res[0].uri,
+                    type: res[0].type,
+                    name: res[0].name,
+                  });
+                  console.log(res[0].uri, 'reasdklaskdl;sakd');
+
+                  hitAPI.fileUpload(
+                    filesApiURL,
+                    data,
+                    token,
+                    async () => {
+                      logOut();
+                    },
+                    val => {
+                      console.log('Progress:', val);
+                      this.setState({
+                        progressVal: val,
+                      });
+                    },
+                    async response => {
+                      if (response?.results?.length) {
+                        // alert(JSON.stringify(data));
+                        this.submitMediaMessage(response.results);
+                      }
+                    },
+                  );
+                  console.log(JSON.stringify(data), 'asdasasdasdkd');
+                } catch (err) {
+                  if (DocumentPicker.isCancel(err)) {
+                    // User cancelled the picker, exit any dialogs or menus and move on
+                  } else {
+                    throw err;
                   }
-                },
-              );
-            } catch (err) {
-              if (DocumentPicker.isCancel(err)) {
-                // User cancelled the picker, exit any dialogs or menus and move on
-              } else {
-                throw err;
-              }
-            }
-          },
-          Cancel: () => {
-            console.log('Cancel');
-          },
-        }}
-        optionTintColor="#000000"
-      />
+                }
+              },
+              Cancel: () => {
+                console.log('Cancel');
+              },
+            }}
+            optionTintColor="#000000"
+          />
+
+          <Actions
+            containerStyle={{
+              // width: hp('100%'),
+              height: hp('4%'),
+              width: hp('5%'),
+
+              alignItems: 'center',
+              justifyContent: 'center',
+              // marginLeft: 3,
+              // marginRight: 3,
+              // marginBottom: 3,
+            }}
+            icon={() => (
+              <View style={{flexDirection: 'row'}}>
+                {/* <TouchableOpacity
+                  style={{marginRight: 10}}
+                  // onPress={this.takePicture}
+                  // onPressIn={this.onStartRecord}
+                  // onPressOut={this.onStopRecord}
+                >
+                  <Entypo name="camera" size={hp('3%')} />
+                </TouchableOpacity> */}
+                {this.state.recording ? (
+                  <TouchableOpacity
+                    // onPress={this.takePicture}
+                    onPress={this.onStopRecord}>
+                    {<Ionicons name="stop-circle" size={hp('3%')} />}
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    // onPress={this.takePicture}
+                    onPress={this.onStartRecord}>
+                    <Entypo name="mic" size={hp('3%')} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          />
+          {/* <Actions
+          containerStyle={{
+            width: hp('100%'),
+            height: hp('4%'),
+            alignItems: 'center',
+            justifyContent: 'center',
+            // marginLeft: 3,
+            // marginRight: 3,
+            // marginBottom: 3,
+          }}
+          icon={() => (
+            <TouchableOpacity
+            // onPress={this.takePicture}
+              onPressIn={this.onStartRecord}
+              onPressOut={this.onStopRecord}
+              >
+              <Entypo name="mic" size={hp('3%')} />
+            </TouchableOpacity>
+          )}
+
+         
+        /> */}
+        </View>
+      </View>
     );
   }
 
@@ -1133,6 +1447,16 @@ class Chat extends Component {
           closeModal={this.closeModal}
           navigation={this.props.navigation}
         />
+        {/* <Modal
+          animationType="slide"
+          transparent={true}
+          isVisible={true}
+          onBackdropPress={this.onBackdropPress}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          {this.RenderCam()}
+        </Modal> */}
       </View>
     );
   }
@@ -1167,6 +1491,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
   },
+
   isTypingContainer: {
     margin: 10,
     marginBottom: 20,

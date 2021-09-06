@@ -22,8 +22,14 @@ import {
 import CustomHeader from '../components/shared/customHeader';
 import {CommonButton} from '../components/shared/customButtons';
 import {Swipeable} from 'react-native-gesture-handler';
-import {commonColors, textStyles, coinImagePath, itemsTransfersAllowed} from '../../docs/config';
-
+import {
+  commonColors,
+  textStyles,
+  coinImagePath,
+  itemsTransfersAllowed,
+} from '../../docs/config';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
+import * as xmppConstants from '../constants/xmppConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -65,10 +71,7 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Image
-          source={coinImagePath}
-          style={styles.tokenIconStyle}
-        />
+        <Image source={coinImagePath} style={styles.tokenIconStyle} />
 
         <Text
           style={{
@@ -203,18 +206,17 @@ const AssetItem = ({
               />
             </View>
             <View style={{width: wp('70%')}}>
-            <Text
-              style={{
-                fontFamily: regularFont,
-                fontSize: hp('2.2%'),
-                color: '#000000',
-                marginLeft: 20,
-                // alignSelf: 'left'
-              }}>
-              {name}
-            </Text>
+              <Text
+                style={{
+                  fontFamily: regularFont,
+                  fontSize: hp('2.2%'),
+                  color: '#000000',
+                  marginLeft: 20,
+                  // alignSelf: 'left'
+                }}>
+                {name}
+              </Text>
             </View>
-           
           </View>
           <View
             style={{
@@ -318,21 +320,23 @@ const loadTabContent = props => {
               </Text>
             </Animated.Text>
           </TouchableOpacity>
-            {itemsTransfersAllowed && <TouchableOpacity
-            // onLayout={event =>
-            //   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
-            // }
-            // ref={ref => (this.coinRef = ref)}
-            onPress={() => setActiveAssetTab(1)}>
-            <Animated.Text
-              style={{
-                fontSize: hp('1.97%'),
-                fontFamily: boldFont,
-                color: activeAssetTab === 1 ? '#000000' : '#0000004D',
-              }}>
-              Items ({itemsBalance})
-            </Animated.Text>
-          </TouchableOpacity>}
+          {itemsTransfersAllowed && (
+            <TouchableOpacity
+              // onLayout={event =>
+              //   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
+              // }
+              // ref={ref => (this.coinRef = ref)}
+              onPress={() => setActiveAssetTab(1)}>
+              <Animated.Text
+                style={{
+                  fontSize: hp('1.97%'),
+                  fontFamily: boldFont,
+                  color: activeAssetTab === 1 ? '#000000' : '#0000004D',
+                }}>
+                Items ({itemsBalance})
+              </Animated.Text>
+            </TouchableOpacity>
+          )}
           {/* </View> */}
         </View>
         <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
@@ -453,9 +457,8 @@ function AnotherProfile(props) {
   const [anotherUserFirstname, setAnotherUserFirstname] = useState('null');
   const [anotherUserLastname, setAnotherUserLastname] = useState('null');
   const [anotherUserDescription, setAnotherUserDescription] = useState(null);
-  const [anotherUserWalletAddress, setAnotherUserWalletAddress] = useState(
-    null,
-  );
+  const [anotherUserWalletAddress, setAnotherUserWalletAddress] =
+    useState(null);
   const [coinData, setCoinData] = useState(null);
   const [itemsData, setItemsData] = useState([]);
 
@@ -495,7 +498,10 @@ function AnotherProfile(props) {
       let allTransactions = walletReducerData.anotherUserTransaction
         // .reverse()
         .map(item => {
-          console.log('sdfdsfsdfdsfsdfsdsfsafsddfw4er', walletReducerData.anotherUserTransaction);
+          console.log(
+            'sdfdsfsdfdsfsdfsdsfsafsddfw4er',
+            walletReducerData.anotherUserTransaction,
+          );
           if (item.tokenId === 'NFT') {
             if (
               item.from === anotherUserWalletAddress &&
@@ -531,8 +537,9 @@ function AnotherProfile(props) {
       setTransactionCount(walletReducerData.anotherUserTransaction.length);
       setIsLoading(false);
       console.log(
-        'aaffdsfdsf',
-        allReducers.walletReducer.anotherUserTransaction,
+        'aaffdsfdasdfsf',
+        allReducers.loginReducer.anotherUserLastSeen,
+        loginReducerData.anotherUserWalletAddress,
       );
     }, 2500);
   }, [allReducers.walletReducer.anotherUserTransaction]);
@@ -579,7 +586,9 @@ function AnotherProfile(props) {
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);
-    setAssetCount((itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance);
+    setAssetCount(
+      (itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance,
+    );
 
     return () => {};
   }, [itemsData, coinData]);
@@ -704,6 +713,25 @@ function AnotherProfile(props) {
                       }}>
                       {anotherUserDescription}
                     </Text>
+                    <Text
+                      style={{
+                        fontSize: hp('2.23%'),
+                        fontFamily: 'Montserrat-Regular',
+                        textAlign: 'center',
+                        color: primaryColor,
+                      }}>
+                      {allReducers.loginReducer.anotherUserLastSeen[
+                        underscoreManipulation(
+                          loginReducerData.anotherUserWalletAddress,
+                        ) 
+                      ] &&
+                        'Seen: ' +
+                          allReducers.loginReducer.anotherUserLastSeen[
+                            underscoreManipulation(
+                              loginReducerData.anotherUserWalletAddress,
+                            ) 
+                          ]}
+                    </Text>
                   </SkeletonContent>
                 </View>
               </View>
@@ -747,7 +775,6 @@ function AnotherProfile(props) {
                         Transactions ({transactionCount})
                       </Animated.Text>
                     </TouchableOpacity>
-                  
                   </View>
                 </SkeletonContent>
 

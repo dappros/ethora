@@ -8,6 +8,7 @@ import {
   ImageBackground,
   RefreshControl,
   Alert,
+  PermissionsAndroid
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -54,6 +55,9 @@ import {commonColors, textStyles} from '../../docs/config';
 import { underscoreManipulation } from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants'
 
+
+ import RNFetchBlob from 'rn-fetch-blob';
+
 const hitAPI = new fetchFunction();
 
 const _ = require('lodash');
@@ -77,7 +81,6 @@ const RenderDragItem = ({
   roomRoles,
   movingActive,
 }) => {
-  console.log(roomRoles, item, 'activeee');
   return (
     <TouchableOpacity
       onPress={() => openChat(item.jid, item.name)}
@@ -377,7 +380,7 @@ class ChatHome extends Component {
       pushChatName: '',
       pushChatJID: '',
       movingActive: false,
-      modalVisible: false
+      modalVisible: false,
     };
   }
 
@@ -979,6 +982,8 @@ class ChatHome extends Component {
           keyExtractor={(item, index) => `draggable-item-${index}`}
           onDragEnd={({data}) => this.storeRosterList(data)}
         />
+
+       
          <Modal
           animationType="slide"
           transparent={true}

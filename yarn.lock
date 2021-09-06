@@ -3540,6 +3540,11 @@ domutils@^1.7.0:
     dom-serializer "0"
     domelementtype "1"
 
+dooboolab-welcome@^1.3.1:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/dooboolab-welcome/-/dooboolab-welcome-1.3.2.tgz#4928595312f0429b4ea1b485ba8767bae6acdab7"
+  integrity sha512-2NbMaIIURElxEf/UAoVUFlXrO+7n/FRhLCiQlk4fkbGRh9cJ3/f8VEMPveR9m4Ug2l2Zey+UCXjd6EcBqHJ5bw==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz#3a83a904e54353287874c564b7549386849a98c9"
@@ -6376,6 +6381,16 @@ mockdate@^3.0.2:
   resolved "https://registry.yarnpkg.com/mockdate/-/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
   integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
+moment@2.24.0:
+  version "2.24.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
+  integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
+
+moment@^2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -7209,6 +7224,20 @@ react-native-animatable@1.3.3:
   integrity sha512-2ckIxZQAsvWn25Ho+DK3d1mXIgj7tITkrS4pYDvx96WyOttSvzzFeQnM2od0+FUMzILbdHDsDEqZvnz1DYNQ1w==
   dependencies:
     prop-types "^15.7.2"
+
+react-native-audio-recorder-player@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-audio-recorder-player/-/react-native-audio-recorder-player-3.1.2.tgz#7b93633c87142585940c1feaeefbac0ccefd4a5e"
+  integrity sha512-jGjvb7EtoR0Zbj7XFv1TAHSpzkdAlhOxKOng2CWM9KXm0vUfw263wdiXx0fr5ojoByAHHnCTMjYK68ZZQj6iow==
+  dependencies:
+    dooboolab-welcome "^1.3.1"
+
+react-native-beautiful-video-recorder@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-beautiful-video-recorder/-/react-native-beautiful-video-recorder-2.0.1.tgz#3e66176edf2ad5a1af32091fbdbf193ab5be0b0a"
+  integrity sha512-2oTn42B5+Uv0y6ulCsZgIfUeJjriLgvDJ71b5uJiAPb/lLTVZtBI1Td14M7PanYd0Bw77SGgH/UFcBqxd5dZgw==
+  dependencies:
+    moment "2.24.0"
 
 react-native-bootsplash@^3.1.2:
   version "3.2.4"

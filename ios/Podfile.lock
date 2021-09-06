@@ -505,6 +505,8 @@ PODS:
     - React-Core
   - RNAppleAuthentication (2.1.2):
     - React-Core
+  - RNAudioRecorderPlayer (3.1.2):
+    - React-Core
   - RNBootSplash (3.2.4):
     - React-Core
   - RNCAsyncStorage (1.15.5):
@@ -659,6 +661,7 @@ DEPENDENCIES:
   - RealmJS (from `../node_modules/realm`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
+  - RNAudioRecorderPlayer (from `../node_modules/react-native-audio-recorder-player`)
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
@@ -803,6 +806,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNAppleAuthentication:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
+  RNAudioRecorderPlayer:
+    :path: "../node_modules/react-native-audio-recorder-player"
   RNBootSplash:
     :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
@@ -853,7 +858,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: f5249daa3ba50471e52dfb2198cc2f2f9cc11b0a
+  FBReactNativeSpec: f9ddda5d0fc6b23136abdc4fad41c32865f5b883
   FBSDKCoreKit: 0d1ae58388a458b8222f72025804cdc84eb5d0c3
   FBSDKLoginKit: aea68df6121c5e165ccae2fabfdc83c4644ee40f
   FBSDKShareKit: 70889c97c62f0c6b3ccb8b999e73a85f19024001
@@ -919,6 +924,7 @@ SPEC CHECKSUMS:
   RealmJS: 550ecbe8a0d55bd0e2abb79a63313d4da08bcf25
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: e95bcfbd044013667f35c5ca20ae17d39500c009
+  RNAudioRecorderPlayer: 4bc5de2316d8a04358c22fb42b6855fc983f3889
   RNBootSplash: 4844706cbb56a3270556c9b94e59dedadccd47e4
   RNCAsyncStorage: 56a3355a10b5d660c48c6e37325ac85ebfd09885
   RNCCheckbox: 6bd119c26c6eb8264a29d59ff66cb70a14de3349

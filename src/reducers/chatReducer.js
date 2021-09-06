@@ -16,7 +16,8 @@ const initialState = {
         text:"",
         user_id:"",
         system:false,
-        shouldUpdateChatScreen:true
+        shouldUpdateChatScreen:true,
+        mimetype: ''
     },
     finalMessageArrived:false,
     shouldCount: true,

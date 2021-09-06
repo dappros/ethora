@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import Toast from 'react-native-simple-toast';
-
+import moment from 'moment';
 //routes
 import HeaderComponent from './components/shared/defaultHeader';
 import Login from './Screens/login';
@@ -40,6 +40,7 @@ import {
   updateUserProfile,
   setOtherUserVcard,
   logOut,
+  setOtherUserDetails
 } from './actions/auth';
 
 import {insertMessages} from './components/realmModels/messages';
@@ -409,6 +410,7 @@ class Routes extends Component {
     this.configurePush();
     obj = this;
     this.rolesMap = {};
+    this.usersLastSeen = {'0xc_f803e3c4e9_b_d_c8636665_d10_d4_a277b48415d421@dev.dxmpp.com': '26 August 12:02'}
   }
 
   configurePush = () => {
@@ -794,13 +796,17 @@ class Routes extends Component {
           // console.log(stanza.children[0].children[0].attrs.role, 'roooadfjsklfjdfssdljf')
           // console.log(stanza.attrs.from.split('/')[0], 'roooadfjsklfjdfssdfslkdfkjljf')
           let roomJID = stanza.attrs.from.split('/')[0];
-          let userJID = stanza.attrs.to.split('/')[0];
+          let userJID = stanza.attrs.from.split('/')[1];
 
           let role = stanza.children[0].children[0].attrs.role;
           console.log(userJID, 'dskljfsdlkfjdfdsfsf');
           this.rolesMap[roomJID] = role;
+          this.usersLastSeen[userJID] = moment().format('DD hh:mm')
           this.props.setRoomRoles(this.rolesMap);
-          // console.log(this.props.ChatReducer, 'reducadklsmads;kld')
+          console.log(this.usersLastSeen, 'reducadklsmads;kld')
+          await this.props.setOtherUserDetails({
+            anotherUserLastSeen: this.usersLastSeen 
+          });
         }
 
         if (stanza.attrs.id === 'CreateRoom') {
@@ -1035,7 +1041,7 @@ class Routes extends Component {
                 image:
                   mimetype === 'application/pdf'
                     ? 'https://image.flaticon.com/icons/png/128/174/174339.png'
-                    : imageLocationPreview,
+                    : imageLocation,
                 realImageURL: imageLocation,
                 localURL: '',
                 isStoredFile: false,
@@ -1320,6 +1326,11 @@ class Routes extends Component {
 
           if (isSystemMessage === 'false') {
             if (isMediafile) {
+              if(!mimetype) {
+                console.log(mimetype, stanza, 'mdsadklajlsdu8sdfsdfsd32ime')
+
+              }
+
               messageObject = {
                 _id: _messageId,
                 text: '',
@@ -1333,7 +1344,7 @@ class Routes extends Component {
                 image:
                   mimetype === 'application/pdf'
                     ? 'https://image.flaticon.com/icons/png/128/174/174339.png'
-                    : imageLocationPreview,
+                    : imageLocation,
                 realImageURL: imageLocation,
                 localURL: '',
                 isStoredFile: false,
@@ -1593,4 +1604,5 @@ module.exports = connect(mapStateToProps, {
   setOtherUserVcard,
   setRoomRoles,
   logOut,
+  setOtherUserDetails
 })(Routes);

@@ -312,7 +312,9 @@ startAnimation=()=>{
                 style={{
                   position: 'absolute',
                   bottom: 0,
-                  right: position === 'left' ? '-5%' : '83%',
+                  right: position === 'left'? 0 : null,
+                  left: position === 'right' ? 0 : null
+
                   // [position]: 0
                 }}>
                 {this.renderTokenCount()}
