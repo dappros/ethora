@@ -718,7 +718,8 @@ function AnotherProfile(props) {
                         fontSize: hp('2.23%'),
                         fontFamily: 'Montserrat-Regular',
                         textAlign: 'center',
-                        color: primaryColor,
+                        color: '0000004D',
+
                       }}>
                       {allReducers.loginReducer.anotherUserLastSeen[
                         underscoreManipulation(

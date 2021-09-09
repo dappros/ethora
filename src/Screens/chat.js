@@ -157,6 +157,7 @@ class Chat extends Component {
       currentPositionSec: 0,
       currentDurationSec: 0,
       recording: false,
+      videoModalOpen: false
     };
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
@@ -1036,7 +1037,10 @@ class Chat extends Component {
   }
   
   videoRecord = async () => {
+    console.log('currentttt', this.cameraRef)
+
     if (this.cameraRef?.current) {
+      
       this.cameraRef.current.open({maxLength: 30}, data => {
         console.log('captured datafdsfsdf', data); // data.uri is the file path
       });
@@ -1051,20 +1055,13 @@ class Chat extends Component {
           style={{
             width: wp('25%'),
             height: hp('5%'),
-            backgroundColor: primaryColor,
+            backgroundColor: 'transparent',
             borderRadius: 4,
             justifyContent: 'center',
             alignItems: 'center',
             marginRight: 10,
           }}>
-          <Text
-            style={{
-              color: '#FFFFFF',
-              fontFamily: regularFont,
-              fontSize: hp('1.8%'),
-            }}>
-            Record
-          </Text>
+         
         </TouchableOpacity>
       </View>
     );
@@ -1286,7 +1283,7 @@ class Chat extends Component {
             optionTintColor="#000000"
           />
 
-          <Actions
+          {/* <Actions
             containerStyle={{
               // width: hp('100%'),
               height: hp('4%'),
@@ -1300,14 +1297,14 @@ class Chat extends Component {
             }}
             icon={() => (
               <View style={{flexDirection: 'row'}}>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={{marginRight: 10}}
-                  // onPress={this.takePicture}
+                  onPress={() => this.toggleVideoModal(true)}
                   // onPressIn={this.onStartRecord}
                   // onPressOut={this.onStopRecord}
                 >
                   <Entypo name="camera" size={hp('3%')} />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
                 {this.state.recording ? (
                   <TouchableOpacity
                     // onPress={this.takePicture}
@@ -1323,7 +1320,7 @@ class Chat extends Component {
                 )}
               </View>
             )}
-          />
+          /> */}
           {/* <Actions
           containerStyle={{
             width: hp('100%'),
@@ -1370,6 +1367,17 @@ class Chat extends Component {
     });
 
     // }
+  }
+  onBackdropPress = () => {
+    this.setState({videoModalOpen: false})
+  }
+  toggleVideoModal = (value) => {
+    this.setState({videoModalOpen: value})
+    setTimeout(() => {
+      this.videoRecord()
+
+    },1000)
+
   }
 
   shouldScrollTo(indexValue) {
@@ -1447,16 +1455,16 @@ class Chat extends Component {
           closeModal={this.closeModal}
           navigation={this.props.navigation}
         />
-        {/* <Modal
+        <Modal
           animationType="slide"
           transparent={true}
-          isVisible={true}
+          isVisible={this.state.videoModalOpen}
           onBackdropPress={this.onBackdropPress}
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
           }}>
           {this.RenderCam()}
-        </Modal> */}
+        </Modal>
       </View>
     );
   }
