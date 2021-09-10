@@ -1100,7 +1100,7 @@ class Chat extends Component {
                 padding: 5,
                 borderRadius: 5,
                 flexDirection: 'column',
-                alignItems: 'center',
+                alignItems: 'flex-start',
               }}>
               <View
                 style={{
@@ -1119,7 +1119,7 @@ class Chat extends Component {
               </View>
 
               {duration && (
-                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                <Text style={{color: 'white', fontSize: hp('1.6%'), marginLeft: hp('1.7%')}}>
                   {duration}
                 </Text>
               )}
@@ -1151,7 +1151,7 @@ class Chat extends Component {
           style={{
             borderRadius: 5,
             // padding: 5,
-            width: wp('10%'),
+            // width: wp('10%'),
             height: hp('5%'),
             justifyContent: 'center',
             position: 'relative',
@@ -1182,7 +1182,7 @@ class Chat extends Component {
         </View>
       )} */}
 
-          <View style={styles.downloadContainer}>
+          {/* <View style={styles.downloadContainer}> */}
             {/* <View style={styles.sizeContainer}>
           <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
           <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
@@ -1192,8 +1192,9 @@ class Chat extends Component {
               style={{
                 marginTop: 10,
                 justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-                width: '100%',
+                alignItems: 'center',
+                // width: '100%',
+                flexDirection: 'row'
                 // position: 'absolute',
                 // left: props.position === 'left' ? '150%': null,
                 // zIndex: 10000
@@ -1203,11 +1204,16 @@ class Chat extends Component {
                 size={hp('3%')}
                 color={'white'}
                 style={{
-                  marginRight: props.position === 'left' ? 'auto' : 0,
+                  marginRight: 4,
                   marginLeft: 10,
                 }}
               />
-            </View>
+              {duration && (
+                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                  {duration}
+                </Text>
+              )}
+            {/* </View> */}
           </View>
         </TouchableOpacity>
       );
@@ -1300,7 +1306,7 @@ class Chat extends Component {
             optionTintColor="#000000"
           />
 
-          {/* <Actions
+          <Actions
             containerStyle={{
               // width: hp('100%'),
               height: hp('4%'),
@@ -1314,14 +1320,14 @@ class Chat extends Component {
             }}
             icon={() => (
               <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={{marginRight: 10}}
                   onPress={() => this.toggleVideoModal(true)}
                   // onPressIn={this.onStartRecord}
                   // onPressOut={this.onStopRecord}
                 >
                   <Entypo name="camera" size={hp('3%')} />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 {this.state.recording ? (
                   <TouchableOpacity
                     // onPress={this.takePicture}
@@ -1337,7 +1343,7 @@ class Chat extends Component {
                 )}
               </View>
             )}
-          /> */}
+          />
           {/* <Actions
           containerStyle={{
             width: hp('100%'),
@@ -1452,7 +1458,7 @@ class Chat extends Component {
           onSend={messageString => this.submitMessage(messageString, false)}
           user={{
             _id:
-              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN ,
             name: this.state.firstName + ' ' + this.state.lastName,
           }}
           onPressAvatar={props => this.onAvatarPress(props)}
@@ -1489,7 +1495,7 @@ const styles = StyleSheet.create({
   downloadContainer: {
     alignSelf: 'center',
     height: hp('5%'),
-    width: hp('5%'),
+    // width: hp('5%'),
     justifyContent: 'center',
     alignItems: 'center',
   },
