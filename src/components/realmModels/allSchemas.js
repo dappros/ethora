@@ -20,7 +20,9 @@ const MessageSchema = {
         image:'string?',
         isStoredFile:'bool?',
         mimetype:'string?',
-        size:'string?'
+        size:'string?',
+        duration:{type: 'string', optional: true}
+
     }
 }
 

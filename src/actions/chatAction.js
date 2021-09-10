@@ -104,6 +104,8 @@ export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateC
                 realImageURL: messageObject.realImageURL,
                 isStoredFile:messageObject.isStoredFile,
                 size:messageObject.size,
+                duration:messageObject.duration,
+
                 user_id:messageObject.user._id,
                 shouldUpdateChatScreen
             }

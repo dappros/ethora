@@ -157,13 +157,12 @@ class Chat extends Component {
       currentPositionSec: 0,
       currentDurationSec: 0,
       recording: false,
-      videoModalOpen: false
+      videoModalOpen: false,
     };
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
-    this.cameraRef = createRef()
+    this.cameraRef = createRef();
   }
-
 
   //fucntion to get chat archive of a room
 
@@ -249,6 +248,8 @@ class Chat extends Component {
           realImageURL: item.realImageURL,
           mimetype: item.mimetype,
           size: item.size,
+          duration: item.duration,
+
           user: {
             _id: item.user_id,
             name: item.name,
@@ -637,6 +638,7 @@ class Chat extends Component {
           });
           shownMessages.clear();
           if (chats.length > 0) {
+            // console.log(chatsLastObject.duration, 'asflksdu343902')
             const chatsLastObject = chats[chats.length - 1];
             tokenAmount = chatsLastObject.tokenAmount
               ? chatsLastObject.tokenAmount
@@ -656,6 +658,8 @@ class Chat extends Component {
               isStoredFile: chatsLastObject.isStoredFile,
               mimetype: chatsLastObject.mimetype,
               size: chatsLastObject.size,
+              duration: chatsLastObject.duration,
+
               user: {
                 _id: chatsLastObject.user_id,
                 name: chatsLastObject.name,
@@ -746,7 +750,7 @@ class Chat extends Component {
             },
           ];
         } else {
-          console.log(recentRealtimeChat.mimetype, 'asfdsklfjlksdjfkldsjf');
+          console.log(recentRealtimeChat.duration, 'asfdsklfjlksdjfkasdldsjf');
           messageObject = [
             {
               _id: recentRealtimeChat.message_id,
@@ -761,6 +765,8 @@ class Chat extends Component {
               isStoredFile: recentRealtimeChat.isStoredFile,
               mimetype: recentRealtimeChat.mimetype,
               size: recentRealtimeChat.size,
+              duration: recentRealtimeChat.duration,
+
               user: {
                 _id: recentRealtimeChat.user_id,
                 name: recentRealtimeChat.name,
@@ -902,7 +908,7 @@ class Chat extends Component {
 
   submitMediaMessage = props => {
     props.map(async item => {
-      console.log(item, 'media messsdfsdfage');
+      // console.log(item.duration, 'masdedia messsdfsdfage');
 
       const message = xml(
         'message',
@@ -937,6 +943,7 @@ class Chat extends Component {
           originalname: item.originalname,
           ownerKey: item.ownerKey,
           size: item.size,
+          duration: item?.duration,
           updatedAt: item.updatedAt,
           userId: item.userId,
         }),
@@ -965,7 +972,6 @@ class Chat extends Component {
       },
     );
   };
-  
 
   startDownload = props => {
     const {isStoredFile, mimetype, localURL} = props.currentMessage;
@@ -1035,12 +1041,11 @@ class Chat extends Component {
       unit: sizes[i],
     };
   }
-  
+
   videoRecord = async () => {
-    console.log('currentttt', this.cameraRef)
+    console.log('currentttt', this.cameraRef);
 
     if (this.cameraRef?.current) {
-      
       this.cameraRef.current.open({maxLength: 30}, data => {
         console.log('captured datafdsfsdf', data); // data.uri is the file path
       });
@@ -1060,16 +1065,15 @@ class Chat extends Component {
             justifyContent: 'center',
             alignItems: 'center',
             marginRight: 10,
-          }}>
-         
-        </TouchableOpacity>
+          }}></TouchableOpacity>
       </View>
     );
   };
   renderMessageImage = props => {
-    console.log(props.position, 'currentMessage...df.......');
-    const {image, realImageURL, mimetype, size} = props.currentMessage;
+    const {image, realImageURL, mimetype, size, duration} =
+      props.currentMessage;
     let formatedSize = {size: 0, unit: 'KB'};
+
     formatedSize = this.formatBytes(parseFloat(size), 2);
     if (mimetype === 'video/mp4' || mimetype === 'image/jpeg') {
       return (
@@ -1083,31 +1087,43 @@ class Chat extends Component {
             justifyContent: 'center',
             position: 'relative',
           }}>
-          {mimetype === 'video/mp4' && (
+          
             <View
               style={{
                 position: 'absolute',
                 top: 10,
-                height: 30,
+                // height: 30,
                 // width: 100,
                 left: 10,
                 backgroundColor: 'rgba(0,0,0,0.6)',
                 zIndex: 9999,
                 padding: 5,
                 borderRadius: 5,
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignItems: 'center',
               }}>
-              <Ionicons
-                name="arrow-down-outline"
-                size={hp('1.7%')}
-                color={'white'}
-              />
-              <Text style={{color: 'white', fontSize: hp('1.6%')}}>
-                {formatedSize.size + ' ' + formatedSize.unit}
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Ionicons
+                  name="arrow-down-outline"
+                  size={hp('1.7%')}
+                  color={'white'}
+                />
+                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                  {formatedSize.size + ' ' + formatedSize.unit}
+                </Text>
+              </View>
+
+              {duration && (
+                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                  {duration}
+                </Text>
+              )}
             </View>
-          )}
 
           <View style={styles.downloadContainer}>
             {/* <View style={styles.sizeContainer}>
@@ -1262,6 +1278,7 @@ class Chat extends Component {
                     },
                     async response => {
                       if (response?.results?.length) {
+                        console.log(response, 'w8329742347892374');
                         // alert(JSON.stringify(data));
                         this.submitMediaMessage(response.results);
                       }
@@ -1369,16 +1386,14 @@ class Chat extends Component {
     // }
   }
   onBackdropPress = () => {
-    this.setState({videoModalOpen: false})
-  }
-  toggleVideoModal = (value) => {
-    this.setState({videoModalOpen: value})
+    this.setState({videoModalOpen: false});
+  };
+  toggleVideoModal = value => {
+    this.setState({videoModalOpen: value});
     setTimeout(() => {
-      this.videoRecord()
-
-    },1000)
-
-  }
+      this.videoRecord();
+    }, 1000);
+  };
 
   shouldScrollTo(indexValue) {
     // console.log(this.giftedRef,"giftedprops");

@@ -990,6 +990,8 @@ class Routes extends Component {
           let imageLocationPreview = '';
           let mimetype = '';
           let size = '';
+          let duration = '';
+
 
           await singleMessageDetailArray.forEach(item => {
             if (item.name === 'body') {
@@ -1021,6 +1023,8 @@ class Routes extends Component {
               imageLocationPreview = item.attrs.locationPreview;
 
               mimetype = item.attrs.mimetype;
+              duration = item.attrs.duration;
+
 
               size = item.attrs.size;
             }
@@ -1047,6 +1051,7 @@ class Routes extends Component {
                 isStoredFile: false,
                 mimetype: mimetype,
                 size: size,
+                duration,
               };
             } else {
               messageObject = {
@@ -1281,6 +1286,7 @@ class Routes extends Component {
           let imageLocation = '';
           let imageLocationPreview = '';
           let mimetype = '';
+          let duration = '';
           let size = '';
           stanza.children.map(item => {
             if (item.name === 'body') {
@@ -1319,6 +1325,7 @@ class Routes extends Component {
               imageLocationPreview = item.attrs.locationPreview;
 
               mimetype = item.attrs.mimetype;
+              duration = item.attrs.duration;
 
               size = item.attrs.size;
             }
@@ -1326,10 +1333,7 @@ class Routes extends Component {
 
           if (isSystemMessage === 'false') {
             if (isMediafile) {
-              if(!mimetype) {
-                console.log(mimetype, stanza, 'mdsadklajlsdu8sdfsdfsd32ime')
-
-              }
+           
 
               messageObject = {
                 _id: _messageId,
@@ -1349,6 +1353,7 @@ class Routes extends Component {
                 localURL: '',
                 isStoredFile: false,
                 mimetype: mimetype,
+                duration,
                 size: size,
               };
             } else {
