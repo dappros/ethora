@@ -11,12 +11,12 @@ const APP_TOKEN = "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6
 
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
-const navbarLogoShow = true; //done
+const navbarLogoShow = false; //done
 
 // COLOUR THEME
 const commonColors = {
-    "primaryColor" : "#F0B310",
-    "primaryDarkColor" : "#C59002",
+    "primaryColor" : "rgba(78, 138, 194, 1)",
+    "primaryDarkColor" : "rgba(55, 116, 173, 1)",
     "secondaryColor" : "#133452"
 } //done
 

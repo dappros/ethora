@@ -77,6 +77,10 @@ const TransactionListComponent = props => {
     fullName = firstName + ' ' + lastName;
   }
 
+  if(props.item.nftFileUrl) {
+    // console.log(item, 'dsfsldfu')
+  }
+
   if (props.showHeader) {
     if (props.currentHeaderDate.getTime() === today.getTime()) {
       Header = (
@@ -153,9 +157,9 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftFileUrl !== 'null' ? (
+          {props.item.nftPreview !== 'null' ? (
             <Image
-              source={{uri: props.item.nftFileUrl}}
+              source={{uri: props.item.nftPreview}}
               style={styles.imagePreviewStyle}
             />
           ) : (

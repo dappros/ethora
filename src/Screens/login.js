@@ -371,7 +371,7 @@ class Login extends Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: secondaryColor,
+          backgroundColor: primaryColor,
           height: Platform.OS == 'ios' ? hp('14%') : hp('10%'),
         }}>
         <View style={[{justifyContent: 'center', flex: 1, margin: hp('1.2%')}]}>
@@ -389,7 +389,7 @@ class Login extends Component {
                       marginTop: hp('1.84%'),
                       fontSize: hp('3.44%'),
                     }}>
-                    {appTitle}
+                    {/* {appTitle} */}
                   </Text>
                 </View>
 
@@ -509,7 +509,7 @@ class Login extends Component {
                       fontFamily: lightFont,
                       fontSize: hp("0.98%")
                     }}>
-                    Version 21.02.10
+                    Version 21.09.29
                   </Text>
                   <Text
                     style={{

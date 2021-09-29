@@ -1507,7 +1507,7 @@ class Routes extends Component {
       console.log('isskipforever', this.state.isSkipForever);
       return (
         <Stack.Navigator>
-          {this.state.isSkipForever ? null : (
+          {this.state.isSkipForever   ? null : (
             <Stack.Screen
               options={{headerShown: false}}
               name="AppIntroComponent"

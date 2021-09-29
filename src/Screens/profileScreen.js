@@ -1058,7 +1058,7 @@ class ProfileScreen extends Component {
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <ScrollView
           nestedScrollEnabled={true}
-          style={{backgroundColor: primaryColor, flex: 1}}>
+          style={{backgroundColor: primaryDarkColor, flex: 1}}>
           <CustomHeader
             isQR={true}
             title="My profile"
@@ -1079,7 +1079,7 @@ class ProfileScreen extends Component {
                 position: 'absolute',
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: primaryDarkColor,
+                backgroundColor: primaryColor,
                 borderRadius: hp('10.46%') / 2,
               }}>
               {/* {this.state.userAvatar ? (
