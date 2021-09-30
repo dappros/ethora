@@ -38,7 +38,6 @@ import {
 } from '../components/realmModels/chatList';
 import {
   get_archive_by_room,
-  subscribe,
   fetchRosterlist as fetchStanzaRosterList,
   setSubscriptions,
   roomConfigurationForm,
@@ -46,10 +45,7 @@ import {
 import {xmpp} from '../helpers/xmppCentral';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Menu, {MenuItem} from 'react-native-material-menu';
-
-import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
-import {gkHubspotToken} from '../config/token';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors, textStyles} from '../../docs/config';
 import { underscoreManipulation } from '../helpers/underscoreLogic';

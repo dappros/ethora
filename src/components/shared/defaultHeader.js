@@ -275,44 +275,41 @@ class HeaderComponent extends Component {
               margin: 8,
               marginRight: wp('0%'),
             }}>
-            <TouchableOpacity
-              onPress={() =>
-                this.props.navigation.navigate('ChatHomeComponent')
-              }
-              style={{
-                flex: 0.1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: 5,
-                // marginLeft: wp('3%'),
-                marginRight: 18,
-              }}>
-              {navbarLogoShow ? (
-                <View
-                  style={{
-                    height: hp('7%'),
-                    width: hp('7%'),
-                    borderRadius: hp('7%') / 2,
-                    borderWidth: 1,
-                    borderColor: 'transparent',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  {navbarLogoShow ? (
-                    <Image
-                      style={{width: hp('7%'), height: hp('7%')}}
-                      source={logoPath}
-                    />
-                  ) : null}
-                </View>
-              ) : null}
-            </TouchableOpacity>
+            {navbarLogoShow?
+              <TouchableOpacity
+                onPress={() =>
+                  this.props.navigation.navigate('ChatHomeComponent')
+                }
+                style={{
+                  flex: 0.1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: 5,
+                  // marginLeft: wp('3%'),
+                  marginRight: 18,
+                }}>
+                  <View
+                    style={{
+                      height: hp('7%'),
+                      width: hp('7%'),
+                      borderRadius: hp('7%') / 2,
+                      borderWidth: 1,
+                      borderColor: 'transparent',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                      <Image
+                        style={{width: hp('7%'), height: hp('7%')}}
+                        source={logoPath}
+                      />
+                  </View>
+              </TouchableOpacity>:null
+            }
             <View
               style={{
-                flex: 0.6,
+                flex: navbarLogoShow? 0.6:0.7,
                 justifyContent: 'center',
                 alignItems: 'flex-start',
-                // marginLeft: wp('2.13%'),
               }}>
               <Text
                 style={{

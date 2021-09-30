@@ -6,6 +6,8 @@ const appTitle = "Ethora"; //done
 // App logo (displayed in login screen) image path: 
 import logoPath from "../src/assets/logo.png"; //done
 
+import loginScreenBackgroundImage from "../src/assets/login_background.png"
+
 //Application token
 const APP_TOKEN = "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxMTBlOTdiMWFjZWQ1MGE0ZGU3MDA0OSIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTEwZTk2MDFhY2VkNTBhNGRlNzAwMDMiLCJjcmVhdGVkQXQiOiIyMDIxLTA4LTA5VDA4OjM4OjE5Ljk2OFoiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IllqUzUvUmthMkNvcitFSStUNlRQUnV3ekZjNk8zZHZYaC8rRFBobHhITExKejlVaDZOSm1WcVNJQkRSYnBXSExuUEpoQzJLUDc0Y2NHZ21hKzFYUGJwcjFpNDV1RlhaeDNNMTdjZDRJTWtqS00yOS9yTERvN3IrYzdJRlpyckt0S3dsWUtwb3Nabi8yQmFEZjdISWRoWXUwdzVHaGp0VUlGcXdJKy94NFZrTyttRUtUIn0sImlhdCI6MTYyODQ5ODMwNX0.TzHlVy2bv-_gnrP9U7NyoYdNYvIBfVR9nUfH-RFg9e8"; //done
 
@@ -107,5 +109,6 @@ export{
     itemsMintingFee,
     appWalletName,
     APP_TOKEN,
-    coinsMainName
+    coinsMainName,
+    loginScreenBackgroundImage
 }

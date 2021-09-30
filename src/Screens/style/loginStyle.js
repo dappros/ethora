@@ -10,7 +10,7 @@ containerView: {
 loginScreenContainer: {
     flex: 1,
     // margin: 10,
-    // justifyContent:'center'
+    justifyContent:'center',
 },
 logoText: {
     fontSize: 40,
@@ -21,7 +21,7 @@ logoText: {
 },
 loginFormView: {
     flex: 1,
-    // justifyContent:'center',
+    justifyContent:'center',
     marginTop:15,
     alignItems: 'center',
 },

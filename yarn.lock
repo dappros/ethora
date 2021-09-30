@@ -7269,10 +7269,10 @@ react-native-communications@^2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha1-eIO1ayCgAu63kMET+GFuqGksp5U=
 
-react-native-document-picker@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-6.0.2.tgz#ac9ce155978e8f9d3bd596557e74dafa857b8fc0"
-  integrity sha512-KK8ZljMT4a0zDi+WcLSDhmGS/j8F8loQErISSnRdWau47+CFwume0xePfgjKZWnRjQKe6Z486d3NiIAecQjgfA==
+react-native-document-picker@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-6.0.4.tgz#21cbe2b3e8a1aff4aafcb81e06f09494b45e62f8"
+  integrity sha512-qFKf76M1VyiVqZscqND8wDcALfHG0BI77mJ4CzEdANqLiJUbwie7XOKtQlw5oRSAjLPgg9NjXnjbOFY3OmkIXQ==
   dependencies:
     invariant "^2.2.4"
 
@@ -7300,10 +7300,10 @@ react-native-fast-image@^8.3.4:
   resolved "https://registry.yarnpkg.com/react-native-fast-image/-/react-native-fast-image-8.3.7.tgz#c4877de17903101f6d94b6736a4f7e5d7b019224"
   integrity sha512-J++Ad04PTUe4YgjyGv63gfgV8Fz1gZKAgQHpblf8Z87D9dxfc8UfXHTPv9VLGdTJU4IzdTnQqzoFgDtWdsvBsQ==
 
-react-native-fbsdk-next@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-4.3.0.tgz#750952a9c2159a7eed830846a3814ab8ce03ba0c"
-  integrity sha512-wJUSgM6hq/gImnp/HflTI5750GNADtxCEEhDD6lXJDPuNfAPfAXi54XcAVa5nbijJMCBr+z3wFZ/gF8PrqdxTQ==
+react-native-fbsdk-next@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-fbsdk-next/-/react-native-fbsdk-next-4.4.0.tgz#79d30dca62efb5c6ed4d5466f4292fb12db525d0"
+  integrity sha512-NlxOhe7Bl2uQ9HoPu7L3BiE/z2+ZOXy84Zgul+MNvaQlAKIhzFm4B2CdP5bA9IvxPAi0ylwo/bp7OZeI7kTGhg==
 
 react-native-fs@^2.18.0:
   version "2.18.0"

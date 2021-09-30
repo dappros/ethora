@@ -73,7 +73,7 @@ import {realm} from './components/realmModels/allSchemas';
 import * as schemaTypes from './constants/realmConstants';
 import * as types from './constants/types';
 import store from './config/store';
-import {commonColors, logoPath} from '../docs/config';
+import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
 const {secondaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
@@ -192,7 +192,7 @@ function loginComponent() {
       <Stack.Screen
         options={{
           header: () => (
-            <View style={{backgroundColor: secondaryColor}}>
+            <View style={{backgroundColor: "transparent"}}>
               <SafeAreaView />
             </View>
           ),
@@ -1507,7 +1507,7 @@ class Routes extends Component {
       console.log('isskipforever', this.state.isSkipForever);
       return (
         <Stack.Navigator>
-          {this.state.isSkipForever   ? null : (
+          {this.state.isSkipForever || !tutorialStartUponLogin  ? null : (
             <Stack.Screen
               options={{headerShown: false}}
               name="AppIntroComponent"
