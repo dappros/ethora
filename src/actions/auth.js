@@ -147,7 +147,6 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     "loginType": loginType,
     "authToken": authToken,
   };
-  console.log(bodyData,"bodydata")
   return dispatch => {
     console.log("in dispatch");
     dispatch(fetchingCommonRequest());

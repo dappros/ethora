@@ -104,7 +104,7 @@ class HeaderComponent extends Component {
 
     if (pushToken) {
       this.props.pushSubscription({
-        appId: 'GKConnect',
+        appId: 'Ethora',
         deviceId: pushToken,
         deviceType: Platform.OS === 'ios' ? '0' : '1',
         environment: 'Production',

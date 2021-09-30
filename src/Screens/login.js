@@ -221,11 +221,11 @@ class Login extends Component {
     // Configure the request
     appleAuthAndroid.configure({
       // The Service ID you registered with Apple
-      clientId: 'com.gkconnect.service',
+      clientId: 'com.ethora.service',
 
       // Return URL added to your Apple dev console. We intercept this redirect, but it must still match
       // the URL you provided to Apple. It can be an empty route on your backend as it's never called.
-      redirectUri: 'https://gkconnect-e9706.firebaseapp.com/__/auth/handler',
+      redirectUri: 'https://ethora-668e9.firebaseapp.com/__/auth/handler',
 
       // The type of response requested - code, id_token, or both.
       responseType: appleAuthAndroid.ResponseType.ALL,
@@ -518,7 +518,7 @@ class Login extends Component {
                         fontFamily: lightFont,
                         fontSize: hp("0.98%")
                       }}>
-                      Version 21.09.29
+                      Version 21.10
                     </Text>
                     <Text
                       style={{
