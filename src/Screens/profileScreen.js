@@ -1082,7 +1082,7 @@ class ProfileScreen extends Component {
                 backgroundColor: primaryColor,
                 borderRadius: hp('10.46%') / 2,
               }}>
-              {/* {this.state.userAvatar ? (
+              {this.state.userAvatar ? (
                 <Image
                   source={{uri: this.state.userAvatar}}
                   style={{
@@ -1091,7 +1091,7 @@ class ProfileScreen extends Component {
                     borderRadius: hp('10.46%') / 2,
                   }}
                 />
-              ) : ( */}
+              ) : (
                 <Text
                   style={{
                     fontSize: 40,
@@ -1100,7 +1100,7 @@ class ProfileScreen extends Component {
                   }}>
                   {firstName[0] + lastName[0]}
                 </Text>
-              {/* )} */}
+              )}
             </View>
           </View>
           {/* Profile Picture */}

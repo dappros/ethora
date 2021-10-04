@@ -7,10 +7,13 @@ import {
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import Share from 'react-native-share';
-import RNFS from "react-native-fs"
+import RNFS from "react-native-fs";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {logoPath} from '../../docs/config';
 import {commonColors, textStyles} from '../../docs/config';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-simple-toast';
+import { CONFERENCEDOMAIN } from '../constants/xmppConstants';
+import { unv_url } from '../../docs/config';
 
 const {primaryColor} = commonColors;
 const {mediumFont} = textStyles;
@@ -55,6 +58,13 @@ class App extends Component {
     })
   }
 
+  copyToClipboard = async() => {
+    const roomName = this.props.value.replace(CONFERENCEDOMAIN,'')
+    const chatLink = `${unv_url}${roomName}`
+    Clipboard.setString(chatLink);
+    Toast.show('Link Copied');
+  };
+
   render() {
     return (
       <View 
@@ -72,7 +82,7 @@ class App extends Component {
           //Background Color of the QR Code (Optional)
           backgroundColor="white"
           //Logo of in the center of QR Code (Optional)
-          logo={logoPath}
+          // logo={logoPath}
           //Center Logo size  (Optional)
           logoSize={30}
           //Center Logo margin (Optional)
@@ -81,25 +91,18 @@ class App extends Component {
           //Center Logo background (Optional)
           logoBackgroundColor="white"
         />
-        {/* <TextInput
-          // Input to get the value to set on QRCode
-          style={styles.TextInputStyle}
-          onChangeText={text => this.setState({ inputValue: text })}
-          underlineColorAndroid="transparent"
-          placeholder="Enter text to Generate QR Code"
-        />
-        <TouchableOpacity
-          onPress={this.getTextInputValue}
-          activeOpacity={0.7}
-          style={styles.button}>
-          <Text style={styles.TextStyle}> Generate QR Code </Text>
-        </TouchableOpacity>*/}
         <TouchableOpacity
           onPress={this.shareQR}
           activeOpacity={0.7}
           style={styles.button}>
           <Text style={styles.TextStyle}> Share </Text>
-        </TouchableOpacity> 
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={this.copyToClipboard}
+          activeOpacity={0.7}
+          style={styles.button}>
+          <Text style={styles.TextStyle}> Copy Link </Text>
+        </TouchableOpacity>
       </View>
     );
   }

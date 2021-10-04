@@ -22,9 +22,6 @@ import {fetchWalletBalance, transferTokens} from '../../actions/wallet';
 import {connect} from 'react-redux';
 import QRGenerator from '../../Screens/qrCodeGenerator';
 import {ActivityIndicator} from 'react-native';
-// import ImageViewer from 'react-native-image-zoom-viewer';
-import downloadFile from '../../helpers/downloadFileLogic';
-import {Swipeable} from 'react-native-gesture-handler';
 import {TouchableWithoutFeedback} from 'react-native';
 import PrivacyPolicy from './PrivacyPolicy';
 import * as xmppConstants from '../../constants/xmppConstants';
@@ -37,7 +34,6 @@ import {
   fetchRosterlist,
   roomConfigurationForm,
   get_archive_by_room,
-  setSubscriptions,
 } from '../../helpers/xmppStanzaRequestMessages';
 import {sha256} from 'react-native-sha256';
 const {xml} = require('@xmpp/client');
@@ -54,7 +50,7 @@ const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, semiBoldFont} = textStyles;
 const QRCodeComponent = props => {
   return (
-    <View style={{justifyContent: 'center'}}>
+    <View >
       <QRGenerator close={() => props.closeModal()} value={props.chat_key} />
     </View>
   );
@@ -1016,10 +1012,12 @@ class CommonModal extends Component {
                 onPress={() => this.closeModal()}>
                 <MaterialIcons name="close" size={hp('3.5%')} />
               </TouchableOpacity>
-              <QRCodeComponent
-                closeModal={() => this.closeModal()}
-                chat_key={extraData}
-              />
+              <View style={{flex:1}}>
+                <QRCodeComponent
+                  closeModal={() => this.closeModal()}
+                  chat_key={extraData}
+                />
+              </View>
             </View>
           </View>
         </Modal>

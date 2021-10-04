@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, Alert } fro
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import styles from './style/createNewChatStyle';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import CustomHeader from '../components/shared/customHeader';
 import {roomCreated} from '../actions/chatAction';
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import * as xmppConstants from '../constants/xmppConstants';
 import { sha256 } from 'react-native-sha256';
 import {roomConfigurationForm, fetchRosterlist} from '../helpers/xmppStanzaRequestMessages';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors} from '../../docs/config';
 
 const {primaryColor} = commonColors;
@@ -19,31 +20,6 @@ const {primaryColor} = commonColors;
 const { xml } = require("@xmpp/client");
 
 const subscriptionsStanzaID = 'subscriptions';
-
-const checkDefaultRoom = [
-  // {exist:false, name:"3981a2b9c1ef7fce8dbf5e3d44fefc58746dee11b3de35655e166c25142612ba"}, //Communication
-  // {exist:false, name:"680c3097aabc902bb129eaa23a974408856fbdccb7630cfd074ddf0639fc8ec0"}, //Workplace Readiness
-  {
-    exist: false,
-    name:
-      '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
-  }, //GK Leadership
-  // {exist:false, name:"91bfaa5cbfaab8a5661c0c5e15e54196d4ed4f76bb86b6cef07d337ff5c7fd41"}, //Career Development
-  {
-    exist: false,
-    name:
-      'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
-  }, //Global
-  {
-    exist: false,
-    name:
-      'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
-  }, //Southern Africa
-  // {exist:false, name:"c67531e3ec3d5090acc25d6768140ad37789000fb4c5e254af6be5538c49ee56"}, //Life Skills
-  // {exist:false, name:"cf5f45da57a2ca0e4a581d40099751bcb4919fbb984b547e1d9d12c8ca710412"}, //Personal Finance
-  // {exist:false, name:"d677190e0a9990e7d5fa9e4c1bbde44271fb8959c4acb6d43e02ed991128b4bf"}, //Service
-  // {exist:false, name:"ec75f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865"}, //Leadership
-];
 
 const options = {
   title: 'Select Avatar',
@@ -82,6 +58,7 @@ class CreateNewGroup extends Component {
   }
 
   createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation){
+
     let message = xml('presence', 
     {
       id:"CreateRoom",
@@ -139,7 +116,7 @@ class CreateNewGroup extends Component {
       if(chatName===""){
         alert('Please fill Chat Name');
       }else{
-        this.createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation)
+          this.createAndSubscribeRoom(manipulatedWalletAddress, roomHash, chatName, roomCreated, navigation)
       }
     });
     
@@ -148,7 +125,7 @@ class CreateNewGroup extends Component {
 
   //function to set avatar for chat
   setChatAvatar=()=>{
-    ImagePicker.showImagePicker(options, (response) => {
+    launchImageLibrary(options, (response) => {
         console.log('Response = ', response);
       
         if (response.didCancel) {
@@ -162,7 +139,7 @@ class CreateNewGroup extends Component {
       
           // You can also display the image using data:
           // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-      
+
           this.setState({
             avatarSource: source,
           });
@@ -181,7 +158,7 @@ class CreateNewGroup extends Component {
             <View style={styles.section1}>
                 <TouchableOpacity onPress={this.setChatAvatar} style={{alignItems:'flex-start', flex:0.2}}>
                     <View style={styles.camOuter}>
-                        {this.state.avatarSource!==null?
+                        {this.state.avatarSource?
                         <Image source={this.state.avatarSource} style={{width:wp('15%'),height:wp('15%'),borderRadius:wp('15%')/2,}}/>:
                         <SimpleLineIcons name='camera' size={hp('3.5%')} color={primaryColor} />
                         }

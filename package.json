@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "clean-cache": "react-native start --reset-cache",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
@@ -14,6 +15,7 @@
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.1.2",
     "@react-native-async-storage/async-storage": "^1.15.5",
+    "@react-native-clipboard/clipboard": "^1.8.4",
     "@react-native-community/audio-toolkit": "^2.0.3",
     "@react-native-community/checkbox": "^0.5.8",
     "@react-native-community/masked-view": "^0.1.11",
@@ -48,7 +50,7 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-get-random-values": "^1.7.0",
     "react-native-gifted-chat": "^0.16.3",
-    "react-native-image-picker": "^4.0.4",
+    "react-native-image-picker": "^3.7.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-material-menu": "^1.2.0",
     "react-native-modal": "^12.0.2",

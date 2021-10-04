@@ -31,6 +31,7 @@ import {
   setRecentRealtimeChatAction,
   tokenAmountUpdateAction,
   updateMessageComposingState,
+  setCurrentChatDetails
 } from '../actions/chatAction';
 import {queryRoomAllMessages} from '../components/realmModels/messages';
 import {
@@ -72,7 +73,8 @@ import {updateMessageObject} from '../components/realmModels/messages';
 import {commonColors, textStyles} from '../../docs/config';
 import {RNCamera} from 'react-native-camera';
 import VideoRecorder from 'react-native-beautiful-video-recorder';
-
+import parseChatLink from '../helpers/parseChatLink';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
 import Modal from 'react-native-modal';
 
 import AudioRecorderPlayer, {
@@ -878,7 +880,7 @@ class Chat extends Component {
     return (
       <View
         style={{
-          height: hp('5%'),
+          height: hp('5.5%'),
           width: wp('100%'),
           backgroundColor: 'transparent',
           flexDirection: 'row',
@@ -898,7 +900,7 @@ class Chat extends Component {
         <View style={styles.progressContainer}>
           {this.state.progressVal ? (
             <Text style={styles.progressNumberText}>
-              Uploading: {this.state.progressVal}
+              Uploading: {this.state.progressVal}%
             </Text>
           ) : null}
         </View>
@@ -1413,6 +1415,12 @@ class Chat extends Component {
     }
   }
 
+  handleChatLinks=(chatLink)=>{
+    const walletAddress = this.props.loginReducer.initialData.walletAddress;
+    const chatJID = parseChatLink(chatLink);
+    openChatFromChatLink(chatJID, walletAddress, this.props.setCurrentChatDetails, this.props.navigation);
+  }
+
   render() {
     return (
       <View style={{flex: 1}}>
@@ -1467,6 +1475,19 @@ class Chat extends Component {
           onLongPress={(e, m) => this.onLongPressMessage(e, m)}
           onLongPressAvatar={e => this.onLongPressAvatar(e)}
           renderMessageImage={this.renderMessageImage}
+          parsePatterns={(linkStyle) => [
+            {
+              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              style:linkStyle,
+              onPress: this.handleChatLinks
+            },
+            {
+              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              style:linkStyle,
+              onPress: this.handleChatLinks
+            },
+
+          ]}
         />
         <ModalList
           type={this.state.modalType}
@@ -1560,4 +1581,5 @@ module.exports = connect(mapStateToProps, {
   fetchTransaction,
   setOtherUserDetails,
   setIsPreviousUser,
+  setCurrentChatDetails
 })(Chat);

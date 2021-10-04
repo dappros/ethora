@@ -6,9 +6,8 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
-  RefreshControl,
+  Linking,
   Alert,
-  PermissionsAndroid
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -49,12 +48,8 @@ import fetchFunction from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors, textStyles} from '../../docs/config';
 import { underscoreManipulation } from '../helpers/underscoreLogic';
-import * as xmppConstants from '../constants/xmppConstants'
-
-
- import RNFetchBlob from 'rn-fetch-blob';
-
-const hitAPI = new fetchFunction();
+import * as xmppConstants from '../constants/xmppConstants';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 const _ = require('lodash');
 const subscriptionsStanzaID = 'subscriptions';
@@ -77,6 +72,7 @@ const RenderDragItem = ({
   roomRoles,
   movingActive,
 }) => {
+  console.log(roomRoles, item, 'activeee');
   return (
     <TouchableOpacity
       onPress={() => openChat(item.jid, item.name)}
@@ -218,10 +214,12 @@ const RenderDragItem = ({
                 </Text>
                 <Text
                   numberOfLines={1}
+                  
                   style={{
                     fontFamily: thinFont,
                     fontSize: hp('1.8%'),
                     color: '#4C5264',
+                    width: wp('30%')
                   }}>
                   {item.lastUserText}
                 </Text>
@@ -404,6 +402,32 @@ class ChatHome extends Component {
   async componentDidMount() {
     const {token} = this.props.loginReducer;
     this.props.getEmailList(token);
+
+    Linking.getInitialURL().then(url => {
+      if(url){
+        const chatJID = parseChatLink(url);
+        setTimeout(()=>{
+          openChatFromChatLink(
+            chatJID,
+            this.props.loginReducer.initialData.walletAddress,
+            this.props.setCurrentChatDetails,
+            this.props.navigation
+          );
+        }, 2000)
+      }
+    });
+
+    Linking.addEventListener('url', data=> {
+      if(data.url){
+        const chatJID = parseChatLink(data.url);
+        openChatFromChatLink(
+          chatJID,
+          this.props.loginReducer.initialData.walletAddress,
+          this.props.setCurrentChatDetails,
+          this.props.navigation
+        );
+      }
+    });
 
     fetchRosterList().then((rosterListFromRealm) => {
       let loading = false;

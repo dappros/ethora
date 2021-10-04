@@ -15,10 +15,14 @@ const APP_TOKEN = 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
 const navbarLogoShow = false; //done
 
+//universal link url
+const unv_url = "https://www.eto.li/go?c=";
+const unv_url1 = "https://www.eto.li/go/?c=";
+
 // COLOUR THEME
 const commonColors = {
-    "primaryColor" : "rgba(78, 138, 194, 1)",
-    "primaryDarkColor" : "rgba(55, 116, 173, 1)",
+    "primaryColor" : "#4E8AC2",
+    "primaryDarkColor" : "#3774AD",
     "secondaryColor" : "#133452"
 } //done
 
@@ -110,5 +114,7 @@ export{
     appWalletName,
     APP_TOKEN,
     coinsMainName,
-    loginScreenBackgroundImage
+    loginScreenBackgroundImage,
+    unv_url,
+    unv_url1
 }

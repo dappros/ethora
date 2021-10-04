@@ -285,7 +285,7 @@ class HeaderComponent extends Component {
                   justifyContent: 'center',
                   alignItems: 'center',
                   margin: 5,
-                  // marginLeft: wp('3%'),
+                  marginLeft: wp('3%'),
                   marginRight: 18,
                 }}>
                   <View
@@ -429,6 +429,7 @@ const styles = StyleSheet.create({
     shadowColor: '#00000040',
     shadowOffset: {width: 5, height: 5},
     shadowOpacity: 1,
+    marginLeft:navbarLogoShow?0:hp("1.2%")
   },
   menuTextStyle: {
     color: '#000000',
