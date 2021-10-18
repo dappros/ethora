@@ -66,7 +66,12 @@ export const setRosterAction = (rosterData) => {
             dispatch(setRoster(rosterData))
         }
     }
+    
 }
+export const setRoomRoles = (data) => ({
+    type: types.SET_ROOM_ROLES,
+    payload:data
+})
 
 export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateChatScreen,tokenAmount,receiverMessageId) => {
     return dispatch => {
@@ -93,10 +98,14 @@ export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateC
                 room_name:roomName,
                 text:messageObject.text,
                 system:false,
+                mimetype: messageObject.mimetype,
+
                 image:messageObject.image,
                 realImageURL: messageObject.realImageURL,
                 isStoredFile:messageObject.isStoredFile,
                 size:messageObject.size,
+                duration:messageObject.duration,
+
                 user_id:messageObject.user._id,
                 shouldUpdateChatScreen
             }

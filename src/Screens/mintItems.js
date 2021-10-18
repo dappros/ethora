@@ -136,9 +136,9 @@ function MintItems(props) {
         console.log(res, 'formsasss');
         const data = new FormData();
         data.append('files', {
-          name: res.name,
-          type: res.type,
-          uri: res.uri,
+          name: res[0].name,
+          type: res[0].type,
+          uri: res[0].uri,
         });
         sendFiles(data);
       } catch (err) {

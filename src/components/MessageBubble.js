@@ -302,6 +302,7 @@ startAnimation=()=>{
                   style={{
                     flexDirection: position === 'left' ? 'row-reverse' : 'row',
                     alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
                   {this.renderTime()}
                   {this.renderTicks()}
@@ -311,7 +312,9 @@ startAnimation=()=>{
                 style={{
                   position: 'absolute',
                   bottom: 0,
-                  right: position === 'left' ? 0 : '80%',
+                  right: position === 'left'? 0 : null,
+                  left: position === 'right' ? 0 : null
+
                   // [position]: 0
                 }}>
                 {this.renderTokenCount()}
@@ -354,7 +357,7 @@ const styles = {
       },
       tokenTextStyle:{
         color:Color.white,
-        fontSize: 10,
+        fontSize:  10,
         fontWeight:"bold",
         backgroundColor: 'transparent',
         textAlign: 'right',

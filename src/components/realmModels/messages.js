@@ -35,6 +35,7 @@ export const insertMessages = (data,room_name,tokenAmount,receiverMessageId) => 
             size: data.size,
             isStoredFile:data.isStoredFile,
             room_name,
+            duration: data.duration,
             tokenAmount
         }
     }

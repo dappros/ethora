@@ -9,6 +9,7 @@ function checkTransactionExist(transactionHash,callback){
 }
 
 export const insertTransaction = (data) => new Promise((resolve,reject)=>{
+    console.log(data, 'dsflkjs8')
     data.map(item=>{
         if (!item.nftTotal) item.nftTotal = '0';
         const data={
@@ -25,11 +26,11 @@ export const insertTransaction = (data) => new Promise((resolve,reject)=>{
             transactionHash:item.transactionHash?item.transactionHash:'N/A',
             type:item.type?item.type:'N/A',
             value:item.value?item.value:'N/A',
-            nftTotal: item.nftTotal,
+            nftTotal: item.nftTotal || 0,
             receiverBalance: item.receiverBalance,
             senderBalance: item.senderBalance,
             nftPreview: item.nftPreview ? item.nftPreview : 'null',
-            nftFileUrl: item.nftFileUrl ? item.nftFileUrl : 'null',
+            nftFileUrl: item.nftFileUrl || 'null',
 
         }
         checkTransactionExist(item.transactionHash,callback=>{

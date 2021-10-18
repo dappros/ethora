@@ -134,13 +134,14 @@ export default class ConnectionAPI {
   }
 
   async fetchPost(url, data, token, logOut, callback) {
-    
+    console.log(url, JSON.stringify(data), token, "Asdasdasdasd");
     const configAxios = {
       method: 'post',
       url: url,
       headers: {
+        'Accept-Encoding': 'gzip, deflate, br',
         'Content-Type': 'application/json',
-        Authorization: token,
+        'Authorization': token,
       },
       data: JSON.stringify(data),
     };
@@ -154,7 +155,7 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              console.log(error)
+              console.log(error.response,"Asdasdas")
               callback(error.response.data);
 
               let title = "";

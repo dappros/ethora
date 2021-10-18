@@ -13,7 +13,7 @@ export const transactionURL = urlDefault+"explorer/transactions?";
 
 export const registerUserURL = urlDefault+"users"
 
-export const checkPushSubscribe = urlDefaultPort7777+"subscriptions/deviceId/"
+export const checkPushSubscribe = 'https://dev.dxmpp.com/'+"subscriptions/deviceId/"
 
 export const subscribePushNotification = urlDefaultPort7777+"subscriptions"
 

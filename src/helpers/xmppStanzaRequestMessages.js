@@ -275,3 +275,38 @@ export const retrieveOtherUserVcard = (username, userJID) => {
 
     xmpp.send(message)
 }
+
+
+export const subscribeAndOpenChat = (manipulatedWalletAddress, chatJID) => {
+    const subscribe = xml(
+        'iq',
+        {
+            from: manipulatedWalletAddress + "@" + xmppConstants.DOMAIN,
+            to: chatJID,
+            type: 'set',
+            id: 'subscription'
+        },
+        xml(
+            'subscribe',
+            {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: manipulatedWalletAddress
+            },
+            xml(
+                'event',
+                {
+                    node: 'urn:xmpp:mucsub:nodes:messages'
+                }
+            ),
+            xml(
+                'event',
+                {
+                    node: 'urn:xmpp:mucsub:nodes:subject'
+                }
+            )
+        )
+    );
+
+    xmpp.send(subscribe);
+    get_archive_by_room(chatJID);
+}

@@ -210,7 +210,6 @@ const TransactionListFunction = props => {
     if (props.route === 'all') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -236,13 +235,11 @@ const TransactionListFunction = props => {
                 walletAddress,
               });
             })}
-          </ScrollView>
         </View>
       );
     } else if (props.route === 'sent') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -271,14 +268,12 @@ const TransactionListFunction = props => {
                 })
               );
             })}
-          </ScrollView>
         </View>
       );
     }
     if (props.route === 'received') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -307,7 +302,6 @@ const TransactionListFunction = props => {
                 })
               );
             })}
-          </ScrollView>
         </View>
       );
     } else return null;

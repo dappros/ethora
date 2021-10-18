@@ -6,12 +6,16 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
-  RefreshControl,
+  Linking,
   Alert,
 } from 'react-native';
 import {connect} from 'react-redux';
+import Modal from 'react-native-modal';
+
 import {Card} from 'react-native-elements';
 import styles from './style/chatHomeStyle';
+import {CommonTextInput} from '../components/shared/customTextInputs';
+
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -31,20 +35,27 @@ import {
   updateChatRoom,
   getChatRoom,
 } from '../components/realmModels/chatList';
+import {
+  get_archive_by_room,
+  fetchRosterlist as fetchStanzaRosterList,
+  setSubscriptions,
+  roomConfigurationForm,
+} from '../helpers/xmppStanzaRequestMessages';
 import {xmpp} from '../helpers/xmppCentral';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import {get_archive_by_room} from '../helpers/xmppStanzaRequestMessages';
-import * as connectionURL from '../config/url';
+import Menu, {MenuItem} from 'react-native-material-menu';
 import fetchFunction from '../config/api';
-import {gkHubspotToken} from '../config/token';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors, textStyles} from '../../docs/config';
-
-const hitAPI = new fetchFunction();
+import { underscoreManipulation } from '../helpers/underscoreLogic';
+import * as xmppConstants from '../constants/xmppConstants';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 const _ = require('lodash');
+const subscriptionsStanzaID = 'subscriptions';
 
 const {primaryColor, primaryDarkColor} = commonColors;
+const {thinFont, regularFont, mediumFont, semiBoldFont, lightFont} = textStyles;
 
 const RenderDragItem = ({
   item,
@@ -58,9 +69,10 @@ const RenderDragItem = ({
   walletAddress,
   setMenuRef,
   onMenuHide,
+  roomRoles,
   movingActive,
 }) => {
-  // console.log(isActive, item, 'activeee');
+  console.log(roomRoles, item, 'activeee');
   return (
     <TouchableOpacity
       onPress={() => openChat(item.jid, item.name)}
@@ -202,10 +214,12 @@ const RenderDragItem = ({
                 </Text>
                 <Text
                   numberOfLines={1}
+                  
                   style={{
                     fontFamily: thinFont,
                     fontSize: hp('1.8%'),
                     color: '#4C5264',
+                    width: wp('30%')
                   }}>
                   {item.lastUserText}
                 </Text>
@@ -281,6 +295,56 @@ const RenderDragItem = ({
                   {item.participants}
                 </Text>
               </View>
+              <Menu
+                onHidden={onMenuHide}
+                ref={ref => setMenuRef(ref, index)}
+                button={
+                  <View>
+                    {/* <Icon name="ellipsis-v" color="#FFFFFF" size={hp('3%')} /> */}
+                  </View>
+                }>
+                {/* <MenuItem
+                  textStyle={{
+                    color: '#000000',
+                    fontFamily: mediumFont,
+                    fontSize: hp('1.6%'),
+                  }}
+                  onPress={() => onMenuItemPress(index, item.jid, 'mute')}>
+                  {item.muted ? 'Unmute' : 'Mute'}
+                </MenuItem> */}
+                {/* <MenuItem
+                  textStyle={{
+                    color: '#000000',
+                    fontFamily: mediumFont,
+                    fontSize: hp('1.6%'),
+                  }}
+                  onPress={() => onMenuItemPress(index, item.jid, 'leave')}
+                  // onPress={() => openKebabItem('profile')}
+                >
+                  Leave
+                </MenuItem> */}
+
+                <MenuItem
+                  textStyle={{
+                    color: '#000000',
+                    fontFamily: mediumFont,
+                    fontSize: hp('1.6%'),
+                  }}
+                  onPress={() => onMenuItemPress(index, item.jid, 'move')}>
+                  Move
+                </MenuItem>
+                { roomRoles[item.jid] !== 'participant' && (
+                  <MenuItem
+                    textStyle={{
+                      color: '#000000',
+                      fontFamily: mediumFont,
+                      fontSize: hp('1.6%'),
+                    }}
+                    onPress={() => onMenuItemPress(index, item.jid, 'rename')}>
+                    Rename
+                  </MenuItem>
+                    )}
+              </Menu>
             </View>
           </View>
         </View>
@@ -289,7 +353,6 @@ const RenderDragItem = ({
   );
 };
 
-const {thinFont, regularFont, mediumFont, semiBoldFont} = textStyles;
 class ChatHome extends Component {
   constructor(props) {
     super(props);
@@ -310,7 +373,8 @@ class ChatHome extends Component {
       lastUserText: '',
       pushChatName: '',
       pushChatJID: '',
-      movingActive: true,
+      movingActive: false,
+      modalVisible: false,
     };
   }
 
@@ -318,11 +382,16 @@ class ChatHome extends Component {
     this._menu = ref;
   };
 
+  onMenuHide = () => {
+    this.setState({activeMenuIndex: null});
+  };
+
   hideMenu = () => {
     this._menu.hide();
   };
 
   showMenu = (item) => {
+    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf')
     this.setState({
       chat_name: item.chat_name,
       chat_jid: item.chat_jid,
@@ -333,6 +402,32 @@ class ChatHome extends Component {
   async componentDidMount() {
     const {token} = this.props.loginReducer;
     this.props.getEmailList(token);
+
+    Linking.getInitialURL().then(url => {
+      if(url){
+        const chatJID = parseChatLink(url);
+        setTimeout(()=>{
+          openChatFromChatLink(
+            chatJID,
+            this.props.loginReducer.initialData.walletAddress,
+            this.props.setCurrentChatDetails,
+            this.props.navigation
+          );
+        }, 2000)
+      }
+    });
+
+    Linking.addEventListener('url', data=> {
+      if(data.url){
+        const chatJID = parseChatLink(data.url);
+        openChatFromChatLink(
+          chatJID,
+          this.props.loginReducer.initialData.walletAddress,
+          this.props.setCurrentChatDetails,
+          this.props.navigation
+        );
+      }
+    });
 
     fetchRosterList().then((rosterListFromRealm) => {
       let loading = false;
@@ -514,6 +609,149 @@ class ChatHome extends Component {
       }
     }
   }
+  onMenuItemPress = (index, jid, type) => {
+    const initialData = this.props.loginReducer.initialData;
+    let walletAddress = initialData.walletAddress;
+    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+
+    if (type === 'mute') {
+      this.unsubscribeFromRoom(jid);
+      this.hideMenu(index);
+    }
+
+    if (type === 'leave') {
+      this.leaveTheRoom(jid);
+      this.hideMenu(index);
+    }
+    if (type === 'rename') {
+      this.setState({modalVisible: true, pickedChatJid: jid});
+      this.hideMenu(index);
+    }
+    if (type === 'move') {
+      this.setState({movingActive: true});
+      this.hideMenu(index);
+    }
+    // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+  };
+  leaveTheRoom = jid => {
+    // <presence
+    // from='hag66@shakespeare.lit/pda'
+    // to='coven@chat.shakespeare.lit/thirdwitch'
+    // type='unavailable'/>
+
+    let walletAddress = this.props.loginReducer.initialData.walletAddress;
+    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+
+    const presence = xml('presence', {
+      from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+      to: jid + '/' + this.props.loginReducer.initialData.username,
+    });
+    xmpp.send(presence);
+  };
+
+  renameTheRoom = (jid, name) => {
+    const initialData = this.props.loginReducer.initialData;
+    let walletAddress = initialData.walletAddress;
+    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+
+    roomConfigurationForm(manipulatedWalletAddress, jid, {
+      roomName: name,
+    });
+    fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+
+    // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+  };
+  unsubscribeFromRoom = jid => {
+    let walletAddress = this.props.loginReducer.initialData.walletAddress;
+    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+    getChatRoom(jid).then(room => {
+      if (!room.muted) {
+        const message = xml(
+          'iq',
+          {
+            from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            to: jid,
+            type: 'set',
+            id: 'unsubscribe',
+          },
+          xml(
+            'unsubscribe',
+            {
+              xmlns: 'urn:xmpp:mucsub:0',
+              // nick: nickName,
+            },
+            // xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+            // xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+          ),
+        );
+        xmpp.send(message);
+        updateChatRoom(jid, 'muted', true);
+      } else {
+        setSubscriptions(
+          manipulatedWalletAddress,
+          jid,
+          this.props.loginReducer.initialData.username,
+        );
+        updateChatRoom(jid, 'muted', false);
+        Toast.show('Notifications unmuted', Toast.SHORT);
+      }
+      fetchRosterList().then(rosterListFromRealm => {
+        console.log(rosterListFromRealm, 'roster from ');
+        let rosterListArray = [];
+        rosterListFromRealm.map(item => {
+          rosterListArray.push({
+            name: item.name,
+            participants: item.participants,
+            avatar: item.avatar,
+            jid: item.jid,
+            counter: item.counter,
+            lastUserText: item.lastUserText,
+            lastUserName: item.lastUserName,
+            createdAt: item.createdAt,
+            muted: item.muted,
+            priority: item.priority,
+          });
+        });
+        this.setState({
+          rosterListArray,
+        });
+      });
+    });
+
+    //   <iq from='hag66@shakespeare.example'
+    //     to='coven@muc.shakespeare.example'
+    //     type='set'
+    //     id='E6E10350-76CF-40C6-B91B-1EA08C332FC7'>
+    //   <unsubscribe xmlns='urn:xmpp:mucsub:0' />
+
+    // </iq>
+  };
+  setNewChatName = () => {
+    // updateVCard(this.state.userAvatar, data);
+    if (this.state.newChatName) {
+      this.renameTheRoom(this.state.pickedChatJid, this.state.newChatName);
+      this.setState({newChatName: '', pickedChatJid: ''});
+    }
+    this.setState({modalVisible: false});
+  };
+  onNameChange = text => {
+    this.setState({newChatName: text});
+  };
+  setMenuRef = (ref, index) => {
+    this[`menu${index}`] = ref;
+  };
+
+  hideMenu = index => {
+    this[`menu${index}`].hide();
+  };
+
+  showMenu = (index, item) => {
+    this.setState({activeMenuIndex: index});
+
+    this[`menu${index}`].show();
+  };
+
+
 
   //view to display when Chat Home component is empty
   chatEmptyComponent = () => {
@@ -662,6 +900,11 @@ class ChatHome extends Component {
       </View>
     );
   };
+  onBackdropPress = () => {
+    this.setState({
+      modalVisible: false,
+    });
+  };
   storeRosterList = async value => {
     let map = {};
     let arr = value.map((item, index) => {
@@ -726,9 +969,10 @@ class ChatHome extends Component {
       //     />
       //   }
       //   style={{flex: 1}}>
+      <>
         <DraggableFlatList
           nestedScrollEnabled={true}
-        //   onRelease={() => this.setState({movingActive: false})}
+          onRelease={() => this.setState({movingActive: false})}
           data={this.state.rosterListArray.sort(
             (a, b) => a.priority - b.priority,
           )}
@@ -737,15 +981,16 @@ class ChatHome extends Component {
               <RenderDragItem
                 key={index}
                 index={index}
+                roomRoles={this.props.ChatReducer.roomRoles}
                 item={item}
                 isActive={isActive}
                 openChat={() => this.openChat(item.jid, item.name)}
-                // showMenu={this.showMenu}
-                // setMenuRef={this.setMenuRef}
+                showMenu={this.showMenu}
+                setMenuRef={this.setMenuRef}
                 drag={drag}
-                // onMenuHide={this.onMenuHide}
-                // activeMenuIndex={this.state.activeMenuIndex}
-                // onMenuItemPress={this.onMenuItemPress}
+                onMenuHide={this.onMenuHide}
+                activeMenuIndex={this.state.activeMenuIndex}
+                onMenuItemPress={this.onMenuItemPress}
                 movingActive={this.state.movingActive}
                 walletAddress={
                   this.props.loginReducer.initialData.walletAddress
@@ -757,6 +1002,74 @@ class ChatHome extends Component {
           keyExtractor={(item, index) => `draggable-item-${index}`}
           onDragEnd={({data}) => this.storeRosterList(data)}
         />
+
+       
+         <Modal
+          animationType="slide"
+          transparent={true}
+          isVisible={this.state.modalVisible}
+          onBackdropPress={this.onBackdropPress}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          {true ? (
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'white',
+                borderRadius: 8,
+                paddingVertical: 20,
+              }}>
+              <CommonTextInput
+                maxLength={128}
+                containerStyle={{
+                  borderWidth: 0.5,
+                  // borderTopWidth: 0,
+                  borderColor: primaryColor,
+                  backgroundColor: 'white',
+                  width: wp('81%'),
+                  height: hp('6.8%'),
+                  // padding: hp('2.4'),
+                  paddingLeft: wp('3.73'),
+                  borderRadius: 0,
+                  marginBottom: 10,
+                  // marginTop: 10
+                }}
+                fontsStyle={{
+                  fontFamily: lightFont,
+                  fontSize: hp('1.6%'),
+                  color: 'black',
+                }}
+                value={this.state.newChatName}
+                onChangeText={text => this.onNameChange(text)}
+                placeholder="Enter new chat name"
+                placeholderTextColor={primaryColor}
+              />
+
+              <TouchableOpacity
+                onPress={() => this.setNewChatName()}
+                style={{
+                  backgroundColor: primaryColor,
+                  borderRadius: 5,
+                  height: hp('4.3'),
+                  padding: 4,
+                }}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flex: 1,
+                  }}>
+                  <Text style={{...styles.createButtonText, color: 'white'}}>
+                    Done editing
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </Modal>
+        </>
        
       // </ScrollView>
     );

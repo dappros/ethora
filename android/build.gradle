@@ -4,10 +4,11 @@ buildscript {
     ext {
         buildToolsVersion = "29.0.3"
         minSdkVersion = 21
-        compileSdkVersion = 29
-        targetSdkVersion = 29
+        compileSdkVersion = 31
+        targetSdkVersion = 31
         ndkVersion = "20.1.5948944"
         googlePlayServicesAuthVersion = "16.0.1"
+        //   kotlinVersion = "1.1.16"
     }
     repositories {
         google()
@@ -16,6 +17,8 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.0")
         classpath 'com.google.gms:google-services:4.3.8'
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0") 
+        //  classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

@@ -1,10 +1,24 @@
-import React, {Component} from 'react';
-import {Platform, View, Text, ActivityIndicator, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {Component, createRef} from 'react';
+import {
+  Platform,
+  View,
+  Text,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Pressable,
+  Button,
+} from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
 import {GiftedChat, Actions} from 'react-native-gifted-chat';
 import MessageBody from '../components/MessageBody';
-import {loginUser, setOtherUserDetails, setIsPreviousUser} from '../actions/auth';
+import {
+  loginUser,
+  setOtherUserDetails,
+  setIsPreviousUser,
+} from '../actions/auth';
 import {
   fetchWalletBalance,
   transferTokensSuccess,
@@ -17,6 +31,7 @@ import {
   setRecentRealtimeChatAction,
   tokenAmountUpdateAction,
   updateMessageComposingState,
+  setCurrentChatDetails
 } from '../actions/chatAction';
 import {queryRoomAllMessages} from '../components/realmModels/messages';
 import {
@@ -31,6 +46,10 @@ import {systemMessage} from '../components/SystemMessage';
 import {xmpp} from '../helpers/xmppCentral';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {updateRosterList} from '../components/realmModels/chatList';
 import {TypingAnimation} from 'react-native-typing-animation';
 import {
@@ -42,23 +61,35 @@ import {
 import {APP_TOKEN} from '../../docs/config';
 import {coinsMainName} from '../../docs/config';
 import * as xmppConstants from '../../src/constants/xmppConstants';
-import { Player} from '@react-native-community/audio-toolkit';
+import {Player} from '@react-native-community/audio-toolkit';
 import DocumentPicker from 'react-native-document-picker';
 import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
 import {logOut} from '../actions/auth';
-import RNFetchBlob from 'rn-fetch-blob'
+import RNFetchBlob from 'rn-fetch-blob';
 import downloadFile from '../helpers/downloadFileLogic';
 import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
 import {commonColors, textStyles} from '../../docs/config';
+import {RNCamera} from 'react-native-camera';
+import VideoRecorder from 'react-native-beautiful-video-recorder';
+import parseChatLink from '../helpers/parseChatLink';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import Modal from 'react-native-modal';
+
+import AudioRecorderPlayer, {
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
+  AudioEncoderAndroidType,
+  AudioSet,
+  AudioSourceAndroidType,
+} from 'react-native-audio-recorder-player';
 
 const {primaryColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
 
 const {xml} = require('@xmpp/client');
-const hitAPI = new fetchFunction;
-
+const hitAPI = new fetchFunction();
 
 // let xmpp;
 const loadMessageAmount = 100;
@@ -120,8 +151,19 @@ class Chat extends Component {
       isTyping: false,
       composingUsername: '',
       userAvatar: '',
-      progressVal:0
+      progressVal: 0,
+      playTime: '00:00:00',
+      duration: '00:00:00',
+      recordSecs: 0,
+      recordTime: '00:00:00',
+      currentPositionSec: 0,
+      currentDurationSec: 0,
+      recording: false,
+      videoModalOpen: false,
     };
+    this.audioRecorderPlayer = new AudioRecorderPlayer();
+    this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
+    this.cameraRef = createRef();
   }
 
   //fucntion to get chat archive of a room
@@ -201,11 +243,15 @@ class Chat extends Component {
           createdAt: item.createdAt,
           system: item.system,
           image: item.image,
-          isStoredFile:item.isStoredFile,
-          localURL:item.localURL,
+          audio: item.audio,
+
+          isStoredFile: item.isStoredFile,
+          localURL: item.localURL,
           realImageURL: item.realImageURL,
           mimetype: item.mimetype,
           size: item.size,
+          duration: item.duration,
+
           user: {
             _id: item.user_id,
             name: item.name,
@@ -270,8 +316,9 @@ class Chat extends Component {
       },
       xml('body', {}, messageText),
       xml('data', {
-        xmlns: 'http://'+xmppConstants.DOMAIN,
-        senderJID: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+        xmlns: 'http://' + xmppConstants.DOMAIN,
+        senderJID:
+          this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
         senderFirstName: this.state.firstName,
         senderLastName: this.state.lastName,
         senderWalletAddress: this.state.walletAddress,
@@ -279,7 +326,7 @@ class Chat extends Component {
         tokenAmount: tokenAmount,
         receiverMessageId: receiverMessageId,
         mucname: this.state.chatRoomDetails.chat_name,
-        photoURL: this.state.userAvatar?this.state.userAvatar:null,
+        photoURL: this.state.userAvatar ? this.state.userAvatar : null,
       }),
     );
 
@@ -314,15 +361,18 @@ class Chat extends Component {
   onLongPressMessage(e, m) {
     let extraData = {};
     if (!m.user._id.includes(xmppConstants.CONF_WITHOUT)) {
-      const jid = m.user._id.split('@'+xmppConstants.DOMAIN)[0];
+      const jid = m.user._id.split('@' + xmppConstants.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
+      const roomJID = this.state.chatRoomDetails.chat_jid;
+
       extraData = {
         type: 'transfer',
         amnt: null,
         name: m.user.name,
         message_id: m._id,
         walletFromJid,
+        roomJID,
         token,
         jid,
         senderName: this.state.name,
@@ -332,6 +382,7 @@ class Chat extends Component {
         type: 'transfer',
         amnt: null,
         name: m.user.name,
+        roomJID,
         message_id: m._id,
         jid,
 
@@ -342,7 +393,6 @@ class Chat extends Component {
       showModal: true,
       modalType: 'tokenTransfer',
       extraData,
-
     });
   }
 
@@ -388,13 +438,13 @@ class Chat extends Component {
     const firstName = name.split(' ')[0];
     const lastName = name.split(' ')[1];
     const xmppID = _id.split('@')[0];
-    const {anotherUserWalletAddress} = this.props.loginReducer
+    const {anotherUserWalletAddress} = this.props.loginReducer;
     let walletAddress = reverseUnderScoreManipulation(xmppID);
 
-    if(anotherUserWalletAddress===walletAddress){
+    if (anotherUserWalletAddress === walletAddress) {
       this.props.setIsPreviousUser(true);
       this.props.navigation.navigate('AnotherProfileComponent');
-    }else{
+    } else {
       //fetch transaction
       this.openWallet(walletAddress).then(async () => {
         //check if user clicked their own avatar/profile
@@ -411,9 +461,8 @@ class Chat extends Component {
             anotherUserFirstname: firstName,
             anotherUserLastname: lastName,
             anotherUserWalletAddress: walletAddress,
-            isPrevious:false
+            isPreviousUser: false,
           });
-
 
           await this.props.fetchWalletBalance(
             walletAddress,
@@ -422,11 +471,89 @@ class Chat extends Component {
             false,
           );
 
-            this.props.navigation.navigate('AnotherProfileComponent');
+          this.props.navigation.navigate('AnotherProfileComponent');
         }
       });
     }
+  };
+  onStartRecord = async () => {
+    const dirs = RNFetchBlob.fs.dirs;
+    const path = Platform.select({
+      ios: 'hello.m4a',
+      android: `${dirs.CacheDir}/hello.mp3`,
+    });
+    const result = await this.audioRecorderPlayer.startRecorder(path);
 
+    this.setState({
+      recording: true,
+    });
+    console.log(result, 'sdfnksdfjlsdj;f');
+  };
+  onStopRecord = async () => {
+    // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
+    // const dirs = RNFetchBlob.fs.dirs;
+
+    // const res = await DocumentPicker.pick({
+    //   type: [DocumentPicker.types.allFiles],
+    // });
+    // console.log(res, 'resfdfsd')
+    const result = await this.audioRecorderPlayer.stopRecorder();
+    this.setState({
+      recording: false,
+    });
+    console.log(result, 'ressslsllsl');
+    const {token} = this.props.loginReducer;
+    const filesApiURL = connectionURL.fileUpload;
+    const FormData = require('form-data');
+    let data = new FormData();
+
+    // let correctpath = '';
+    // const str1 = 'file://';
+    // const str2 = res.uri;
+    // correctpath = str2.replace(str1, '');
+
+    data.append('files', {
+      uri: result,
+      type: 'audio/mpeg',
+      name: 'sound.mp3',
+    });
+    hitAPI.fileUpload(
+      filesApiURL,
+      data,
+      token,
+      async () => {
+        logOut();
+      },
+      val => {
+        console.log('Progress:', val);
+        this.setState({
+          progressVal: val,
+        });
+      },
+      async response => {
+        if (response.results.length) {
+          // alert(JSON.stringify(data));
+          this.submitMediaMessage(response.results);
+          console.log(response, 'dsfjdksfklsdjfkdsjlfj');
+        }
+      },
+    );
+  };
+  onStartPlay = async () => {
+    console.log('onStartPlay');
+    const msg = await this.audioRecorderPlayer.startPlayer();
+    console.log(msg);
+    this.audioRecorderPlayer.addPlayBackListener(e => {
+      this.setState({
+        currentPositionSec: e.currentPosition,
+        currentDurationSec: e.duration,
+        playTime: this.audioRecorderPlayer.mmssss(
+          Math.floor(e.currentPosition),
+        ),
+        duration: this.audioRecorderPlayer.mmssss(Math.floor(e.duration)),
+      });
+      return;
+    });
   };
 
   scrollToMessage(messageID) {
@@ -451,12 +578,15 @@ class Chat extends Component {
       const jid = m._id.split('@' + xmppConstants.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
+      const roomJID = this.state.chatRoomDetails.chat_jid;
+
       extraData = {
         type: 'transfer',
         amnt: null,
         name: m.name,
         message_id: m._id,
         walletFromJid,
+        roomJID,
         token,
         senderName: this.state.name,
       };
@@ -466,6 +596,7 @@ class Chat extends Component {
         amnt: null,
         name: m.name,
         message_id: m._id,
+        roomJID,
         senderName: this.state.name,
       };
     }
@@ -509,6 +640,7 @@ class Chat extends Component {
           });
           shownMessages.clear();
           if (chats.length > 0) {
+            // console.log(chatsLastObject.duration, 'asflksdu343902')
             const chatsLastObject = chats[chats.length - 1];
             tokenAmount = chatsLastObject.tokenAmount
               ? chatsLastObject.tokenAmount
@@ -520,12 +652,16 @@ class Chat extends Component {
               _id: chatsLastObject.message_id,
               text: chatsLastObject.text,
               createdAt: chatsLastObject.createdAt,
-              image:chatsLastObject.image,
-              realImageURL:chatsLastObject.realImageURL,
-              localURL:chatsLastObject.localURL,
-              isStoredFile:chatsLastObject.isStoredFile,
+              image: chatsLastObject.image,
+              audio: chatsLastObject.audio,
+
+              realImageURL: chatsLastObject.realImageURL,
+              localURL: chatsLastObject.localURL,
+              isStoredFile: chatsLastObject.isStoredFile,
               mimetype: chatsLastObject.mimetype,
               size: chatsLastObject.size,
+              duration: chatsLastObject.duration,
+
               user: {
                 _id: chatsLastObject.user_id,
                 name: chatsLastObject.name,
@@ -565,25 +701,25 @@ class Chat extends Component {
           prevProps.walletReducer.tokenTransferSuccess.success &&
         this.props.walletReducer.tokenTransferSuccess.success
       ) {
-        const senderName = this.props.walletReducer.tokenTransferSuccess
-          .senderName;
-        const receiverMessageId = this.props.walletReducer.tokenTransferSuccess
-          .receiverMessageId;
-        const receiverName = this.props.walletReducer.tokenTransferSuccess
-          .receiverName;
+        const senderName =
+          this.props.walletReducer.tokenTransferSuccess.senderName;
+        const receiverMessageId =
+          this.props.walletReducer.tokenTransferSuccess.receiverMessageId;
+        const receiverName =
+          this.props.walletReducer.tokenTransferSuccess.receiverName;
         const amount = this.props.walletReducer.tokenTransferSuccess.amount;
-        const tokenName = this.props.walletReducer.tokenTransferSuccess
-          .tokenName;
-          console.log(
-            this.props.walletReducer.tokenTransferSuccess,
-            'tradjnsakdjsdfjdskjf',
-          );
+        const tokenName =
+          this.props.walletReducer.tokenTransferSuccess.tokenName;
+        console.log(
+          this.props.walletReducer.tokenTransferSuccess,
+          'tradjnsakdjsdfjdskjf',
+        );
         let message = systemMessage({
           senderName,
           receiverName,
           amount,
           receiverMessageId,
-          tokenName
+          tokenName,
         });
         this.submitMessage(message, message[0].system);
         this.props.transferTokensSuccess({
@@ -593,7 +729,6 @@ class Chat extends Component {
           amount: 0,
           receiverMessageId: '',
           tokenName: '',
-          
         });
       }
 
@@ -617,7 +752,7 @@ class Chat extends Component {
             },
           ];
         } else {
-
+          console.log(recentRealtimeChat.duration, 'asfdsklfjlksdjfkasdldsjf');
           messageObject = [
             {
               _id: recentRealtimeChat.message_id,
@@ -625,11 +760,15 @@ class Chat extends Component {
               createdAt: recentRealtimeChat.createdAt,
               system: false,
               image: recentRealtimeChat.image,
-              realImageURL:recentRealtimeChat.realImageURL,
-              localURL:recentRealtimeChat.localURL,
-              isStoredFile:recentRealtimeChat.isStoredFile,
-              mimetype:recentRealtimeChat.mimetype,
+              audio: recentRealtimeChat.audio,
+
+              realImageURL: recentRealtimeChat.realImageURL,
+              localURL: recentRealtimeChat.localURL,
+              isStoredFile: recentRealtimeChat.isStoredFile,
+              mimetype: recentRealtimeChat.mimetype,
               size: recentRealtimeChat.size,
+              duration: recentRealtimeChat.duration,
+
               user: {
                 _id: recentRealtimeChat.user_id,
                 name: recentRealtimeChat.name,
@@ -638,32 +777,32 @@ class Chat extends Component {
             },
           ];
         }
-        
-        if(this.state.username!==recentRealtimeChat.name){
+
+        if (this.state.username !== recentRealtimeChat.name) {
           //if recentRealtimeChat.system == true then play sound.
-          if(recentRealtimeChat.system){
-            let coinSound = "";
-            
-            switch(recentRealtimeChat.tokenAmount){
+          if (recentRealtimeChat.system) {
+            let coinSound = '';
+
+            switch (recentRealtimeChat.tokenAmount) {
               case 1:
-                coinSound = "token1.mp3"
+                coinSound = 'token1.mp3';
                 break;
               case 3:
-                coinSound = "token3.mp3"
+                coinSound = 'token3.mp3';
                 break;
 
               case 5:
-                coinSound = "token5.mp3"
+                coinSound = 'token5.mp3';
                 break;
 
               case 7:
-                coinSound = "token7.mp3"
+                coinSound = 'token7.mp3';
                 break;
             }
             new Player(coinSound).play();
           }
-					this.addMessage(messageObject,this.state.loadMessageIndex,false)
-				}
+          this.addMessage(messageObject, this.state.loadMessageIndex, false);
+        }
         updateRosterList({
           counter: 0,
           jid: recentRealtimeChat.room_name,
@@ -671,7 +810,7 @@ class Chat extends Component {
           lastUserText: null,
           participants: null,
           createdAt: null,
-          name: null
+          name: null,
         });
       }
 
@@ -683,7 +822,8 @@ class Chat extends Component {
           this.props.ChatReducer.chatRoomDetails.chat_jid
       ) {
         const fullName = this.state.firstName + ' ' + this.state.lastName;
-        const manipulatedWalletAddress = this.props.ChatReducer.isComposing.manipulatedWalletAddress;
+        const manipulatedWalletAddress =
+          this.props.ChatReducer.isComposing.manipulatedWalletAddress;
         if (manipulatedWalletAddress !== this.state.manipulatedWalletAddress) {
           this.setState({
             isTyping: this.props.ChatReducer.isComposing.state,
@@ -729,52 +869,63 @@ class Chat extends Component {
     );
   }
 
-  chatFooter(){
-    setTimeout(()=>{
-      if(this.state.progressVal===100){
+  chatFooter() {
+    setTimeout(() => {
+      if (this.state.progressVal === 100) {
         this.setState({
-          progressVal:0
-        })
+          progressVal: 0,
+        });
       }
-    },5000)
-    return(
-      <View style={{height:hp("5%"), width: wp("100%"), backgroundColor:"transparent", flexDirection:"row"}}>
-        <View style={{flex:0.6}}>
-        {this.state.isTyping?
-          <View style={styles.isTypingContainer}>
-            <View style={{marginRight: 30}}>
-              <TypingAnimation dotColor="grey" />
+    }, 5000);
+    return (
+      <View
+        style={{
+          height: hp('5.5%'),
+          width: wp('100%'),
+          backgroundColor: 'transparent',
+          flexDirection: 'row',
+        }}>
+        <View style={{flex: 0.6}}>
+          {this.state.isTyping ? (
+            <View style={styles.isTypingContainer}>
+              <View style={{marginRight: 30}}>
+                <TypingAnimation dotColor="grey" />
+              </View>
+              <Text style={styles.isTypingTextStyle}>
+                {this.state.composingUsername}
+              </Text>
             </View>
-            <Text style={styles.isTypingTextStyle}>{this.state.composingUsername}</Text>
-          </View>
-          :null
-        }
+          ) : null}
         </View>
         <View style={styles.progressContainer}>
-          {this.state.progressVal?
-          <Text style={styles.progressNumberText}>Uploading: {this.state.progressVal}</Text>:
-          null
-          }
+          {this.state.progressVal ? (
+            <Text style={styles.progressNumberText}>
+              Uploading: {this.state.progressVal}%
+            </Text>
+          ) : null}
         </View>
       </View>
-    )
+    );
   }
 
-  submitMediaMessage= (props)=>{
-    console.log(props)
+  submitMediaMessage = props => {
     props.map(async item => {
+      // console.log(item.duration, 'masdedia messsdfsdfage');
+
       const message = xml(
         'message',
         {
           id: 'sendMessage',
           type: 'groupchat',
-          from: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
-          to: this.state.chatRoomDetails.chat_jid
+          from:
+            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          to: this.state.chatRoomDetails.chat_jid,
         },
         xml('body', {}, 'media file'),
         xml('data', {
           xmlns: 'http://' + xmppConstants.DOMAIN,
-          senderJID: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          senderJID:
+            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
           senderFirstName: this.state.firstName,
           senderLastName: this.state.lastName,
           senderWalletAddress: this.state.walletAddress,
@@ -782,8 +933,8 @@ class Chat extends Component {
           tokenAmount: '0',
           receiverMessageId: '0',
           mucname: this.state.chatRoomDetails.chat_name,
-          photoURL: this.state.userAvatar?this.state.userAvatar:'',
-          isMediafile:true,
+          photoURL: this.state.userAvatar ? this.state.userAvatar : '',
+          isMediafile: true,
           createdAt: item.createdAt,
           expiresAt: item.expiresAt,
           filename: item.filename,
@@ -794,53 +945,72 @@ class Chat extends Component {
           originalname: item.originalname,
           ownerKey: item.ownerKey,
           size: item.size,
+          duration: item?.duration,
           updatedAt: item.updatedAt,
-          userId: item.userId
-        })
+          userId: item.userId,
+        }),
       );
-  
-      await xmpp.send(message);
-    })
-  }
 
-  downloadFunction = (props) => {
+      await xmpp.send(message);
+    });
+  };
+
+  downloadFunction = props => {
     const {realImageURL, isStoredFile, _id, mimetype} = props.currentMessage;
-    const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
+    const filename = realImageURL.substring(realImageURL.lastIndexOf('/') + 1);
     this.setState({
       showModal: true,
       modalType: 'loading',
-    })
-    downloadFile({fileURL:realImageURL, fileName: filename, closeModal:this.closeModal(), mimetype:mimetype}, path=>{
-      updateMessageObject({localURL:path,receiverMessageId: _id})
     });
-  }
+    downloadFile(
+      {
+        fileURL: realImageURL,
+        fileName: filename,
+        closeModal: this.closeModal(),
+        mimetype: mimetype,
+      },
+      path => {
+        updateMessageObject({localURL: path, receiverMessageId: _id});
+      },
+    );
+  };
 
-  startDownload=(props)=>{
+  startDownload = props => {
     const {isStoredFile, mimetype, localURL} = props.currentMessage;
-    console.log(localURL,"LocalURL..........")
+    console.log(localURL, 'LocalURL..........');
     var RNFS = require('react-native-fs');
-    
-    if(isStoredFile){
 
+    if (isStoredFile) {
       //display image from store location path on modal view
-      RNFS.exists(localURL).then(val =>{
-        console.log("yesinhere",val)
-        if(val){
-          if(Platform.OS === "ios"){
-            RNFetchBlob.ios.openDocument("file://"+localURL)
-          }
-          if(Platform.OS === "android"){
-            console.log(localURL,"Asfadsfsfbvdfbdfghbdfghbfg")
-            RNFetchBlob.android.actionViewIntent(localURL, mimetype)
-          }
-        }else{
-          this.downloadFunction(props)
-        }
-      }).catch(err=>{
-        console.log(err)
-      })
+      RNFS.exists(localURL)
+        .then(val => {
+          console.log('yesinhere', val);
+          if (val) {
+            if (Platform.OS === 'ios') {
+              try{
+              RNFetchBlob.ios.openDocument('file://' + localURL);
+              }catch(err){
+                console.log(err,"rnfetchblobcatch")
+              }
+            }
+            if (Platform.OS === 'android') {
+              console.log(localURL, 'Asfadsfsfbvdfbdfghbdfghbfg');
+              RNFetchBlob.android.actionViewIntent(localURL, mimetype);
 
-    }else{
+              // if (mimetype === 'audio/mpeg') {
+              //   new Player(localURL).play();
+              // } else {
+              //   RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+              // }
+            }
+          } else {
+            this.downloadFunction(props);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
       //download file and display the modal
       // const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
       // this.setState({
@@ -851,9 +1021,16 @@ class Chat extends Component {
       //   console.log(path,"path path path");
       //   updateMessageObject({realImageURL:path,receiverMessageId: _id})
       // });
-      this.downloadFunction(props)
+      this.downloadFunction(props);
     }
-  }
+  };
+  takePicture = async () => {
+    if (this.camera) {
+      const options = {quality: 0.5, base64: true};
+      const data = await this.camera.takePictureAsync(options);
+      console.log(data.uri);
+    }
+  };
 
   formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -863,127 +1040,334 @@ class Chat extends Component {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    console.log((bytes / Math.pow(k, i)).toFixed(dm),"Asdasdgbdfgbdfg", bytes)
+    console.log((bytes / Math.pow(k, i)).toFixed(dm), 'Asdasdgbdfgbdfg', bytes);
 
-    return {size:parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),unit:sizes[i]};
+    return {
+      size: parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
+      unit: sizes[i],
+    };
   }
 
-  renderMessageImage=(props)=>{
-    console.log(props,"currentMessage..........")
-    const {image, mimetype, size} = props.currentMessage;
-    let formatedSize = {size:0, unit:"KB"}
+  videoRecord = async () => {
+    console.log('currentttt', this.cameraRef);
+
+    if (this.cameraRef?.current) {
+      this.cameraRef.current.open({maxLength: 30}, data => {
+        console.log('captured datafdsfsdf', data); // data.uri is the file path
+      });
+    }
+  };
+  RenderCam = () => {
+    return (
+      <View>
+        <VideoRecorder ref={this.cameraRef} />
+        <TouchableOpacity
+          onPress={this.videoRecord}
+          style={{
+            width: wp('25%'),
+            height: hp('5%'),
+            backgroundColor: 'transparent',
+            borderRadius: 4,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}></TouchableOpacity>
+      </View>
+    );
+  };
+  renderMessageImage = props => {
+    const {image, realImageURL, mimetype, size, duration} =
+      props.currentMessage;
+    let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = this.formatBytes(parseFloat(size), 2);
-    console.log(formatedSize);
-    return(
-      <TouchableOpacity
-      onPress={() => this.startDownload(props)}
+    if (mimetype === 'video/mp4' || mimetype === 'image/jpeg' || mimetype === 'image/png' || mimetype === 'application/octet-stream') {
+      return (
+        <TouchableOpacity
+          onPress={() => this.startDownload(props)}
+          style={{
+            borderRadius: 5,
+            // padding: 5,
+            width: hp('24%'),
+            height: hp('24%'),
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+          
+            <View
+              style={{
+                position: 'absolute',
+                top: 10,
+                // height: 30,
+                // width: 100,
+                left: 10,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                zIndex: 9999,
+                padding: 5,
+                borderRadius: 5,
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Ionicons
+                  name="arrow-down-outline"
+                  size={hp('1.7%')}
+                  color={'white'}
+                />
+                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                  {formatedSize.size + ' ' + formatedSize.unit}
+                </Text>
+              </View>
 
-        style={{
-          borderRadius: 5,
-          // padding: 5,
-          width: hp('24%'),
-          height: hp('24%'),
-          justifyContent: 'center',
-        }}>
+              {duration && (
+                <Text style={{color: 'white', fontSize: hp('1.6%'), marginLeft: hp('1.7%')}}>
+                  {duration}
+                </Text>
+              )}
+            </View>
+
+          <View style={styles.downloadContainer}>
+            <FastImage
+              style={styles.messageImageContainer}
+              source={{
+                // @ts-ignore
+                uri: realImageURL,
+                priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </View>
+        </TouchableOpacity>
+      );
+    } else if (mimetype === 'audio/mpeg') {
+      // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
+      return (
+        <TouchableOpacity
+          onPress={() => this.startDownload(props)}
+          style={{
+            borderRadius: 5,
+            // padding: 5,
+            // width: wp('10%'),
+            height: hp('5%'),
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+          {/* {mimetype === 'video/mp4' && (
         <View
-          style={styles.downloadContainer}>
-          {/* <View style={styles.sizeContainer}>
-            <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
-            <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
-          </View> */}
-          <FastImage
-            style={styles.messageImageContainer}
-            source={{
-              // @ts-ignore
-              uri: props.currentMessage.image,
-              priority: FastImage.priority.normal,
-            }}
-            resizeMode={FastImage.resizeMode.cover}
+          style={{
+            position: 'absolute',
+            top: 10,
+            height: 30,
+            // width: 100,
+            left: 10,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            zIndex: 9999,
+            padding: 5,
+            borderRadius: 5,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+          <Ionicons
+            name="arrow-down-outline"
+            size={hp('1.7%')}
+            color={'white'}
           />
+          <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+            {formatedSize.size + ' ' + formatedSize.unit}
+          </Text>
         </View>
-      </TouchableOpacity>
-    )
-  }
+      )} */}
 
-  renderAttachment(){
-    return(
-      <Actions
-      containerStyle={{
-        width: hp("4%"),
-        height: hp("4%"),
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 3,
-        marginRight: 3,
-        marginBottom: 3,
-      }}
-      icon={() => (
-        <Entypo name="attachment" size={hp("3%")}/>
-      )}
-      options={{
-        'Upload File' : async() => {
-          try {
-            const res = await DocumentPicker.pick({
-              type: [DocumentPicker.types.allFiles],
-            });
-            // console.log(
-            //   res.uri,
-            //   res.type, // mime type
-            //   res.name,
-            //   res.size
-            // );
-            const {token} = this.props.loginReducer;
-            const filesApiURL = connectionURL.fileUpload;
-            const FormData = require('form-data');
-            let data = new FormData();
-            
-            let correctpath = "";
-            const str1 = "file://";
-            const str2 = res.uri;
-            correctpath = str2.replace(str1, '');
+          {/* <View style={styles.downloadContainer}> */}
+            {/* <View style={styles.sizeContainer}>
+          <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
+          <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
+        </View> */}
 
-            data.append('files', {uri: res.uri, type: res.type, name: res.name});
-            
-            hitAPI.fileUpload(filesApiURL, data, token, async()=>{
-              logOut()
-            },
-            (val)=>{
-              console.log("Progress:",val);
-              this.setState({
-                progressVal:val
-              })
-            },
-            async response=>{
-              if(response.results.length){
-                // alert(JSON.stringify(data));
-                this.submitMediaMessage(response.results)
-              }
-            })
+            <View
+              style={{
+                marginTop: 10,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                // width: '100%',
+                flexDirection: 'row'
+                // position: 'absolute',
+                // left: props.position === 'left' ? '150%': null,
+                // zIndex: 10000
+              }}>
+              <AntDesign
+                name="play"
+                size={hp('3%')}
+                color={'white'}
+                style={{
+                  marginRight: 4,
+                  marginLeft: 10,
+                }}
+              />
+              {duration && (
+                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                  {duration}
+                </Text>
+              )}
+            {/* </View> */}
+          </View>
+        </TouchableOpacity>
+      );
+    }
+  };
 
-          } catch (err) {
-            if (DocumentPicker.isCancel(err)) {
-              // User cancelled the picker, exit any dialogs or menus and move on
-            } else {
-              throw err;
-            }
-          }
-        },
-        Cancel: () => {
-          console.log('Cancel');
-        },
-      }}
-      optionTintColor="#000000"
-    />
-    )
+  renderAttachment() {
+    return (
+      <View style={{position: 'relative'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            // position: 'absolute',
+            // left: 0
+            // width: hp('100%'),
+          }}>
+          <Actions
+            containerStyle={{
+              width: hp('4%'),
+              height: hp('4%'),
+              alignItems: 'center',
+              justifyContent: 'center',
+              // marginLeft: 3,
+              // marginRight: 3,
+              // marginBottom: 3,
+            }}
+            icon={() => <Entypo name="attachment" size={hp('3%')} />}
+            options={{
+              'Upload File': async () => {
+                try {
+                  const res = await DocumentPicker.pick({
+                    type: [DocumentPicker.types.allFiles],
+                  });
+                  // console.log(
+                  //   res,
+                  //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
+                  // );
+                  const {token} = this.props.loginReducer;
+                  const filesApiURL = connectionURL.fileUpload;
+                  const FormData = require('form-data');
+                  let data = new FormData();
+                  // correctpath = str2.replace(str1, '');
+                  // alert(JSON.stringify(res))
+                  data.append('files', {
+                    uri: res[0].uri,
+                    type: res[0].type,
+                    name: res[0].name,
+                  });
+                  console.log(res[0].uri, 'reasdklaskdl;sakd');
+
+                  hitAPI.fileUpload(
+                    filesApiURL,
+                    data,
+                    token,
+                    async () => {
+                      logOut();
+                    },
+                    val => {
+                      console.log('Progress:', val);
+                      this.setState({
+                        progressVal: val,
+                      });
+                    },
+                    async response => {
+                      if (response?.results?.length) {
+                        this.submitMediaMessage(response.results);
+                      }
+                    },
+                  );
+                  console.log(JSON.stringify(data), 'asdasasdasdkd');
+                } catch (err) {
+                  if (DocumentPicker.isCancel(err)) {
+                    // User cancelled the picker, exit any dialogs or menus and move on
+                  } else {
+                    throw err;
+                  }
+                }
+              },
+              Cancel: () => {
+                console.log('Cancel');
+              },
+            }}
+            optionTintColor="#000000"
+          />
+
+          <Actions
+            containerStyle={{
+              // width: hp('100%'),
+              height: hp('4%'),
+              width: hp('5%'),
+
+              alignItems: 'center',
+              justifyContent: 'center',
+              // marginLeft: 3,
+              // marginRight: 3,
+              // marginBottom: 3,
+            }}
+            icon={() => (
+              <View style={{flexDirection: 'row'}}>
+                {/* <TouchableOpacity
+                  style={{marginRight: 10}}
+                  onPress={() => this.toggleVideoModal(true)}
+                  // onPressIn={this.onStartRecord}
+                  // onPressOut={this.onStopRecord}
+                >
+                  <Entypo name="camera" size={hp('3%')} />
+                </TouchableOpacity> */}
+                {this.state.recording ? (
+                  <TouchableOpacity
+                    // onPress={this.takePicture}
+                    onPress={this.onStopRecord}>
+                    {<Ionicons name="stop-circle" size={hp('3%')} />}
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    // onPress={this.takePicture}
+                    onPress={this.onStartRecord}>
+                    <Entypo name="mic" size={hp('3%')} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+          />
+          {/* <Actions
+          containerStyle={{
+            width: hp('100%'),
+            height: hp('4%'),
+            alignItems: 'center',
+            justifyContent: 'center',
+            // marginLeft: 3,
+            // marginRight: 3,
+            // marginBottom: 3,
+          }}
+          icon={() => (
+            <TouchableOpacity
+            // onPress={this.takePicture}
+              onPressIn={this.onStartRecord}
+              onPressOut={this.onStopRecord}
+              >
+              <Entypo name="mic" size={hp('3%')} />
+            </TouchableOpacity>
+          )}
+
+         
+        /> */}
+        </View>
+      </View>
+    );
   }
 
   handleInputChange() {
-    let {
-      manipulatedWalletAddress,
-      chatRoomDetails,
-      firstName,
-      lastName,
-    } = this.state;
+    let {manipulatedWalletAddress, chatRoomDetails, firstName, lastName} =
+      this.state;
     // msgCountForCompose = msgCountForCompose +1;
     const duration = 2000;
     const fullName = firstName + ' ' + lastName;
@@ -1001,6 +1385,15 @@ class Chat extends Component {
 
     // }
   }
+  onBackdropPress = () => {
+    this.setState({videoModalOpen: false});
+  };
+  toggleVideoModal = value => {
+    this.setState({videoModalOpen: value});
+    setTimeout(() => {
+      this.videoRecord();
+    }, 1000);
+  };
 
   shouldScrollTo(indexValue) {
     // console.log(this.giftedRef,"giftedprops");
@@ -1014,6 +1407,12 @@ class Chat extends Component {
     }
   }
 
+  handleChatLinks=(chatLink)=>{
+    const walletAddress = this.props.loginReducer.initialData.walletAddress;
+    const chatJID = parseChatLink(chatLink);
+    openChatFromChatLink(chatJID, walletAddress, this.props.setCurrentChatDetails, this.props.navigation);
+  }
+
   render() {
     return (
       <View style={{flex: 1}}>
@@ -1024,7 +1423,7 @@ class Chat extends Component {
         />
         <GiftedChat
           renderLoading={() => (
-            <ActivityIndicator size="large" color= {primaryColor} />
+            <ActivityIndicator size="large" color={primaryColor} />
           )}
           // loadEarlier={true}
           renderLoadEarlier={e => this.renderLoadEarlierFunction(e)}
@@ -1034,7 +1433,7 @@ class Chat extends Component {
             color: '#FFFF',
             fontSize: hp('1.47%'),
           }}
-          renderActions={()=> this.renderAttachment()}
+          renderActions={() => this.renderAttachment()}
           alwaysShowSend
           showUserAvatar
           infiniteScroll
@@ -1047,7 +1446,7 @@ class Chat extends Component {
             shadowRadius: 3.84,
             elevation: 5,
           }}
-          renderChatFooter={()=>this.chatFooter()}
+          renderChatFooter={() => this.chatFooter()}
           renderChatEmpty={() => emptyChatComponent()}
           isLoadingEarlier={this.state.isLoadingEarlier}
           onInputTextChanged={() => this.handleInputChange()}
@@ -1058,7 +1457,8 @@ class Chat extends Component {
           // renderFooter={() => this.renderFooter()}
           onSend={messageString => this.submitMessage(messageString, false)}
           user={{
-            _id: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            _id:
+              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN ,
             name: this.state.firstName + ' ' + this.state.lastName,
           }}
           onPressAvatar={props => this.onAvatarPress(props)}
@@ -1066,7 +1466,20 @@ class Chat extends Component {
           renderAvatarOnTop={true}
           onLongPress={(e, m) => this.onLongPressMessage(e, m)}
           onLongPressAvatar={e => this.onLongPressAvatar(e)}
-          renderMessageImage = {this.renderMessageImage}
+          renderMessageImage={this.renderMessageImage}
+          parsePatterns={(linkStyle) => [
+            {
+              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              style:linkStyle,
+              onPress: this.handleChatLinks
+            },
+            {
+              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              style:linkStyle,
+              onPress: this.handleChatLinks
+            },
+
+          ]}
         />
         <ModalList
           type={this.state.modalType}
@@ -1076,6 +1489,16 @@ class Chat extends Component {
           closeModal={this.closeModal}
           navigation={this.props.navigation}
         />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          isVisible={this.state.videoModalOpen}
+          onBackdropPress={this.onBackdropPress}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+          }}>
+          {this.RenderCam()}
+        </Modal>
       </View>
     );
   }
@@ -1083,54 +1506,55 @@ class Chat extends Component {
 
 const styles = StyleSheet.create({
   downloadContainer: {
-    alignSelf:'center',
-    height:hp('5%'),
-    width:hp("5%"),
-    justifyContent:'center',
-    alignItems:'center'
+    alignSelf: 'center',
+    height: hp('5%'),
+    // width: hp('5%'),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  messageImageContainer:{
-    width:hp("22%"),
-    height:hp("22%"),
-    borderRadius:5
+  messageImageContainer: {
+    width: hp('22%'),
+    height: hp('22%'),
+    borderRadius: 5,
   },
-  sizeContainer:{
-    position:"absolute",
-    width:hp("8%"),
-    height: hp("8%"),
-    borderRadius: hp("8%")/2,
-    zIndex:+1,
-    backgroundColor:"#343434",
-    justifyContent:"center",
-    alignItems:"center"
+  sizeContainer: {
+    position: 'absolute',
+    width: hp('8%'),
+    height: hp('8%'),
+    borderRadius: hp('8%') / 2,
+    zIndex: +1,
+    backgroundColor: '#343434',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sizeTextStyle:{
+  sizeTextStyle: {
     fontFamily: boldFont,
-    fontSize: hp("1.4%"),
-    color: "#fff",
-    textAlign:"center"
+    fontSize: hp('1.4%'),
+    color: '#fff',
+    textAlign: 'center',
   },
-  isTypingContainer:{
+
+  isTypingContainer: {
     margin: 10,
     marginBottom: 20,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
-  isTypingTextStyle:{
+  isTypingTextStyle: {
     color: 'grey',
     fontFamily: regularFont,
-    fontSize:hp("1.4%")
+    fontSize: hp('1.4%'),
   },
-  progressContainer:{
-    alignItems:"flex-start",
-    justifyContent:'center',
-    flex:0.4
+  progressContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    flex: 0.4,
   },
-  progressNumberText:{
+  progressNumberText: {
     color: 'grey',
     fontFamily: regularFont,
-    fontSize:hp("1.4%")
-  }
-})
+    fontSize: hp('1.4%'),
+  },
+});
 
 const mapStateToProps = state => {
   return {
@@ -1138,18 +1562,16 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    loginUser,
-    fetchWalletBalance,
-    finalMessageArrivalAction,
-    setRecentRealtimeChatAction,
-    transferTokensSuccess,
-    tokenAmountUpdateAction,
-    updateMessageComposingState,
-    fetchTransaction,
-    setOtherUserDetails,
-    setIsPreviousUser
-  },
-)(Chat);
+module.exports = connect(mapStateToProps, {
+  loginUser,
+  fetchWalletBalance,
+  finalMessageArrivalAction,
+  setRecentRealtimeChatAction,
+  transferTokensSuccess,
+  tokenAmountUpdateAction,
+  updateMessageComposingState,
+  fetchTransaction,
+  setOtherUserDetails,
+  setIsPreviousUser,
+  setCurrentChatDetails
+})(Chat);

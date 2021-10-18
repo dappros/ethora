@@ -20,7 +20,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // RNBootSplash.hide();
+    RNBootSplash.hide();
   }
 
 

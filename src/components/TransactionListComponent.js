@@ -77,6 +77,10 @@ const TransactionListComponent = props => {
     fullName = firstName + ' ' + lastName;
   }
 
+  if(props.item.nftFileUrl) {
+    // console.log(item, 'dsfsldfu')
+  }
+
   if (props.showHeader) {
     if (props.currentHeaderDate.getTime() === today.getTime()) {
       Header = (
@@ -153,9 +157,9 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftFileUrl !== 'null' ? (
+          {props.item.nftPreview !== 'null' ? (
             <Image
-              source={{uri: props.item.nftFileUrl}}
+              source={{uri: props.item.nftPreview}}
               style={styles.imagePreviewStyle}
             />
           ) : (
@@ -197,7 +201,7 @@ const TransactionListComponent = props => {
 const TransactionList = (params, tabIndex) => {
   let {transactions, walletAddress} = params;
   let currentHeaderDate = null;
-//   console.log(transactions, 'mytraaa');
+  console.log(transactions, 'mytraaa');
   if (transactions.length > 0) {
     if (tabIndex === 0) {
       return (
@@ -241,6 +245,7 @@ const TransactionList = (params, tabIndex) => {
     }
 
     if (tabIndex === 1) {
+      console.log(transactions,"sentsdfs")
       return (
         <View style={{backgroundColor: 'white'}}>
           <ScrollView nestedScrollEnabled={true} style={{height: '100%'}}>
