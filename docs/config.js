@@ -6,7 +6,18 @@ const appTitle = "Ethora"; //done
 // App logo (displayed in login screen) image path: 
 import logoPath from "../src/assets/logo.png"; //done
 
-import loginScreenBackgroundImage from "../src/assets/login_background.png"
+//images for tutorial screens
+import slide1Image1 from "../src/assets/tutorials/slide1Img1.png";
+import slide2Image1 from "../src/assets/tutorials/slide1Img1.png";
+import slide2Image2 from "../src/assets/tutorials/slide1Img1.png";
+import slide2Image3 from "../src/assets/tutorials/slide1Img1.png";
+import slide3Image1 from "../src/assets/tutorials/slide1Img1.png";
+import slide3Image2 from "../src/assets/tutorials/slide1Img1.png";
+import slide4Image1 from "../src/assets/tutorials/slide1Img1.png";
+import slide4Image2 from "../src/assets/tutorials/slide1Img1.png";
+
+import loginScreenBackgroundImage from "../src/assets/login_background.png";
+
 
 //Application token
 const APP_TOKEN = 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxMTBlOTdiMWFjZWQ1MGE0ZGU3MDA0OSIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTEwZTk2MDFhY2VkNTBhNGRlNzAwMDMiLCJjcmVhdGVkQXQiOiIyMDIxLTA4LTA5VDA4OjM4OjE5Ljk2OFoiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IllqUzUvUmthMkNvcitFSStUNlRQUnV3ekZjNk8zZHZYaC8rRFBobHhITExKejlVaDZOSm1WcVNJQkRSYnBXSExuUEpoQzJLUDc0Y2NHZ21hKzFYUGJwcjFpNDV1RlhaeDNNMTdjZDRJTWtqS00yOS9yTERvN3IrYzdJRlpyckt0S3dsWUtwb3Nabi8yQmFEZjdISWRoWXUwdzVHaGp0VUlGcXdJKy94NFZrTyttRUtUIn0sImlhdCI6MTYyODQ5ODMwNX0.TzHlVy2bv-_gnrP9U7NyoYdNYvIBfVR9nUfH-RFg9e8'; //done
@@ -116,5 +127,13 @@ export{
     coinsMainName,
     loginScreenBackgroundImage,
     unv_url,
-    unv_url1
+    unv_url1,
+    slide1Image1,
+    slide2Image1,
+    slide2Image2,
+    slide2Image3,
+    slide3Image1,
+    slide3Image2,
+    slide4Image1,
+    slide4Image2
 }

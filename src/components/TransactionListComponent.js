@@ -201,7 +201,7 @@ const TransactionListComponent = props => {
 const TransactionList = (params, tabIndex) => {
   let {transactions, walletAddress} = params;
   let currentHeaderDate = null;
-//   console.log(transactions, 'mytraaa');
+  console.log(transactions, 'mytraaa');
   if (transactions.length > 0) {
     if (tabIndex === 0) {
       return (
@@ -245,6 +245,7 @@ const TransactionList = (params, tabIndex) => {
     }
 
     if (tabIndex === 1) {
+      console.log(transactions,"sentsdfs")
       return (
         <View style={{backgroundColor: 'white'}}>
           <ScrollView nestedScrollEnabled={true} style={{height: '100%'}}>

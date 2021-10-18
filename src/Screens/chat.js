@@ -987,7 +987,11 @@ class Chat extends Component {
           console.log('yesinhere', val);
           if (val) {
             if (Platform.OS === 'ios') {
+              try{
               RNFetchBlob.ios.openDocument('file://' + localURL);
+              }catch(err){
+                console.log(err,"rnfetchblobcatch")
+              }
             }
             if (Platform.OS === 'android') {
               console.log(localURL, 'Asfadsfsfbvdfbdfghbdfghbfg');
@@ -1075,9 +1079,8 @@ class Chat extends Component {
     const {image, realImageURL, mimetype, size, duration} =
       props.currentMessage;
     let formatedSize = {size: 0, unit: 'KB'};
-
     formatedSize = this.formatBytes(parseFloat(size), 2);
-    if (mimetype === 'video/mp4' || mimetype === 'image/jpeg') {
+    if (mimetype === 'video/mp4' || mimetype === 'image/jpeg' || mimetype === 'image/png' || mimetype === 'application/octet-stream') {
       return (
         <TouchableOpacity
           onPress={() => this.startDownload(props)}
@@ -1128,16 +1131,11 @@ class Chat extends Component {
             </View>
 
           <View style={styles.downloadContainer}>
-            {/* <View style={styles.sizeContainer}>
-    <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
-    <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
-  </View> */}
-
             <FastImage
               style={styles.messageImageContainer}
               source={{
                 // @ts-ignore
-                uri: props.currentMessage.image,
+                uri: realImageURL,
                 priority: FastImage.priority.normal,
               }}
               resizeMode={FastImage.resizeMode.cover}
@@ -1256,14 +1254,10 @@ class Chat extends Component {
                   // );
                   const {token} = this.props.loginReducer;
                   const filesApiURL = connectionURL.fileUpload;
-                  // const FormData = require('form-data');
+                  const FormData = require('form-data');
                   let data = new FormData();
-
-                  let correctpath = '';
-                  const str1 = 'file://';
-                  const str2 = res.uri;
                   // correctpath = str2.replace(str1, '');
-
+                  // alert(JSON.stringify(res))
                   data.append('files', {
                     uri: res[0].uri,
                     type: res[0].type,
@@ -1286,8 +1280,6 @@ class Chat extends Component {
                     },
                     async response => {
                       if (response?.results?.length) {
-                        console.log(response, 'w8329742347892374');
-                        // alert(JSON.stringify(data));
                         this.submitMediaMessage(response.results);
                       }
                     },

@@ -19,8 +19,6 @@ const {primaryColor} = commonColors;
 
 const { xml } = require("@xmpp/client");
 
-const subscriptionsStanzaID = 'subscriptions';
-
 const options = {
   title: 'Select Avatar',
   storageOptions: {
@@ -99,7 +97,7 @@ class CreateNewGroup extends Component {
 
     xmpp.send(message);
     setTimeout(()=>{
-      fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+      fetchRosterlist(manipulatedWalletAddress, xmppConstants.subscriptionsStanzaID);
     },2000)
     
     roomCreated(true, navigation);
@@ -130,10 +128,8 @@ class CreateNewGroup extends Component {
       
         if (response.didCancel) {
           console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
+        } else if (response.errorMessage) {
+          alert('ImagePicker Error: ', response.errorMessage);
         } else {
           const source = { uri: response.uri };
       

@@ -10,7 +10,6 @@ import {
   Linking,
   Image,
   StyleSheet,
-  ScrollView,
   TouchableWithoutFeedback,
 } from 'react-native';
 import CustomHeader from '../components/shared/customHeader';
@@ -29,24 +28,17 @@ import {
 } from '../actions/auth';
 
 import {CommonTextInput} from '../components/shared/customTextInputs';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import TransactionListTab from '../components/TransactionListComponent';
 import {queryAllTransactions} from '../components/realmModels/transaction';
 import {updateVCard} from '../helpers/xmppStanzaRequestMessages';
 import Modal from 'react-native-modal';
-import {CommonButton} from '../components/shared/customButtons';
 import styles from './style/createNewChatStyle';
 import * as connectionURL from '../config/url';
-import {Swipeable} from 'react-native-gesture-handler';
 import {Alert} from 'react-native';
 import axios from 'axios';
 import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../docs/config';
 
-
-
-
-const {height, width} = Dimensions.get('window');
 const {
   primaryColor,
   primaryDarkColor
@@ -323,10 +315,12 @@ class ProfileScreen extends Component {
     Animated.spring(translateX, {
       toValue: type,
       duration: 500,
+      useNativeDriver:false
     }).start();
     Animated.timing(textColorAnim, {
       toValue: 1,
       duration: 700,
+      useNativeDriver:false
     }).start();
   };
   handleCoinSlide = type => {
@@ -335,10 +329,12 @@ class ProfileScreen extends Component {
     Animated.spring(translateCoin, {
       toValue: type,
       duration: 500,
+      useNativeDriver:false
     }).start();
     Animated.timing(textColorAnim, {
       toValue: 1,
       duration: 700,
+      useNativeDriver:false
     }).start();
   };
   onEnableScroll = value => {
@@ -1056,7 +1052,7 @@ class ProfileScreen extends Component {
     });
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-        <ScrollView
+        <View
           nestedScrollEnabled={true}
           style={{backgroundColor: primaryDarkColor, flex: 1}}>
           <CustomHeader
@@ -1280,7 +1276,7 @@ class ProfileScreen extends Component {
               </Modal>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }

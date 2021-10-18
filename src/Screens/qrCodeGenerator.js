@@ -58,6 +58,12 @@ class App extends Component {
     })
   }
 
+  createShareLink(){
+    const roomName = this.props.value.replace(CONFERENCEDOMAIN,'');
+    const chatLink = `${unv_url}${roomName}`
+    return chatLink
+  }
+
   copyToClipboard = async() => {
     const roomName = this.props.value.replace(CONFERENCEDOMAIN,'')
     const chatLink = `${unv_url}${roomName}`
@@ -66,6 +72,7 @@ class App extends Component {
   };
 
   render() {
+    const qrlink = this.createShareLink();
     return (
       <View 
       style={styles.MainContainer}
@@ -73,7 +80,7 @@ class App extends Component {
         <QRCode
           getRef={(c) => (this.svg = c)}
           //QR code value
-          value={this.props.value}
+          value={qrlink}
           //size of QR Code
           size={hp("20%")}
           //Color of the QR Code (Optional)
