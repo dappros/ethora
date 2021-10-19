@@ -1,6 +1,9 @@
 # ethora
 Mobile app engine and platform for social tokenized communities. 
 
+## wiki website
+Visit https://ethora.com/ for latest information regarding the project.
+
 ### Core features
 * iOS & Android
 * Social sign-in & Crypto wallets
