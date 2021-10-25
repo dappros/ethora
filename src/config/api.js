@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import {Alert} from 'react-native';
 let axios = require('axios');
 import NetInfo from "@react-native-community/netinfo";
@@ -44,6 +50,7 @@ export default class ConnectionAPI {
         try{
           axios(configAxios)
           .then(response => {
+            console.log(response,"adgdgjfhjndfg")
             callback(response.data)
           })
           .catch(error => {
@@ -133,17 +140,17 @@ export default class ConnectionAPI {
   }
 
   async fetchPost(url, data, token, logOut, callback) {
-    
+    console.log(url, JSON.stringify(data), token, "Asdasdasdasd");
     const configAxios = {
       method: 'post',
       url: url,
       headers: {
+        'Accept-Encoding': 'gzip, deflate, br',
         'Content-Type': 'application/json',
-        Authorization: token,
+        'Authorization': token,
       },
       data: JSON.stringify(data),
     };
-    console.log(JSON.stringify(data))
     this.checkNetworkState(callbackState =>{
       if(callbackState){
         console.log(callbackState,"callbackstate")
@@ -154,7 +161,7 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              console.log(error.response.data,"Asdasdasd")
+              console.log(error.response,"Asdasdas")
               callback(error.response.data);
 
               let title = "";
@@ -463,7 +470,8 @@ export default class ConnectionAPI {
               callback(response.data);
             })
             .catch(error=>{
-              callback(error.response.data);
+              console.log(error.response,"Asdasdasd")
+              callback(error.response);
 
               let title = "";
               let description = "";
@@ -543,5 +551,4 @@ export default class ConnectionAPI {
       }
     })
   }
-
 }

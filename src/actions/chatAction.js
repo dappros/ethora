@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import * as types from '../constants/types';
 import {insertMessages} from '../components/realmModels/messages';
 
@@ -66,7 +72,12 @@ export const setRosterAction = (rosterData) => {
             dispatch(setRoster(rosterData))
         }
     }
+    
 }
+export const setRoomRoles = (data) => ({
+    type: types.SET_ROOM_ROLES,
+    payload:data
+})
 
 export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateChatScreen,tokenAmount,receiverMessageId) => {
     return dispatch => {
@@ -93,10 +104,14 @@ export const setRecentRealtimeChatAction = (messageObject,roomName,shouldUpdateC
                 room_name:roomName,
                 text:messageObject.text,
                 system:false,
+                mimetype: messageObject.mimetype,
+
                 image:messageObject.image,
                 realImageURL: messageObject.realImageURL,
                 isStoredFile:messageObject.isStoredFile,
                 size:messageObject.size,
+                duration:messageObject.duration,
+
                 user_id:messageObject.user._id,
                 shouldUpdateChatScreen
             }

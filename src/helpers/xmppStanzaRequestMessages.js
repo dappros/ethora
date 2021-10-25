@@ -1,3 +1,8 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
 
 const { xml } = require("@xmpp/client");
 import {xmpp} from './xmppCentral';
@@ -274,4 +279,39 @@ export const retrieveOtherUserVcard = (username, userJID) => {
     },xml('vCard',{'xmlns':'vcard-temp'}));
 
     xmpp.send(message)
+}
+
+
+export const subscribeAndOpenChat = (manipulatedWalletAddress, chatJID) => {
+    const subscribe = xml(
+        'iq',
+        {
+            from: manipulatedWalletAddress + "@" + xmppConstants.DOMAIN,
+            to: chatJID,
+            type: 'set',
+            id: 'subscription'
+        },
+        xml(
+            'subscribe',
+            {
+                xmlns: 'urn:xmpp:mucsub:0',
+                nick: manipulatedWalletAddress
+            },
+            xml(
+                'event',
+                {
+                    node: 'urn:xmpp:mucsub:nodes:messages'
+                }
+            ),
+            xml(
+                'event',
+                {
+                    node: 'urn:xmpp:mucsub:nodes:subject'
+                }
+            )
+        )
+    );
+
+    xmpp.send(subscribe);
+    get_archive_by_room(chatJID);
 }

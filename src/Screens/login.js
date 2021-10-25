@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import React, {Component} from 'react';
 
 import styles from './style/loginStyle';
@@ -7,7 +13,7 @@ import {
   ActivityIndicator,
   Image,
   SafeAreaView,
-  ScrollView,
+  ImageBackground,
   Linking,
   Platform,
   Alert
@@ -35,8 +41,7 @@ import * as connectionURL from '../config/url';
 import { AppleButton, appleAuth, appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import 'react-native-get-random-values';
 import { v4 as uuid } from 'uuid'
-import {logoPath, appTitle, APP_TOKEN, commonColors, textStyles} from "../../docs/config"
-
+import {logoPath, appTitle, APP_TOKEN, commonColors, textStyles, loginScreenBackgroundImage} from "../../docs/config"
 const hitAPI = new fetchFunction();
 
   const {
@@ -222,11 +227,11 @@ class Login extends Component {
     // Configure the request
     appleAuthAndroid.configure({
       // The Service ID you registered with Apple
-      clientId: 'com.gkconnect.service',
+      clientId: 'com.ethora.service',
 
       // Return URL added to your Apple dev console. We intercept this redirect, but it must still match
       // the URL you provided to Apple. It can be an empty route on your backend as it's never called.
-      redirectUri: 'https://gkconnect-e9706.firebaseapp.com/__/auth/handler',
+      redirectUri: 'https://ethora-668e9.firebaseapp.com/__/auth/handler',
 
       // The type of response requested - code, id_token, or both.
       responseType: appleAuthAndroid.ResponseType.ALL,
@@ -371,164 +376,175 @@ class Login extends Component {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: secondaryColor,
+          // backgroundColor: primaryColor,
+          justifyContent:"center",
           height: Platform.OS == 'ios' ? hp('14%') : hp('10%'),
         }}>
-        <View style={[{justifyContent: 'center', flex: 1, margin: hp('1.2%')}]}>
-          <View style={styles.loginScreenContainer}>
-              <View style={styles.loginFormView}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Image
-                    source={logoPath}
-                    style={{width: wp('30%'), height: wp('30%')}}
-                  />
-                  <Text
-                    style={{
-                      color: '#FFFFFF',
-                      fontFamily: mediumFont,
-                      marginTop: hp('1.84%'),
-                      fontSize: hp('3.44%'),
-                    }}>
-                    {appTitle}
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginTop: hp('1%'),
-                    fontFamily: lightFont,
-                  }}>
-                  <CommonButton
-                    buttonText="Sign in with Facebook"
-                    textStyle={{
-                    color: "white",
-                    fontFamily:boldFont,
-                    textTransform:"uppercase",
-                    fontSize:hp("1.47%")
-                    }}
-                    icon
-                    iconType={<AntIcon name="facebook-square" size={hp('2.25%')} style={{marginRight:wp("4.981%")}} color="white" />}
-                    onPress={() =>
-                      this.onFacebookButtonPress()}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: '#4D6DA4',
-                      backgroundColor: '#4D6DA4',
-                      margin: wp('2%'),
-                      width: wp('80%'),
-                      height: hp('5.91%'),
-                      borderRadius: 5,
-                      fontFamily: lightFont,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  />
-                  <CommonButton
-                    buttonText={'Sign in with Google'}
-                    textStyle={{
-                    color:"#696969",
-                    fontFamily:boldFont,
-                    textTransform:"uppercase",
-                    fontSize:hp("1.47%")
-                    }}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: '#FFFFFF',
-                      backgroundColor: '#FFFFFF',
-                      margin: wp('2%'),
-                      width: wp('80%'),
-                      height: hp('5.91%'),
-                      borderRadius: 5,
-                      fontFamily: lightFont,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    icon
-                    iconType={<Image source={require('../assets/google-logo.png')} style={{height:hp('2.25%'), width:hp('2.25%'), marginRight:wp("5.06%")}}/>}
-                    onPress={() =>
-                      this.onGoogleButtonPress()
-                    }
-                  />
-                  <CommonButton
-                    buttonText={'Sign in with Apple'}
-                    textStyle={{
-                    color:"#fff",
-                    fontFamily:boldFont,
-                    textTransform:"uppercase",
-                    fontSize:hp("1.47%")
-                    }}
-                    style={{
-                      borderWidth: 1,
-                      borderColor: '#000000',
-                      backgroundColor: '#000000',
-                      margin: wp('2%'),
-                      width: wp('80%'),
-                      height: hp('5.91%'),
-                      borderRadius: 5,
-                      fontFamily: lightFont,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    icon
-                    iconType={
-                    <Image 
-                    source={require('../assets/appleWhite.png')} 
-                    style={{height:hp('2.25%'), width:hp('2.25%'), 
-                    marginRight:wp("5.06%")}}/>}
-                    onPress={() =>
-                      this.onAppleButtonPress()
-                    }
-                  />
-                </View>
-
-                <View style={{justifyContent: 'center', padding: 10}}>
-                  <ActivityIndicator
-                    size="small"
-                    color={'white'}
-                    animating={isFetching}
-                  />
-                </View>
-
-                <View style={{alignItems: 'center'}}>
-                  {error ? (
-                    <Text style={{color: 'red'}}>{errorMessage}</Text>
-                  ) : null}
-                </View>
-
-                <View
-                  style={{
-                    justifyContent: 'flex-end',
-                    alignItems: 'center',
-                    flex: 1,
-                  }}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: lightFont,
-                      fontSize: hp("0.98%")
-                    }}>
-                    Version 21.02.10
-                  </Text>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontFamily: lightFont,
-                      fontSize: hp("0.98%")
-                    }}>
-                    Powered by Dappros Platform
-                  </Text>
-                  <View style={{padding: 5}}>
+        <ImageBackground
+          source = {loginScreenBackgroundImage}
+          resizeMode="stretch"
+          style={{
+            flex:1,
+            justifyContent:"center",
+            alignItems:"center"
+          }}
+        >
+          <View style={[{justifyContent: 'center', flex: 1, alignItems:"center"}]}>
+            <View style={styles.loginScreenContainer}>
+                <View style={styles.loginFormView}>
+                  <View style={{justifyContent: 'center', alignItems: 'center', flex:1}}>
                     <Image
-                      source={require('../assets/poweredBy.png')}
-                      style={{height: hp('1.84%'), width: hp('1.84%')}}
+                      source={logoPath}
+                      style={{width: wp('70%'), height: wp('20%')}}
+                    />
+                    <Text
+                      style={{
+                        color: '#FFFFFF',
+                        fontFamily: mediumFont,
+                        marginTop: hp('1.84%'),
+                        fontSize: hp('3.44%'),
+                      }}>
+                      {/* {appTitle} */}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: hp('1%'),
+                      fontFamily: lightFont,
+                    }}>
+                    <CommonButton
+                      buttonText="Sign in with Facebook"
+                      textStyle={{
+                      color: "white",
+                      fontFamily:boldFont,
+                      textTransform:"uppercase",
+                      fontSize:hp("1.47%")
+                      }}
+                      icon
+                      iconType={<AntIcon name="facebook-square" size={hp('2.25%')} style={{marginRight:wp("4.981%")}} color="white" />}
+                      onPress={() =>
+                        this.onFacebookButtonPress()}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: '#4D6DA4',
+                        backgroundColor: '#4D6DA4',
+                        margin: wp('2%'),
+                        width: wp('80%'),
+                        height: hp('5.91%'),
+                        borderRadius: 5,
+                        fontFamily: lightFont,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    />
+                    <CommonButton
+                      buttonText={'Sign in with Google'}
+                      textStyle={{
+                      color:"#696969",
+                      fontFamily:boldFont,
+                      textTransform:"uppercase",
+                      fontSize:hp("1.47%")
+                      }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: '#FFFFFF',
+                        backgroundColor: '#FFFFFF',
+                        margin: wp('2%'),
+                        width: wp('80%'),
+                        height: hp('5.91%'),
+                        borderRadius: 5,
+                        fontFamily: lightFont,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      icon
+                      iconType={<Image source={require('../assets/google-logo.png')} style={{height:hp('2.25%'), width:hp('2.25%'), marginRight:wp("5.06%")}}/>}
+                      onPress={() =>
+                        this.onGoogleButtonPress()
+                      }
+                    />
+                    <CommonButton
+                      buttonText={'Sign in with Apple'}
+                      textStyle={{
+                      color:"#fff",
+                      fontFamily:boldFont,
+                      textTransform:"uppercase",
+                      fontSize:hp("1.47%")
+                      }}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: '#000000',
+                        backgroundColor: '#000000',
+                        margin: wp('2%'),
+                        width: wp('80%'),
+                        height: hp('5.91%'),
+                        borderRadius: 5,
+                        fontFamily: lightFont,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      icon
+                      iconType={
+                      <Image 
+                      source={require('../assets/appleWhite.png')} 
+                      style={{height:hp('2.25%'), width:hp('2.25%'), 
+                      marginRight:wp("5.06%")}}/>}
+                      onPress={() =>
+                        this.onAppleButtonPress()
+                      }
                     />
                   </View>
+
+                  <View style={{justifyContent: 'center', padding: 10}}>
+                    <ActivityIndicator
+                      size="small"
+                      color={'white'}
+                      animating={isFetching}
+                    />
+                  </View>
+
+                  <View style={{alignItems: 'center'}}>
+                    {error ? (
+                      <Text style={{color: 'red'}}>{errorMessage}</Text>
+                    ) : null}
+                  </View>
+
+                  <View
+                    style={{
+                      justifyContent: 'flex-end',
+                      alignItems: 'center',
+                      flex: 1,
+                    }}>
+                    <Text
+                      style={{
+                        color: 'grey',
+                        fontFamily: lightFont,
+                        fontSize: hp("0.98%")
+                      }}>
+                      Version 21.10
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'grey',
+                        fontFamily: lightFont,
+                        fontSize: hp("0.98%")
+                      }}>
+                      Powered by Dappros Platform
+                    </Text>
+                    <View style={{padding: 5}}>
+                      <Image
+                        source={require('../assets/poweredBy.png')}
+                        style={{height: hp('1.84%'), width: hp('1.84%')}}
+                      />
+                    </View>
+                  </View>
                 </View>
-              </View>
+            </View>
           </View>
-        </View>
+        </ImageBackground>
       </SafeAreaView>
     );
   }

@@ -1,10 +1,16 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import * as types from '../constants/types';
 import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
-import * as token from '../config/token';
 import {LoginManager} from 'react-native-fbsdk-next';
+import {APP_TOKEN} from '../../docs/config';
 
 const hitAPI = new fetchFunction();
 
@@ -147,13 +153,12 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     "loginType": loginType,
     "authToken": authToken,
   };
-  console.log(bodyData,"bodydata")
   return dispatch => {
     console.log("in dispatch");
     dispatch(fetchingCommonRequest());
     try {
       console.log("in try")
-      hitAPI.fetchPost(connectionURL.loginURL, bodyData, null, () => {
+      hitAPI.fetchPost(connectionURL.loginURL, bodyData, APP_TOKEN, () => {
         dispatch(logOut());
       }, data => {
         if (data.success) {
@@ -205,7 +210,7 @@ const registerUserWordpress = dataObject => {
       hitAPI.fetchPost(
         connectionURL.registerUserURL,
         dataObject,
-        token.APP_TOKEN,
+        APP_TOKEN,
         () => {
           dispatch(logOut());
         },
@@ -245,7 +250,7 @@ export const registerUser = (dataObject, ssoUserData) => {
       hitAPI.fetchPost(
         connectionURL.registerUserURL,
         dataObject,
-        token.APP_TOKEN,
+        APP_TOKEN,
         () => {
           dispatch(logOut());
         },
@@ -273,7 +278,7 @@ export const checkInDb = async email => {
     url: 'http://18.222.34.175/v1/users/checkEmail/' + email,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: token.APP_TOKEN,
+      Authorization: APP_TOKEN,
     },
   };
 

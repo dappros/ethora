@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
@@ -69,7 +75,7 @@ export default class Message extends React.Component {
     if (this.props.renderSystemMessage) {
         return this.props.renderSystemMessage(props);
     }
-    return <SystemMessage {...props}/>;
+    return <SystemMessage {...props} textStyle={{textAlign: 'center'}}/>;
   }
 
   render() {

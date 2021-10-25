@@ -120,6 +120,12 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+ext {    
+    react = [
+        nodeExecutableAndArgs:  ["/usr/local/bin/node"]
+    ]
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -128,6 +134,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+       javaMaxHeapSize "3g"
     }
 
     defaultConfig {

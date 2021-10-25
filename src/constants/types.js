@@ -1,3 +1,8 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
 
 //common fetch requests
 export const FETCHING_COMMON_REQUEST = 'FETCHING_COMMON_REQUEST';
@@ -48,7 +53,7 @@ export const UPDATED_ROASTER = "UPDATED_ROASTER";
 export const TOKEN_AMOUNT_UPDATE = "TOKEN_AMOUNT_UPDATE";
 export const SET_PUSH_DATA = "SET_PUSH_DATA";
 export const UPDATE_MESSAGE_COMPOSING_STATE = "UPDATE_MESSAGE_COMPOSING_STATE";
-
+export const SET_ROOM_ROLES = "SET_ROOM_ROLES";
 
 //users
 export const FETCHING_ALL_USER_SUCCESS = "FETCHING_ALL_USER_SUCCESS"; 

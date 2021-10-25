@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -5,12 +11,8 @@ import {
   View,
   Image,
   SafeAreaView,
-  Platform,
-  Alert,
-  AppState
+  AppState,
 } from 'react-native';
-
-import Toast from 'react-native-simple-toast';
 
 //routes
 import HeaderComponent from './components/shared/defaultHeader';
@@ -26,6 +28,8 @@ import AnotherProfile from './Screens/anotherUserProfileScreen';
 import Settings from './Screens/settingsScreen';
 import AppIntro from './Screens/AppIntro';
 import MintItems from './Screens/mintItems';
+import NftItemHistory from './Screens/NftItemHistory';
+
 // import Account from './Screens/Account';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
@@ -37,10 +41,9 @@ import {
   updateUserAvatar,
   updateUserProfile,
   setOtherUserVcard,
-  logOut
+  logOut,
+  setOtherUserDetails
 } from './actions/auth';
-
-import {insertMessages} from './components/realmModels/messages';
 import {
   finalMessageArrivalAction,
   participantsUpdateAction,
@@ -50,70 +53,24 @@ import {
   tokenAmountUpdateAction,
   setPushNotificationData,
   updateMessageComposingState,
+  setRoomRoles,
 } from './actions/chatAction';
-import {xmppConnect, xmpp} from './helpers/xmppCentral';
-import {
-  fetchRosterlist,
-  get_list_of_subscribers,
-  getRoomInfo,
-  commonDiscover,
-  vcardRetrievalRequest,
-  get_archive_by_room,
-  updateVCard,
-  setSubscriptions
-} from './helpers/xmppStanzaRequestMessages';
+import {xmppConnect, xmpp, xmppListener} from './helpers/xmppCentral';
 import * as xmppConstant from './constants/xmppConstants';
 import {underscoreManipulation} from './helpers/underscoreLogic';
 import {fetchWalletBalance} from './actions/wallet';
 import {realm} from './components/realmModels/allSchemas';
 import * as schemaTypes from './constants/realmConstants';
-import * as types from './constants/types';
 import store from './config/store';
-import {commonColors, logoPath} from '../docs/config';
+import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
 const {secondaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
-const subscriptionsStanzaID = 'subscriptions';
-const newSubscription = 'newSubscription';
 const {xml} = require('@xmpp/client');
-const debug = require('@xmpp/debug');
-let profileDescription = '';
-let profilePhoto = '';
-
-import {
-  insertRosterList,
-  updateRosterList,
-  fetchRosterList as fetchChatListRealm
-} from './components/realmModels/chatList';
 
 const Stack = createStackNavigator();
 let pushToken = '';
 let obj;
-
-const checkDefaultRoom = [
-  // {exist:false, name:"3981a2b9c1ef7fce8dbf5e3d44fefc58746dee11b3de35655e166c25142612ba"}, //Communication
-  // {exist:false, name:"680c3097aabc902bb129eaa23a974408856fbdccb7630cfd074ddf0639fc8ec0"}, //Workplace Readiness
-  {
-    exist: false,
-    name:
-      '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
-  }, //GK Leadership
-  // {exist:false, name:"91bfaa5cbfaab8a5661c0c5e15e54196d4ed4f76bb86b6cef07d337ff5c7fd41"}, //Career Development
-  {
-    exist: false,
-    name:
-      'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
-  }, //Global
-  {
-    exist: false,
-    name:
-      'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
-  }, //Southern Africa
-  // {exist:false, name:"c67531e3ec3d5090acc25d6768140ad37789000fb4c5e254af6be5538c49ee56"}, //Life Skills
-  // {exist:false, name:"cf5f45da57a2ca0e4a581d40099751bcb4919fbb984b547e1d9d12c8ca710412"}, //Personal Finance
-  // {exist:false, name:"d677190e0a9990e7d5fa9e4c1bbde44271fb8959c4acb6d43e02ed991128b4bf"}, //Service
-  // {exist:false, name:"ec75f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865"}, //Leadership
-];
 
 //realm listeners
 function realmMessageObjListener(message, changes) {
@@ -190,7 +147,7 @@ function loginComponent() {
       <Stack.Screen
         options={{
           header: () => (
-            <View style={{backgroundColor: secondaryColor}}>
+            <View style={{backgroundColor: "transparent"}}>
               <SafeAreaView />
             </View>
           ),
@@ -307,6 +264,25 @@ function profileComponent({navigation}) {
     </Stack.Navigator>
   );
 }
+function NftItemHistoryComponent({navigation}) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="NftItemHistory"
+        component={NftItemHistory}
+        options={{
+          header: () => (
+            <HeaderComponent
+              pushToken={pushToken}
+              navigation={navigation}
+              screenName="ChatHome"
+            />
+          ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 function anotherProfileComponent({navigation}) {
   return (
@@ -352,7 +328,6 @@ function settingsComponent({navigation}) {
   );
 }
 
-
 // function accountComponent({navigation}) {
 //   return (
 //     <Stack.Navigator>
@@ -375,8 +350,6 @@ function settingsComponent({navigation}) {
 //   );
 // }
 
-
-
 class Routes extends Component {
   constructor(props) {
     super(props);
@@ -387,9 +360,12 @@ class Routes extends Component {
       password: '',
       username: '',
       isSkipForever: 'false',
+      roomRolesMap: {},
     };
     this.configurePush();
     obj = this;
+    this.rolesMap = {};
+    this.usersLastSeen = {'0xc_f803e3c4e9_b_d_c8636665_d10_d4_a277b48415d421@dev.dxmpp.com': '26 August 12:02'}
   }
 
   configurePush = () => {
@@ -397,13 +373,13 @@ class Routes extends Component {
     let mucId = '';
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
-      onRegister: function(token) {
+      onRegister: function (token) {
         console.log('TOKEN:', token);
         pushToken = token.token;
       },
 
       // (required) Called when a remote is received or opened, or local notification is opened
-      onNotification: function(notification) {
+      onNotification: function (notification) {
         console.log('NOTIFICATION:', notification);
         msgId = notification.data.msgId;
         mucId = notification.data.mucId;
@@ -415,7 +391,7 @@ class Routes extends Component {
       },
 
       // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
-      onAction: function(notification) {
+      onAction: function (notification) {
         console.log('ACTION:', notification.action);
         console.log('NOTIFICATION:', notification);
 
@@ -423,7 +399,7 @@ class Routes extends Component {
       },
 
       // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-      onRegistrationError: function(err) {
+      onRegistrationError: function (err) {
         console.error(err.message, err);
       },
 
@@ -449,9 +425,6 @@ class Routes extends Component {
     });
   };
 
-
-
-
   async componentDidMount() {
     this.props.getUserToken();
     const isSkipForever = await AsyncStorage.getItem('@skipForever');
@@ -470,744 +443,94 @@ class Routes extends Component {
   }
 
   _handleAppStateChange = nextAppState => {
-    if(nextAppState === "active"){
-      if(xmpp){
-        if(xmpp.status === "disconnected"){
+    if (nextAppState === 'active') {
+      if (xmpp) {
+        if (xmpp.status === 'disconnected') {
           NetInfo.fetch().then(state => {
-            console.log("Connection type", state.type);
-            console.log("Is connected?", state.isConnected);
-            if(state.isConnected){
+            console.log('Connection type', state.type);
+            console.log('Is connected?', state.isConnected);
+            if (state.isConnected) {
               xmpp.start();
             }
           });
         }
       }
     }
-  }
+  };
+  getArchive = () => {
+    let message = xml(
+      'iq',
+      {type: 'set', id: this.state.manipulatedWalletAddress},
+      xml('query', {xmlns: 'urn:xmpp:mam:2', queryid: 'userArchive'}),
+    );
+    // write_logs("Query : " + message);
+    xmpp.send(message);
+  };
+  submitMessage = async (messageObject, chatJID) => {
+    // let messageText = messageString[0].text;
+    // let tokenAmount = messageString[0].tokenAmount
+    //   ? messageString[0].tokenAmount
+    //   : '0';
+    // let receiverMessageId = messageString[0].receiverMessageId
+    //   ? messageString[0].receiverMessageId
+    //   : '0';
 
-  //xmpp listeners
-  async xmppListener() {
-    debug(xmpp, true);
+    //xml for the message to send
+    console.log(messageObject, 'kdsljfdsklfjdsklfioewuruowe');
+    const message = xml(
+      'message',
+      {
+        id: 'sendMessage',
+        type: 'groupchat',
+        from: this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+        to: chatJID,
+      },
+      xml('body', {}, messageObject[0].text),
+      xml('data', {
+        xmlns: 'http://' + xmppConstant.DOMAIN,
+        senderJID:
+          this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+        senderFirstName: this.props.loginReducer.initialData.firstName,
+        senderLastName: this.props.loginReducer.initialData.lastName,
+        senderWalletAddress: this.props.loginReducer.initialData.walletAddress,
+        isSystemMessage: true,
+        tokenAmount: 0,
+        receiverMessageId: '',
+        // mucname: this.state.chatRoomDetails.chat_name,
+        photoURL: null,
+      }),
+    );
 
-    xmpp.on('error', err => {
-      // xmpp.reconnect.start();
-      if(err.message === "not-authorized - Invalid username or password"){
-        xmpp.stop().catch(console.error);
-        Alert.alert(
-          'User Not found',
-          'User account not found. Please sign in again.',[{
-            text:'Ok',
-            onPress:() => this.props.logOut()
-          }]
-        )
+    //call to send message to the xmpp server
+    await xmpp.send(message);
+
+    //function call to add message to gifted chat
+    // this.addMessage(messageString,this.state.loadMessageIndex,false)
+  };
+  getStoredItems = async () => {
+    try {
+      const value = await AsyncStorage.getItem('rosterListHashMap');
+      if (value !== null) {
+        // value previously stored
+        console.log(JSON.parse(value), 'parsedValue from home2');
+        return JSON.parse(value);
       }
+    } catch (e) {
+      // error reading value
+      console.log(e, 'error reading');
+    }
+  };
 
-      if(err.message === "WebSocket ECONNERROR wss://rtc-cc.dappros.com:5443/ws"){
-        xmpp.stop();
-      }
-      console.log(err.message,"xmpperror")
-    });
-
-    xmpp.on('offline', () => {
-      console.log('offline');
-    });
-
-    // xmpp.reconnect.start();
-
-    xmpp.reconnect.on('reconnecting',()=>{
-      // console.log("reconnecting...")
-    })
-
-    xmpp.on('stanza', async stanza => {
-      console.log(stanza, 'stanza');
-      let featureList = {};
-      if (stanza.is('iq')) {
-        if (stanza.attrs.id === 'disco1') {
-          stanza.children[0].children.map(item => {
-            if (item.name === 'feature') {
-              featureList = {...featureList, item};
-              if (item.attrs.var === 'http://jabber.org/protocol/chatstates') {
-              }
-            }
-          });
-
-          // console.log(stanza.children[0].children.map,"featuredisco")
-        }
-        //capture error
-        if (stanza.attrs.type === 'error') {
-          let errorMessage = '';
-          errorMessage = stanza.children[1].children[1].children[0];
-          // alert(errorMessage);
-        }
-        //capture room info
-        if (stanza.attrs.id === 'roomInfo') {
-          const roomName = stanza.children[0].children[0].attrs.name;
-          const roomJID = stanza.attrs.from;
-          let exist = false;
-          fetchChatListRealm().then(chatList=>{
-            if(chatList.length){
-              chatList.map(chat=>{
-                if(chat.jid === roomJID && chat.name === roomName){
-                  exist = true;
-                }else{
-                  exist = false;
-                }
-              })
-            }else{
-              exist = false;
-            }
-          }).then(()=>{
-            if(!exist){
-              updateRosterList({jid: roomJID, name: roomName}).then(() => {
-                //roasterUpdatedAction
-                this.props.updatedRoster(true);
-              });
-            }
-          })
-
-
-        }
-
-        //check new user join room
-        // console.log(this.props.ChatReducer.chatRoomDetails.chat_jid,"Asdasdas")
-        // if(stanza.attrs.from.split("/")[0] === this.props.ChatReducer.chatRoomDetails.chat_jid){
-        //   console.log("yess")
-        // }
-
-        //capture vcard request response
-        if (stanza.attrs.id === types.V_CARD_REQUEST) {
-          console.log(stanza, 'vcarddddddd');
-          if (!stanza.children[0].children.length) {
-            profilePhoto = this.props.loginReducer.initialData.photo;
-            profileDescription = 'No description';
-            // updateVcardPhoto(this.props.loginReducer.initialData.photo);
-            // updateVcardDescription("No Description");
-            updateVCard(profilePhoto, profileDescription);
-          } else {
-            stanza.children[0].children.map(item => {
-              if (item.name === 'DESC') {
-                profileDescription = item.children[0];
-                // this.props.updateUserDescription(item.children[0]);
-              }
-              if (item.name === 'PHOTO') {
-                // this.props.updateUserAvatar(item.children[0].children[0]);
-                // profilePhoto = item.children[0].children[0];
-                profilePhoto = this.props.loginReducer.initialData.photo;
-              }
-            });
-            this.props.updateUserProfile({
-              desc: profileDescription,
-              photoURL: profilePhoto,
-            });
-          }
-        }
-
-        //capture other user Vcard
-        if (stanza.attrs.id === types.OTHER_USER_V_CARD_REQUEST) {
-          let anotherUserAvatar = '';
-          let anotherUserDescription = '';
-          stanza.children[0].children.map(item => {
-            if (item.name === 'DESC') {
-              anotherUserDescription = item.children[0];
-            }
-            if (item.name === 'PHOTO') {
-              anotherUserAvatar = item.children[0].children[0];
-            }
-          });
-          this.props.setOtherUserVcard({
-            anotherUserAvatar,
-            anotherUserDescription,
-          });
-        }
-
-        if (stanza.attrs.id === types.UPDATE_VCARD) {
-          if (stanza.attrs.type === 'result') {
-            vcardRetrievalRequest(this.state.manipulatedWalletAddress);
-          }
-        }
-
-        if (stanza.attrs.type === 'error') {
-          console.log(stanza.children[1].children[1].children[0]);
-        }
-
-        //capture fin event, which comes after final message of the archived list has come
-        // if (
-        //   stanza.children[0].name !== undefined &&
-        //   stanza.children[0].name === 'fin'
-        // ) {
-        //   console.log("fin event", stanza)
-        //   this.props.finalMessageArrivalAction(true);
-        // }
-
-        if(stanza.attrs.id === "GetArchive"){
-          if(stanza.children[0].name === "fin"){
-            console.log("finevent",stanza)
-            this.props.finalMessageArrivalAction(true);
-          }
-        }
-
-        //capture participants of subscribed room
-        if (stanza.attrs.id === 'participants') {
-          const chat_jid = stanza.attrs.from;
-          const numberOfParticipants = stanza.children[0].children.length;
-          let exist = false;
-          fetchChatListRealm().then(chatList=>{
-            if(chatList.length){
-              chatList.map(chat=>{
-                if(chat.participants === numberOfParticipants){
-                  exist = true
-                }else{
-                  exist = false
-                }
-              })
-            }else{
-              exist = false
-            }
-
-          }).then(()=>{
-            if(!exist){
-              updateRosterList({
-                jid: chat_jid,
-                participants: numberOfParticipants,
-              }).then(() => {
-                this.props.participantsUpdateAction(true);
-              });
-            }
-          })
-
-        }
-      }
-
-      if (stanza.is('presence')) {
-
-        //catch when "you have joined too many conference issue"
-        if(stanza.attrs.type === "error"){
-          if(stanza.children[1].attrs.code === "500"){
-            console.log(stanza.children[1].children[1].children[0], "xmpperrorr");
-            xmpp.reconnect.stop();
-          }
-        }
-
-        if (stanza.attrs.id === 'CreateRoom') {
-          if (stanza.children[1] !== undefined) {
-            console.log(stanza, 'Asdcasxasdaxsd');
-            if (stanza.children[1].children[1].attrs.code === '201') {
-              Toast.show('Room created successfully', Toast.LONG);
-              fetchRosterlist(
-                this.state.manipulatedWalletAddress,
-                subscriptionsStanzaID,
-              );
-            }
-
-            if (stanza.children[1].children[1].attrs.code === '110') {
-              Toast.show('Room joined successfully', Toast.LONG);
-              fetchRosterlist(
-                this.state.manipulatedWalletAddress,
-                subscriptionsStanzaID,
-              );
-            }
-          }
-        }
-      }
-
-      if (stanza.name === 'message') {
-        //capture message composing
-        if (stanza.attrs.id === types.IS_COMPOSING) {
-          const mucRoom = stanza.attrs.from.split('/')[0];
-          console.log('captured');
-          
-          const fullName = stanza.children[1].attrs.fullName;
-          const manipulatedWalletAddress = stanza.children[1].attrs.manipulatedWalletAddress;
-          await this.props.updateMessageComposingState({
-            state: true,
-            username: fullName,
-            manipulatedWalletAddress,
-            mucRoom,
-          });
-        }
-
-        //capture message composing pause
-        if (stanza.attrs.id === types.PAUSED_COMPOSING) {
-          console.log('pause');
-          const mucRoom = stanza.attrs.from.split('/')[0];
-          // username = stanza.attrs.from.split('/')[1];
-          // if(this.state.username!==username){
-          const manipulatedWalletAddress = stanza.children[1].attrs.manipulatedWalletAddress;
-          await this.props.updateMessageComposingState({
-            state: false,
-            manipulatedWalletAddress,
-            mucRoom,
-          });
-          // }
-        }
-        if(stanza?.children[2]?.children[0]?.name ==='invite') {
-          console.log(stanza, 'invite')
-
-          const jid =  stanza.children[3].attrs.jid;
-          // console.log(jid, 'dsfjkdshjfksdu439782374')
-          const subscribe = xml(
-            'iq',
-            {
-              from:
-                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-              to: jid ,
-              type: 'set',
-              id: newSubscription,
-            },
-            xml(
-              'subscribe',
-              {
-                xmlns: 'urn:xmpp:mucsub:0',
-                nick: this.state.manipulatedWalletAddress,
-              },
-              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-            ),
-          );
-
-          xmpp.send(subscribe);
-          fetchRosterlist(
-            this.state.manipulatedWalletAddress,
-            subscriptionsStanzaID,
-          );
-        }
-
-
-        //capture archived message of a room
-        if (stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:2') {
-          const singleMessageDetailArray =
-            stanza.children[0].children[0].children[0].children;
-          let _id = stanza.children[0].children[0].children[0].attrs.from; // message owner id
-          const roomName = stanza.attrs.from; //the jid of room
-          let user_name = _id.replace(roomName + '/', '');
-          let _messageId = ''; //message id
-          let text = ''; //the message text sent by the owner
-          let isSystemMessage = 'false';
-          let messageObject = {};
-          let tokenAmount = 0;
-          let receiverMessageId = '';
-          let userAvatar = '';
-          let isMediafile = false;
-          let imageLocation = "";
-          let imageLocationPreview = "";
-          let mimetype = "";
-          let size = "";
-
-          await singleMessageDetailArray.forEach(item => {
-            if (item.name === 'body') {
-              text = item.children[0];
-            }
-            if (item.name === 'archived') {
-              _messageId = item.attrs.id;
-            }
-            if (item.name === 'data') {
-              user_name =
-                item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
-              _id = item.attrs.senderJID;
-              isSystemMessage = item.attrs.isSystemMessage
-                ? item.attrs.isSystemMessage
-                : isSystemMessage;
-              tokenAmount = item.attrs.tokenAmount
-                ? parseInt(item.attrs.tokenAmount)
-                : tokenAmount;
-              receiverMessageId = item.attrs.receiverMessageId
-                ? item.attrs.receiverMessageId
-                : receiverMessageId;
-
-              userAvatar = item.attrs.photoURL ? item.attrs.photoURL : null;
-
-              isMediafile = item.attrs.isMediafile === 'true'?true:false;
-
-              imageLocation = item.attrs.location;
-
-              imageLocationPreview = item.attrs.locationPreview;
-
-              mimetype = item.attrs.mimetype;
-
-              size = item.attrs.size;
-            }
-          });
-
-          if (isSystemMessage === 'false') {
-            if(isMediafile){
-              messageObject = {
-                _id: _messageId,
-                text:'',
-                createdAt: new Date(parseInt(_messageId.substring(0,13))),
-                system: false,
-                user:{
-                  _id,
-                  name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null
-                },
-                image:mimetype==="application/pdf"?"https://image.flaticon.com/icons/png/128/174/174339.png":imageLocationPreview,
-                realImageURL: imageLocation,
-                localURL:"",
-                isStoredFile: false,
-                mimetype: mimetype,
-                size: size
-              }
-            }else{
-              messageObject = {
-                _id: _messageId,
-                text,
-                createdAt: new Date(parseInt(_messageId.substring(0, 13))),
-                system: false,
-                user: {
-                  _id,
-                  name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null,
-                },
-              };
-            }
-          }
-          if (isSystemMessage === 'true') {
-            messageObject = {
-              _id: _messageId,
-              text,
-              createdAt: new Date(parseInt(_messageId.substring(0, 13))),
-              system: true,
-            };
-          }
-
-          insertMessages(
-            messageObject,
-            roomName,
-            tokenAmount,
-            receiverMessageId,
-          );
-        }
-      }
-
-      //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
-      if (stanza.attrs.id === newSubscription) {
-        const presence = xml(
-          'presence',
-          {
-            from:
-              this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-            to: stanza.attrs.from + '/' + this.state.manipulatedWalletAddress,
-          },
-          xml('x', 'http://jabber.org/protocol/muc'),
-        );
-        xmpp.send(presence);
-        fetchRosterlist(
-          this.state.manipulatedWalletAddress,
-          subscriptionsStanzaID,
-        );
-      }
-
-      //To capture the response for list of rosters (for now only subscribed muc)
-      if (stanza.attrs.id === subscriptionsStanzaID) {
-        console.log(stanza, 'in fetchroster stanza');
-        const rosterFromXmpp = stanza.children[0].children;
-        let rosterListArray = [];
-
-        let nonMemberchat = {
-          name:"f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5",
-          exist:false
-        }
-
-        rosterFromXmpp.map(item => {
-          //check if the default rooms already subscribed, if not then subscibe it
-          const rosterObject = {
-            name: 'Loading...',
-            jid: item.attrs.jid,
-            participants: 0,
-            avatar: 'https://placeimg.com/140/140/any',
-            counter: 0,
-            lastUserText: '',
-            lastUserName: '',
-            createdAt: new Date(),
-          };
-          
-          if(item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
-            nonMemberchat.exist = true;
-          }
-
-          // switch (item.attrs.jid.split(xmppConstant.CONFERENCEDOMAIN)[0]) {
-          //   case checkDefaultRoom[0].name:
-          //     checkDefaultRoom[0].exist = true;
-          //     break;
-
-          //   case checkDefaultRoom[1].name:
-          //     checkDefaultRoom[1].exist = true;
-          //     break;
-
-          //   case checkDefaultRoom[2].name:
-          //     checkDefaultRoom[2].exist = true;
-          //     break;
-
-          //   // case checkDefaultRoom[3].name:
-          //   //     checkDefaultRoom[3].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[4].name:
-          //   //     checkDefaultRoom[4].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[5].name:
-          //   //     checkDefaultRoom[5].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[6].name:
-          //   //     checkDefaultRoom[6].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[7].name:
-          //   //     checkDefaultRoom[7].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[8].name:
-          //   //     checkDefaultRoom[8].exist=true;
-          //   //     break;
-
-          //   // case checkDefaultRoom[9].name:
-          //   //     checkDefaultRoom[9].exist=true;
-          //   //     break;
-          // }
-          let exist = false;
-          fetchChatListRealm().then(chatListFromRealm => {
-            
-            if(chatListFromRealm.length){
-              chatListFromRealm.map(chat=>{
-                if(chat.jid === item.attrs.jid){
-                  exist = true;
-                }else{
-                  exist = false;
-                }
-              })
-            }else{
-              exist = false;
-            }
-          }).then(()=>{
-            if(!exist){
-              insertRosterList(rosterObject);
-              rosterListArray.push(rosterObject);
-            }
-          })
-
-          //presence is sent to every contact in roster
-          const presence = xml(
-            'presence',
-            {
-              from:
-                this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-              to: item.attrs.jid + '/' + this.state.manipulatedWalletAddress,
-            },
-            xml('x', 'http://jabber.org/protocol/muc'),
-          );
-
-          xmpp.send(presence);
-          const manipulatedWalletAddress = this.state.manipulatedWalletAddress;
-          get_list_of_subscribers(
-            item.attrs.jid,
-            this.state.manipulatedWalletAddress,
-          );
-          setTimeout(function() {
-            getRoomInfo(manipulatedWalletAddress, item.attrs.jid);
-          }, 3000);
-        });
-
-        if(!nonMemberchat.exist){
-          const subscribe = xml(
-            'iq',
-            {
-              from:
-                this.state.manipulatedWalletAddress +
-                '@' +
-                xmppConstant.DOMAIN,
-              to: nonMemberchat.name + xmppConstant.CONFERENCEDOMAIN,
-              type: 'set',
-              id: newSubscription,
-            },
-            xml(
-              'subscribe',
-              {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
-              xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-              xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-            ),
-          );
-
-          xmpp.send(subscribe);
-        }
-
-        this.props.setRosterAction(rosterListArray);
-      }
-
-      //to capture realtime incoming message
-      if (stanza.attrs.id === 'sendMessage') {
-        if (
-          stanza.children[0].attrs &&
-          stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:tmp'
-        ) {
-          console.log(stanza, 'asdasdasd');
-          let text = ''; //the text message
-          let _id = ''; //the id of the sender
-          let user_name = '';
-          let _messageId = ''; //the id of the message
-          let roomName = '';
-          let isSystemMessage = 'false';
-          let tokenAmount = 0;
-          let receiverMessageId = '';
-          let messageObject = {};
-          let userAvatar = '';
-          let isMediafile = false;
-          let imageLocation = "";
-          let imageLocationPreview = "";
-          let mimetype = "";
-          let size = "";
-          stanza.children.map(item => {
-            if (item.name === 'body') {
-              text = item.children[0];
-            }
-
-            if (item.name === 'archived') {
-              _messageId = item.attrs.id;
-              roomName = item.attrs.by;
-            }
-
-            if (item.name === 'data') {
-              user_name = item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
-
-              _id = item.attrs.senderJID;
-
-              isSystemMessage = item.attrs.isSystemMessage
-                ? item.attrs.isSystemMessage
-                : isSystemMessage;
-
-              tokenAmount = item.attrs.tokenAmount
-                ? parseInt(item.attrs.tokenAmount)
-                : tokenAmount;
-
-              receiverMessageId = item.attrs.receiverMessageId
-                ? item.attrs.receiverMessageId
-                : receiverMessageId;
-
-              userAvatar = item.attrs.photoURL ? item.attrs.photoURL : null;
-
-              isMediafile = item.attrs.isMediafile === 'true'?true:false;
-
-              imageLocation = item.attrs.location;
-
-              imageLocationPreview = item.attrs.locationPreview;
-
-              mimetype = item.attrs.mimetype;
-
-              size = item.attrs.size;
-
-            }
-          });
-
-          if (isSystemMessage === 'false') {
-            if(isMediafile){
-              messageObject = {
-                _id: _messageId,
-                text:'',
-                createdAt: new Date(parseInt(_messageId.substring(0,13))),
-                system: false,
-                user:{
-                  _id,
-                  name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null
-                },
-                image:mimetype==="application/pdf"?"https://image.flaticon.com/icons/png/128/174/174339.png":imageLocationPreview,
-                realImageURL: imageLocation,
-                localURL:"",
-                isStoredFile:false,
-                mimetype: mimetype,
-                size: size
-              }
-            }else{
-              messageObject = {
-                _id: _messageId,
-                text,
-                createdAt: new Date(parseInt(_messageId.substring(0, 13))),
-                system: false,
-                user: {
-                  _id,
-                  name: user_name,
-                  avatar: userAvatar!=='false'?userAvatar:null,
-                },
-              };
-            }
-          }
-          if (isSystemMessage === 'true') {
-            messageObject = {
-              _id: _messageId,
-              text,
-              createdAt: new Date(parseInt(_messageId.substring(0, 13))),
-              system: true,
-            };
-          }
-          console.log(messageObject, 'gjutyhgrv');
-          this.props.setRecentRealtimeChatAction(
-            messageObject,
-            roomName,
-            true,
-            tokenAmount,
-            receiverMessageId,
-          );
-        }
-      }
-    });
-
-    xmpp.on('online', async address => {
-      xmpp.reconnect.delay = 2000;
-      xmpp.send(
-        xml('presence', {
-          from: this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
-          to: xmppConstant.DOMAIN,
-        }),
-      );
-      fetchRosterlist(
-        this.state.manipulatedWalletAddress,
-        subscriptionsStanzaID,
-      );
-      newOnline = false;
-      commonDiscover(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
-      // discoverProfileSupport(this.state.manipulatedWalletAddress, xmppConstant.DOMAIN);
-      vcardRetrievalRequest(this.state.manipulatedWalletAddress);
-    });
-  }
-
-  subscribeToPremium(){
-    checkDefaultRoom.map(item => {
-      if (!item.exist) {
-        const subscribe = xml(
-          'iq',
-          {
-            from:
-              this.state.manipulatedWalletAddress +
-              '@' +
-              xmppConstant.DOMAIN,
-            to: item.name + xmppConstant.CONFERENCEDOMAIN,
-            type: 'set',
-            id: newSubscription,
-          },
-          xml(
-            'subscribe',
-            {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-          ),
-        );
-
-        xmpp.send(subscribe);
-      }
-    });
-
-  }
 
   async componentDidUpdate(prevProps) {
-
     //check if premium
-    if(this.props.AccountReducer.isPremium && this.props.AccountReducer.isPremium!==prevProps.AccountReducer.isPremium){
+    if (
+      this.props.AccountReducer.isPremium &&
+      this.props.AccountReducer.isPremium !== prevProps.AccountReducer.isPremium
+    ) {
       const isPremium = this.props.AccountReducer.isPremium;
-      // this.subscribeToPremium()
-      console.log(isPremium,"ascadfcadf")
+      console.log(isPremium, 'ascadfcadf');
     }
-    
 
     if (this.props.loginReducer.token !== prevProps.loginReducer.token) {
       if (this.props.loginReducer.token === 'loading') {
@@ -1242,7 +565,22 @@ class Routes extends Component {
         manipulatedWalletAddress,
       });
       xmppConnect(manipulatedWalletAddress, password);
-      this.xmppListener();
+      xmppListener(
+        manipulatedWalletAddress,
+        this.props.updatedRoster,
+        this.props.loginReducer.initialData,
+        this.props.updateUserProfile,
+        this.props.setOtherUserVcard,
+        this.props.finalMessageArrivalAction,
+        this.props.participantsUpdateAction,
+        this.props.updateMessageComposingState,
+        this.props.setRoomRoles,
+        this.getStoredItems,
+        this.props.setRosterAction,
+        this.props.setRecentRealtimeChatAction,
+        this.props.setOtherUserDetails,
+        this.props.logOut
+      )
     }
   }
 
@@ -1250,10 +588,7 @@ class Routes extends Component {
     if (this.state.userToken === 'loading') {
       return (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Image
-            source={logoPath}
-            style={{height: 100, width: 100}}
-          />
+          <Image source={logoPath} style={{height: 100, width: 100}} />
         </View>
       );
     }
@@ -1274,7 +609,7 @@ class Routes extends Component {
       console.log('isskipforever', this.state.isSkipForever);
       return (
         <Stack.Navigator>
-          {this.state.isSkipForever ? null : (
+          {this.state.isSkipForever || !tutorialStartUponLogin  ? null : (
             <Stack.Screen
               options={{headerShown: false}}
               name="AppIntroComponent"
@@ -1288,9 +623,14 @@ class Routes extends Component {
           />
           <Stack.Screen
             options={{headerShown: false}}
+            name="NftItemHistoryComponent"
+            component={NftItemHistoryComponent}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
             name="MintItemsComponent"
             component={mintitemsComponent}
-          /> 
+          />
           <Stack.Screen
             options={{headerShown: false}}
             name="QRScreenComponent"
@@ -1354,23 +694,22 @@ const mapStateToProps = state => {
     ...state,
   };
 };
-module.exports = connect(
-  mapStateToProps,
-  {
-    getUserToken,
-    finalMessageArrivalAction,
-    participantsUpdateAction,
-    setRosterAction,
-    setRecentRealtimeChatAction,
-    updatedRoster,
-    fetchWalletBalance,
-    tokenAmountUpdateAction,
-    setPushNotificationData,
-    updateUserDescription,
-    updateUserAvatar,
-    updateMessageComposingState,
-    updateUserProfile,
-    setOtherUserVcard,
-    logOut
-  },
-)(Routes);
+module.exports = connect(mapStateToProps, {
+  getUserToken,
+  finalMessageArrivalAction,
+  participantsUpdateAction,
+  setRosterAction,
+  setRecentRealtimeChatAction,
+  updatedRoster,
+  fetchWalletBalance,
+  tokenAmountUpdateAction,
+  setPushNotificationData,
+  updateUserDescription,
+  updateUserAvatar,
+  updateMessageComposingState,
+  updateUserProfile,
+  setOtherUserVcard,
+  setRoomRoles,
+  logOut,
+  setOtherUserDetails
+})(Routes);

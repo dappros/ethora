@@ -1,3 +1,8 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
 
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 export default {
@@ -10,7 +15,7 @@ containerView: {
 loginScreenContainer: {
     flex: 1,
     // margin: 10,
-    // justifyContent:'center'
+    justifyContent:'center',
 },
 logoText: {
     fontSize: 40,
@@ -21,7 +26,7 @@ logoText: {
 },
 loginFormView: {
     flex: 1,
-    // justifyContent:'center',
+    justifyContent:'center',
     marginTop:15,
     alignItems: 'center',
 },

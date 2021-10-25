@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import React, {Component, Fragment} from 'react';
 import {View, Text, Dimensions, Image, ScrollView, StyleSheet} from 'react-native';
 import CustomHeader from '../components/shared/customHeader';
@@ -8,10 +14,12 @@ import {
 } from 'react-native-responsive-screen';
 import {Divider} from 'react-native-elements';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import {fetchTransaction} from '../actions/wallet';
 import {queryAllTransactions} from '../components/realmModels/transaction';
 import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+
 
 const {primaryColor} = commonColors;
 
@@ -20,6 +28,7 @@ const {
   semiBoldFont,
   boldFont
 } = textStyles;
+
 
 const renderTabBar = props => {
   return (
@@ -154,7 +163,18 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          <Image source={coinImagePath} style={styles.tokenIconStyle} />
+        {props.item.nftPreview !== 'null' ? (
+            <Image
+              source={{uri: props.item.nftPreview}}
+              style={styles.imagePreviewStyle}
+            />
+          ) : (
+            <Image
+              source={coinImagePath}
+              style={styles.tokenIconStyle}
+            />
+          )}
+
           <Text
             style={{
               fontFamily: semiBoldFont,
@@ -196,7 +216,6 @@ const TransactionListFunction = props => {
     if (props.route === 'all') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -222,13 +241,11 @@ const TransactionListFunction = props => {
                 walletAddress,
               });
             })}
-          </ScrollView>
         </View>
       );
     } else if (props.route === 'sent') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -257,14 +274,12 @@ const TransactionListFunction = props => {
                 })
               );
             })}
-          </ScrollView>
         </View>
       );
     }
     if (props.route === 'received') {
       return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
-          <ScrollView>
             {transactions.map(item => {
               let showHeader = false;
               if (currentHeaderDate === null) {
@@ -293,7 +308,6 @@ const TransactionListFunction = props => {
                 })
               );
             })}
-          </ScrollView>
         </View>
       );
     } else return null;
@@ -365,18 +379,33 @@ class TransactionScreen extends Component {
       let balance = 0;
       if (transactions.length > 0) {
         transactions.map(item => {
-          if (item.from === walletAddress && item.from !== item.to) {
-            item.balance = balance - item.value;
+          if (item.tokenId === 'NFT') {
+            if (
+              item.from === this.state.walletAddress &&
+              item.from !== item.to
+            ) {
+              balance = balance;
+              item.balance = item.senderBalance + '/' + item.nftTotal;
+            } else {
+
+              item.balance = item.receiverBalance + '/' + item.nftTotal;
+            }
+          
+            return item;
+          } else if (
+            item.from === this.state.walletAddress &&
+            item.from !== item.to
+          ) {
+            item.balance = item.senderBalance;
             balance = balance - item.value;
-          } else if (item.from === item.to) {
-            item.balance = balance;
-            balance = balance;
+      
           } else {
-            item.balance = balance + item.value;
+            item.balance = item.receiverBalance;
             balance = balance + item.value;
           }
         });
       }
+      // console.log(transactions, 'transindidmount');
 
       this.setState({
         transactionObject: transactions.reverse(),
@@ -391,24 +420,38 @@ class TransactionScreen extends Component {
       this.props.walletReducer.transactions
     ) {
       queryAllTransactions(coinsMainName).then(transactions => {
+        // console.log(transactions, 'thisistransacts');
         let balance = 0;
         if (transactions.length > 0) {
+          console.log('entered');
           transactions.map(item => {
-            if (
+            if (item.tokenId === 'NFT') {
+              if (
+                item.from === this.state.walletAddress &&
+                item.from !== item.to
+              ) {
+                balance = balance;
+                item.balance = item.senderBalance + '/' + item.nftTotal;
+              } else {
+
+                item.balance = item.receiverBalance + '/' + item.nftTotal;
+              }
+            
+              return item;
+            } else if (
               item.from === this.state.walletAddress &&
               item.from !== item.to
             ) {
-              item.balance = balance - item.value;
+              item.balance = item.senderBalance;
               balance = balance - item.value;
-            } else if (item.from === item.to) {
-              item.balance = balance
-              balance = balance;
+        
             } else {
-              item.balance = balance + item.value;
+              item.balance = item.receiverBalance;
               balance = balance + item.value;
             }
           });
         }
+        console.log(transactions, 'transindidmount');
 
         this.setState({
           transactionObject: transactions.reverse(),
@@ -478,6 +521,17 @@ class TransactionScreen extends Component {
   }
 }
 
+const styles = StyleSheet.create({
+  tokenIconStyle:{
+    height: hp("3%"),
+    width: hp("3%")
+  },
+  imagePreviewStyle: {
+    height: hp('5%'),
+    width: hp('7%'),
+  },
+})
+
 const mapStateToProps = state => {
   return {
     ...state,
@@ -490,11 +544,3 @@ module.exports = connect(
     fetchTransaction,
   },
 )(TransactionScreen);
-
-
-const styles = StyleSheet.create({
-  tokenIconStyle:{
-    height: hp("3%"),
-    width: hp("3%")
-  }
-})

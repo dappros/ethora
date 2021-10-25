@@ -1,7 +1,23 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import { View, Text, StyleSheet, Image} from 'react-native';
 import React from 'react';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import {textStyles} from '../../../docs/config';
+import {
+    slide1Image1,
+    slide2Image1,
+    slide2Image2,
+    slide2Image3,
+    slide3Image1,
+    slide3Image2,
+    slide4Image1,
+    slide4Image2
+} from '../../../docs/config';
 
 const screenNameArray=["screen0","screen1","screen2","screen3","common"]
 const {
@@ -37,7 +53,7 @@ export const screen0 = ()=>{
             </View>
 
             <View style={styles[screenNameArray[0]].imageContainer}>
-                <Image style={styles[screenNameArray[0]].imageStyle} source={require("../../assets/slide1Img1.png")} />
+                <Image style={styles[screenNameArray[0]].imageStyle} source={slide1Image1} />
             </View>
         </View>
     )
@@ -61,7 +77,7 @@ export const screen1 = ()=>{
                 </View>
 
                 <View style={styles[screenNameArray[1]].imageContainer1}>
-                    <Image source={require("../../assets/slide2Img1.png")} style={styles[screenNameArray[1]].imageStyle1}/>
+                    <Image source={slide2Image1} style={styles[screenNameArray[1]].imageStyle1}/>
                 </View>
             </View>
 
@@ -73,7 +89,7 @@ export const screen1 = ()=>{
                 </View>
 
                 <View style={styles[screenNameArray[1]].imageContainer2}>
-                    <Image source={require("../../assets/slide2Img2.png")} style={styles[screenNameArray[1]].imageStyle2}/>
+                    <Image source={slide2Image2} style={styles[screenNameArray[1]].imageStyle2}/>
                 </View>
             </View>
 
@@ -85,7 +101,7 @@ export const screen1 = ()=>{
                 </View>
 
                 <View style={styles[screenNameArray[1]].imageContainer3}>
-                    <Image source={require("../../assets/slide2Img3.png")} style={styles[screenNameArray[1]].imageStyle3}/>
+                    <Image source={slide2Image3} style={styles[screenNameArray[1]].imageStyle3}/>
                 </View>
             </View>
 
@@ -126,7 +142,7 @@ export const screen2 = ()=>{
                     </View>
 
                     <View style={styles[screenNameArray[2]].imageContainer1}>
-                        <Image source={require("../../assets/slide3Img1.png")} style={styles[screenNameArray[2]].imageStyle1}/>
+                        <Image source={slide3Image1} style={styles[screenNameArray[2]].imageStyle1}/>
                     </View>
                 </View>
 
@@ -138,7 +154,7 @@ export const screen2 = ()=>{
                     </View>
 
                     <View style={styles[screenNameArray[2]].imageContainer2}>
-                        <Image source={require("../../assets/slide3Img2.png")} style={styles[screenNameArray[2]].imageStyle2}/>
+                        <Image source={slide3Image2} style={styles[screenNameArray[2]].imageStyle2}/>
                     </View>
                 </View>
 
@@ -171,7 +187,7 @@ export const screen3 = ()=>{
                 </View>
 
                 <View style={styles[screenNameArray[3]].imageContainer1}>
-                    <Image source={require("../../assets/slide4Img1.png")} style={styles[screenNameArray[3]].imageStyle1}/>
+                    <Image source={slide4Image1} style={styles[screenNameArray[3]].imageStyle1}/>
                 </View>
             </View>
 
@@ -183,7 +199,7 @@ export const screen3 = ()=>{
                 </View>
 
                 <View style={styles[screenNameArray[3]].imageContainer2}>
-                    <Image source={require("../../assets/slide4Img2.png")} style={styles[screenNameArray[3]].imageStyle2}/>
+                    <Image source={slide4Image2} style={styles[screenNameArray[3]].imageStyle2}/>
                 </View>
             </View>
 

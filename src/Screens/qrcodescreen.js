@@ -1,6 +1,13 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import React, {Component, Fragment} from 'react';
 import {View, Text, TouchableOpacity, ActivityIndicator, Platform, Alert} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
+import { RNCamera } from 'react-native-camera';
 import styles from './style/scanStyle';
 import {connect} from 'react-redux';
 import {fetchchatRoomDetails} from '../actions/chatAction';
@@ -19,40 +26,15 @@ import {
   fetchRosterlist,
 } from '../helpers/xmppStanzaRequestMessages';
 import CustomHeader from '../components/shared/customHeader';
-
 import * as xmppConstants from '../constants/xmppConstants';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import parseChatLink from '../helpers/parseChatLink';
+
 const {xml} = require('@xmpp/client');
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
 
 const subscriptionsStanzaID = 'subscriptions';
-
-const checkDefaultRoom = [
-  // {exist:false, name:"3981a2b9c1ef7fce8dbf5e3d44fefc58746dee11b3de35655e166c25142612ba"}, //Communication
-  // {exist:false, name:"680c3097aabc902bb129eaa23a974408856fbdccb7630cfd074ddf0639fc8ec0"}, //Workplace Readiness
-  {
-    exist: false,
-    name:
-      '9c8f9e5ee96519c5251b79f9da4f0ad210cd7450ce7e04c8fbbcfbf748436ee0',
-  }, //GK Leadership
-  // {exist:false, name:"91bfaa5cbfaab8a5661c0c5e15e54196d4ed4f76bb86b6cef07d337ff5c7fd41"}, //Career Development
-  {
-    exist: false,
-    name:
-      'a258b30f88c30650e73073d5bdde5cfcc6987100ae62d37789e5c46a0d85b7c6',
-  }, //Global
-  {
-    exist: false,
-    name:
-      'aa2f4a79e1413b444fd531a394a01befa3b5e8b559dfbc67b54ce9a1b91cedf2',
-  }, //Southern Africa
-  // {exist:false, name:"c67531e3ec3d5090acc25d6768140ad37789000fb4c5e254af6be5538c49ee56"}, //Life Skills
-  // {exist:false, name:"cf5f45da57a2ca0e4a581d40099751bcb4919fbb984b547e1d9d12c8ca710412"}, //Personal Finance
-  // {exist:false, name:"d677190e0a9990e7d5fa9e4c1bbde44271fb8959c4acb6d43e02ed991128b4bf"}, //Service
-  // {exist:false, name:"ec75f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865"}, //Leadership
-];
 
 const options = {
   mediaType: 'photo',
@@ -72,7 +54,6 @@ function createImageData(base64ImageData, imageType, callback) {
     decodedData = PNG.sync.read(bufferFrom);
     console.log(decodedData, 'decoded png');
   }
-  // const png = PNG.sync.read(Buffer.from(base64ImageData, 'base64'));
   const code = jsQR(
     Uint8ClampedArray.from(decodedData.data),
     decodedData.width,
@@ -131,7 +112,8 @@ class qrcodescreen extends Component {
       ScanResult: true,
       isLoading: true,
     });
-    this.openChat(e.data);
+    const chatJID = parseChatLink(e.data);
+    this.openChat(chatJID);
   };
 
 subscribeRoomAndOpenChat(chat_jid){
@@ -179,12 +161,6 @@ subscribeRoomAndOpenChat(chat_jid){
         this.subscribeRoomAndOpenChat(chat_jid);
       }
     })
-
-
-
-    // insertRosterList(chatListObject);
-
-    // this.props.navigation.navigate({name:"ChatComponent"})
   }
 
   openGallery() {
@@ -233,6 +209,7 @@ subscribeRoomAndOpenChat(chat_jid){
       <View style={styles.container}>
         <View style={{zIndex:Platform.OS==="android"?+1:0, flex:0.2}}>
         <CustomHeader
+          flashMode={RNCamera.Constants.FlashMode.torch}
           title = "Scan"
           isQR={false}
           navigation={this.props.navigation}
@@ -264,7 +241,7 @@ subscribeRoomAndOpenChat(chat_jid){
                     onPress={() => this.openGallery()}
                     style={styles.buttonTouchable}>
                     <Text style={styles.buttonTextStyle}>
-                      Upload from gallery
+                      Upload from gallery.
                     </Text>
                   </TouchableOpacity>
                 </View>

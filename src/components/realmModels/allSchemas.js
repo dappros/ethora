@@ -1,3 +1,9 @@
+/*
+Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
+*/
+
 import * as schemaTypes from '../../constants/realmConstants';
 // const Realm = require('realm');
 import Realm from 'realm';
@@ -20,7 +26,9 @@ const MessageSchema = {
         image:'string?',
         isStoredFile:'bool?',
         mimetype:'string?',
-        size:'string?'
+        size:'string?',
+        duration:{type: 'string', optional: true}
+
     }
 }
 
@@ -35,7 +43,9 @@ const ChatListSchema={
         counter:'int',
         lastUserText:'string',
         lastUserName:'string',
-        createdAt:'date?'
+        createdAt:'date?',
+        priority: {type: 'int', optional: true}
+
     }
 }
 
@@ -43,7 +53,7 @@ const TransactionSchema={
     name: schemaTypes.TRANSACTION_SCHEMA,
     primaryKey:"transactionHash",
     properties:{
-        blockNumber:'int',
+        // blockNumber:'int',
         from:'string',
         fromFirstName:'string',
         fromLastName:'string',
@@ -52,12 +62,19 @@ const TransactionSchema={
         timestamp:'date',
         to:'string',
         tokenId:'string',
+        nftTotal: 'string',
+        receiverBalance: 'string',
+        // _id: 'string',
         tokenName:'string',
         transactionHash:'string',
+        senderBalance: 'string',
         type:'string',
-        value:'int'
+        value:'int',
+        nftPreview: 'string',
+        nftFileUrl: 'string'
     }
 }
+
 
 export const databaseOptions = {
     path: 'ethoraTest.realm',
