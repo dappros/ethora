@@ -8,7 +8,8 @@ import * as xmppConfig from '../constants/xmppConstants';
 import {
   insertRosterList,
   fetchRosterList as fetchChatListRealm,
-  updateRosterList} from '../components/realmModels/chatList';
+  updateRosterList,
+} from '../components/realmModels/chatList';
 import {insertMessages} from '../components/realmModels/messages';
 import {
   fetchRosterlist,
@@ -16,24 +17,24 @@ import {
   get_list_of_subscribers,
   commonDiscover,
   getRoomInfo,
-  updateVCard
+  updateVCard,
 } from './xmppStanzaRequestMessages';
 import Toast from 'react-native-simple-toast';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 import * as types from '../constants/types';
 import {joinSystemMessage} from '../components/SystemMessage';
 
-const { client, xml } = require("@xmpp/client");
-const debug = require("@xmpp/debug");
+const {client, xml} = require('@xmpp/client');
+const debug = require('@xmpp/debug');
 
 let profileDescription = '';
 let profilePhoto = '';
 let rolesMap = {};
-let usersLastSeen = {}
+let usersLastSeen = {};
 
 export let xmpp;
 
-export const xmppListener=(
+export const xmppListener = (
   manipulatedWalletAddress,
   updatedRoster,
   initialData,
@@ -47,8 +48,8 @@ export const xmppListener=(
   setRosterAction,
   setRecentRealtimeChatAction,
   setOtherUserDetails,
-  logOut
-)=> {
+  logOut,
+) => {
   debug(xmpp, true);
 
   xmpp.on('error', err => {
@@ -242,13 +243,10 @@ export const xmppListener=(
           'fdsmlfnsdddsdffslfmn',
         );
         // stanza.children[1].children[1].children[0] ===
-        //   'You have been banned from this room' && 
+        //   'You have been banned from this room' &&
         //   Alert.alert(' You have been banned from this room');
         if (stanza.children[1].attrs.code === '500') {
-          console.log(
-            stanza.children[1].children[1].children[0],
-            'xmpperrorr',
-          );
+          console.log(stanza.children[1].children[1].children[0], 'xmpperrorr');
           xmpp.reconnect.stop();
         }
       }
@@ -258,11 +256,11 @@ export const xmppListener=(
 
         let role = stanza.children[0].children[0].attrs.role;
         rolesMap[roomJID] = role;
-        usersLastSeen[userJID] = moment().format('DD hh:mm')
+        usersLastSeen[userJID] = moment().format('DD hh:mm');
         setRoomRoles(rolesMap);
-        console.log(usersLastSeen, 'reducadklsmads;kld')
+        console.log(usersLastSeen, 'reducadklsmads;kld');
         await setOtherUserDetails({
-          anotherUserLastSeen: usersLastSeen 
+          anotherUserLastSeen: usersLastSeen,
         });
       }
 
@@ -290,8 +288,8 @@ export const xmppListener=(
     if (stanza.name === 'message') {
       //capture message composing
       if (
-        stanza?.children[0]?.children[0]?.children[0]?.children[2]
-          ?.children[0]?.name === 'invite'
+        stanza?.children[0]?.children[0]?.children[0]?.children[2]?.children[0]
+          ?.name === 'invite'
       ) {
         let jid =
           stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
@@ -300,8 +298,7 @@ export const xmppListener=(
         const subscribe = xml(
           'iq',
           {
-            from:
-              manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: jid,
             type: 'set',
             id: 'inviteFromArchive',
@@ -321,8 +318,7 @@ export const xmppListener=(
         const presence = xml(
           'presence',
           {
-            from:
-              manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: jid + '/' + manipulatedWalletAddress,
           },
           xml('x', 'http://jabber.org/protocol/muc'),
@@ -337,8 +333,7 @@ export const xmppListener=(
         const subscribe = xml(
           'iq',
           {
-            from:
-              manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: jid,
             type: 'set',
             id: xmppConfig.newSubscription,
@@ -392,8 +387,7 @@ export const xmppListener=(
         const subscribe = xml(
           'iq',
           {
-            from:
-              manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: jid,
             type: 'set',
             id: xmppConfig.newSubscription,
@@ -437,7 +431,6 @@ export const xmppListener=(
         let size = '';
         let duration = '';
 
-
         await singleMessageDetailArray.forEach(item => {
           if (item.name === 'body') {
             text = item.children[0];
@@ -465,11 +458,10 @@ export const xmppListener=(
 
             imageLocation = item.attrs.location;
 
-            imageLocationPreview = item.attrs.locationPreview;
-
+            imageLocationPreview = item.attrs.locationPreview || item.attrs.location;
             mimetype = item.attrs.mimetype;
+            console.log(item, '3202394023-49-23')
             duration = item.attrs.duration;
-
 
             size = item.attrs.size;
           }
@@ -521,12 +513,7 @@ export const xmppListener=(
           };
         }
 
-        insertMessages(
-          messageObject,
-          roomName,
-          tokenAmount,
-          receiverMessageId,
-        );
+        insertMessages(messageObject, roomName, tokenAmount, receiverMessageId);
       }
     }
 
@@ -611,8 +598,7 @@ export const xmppListener=(
           'presence',
           {
             id: 'roomPresence',
-            from:
-            manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: item.attrs.jid + '/' + manipulatedWalletAddress,
           },
           // xml('data', {
@@ -623,16 +609,10 @@ export const xmppListener=(
 
         xmpp.send(presence);
         let message = joinSystemMessage({
-          username:
-            initialData.firstName +
-            ' ' +
-            initialData.lastName,
+          username: initialData.firstName + ' ' + initialData.lastName,
         });
         // this.submitMessage(message, item.attrs.jid);
-        get_list_of_subscribers(
-          item.attrs.jid,
-          manipulatedWalletAddress,
-        );
+        get_list_of_subscribers(item.attrs.jid, manipulatedWalletAddress);
         setTimeout(function () {
           getRoomInfo(manipulatedWalletAddress, item.attrs.jid);
         }, 2000);
@@ -642,8 +622,7 @@ export const xmppListener=(
         const subscribe = xml(
           'iq',
           {
-            from:
-              manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
             to: nonMemberchat.name + xmppConfig.CONFERENCEDOMAIN,
             type: 'set',
             id: xmppConfig.newSubscription,
@@ -722,7 +701,7 @@ export const xmppListener=(
 
             imageLocation = item.attrs.location;
 
-            imageLocationPreview = item.attrs.locationPreview;
+            imageLocationPreview = item.attrs.locationPreview || item.attrs.location;
 
             mimetype = item.attrs.mimetype;
             duration = item.attrs.duration;
@@ -733,8 +712,6 @@ export const xmppListener=(
 
         if (isSystemMessage === 'false') {
           if (isMediafile) {
-         
-
             messageObject = {
               _id: _messageId,
               text: '',
@@ -794,17 +771,14 @@ export const xmppListener=(
     xmpp.reconnect.delay = 2000;
     xmpp.send(xml('presence'));
 
-    fetchRosterlist(
-      manipulatedWalletAddress,
-      xmppConfig.subscriptionsStanzaID,
-    );
+    fetchRosterlist(manipulatedWalletAddress, xmppConfig.subscriptionsStanzaID);
 
     commonDiscover(manipulatedWalletAddress, xmppConfig.DOMAIN);
     vcardRetrievalRequest(manipulatedWalletAddress);
   });
-}
+};
 
-export const xmppConnect=(walletAddress,password)=>{
+export const xmppConnect = (walletAddress, password) => {
   xmpp = client({
     service: xmppConfig.SERVICE,
     domain: xmppConfig.DOMAIN,
@@ -812,4 +786,4 @@ export const xmppConnect=(walletAddress,password)=>{
     password: password,
   });
   xmpp.start();
-}
+};
