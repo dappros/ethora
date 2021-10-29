@@ -32,6 +32,9 @@ import {
   saveInitialData,
   saveInitialDataAction
 } from '../actions/auth';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import parseChatLink from '../helpers/parseChatLink';
+import {setCurrentChatDetails} from '../actions/chatAction';
 
 import {CommonTextInput} from '../components/shared/customTextInputs';
 import {connect} from 'react-redux';
@@ -43,6 +46,8 @@ import styles from './style/createNewChatStyle';
 import * as connectionURL from '../config/url';
 import {Alert} from 'react-native';
 import axios from 'axios';
+import Hyperlink from 'react-native-hyperlink'
+import AntIcon from 'react-native-vector-icons/AntDesign'
 import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../docs/config';
 
 const {
@@ -902,6 +907,19 @@ class ProfileScreen extends Component {
     });
   };
 
+  handleChatLinks= async(chatLink)=>{
+      const walletAddress = this.props.loginReducer.initialData.walletAddress;
+      const chatJID = parseChatLink(chatLink);
+      const pattern1 = /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm 
+      const pattern2 = /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm
+
+      if(pattern1.test(chatLink)||pattern2.test(chatLink)){
+        openChatFromChatLink(chatJID, walletAddress, this.props.setCurrentChatDetails, this.props.navigation);
+      }else{
+        Linking.openURL(chatLink);
+      }
+  }
+
   modalContent = () => {
     if (this.state.modalTypeForEditing === 'description') {
       return this.state.isDescriptionEditable ? (
@@ -1136,19 +1154,29 @@ class ProfileScreen extends Component {
                       paddingTop: 0,
                     }}>
                     <TouchableOpacity>
+                      <Hyperlink 
+                      onPress={(url)=>this.handleChatLinks(url)}
+                      linkStyle={ { color: '#2980b9', fontSize: hp('1.8%'), textDecorationLine:"underline" } }
+                      >
                       <Text
-                        onPress={this.onDescriptionPressed}
                         style={{
-                          fontSize: hp('2.23%'),
+                          fontSize: hp('2%'),
                           fontFamily: regularFont,
                           textAlign: 'center',
-                          color: primaryColor,
+                          color: 'black',
                         }}>
                         {this.state.description &&
                         !this.state.isDescriptionEditable
                           ? this.state.description
                           : 'Add your description'}
                       </Text>
+                      </Hyperlink>
+                      <TouchableOpacity
+                      onPress={this.onDescriptionPressed}
+                      style={{alignItems:"center", margin:10}}
+                      >
+                        <AntIcon name="edit" size={hp('2%')}/>
+                      </TouchableOpacity>
                     </TouchableOpacity>
 
                     {/* {this.state.isDescriptionEditable ? (
@@ -1309,6 +1337,7 @@ module.exports = connect(
     getUserProfileData,
     setUserInitialData,
     saveInitialData,
-    saveInitialDataAction
+    saveInitialDataAction,
+    setCurrentChatDetails
   },
 )(ProfileScreen);

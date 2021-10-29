@@ -77,7 +77,6 @@ import downloadFile from '../helpers/downloadFileLogic';
 import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
 import {commonColors, textStyles} from '../../docs/config';
-import {RNCamera} from 'react-native-camera';
 import VideoRecorder from 'react-native-beautiful-video-recorder';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
