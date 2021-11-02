@@ -346,7 +346,7 @@ const RenderDragItem = ({
                       fontFamily: mediumFont,
                       fontSize: hp('1.6%'),
                     }}
-                    onPress={() => onMenuItemPress(index, item.jid, 'rename')}>
+                    onPress={() => onMenuItemPress(index, item.jid, 'rename', item.name)}>
                     Rename
                   </MenuItem>
                     )}
@@ -615,7 +615,7 @@ class ChatHome extends Component {
       }
     }
   }
-  onMenuItemPress = (index, jid, type) => {
+  onMenuItemPress = (index, jid, type, name) => {
     const initialData = this.props.loginReducer.initialData;
     let walletAddress = initialData.walletAddress;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -630,7 +630,7 @@ class ChatHome extends Component {
       this.hideMenu(index);
     }
     if (type === 'rename') {
-      this.setState({modalVisible: true, pickedChatJid: jid});
+      this.setState({modalVisible: true, pickedChatJid: jid, newChatName: name});
       this.hideMenu(index);
     }
     if (type === 'move') {
