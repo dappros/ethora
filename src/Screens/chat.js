@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
-import {GiftedChat, Actions} from 'react-native-gifted-chat';
+import {GiftedChat, Actions, Send} from 'react-native-gifted-chat';
 import MessageBody from '../components/MessageBody';
 import {
   loginUser,
@@ -37,7 +37,7 @@ import {
   setRecentRealtimeChatAction,
   tokenAmountUpdateAction,
   updateMessageComposingState,
-  setCurrentChatDetails
+  setCurrentChatDetails,
 } from '../actions/chatAction';
 import {queryRoomAllMessages} from '../components/realmModels/messages';
 import {
@@ -55,6 +55,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import {updateRosterList} from '../components/realmModels/chatList';
 import {TypingAnimation} from 'react-native-typing-animation';
@@ -78,8 +79,8 @@ import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
 import {commonColors, textStyles} from '../../docs/config';
 import VideoRecorder from 'react-native-beautiful-video-recorder';
-import parseChatLink from '../helpers/parseChatLink';
-import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import VideoPlayer from 'react-native-video-player';
+import WaveForm from 'react-native-audiowaveform';
 import Modal from 'react-native-modal';
 
 import AudioRecorderPlayer, {
@@ -89,8 +90,10 @@ import AudioRecorderPlayer, {
   AudioSet,
   AudioSourceAndroidType,
 } from 'react-native-audio-recorder-player';
+import Video from 'react-native-video';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 
-const {primaryColor} = commonColors;
+const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
 
 const {xml} = require('@xmpp/client');
@@ -164,7 +167,10 @@ class Chat extends Component {
       currentPositionSec: 0,
       currentDurationSec: 0,
       recording: false,
-      videoModalOpen: false,
+      mediaContentModalVisible: false,
+      playingMessageId: '',
+      mediaModalContent: {type: '', localURL: '', remoteUrl: ''},
+      videoPaused: false,
     };
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
@@ -489,10 +495,9 @@ class Chat extends Component {
     });
     const result = await this.audioRecorderPlayer.startRecorder(path);
 
-    this.setState({
-      recording: true,
-    });
-    console.log(result, 'sdfnksdfjlsdj;f');
+    // this.setState({
+    //   recording: true,
+    // });
   };
   onStopRecord = async () => {
     // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
@@ -981,32 +986,40 @@ class Chat extends Component {
   };
 
   startDownload = props => {
-    const {isStoredFile, mimetype, localURL} = props.currentMessage;
-    console.log(localURL, 'LocalURL..........');
+    const {isStoredFile, mimetype, localURL, realImageURL, id} =
+      props.currentMessage;
     var RNFS = require('react-native-fs');
+    this.setState({
+      mediaModalContent: {
+        type: mimetype,
+        url: localURL,
+        remoteUrl: realImageURL,
+      },
+      mediaContentModalVisible: mimetype === 'audio/mpeg' ? false : true,
+    });
 
     if (isStoredFile) {
+      this.setState({playingMessageId: id});
       //display image from store location path on modal view
       RNFS.exists(localURL)
         .then(val => {
-          console.log('yesinhere', val);
           if (val) {
             if (Platform.OS === 'ios') {
-              try{
-              RNFetchBlob.ios.openDocument('file://' + localURL);
-              }catch(err){
-                console.log(err,"rnfetchblobcatch")
+              try {
+                RNFetchBlob.ios.openDocument('file://' + localURL);
+              } catch (err) {
+                console.log(err, 'rnfetchblobcatch');
               }
             }
             if (Platform.OS === 'android') {
-              console.log(localURL, 'Asfadsfsfbvdfbdfghbdfghbfg');
-              RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+              console.log(mimetype, 'Asfadsfsfbvdfbdfghbdfghbfg');
+              // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
 
-              // if (mimetype === 'audio/mpeg') {
-              //   new Player(localURL).play();
-              // } else {
-              //   RNFetchBlob.android.actionViewIntent(localURL, mimetype);
-              // }
+              if (mimetype === 'audio/mpeg') {
+                // new Player(realImageURL).play();
+              } else {
+                RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+              }
             }
           } else {
             this.downloadFunction(props);
@@ -1062,30 +1075,59 @@ class Chat extends Component {
       });
     }
   };
-  RenderCam = () => {
-    return (
-      <View>
-        <VideoRecorder ref={this.cameraRef} />
-        <TouchableOpacity
-          onPress={this.videoRecord}
-          style={{
-            width: wp('25%'),
-            height: hp('5%'),
-            backgroundColor: 'transparent',
-            borderRadius: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginRight: 10,
-          }}></TouchableOpacity>
-      </View>
-    );
+  RenderMediaModalContent = () => {
+    if (this.state.mediaModalContent.type === 'image/jpeg') {
+      return (
+        <View>
+          <TouchableOpacity
+            onPress={() => this.toggleVideoModal(false)}
+            activeOpacity={0.9}>
+            <Image
+              source={{uri: this.state.mediaModalContent.remoteUrl}}
+              style={{width: '100%', height: '100%', borderRadius: 5}}
+            />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    if (this.state.mediaModalContent.type === 'video/mp4') {
+      return (
+        <View>
+          <TouchableOpacity
+            onPress={() =>
+              this.setState({videoPaused: !this.state.videoPaused})
+            }
+            activeOpacity={1}
+            style={{width: '100%', height: '100%'}}>
+            <VideoPlayer
+              video={{
+                uri: this.state.mediaModalContent.remoteUrl,
+              }}
+              autoplay
+              videoWidth={wp('100%')}
+              videoHeight={hp('100%')}
+              // thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
+            />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+    // if (this.state.mediaModalContent.type === 'audio/mpeg') {
+    //   return <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />;
+    // }
   };
   renderMessageImage = props => {
-    const {image, realImageURL, mimetype, size, duration} =
+    const {image, realImageURL, mimetype, size, duration, id} =
       props.currentMessage;
+    console.log(props.currentMessage, '234u2asdasda34');
     let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = this.formatBytes(parseFloat(size), 2);
-    if (mimetype === 'video/mp4' || mimetype === 'image/jpeg' || mimetype === 'image/png' || mimetype === 'application/octet-stream') {
+    if (
+      mimetype === 'video/mp4' ||
+      mimetype === 'image/jpeg' ||
+      mimetype === 'image/png' ||
+      mimetype === 'application/octet-stream'
+    ) {
       return (
         <TouchableOpacity
           onPress={() => this.startDownload(props)}
@@ -1097,43 +1139,47 @@ class Chat extends Component {
             justifyContent: 'center',
             position: 'relative',
           }}>
-          
+          <View
+            style={{
+              position: 'absolute',
+              top: 10,
+              // height: 30,
+              // width: 100,
+              left: 10,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              zIndex: 9999,
+              padding: 5,
+              borderRadius: 5,
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+            }}>
             <View
               style={{
-                position: 'absolute',
-                top: 10,
-                // height: 30,
-                // width: 100,
-                left: 10,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                zIndex: 9999,
-                padding: 5,
-                borderRadius: 5,
-                flexDirection: 'column',
-                alignItems: 'flex-start',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Ionicons
-                  name="arrow-down-outline"
-                  size={hp('1.7%')}
-                  color={'white'}
-                />
-                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
-                  {formatedSize.size + ' ' + formatedSize.unit}
-                </Text>
-              </View>
-
-              {duration && (
-                <Text style={{color: 'white', fontSize: hp('1.6%'), marginLeft: hp('1.7%')}}>
-                  {duration}
-                </Text>
-              )}
+              <Ionicons
+                name="arrow-down-outline"
+                size={hp('1.7%')}
+                color={'white'}
+              />
+              <Text style={{color: 'white', fontSize: hp('1.6%')}}>
+                {formatedSize.size + ' ' + formatedSize.unit}
+              </Text>
             </View>
+
+            {duration && (
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: hp('1.6%'),
+                  marginLeft: hp('1.7%'),
+                }}>
+                {duration}
+              </Text>
+            )}
+          </View>
 
           <View style={styles.downloadContainer}>
             <FastImage
@@ -1149,6 +1195,7 @@ class Chat extends Component {
         </TouchableOpacity>
       );
     } else if (mimetype === 'audio/mpeg') {
+      console.log(mimetype, '238942384923840');
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
         <TouchableOpacity
@@ -1188,24 +1235,25 @@ class Chat extends Component {
       )} */}
 
           {/* <View style={styles.downloadContainer}> */}
-            {/* <View style={styles.sizeContainer}>
+          {/* <View style={styles.sizeContainer}>
           <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
           <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
         </View> */}
 
-            <View
-              style={{
-                marginTop: 10,
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                // width: '100%',
-                flexDirection: 'row'
-                // position: 'absolute',
-                // left: props.position === 'left' ? '150%': null,
-                // zIndex: 10000
-              }}>
-              <AntDesign
-                name="play"
+          <View
+            style={{
+              marginTop: 10,
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              // width: '100%',
+              flexDirection: 'row',
+              // position: 'absolute',
+              // left: props.position === 'left' ? '150%': null,
+              // zIndex: 10000
+            }}>
+            {/* {this.state.playingMessageId === id ? (
+              <FontAwesome
+                name="pause-circle"
                 size={hp('3%')}
                 color={'white'}
                 style={{
@@ -1213,16 +1261,70 @@ class Chat extends Component {
                   marginLeft: 10,
                 }}
               />
-              {duration && (
-                <Text style={{color: 'white', fontSize: hp('1.6%')}}>
-                  {duration}
-                </Text>
-              )}
+            ) : ( */}
+
+            <AntDesign
+              name="play"
+              size={hp('3%')}
+              color={'white'}
+              style={{
+                marginRight: 4,
+                marginLeft: 10,
+              }}
+            />
+
+            {/* )} */}
+
+            {duration && (
+              <WaveForm
+                source={{uri: image}}
+                style={{width: 100, height: '100%'}}
+                waveFormStyle={{
+                  waveColor: primaryDarkColor,
+                  scrubColor: primaryDarkColor,
+                }}
+              />
+            )}
             {/* </View> */}
           </View>
         </TouchableOpacity>
       );
     }
+  };
+
+  renderSend = props => {
+    if (!props.text) {
+      return (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            paddingHorizontal: 5,
+          }}>
+          {/* {this.state.recording ? (
+            <TouchableOpacity
+              // onPress={this.takePicture}
+              onPress={this.onStopRecord}>
+              {<Ionicons name="stop-circle" size={hp('3%')} />}
+            </TouchableOpacity>
+          ) : ( */}
+          <TouchableOpacity
+            // onPress={this.takePicture}
+            style={{
+              backgroundColor: primaryDarkColor,
+              borderRadius: 50,
+              padding: 5,
+            }}
+            onPressIn={this.onStartRecord}
+            onPressOut={this.onStopRecord}>
+            <Entypo name="mic" color={'white'} size={hp('3%')} />
+          </TouchableOpacity>
+          {/* )} */}
+        </View>
+      );
+    }
+    return <Send {...props} />;
   };
 
   renderAttachment() {
@@ -1305,7 +1407,7 @@ class Chat extends Component {
             optionTintColor="#000000"
           />
 
-          <Actions
+          {/* <Actions
             containerStyle={{
               // width: hp('100%'),
               height: hp('4%'),
@@ -1319,14 +1421,7 @@ class Chat extends Component {
             }}
             icon={() => (
               <View style={{flexDirection: 'row'}}>
-                {/* <TouchableOpacity
-                  style={{marginRight: 10}}
-                  onPress={() => this.toggleVideoModal(true)}
-                  // onPressIn={this.onStartRecord}
-                  // onPressOut={this.onStopRecord}
-                >
-                  <Entypo name="camera" size={hp('3%')} />
-                </TouchableOpacity> */}
+               
                 {this.state.recording ? (
                   <TouchableOpacity
                     // onPress={this.takePicture}
@@ -1342,7 +1437,7 @@ class Chat extends Component {
                 )}
               </View>
             )}
-          />
+          /> */}
           {/* <Actions
           containerStyle={{
             width: hp('100%'),
@@ -1391,13 +1486,10 @@ class Chat extends Component {
     // }
   }
   onBackdropPress = () => {
-    this.setState({videoModalOpen: false});
+    this.setState({mediaContentModalVisible: false});
   };
   toggleVideoModal = value => {
-    this.setState({videoModalOpen: value});
-    setTimeout(() => {
-      this.videoRecord();
-    }, 1000);
+    this.setState({mediaContentModalVisible: value});
   };
 
   shouldScrollTo(indexValue) {
@@ -1412,11 +1504,16 @@ class Chat extends Component {
     }
   }
 
-  handleChatLinks=(chatLink)=>{
+  handleChatLinks = chatLink => {
     const walletAddress = this.props.loginReducer.initialData.walletAddress;
     const chatJID = parseChatLink(chatLink);
-    openChatFromChatLink(chatJID, walletAddress, this.props.setCurrentChatDetails, this.props.navigation);
-  }
+    openChatFromChatLink(
+      chatJID,
+      walletAddress,
+      this.props.setCurrentChatDetails,
+      this.props.navigation,
+    );
+  };
 
   render() {
     return (
@@ -1426,6 +1523,9 @@ class Chat extends Component {
           onQRPressed={() => this.QRPressed()}
           navigation={this.props.navigation}
         />
+        {this.state.mediaModalContent.type === 'audio/mpeg' && (
+          <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
+        )}
         <GiftedChat
           renderLoading={() => (
             <ActivityIndicator size="large" color={primaryColor} />
@@ -1451,6 +1551,7 @@ class Chat extends Component {
             shadowRadius: 3.84,
             elevation: 5,
           }}
+          renderSend={this.renderSend}
           renderChatFooter={() => this.chatFooter()}
           renderChatEmpty={() => emptyChatComponent()}
           isLoadingEarlier={this.state.isLoadingEarlier}
@@ -1463,7 +1564,7 @@ class Chat extends Component {
           onSend={messageString => this.submitMessage(messageString, false)}
           user={{
             _id:
-              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN ,
+              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
             name: this.state.firstName + ' ' + this.state.lastName,
           }}
           onPressAvatar={props => this.onAvatarPress(props)}
@@ -1472,18 +1573,18 @@ class Chat extends Component {
           onLongPress={(e, m) => this.onLongPressMessage(e, m)}
           onLongPressAvatar={e => this.onLongPressAvatar(e)}
           renderMessageImage={this.renderMessageImage}
-          parsePatterns={(linkStyle) => [
+          parsePatterns={linkStyle => [
             {
-              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
-              style:linkStyle,
-              onPress: this.handleChatLinks
+              pattern:
+                /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: this.handleChatLinks,
             },
             {
-              pattern:/\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
-              style:linkStyle,
-              onPress: this.handleChatLinks
+              pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: this.handleChatLinks,
             },
-
           ]}
         />
         <ModalList
@@ -1497,12 +1598,19 @@ class Chat extends Component {
         <Modal
           animationType="slide"
           transparent={true}
-          isVisible={this.state.videoModalOpen}
-          onBackdropPress={this.onBackdropPress}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
-          {this.RenderCam()}
+          isVisible={this.state.mediaContentModalVisible}
+          style={{position: 'relative'}}
+          backdropOpacity={0.9}
+          onBackdropPress={this.onBackdropPress}>
+          <>
+            <TouchableOpacity
+              style={{position: 'absolute', top: 0, right: -10, zIndex: 99999}}
+              onPress={() => this.toggleVideoModal(false)}>
+              <EvilIcons size={hp('5%')} name="close" color={'white'} />
+            </TouchableOpacity>
+
+            {this.RenderMediaModalContent()}
+          </>
         </Modal>
       </View>
     );
@@ -1578,5 +1686,5 @@ module.exports = connect(mapStateToProps, {
   fetchTransaction,
   setOtherUserDetails,
   setIsPreviousUser,
-  setCurrentChatDetails
+  setCurrentChatDetails,
 })(Chat);
