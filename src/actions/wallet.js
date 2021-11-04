@@ -124,6 +124,7 @@ export const transferTokens = (
   } else {
     url = getUrlFromStore(etherTransferURL);
   }
+  console.log(url, '324882309423094');
   if (bodyData.nftId) {
     console.log(bodyData.tokenName, 'tokenjsdkfhdksjf');
     Alert.alert(
