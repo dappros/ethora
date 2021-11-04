@@ -42,6 +42,7 @@ import {logOut} from '../actions/auth';
 import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
 import {commonColors, textStyles} from '../../docs/config';
+import {fileUpload, nftTransferURL} from '../config/routesConstants';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -56,25 +57,6 @@ const options = {
   saveToPhotos: true,
 };
 
-export const uploadToFilesApi = async (file, token, callback) => {
-  console.log(file, token, 'asdkasldh8q9e', connectionURL.fileUpload);
-  hitAPI.fileUpload(
-    connectionURL.fileUpload,
-    file,
-    token,
-    async () => {
-      logOut();
-    },
-    val => {
-      console.log('Progress Val: ', val);
-    },
-    async response => {
-      callback(response);
-      console.log(response, 'thisisit');
-    },
-  );
-};
-
 function MintItems(props) {
   const [avatarSource, setAvatarSource] = useState(null);
   const [itemName, setItemName] = useState('');
@@ -86,7 +68,7 @@ function MintItems(props) {
   const [open, setOpen] = useState(false);
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [walletAddress, setWalletAddress] =
     loginReducerData.initialData.walletAddress;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -100,8 +82,30 @@ function MintItems(props) {
     requestCameraPermission();
     return () => {};
   }, []);
+
+  const constructUrl = route => {
+    return allReducers.apiReducer.defaultUrl + route;
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+  const uploadToFilesApi = async (file, token, callback) => {
+    console.log(file, token, 'asdkasldh8q9e', constructUrl(fileUpload));
+    hitAPI.fileUpload(
+      constructUrl(fileUpload),
+      file,
+      token,
+      async () => {
+        logOut();
+      },
+      val => {
+        console.log('Progress Val: ', val);
+      },
+      async response => {
+        callback(response);
+        console.log(response, 'thisisit');
+      },
+    );
   };
   const setChatAvatar = async type => {
     if (type === 'image') {
@@ -236,18 +240,16 @@ function MintItems(props) {
   };
 
   const createNftItem = () => {
-    connectionURL.urlDefault = 'hello world';
-    console.log(connectionURL.urlDefault, 'defaduladsdttt')
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
     hitAPI.fetchPost(
-      connectionURL.nftTransferURL,
+      constructUrl(nftTransferURL),
       item,
       loginReducerData.token,
       async () => {
         console.log('minted failed');
       },
       async data => {
-        dispatch(addLogs(data))
+        // dispatch(addLogs(data));
         console.log(data, 'createddskldjfdsflk');
         props.fetchWalletBalance(
           loginReducerData.initialData.walletAddress,

@@ -33,31 +33,17 @@ import * as connectionURL from '../config/url';
 import * as token from '../config/token';
 import axios from 'axios';
 import Modal from 'react-native-modal';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
+import {
+  commonColors,
+  textStyles,
+  coinImagePath,
+  coinsMainName,
+} from '../../docs/config';
 import NftTransactionListTab from '../components/NftTransactionsHistoryComponent';
+import {transactionURL} from '../config/routesConstants';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
-
-
-
-export const getItemTransactionsHistory = async (walletAddress, nftId) => {
-  // let axios = require('axios');
-  let url =
-    connectionURL.transactionURL +
-    'walletAddress=' +
-    walletAddress +
-    '&' +
-    'nftId=' +
-    nftId;
-  return await axios.get(url, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: token,
-      'Accept-encoding': 'gzip, deflate'
-    },
-  });
-};
 
 function NftItemHistory(props) {
   const [avatarSource, setAvatarSource] = useState(null);
@@ -73,12 +59,28 @@ function NftItemHistory(props) {
   const [itemTransactions, setItemTransactions] = useState([]);
 
   const loginReducerData = allReducers.loginReducer;
-  const [
-    walletAddress,
-    setWalletAddress,
-  ] = loginReducerData.initialData.walletAddress;
+  const [walletAddress, setWalletAddress] =
+    loginReducerData.initialData.walletAddress;
   const [isModalVisible, setModalVisible] = useState(false);
   const {item, userWalletAddress} = props.route.params;
+  const getItemTransactionsHistory = async (walletAddress, nftId) => {
+    // let axios = require('axios');
+    let url =
+      allReducers.apiReducer.defaultUrl +
+      transactionURL +
+      'walletAddress=' +
+      walletAddress +
+      '&' +
+      'nftId=' +
+      nftId;
+    return await axios.get(url, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: token,
+        'Accept-encoding': 'gzip, deflate',
+      },
+    });
+  };
 
   // const [value, setValue] = useState(1);
   const [items, setItems] = useState([
@@ -92,24 +94,27 @@ function NftItemHistory(props) {
     // console.log(item, 'sdf49835430895dsf')
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
       const allTransactions = res.data.transactions.map(item => {
-        // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')  
+        // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')
         if (item.from === userWalletAddress && item.from !== item.to) {
           // balance = balance;
           item.balance = item.senderBalance + '/' + item.nftTotal;
         } else if (item.from === item.to) {
-          item.balance = item.receiverBalance + '/' + item.nftTotal
-             
+          item.balance = item.receiverBalance + '/' + item.nftTotal;
         } else {
           item.balance = item.receiverBalance + '/' + item.nftTotal;
         }
         return item;
       });
 
-      setItemTransactions(allTransactions.sort((a, b) => {
-        // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')  
-        return new Date(a.createdAt).toUTCString() - new Date(b.createdAt).toUTCString()
-      
-      }));
+      setItemTransactions(
+        allTransactions.sort((a, b) => {
+          // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')
+          return (
+            new Date(a.createdAt).toUTCString() -
+            new Date(b.createdAt).toUTCString()
+          );
+        }),
+      );
     });
     return () => {};
   }, [item]);
@@ -235,8 +240,7 @@ function NftItemHistory(props) {
                   marginTop: 10,
                   alignSelf: 'flex-start',
                 }}>
-                Balance: {' '}
-                {item.balance + '/' + item.total}
+                Balance: {item.balance + '/' + item.total}
               </Text>
 
               <View />
@@ -293,7 +297,12 @@ function NftItemHistory(props) {
                   alignItems: 'center',
                   marginTop: 20,
                 }}>
-                <Text style={{...classes.textStyle, fontWeight: 'bold', color: primaryColor}}>
+                <Text
+                  style={{
+                    ...classes.textStyle,
+                    fontWeight: 'bold',
+                    color: primaryColor,
+                  }}>
                   This item has no transactions yet...
                 </Text>
                 <Image
@@ -391,10 +400,7 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    fetchTransaction,
-    fetchWalletBalance,
-  },
-)(NftItemHistory);
+module.exports = connect(mapStateToProps, {
+  fetchTransaction,
+  fetchWalletBalance,
+})(NftItemHistory);

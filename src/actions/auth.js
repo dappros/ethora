@@ -12,8 +12,17 @@ import {deleteAllRealm} from '../components/realmModels/allSchemas';
 import {LoginManager} from 'react-native-fbsdk-next';
 import {APP_TOKEN} from '../../docs/config';
 import { addLogs } from './debugActions';
+import store from '../config/store';
+import { loginURL, registerUserURL } from '../config/routesConstants';
 
 const hitAPI = new fetchFunction();
+const getUrlFromStore = additionalUrl => {
+  console.log(
+    store.getState().apiReducer.defaultUrl + additionalUrl,
+    'getjkadlfjal',
+  );
+  return store.getState().apiReducer.defaultUrl + additionalUrl;
+};
 
 export const fetchingCommonRequest = () => ({
   type: types.FETCHING_COMMON_REQUEST,
@@ -160,7 +169,7 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     try {
       console.log('in try');
       hitAPI.fetchPost(
-        connectionURL.loginURL,
+        getUrlFromStore(loginURL),
         bodyData,
         APP_TOKEN,
         () => {
@@ -217,7 +226,7 @@ const registerUserWordpress = dataObject => {
   return dispatch => {
     try {
       hitAPI.fetchPost(
-        connectionURL.registerUserURL,
+        getUrlFromStore(registerUserURL),
         dataObject,
         APP_TOKEN,
         () => {
@@ -257,7 +266,7 @@ export const registerUser = (dataObject, ssoUserData) => {
 
     try {
       hitAPI.fetchPost(
-        connectionURL.registerUserURL,
+        getUrlFromStore(registerUserURL),
         dataObject,
         APP_TOKEN,
         () => {
