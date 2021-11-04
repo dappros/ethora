@@ -30,7 +30,7 @@ import {
   getUserProfileData,
   setUserInitialData,
   saveInitialData,
-  saveInitialDataAction
+  saveInitialDataAction,
 } from '../actions/auth';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
 import parseChatLink from '../helpers/parseChatLink';
@@ -46,21 +46,19 @@ import styles from './style/createNewChatStyle';
 import * as connectionURL from '../config/url';
 import {Alert} from 'react-native';
 import axios from 'axios';
-import Hyperlink from 'react-native-hyperlink'
-import AntIcon from 'react-native-vector-icons/AntDesign'
-import {commonColors, textStyles, coinImagePath, coinsMainName, itemsTransfersAllowed} from '../../docs/config';
+import Hyperlink from 'react-native-hyperlink';
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import {
+  commonColors,
+  textStyles,
+  coinImagePath,
+  coinsMainName,
+  itemsTransfersAllowed,
+} from '../../docs/config';
 
-const {
-  primaryColor,
-  primaryDarkColor
-} = commonColors;
+const {primaryColor, primaryDarkColor} = commonColors;
 
-const {
-  mediumFont,
-  regularFont,
-  boldFont,
-  lightFont
-} = textStyles;
+const {mediumFont, regularFont, boldFont, lightFont} = textStyles;
 
 export const changeUserName = async (data, token) => {
   console.log(data, 'datainnewname');
@@ -103,7 +101,7 @@ const AssetItem = ({
   nftId,
   onClick,
   index,
-  item
+  item,
 }) => {
   const rightSwipe = () => {
     return (
@@ -309,6 +307,7 @@ class ProfileScreen extends Component {
       ref: null,
       itemsBalance: 0,
       modalTypeForEditing: 'name',
+      debugModeCounter: 0,
     };
     coinRef = createRef();
   }
@@ -326,12 +325,12 @@ class ProfileScreen extends Component {
     Animated.spring(translateX, {
       toValue: type,
       duration: 500,
-      useNativeDriver:false
+      useNativeDriver: false,
     }).start();
     Animated.timing(textColorAnim, {
       toValue: 1,
       duration: 700,
-      useNativeDriver:false
+      useNativeDriver: false,
     }).start();
   };
   handleCoinSlide = type => {
@@ -340,12 +339,12 @@ class ProfileScreen extends Component {
     Animated.spring(translateCoin, {
       toValue: type,
       duration: 500,
-      useNativeDriver:false
+      useNativeDriver: false,
     }).start();
     Animated.timing(textColorAnim, {
       toValue: 1,
       duration: 700,
-      useNativeDriver:false
+      useNativeDriver: false,
     }).start();
   };
   onEnableScroll = value => {
@@ -410,26 +409,30 @@ class ProfileScreen extends Component {
                   </Text>
                 </Animated.Text>
               </TouchableOpacity>
-             {itemsTransfersAllowed&&  <TouchableOpacity
-                onLayout={event =>
-                  this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
-                }
-                ref={ref => (this.coinRef = ref)}
-                onPress={() =>
-                  this.setState({activeAssetTab: 1}, () =>
-                    this.handleCoinSlide(xCoinTabTwo),
-                  )
-                }>
-                <Animated.Text
-                  style={{
-                    fontSize: hp('1.97%'),
-                    fontFamily: boldFont,
-                    color:
-                      this.state.activeAssetTab === 1 ? '#000000' : '#0000004D',
-                  }}>
-                  Items ({this.state.itemsBalance})
-                </Animated.Text>
-              </TouchableOpacity>}
+              {itemsTransfersAllowed && (
+                <TouchableOpacity
+                  onLayout={event =>
+                    this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
+                  }
+                  ref={ref => (this.coinRef = ref)}
+                  onPress={() =>
+                    this.setState({activeAssetTab: 1}, () =>
+                      this.handleCoinSlide(xCoinTabTwo),
+                    )
+                  }>
+                  <Animated.Text
+                    style={{
+                      fontSize: hp('1.97%'),
+                      fontFamily: boldFont,
+                      color:
+                        this.state.activeAssetTab === 1
+                          ? '#000000'
+                          : '#0000004D',
+                    }}>
+                    Items ({this.state.itemsBalance})
+                  </Animated.Text>
+                </TouchableOpacity>
+              )}
             </View>
             <Animated.View
               style={{
@@ -540,7 +543,6 @@ class ProfileScreen extends Component {
         </View>
       );
     }
-   
   };
 
   componentDidMount() {
@@ -616,12 +618,13 @@ class ProfileScreen extends Component {
     Linking.getInitialURL().then(url => {
       console.log(url);
     });
-   setTimeout(() => {
-    itemsTransfersAllowed &&   this.coinRef.measure((fx, fy, width, height, px, py) => {
-        if (this.props.route.params.viewItems) {
-          this.setState({activeAssetTab: 1}, () => this.handleCoinSlide(px));
-        }
-      });
+    setTimeout(() => {
+      itemsTransfersAllowed &&
+        this.coinRef.measure((fx, fy, width, height, px, py) => {
+          if (this.props.route.params.viewItems) {
+            this.setState({activeAssetTab: 1}, () => this.handleCoinSlide(px));
+          }
+        });
     }, 1000);
 
     if (Platform.OS === 'ios') {
@@ -752,13 +755,11 @@ class ProfileScreen extends Component {
       prevProps.walletReducer.balance !== this.props.walletReducer.balance
       // this.state.itemsData.length
     ) {
-     
-      
       // this.setState({itemsDat})
       let itemsData = this.props.walletReducer.balance.filter(
         item => item.tokenType === 'NFT' && item.balance > 0,
       );
-      console.log(itemsData, 'itemsss')
+      console.log(itemsData, 'itemsss');
       let coinData = this.props.walletReducer.balance.filter(
         item => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
       );
@@ -818,7 +819,9 @@ class ProfileScreen extends Component {
         itemsData: itemsData.reverse(),
         coinBalance,
         coinData,
-        assetCount: +parseFloat(coinBalance).toFixed(0) + (itemsTransfersAllowed ? itemsBalance : 0 ) ,
+        assetCount:
+          +parseFloat(coinBalance).toFixed(0) +
+          (itemsTransfersAllowed ? itemsBalance : 0),
         itemsBalance,
       });
     }
@@ -873,19 +876,21 @@ class ProfileScreen extends Component {
         //   walletAddress: this.props.loginReducer.initialData.walletAddress,
         // }),
         saveInitialData(
-          { firstName: this.state.firstName,
+          {
+            firstName: this.state.firstName,
             lastName: this.state.lastName,
             image: this.props.loginReducer.initialData.image,
             username: this.props.loginReducer.initialData.username,
-  
+
             password: this.props.loginReducer.initialData.password,
-  
-            walletAddress: this.props.loginReducer.initialData.walletAddress,},
+
+            walletAddress: this.props.loginReducer.initialData.walletAddress,
+          },
           callback => {
             this.props.saveInitialDataAction(callback);
             // dispatch(loginUserSuccess(data));
           },
-        )
+        ),
       )
       .catch(e => console.log(e, 'nameerror'));
     // this.props.getUserProfileData(this.props.loginReducer.token)
@@ -907,18 +912,24 @@ class ProfileScreen extends Component {
     });
   };
 
-  handleChatLinks= async(chatLink)=>{
-      const walletAddress = this.props.loginReducer.initialData.walletAddress;
-      const chatJID = parseChatLink(chatLink);
-      const pattern1 = /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm 
-      const pattern2 = /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm
+  handleChatLinks = async chatLink => {
+    const walletAddress = this.props.loginReducer.initialData.walletAddress;
+    const chatJID = parseChatLink(chatLink);
+    const pattern1 =
+      /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm;
+    const pattern2 = /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm;
 
-      if(pattern1.test(chatLink)||pattern2.test(chatLink)){
-        openChatFromChatLink(chatJID, walletAddress, this.props.setCurrentChatDetails, this.props.navigation);
-      }else{
-        Linking.openURL(chatLink);
-      }
-  }
+    if (pattern1.test(chatLink) || pattern2.test(chatLink)) {
+      openChatFromChatLink(
+        chatJID,
+        walletAddress,
+        this.props.setCurrentChatDetails,
+        this.props.navigation,
+      );
+    } else {
+      Linking.openURL(chatLink);
+    }
+  };
 
   modalContent = () => {
     if (this.state.modalTypeForEditing === 'description') {
@@ -1089,10 +1100,6 @@ class ProfileScreen extends Component {
           {/* Profile Picture */}
           <View style={{zIndex: +1, alignItems: 'center'}}>
             <View
-              onPress={() => {
-                this.onEnableScroll(false);
-                console.log('scrooooooooool');
-              }}
               style={{
                 width: hp('10.46%'),
                 height: hp('10.46%'),
@@ -1154,28 +1161,30 @@ class ProfileScreen extends Component {
                       paddingTop: 0,
                     }}>
                     <TouchableOpacity>
-                      <Hyperlink 
-                      onPress={(url)=>this.handleChatLinks(url)}
-                      linkStyle={ { color: '#2980b9', fontSize: hp('1.8%'), textDecorationLine:"underline" } }
-                      >
-                      <Text
-                        style={{
-                          fontSize: hp('2%'),
-                          fontFamily: regularFont,
-                          textAlign: 'center',
-                          color: 'black',
+                      <Hyperlink
+                        onPress={url => this.handleChatLinks(url)}
+                        linkStyle={{
+                          color: '#2980b9',
+                          fontSize: hp('1.8%'),
+                          textDecorationLine: 'underline',
                         }}>
-                        {this.state.description &&
-                        !this.state.isDescriptionEditable
-                          ? this.state.description
-                          : 'Add your description'}
-                      </Text>
+                        <Text
+                          style={{
+                            fontSize: hp('2%'),
+                            fontFamily: regularFont,
+                            textAlign: 'center',
+                            color: 'black',
+                          }}>
+                          {this.state.description &&
+                          !this.state.isDescriptionEditable
+                            ? this.state.description
+                            : 'Add your description'}
+                        </Text>
                       </Hyperlink>
                       <TouchableOpacity
-                      onPress={this.onDescriptionPressed}
-                      style={{alignItems:"center", margin:10}}
-                      >
-                        <AntIcon name="edit" size={hp('2%')}/>
+                        onPress={this.onDescriptionPressed}
+                        style={{alignItems: 'center', margin: 10}}>
+                        <AntIcon name="edit" size={hp('2%')} />
                       </TouchableOpacity>
                     </TouchableOpacity>
 
@@ -1266,7 +1275,6 @@ class ProfileScreen extends Component {
                         Transactions ({this.state.transactionCount})
                       </Animated.Text>
                     </TouchableOpacity>
-                   
                   </View>
 
                   <Animated.View
@@ -1329,15 +1337,11 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    fetchTransaction,
-    fetchWalletBalance,
-    getUserProfileData,
-    setUserInitialData,
-    saveInitialData,
-    saveInitialDataAction,
-    setCurrentChatDetails
-  },
-)(ProfileScreen);
+module.exports = connect(mapStateToProps, {
+  fetchTransaction,
+  fetchWalletBalance,
+  getUserProfileData,
+  setUserInitialData,
+  saveInitialData,
+  saveInitialDataAction,
+})(ProfileScreen);

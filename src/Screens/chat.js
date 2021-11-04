@@ -15,6 +15,8 @@ import {
   StyleSheet,
   Pressable,
   Button,
+  Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
@@ -175,10 +177,25 @@ class Chat extends Component {
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
     this.cameraRef = createRef();
+    this.mediaButtonAnimation = new Animated.Value(1);
   }
 
   //fucntion to get chat archive of a room
+  animateMediaButtonIn = () => {
+    Animated.spring(this.mediaButtonAnimation, {
+      toValue: 1.8,
+      useNativeDriver: true,
+    }).start();
+  };
+  animateMediaButtonOut = () => {
+    Animated.spring(this.mediaButtonAnimation, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 40,
 
+      friction: 3,
+    }).start();
+  };
   async componentDidMount() {
     let firstName = '';
     let lastName = '';
@@ -488,6 +505,7 @@ class Chat extends Component {
     }
   };
   onStartRecord = async () => {
+    this.animateMediaButtonIn();
     const dirs = RNFetchBlob.fs.dirs;
     const path = Platform.select({
       ios: 'hello.m4a',
@@ -500,6 +518,8 @@ class Chat extends Component {
     // });
   };
   onStopRecord = async () => {
+    this.animateMediaButtonOut();
+
     // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
     // const dirs = RNFetchBlob.fs.dirs;
 
@@ -1076,7 +1096,10 @@ class Chat extends Component {
     }
   };
   RenderMediaModalContent = () => {
-    if (this.state.mediaModalContent.type === 'image/jpeg') {
+    if (
+      this.state.mediaModalContent.type === 'image/jpeg' ||
+      this.state.mediaModalContent.type === 'image/png'
+    ) {
       return (
         <View>
           <TouchableOpacity
@@ -1293,6 +1316,9 @@ class Chat extends Component {
   };
 
   renderSend = props => {
+    const animateMediaButtonStyle = {
+      transform: [{scale: this.mediaButtonAnimation}],
+    };
     if (!props.text) {
       return (
         <View
@@ -1301,25 +1327,46 @@ class Chat extends Component {
             alignItems: 'center',
             height: '100%',
             paddingHorizontal: 5,
+            flexDirection: 'row'
           }}>
-          {/* {this.state.recording ? (
-            <TouchableOpacity
-              // onPress={this.takePicture}
-              onPress={this.onStopRecord}>
-              {<Ionicons name="stop-circle" size={hp('3%')} />}
-            </TouchableOpacity>
-          ) : ( */}
-          <TouchableOpacity
-            // onPress={this.takePicture}
-            style={{
-              backgroundColor: primaryDarkColor,
-              borderRadius: 50,
-              padding: 5,
-            }}
+          <TouchableWithoutFeedback
+            // onPress={this.start}
+
             onPressIn={this.onStartRecord}
-            onPressOut={this.onStopRecord}>
-            <Entypo name="mic" color={'white'} size={hp('3%')} />
-          </TouchableOpacity>
+            onPressOut={this.onStopRecord}
+            >
+            <Animated.View
+              style={[
+                {
+                  backgroundColor: primaryDarkColor,
+                  borderRadius: 50,
+                  padding: 5,
+                },
+                animateMediaButtonStyle,
+              ]}>
+              <Entypo name="mic" color={'white'} size={hp('3%')} />
+            </Animated.View>
+            
+          </TouchableWithoutFeedback>
+          {/* <TouchableWithoutFeedback
+            // onPress={this.start}
+
+            onPressIn={this.onStartRecord}
+            onPressOut={this.onStopRecord}
+            >
+            <Animated.View
+              style={[
+                {
+                  backgroundColor: primaryDarkColor,
+                  borderRadius: 50,
+                  padding: 5,
+                },
+                animateMediaButtonStyle,
+              ]}>
+              <Entypo name="camera" color={'white'} size={hp('3%')} />
+            </Animated.View>
+            
+          </TouchableWithoutFeedback> */}
           {/* )} */}
         </View>
       );
@@ -1514,6 +1561,12 @@ class Chat extends Component {
       this.props.navigation,
     );
   };
+  start = () => {
+    // 30 seconds
+    this.videoRecorder.open({ maxLength: 30 },(data) => {
+      console.log('captured data', data);
+    });
+  }
 
   render() {
     return (
@@ -1523,6 +1576,9 @@ class Chat extends Component {
           onQRPressed={() => this.QRPressed()}
           navigation={this.props.navigation}
         />
+        
+        <VideoRecorder ref={(ref) => { this.videoRecorder = ref; }} />
+
         {this.state.mediaModalContent.type === 'audio/mpeg' && (
           <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
         )}

@@ -86,6 +86,7 @@ function MintItems(props) {
   const [open, setOpen] = useState(false);
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
+  const dispatch = useDispatch()
   const [walletAddress, setWalletAddress] =
     loginReducerData.initialData.walletAddress;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -95,7 +96,6 @@ function MintItems(props) {
     // {label: '1', value: '1'}
   ]);
 
-  const dispatch = useDispatch();
   useEffect(() => {
     requestCameraPermission();
     return () => {};
@@ -123,9 +123,9 @@ function MintItems(props) {
           sendFiles(data);
         }
       });
-    }else if (type === 'photo') {
+    } else if (type === 'photo') {
       launchCamera(options, response => {
-        console.log(response)
+        console.log(response);
         const data = new FormData();
         data.append('files', {
           name: response.fileName,
@@ -133,7 +133,7 @@ function MintItems(props) {
           uri: response.uri,
         });
         sendFiles(data);
-      })
+      });
     } else {
       try {
         const res = await DocumentPicker.pick({
@@ -236,15 +236,19 @@ function MintItems(props) {
   };
 
   const createNftItem = () => {
+    connectionURL.urlDefault = 'hello world';
+    console.log(connectionURL.urlDefault, 'defaduladsdttt')
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
     hitAPI.fetchPost(
       connectionURL.nftTransferURL,
       item,
       loginReducerData.token,
-      async() => {
-        console.log('minted failed')
-    }, async data => {
-      console.log(data, 'createddskldjfdsflk')
+      async () => {
+        console.log('minted failed');
+      },
+      async data => {
+        dispatch(addLogs(data))
+        console.log(data, 'createddskldjfdsflk');
         props.fetchWalletBalance(
           loginReducerData.initialData.walletAddress,
           null,

@@ -4,19 +4,24 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import { combineReducers } from 'redux';
-import loginReducer from  './loginReducer';
+import {combineReducers} from 'redux';
+import loginReducer from './loginReducer';
 import walletReducer from './walletReducer';
 import searchReducer from './searchReducer';
 import ChatReducer from './chatReducer';
 import UsersReducer from './usersReducer';
 import AccountReducer from './accountReducer';
+import debugReducer from './debugReducer';
+import apiReducer from './apiReducer';
+
 
 module.exports = combineReducers({
-    loginReducer,
-    walletReducer,
-    searchReducer,
-    ChatReducer,
-    UsersReducer,
-    AccountReducer
-})
+  loginReducer,
+  walletReducer,
+  searchReducer,
+  ChatReducer,
+  UsersReducer,
+  AccountReducer,
+  debugReducer,
+  apiReducer
+});

@@ -121,6 +121,14 @@ class HeaderComponent extends Component {
       });
     }
   }
+  enableDebugMode = () => {
+    if (this.state.debugModeCounter === 2) {
+      this.props.toggleDebugMode(true);
+    }
+    this.setState({
+      debugModeCounter: this.state.debugModeCounter + 1,
+    });
+  };
 
   componentDidUpdate(prevProps, prevState) {
     if (

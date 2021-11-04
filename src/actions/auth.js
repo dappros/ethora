@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
 import {LoginManager} from 'react-native-fbsdk-next';
 import {APP_TOKEN} from '../../docs/config';
+import { addLogs } from './debugActions';
 
 const hitAPI = new fetchFunction();
 
@@ -68,28 +69,28 @@ export const updateUserDescription = desc => ({
 
 export const updateUserAvatar = url => ({
   type: types.UPDATE_USER_PHOTO,
-  payload: url
-})
+  payload: url,
+});
 
-export const setOtherUserVcard = (data) => ({
+export const setOtherUserVcard = data => ({
   type: types.SET_OTHER_USER_VCARD,
-  payload: data
-})
+  payload: data,
+});
 
-export const setOtherUserDetails = (data) => ({
+export const setOtherUserDetails = data => ({
   type: types.SET_OTHER_USER_DETAILS,
-  payload: data
-})
+  payload: data,
+});
 
-export const setIsPreviousUser = (value) => ({
+export const setIsPreviousUser = value => ({
   type: types.SET_IS_PREVIOUS_USER,
-  payload: value
-})
+  payload: value,
+});
 
 export const updateUserProfile = profileData => ({
-  type:types.UPDATE_USER_PROFILE,
-  payload: profileData
-})
+  type: types.UPDATE_USER_PROFILE,
+  payload: profileData,
+});
 
 export const wordpressLogin = data => ({
   type: types.WORDPRESS_AUTH,
@@ -154,51 +155,59 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     "authToken": authToken,
   };
   return dispatch => {
-    console.log("in dispatch");
+    console.log('in dispatch');
     dispatch(fetchingCommonRequest());
     try {
-      console.log("in try")
-      hitAPI.fetchPost(connectionURL.loginURL, bodyData, APP_TOKEN, () => {
-        dispatch(logOut());
-      }, data => {
-        if (data.success) {
-          saveUserToken(data.token)
-            .then(data => {
-              dispatch(loading(false));
-              dispatch(saveToken(data));
-            })
-            .catch(error => {
-              console.log(error);
-            });
-          // console.log(data,'loginData')
-          const photo = ssoUserData.photo
-          let {firstName, lastName, username} = data.user;
-          if(!lastName){
-            lastName = firstName.split(" ")[1];
-            firstName = firstName.split(" ")[0];
-          }
-          let {walletAddress} = data.user.defaultWallet;
-          // saveInitialData({firstName,lastName,walletAddress,image,username,password}).
-          // then((data)=>{
-          //     console.log('save initial data called')
-          //     dispatch(saveInitialDataAction(data))
-          // }).then(dispatch(loginUserSuccess(data)))
-          saveInitialData(
-            {firstName, lastName, walletAddress, photo, username, password},
-            callback => {
-              dispatch(saveInitialDataAction(callback));
-              dispatch(loginUserSuccess(data));
-            },
-          );
+      console.log('in try');
+      hitAPI.fetchPost(
+        connectionURL.loginURL,
+        bodyData,
+        APP_TOKEN,
+        () => {
+          dispatch(logOut());
+        },
+        data => {
+          if (data.success) {
+            saveUserToken(data.token)
+              .then(data => {
+                dispatch(loading(false));
+                dispatch(saveToken(data));
+                addLogs(data)
 
-          // navigation.navigate('ChatHomeComponent');
-        } 
-        else {
-          dispatch(fetchingCommonFailure(data.msg));
-        }
-      });
+              })
+              .catch(error => {
+                console.log(error);
+                addLogs(error)
+              });
+            // console.log(data,'loginData')
+            const photo = ssoUserData.photo;
+            let {firstName, lastName, username} = data.user;
+            if (!lastName) {
+              lastName = firstName.split(' ')[1];
+              firstName = firstName.split(' ')[0];
+            }
+            let {walletAddress} = data.user.defaultWallet;
+            // saveInitialData({firstName,lastName,walletAddress,image,username,password}).
+            // then((data)=>{
+            //     console.log('save initial data called')
+            //     dispatch(saveInitialDataAction(data))
+            // }).then(dispatch(loginUserSuccess(data)))
+            saveInitialData(
+              {firstName, lastName, walletAddress, photo, username, password},
+              callback => {
+                dispatch(saveInitialDataAction(callback));
+                dispatch(loginUserSuccess(data));
+              },
+            );
+
+            // navigation.navigate('ChatHomeComponent');
+          } else {
+            dispatch(fetchingCommonFailure(data.msg));
+          }
+        },
+      );
     } catch (error) {
-      console.log(error,"asdfasdfcasdf");
+      console.log(error, 'asdfasdfcasdf');
       dispatch(fetchingCommonFailure('Something went wrong'));
     }
   };
@@ -256,8 +265,15 @@ export const registerUser = (dataObject, ssoUserData) => {
         },
         data => {
           if (data.success === true) {
-              dispatch(registerUserSuccess());
-              dispatch(loginUser(dataObject.loginType, dataObject.authToken, dataObject.password, ssoUserData));
+            dispatch(registerUserSuccess());
+            dispatch(
+              loginUser(
+                dataObject.loginType,
+                dataObject.authToken,
+                dataObject.password,
+                ssoUserData,
+              ),
+            );
             // dispatch(loginUser(dataObject.username,dataObject.password,navigation))
           } else {
             dispatch(fetchingCommonFailure(data));
@@ -292,11 +308,11 @@ export const logOut = () => {
       // navigation.navigate("loginComponent");
       LoginManager.logOut();
       try {
-        console.log("inhereasdas")
-        await AsyncStorage.clear()
-      } catch(e) {
+        console.log('inhereasdas');
+        await AsyncStorage.clear();
+      } catch (e) {
         // clear error
-        console.log(e,"adcafgtsafc")
+        console.log(e, 'adcafgtsafc');
       }
       deleteAllRealm();
       dispatch(logoutAction());
@@ -366,18 +382,18 @@ export const pushSubscription = bodyData => {
 
     try {
       axios(configCheck)
-        .then(function(response) {
+        .then(function (response) {
           if (response.data.ok) {
             response.data.result.map(item => {
               if (item.jid !== bodyData.jid) {
                 console.log('asdasdxasdasd');
                 axios(configPush)
-                  .then(function(response) {
+                  .then(function (response) {
                     if (response.data.ok) {
                       dispatch(setPushSubsData(response.data));
                     }
                   })
-                  .catch(function(error) {
+                  .catch(function (error) {
                     console.log(error, 'asbdfhdmgsdd');
                   });
               } else {
@@ -389,17 +405,17 @@ export const pushSubscription = bodyData => {
           } else if (!response.data.ok) {
             console.log('Asdcdgdsbdsbnsd');
             axios(configPush)
-              .then(function(response) {
+              .then(function (response) {
                 if (response.data.ok) {
                   dispatch(setPushSubsData(response.data));
                 }
               })
-              .catch(function(error) {
+              .catch(function (error) {
                 console.log(error, 'asbdfhdmgsdd');
               });
           }
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error, 'Asfasfasfasf');
           dispatch(fetchingCommonFailure(error));
         });

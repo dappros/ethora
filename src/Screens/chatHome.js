@@ -53,7 +53,7 @@ import Menu, {MenuItem} from 'react-native-material-menu';
 import fetchFunction from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors, textStyles} from '../../docs/config';
-import { underscoreManipulation } from '../helpers/underscoreLogic';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
@@ -166,7 +166,7 @@ const RenderDragItem = ({
                 style={{
                   color: 'white',
                   marginRight: 3,
-                //   fontFamily: mediumRobotoFont,
+                  //   fontFamily: mediumRobotoFont,
                   textTransform: 'uppercase',
                   textAlign: 'center',
                 }}>
@@ -220,12 +220,11 @@ const RenderDragItem = ({
                 </Text>
                 <Text
                   numberOfLines={1}
-                  
                   style={{
                     fontFamily: thinFont,
                     fontSize: hp('1.8%'),
                     color: '#4C5264',
-                    width: wp('30%')
+                    width: wp('30%'),
                   }}>
                   {item.lastUserText}
                 </Text>
@@ -233,10 +232,10 @@ const RenderDragItem = ({
                   style={{
                     fontFamily: regularFont,
                     fontSize: hp('1.2%'),
-                    flex: 1,
+                    // flex: 1,
                     color: '#BCC5D3',
                     marginTop: hp('0.6%'),
-                  }}>{` :${item.createdAt.getHours()}:${item.createdAt.getMinutes()}`}</Text>
+                  }}>{` ${item.createdAt.getHours()}:${item.createdAt.getMinutes()}`}</Text>
               </View>
             </Fragment>
           ) : (
@@ -339,17 +338,19 @@ const RenderDragItem = ({
                   onPress={() => onMenuItemPress(index, item.jid, 'move')}>
                   Move
                 </MenuItem>
-                { roomRoles[item.jid] !== 'participant' && (
+                {roomRoles[item.jid] !== 'participant' && (
                   <MenuItem
                     textStyle={{
                       color: '#000000',
                       fontFamily: mediumFont,
                       fontSize: hp('1.6%'),
                     }}
-                    onPress={() => onMenuItemPress(index, item.jid, 'rename', item.name)}>
+                    onPress={() =>
+                      onMenuItemPress(index, item.jid, 'rename', item.name)
+                    }>
                     Rename
                   </MenuItem>
-                    )}
+                )}
               </Menu>
             </View>
           </View>
@@ -384,7 +385,7 @@ class ChatHome extends Component {
     };
   }
 
-  setMenuRef = (ref) => {
+  setMenuRef = ref => {
     this._menu = ref;
   };
 
@@ -396,8 +397,8 @@ class ChatHome extends Component {
     this._menu.hide();
   };
 
-  showMenu = (item) => {
-    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf')
+  showMenu = item => {
+    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
     this.setState({
       chat_name: item.chat_name,
       chat_jid: item.chat_jid,
@@ -410,39 +411,39 @@ class ChatHome extends Component {
     this.props.getEmailList(token);
 
     Linking.getInitialURL().then(url => {
-      if(url){
+      if (url) {
         const chatJID = parseChatLink(url);
-        setTimeout(()=>{
+        setTimeout(() => {
           openChatFromChatLink(
             chatJID,
             this.props.loginReducer.initialData.walletAddress,
             this.props.setCurrentChatDetails,
-            this.props.navigation
+            this.props.navigation,
           );
-        }, 2000)
+        }, 2000);
       }
     });
 
-    Linking.addEventListener('url', data=> {
-      if(data.url){
+    Linking.addEventListener('url', data => {
+      if (data.url) {
         const chatJID = parseChatLink(data.url);
         openChatFromChatLink(
           chatJID,
           this.props.loginReducer.initialData.walletAddress,
           this.props.setCurrentChatDetails,
-          this.props.navigation
+          this.props.navigation,
         );
       }
     });
 
-    fetchRosterList().then((rosterListFromRealm) => {
+    fetchRosterList().then(rosterListFromRealm => {
       let loading = false;
       let pushChatName = '';
       let pushChatJID = '';
       if (rosterListFromRealm) {
         let rosterListArray = [];
 
-        rosterListFromRealm.map((item) => {
+        rosterListFromRealm.map(item => {
           if (item.jid === this.props.ChatReducer.pushData.mucId) {
             pushChatName = item.name;
             pushChatJID = item.jid;
@@ -457,7 +458,7 @@ class ChatHome extends Component {
             counter: item.counter,
             lastUserText: item.lastUserText,
             lastUserName: item.lastUserName,
-             priority: item.priority,
+            priority: item.priority,
             createdAt: item.createdAt,
           });
         });
@@ -478,10 +479,10 @@ class ChatHome extends Component {
       if (this.props.ChatReducer.isRosterUpdated) {
         let {pushChatJID, pushChatName} = this.state;
         fetchRosterList()
-          .then((rosterListFromRealm) => {
+          .then(rosterListFromRealm => {
             if (rosterListFromRealm) {
               let rosterListArrayTemp = [];
-              rosterListFromRealm.map((item) => {
+              rosterListFromRealm.map(item => {
                 rosterListArrayTemp.push({
                   name: item.name,
                   participants: item.participants,
@@ -490,7 +491,7 @@ class ChatHome extends Component {
                   counter: item.counter,
                   lastUserText: item.lastUserText,
                   lastUserName: item.lastUserName,
-                   priority: item.priority,
+                  priority: item.priority,
                   createdAt: item.createdAt,
                 });
               });
@@ -535,7 +536,7 @@ class ChatHome extends Component {
               counter: item.counter,
               lastUserText: item.lastUserText,
               lastUserName: item.lastUserName,
-               priority: item.priority,
+              priority: item.priority,
               createdAt: item.createdAt,
             });
           });
@@ -557,7 +558,7 @@ class ChatHome extends Component {
 
         let rosterListArray = this.state.rosterListArray;
 
-        rosterListArray.map((item) => {
+        rosterListArray.map(item => {
           if (item.jid === roomJID) {
             //the count will not happen if you are already inside the room
             if (this.props.ChatReducer.shouldCount) {
@@ -591,9 +592,9 @@ class ChatHome extends Component {
           prevProps.ChatReducer.participantsUpdate &&
         this.props.ChatReducer.participantsUpdate
       ) {
-        fetchRosterList().then((rosterListFromRealm) => {
+        fetchRosterList().then(rosterListFromRealm => {
           let rosterListArray = [];
-          rosterListFromRealm.map((item) => {
+          rosterListFromRealm.map(item => {
             rosterListArray.push({
               name: item.name,
               participants: item.participants,
@@ -602,7 +603,7 @@ class ChatHome extends Component {
               counter: item.counter,
               lastUserText: item.lastUserText,
               lastUserName: item.lastUserName,
-               priority: item.priority,
+              priority: item.priority,
               createdAt: item.createdAt,
             });
           });
@@ -630,7 +631,11 @@ class ChatHome extends Component {
       this.hideMenu(index);
     }
     if (type === 'rename') {
-      this.setState({modalVisible: true, pickedChatJid: jid, newChatName: name});
+      this.setState({
+        modalVisible: true,
+        pickedChatJid: jid,
+        newChatName: name,
+      });
       this.hideMenu(index);
     }
     if (type === 'move') {
@@ -756,8 +761,6 @@ class ChatHome extends Component {
 
     this[`menu${index}`].show();
   };
-
-
 
   //view to display when Chat Home component is empty
   chatEmptyComponent = () => {
@@ -934,7 +937,7 @@ class ChatHome extends Component {
   //fucntion to open a chat room
   openChat(chat_jid, chat_name) {
     let rosterListArray = this.state.rosterListArray;
-    rosterListArray.map((item) => {
+    rosterListArray.map(item => {
       if (item.counter !== 0) {
         item.counter = 0;
       }
@@ -1009,8 +1012,7 @@ class ChatHome extends Component {
           onDragEnd={({data}) => this.storeRosterList(data)}
         />
 
-       
-         <Modal
+        <Modal
           animationType="slide"
           transparent={true}
           isVisible={this.state.modalVisible}
@@ -1075,8 +1077,8 @@ class ChatHome extends Component {
             </View>
           ) : null}
         </Modal>
-        </>
-       
+      </>
+
       // </ScrollView>
     );
   };
@@ -1117,7 +1119,7 @@ class ChatHome extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     ...state,
   };
