@@ -55,14 +55,15 @@ import {
   coinsMainName,
   itemsTransfersAllowed,
 } from '../../docs/config';
+import {registerUserURL} from '../config/routesConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 
 const {mediumFont, regularFont, boldFont, lightFont} = textStyles;
 
-export const changeUserName = async (data, token) => {
+export const changeUserName = async (url, data, token) => {
   console.log(data, 'datainnewname');
-  return await axios.put(connectionURL.registerUserURL, data, {
+  return await axios.put(url, data, {
     headers: {
       // 'Content-Type': 'multipart/form-data',
       Authorization: token,
@@ -861,6 +862,7 @@ class ProfileScreen extends Component {
   };
   setNewName = () => {
     changeUserName(
+      this.props.apiReducer.defaultUrl + registerUserURL,
       {firstName: this.state.firstName, lastName: this.state.lastName},
       this.props.loginReducer.token,
     )

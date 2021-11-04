@@ -94,6 +94,7 @@ import AudioRecorderPlayer, {
 } from 'react-native-audio-recorder-player';
 import Video from 'react-native-video';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
+import { fileUpload } from '../config/routesConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
@@ -504,6 +505,10 @@ class Chat extends Component {
       });
     }
   };
+
+  constructUrl = route => {
+    return this.props.apiReducer.defaultUrl + route;
+  };
   onStartRecord = async () => {
     this.animateMediaButtonIn();
     const dirs = RNFetchBlob.fs.dirs;
@@ -533,7 +538,7 @@ class Chat extends Component {
     });
     console.log(result, 'ressslsllsl');
     const {token} = this.props.loginReducer;
-    const filesApiURL = connectionURL.fileUpload;
+    const filesApiURL = this.constructUrl(fileUpload);
     const FormData = require('form-data');
     let data = new FormData();
 
@@ -1327,14 +1332,13 @@ class Chat extends Component {
             alignItems: 'center',
             height: '100%',
             paddingHorizontal: 5,
-            flexDirection: 'row'
+            flexDirection: 'row',
           }}>
           <TouchableWithoutFeedback
             // onPress={this.start}
 
             onPressIn={this.onStartRecord}
-            onPressOut={this.onStopRecord}
-            >
+            onPressOut={this.onStopRecord}>
             <Animated.View
               style={[
                 {
@@ -1346,7 +1350,6 @@ class Chat extends Component {
               ]}>
               <Entypo name="mic" color={'white'} size={hp('3%')} />
             </Animated.View>
-            
           </TouchableWithoutFeedback>
           {/* <TouchableWithoutFeedback
             // onPress={this.start}
@@ -1407,7 +1410,7 @@ class Chat extends Component {
                   //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
                   // );
                   const {token} = this.props.loginReducer;
-                  const filesApiURL = connectionURL.fileUpload;
+                  const filesApiURL = this.constructUrl(fileUpload);
                   const FormData = require('form-data');
                   let data = new FormData();
                   // correctpath = str2.replace(str1, '');
@@ -1563,10 +1566,10 @@ class Chat extends Component {
   };
   start = () => {
     // 30 seconds
-    this.videoRecorder.open({ maxLength: 30 },(data) => {
+    this.videoRecorder.open({maxLength: 30}, data => {
       console.log('captured data', data);
     });
-  }
+  };
 
   render() {
     return (
@@ -1576,8 +1579,12 @@ class Chat extends Component {
           onQRPressed={() => this.QRPressed()}
           navigation={this.props.navigation}
         />
-        
-        <VideoRecorder ref={(ref) => { this.videoRecorder = ref; }} />
+
+        <VideoRecorder
+          ref={ref => {
+            this.videoRecorder = ref;
+          }}
+        />
 
         {this.state.mediaModalContent.type === 'audio/mpeg' && (
           <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
