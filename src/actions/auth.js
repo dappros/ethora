@@ -11,9 +11,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
 import {LoginManager} from 'react-native-fbsdk-next';
 import {APP_TOKEN} from '../../docs/config';
-import { addLogs } from './debugActions';
+import {addLogs} from './debugActions';
 import store from '../config/store';
-import { loginURL, registerUserURL } from '../config/routesConstants';
+import {loginURL, registerUserURL} from '../config/routesConstants';
 
 const hitAPI = new fetchFunction();
 const getUrlFromStore = additionalUrl => {
@@ -23,7 +23,9 @@ const getUrlFromStore = additionalUrl => {
   );
   return store.getState().apiReducer.defaultUrl + additionalUrl;
 };
-
+const getTokenFromStore = () => {
+  return store.getState().apiReducer.defaultToken;
+};
 export const fetchingCommonRequest = () => ({
   type: types.FETCHING_COMMON_REQUEST,
 });
@@ -158,6 +160,7 @@ export const saveInitialData = (data, callback) => {
 export const saveUserToken = token => AsyncStorage.setItem('token', token);
 
 export const loginUser = (loginType, authToken, password, ssoUserData) => {
+  const token = getTokenFromStore();
   // prettier-ignore
   let bodyData = {
     "loginType": loginType,
@@ -171,7 +174,7 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
       hitAPI.fetchPost(
         getUrlFromStore(loginURL),
         bodyData,
-        APP_TOKEN,
+        token,
         () => {
           dispatch(logOut());
         },
@@ -181,12 +184,9 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
               .then(data => {
                 dispatch(loading(false));
                 dispatch(saveToken(data));
-                addLogs(data)
-
               })
               .catch(error => {
                 console.log(error);
-                addLogs(error)
               });
             // console.log(data,'loginData')
             const photo = ssoUserData.photo;
@@ -223,12 +223,14 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
 };
 
 const registerUserWordpress = dataObject => {
+  const token = getTokenFromStore();
+
   return dispatch => {
     try {
       hitAPI.fetchPost(
         getUrlFromStore(registerUserURL),
         dataObject,
-        APP_TOKEN,
+        token,
         () => {
           dispatch(logOut());
         },
@@ -261,6 +263,7 @@ const loginWordpressUser = (username, password) => {
 
 export const registerUser = (dataObject, ssoUserData) => {
   console.log(dataObject);
+  const token = getTokenFromStore();
   return dispatch => {
     console.log('data', 'yedata');
 
@@ -268,7 +271,7 @@ export const registerUser = (dataObject, ssoUserData) => {
       hitAPI.fetchPost(
         getUrlFromStore(registerUserURL),
         dataObject,
-        APP_TOKEN,
+        token,
         () => {
           dispatch(logOut());
         },
@@ -297,13 +300,14 @@ export const registerUser = (dataObject, ssoUserData) => {
 };
 
 export const checkInDb = async email => {
+  const token = getTokenFromStore();
   let axios = require('axios');
   let configAxios = {
     method: 'get',
     url: 'http://18.222.34.175/v1/users/checkEmail/' + email,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: APP_TOKEN,
+      Authorization: token,
     },
   };
 

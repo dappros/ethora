@@ -47,7 +47,7 @@ import {
   textStyles,
   loginScreenBackgroundImage,
 } from '../../docs/config';
-import { checkEmailExist } from '../config/routesConstants';
+import {checkEmailExist} from '../config/routesConstants';
 const hitAPI = new fetchFunction();
 
 const {primaryColor, secondaryColor} = commonColors;
@@ -162,6 +162,7 @@ class Login extends Component {
         authToken: idToken,
         uid: hashUID,
       };
+
       await this.loginOrRegisterSocialUser(user, user.email, 'google');
     });
   }
@@ -304,21 +305,26 @@ class Login extends Component {
         });
     }
   };
-  construnctUrl = (route) => {
-    return this.props.apiReducer.defaultUrl + route
-  }
-  
+  constructUrl = route => {
+    return this.props.apiReducer.defaultUrl + route;
+  };
 
   loginOrRegisterSocialUser = async (user, userEmail, loginType) => {
+    console.log('uers');
     const url = this.constructUrl(checkEmailExist) + userEmail;
 
-    hitAPI.fetchGet(url, APP_TOKEN, this.props.logOut, callback => {
-      if (!callback.success) {
-        this.props.loginUser(loginType, user.authToken, user.uid, user);
-      } else {
-        this.registerSocialUser(user, loginType);
-      }
-    });
+    hitAPI.fetchGet(
+      url,
+      this.props.apiReducer.defaultToken,
+      this.props.logOut,
+      callback => {
+        if (!callback.success) {
+          this.props.loginUser(loginType, user.authToken, user.uid, user);
+        } else {
+          this.registerSocialUser(user, loginType);
+        }
+      },
+    );
   };
 
   registerSocialUser = async (user, loginType) => {

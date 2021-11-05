@@ -49,6 +49,8 @@ export const xmppListener = (
   setRecentRealtimeChatAction,
   setOtherUserDetails,
   logOut,
+  appDebugMode,
+  printLogs,
 ) => {
   debug(xmpp, true);
 
@@ -87,6 +89,7 @@ export const xmppListener = (
   });
 
   xmpp.on('stanza', async stanza => {
+    printLogs(stanza);
     console.log(stanza, 'stanza');
     let featureList = {};
     if (stanza.is('iq')) {
@@ -458,9 +461,10 @@ export const xmppListener = (
 
             imageLocation = item.attrs.location;
 
-            imageLocationPreview = item.attrs.locationPreview || item.attrs.location;
+            imageLocationPreview =
+              item.attrs.locationPreview || item.attrs.location;
             mimetype = item.attrs.mimetype;
-            console.log(item, '3202394023-49-23')
+            console.log(item, '3202394023-49-23');
             duration = item.attrs.duration;
 
             size = item.attrs.size;
@@ -701,7 +705,8 @@ export const xmppListener = (
 
             imageLocation = item.attrs.location;
 
-            imageLocationPreview = item.attrs.locationPreview || item.attrs.location;
+            imageLocationPreview =
+              item.attrs.locationPreview || item.attrs.location;
 
             mimetype = item.attrs.mimetype;
             duration = item.attrs.duration;

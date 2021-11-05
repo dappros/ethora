@@ -20,7 +20,7 @@ import {
 import TransactionListTab from '../components/TransactionListComponent';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -36,6 +36,7 @@ import {
 } from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants';
+import {fetchTransaction, setOffset, setTotal} from '../actions/wallet';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -269,196 +270,11 @@ const firstLayout = [
   },
 ];
 
-const loadTabContent = props => {
-  // console.log(props,"asdasdasgbdfb")
-  const {
-    activeTab,
-    coinData,
-    anotherUserTransaction,
-    anotherUserWalletAddress,
-    activeAssetTab,
-    itemsData,
-    setActiveAssetTab,
-    itemsBalance,
-    navigation,
-  } = props;
-
-  let updatedCoinBalance = 0;
-
-  coinData
-    ? coinData.map(item => {
-        updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-      })
-    : null;
-
-  if (activeTab === 0) {
-    return (
-      <View style={{marginTop: hp('3%')}}>
-        {/* <View style={{padding: hp('3%'), paddingBottom: 0, paddingTop: 0}}> */}
-        <View
-          style={{
-            padding: wp('4%'),
-            flexDirection: 'row',
-            paddingBottom: 0,
-            paddingTop: 0,
-          }}>
-          <TouchableOpacity
-            // onLayout={event =>
-            //   setXCoinTabOne( event.nativeEvent.layout.x)
-            // }
-            // ref={this.state.ref}
-            onPress={() => setActiveAssetTab(0)}
-            style={{marginRight: 20}}>
-            <Animated.Text
-              style={{
-                fontSize: hp('1.97%'),
-                fontFamily: boldFont,
-                color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-              }}>
-              Coins{' '}
-              <Text
-                style={{
-                  fontSize: hp('1.97%'),
-                  color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-                  fontFamily: boldFont,
-                }}>
-                ({parseFloat(updatedCoinBalance).toFixed(0)})
-              </Text>
-            </Animated.Text>
-          </TouchableOpacity>
-          {itemsTransfersAllowed && (
-            <TouchableOpacity
-              // onLayout={event =>
-              //   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
-              // }
-              // ref={ref => (this.coinRef = ref)}
-              onPress={() => setActiveAssetTab(1)}>
-              <Animated.Text
-                style={{
-                  fontSize: hp('1.97%'),
-                  fontFamily: boldFont,
-                  color: activeAssetTab === 1 ? '#000000' : '#0000004D',
-                }}>
-                Items ({itemsBalance})
-              </Animated.Text>
-            </TouchableOpacity>
-          )}
-          {/* </View> */}
-        </View>
-        <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
-          {activeAssetTab === 0 ? (
-            <FlatList
-              data={coinData}
-              nestedScrollEnabled={true}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-              // onTouchStart={() => {
-              //   this.onEnableScroll(false);
-              //   console.log('scrooooooooool');
-              // }}
-              // onMomentumScrollEnd={() => {
-              //   this.onEnableScroll(true);
-              // }}
-              nestedScrollEnabled={true}
-            />
-          ) : (
-            <FlatList
-              // style={{paddingBottom: 300}}
-              data={itemsData}
-              // contentContainerStyle={{paddingBottom: hp('15.47')}}
-              // nestedScrollEnabled={true}
-              renderItem={e => (
-                <RenderAssetItem
-                  item={e.item}
-                  index={e.index}
-                  onClick={() =>
-                    props.navigation.navigate('NftItemHistoryComponent', {
-                      screen: 'NftItemHistory',
-                      params: {
-                        item: e.item,
-                        userWalletAddress: anotherUserWalletAddress,
-                      },
-                    })
-                  }
-                  selectedItem
-                />
-              )}
-              nestedScrollEnabled={true}
-              keyExtractor={(item, index) => index.toString()}
-              // onPress={() => {
-              //   this.onEnableScroll(false);
-              // }}
-              // onTouchStart={() => {
-              //   this.onEnableScroll(false);
-              // }}
-              // onMomentumScrollEnd={() => {
-              //   this.onEnableScroll(true);
-              // }}
-              nestedScrollEnabled={true}
-            />
-          )}
-        </View>
-
-        {/* <Text
-          style={{fontSize:hp("1.97"), color:"#000000", fontFamily:"Montserrat-Bold"}}>
-            Items <Text style={{fontSize:hp("1.47%"), color:"#000000", fontFamily:"Montserrat-Medium"}}>({coinBalance})</Text></Text>
-          <View style={{marginTop:hp("1.47%")}}>
-            <FlatList
-            data={DATA}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            />
-          </View> */}
-      </View>
-    );
-  }
-
-  if (activeTab === 1) {
-    return (
-      <SafeAreaView style={{paddingBottom: hp('72%')}}>
-        <TransactionListTab
-          transactions={anotherUserTransaction}
-          walletAddress={anotherUserWalletAddress}
-        />
-      </SafeAreaView>
-    );
-  }
-  if (activeTab === 2) {
-    return (
-      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-        <CommonButton
-          style={{
-            backgroundColor: '#114592',
-            padding: 5,
-            width: wp('51%'),
-            height: hp('6.7%'),
-            borderRadius: 5,
-            fontFamily: lightFont,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onPress={() =>
-            Linking.openURL(
-              'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
-            )
-          }
-          buttonText="3D Garage"
-          textStyle={{
-            fontSize: hp('2.21%'),
-            color: '#FFFFFF',
-            fontFamily: boldFont,
-          }}
-        />
-      </View>
-    );
-  }
-};
-
 function AnotherProfile(props) {
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
   const walletReducerData = allReducers.walletReducer;
-
+  const dispatch = useDispatch();
   const [anotherUserAvatar, setAnotherUserAvatar] = useState(null);
   const [anotherUserFirstname, setAnotherUserFirstname] = useState('null');
   const [anotherUserLastname, setAnotherUserLastname] = useState('null');
@@ -496,6 +312,11 @@ function AnotherProfile(props) {
       textColorAnim,
     );
   }, [activeTab]);
+
+  useEffect(() => {
+    dispatch(setOffset(0));
+    dispatch(setTotal(0));
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -625,6 +446,204 @@ function AnotherProfile(props) {
     };
   }, []);
 
+  const loadTabContent = props => {
+    // console.log(props,"asdasdasgbdfb")
+    const {
+      activeTab,
+      coinData,
+      anotherUserTransaction,
+      anotherUserWalletAddress,
+      activeAssetTab,
+      itemsData,
+      setActiveAssetTab,
+      itemsBalance,
+      navigation,
+    } = props;
+
+    let updatedCoinBalance = 0;
+
+    coinData
+      ? coinData.map(item => {
+          updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
+        })
+      : null;
+
+    if (activeTab === 0) {
+      return (
+        <View style={{marginTop: hp('3%')}}>
+          {/* <View style={{padding: hp('3%'), paddingBottom: 0, paddingTop: 0}}> */}
+          <View
+            style={{
+              padding: wp('4%'),
+              flexDirection: 'row',
+              paddingBottom: 0,
+              paddingTop: 0,
+            }}>
+            <TouchableOpacity
+              // onLayout={event =>
+              //   setXCoinTabOne( event.nativeEvent.layout.x)
+              // }
+              // ref={this.state.ref}
+              onPress={() => setActiveAssetTab(0)}
+              style={{marginRight: 20}}>
+              <Animated.Text
+                style={{
+                  fontSize: hp('1.97%'),
+                  fontFamily: boldFont,
+                  color: activeAssetTab === 0 ? '#000000' : '#0000004D',
+                }}>
+                Coins{' '}
+                <Text
+                  style={{
+                    fontSize: hp('1.97%'),
+                    color: activeAssetTab === 0 ? '#000000' : '#0000004D',
+                    fontFamily: boldFont,
+                  }}>
+                  ({parseFloat(updatedCoinBalance).toFixed(0)})
+                </Text>
+              </Animated.Text>
+            </TouchableOpacity>
+            {itemsTransfersAllowed && (
+              <TouchableOpacity
+                // onLayout={event =>
+                //   this.setState({xCoinTabTwo: event.nativeEvent.layout.x})
+                // }
+                // ref={ref => (this.coinRef = ref)}
+                onPress={() => setActiveAssetTab(1)}>
+                <Animated.Text
+                  style={{
+                    fontSize: hp('1.97%'),
+                    fontFamily: boldFont,
+                    color: activeAssetTab === 1 ? '#000000' : '#0000004D',
+                  }}>
+                  Items ({itemsBalance})
+                </Animated.Text>
+              </TouchableOpacity>
+            )}
+            {/* </View> */}
+          </View>
+          <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
+            {activeAssetTab === 0 ? (
+              <FlatList
+                data={coinData}
+                nestedScrollEnabled={true}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                // onTouchStart={() => {
+                //   this.onEnableScroll(false);
+                //   console.log('scrooooooooool');
+                // }}
+                // onMomentumScrollEnd={() => {
+                //   this.onEnableScroll(true);
+                // }}
+                nestedScrollEnabled={true}
+              />
+            ) : (
+              <FlatList
+                // style={{paddingBottom: 300}}
+                data={itemsData}
+                // contentContainerStyle={{paddingBottom: hp('15.47')}}
+                // nestedScrollEnabled={true}
+                renderItem={e => (
+                  <RenderAssetItem
+                    item={e.item}
+                    index={e.index}
+                    onClick={() =>
+                      props.navigation.navigate('NftItemHistoryComponent', {
+                        screen: 'NftItemHistory',
+                        params: {
+                          item: e.item,
+                          userWalletAddress: anotherUserWalletAddress,
+                        },
+                      })
+                    }
+                    selectedItem
+                  />
+                )}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+                // onPress={() => {
+                //   this.onEnableScroll(false);
+                // }}
+                // onTouchStart={() => {
+                //   this.onEnableScroll(false);
+                // }}
+                // onMomentumScrollEnd={() => {
+                //   this.onEnableScroll(true);
+                // }}
+                nestedScrollEnabled={true}
+              />
+            )}
+          </View>
+
+          {/* <Text
+            style={{fontSize:hp("1.97"), color:"#000000", fontFamily:"Montserrat-Bold"}}>
+              Items <Text style={{fontSize:hp("1.47%"), color:"#000000", fontFamily:"Montserrat-Medium"}}>({coinBalance})</Text></Text>
+            <View style={{marginTop:hp("1.47%")}}>
+              <FlatList
+              data={DATA}
+              renderItem={renderItem}
+              keyExtractor={item => item.id}
+              />
+            </View> */}
+        </View>
+      );
+    }
+
+    if (activeTab === 1) {
+      return (
+        <SafeAreaView style={{paddingBottom: '100%'}} >
+          <TransactionListTab
+            transactions={anotherUserTransaction}
+            walletAddress={anotherUserWalletAddress}
+            onEndReached={() => {
+              if (
+                anotherUserTransaction.length < allReducers.walletReducer.total
+              ) {
+                fetchTransaction(
+                  anotherUserWalletAddress,
+                  allReducers.apiReducer.defaultToken,
+                  false,
+                  allReducers.walletReducer.limit,
+                  allReducers.walletReducer.offset,
+                );
+              }
+            }}
+          />
+        </SafeAreaView>
+      );
+    }
+    if (activeTab === 2) {
+      return (
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
+          <CommonButton
+            style={{
+              backgroundColor: '#114592',
+              padding: 5,
+              width: wp('51%'),
+              height: hp('6.7%'),
+              borderRadius: 5,
+              fontFamily: lightFont,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() =>
+              Linking.openURL(
+                'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
+              )
+            }
+            buttonText="3D Garage"
+            textStyle={{
+              fontSize: hp('2.21%'),
+              color: '#FFFFFF',
+              fontFamily: boldFont,
+            }}
+          />
+        </View>
+      );
+    }
+  };
+
   const {navigation} = props;
 
   return (
@@ -725,18 +744,17 @@ function AnotherProfile(props) {
                         fontFamily: 'Montserrat-Regular',
                         textAlign: 'center',
                         color: '0000004D',
-
                       }}>
                       {allReducers.loginReducer.anotherUserLastSeen[
                         underscoreManipulation(
                           loginReducerData.anotherUserWalletAddress,
-                        ) 
+                        )
                       ] &&
                         'Seen: ' +
                           allReducers.loginReducer.anotherUserLastSeen[
                             underscoreManipulation(
                               loginReducerData.anotherUserWalletAddress,
-                            ) 
+                            )
                           ]}
                     </Text>
                   </SkeletonContent>

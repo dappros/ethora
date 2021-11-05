@@ -309,6 +309,9 @@ class ProfileScreen extends Component {
       itemsBalance: 0,
       modalTypeForEditing: 'name',
       debugModeCounter: 0,
+      endOfListReached: false,
+      limit: 10,
+      offset: 0,
     };
     coinRef = createRef();
   }
@@ -540,6 +543,20 @@ class ProfileScreen extends Component {
           <TransactionListTab
             transactions={this.state.transactionObject}
             walletAddress={this.state.walletAddress}
+            onEndReached={() => {
+              if (
+                this.props.walletReducer.transactions.length <
+                this.props.walletReducer.total
+              ) {
+                this.props.fetchTransaction(
+                  this.state.walletAddress,
+                  this.props.loginReducer.token,
+                  true,
+                  this.props.walletReducer.limit,
+                  this.props.walletReducer.offset,
+                );
+              }
+            }}
           />
         </View>
       );
@@ -577,6 +594,13 @@ class ProfileScreen extends Component {
       lastName = initialData.lastName;
       walletAddress = initialData.walletAddress;
       description = this.props.loginReducer.userDescription;
+      this.props.fetchTransaction(
+        this.state.walletAddress,
+        this.props.loginReducer.token,
+        true,
+        this.props.walletReducer.limit,
+        this.props.walletReducer.offset,
+      );
       this.props.fetchWalletBalance(
         this.props.loginReducer.initialData.walletAddress,
         null,
@@ -698,50 +722,56 @@ class ProfileScreen extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (
-      prevProps.walletReducer.transactions !==
-      this.props.walletReducer.transactions
-    ) {
-      // this.props.fetchTransaction(this.state.walletAddress, this.props.loginReducer.token, true)
-      queryAllTransactions().then(transactions => {
-        let balance = this.props.walletReducer.userCoinBalanceValue;
-        if (transactions.length > 0) {
-          console.log(transactions, 'reaaalllll,m');
-          transactions.map(item => {
-            if (item.tokenId === 'NFT') {
-              if (
-                item.from === this.state.walletAddress &&
-                item.from !== item.to
-              ) {
-                balance = balance;
-                item.balance = item.senderBalance + '/' + item.nftTotal;
-              } else if (item.from === item.to) {
-                item.balance = item.receiverBalance + '/' + item.nftTotal;
-              } else {
-                item.balance = item.receiverBalance + '/' + item.nftTotal;
-              }
+    // if (
+    //   prevProps.walletReducer.transactions.length !==
+    //   this.props.walletReducer.transactions.length
+    // ) {
+    //   this.props.fetchTransaction(
+    //     this.state.walletAddress,
+    //     this.props.loginReducer.token,
+    //     true,
+    //     // this.props.walletReducer.offset,
+    //     // this.props.walletReducer.limit,
+    //   );
+    //   queryAllTransactions().then(transactions => {
+    //     let balance = this.props.walletReducer.userCoinBalanceValue;
+    //     if (transactions.length > 0) {
+    //       console.log(transactions, 'reaaalllll,m');
+    //       transactions.map(item => {
+    //         if (item.tokenId === 'NFT') {
+    //           if (
+    //             item.from === this.state.walletAddress &&
+    //             item.from !== item.to
+    //           ) {
+    //             balance = balance;
+    //             item.balance = item.senderBalance + '/' + item.nftTotal;
+    //           } else if (item.from === item.to) {
+    //             item.balance = item.receiverBalance + '/' + item.nftTotal;
+    //           } else {
+    //             item.balance = item.receiverBalance + '/' + item.nftTotal;
+    //           }
 
-              return item;
-            } else if (
-              item.from === this.state.walletAddress &&
-              item.from !== item.to
-            ) {
-              item.balance = item.senderBalance;
-              balance = balance - item.value;
-            } else {
-              item.balance = item.receiverBalance;
-              balance = balance + item.value;
-            }
-            return item;
-          });
-        }
+    //           return item;
+    //         } else if (
+    //           item.from === this.state.walletAddress &&
+    //           item.from !== item.to
+    //         ) {
+    //           item.balance = item.senderBalance;
+    //           balance = balance - item.value;
+    //         } else {
+    //           item.balance = item.receiverBalance;
+    //           balance = balance + item.value;
+    //         }
+    //         return item;
+    //       });
+    //     }
 
-        this.setState({
-          transactionObject: transactions.reverse(),
-          transactionCount: transactions.length,
-        });
-      });
-    }
+    //     this.setState({
+    //       transactionObject: transactions.reverse(),
+    //       transactionCount: transactions.length,
+    //     });
+    //   });
+    // }
 
     if (
       this.props.loginReducer.userAvatar &&
@@ -1274,7 +1304,8 @@ class ProfileScreen extends Component {
                               ? '#000000'
                               : '#0000004D',
                         }}>
-                        Transactions ({this.state.transactionCount})
+                        Transactions (
+                        {this.state.transactionCount})
                       </Animated.Text>
                     </TouchableOpacity>
                   </View>
