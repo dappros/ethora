@@ -104,4 +104,8 @@ export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
 
 // api reducer
 export const CHANGE_API_MODE = 'CHANGE_API_MODE';
+export const CHANGE_TOKEN = 'CHANGE_TOKEN';
 
+export const SET_OFFSET = 'SET_OFFSET';
+export const SET_TOTAL = 'SET_TOTAL';
+export const CHANGE_XMPP_DOMAIN = 'CHANGE_XMPP_DOMAIN';

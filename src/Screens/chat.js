@@ -94,7 +94,7 @@ import AudioRecorderPlayer, {
 } from 'react-native-audio-recorder-player';
 import Video from 'react-native-video';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
-import { fileUpload } from '../config/routesConstants';
+import {fileUpload} from '../config/routesConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
@@ -457,7 +457,7 @@ class Chat extends Component {
   openWallet = async walletAddress => {
     await this.props.fetchTransaction(
       walletAddress,
-      APP_TOKEN,
+      this.props.apiReducer.defaultToken,
       walletAddress === this.state.walletAddress ? true : false,
     );
   };
@@ -496,7 +496,7 @@ class Chat extends Component {
           await this.props.fetchWalletBalance(
             walletAddress,
             coinsMainName,
-            APP_TOKEN,
+            this.props.apiReducer.defaultToken,
             false,
           );
 
@@ -1020,7 +1020,10 @@ class Chat extends Component {
         url: localURL,
         remoteUrl: realImageURL,
       },
-      mediaContentModalVisible: mimetype === 'audio/mpeg' ? false : true,
+      mediaContentModalVisible:
+        mimetype === 'audio/mpeg' || mimetype === 'application/octet-stream'
+          ? false
+          : true,
     });
 
     if (isStoredFile) {
@@ -1153,8 +1156,8 @@ class Chat extends Component {
     if (
       mimetype === 'video/mp4' ||
       mimetype === 'image/jpeg' ||
-      mimetype === 'image/png' ||
-      mimetype === 'application/octet-stream'
+      mimetype === 'image/png'
+      // mimetype === 'application/octet-stream'
     ) {
       return (
         <TouchableOpacity
@@ -1222,7 +1225,10 @@ class Chat extends Component {
           </View>
         </TouchableOpacity>
       );
-    } else if (mimetype === 'audio/mpeg') {
+    } else if (
+      mimetype === 'audio/mpeg' ||
+      mimetype === 'application/octet-stream'
+    ) {
       console.log(mimetype, '238942384923840');
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
@@ -1586,9 +1592,10 @@ class Chat extends Component {
           }}
         />
 
-        {this.state.mediaModalContent.type === 'audio/mpeg' && (
-          <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
-        )}
+        {this.state.mediaModalContent.type === 'audio/mpeg' ||
+          (this.state.mediaModalContent.type === 'application/octet-stream' && (
+            <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
+          ))}
         <GiftedChat
           renderLoading={() => (
             <ActivityIndicator size="large" color={primaryColor} />

@@ -18,7 +18,8 @@ import {urlDefault} from '../config/url';
 import {fetchWalletBalance} from '../actions/wallet';
 import {ApiService} from '../config/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {changeApiMode} from '../actions/apiAction';
+import {changeApiMode, changeToken} from '../actions/apiAction';
+import { nextToken } from '../reducers/apiReducer';
 
 const DebugScreenXmpp = ({navigation}) => {
   const logs = useSelector(state => state.debugReducer.xmppLogs);
@@ -107,7 +108,9 @@ const DebugScreenApi = ({navigation}) => {
   const submit = async () => {
     // let res = await http.httpGet('wallets/balance/' + walletAddress);
     // console.log(res);
-    dispatch(changeApiMode('prod'));
+    // dispatch(changeApiMode('prod'));
+    // dispatch(changeToken('prod'));
+
     setTextForSearch(searchText);
   };
   useEffect(() => {
