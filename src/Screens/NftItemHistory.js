@@ -93,7 +93,7 @@ function NftItemHistory(props) {
     setAvatarSource({uri: item.nftFileUrl});
     // console.log(item, 'sdf49835430895dsf')
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
-      const allTransactions = res.data.transactions.map(item => {
+      const allTransactions = res.data.items.map(item => {
         // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')
         if (item.from === userWalletAddress && item.from !== item.to) {
           // balance = balance;

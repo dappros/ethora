@@ -34,6 +34,14 @@ export const fetchingWalletCommonRequest = () => ({
   type: types.FETCHING_WALLET_COMMON_REQUEST,
 });
 
+export const setOffset = offset => ({
+  type: types.SET_OFFSET,
+  payload: offset,
+});
+export const setTotal = total => ({
+  type: types.SET_TOTAL,
+  payload: total,
+});
 export const fetchingWalletCommonFailure = errorMsg => ({
   type: types.FETCHING_WALLET_COMMON_FAILURE,
   payload: errorMsg,
@@ -87,6 +95,8 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
           dispatch(logOut());
         },
         data => {
+          dispatch(addLogsApi(data));
+
           if (data.success === true) {
             console.log(data, 'asjkdkasdjlaks');
             if (isOwn) {
@@ -144,8 +154,9 @@ export const transferTokens = (
           dispatch(logOut());
         },
         async data => {
+          dispatch(addLogsApi(data));
           if (data.success) {
-            console.log('dasdsadasdasdffffafdgdfsd', bodyData);
+            console.log('dasdsadasdasdffffafdgdfsd', data);
 
             dispatch(
               transferTokensSuccess({
@@ -169,11 +180,21 @@ export const transferTokens = (
   };
 };
 
-export const fetchTransaction = (walletAddress, token, isOwn) => {
-  let url = getUrlFromStore(transactionURL) + 'walletAddress=' + walletAddress;
+export const fetchTransaction = (
+  walletAddress,
+  token,
+  isOwn,
+  limit = 10,
+  offset = 0,
+) => {
+  let url =
+    getUrlFromStore(transactionURL) +
+    'walletAddress=' +
+    walletAddress +
+    `&limit=${limit}&offset=${offset}`;
   // let url = connectionURL.transactionURL
   return dispatch => {
-    dispatch(fetchingWalletCommonRequest());
+    // dispatch(fetchingWalletCommonRequest());
     try {
       walletAddress &&
         hitAPI.fetchGet(
@@ -183,9 +204,15 @@ export const fetchTransaction = (walletAddress, token, isOwn) => {
             dispatch(logOut());
           },
           data => {
-            if (data.success) {
+            console.log(data, '523423423');
+            dispatch(addLogsApi(data));
+            if (data.items) {
+              dispatch(setOffset(data.limit));
+              dispatch(setTotal(data.total));
+
               if (isOwn) {
-                insertTransaction(data.transactions);
+                console.log(url, data, offset, '234u23412342323123423423024');
+                insertTransaction(data.items);
                 dispatch(fetchingTransactionSuccess(data));
               } else {
                 dispatch(fetchingOtherUserTransactionSuccess(data));
