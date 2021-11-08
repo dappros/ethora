@@ -310,8 +310,6 @@ class ProfileScreen extends Component {
       modalTypeForEditing: 'name',
       debugModeCounter: 0,
       endOfListReached: false,
-      limit: 10,
-      offset: 0,
     };
     coinRef = createRef();
   }
@@ -564,7 +562,6 @@ class ProfileScreen extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props.loginReducer.token, 'userToken222');
     // this.props.getUserProfileData(this.props.loginReducer.token)
 
     let transactionsObject = [];
@@ -1304,8 +1301,7 @@ class ProfileScreen extends Component {
                               ? '#000000'
                               : '#0000004D',
                         }}>
-                        Transactions (
-                        {this.state.transactionCount})
+                        Transactions ({this.state.transactionCount})
                       </Animated.Text>
                     </TouchableOpacity>
                   </View>

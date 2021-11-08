@@ -77,6 +77,14 @@ const walletReducer = (state = initialState, action) => {
       return {...state, offset: state.offset + action.payload};
     case types.SET_TOTAL:
       return {...state, total: action.payload};
+    case types.CLEAR_PAGINATION_DATA:
+      return {
+        ...state,
+        offset: 0,
+        limit: 10,
+        total: 0,
+        anotherUserTransaction: [],
+      };
 
     case types.FETCHING_WALLET_COMMON_FAILURE:
       return {

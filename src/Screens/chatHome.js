@@ -408,7 +408,7 @@ class ChatHome extends Component {
 
   async componentDidMount() {
     const {token} = this.props.loginReducer;
-    this.props.getEmailList(token);
+    // this.props.getEmailList(token);
 
     Linking.getInitialURL().then(url => {
       if (url) {

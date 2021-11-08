@@ -36,7 +36,12 @@ import {
 } from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants';
-import {fetchTransaction, setOffset, setTotal} from '../actions/wallet';
+import {
+  clearPaginationData,
+  fetchTransaction,
+  setOffset,
+  setTotal,
+} from '../actions/wallet';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -316,6 +321,11 @@ function AnotherProfile(props) {
   useEffect(() => {
     dispatch(setOffset(0));
     dispatch(setTotal(0));
+    // dispatch(clearPaginationData());
+
+    return () => {
+      dispatch(clearPaginationData());
+    };
   }, []);
 
   useEffect(() => {
@@ -592,7 +602,7 @@ function AnotherProfile(props) {
 
     if (activeTab === 1) {
       return (
-        <SafeAreaView style={{paddingBottom: '100%'}} >
+        <SafeAreaView style={{paddingBottom: '100%'}}>
           <TransactionListTab
             transactions={anotherUserTransaction}
             walletAddress={anotherUserWalletAddress}
@@ -600,12 +610,14 @@ function AnotherProfile(props) {
               if (
                 anotherUserTransaction.length < allReducers.walletReducer.total
               ) {
-                fetchTransaction(
-                  anotherUserWalletAddress,
-                  allReducers.apiReducer.defaultToken,
-                  false,
-                  allReducers.walletReducer.limit,
-                  allReducers.walletReducer.offset,
+                dispatch(
+                  fetchTransaction(
+                    anotherUserWalletAddress,
+                    allReducers.apiReducer.token,
+                    false,
+                    allReducers.walletReducer.limit,
+                    allReducers.walletReducer.offset,
+                  ),
                 );
               }
             }}
