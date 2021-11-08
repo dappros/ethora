@@ -1,4 +1,9 @@
-import {ADD_LOG_API, ADD_LOG_XMPP, TOGGLE_DEBUG_MODE} from '../constants/types';
+import {
+  ADD_LOG_API,
+  ADD_LOG_XMPP,
+  CLEAR_LOGS,
+  TOGGLE_DEBUG_MODE,
+} from '../constants/types';
 
 const initialState = {
   xmppLogs: [],
@@ -14,6 +19,10 @@ const debugReducer = (state = initialState, action) => {
       return {...state, apiLogs: [...state.apiLogs, action.payload]};
     case TOGGLE_DEBUG_MODE:
       return {...state, debugMode: action.payload};
+
+    case CLEAR_LOGS:
+      return {...state, xmppLogs: [], apiLogs: []};
+
     default:
       return state;
   }

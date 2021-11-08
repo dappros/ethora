@@ -583,7 +583,12 @@ class Routes extends Component {
         username,
         manipulatedWalletAddress,
       });
-      xmppConnect(manipulatedWalletAddress, password);
+      xmppConnect(
+        manipulatedWalletAddress,
+        password,
+        this.props.apiReducer.xmppDomains.DOMAIN,
+        this.props.apiReducer.xmppDomains.SERVICE,
+      );
       xmppListener(
         manipulatedWalletAddress,
         this.props.updatedRoster,
@@ -601,6 +606,8 @@ class Routes extends Component {
         this.props.logOut,
         this.props.debugReducer.debugMode,
         this.props.addLogsXmpp,
+        this.props.apiReducer.xmppDomains.DOMAIN,
+        this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
       );
     }
   }

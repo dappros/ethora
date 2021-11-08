@@ -340,14 +340,19 @@ class Chat extends Component {
       {
         id: 'sendMessage',
         type: 'groupchat',
-        from: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+        from:
+          this.state.manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         to: this.state.chatRoomDetails.chat_jid,
       },
       xml('body', {}, messageText),
       xml('data', {
-        xmlns: 'http://' + xmppConstants.DOMAIN,
+        xmlns: 'http://' + this.props.apiReducer.xmppDomains.DOMAIN,
         senderJID:
-          this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          this.state.manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         senderFirstName: this.state.firstName,
         senderLastName: this.state.lastName,
         senderWalletAddress: this.state.walletAddress,
@@ -389,8 +394,10 @@ class Chat extends Component {
   //longpress any message function
   onLongPressMessage(e, m) {
     let extraData = {};
-    if (!m.user._id.includes(xmppConstants.CONF_WITHOUT)) {
-      const jid = m.user._id.split('@' + xmppConstants.DOMAIN)[0];
+    if (!m.user._id.includes(this.props.apiReducer.xmppDomains.CONF_WITHOUT)) {
+      const jid = m.user._id.split(
+        '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+      )[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
       const roomJID = this.state.chatRoomDetails.chat_jid;
@@ -609,8 +616,10 @@ class Chat extends Component {
   }
   onLongPressAvatar(m) {
     let extraData = {};
-    if (!m._id.includes(xmppConstants.CONFERENCEDOMAIN)) {
-      const jid = m._id.split('@' + xmppConstants.DOMAIN)[0];
+    if (!m._id.includes(this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN)) {
+      const jid = m._id.split(
+        '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+      )[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
       const roomJID = this.state.chatRoomDetails.chat_jid;
@@ -953,14 +962,18 @@ class Chat extends Component {
           id: 'sendMessage',
           type: 'groupchat',
           from:
-            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            this.state.manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           to: this.state.chatRoomDetails.chat_jid,
         },
         xml('body', {}, 'media file'),
         xml('data', {
-          xmlns: 'http://' + xmppConstants.DOMAIN,
+          xmlns: 'http://' + this.props.apiReducer.xmppDomains.DOMAIN,
           senderJID:
-            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            this.state.manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           senderFirstName: this.state.firstName,
           senderLastName: this.state.lastName,
           senderWalletAddress: this.state.walletAddress,
@@ -1025,50 +1038,50 @@ class Chat extends Component {
           ? false
           : true,
     });
+    console.log(mimetype, '2329084234203');
+    // if (isStoredFile) {
+    //   this.setState({playingMessageId: id});
+    //   //display image from store location path on modal view
+    //   RNFS.exists(localURL)
+    //     .then(val => {
+    //       if (val) {
+    //         if (Platform.OS === 'ios') {
+    //           try {
+    //             RNFetchBlob.ios.openDocument('file://' + localURL);
+    //           } catch (err) {
+    //             console.log(err, 'rnfetchblobcatch');
+    //           }
+    //         }
+    //         if (Platform.OS === 'android') {
+    //           console.log(mimetype, 'Asfadsfsfbvdfbdfghbdfghbfg');
+    //           // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
 
-    if (isStoredFile) {
-      this.setState({playingMessageId: id});
-      //display image from store location path on modal view
-      RNFS.exists(localURL)
-        .then(val => {
-          if (val) {
-            if (Platform.OS === 'ios') {
-              try {
-                RNFetchBlob.ios.openDocument('file://' + localURL);
-              } catch (err) {
-                console.log(err, 'rnfetchblobcatch');
-              }
-            }
-            if (Platform.OS === 'android') {
-              console.log(mimetype, 'Asfadsfsfbvdfbdfghbdfghbfg');
-              // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
-
-              if (mimetype === 'audio/mpeg') {
-                // new Player(realImageURL).play();
-              } else {
-                RNFetchBlob.android.actionViewIntent(localURL, mimetype);
-              }
-            }
-          } else {
-            this.downloadFunction(props);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    } else {
-      //download file and display the modal
-      // const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
-      // this.setState({
-      //   showModal: true,
-      //   modalType: 'loading',
-      // })
-      // downloadFile({fileURL:realImageURL, fileName: filename, closeModal:this.closeModal()}, path=>{
-      //   console.log(path,"path path path");
-      //   updateMessageObject({realImageURL:path,receiverMessageId: _id})
-      // });
-      this.downloadFunction(props);
-    }
+    //           if (mimetype === 'audio/mpeg') {
+    //             // new Player(realImageURL).play();
+    //           } else {
+    //             // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+    //           }
+    //         }
+    //       } else {
+    //         this.downloadFunction(props);
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // } else {
+    //   //download file and display the modal
+    //   // const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
+    //   // this.setState({
+    //   //   showModal: true,
+    //   //   modalType: 'loading',
+    //   // })
+    //   // downloadFile({fileURL:realImageURL, fileName: filename, closeModal:this.closeModal()}, path=>{
+    //   //   console.log(path,"path path path");
+    //   //   updateMessageObject({realImageURL:path,receiverMessageId: _id})
+    //   // });
+    //   this.downloadFunction(props);
+    // }
   };
   takePicture = async () => {
     if (this.camera) {
@@ -1592,10 +1605,10 @@ class Chat extends Component {
           }}
         />
 
-        {this.state.mediaModalContent.type === 'audio/mpeg' ||
-          (this.state.mediaModalContent.type === 'application/octet-stream' && (
-            <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
-          ))}
+        {(this.state.mediaModalContent.type === 'audio/mpeg' ||
+          this.state.mediaModalContent.type === 'application/octet-stream') && (
+          <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
+        )}
         <GiftedChat
           renderLoading={() => (
             <ActivityIndicator size="large" color={primaryColor} />
@@ -1634,7 +1647,9 @@ class Chat extends Component {
           onSend={messageString => this.submitMessage(messageString, false)}
           user={{
             _id:
-              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+              this.state.manipulatedWalletAddress +
+              '@' +
+              this.props.apiReducer.xmppDomains.DOMAIN,
             name: this.state.firstName + ' ' + this.state.lastName,
           }}
           onPressAvatar={props => this.onAvatarPress(props)}

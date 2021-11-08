@@ -4,7 +4,10 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import * as xmppConfig from '../constants/xmppConstants';
+import {
+  newSubscription,
+  subscriptionsStanzaID,
+} from '../constants/xmppConstants';
 import {
   insertRosterList,
   fetchRosterList as fetchChatListRealm,
@@ -51,6 +54,8 @@ export const xmppListener = (
   logOut,
   appDebugMode,
   printLogs,
+  DOMAIN,
+  CONFERENCEDOMAIN,
 ) => {
   debug(xmpp, true);
 
@@ -98,10 +103,7 @@ export const xmppListener = (
         stanza?.children[0]?.attrs?.complete
       ) {
         console.log(stanza, 'archiveksdlfsdfdsfjsdlfjkls');
-        fetchRosterlist(
-          manipulatedWalletAddress,
-          xmppConfig.subscriptionsStanzaID,
-        );
+        fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
       }
       if (stanza.attrs.id === 'disco1') {
         stanza.children[0].children.map(item => {
@@ -271,18 +273,12 @@ export const xmppListener = (
         if (stanza.children[1] !== undefined) {
           if (stanza.children[1].children[1].attrs.code === '201') {
             Toast.show('Room created successfully', Toast.LONG);
-            fetchRosterlist(
-              manipulatedWalletAddress,
-              xmppConfig.subscriptionsStanzaID,
-            );
+            fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
           }
 
           if (stanza.children[1].children[1].attrs.code === '110') {
             Toast.show('Room joined successfully', Toast.LONG);
-            fetchRosterlist(
-              manipulatedWalletAddress,
-              xmppConfig.subscriptionsStanzaID,
-            );
+            fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
           }
         }
       }
@@ -301,7 +297,7 @@ export const xmppListener = (
         const subscribe = xml(
           'iq',
           {
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
             to: jid,
             type: 'set',
             id: 'inviteFromArchive',
@@ -321,7 +317,7 @@ export const xmppListener = (
         const presence = xml(
           'presence',
           {
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
             to: jid + '/' + manipulatedWalletAddress,
           },
           xml('x', 'http://jabber.org/protocol/muc'),
@@ -336,10 +332,10 @@ export const xmppListener = (
         const subscribe = xml(
           'iq',
           {
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
             to: jid,
             type: 'set',
-            id: xmppConfig.newSubscription,
+            id: newSubscription,
           },
           xml(
             'subscribe',
@@ -390,10 +386,10 @@ export const xmppListener = (
         const subscribe = xml(
           'iq',
           {
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
             to: jid,
             type: 'set',
-            id: xmppConfig.newSubscription,
+            id: newSubscription,
           },
           xml(
             'subscribe',
@@ -407,10 +403,7 @@ export const xmppListener = (
         );
 
         xmpp.send(subscribe);
-        fetchRosterlist(
-          manipulatedWalletAddress,
-          xmppConfig.subscriptionsStanzaID,
-        );
+        fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
       }
 
       //capture archived message of a room
@@ -522,24 +515,21 @@ export const xmppListener = (
     }
 
     //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
-    if (stanza.attrs.id === xmppConfig.newSubscription) {
+    if (stanza.attrs.id === newSubscription) {
       const presence = xml(
         'presence',
         {
-          from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+          from: manipulatedWalletAddress + '@' + DOMAIN,
           to: stanza.attrs.from + '/' + manipulatedWalletAddress,
         },
         xml('x', 'http://jabber.org/protocol/muc'),
       );
       xmpp.send(presence);
-      fetchRosterlist(
-        manipulatedWalletAddress,
-        xmppConfig.subscriptionsStanzaID,
-      );
+      fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
     }
 
     //To capture the response for list of rosters (for now only subscribed muc)
-    if (stanza.attrs.id === xmppConfig.subscriptionsStanzaID) {
+    if (stanza.attrs.id === subscriptionsStanzaID) {
       const rosterFromXmpp = stanza.children[0].children;
       let rosterListArray = [];
       let rosterMap = await getStoredItems();
@@ -563,10 +553,7 @@ export const xmppListener = (
           // pri
         };
 
-        if (
-          item.attrs.jid.split(xmppConfig.CONFERENCEDOMAIN)[0] ===
-          nonMemberchat.name
-        ) {
+        if (item.attrs.jid.split(CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
           nonMemberchat.exist = true;
         }
         let exist = false;
@@ -602,7 +589,7 @@ export const xmppListener = (
           'presence',
           {
             id: 'roomPresence',
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
             to: item.attrs.jid + '/' + manipulatedWalletAddress,
           },
           // xml('data', {
@@ -626,10 +613,10 @@ export const xmppListener = (
         const subscribe = xml(
           'iq',
           {
-            from: manipulatedWalletAddress + '@' + xmppConfig.DOMAIN,
-            to: nonMemberchat.name + xmppConfig.CONFERENCEDOMAIN,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
+            to: nonMemberchat.name + CONFERENCEDOMAIN,
             type: 'set',
-            id: xmppConfig.newSubscription,
+            id: newSubscription,
           },
           xml(
             'subscribe',
@@ -776,17 +763,17 @@ export const xmppListener = (
     xmpp.reconnect.delay = 2000;
     xmpp.send(xml('presence'));
 
-    fetchRosterlist(manipulatedWalletAddress, xmppConfig.subscriptionsStanzaID);
+    fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
 
-    commonDiscover(manipulatedWalletAddress, xmppConfig.DOMAIN);
+    commonDiscover(manipulatedWalletAddress, DOMAIN);
     vcardRetrievalRequest(manipulatedWalletAddress);
   });
 };
 
-export const xmppConnect = (walletAddress, password) => {
+export const xmppConnect = (walletAddress, password, DOMAIN, SERVICE) => {
   xmpp = client({
-    service: xmppConfig.SERVICE,
-    domain: xmppConfig.DOMAIN,
+    service: SERVICE,
+    domain: DOMAIN,
     username: walletAddress,
     password: password,
   });

@@ -10,16 +10,24 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Highlighter from 'react-native-highlight-words';
-import {APP_TOKEN, commonColors} from '../../docs/config';
+import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 import CustomHeader from '../components/shared/customHeader';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 import {urlDefault} from '../config/url';
 import {fetchWalletBalance} from '../actions/wallet';
 import {ApiService} from '../config/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {changeApiMode, changeToken} from '../actions/apiAction';
-import { nextToken } from '../reducers/apiReducer';
+import {changeApiMode, changeToken, changeXmpp} from '../actions/apiAction';
+import {devXmpp, nextToken, prodXmpp} from '../reducers/apiReducer';
+
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import Modal from 'react-native-modal';
+import {logOut} from '../actions/auth';
+import {clearLogs} from '../actions/debugActions';
 
 const DebugScreenXmpp = ({navigation}) => {
   const logs = useSelector(state => state.debugReducer.xmppLogs);
@@ -105,11 +113,14 @@ const DebugScreenApi = ({navigation}) => {
   const [textForSearch, setTextForSearch] = useState('');
   const dispatch = useDispatch();
   const http = new ApiService(url, APP_TOKEN);
+  const [apiMode, setApiMode] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
   const submit = async () => {
     // let res = await http.httpGet('wallets/balance/' + walletAddress);
     // console.log(res);
     // dispatch(changeApiMode('prod'));
     // dispatch(changeToken('prod'));
+    // dispatch(changeXmpp(prodXmpp));
 
     setTextForSearch(searchText);
   };
@@ -117,9 +128,23 @@ const DebugScreenApi = ({navigation}) => {
     // dispatch(fetchWalletBalance());
   }, []);
 
+  const pickApiMode = mode => {
+    setModalVisible(false);
+    dispatch(changeApiMode(mode));
+    dispatch(changeToken(mode));
+
+    if (mode === 'prod') {
+      dispatch(changeXmpp(prodXmpp));
+    } else {
+      dispatch(changeXmpp(devXmpp));
+    }
+    dispatch(clearLogs());
+    dispatch(logOut());
+  };
+
   return (
     <View style={{paddingBottom: 100}}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
         <TextInput
           value={searchText}
           onChangeText={text => setSearchText(text)}
@@ -131,6 +156,40 @@ const DebugScreenApi = ({navigation}) => {
         <TouchableOpacity style={styles.searchButton} onPress={submit}>
           <Text style={{color: 'white'}}>Search</Text>
         </TouchableOpacity>
+
+        <View style={styles.selectContainer}>
+          <Text
+            style={{
+              ...styles.textStyle,
+              left: 5,
+            }}>
+            {' '}
+            Api mode
+          </Text>
+          <Text
+            style={{
+              ...styles.textStyle,
+              right: 40,
+            }}>
+            {' '}
+            {apiMode}
+          </Text>
+
+          <View />
+          <>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <AntIcon
+                // onPress={() => props.navigation.navigate('LoginComponent')}
+                color={commonColors.primaryColor}
+                name="caretdown"
+                size={heightPercentageToDP('2%')}
+                style={{marginRight: 5, marginBottom: 2}}
+              />
+            </TouchableOpacity>
+          </>
+          {/* )} */}
+        </View>
+        {/* </View> */}
       </View>
 
       <ScrollView>
@@ -150,6 +209,25 @@ const DebugScreenApi = ({navigation}) => {
             })}
         </View>
       </ScrollView>
+
+      <Modal
+        onBackdropPress={() => setModalVisible(false)}
+        isVisible={isModalVisible}>
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            onPress={() => pickApiMode('dev')}
+            style={styles.rarityItems}>
+            <Text style={styles.modalItem}>api-dev.dappros.com</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => pickApiMode('prod')}
+            style={styles.rarityItems}>
+            <Text style={styles.modalItem}>app.dappros.com</Text>
+          </TouchableOpacity>
+
+          {/* <Button title="Hide modal" onPress={toggleModal} /> */}
+        </View>
+      </Modal>
 
       {/* 
       {logs.map(log => (
@@ -193,6 +271,7 @@ export function DebugScreen({navigation}) {
     </>
   );
 }
+
 const styles = StyleSheet.create({
   searchButton: {
     backgroundColor: commonColors.primaryDarkColor,
@@ -200,13 +279,59 @@ const styles = StyleSheet.create({
     width: 60,
     padding: 7,
     marginLeft: 10,
+    height: 30,
   },
   searchInput: {
-    width: '80%',
-    padding: 0,
+    width: '40%',
+    padding: 5,
     paddingLeft: 10,
+    height: 30,
     borderWidth: 2,
     borderColor: commonColors.primaryDarkColor,
     borderRadius: 5,
+  },
+
+  selectContainer: {
+    borderColor: commonColors.primaryColor,
+    borderWidth: 1,
+    // marginTop: 10,
+    borderRadius: 5,
+    marginLeft: 10,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: widthPercentageToDP('35%'),
+    height: 30,
+  },
+
+  textStyle: {
+    fontFamily: textStyles.lightFont,
+    color: commonColors.primaryColor,
+    position: 'absolute',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalItem: {
+    fontSize: heightPercentageToDP('2.23%'),
+    fontFamily: textStyles.regularFont,
+    textAlign: 'left',
+    paddingLeft: 5,
+    color: commonColors.primaryColor,
+  },
+
+  rarityItems: {
+    paddingLeft: 5,
+    paddingVertical: 5,
+    borderBottomColor: commonColors.primaryColor,
+    borderBottomWidth: 1,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

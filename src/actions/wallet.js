@@ -23,10 +23,6 @@ import {
 const hitAPI = new fetchFunction();
 
 const getUrlFromStore = additionalUrl => {
-  console.log(
-    store.getState().apiReducer.defaultUrl + additionalUrl,
-    'getjkadlfjal',
-  );
   return store.getState().apiReducer.defaultUrl + additionalUrl;
 };
 
@@ -42,6 +38,10 @@ export const setTotal = total => ({
   type: types.SET_TOTAL,
   payload: total,
 });
+export const clearPaginationData = () => ({
+  type: types.CLEAR_PAGINATION_DATA,
+});
+
 export const fetchingWalletCommonFailure = errorMsg => ({
   type: types.FETCHING_WALLET_COMMON_FAILURE,
   payload: errorMsg,
@@ -134,7 +134,6 @@ export const transferTokens = (
   } else {
     url = getUrlFromStore(etherTransferURL);
   }
-  console.log(url, '324882309423094');
   if (bodyData.nftId) {
     console.log(bodyData.tokenName, 'tokenjsdkfhdksjf');
     Alert.alert(
@@ -156,8 +155,6 @@ export const transferTokens = (
         async data => {
           dispatch(addLogsApi(data));
           if (data.success) {
-            console.log('dasdsadasdasdffffafdgdfsd', data);
-
             dispatch(
               transferTokensSuccess({
                 success: true,
@@ -204,17 +201,17 @@ export const fetchTransaction = (
             dispatch(logOut());
           },
           data => {
-            console.log(data, '523423423');
             dispatch(addLogsApi(data));
             if (data.items) {
-              dispatch(setOffset(data.limit));
-              dispatch(setTotal(data.total));
-
               if (isOwn) {
-                console.log(url, data, offset, '234u23412342323123423423024');
-                insertTransaction(data.items);
+                dispatch(setOffset(data.limit));
+                dispatch(setTotal(data.total));
                 dispatch(fetchingTransactionSuccess(data));
+                insertTransaction(data.items);
               } else {
+
+                dispatch(setOffset(data.limit));
+                dispatch(setTotal(data.total));
                 dispatch(fetchingOtherUserTransactionSuccess(data));
               }
             } else {

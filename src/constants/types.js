@@ -99,7 +99,7 @@ export const SET_IS_PREMIUM = 'SET_IS_PREMIUM';
 //Debug reducer
 export const ADD_LOG_XMPP = 'ADD_LOG_XMPP';
 export const ADD_LOG_API = 'ADD_LOG_API';
-
+export const CLEAR_LOGS = 'CLEAR_LOGS';
 export const TOGGLE_DEBUG_MODE = 'TOGGLE_DEBUG_MODE';
 
 // api reducer
@@ -108,4 +108,5 @@ export const CHANGE_TOKEN = 'CHANGE_TOKEN';
 
 export const SET_OFFSET = 'SET_OFFSET';
 export const SET_TOTAL = 'SET_TOTAL';
+export const CLEAR_PAGINATION_DATA = 'CLEAR_PAGINATION_DATA';
 export const CHANGE_XMPP_DOMAIN = 'CHANGE_XMPP_DOMAIN';

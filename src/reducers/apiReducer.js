@@ -5,6 +5,8 @@ import {
 } from '../constants/types';
 
 export const prodXmpp = 'dxmpp.com';
+export const devXmpp = 'dev.dxmpp.com';
+
 
 const initialState = {
   modes: {
@@ -19,7 +21,8 @@ const initialState = {
   xmppDomains: {
     DOMAIN: 'dev.dxmpp.com',
     SERVICE: 'wss://dev.dxmpp.com:5443/ws',
-    CONFERENCEDOMAIN: 'conference.dev.dxmpp.com',
+    CONFERENCEDOMAIN: '@conference.dev.dxmpp.com',
+    CONFERENCEDOMAIN_WITHOUT: 'conference.dev.dxmpp.com',
   },
   defaultUrl: 'https://app-dev.dappros.com/v1',
   defaultToken:
@@ -38,7 +41,8 @@ const apiReducer = (state = initialState, action) => {
         xmppDomains: {
           DOMAIN: action.payload,
           SERVICE: `wss://${action.payload}:5443/ws`,
-          CONFERENCEDOMAIN: 'conference.' + action.payload,
+          CONFERENCEDOMAIN: '@conference.' + action.payload,
+          CONFERENCEDOMAIN_WITHOUT: 'conference.' + action.payload,
         },
       };
     default:
