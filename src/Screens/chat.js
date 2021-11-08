@@ -77,7 +77,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 import downloadFile from '../helpers/downloadFileLogic';
 import FastImage from 'react-native-fast-image';
 import {updateMessageObject} from '../components/realmModels/messages';
-import {commonColors, textStyles} from '../../docs/config';
+import {commonColors, textStyles, allowIsTyping} from '../../docs/config';
 import VideoRecorder from 'react-native-beautiful-video-recorder';
 import VideoPlayer from 'react-native-video-player';
 import WaveForm from 'react-native-audiowaveform';
@@ -896,7 +896,7 @@ class Chat extends Component {
           flexDirection: 'row',
         }}>
         <View style={{flex: 0.6}}>
-          {this.state.isTyping ? (
+          {allowIsTyping && this.state.isTyping ? (
             <View style={styles.isTypingContainer}>
               <View style={{marginRight: 30}}>
                 <TypingAnimation dotColor="grey" />

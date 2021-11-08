@@ -106,6 +106,8 @@ const itemsMintingFee = 10;
 // Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default. 
 const appWalletName = "Anonymous";
 
+const allowIsTyping = false;
+
 
 export{
     appTitle,
@@ -135,5 +137,6 @@ export{
     slide3Image1,
     slide3Image2,
     slide4Image1,
-    slide4Image2
+    slide4Image2,
+    allowIsTyping
 }
