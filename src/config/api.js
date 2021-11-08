@@ -106,7 +106,7 @@ export default class ConnectionAPI {
                 Alert.alert(title, description, [
                   {
                     text: 'Ok',
-                    onPress: () => logOut(),
+                    onPress: () => console.log(),
                   },
                 ]);
               } else {
@@ -425,7 +425,7 @@ export default class ConnectionAPI {
                 Alert.alert(title, description, [
                   {
                     text: 'Ok',
-                    onPress: () => logOut(),
+                    onPress: () => console.log(),
                   },
                 ]);
               } else {
