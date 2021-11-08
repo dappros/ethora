@@ -324,6 +324,11 @@ function MintItems(props) {
     ]);
   };
 
+  const selectNftQuantity = value => {
+    setSelectedValue(value);
+    setModalVisible(false);
+  };
+
   return (
     <Fragment>
       <View>
@@ -489,84 +494,54 @@ function MintItems(props) {
             alignItems: 'center',
           }}>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(1), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(1)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              1
-            </Text>
+            <Text style={classes.quantityItem}>1</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(2), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(2)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              2
-            </Text>
+            <Text style={classes.quantityItem}>2</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(3), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(3)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              3
-            </Text>
+            <Text style={classes.quantityItem}>3</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(4), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(4)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              4
-            </Text>
+            <Text style={classes.quantityItem}>4</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(5), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(5)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              5
-            </Text>
+            <Text style={classes.quantityItem}>5</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(6)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>6</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(7)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>7</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(8)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>8</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(9)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>9</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(10)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>10</Text>
           </TouchableOpacity>
 
           {/* <Button title="Hide modal" onPress={toggleModal} /> */}
@@ -609,6 +584,13 @@ const classes = StyleSheet.create({
     width: wp('80%'),
     alignItems: 'center',
     marginTop: 10,
+  },
+  quantityItem: {
+    fontSize: hp('2.23%'),
+    fontFamily: regularFont,
+    textAlign: 'left',
+    paddingLeft: 5,
+    color: primaryColor,
   },
   rarityItems: {
     paddingLeft: 5,
