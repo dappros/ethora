@@ -5,9 +5,16 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import React, {Component, Fragment} from 'react';
-import {View, Text, TouchableOpacity, ActivityIndicator, Platform, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Platform,
+  Alert,
+} from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { RNCamera } from 'react-native-camera';
+import {RNCamera} from 'react-native-camera';
 import styles from './style/scanStyle';
 import {connect} from 'react-redux';
 import {fetchchatRoomDetails} from '../actions/chatAction';
@@ -116,51 +123,50 @@ class qrcodescreen extends Component {
     this.openChat(chatJID);
   };
 
-subscribeRoomAndOpenChat(chat_jid){
-  const subscribe = xml(
-    'iq',
-    {
-      from: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
-      to: chat_jid,
-      type: 'set',
-      id: 'subscription',
-    },
-    xml(
-      'subscribe',
-      {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
-      xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-      xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-    ),
-  );
-  xmpp.send(subscribe);
-  get_archive_by_room(chat_jid);
+  subscribeRoomAndOpenChat(chat_jid) {
+    console.log(chat_jid, '324290349234890');
+    const subscribe = xml(
+      'iq',
+      {
+        from:
+          this.state.manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
+        to: chat_jid,
+        type: 'set',
+        id: 'subscription',
+      },
+      xml(
+        'subscribe',
+        {xmlns: 'urn:xmpp:mucsub:0', nick: this.state.manipulatedWalletAddress},
+        xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+        xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+      ),
+    );
+    xmpp.send(subscribe);
+    get_archive_by_room(chat_jid);
 
-  this.props.setCurrentChatDetails(
-    chat_jid,
-    'Loading...',
-    this.props.navigation,
-    true,
-  );
-  this.setState({
-    isLoading: false,
-  });
-  fetchRosterlist(this.state.manipulatedWalletAddress, subscriptionsStanzaID);
-}
+    this.props.setCurrentChatDetails(
+      chat_jid,
+      'Loading...',
+      this.props.navigation,
+      true,
+    );
+    this.setState({
+      isLoading: false,
+    });
+    fetchRosterlist(this.state.manipulatedWalletAddress, subscriptionsStanzaID);
+  }
 
   async openChat(chat_jid) {
-    // if(chat_jid.includes(xmppConstants.DOMAIN))
-    // {
-    //   chat_name=chat_jid.split("@"+xmppConstants.CONFERENCEDOMAIN)[0]
-    // }
+    if (chat_jid.includes(xmppConstants.DOMAIN)) {
+      chat_name = chat_jid.split('@' + xmppConstants.CONFERENCEDOMAIN)[0];
+    }
 
-    this.checkUserPremium(callback => {
-      console.log(callback,"thisisit")
-      if(callback){
-        this.subscribeRoomAndOpenChat(chat_jid)
-      }else{
-        this.subscribeRoomAndOpenChat(chat_jid);
-      }
-    })
+    const chatJID =
+      parseChatLink(chat_jid) +
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
+    this.subscribeRoomAndOpenChat(chatJID);
   }
 
   openGallery() {
@@ -187,6 +193,7 @@ subscribeRoomAndOpenChat(chat_jid){
       } else {
         const qrCodeFileUri = {uri: response.uri};
         createImageData(response.base64, response.type, res => {
+          console.log(res, '234879234');
           // console.log(res.data,'returned data')
           if (res) {
             this.openChat(res.data);
@@ -207,15 +214,15 @@ subscribeRoomAndOpenChat(chat_jid){
   render() {
     return (
       <View style={styles.container}>
-        <View style={{zIndex:Platform.OS==="android"?+1:0, flex:0.2}}>
-        <CustomHeader
-          flashMode={RNCamera.Constants.FlashMode.torch}
-          title = "Scan"
-          isQR={false}
-          navigation={this.props.navigation}
-        />
+        <View style={{zIndex: Platform.OS === 'android' ? +1 : 0, flex: 0.2}}>
+          <CustomHeader
+            flashMode={RNCamera.Constants.FlashMode.torch}
+            title="Scan"
+            isQR={false}
+            navigation={this.props.navigation}
+          />
         </View>
-        <View style={{flex:0.7, justifyContent:'flex-start'}}>
+        <View style={{flex: 0.7, justifyContent: 'flex-start'}}>
           {/* <StatusBar barStyle="dark-content" /> */}
           {this.state.isLoading ? (
             <ActivityIndicator
@@ -226,14 +233,18 @@ subscribeRoomAndOpenChat(chat_jid){
           ) : (
             <QRCodeScanner
               showMarker={true}
-
               topViewStyle={{flex: 0}}
-              containerStyle={{flex:1}}
-              cameraStyle={{flex:Platform.OS==="android"?0.8:1, height:hp("40%"), width:"100%", justifyContent:'flex-start'}}
+              containerStyle={{flex: 1}}
+              cameraStyle={{
+                flex: Platform.OS === 'android' ? 0.8 : 1,
+                height: hp('40%'),
+                width: '100%',
+                justifyContent: 'flex-start',
+              }}
               ref={node => {
                 this.scanner = node;
               }}
-              bottomViewStyle={{flex:0.2}}
+              bottomViewStyle={{flex: 0.2}}
               onRead={e => this.onSuccess(e)}
               bottomContent={
                 <View>
@@ -260,12 +271,9 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    fetchchatRoomDetails,
-    setCurrentChatDetails,
-    roomCreated,
-    fetchRosterlist,
-  },
-)(qrcodescreen);
+module.exports = connect(mapStateToProps, {
+  fetchchatRoomDetails,
+  setCurrentChatDetails,
+  roomCreated,
+  fetchRosterlist,
+})(qrcodescreen);

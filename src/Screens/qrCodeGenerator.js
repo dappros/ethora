@@ -18,12 +18,13 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
 import {CONFERENCEDOMAIN} from '../constants/xmppConstants';
 import {unv_url} from '../../docs/config';
+import {connect} from 'react-redux';
 
 const {primaryColor} = commonColors;
 const {mediumFont} = textStyles;
 
 // const obj
-class App extends Component {
+class QrCodeGenerator extends Component {
   constructor() {
     super();
     this.state = {
@@ -67,13 +68,19 @@ class App extends Component {
   }
 
   createShareLink() {
-    const roomName = this.props.value.replace(CONFERENCEDOMAIN, '');
+    const roomName = this.props.value.replace(
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+      '',
+    );
     const chatLink = `${unv_url}${roomName}`;
     return chatLink;
   }
 
   copyToClipboard = async () => {
-    const roomName = this.props.value.replace(CONFERENCEDOMAIN, '');
+    const roomName = this.props.value.replace(
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+      '',
+    );
     const chatLink = `${unv_url}${roomName}`;
     Clipboard.setString(chatLink);
     Toast.show('Link Copied');
@@ -120,7 +127,8 @@ class App extends Component {
     );
   }
 }
-export default App;
+
+
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
@@ -150,3 +158,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
+const mapStateToProps = state => {
+  return {
+    ...state,
+  };
+};
+module.exports =  connect(mapStateToProps, {})(QrCodeGenerator);
