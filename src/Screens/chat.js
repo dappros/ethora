@@ -15,6 +15,8 @@ import {
   StyleSheet,
   Pressable,
   Button,
+  Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
@@ -92,6 +94,7 @@ import AudioRecorderPlayer, {
 } from 'react-native-audio-recorder-player';
 import Video from 'react-native-video';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
+import {fileUpload} from '../config/routesConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
@@ -175,10 +178,25 @@ class Chat extends Component {
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
     this.cameraRef = createRef();
+    this.mediaButtonAnimation = new Animated.Value(1);
   }
 
   //fucntion to get chat archive of a room
+  animateMediaButtonIn = () => {
+    Animated.spring(this.mediaButtonAnimation, {
+      toValue: 1.8,
+      useNativeDriver: true,
+    }).start();
+  };
+  animateMediaButtonOut = () => {
+    Animated.spring(this.mediaButtonAnimation, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 40,
 
+      friction: 3,
+    }).start();
+  };
   async componentDidMount() {
     let firstName = '';
     let lastName = '';
@@ -322,14 +340,19 @@ class Chat extends Component {
       {
         id: 'sendMessage',
         type: 'groupchat',
-        from: this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+        from:
+          this.state.manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         to: this.state.chatRoomDetails.chat_jid,
       },
       xml('body', {}, messageText),
       xml('data', {
-        xmlns: 'http://' + xmppConstants.DOMAIN,
+        xmlns: 'http://' + this.props.apiReducer.xmppDomains.DOMAIN,
         senderJID:
-          this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          this.state.manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         senderFirstName: this.state.firstName,
         senderLastName: this.state.lastName,
         senderWalletAddress: this.state.walletAddress,
@@ -371,8 +394,10 @@ class Chat extends Component {
   //longpress any message function
   onLongPressMessage(e, m) {
     let extraData = {};
-    if (!m.user._id.includes(xmppConstants.CONF_WITHOUT)) {
-      const jid = m.user._id.split('@' + xmppConstants.DOMAIN)[0];
+    if (!m.user._id.includes(this.props.apiReducer.xmppDomains.CONF_WITHOUT)) {
+      const jid = m.user._id.split(
+        '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+      )[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
       const roomJID = this.state.chatRoomDetails.chat_jid;
@@ -439,7 +464,7 @@ class Chat extends Component {
   openWallet = async walletAddress => {
     await this.props.fetchTransaction(
       walletAddress,
-      APP_TOKEN,
+      this.props.apiReducer.defaultToken,
       walletAddress === this.state.walletAddress ? true : false,
     );
   };
@@ -478,7 +503,7 @@ class Chat extends Component {
           await this.props.fetchWalletBalance(
             walletAddress,
             coinsMainName,
-            APP_TOKEN,
+            this.props.apiReducer.defaultToken,
             false,
           );
 
@@ -487,7 +512,12 @@ class Chat extends Component {
       });
     }
   };
+
+  constructUrl = route => {
+    return this.props.apiReducer.defaultUrl + route;
+  };
   onStartRecord = async () => {
+    this.animateMediaButtonIn();
     const dirs = RNFetchBlob.fs.dirs;
     const path = Platform.select({
       ios: 'hello.m4a',
@@ -500,6 +530,8 @@ class Chat extends Component {
     // });
   };
   onStopRecord = async () => {
+    this.animateMediaButtonOut();
+
     // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
     // const dirs = RNFetchBlob.fs.dirs;
 
@@ -513,7 +545,7 @@ class Chat extends Component {
     });
     console.log(result, 'ressslsllsl');
     const {token} = this.props.loginReducer;
-    const filesApiURL = connectionURL.fileUpload;
+    const filesApiURL = this.constructUrl(fileUpload);
     const FormData = require('form-data');
     let data = new FormData();
 
@@ -584,8 +616,10 @@ class Chat extends Component {
   }
   onLongPressAvatar(m) {
     let extraData = {};
-    if (!m._id.includes(xmppConstants.CONFERENCEDOMAIN)) {
-      const jid = m._id.split('@' + xmppConstants.DOMAIN)[0];
+    if (!m._id.includes(this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN)) {
+      const jid = m._id.split(
+        '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+      )[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = this.props.loginReducer.token;
       const roomJID = this.state.chatRoomDetails.chat_jid;
@@ -928,14 +962,18 @@ class Chat extends Component {
           id: 'sendMessage',
           type: 'groupchat',
           from:
-            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            this.state.manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           to: this.state.chatRoomDetails.chat_jid,
         },
         xml('body', {}, 'media file'),
         xml('data', {
-          xmlns: 'http://' + xmppConstants.DOMAIN,
+          xmlns: 'http://' + this.props.apiReducer.xmppDomains.DOMAIN,
           senderJID:
-            this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            this.state.manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           senderFirstName: this.state.firstName,
           senderLastName: this.state.lastName,
           senderWalletAddress: this.state.walletAddress,
@@ -995,52 +1033,55 @@ class Chat extends Component {
         url: localURL,
         remoteUrl: realImageURL,
       },
-      mediaContentModalVisible: mimetype === 'audio/mpeg' ? false : true,
+      mediaContentModalVisible:
+        mimetype === 'audio/mpeg' || mimetype === 'application/octet-stream'
+          ? false
+          : true,
     });
+    console.log(mimetype, '2329084234203');
+    // if (isStoredFile) {
+    //   this.setState({playingMessageId: id});
+    //   //display image from store location path on modal view
+    //   RNFS.exists(localURL)
+    //     .then(val => {
+    //       if (val) {
+    //         if (Platform.OS === 'ios') {
+    //           try {
+    //             RNFetchBlob.ios.openDocument('file://' + localURL);
+    //           } catch (err) {
+    //             console.log(err, 'rnfetchblobcatch');
+    //           }
+    //         }
+    //         if (Platform.OS === 'android') {
+    //           console.log(mimetype, 'Asfadsfsfbvdfbdfghbdfghbfg');
+    //           // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
 
-    if (isStoredFile) {
-      this.setState({playingMessageId: id});
-      //display image from store location path on modal view
-      RNFS.exists(localURL)
-        .then(val => {
-          if (val) {
-            if (Platform.OS === 'ios') {
-              try {
-                RNFetchBlob.ios.openDocument('file://' + localURL);
-              } catch (err) {
-                console.log(err, 'rnfetchblobcatch');
-              }
-            }
-            if (Platform.OS === 'android') {
-              console.log(mimetype, 'Asfadsfsfbvdfbdfghbdfghbfg');
-              // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
-
-              if (mimetype === 'audio/mpeg') {
-                // new Player(realImageURL).play();
-              } else {
-                RNFetchBlob.android.actionViewIntent(localURL, mimetype);
-              }
-            }
-          } else {
-            this.downloadFunction(props);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    } else {
-      //download file and display the modal
-      // const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
-      // this.setState({
-      //   showModal: true,
-      //   modalType: 'loading',
-      // })
-      // downloadFile({fileURL:realImageURL, fileName: filename, closeModal:this.closeModal()}, path=>{
-      //   console.log(path,"path path path");
-      //   updateMessageObject({realImageURL:path,receiverMessageId: _id})
-      // });
-      this.downloadFunction(props);
-    }
+    //           if (mimetype === 'audio/mpeg') {
+    //             // new Player(realImageURL).play();
+    //           } else {
+    //             // RNFetchBlob.android.actionViewIntent(localURL, mimetype);
+    //           }
+    //         }
+    //       } else {
+    //         this.downloadFunction(props);
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // } else {
+    //   //download file and display the modal
+    //   // const filename = realImageURL.substring(realImageURL.lastIndexOf('/')+1);
+    //   // this.setState({
+    //   //   showModal: true,
+    //   //   modalType: 'loading',
+    //   // })
+    //   // downloadFile({fileURL:realImageURL, fileName: filename, closeModal:this.closeModal()}, path=>{
+    //   //   console.log(path,"path path path");
+    //   //   updateMessageObject({realImageURL:path,receiverMessageId: _id})
+    //   // });
+    //   this.downloadFunction(props);
+    // }
   };
   takePicture = async () => {
     if (this.camera) {
@@ -1076,7 +1117,10 @@ class Chat extends Component {
     }
   };
   RenderMediaModalContent = () => {
-    if (this.state.mediaModalContent.type === 'image/jpeg') {
+    if (
+      this.state.mediaModalContent.type === 'image/jpeg' ||
+      this.state.mediaModalContent.type === 'image/png'
+    ) {
       return (
         <View>
           <TouchableOpacity
@@ -1125,8 +1169,8 @@ class Chat extends Component {
     if (
       mimetype === 'video/mp4' ||
       mimetype === 'image/jpeg' ||
-      mimetype === 'image/png' ||
-      mimetype === 'application/octet-stream'
+      mimetype === 'image/png'
+      // mimetype === 'application/octet-stream'
     ) {
       return (
         <TouchableOpacity
@@ -1194,7 +1238,10 @@ class Chat extends Component {
           </View>
         </TouchableOpacity>
       );
-    } else if (mimetype === 'audio/mpeg') {
+    } else if (
+      mimetype === 'audio/mpeg' ||
+      mimetype === 'application/octet-stream'
+    ) {
       console.log(mimetype, '238942384923840');
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
@@ -1293,6 +1340,9 @@ class Chat extends Component {
   };
 
   renderSend = props => {
+    const animateMediaButtonStyle = {
+      transform: [{scale: this.mediaButtonAnimation}],
+    };
     if (!props.text) {
       return (
         <View
@@ -1301,25 +1351,44 @@ class Chat extends Component {
             alignItems: 'center',
             height: '100%',
             paddingHorizontal: 5,
+            flexDirection: 'row',
           }}>
-          {/* {this.state.recording ? (
-            <TouchableOpacity
-              // onPress={this.takePicture}
-              onPress={this.onStopRecord}>
-              {<Ionicons name="stop-circle" size={hp('3%')} />}
-            </TouchableOpacity>
-          ) : ( */}
-          <TouchableOpacity
-            // onPress={this.takePicture}
-            style={{
-              backgroundColor: primaryDarkColor,
-              borderRadius: 50,
-              padding: 5,
-            }}
+          <TouchableWithoutFeedback
+            // onPress={this.start}
+
             onPressIn={this.onStartRecord}
             onPressOut={this.onStopRecord}>
-            <Entypo name="mic" color={'white'} size={hp('3%')} />
-          </TouchableOpacity>
+            <Animated.View
+              style={[
+                {
+                  backgroundColor: primaryDarkColor,
+                  borderRadius: 50,
+                  padding: 5,
+                },
+                animateMediaButtonStyle,
+              ]}>
+              <Entypo name="mic" color={'white'} size={hp('3%')} />
+            </Animated.View>
+          </TouchableWithoutFeedback>
+          {/* <TouchableWithoutFeedback
+            // onPress={this.start}
+
+            onPressIn={this.onStartRecord}
+            onPressOut={this.onStopRecord}
+            >
+            <Animated.View
+              style={[
+                {
+                  backgroundColor: primaryDarkColor,
+                  borderRadius: 50,
+                  padding: 5,
+                },
+                animateMediaButtonStyle,
+              ]}>
+              <Entypo name="camera" color={'white'} size={hp('3%')} />
+            </Animated.View>
+            
+          </TouchableWithoutFeedback> */}
           {/* )} */}
         </View>
       );
@@ -1360,7 +1429,7 @@ class Chat extends Component {
                   //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
                   // );
                   const {token} = this.props.loginReducer;
-                  const filesApiURL = connectionURL.fileUpload;
+                  const filesApiURL = this.constructUrl(fileUpload);
                   const FormData = require('form-data');
                   let data = new FormData();
                   // correctpath = str2.replace(str1, '');
@@ -1514,6 +1583,12 @@ class Chat extends Component {
       this.props.navigation,
     );
   };
+  start = () => {
+    // 30 seconds
+    this.videoRecorder.open({maxLength: 30}, data => {
+      console.log('captured data', data);
+    });
+  };
 
   render() {
     return (
@@ -1523,7 +1598,15 @@ class Chat extends Component {
           onQRPressed={() => this.QRPressed()}
           navigation={this.props.navigation}
         />
-        {this.state.mediaModalContent.type === 'audio/mpeg' && (
+
+        <VideoRecorder
+          ref={ref => {
+            this.videoRecorder = ref;
+          }}
+        />
+
+        {(this.state.mediaModalContent.type === 'audio/mpeg' ||
+          this.state.mediaModalContent.type === 'application/octet-stream') && (
           <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
         )}
         <GiftedChat
@@ -1564,7 +1647,9 @@ class Chat extends Component {
           onSend={messageString => this.submitMessage(messageString, false)}
           user={{
             _id:
-              this.state.manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+              this.state.manipulatedWalletAddress +
+              '@' +
+              this.props.apiReducer.xmppDomains.DOMAIN,
             name: this.state.firstName + ' ' + this.state.lastName,
           }}
           onPressAvatar={props => this.onAvatarPress(props)}

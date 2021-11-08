@@ -408,10 +408,10 @@ class CommonModal extends Component {
         'presence',
         {
           id: 'CreateRoom',
-          from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
           to:
             combinedWalletAddress +
-            xmppConstants.CONFERENCEDOMAIN +
+           this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN +
             '/' +
             username,
         },
@@ -428,8 +428,8 @@ class CommonModal extends Component {
       message = xml(
         'iq',
         {
-          to: combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN,
-          from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+          to: combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
           id: 'setOwner',
           type: 'get',
         },
@@ -455,15 +455,15 @@ class CommonModal extends Component {
 
       roomConfigurationForm(
         manipulatedWalletAddress,
-        combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN,
+        combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
         {roomName: chatName},
       );
 
       message = xml(
         'iq',
         {
-          from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
-          to: combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN,
+          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+          to: combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
           type: 'set',
           id: 'subscription',
         },
@@ -502,13 +502,13 @@ class CommonModal extends Component {
   sendInvite = (username, chatName, to) => {
     const stanza = xml(
       'message',
-      {from: username + '@' + xmppConstants.DOMAIN, to: chatName},
+      {from: username + '@' + this.props.apiReducer.xmppDomains.DOMAIN, to: chatName},
       xml(
         'x',
         'http://jabber.org/protocol/muc#user',
         xml(
           'invite',
-          {to: to + '@' + xmppConstants.DOMAIN},
+          {to: to + '@' + this.props.apiReducer.xmppDomains.DOMAIN},
           xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
         ),
       ),
@@ -524,7 +524,7 @@ class CommonModal extends Component {
       .sort()
       .join('_');
 
-    const roomJid = combinedWalletAddress + xmppConstants.CONFERENCEDOMAIN;
+    const roomJid = combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
     const combinedUsersName = [
       this.props.loginReducer.initialData.firstName,
       this.props.extraData.name.split(' ')[0],
@@ -741,7 +741,7 @@ class CommonModal extends Component {
       {
         id: 'ban_user',
         to: roomJID,
-        from: senderWalletAddres + '@' + xmppConstants.DOMAIN,
+        from: senderWalletAddres + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         type: 'set',
       },
       xml(
@@ -749,7 +749,7 @@ class CommonModal extends Component {
         'http://jabber.org/protocol/muc#owner',
         xml('item', {
           affiliation: 'outcast',
-          jid: bannedUserWalletAddres + '@' + xmppConstants.DOMAIN,
+          jid: bannedUserWalletAddres + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         }),
       ),
     );

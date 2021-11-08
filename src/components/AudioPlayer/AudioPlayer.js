@@ -8,19 +8,16 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Slider from 'react-native-slider';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import RNFetchBlob from 'rn-fetch-blob';
 import PlayButton from './PlayButton';
 import {commonColors, textStyles} from '../../../docs/config';
 const {primaryColor} = commonColors;
 
 export default function AudioPlayer({audioUrl}) {
   const [isAlreadyPlay, setisAlreadyPlay] = useState(false);
-  const [duration, setDuration] = useState('00:00:00');
-  const [timeElapsed, setTimeElapsed] = useState('00:00:00');
+  const [duration, setDuration] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [percent, setPercent] = useState(0);
-  const [inprogress, setInprogress] = useState(false);
   const [audioRecorderPlayer, setAudioRecordedPlayer] = useState(
     new AudioRecorderPlayer(),
   );
@@ -33,7 +30,6 @@ export default function AudioPlayer({audioUrl}) {
   };
   const onStartPress = async e => {
     setisAlreadyPlay(true);
-    setInprogress(true);
     audioRecorderPlayer.startPlayer(audioUrl);
     audioRecorderPlayer.setVolume(1.0);
 
@@ -42,11 +38,11 @@ export default function AudioPlayer({audioUrl}) {
         audioRecorderPlayer.stopPlayer();
         setisAlreadyPlay(false);
       }
-      let percent = Math.round(
+      let currentPresent = Math.round(
         (Math.floor(e.currentPosition) / Math.floor(e.duration)) * 100,
       );
       setTimeElapsed(e.currentPosition);
-      setPercent(percent);
+      setPercent(currentPresent);
       setDuration(e.duration);
     });
   };
@@ -88,14 +84,10 @@ export default function AudioPlayer({audioUrl}) {
 
         <View style={styles.inprogress}>
           <Text style={[styles.textLight, styles.timeStamp]}>
-            {!inprogress
-              ? timeElapsed
-              : audioRecorderPlayer.mmssss(Math.floor(timeElapsed))}
+            {audioRecorderPlayer.mmssss(Math.floor(timeElapsed))}
           </Text>
           <Text style={[styles.textLight, styles.timeStamp]}>
-            {!inprogress
-              ? duration
-              : audioRecorderPlayer.mmssss(Math.floor(duration))}
+            {audioRecorderPlayer.mmssss(Math.floor(duration))}
           </Text>
         </View>
       </View>
