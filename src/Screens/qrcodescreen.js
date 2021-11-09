@@ -36,6 +36,7 @@ import CustomHeader from '../components/shared/customHeader';
 import * as xmppConstants from '../constants/xmppConstants';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import parseChatLink from '../helpers/parseChatLink';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 const {xml} = require('@xmpp/client');
 const Buffer = require('buffer').Buffer;
@@ -111,16 +112,21 @@ class qrcodescreen extends Component {
   };
 
   onSuccess = e => {
-    const check = e.data.substring(0, 4);
-    console.log('scanned data' + e.data);
+    // const check = e.data.substring(0, 4);
+    // alert(e.data);
+    const chatJID = parseChatLink(e.data);
     this.setState({
-      result: e,
+      result: chatJID,
       scan: false,
       ScanResult: true,
-      isLoading: true,
+      // isLoading: true,
     });
-    const chatJID = parseChatLink(e.data);
-    this.openChat(chatJID);
+    openChatFromChatLink(
+      chatJID,
+      this.props.loginReducer.initialData.walletAddress,
+      this.props.setCurrentChatDetails,
+      this.props.navigation
+    )
   };
 
   subscribeRoomAndOpenChat(chat_jid) {
@@ -159,14 +165,11 @@ class qrcodescreen extends Component {
   }
 
   async openChat(chat_jid) {
-    if (chat_jid.includes(xmppConstants.DOMAIN)) {
-      chat_name = chat_jid.split('@' + xmppConstants.CONFERENCEDOMAIN)[0];
-    }
-
-    const chatJID =
-      parseChatLink(chat_jid) +
-      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
-    this.subscribeRoomAndOpenChat(chatJID);
+    // if(chat_jid.includes(xmppConstants.DOMAIN))
+    // {
+    //   chat_name=chat_jid.split("@"+xmppConstants.CONFERENCEDOMAIN)[0]
+    // }
+        this.subscribeRoomAndOpenChat(chat_jid)
   }
 
   openGallery() {

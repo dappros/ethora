@@ -356,7 +356,7 @@ class HeaderComponent extends Component {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Image source={coinImagePath} style={styles.gkcIconStyle} />
+                  <Image source={coinImagePath} style={styles.iconStyle} />
                   <Text
                     style={{
                       color: primaryColor,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     fontFamily: mediumFont,
     fontSize: hp('1.6%'),
   },
-  gkcIconStyle: {
+  iconStyle: {
     height: hp('3%'),
     width: hp('3%'),
   },

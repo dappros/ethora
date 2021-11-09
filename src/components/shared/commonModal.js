@@ -220,7 +220,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 1 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image source={coinImagePath} style={styles.gkcIconStyle} />
+          <Image source={coinImagePath} style={styles.iconStyle} />
           <Text>1</Text>
         </Pressable>
 
@@ -233,7 +233,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 3 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image source={coinImagePath} style={styles.gkcIconStyle} />
+          <Image source={coinImagePath} style={styles.iconStyle} />
           <Text>3</Text>
         </Pressable>
 
@@ -246,7 +246,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 5 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image source={coinImagePath} style={styles.gkcIconStyle} />
+          <Image source={coinImagePath} style={styles.iconStyle} />
           <Text>5</Text>
         </Pressable>
 
@@ -259,7 +259,7 @@ const TokenTransfer = props => {
             borderColor: props.tokenAmount === 7 ? '#A1A9B4' : null,
             padding: 5,
           }}>
-          <Image source={coinImagePath} style={styles.gkcIconStyle} />
+          <Image source={coinImagePath} style={styles.iconStyle} />
           <Text>7</Text>
         </Pressable>
       </View>
@@ -1139,7 +1139,7 @@ const styles = StyleSheet.create({
     margin: 5,
     textAlign: 'center',
   },
-  gkcIconStyle: {
+  iconStyle: {
     height: hp('3%'),
     width: hp('3%'),
   },
