@@ -10,6 +10,12 @@ Please note the GiftedChat code is distributed under its own license. At the tim
 Refer to GiftedChat project and its license via their official repository: https://github.com/FaridSafi/react-native-gifted-chat/blob/master/LICENSE
 */
 
+/*
+Part of this file uses or imports open-source code from xmpp.js project. 
+Please note the xmpp.js code is distributed under its own license. At the time of this publication it is ISC which is functionally equivalent to the BSD 2-Clause and MIT license.
+Refer to xmpp.js project and its license via their official repository: https://github.com/xmppjs/xmpp.js/blob/main/LICENSE
+*/
+
 import React, {Component, createRef} from 'react';
 import {
   Platform,
