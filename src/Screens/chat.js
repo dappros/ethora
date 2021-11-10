@@ -4,6 +4,12 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
+/*
+Part of this file uses the open-source code from GiftedChat project. 
+Please note our abovementioned License does not cover this 3rd party code which is distributed under MIT license at the time of this publication.
+Refer to GiftedChat project and its license via their official repository: https://github.com/FaridSafi/react-native-gifted-chat/blob/master/LICENSE
+*/
+
 import React, {Component, createRef} from 'react';
 import {
   Platform,
