@@ -350,10 +350,11 @@ class Login extends Component {
     await this.props.registerUser(dataObject, user);
   };
 
+  // optional - specify a link for registering new members for your community
   openMembership = () => {
-    Linking.openURL('https://www.goldenkey.org/golden-key-eligibility/');
+    Linking.openURL('https://www.yoursite.com/members-onboarding-page/');
   };
-
+  
   revealPassword() {
     this.setState({
       isSecureEntry: !this.state.isSecureEntry,
