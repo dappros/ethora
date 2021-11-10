@@ -15,8 +15,8 @@ const initialState = {
     qa: 'https://app-dev.dappros.com/v1',
   },
   tokens: {
-    dev: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxMTBlOTdiMWFjZWQ1MGE0ZGU3MDA0OSIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTEwZTk2MDFhY2VkNTBhNGRlNzAwMDMiLCJjcmVhdGVkQXQiOiIyMDIxLTA4LTA5VDA4OjM4OjE5Ljk2OFoiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IllqUzUvUmthMkNvcitFSStUNlRQUnV3ekZjNk8zZHZYaC8rRFBobHhITExKejlVaDZOSm1WcVNJQkRSYnBXSExuUEpoQzJLUDc0Y2NHZ21hKzFYUGJwcjFpNDV1RlhaeDNNMTdjZDRJTWtqS00yOS9yTERvN3IrYzdJRlpyckt0S3dsWUtwb3Nabi8yQmFEZjdISWRoWXUwdzVHaGp0VUlGcXdJKy94NFZrTyttRUtUIn0sImlhdCI6MTYyODQ5ODMwNX0.TzHlVy2bv-_gnrP9U7NyoYdNYvIBfVR9nUfH-RFg9e8',
-    prod: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxODRmZjNiYzU0MDkzNmMwY2I3Y2M2OCIsImFwcE5hbWUiOiJFdGhvcmExIiwiYXBwRGVzY3JpcHRpb24iOiJudWxsIiwiYXBwVXJsIjoibnVsbCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTg0ZmYxM2M1NDA5MzZjMGNiN2NiZmEiLCJjcmVhdGVkQXQiOiIyMDIxLTExLTA1VDA5OjU0OjAzLjQ4NloiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IlFpaFdNcUNRNWJBQXpRWUZiODJnVlM0VFNBRTZ0cWVJamhHenU0bzFIWFNmZ0xJenB1dGU4Y2t4eXJrdGdSakMvUDJYeEVDbWNVUzAwaWk5RmgyQ25PSnd5V3VpWXFlWW50OHBOZ0hST0FDVFdIOFhybThHRjRhTVpYMUdhdkh5UWc5MEFjNjQrUzV0dW1WcjA0dk9vc1Nqd1FpeXBtKzA1QWNQYlAifSwiaWF0IjoxNjM2MTA2MDU4fQ.V9Q7uqfG6h__GI3yRD-omjYZj-eD-O2RuhWgUieboEk',
+    dev: '<Include your JWT token string here starting with "JWT " obtained after creating your Application at https://app-dev.dappros.com/>',
+    prod: '<Include your JWT token string here starting with "JWT " obtained after creating your Application at https://app.dappros.com/>',
   },
   xmppDomains: {
     DOMAIN: 'dev.dxmpp.com',
@@ -26,7 +26,7 @@ const initialState = {
   },
   defaultUrl: 'https://app-dev.dappros.com/v1',
   defaultToken:
-    'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxMTBlOTdiMWFjZWQ1MGE0ZGU3MDA0OSIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTEwZTk2MDFhY2VkNTBhNGRlNzAwMDMiLCJjcmVhdGVkQXQiOiIyMDIxLTA4LTA5VDA4OjM4OjE5Ljk2OFoiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IllqUzUvUmthMkNvcitFSStUNlRQUnV3ekZjNk8zZHZYaC8rRFBobHhITExKejlVaDZOSm1WcVNJQkRSYnBXSExuUEpoQzJLUDc0Y2NHZ21hKzFYUGJwcjFpNDV1RlhaeDNNMTdjZDRJTWtqS00yOS9yTERvN3IrYzdJRlpyckt0S3dsWUtwb3Nabi8yQmFEZjdISWRoWXUwdzVHaGp0VUlGcXdJKy94NFZrTyttRUtUIn0sImlhdCI6MTYyODQ5ODMwNX0.TzHlVy2bv-_gnrP9U7NyoYdNYvIBfVR9nUfH-RFg9e8',
+    '<Include your JWT token string here starting with "JWT " obtained after creating your Application at https://app-dev.dappros.com/>',
 };
 
 const apiReducer = (state = initialState, action) => {
