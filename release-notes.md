@@ -5,9 +5,10 @@ Thank you all for your support and interest in Ethora project! We are finally go
 Messages from the Ethora development team:
 
 * Mansi Nashte (HR & marketing) - Those who think women cannot be leaders are not married.
-* Borys Bordunov (backend engineer) - Big jobs can be smaller together.
+* Borys Bordunov (Backend engineer) - Big jobs can be smaller together.
 * Mykhailo Mogyliuk (React Native engineer) - Seen it all, done it all, can't remember most of it).
 * Vineeth Nambiar (React Native engineer) - The start of any big journey can be complex. Determination and patience makes it simple.
+* Oleksii Kliuiev (Erlang engineer) - Rome wasn’t built in a day.
 * Bikash Patak (QA engineer) - Nothing is impossible, the word itself says "I'm possible".
 * Nikhil Bankar (UX designer, Product Lead) - A user interface is like a joke. If you have to explain it, it’s not that good.
 * Taras Filatov (founder, CEO & CTO) - I devote my work on this product to my parents Vira and Sergii and my family Polina, Platon and Max. My thanks also go out to my ‘extended family’ - Dappros team who have worked on the blockchain and API backend, and the Ethora engine itself, and to DeepX team who have built the messaging infrastructure (Oleksii, Ihor, my brother Dima - thank you for sparing your time and resources towards this project). This project wouldn’t have been possible without you all!
