@@ -4,6 +4,12 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
+/*
+Part of this file uses or imports open-source code from GiftedChat project. 
+Please note the GiftedChat code is distributed under its own license. At the time of this publication it is MIT license.
+Refer to GiftedChat project and its license via their official repository: https://github.com/FaridSafi/react-native-gifted-chat/blob/master/LICENSE
+*/
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
