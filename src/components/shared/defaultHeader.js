@@ -30,6 +30,7 @@ import {
   logOut,
   pushSubscription,
 } from '../../actions/auth';
+import {toggleDebugMode} from '../../actions/debugActions';
 import {sendSearchText} from '../../actions/searchAction';
 import Menu, {MenuItem} from 'react-native-material-menu';
 import * as XmppConstant from '../../constants/xmppConstants';
@@ -69,6 +70,7 @@ class HeaderComponent extends Component {
       manipulatedWalletAddress: '',
       username: '',
       pushToken: '',
+      debugModeCounter: 0,
     };
   }
 
@@ -121,6 +123,14 @@ class HeaderComponent extends Component {
       });
     }
   }
+  enableDebugMode = () => {
+    if (this.state.debugModeCounter === 2) {
+      this.props.toggleDebugMode(true);
+    }
+    this.setState({
+      debugModeCounter: this.state.debugModeCounter + 1,
+    });
+  };
 
   componentDidUpdate(prevProps, prevState) {
     if (
@@ -250,6 +260,10 @@ class HeaderComponent extends Component {
         this.hideMenu();
         this.props.navigation.navigate('AccountComponent');
         break;
+      case 'debug':
+        this.hideMenu();
+        this.props.navigation.navigate('DebugScreenComponent');
+        break;
 
       case 'logOut':
         this.hideMenu();
@@ -281,7 +295,7 @@ class HeaderComponent extends Component {
               margin: 8,
               marginRight: wp('0%'),
             }}>
-            {navbarLogoShow?
+            {navbarLogoShow ? (
               <TouchableOpacity
                 onPress={() =>
                   this.props.navigation.navigate('ChatHomeComponent')
@@ -294,26 +308,29 @@ class HeaderComponent extends Component {
                   marginLeft: wp('3%'),
                   marginRight: 18,
                 }}>
-                  <View
-                    style={{
-                      height: hp('7%'),
-                      width: hp('7%'),
-                      borderRadius: hp('7%') / 2,
-                      borderWidth: 1,
-                      borderColor: 'transparent',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                      <Image
-                        style={{width: hp('7%'), height: hp('7%')}}
-                        source={logoPath}
-                      />
-                  </View>
-              </TouchableOpacity>:null
-            }
-            <View
-              style={{
-                flex: navbarLogoShow? 0.6:0.7,
+                <View
+                  style={{
+                    height: hp('7%'),
+                    width: hp('7%'),
+                    borderRadius: hp('7%') / 2,
+                    borderWidth: 1,
+                    borderColor: 'transparent',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    style={{width: hp('7%'), height: hp('7%')}}
+                    source={logoPath}
+                  />
+                </View>
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+             
+           onPress={this.enableDebugMode}
+           activeOpacity={0.9}
+           style={{
+                flex: navbarLogoShow ? 0.6 : 0.7,
                 justifyContent: 'center',
                 alignItems: 'flex-start',
               }}>
@@ -325,7 +342,7 @@ class HeaderComponent extends Component {
                 }}>
                 {appTitle}
               </Text>
-            </View>
+            </TouchableOpacity>
             <View style={{flex: 0.3, flexDirection: 'row'}}>
               <TouchableOpacity
                 onPress={() => this.onPressGem()}
@@ -339,7 +356,7 @@ class HeaderComponent extends Component {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Image source={coinImagePath} style={styles.gkcIconStyle} />
+                  <Image source={coinImagePath} style={styles.iconStyle} />
                   <Text
                     style={{
                       color: primaryColor,
@@ -389,6 +406,13 @@ class HeaderComponent extends Component {
                     onPress={() => this.openKebabItem('scan')}>
                     Scan
                   </MenuItem>
+                  {this.props.debugReducer.debugMode && (
+                    <MenuItem
+                      textStyle={styles.menuTextStyle}
+                      onPress={() => this.openKebabItem('debug')}>
+                      Debug
+                    </MenuItem>
+                  )}
                   {itemsMintingAllowed && (
                     <MenuItem
                       textStyle={styles.menuTextStyle}
@@ -435,14 +459,14 @@ const styles = StyleSheet.create({
     shadowColor: '#00000040',
     shadowOffset: {width: 5, height: 5},
     shadowOpacity: 1,
-    marginLeft:navbarLogoShow?0:hp("1.2%")
+    marginLeft: navbarLogoShow ? 0 : hp('1.2%'),
   },
   menuTextStyle: {
     color: '#000000',
     fontFamily: mediumFont,
     fontSize: hp('1.6%'),
   },
-  gkcIconStyle: {
+  iconStyle: {
     height: hp('3%'),
     width: hp('3%'),
   },
@@ -466,4 +490,5 @@ module.exports = connect(mapStateToProps, {
   finalMessageArrivalAction,
   participantsUpdateAction,
   pushSubscription,
+  toggleDebugMode,
 })(HeaderComponent);

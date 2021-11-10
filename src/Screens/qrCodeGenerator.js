@@ -4,28 +4,27 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import React, {Component} from 'react';
+import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import Share from 'react-native-share';
-import RNFS from "react-native-fs";
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import RNFS from 'react-native-fs';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 import {commonColors, textStyles} from '../../docs/config';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
-import { CONFERENCEDOMAIN } from '../constants/xmppConstants';
-import { unv_url } from '../../docs/config';
+import {CONFERENCEDOMAIN} from '../constants/xmppConstants';
+import {unv_url} from '../../docs/config';
+import {connect} from 'react-redux';
 
 const {primaryColor} = commonColors;
 const {mediumFont} = textStyles;
 
 // const obj
-class App extends Component {
+class QrCodeGenerator extends Component {
   constructor() {
     super();
     this.state = {
@@ -39,40 +38,50 @@ class App extends Component {
   getTextInputValue = () => {
     // Function to get the value from input
     // and Setting the value to the QRCode
-    this.setState({ valueForQRCode: this.state.inputValue });
+    this.setState({valueForQRCode: this.state.inputValue});
   };
   shareQR = () => {
     this.svg.toDataURL(this.callback);
-  }
-  callback=(dataURL) =>{
-    let imgURL = `data:image/png;base64,${dataURL}`
-    Share.open({url:imgURL}).then(()=>{
-      this.props.close()
+  };
+  callback = dataURL => {
+    let imgURL = `data:image/png;base64,${dataURL}`;
+    Share.open({url: imgURL}).then(() => {
+      this.props.close();
+    });
+  };
+
+  saveQrToDisk() {
+    this.svg.toDataURL(data => {
+      RNFS.writeFile(
+        RNFS.CachesDirectoryPath + '/some-name.png',
+        data,
+        'base64',
+      )
+        .then(success => {
+          Share.open(RNFS.CachesDirectoryPath + '/some-name.png');
+        })
+        .then(() => {
+          this.setState({busy: false, imageSaved: true});
+          ToastAndroid.show('Saved to gallery !!', ToastAndroid.SHORT);
+        });
     });
   }
 
-  saveQrToDisk() {
-    this.svg.toDataURL((data) => {
-      RNFS.writeFile(RNFS.CachesDirectoryPath+"/some-name.png", data, 'base64')
-        .then((success) => {
-          Share.open(RNFS.CachesDirectoryPath+"/some-name.png");
-        })
-        .then(() => {
-          this.setState({ busy: false, imageSaved: true });
-          ToastAndroid.show('Saved to gallery !!', ToastAndroid.SHORT);
-        })
-    })
+  createShareLink() {
+    const roomName = this.props.value.replace(
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+      '',
+    );
+    const chatLink = `${unv_url}${roomName}`;
+    return chatLink;
   }
 
-  createShareLink(){
-    const roomName = this.props.value.replace(CONFERENCEDOMAIN,'');
-    const chatLink = `${unv_url}${roomName}`
-    return chatLink
-  }
-
-  copyToClipboard = async() => {
-    const roomName = this.props.value.replace(CONFERENCEDOMAIN,'')
-    const chatLink = `${unv_url}${roomName}`
+  copyToClipboard = async () => {
+    const roomName = this.props.value.replace(
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+      '',
+    );
+    const chatLink = `${unv_url}${roomName}`;
     Clipboard.setString(chatLink);
     Toast.show('Link Copied');
   };
@@ -80,18 +89,16 @@ class App extends Component {
   render() {
     const qrlink = this.createShareLink();
     return (
-      <View 
-      style={styles.MainContainer}
-      >
+      <View style={styles.MainContainer}>
         <QRCode
-          getRef={(c) => (this.svg = c)}
+          getRef={c => (this.svg = c)}
           //QR code value
           value={qrlink}
           //size of QR Code
-          size={hp("20%")}
+          size={hp('20%')}
           //Color of the QR Code (Optional)
           color="black"
-          quietZone = "5"
+          quietZone="5"
           //Background Color of the QR Code (Optional)
           backgroundColor="white"
           //Logo of in the center of QR Code (Optional)
@@ -120,12 +127,13 @@ class App extends Component {
     );
   }
 }
-export default App;
+
+
 const styles = StyleSheet.create({
   MainContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent:'center',
+    justifyContent: 'center',
   },
   TextInputStyle: {
     width: '100%',
@@ -141,12 +149,18 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     backgroundColor: primaryColor,
     marginBottom: 20,
-    alignItems:'center'
+    alignItems: 'center',
   },
   TextStyle: {
     color: '#fff',
-    fontFamily:mediumFont,
+    fontFamily: mediumFont,
     // textAlign: 'center',
     fontSize: 18,
   },
 });
+const mapStateToProps = state => {
+  return {
+    ...state,
+  };
+};
+module.exports =  connect(mapStateToProps, {})(QrCodeGenerator);

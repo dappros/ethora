@@ -8,13 +8,13 @@ import logoPath from "../src/assets/logo.png"; //done
 
 //images for tutorial screens
 import slide1Image1 from "../src/assets/tutorials/slide1Img1.png";
-import slide2Image1 from "../src/assets/tutorials/slide1Img1.png";
-import slide2Image2 from "../src/assets/tutorials/slide1Img1.png";
-import slide2Image3 from "../src/assets/tutorials/slide1Img1.png";
-import slide3Image1 from "../src/assets/tutorials/slide1Img1.png";
-import slide3Image2 from "../src/assets/tutorials/slide1Img1.png";
-import slide4Image1 from "../src/assets/tutorials/slide1Img1.png";
-import slide4Image2 from "../src/assets/tutorials/slide1Img1.png";
+import slide2Image1 from "../src/assets/tutorials/slide2Img1.png";
+import slide2Image2 from "../src/assets/tutorials/slide2Img2.png";
+import slide2Image3 from "../src/assets/tutorials/slide2Img3.png";
+import slide3Image1 from "../src/assets/tutorials/slide3Img1.png";
+import slide3Image2 from "../src/assets/tutorials/slide3Img2.png";
+import slide4Image1 from "../src/assets/tutorials/slide4Img1.png";
+import slide4Image2 from "../src/assets/tutorials/slide4Img2.png";
 
 import loginScreenBackgroundImage from "../src/assets/login_background.png";
 
@@ -106,6 +106,8 @@ const itemsMintingFee = 10;
 // Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default. 
 const appWalletName = "Anonymous";
 
+const allowIsTyping = false;
+
 
 export{
     appTitle,
@@ -135,5 +137,6 @@ export{
     slide3Image1,
     slide3Image2,
     slide4Image1,
-    slide4Image2
+    slide4Image2,
+    allowIsTyping
 }

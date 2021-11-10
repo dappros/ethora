@@ -31,9 +31,16 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import {commonColors, textStyles, coinImagePath} from '../../docs/config';
 
-
 const {primaryColor} = commonColors;
 const {lightFont, semiBoldFont, boldFont} = textStyles;
+
+const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+  const paddingToBottom = 20;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
+};
 
 const TransactionListComponent = props => {
   const month = new Array();
@@ -56,7 +63,7 @@ const TransactionListComponent = props => {
   let firstName = '';
   let lastName = '';
   // console.log(props.item)
-  
+
   if (props.item.from === props.walletAddress) {
     firstName = props.item.toFirstName
       ? props.item.toFirstName === 'N/A'
@@ -83,7 +90,7 @@ const TransactionListComponent = props => {
     fullName = firstName + ' ' + lastName;
   }
 
-  if(props.item.nftFileUrl) {
+  if (props.item.nftFileUrl) {
     // console.log(item, 'dsfsldfu')
   }
 
@@ -133,7 +140,7 @@ const TransactionListComponent = props => {
       key={props.item.transactionHash}
       style={{flex: 1, paddingBottom: Platform.OS === 'android' ? 5 : null}}>
       {Header}
-      <View style={{flexDirection: 'row', margin: 20,}}>
+      <View style={{flexDirection: 'row', margin: 20}}>
         <View style={{flex: 0.1}}>
           <View
             style={{
@@ -159,20 +166,20 @@ const TransactionListComponent = props => {
             {fullName}
           </Text>
           <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-            Balance: {props.item.balance && props.item.balance.length < 10 ? props.item.balance : 'nan'}
+            Balance:{' '}
+            {props.item.balance && props.item.balance.length < 10
+              ? props.item.balance
+              : 'nan'}
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftPreview !== 'null' ? (
+          {props.item.nftPreview &&props.item.nftPreview !=='null'  ? (
             <Image
               source={{uri: props.item.nftPreview}}
               style={styles.imagePreviewStyle}
             />
           ) : (
-            <Image
-              source={coinImagePath}
-              style={styles.tokenIconStyle}
-            />
+            <Image source={coinImagePath} style={styles.tokenIconStyle} />
           )}
 
           <Text
@@ -204,7 +211,7 @@ const TransactionListComponent = props => {
   );
 };
 
-const TransactionList = (params, tabIndex) => {
+const TransactionList = (params, tabIndex, onEndReached) => {
   let {transactions, walletAddress} = params;
   let currentHeaderDate = null;
   console.log(transactions, 'mytraaa');
@@ -212,10 +219,16 @@ const TransactionList = (params, tabIndex) => {
     if (tabIndex === 0) {
       return (
         <View style={{backgroundColor: 'white'}}>
-          <ScrollView nestedScrollEnabled={true}>
-            {transactions.map(item => { 
-                // console.log(item, 'traaasss')
-// if (item.tokenId === 'NFT') return
+          <ScrollView
+            onScroll={({nativeEvent}) => {
+              if (isCloseToBottom(nativeEvent)) {
+                onEndReached();
+              }
+            }}
+            nestedScrollEnabled={true}>
+            {transactions.map(item => {
+              // console.log(item, 'traaasss')
+              // if (item.tokenId === 'NFT') return
 
               let showHeader = false;
               const transactionTimeStamp =
@@ -251,7 +264,7 @@ const TransactionList = (params, tabIndex) => {
     }
 
     if (tabIndex === 1) {
-      console.log(transactions,"sentsdfs")
+      console.log(transactions, 'sentsdfs');
       return (
         <View style={{backgroundColor: 'white'}}>
           <ScrollView nestedScrollEnabled={true} style={{height: '100%'}}>
@@ -455,7 +468,7 @@ const TransactionListTab = params => {
           </Text>
         </TouchableOpacity>
       </View>
-      {TransactionList(params, tabIndex)}
+      {TransactionList(params, tabIndex, params.onEndReached)}
     </View>
   );
 };

@@ -42,6 +42,7 @@ import {logOut} from '../actions/auth';
 import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
 import {commonColors, textStyles} from '../../docs/config';
+import {fileUpload, nftTransferURL} from '../config/routesConstants';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -56,25 +57,6 @@ const options = {
   saveToPhotos: true,
 };
 
-export const uploadToFilesApi = async (file, token, callback) => {
-  console.log(file, token, 'asdkasldh8q9e', connectionURL.fileUpload);
-  hitAPI.fileUpload(
-    connectionURL.fileUpload,
-    file,
-    token,
-    async () => {
-      logOut();
-    },
-    val => {
-      console.log('Progress Val: ', val);
-    },
-    async response => {
-      callback(response);
-      console.log(response, 'thisisit');
-    },
-  );
-};
-
 function MintItems(props) {
   const [avatarSource, setAvatarSource] = useState(null);
   const [itemName, setItemName] = useState('');
@@ -86,6 +68,7 @@ function MintItems(props) {
   const [open, setOpen] = useState(false);
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
+  const dispatch = useDispatch();
   const [walletAddress, setWalletAddress] =
     loginReducerData.initialData.walletAddress;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -95,13 +78,34 @@ function MintItems(props) {
     // {label: '1', value: '1'}
   ]);
 
-  const dispatch = useDispatch();
   useEffect(() => {
     requestCameraPermission();
     return () => {};
   }, []);
+
+  const constructUrl = route => {
+    return allReducers.apiReducer.defaultUrl + route;
+  };
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+  const uploadToFilesApi = async (file, token, callback) => {
+    console.log(file, token, 'asdkasldh8q9e', constructUrl(fileUpload));
+    hitAPI.fileUpload(
+      constructUrl(fileUpload),
+      file,
+      token,
+      async () => {
+        logOut();
+      },
+      val => {
+        console.log('Progress Val: ', val);
+      },
+      async response => {
+        callback(response);
+        console.log(response, 'thisisit');
+      },
+    );
   };
   const setChatAvatar = async type => {
     if (type === 'image') {
@@ -123,9 +127,9 @@ function MintItems(props) {
           sendFiles(data);
         }
       });
-    }else if (type === 'photo') {
+    } else if (type === 'photo') {
       launchCamera(options, response => {
-        console.log(response)
+        console.log(response);
         const data = new FormData();
         data.append('files', {
           name: response.fileName,
@@ -133,7 +137,7 @@ function MintItems(props) {
           uri: response.uri,
         });
         sendFiles(data);
-      })
+      });
     } else {
       try {
         const res = await DocumentPicker.pick({
@@ -238,13 +242,15 @@ function MintItems(props) {
   const createNftItem = () => {
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
     hitAPI.fetchPost(
-      connectionURL.nftTransferURL,
+      constructUrl(nftTransferURL),
       item,
       loginReducerData.token,
-      async() => {
-        console.log('minted failed')
-    }, async data => {
-      console.log(data, 'createddskldjfdsflk')
+      async () => {
+        console.log('minted failed');
+      },
+      async data => {
+        // dispatch(addLogs(data));
+        console.log(data, 'createddskldjfdsflk');
         props.fetchWalletBalance(
           loginReducerData.initialData.walletAddress,
           null,
@@ -316,6 +322,11 @@ function MintItems(props) {
       //   },
       // },
     ]);
+  };
+
+  const selectNftQuantity = value => {
+    setSelectedValue(value);
+    setModalVisible(false);
   };
 
   return (
@@ -483,84 +494,54 @@ function MintItems(props) {
             alignItems: 'center',
           }}>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(1), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(1)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              1
-            </Text>
+            <Text style={classes.quantityItem}>1</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(2), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(2)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              2
-            </Text>
+            <Text style={classes.quantityItem}>2</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(3), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(3)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              3
-            </Text>
+            <Text style={classes.quantityItem}>3</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(4), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(4)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              4
-            </Text>
+            <Text style={classes.quantityItem}>4</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              setSelectedValue(5), setModalVisible(false);
-            }}
+            onPress={() => selectNftQuantity(5)}
             style={classes.rarityItems}>
-            <Text
-              style={{
-                fontSize: hp('2.23%'),
-                fontFamily: regularFont,
-                textAlign: 'left',
-                paddingLeft: 5,
-                color: primaryColor,
-              }}>
-              5
-            </Text>
+            <Text style={classes.quantityItem}>5</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(6)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>6</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(7)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>7</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(8)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>8</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(9)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>9</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => selectNftQuantity(10)}
+            style={classes.rarityItems}>
+            <Text style={classes.quantityItem}>10</Text>
           </TouchableOpacity>
 
           {/* <Button title="Hide modal" onPress={toggleModal} /> */}
@@ -603,6 +584,13 @@ const classes = StyleSheet.create({
     width: wp('80%'),
     alignItems: 'center',
     marginTop: 10,
+  },
+  quantityItem: {
+    fontSize: hp('2.23%'),
+    fontFamily: regularFont,
+    textAlign: 'left',
+    paddingLeft: 5,
+    color: primaryColor,
   },
   rarityItems: {
     paddingLeft: 5,

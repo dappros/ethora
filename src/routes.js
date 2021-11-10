@@ -7,12 +7,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {
-  View,
-  Image,
-  SafeAreaView,
-  AppState,
-} from 'react-native';
+import {View, Image, SafeAreaView, AppState} from 'react-native';
 
 //routes
 import HeaderComponent from './components/shared/defaultHeader';
@@ -42,7 +37,7 @@ import {
   updateUserProfile,
   setOtherUserVcard,
   logOut,
-  setOtherUserDetails
+  setOtherUserDetails,
 } from './actions/auth';
 import {
   finalMessageArrivalAction,
@@ -55,6 +50,7 @@ import {
   updateMessageComposingState,
   setRoomRoles,
 } from './actions/chatAction';
+import {addLogsXmpp} from './actions/debugActions';
 import {xmppConnect, xmpp, xmppListener} from './helpers/xmppCentral';
 import * as xmppConstant from './constants/xmppConstants';
 import {underscoreManipulation} from './helpers/underscoreLogic';
@@ -63,6 +59,7 @@ import {realm} from './components/realmModels/allSchemas';
 import * as schemaTypes from './constants/realmConstants';
 import store from './config/store';
 import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
+import {DebugScreen} from './Screens/DebugScreen';
 const {secondaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
@@ -141,13 +138,33 @@ function qrScreenComponent({navigation}) {
   );
 }
 
+function DebugScreenComponent({navigation}) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        options={{
+          header: () => (
+            <HeaderComponent
+              pushToken={pushToken}
+              navigation={navigation}
+              screenName="DebugScreen"
+            />
+          ),
+        }}
+        name="DebugScreen"
+        component={DebugScreen}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function loginComponent() {
   return (
     <Stack.Navigator>
       <Stack.Screen
         options={{
           header: () => (
-            <View style={{backgroundColor: "transparent"}}>
+            <View style={{backgroundColor: 'transparent'}}>
               <SafeAreaView />
             </View>
           ),
@@ -365,7 +382,10 @@ class Routes extends Component {
     this.configurePush();
     obj = this;
     this.rolesMap = {};
-    this.usersLastSeen = {'0xc_f803e3c4e9_b_d_c8636665_d10_d4_a277b48415d421@dev.dxmpp.com': '26 August 12:02'}
+    this.usersLastSeen = {
+      '0xc_f803e3c4e9_b_d_c8636665_d10_d4_a277b48415d421@dev.dxmpp.com':
+        '26 August 12:02',
+    };
   }
 
   configurePush = () => {
@@ -521,7 +541,6 @@ class Routes extends Component {
     }
   };
 
-
   async componentDidUpdate(prevProps) {
     //check if premium
     if (
@@ -564,7 +583,12 @@ class Routes extends Component {
         username,
         manipulatedWalletAddress,
       });
-      xmppConnect(manipulatedWalletAddress, password);
+      xmppConnect(
+        manipulatedWalletAddress,
+        password,
+        this.props.apiReducer.xmppDomains.DOMAIN,
+        this.props.apiReducer.xmppDomains.SERVICE,
+      );
       xmppListener(
         manipulatedWalletAddress,
         this.props.updatedRoster,
@@ -579,8 +603,12 @@ class Routes extends Component {
         this.props.setRosterAction,
         this.props.setRecentRealtimeChatAction,
         this.props.setOtherUserDetails,
-        this.props.logOut
-      )
+        this.props.logOut,
+        this.props.debugReducer.debugMode,
+        this.props.addLogsXmpp,
+        this.props.apiReducer.xmppDomains.DOMAIN,
+        this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+      );
     }
   }
 
@@ -609,7 +637,7 @@ class Routes extends Component {
       console.log('isskipforever', this.state.isSkipForever);
       return (
         <Stack.Navigator>
-          {this.state.isSkipForever || !tutorialStartUponLogin  ? null : (
+          {this.state.isSkipForever || !tutorialStartUponLogin ? null : (
             <Stack.Screen
               options={{headerShown: false}}
               name="AppIntroComponent"
@@ -620,6 +648,11 @@ class Routes extends Component {
             options={{headerShown: false}}
             name="ChatHomeComponent"
             component={chatHomeComponent}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="DebugScreenComponent"
+            component={DebugScreenComponent}
           />
           <Stack.Screen
             options={{headerShown: false}}
@@ -711,5 +744,6 @@ module.exports = connect(mapStateToProps, {
   setOtherUserVcard,
   setRoomRoles,
   logOut,
-  setOtherUserDetails
+  setOtherUserDetails,
+  addLogsXmpp,
 })(Routes);

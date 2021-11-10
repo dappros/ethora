@@ -5,7 +5,14 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import React, {Component, Fragment} from 'react';
-import {View, Text, Dimensions, Image, ScrollView, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import CustomHeader from '../components/shared/customHeader';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {
@@ -18,17 +25,16 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {connect} from 'react-redux';
 import {fetchTransaction} from '../actions/wallet';
 import {queryAllTransactions} from '../components/realmModels/transaction';
-import {commonColors, textStyles, coinImagePath, coinsMainName} from '../../docs/config';
-
+import {
+  commonColors,
+  textStyles,
+  coinImagePath,
+  coinsMainName,
+} from '../../docs/config';
 
 const {primaryColor} = commonColors;
 
-const {
-  lightFont,
-  semiBoldFont,
-  boldFont
-} = textStyles;
-
+const {lightFont, semiBoldFont, boldFont} = textStyles;
 
 const renderTabBar = props => {
   return (
@@ -78,12 +84,28 @@ const TransactionListComponent = props => {
   let lastName = '';
 
   if (props.item.from === props.walletAddress) {
-    firstName = props.item.toFirstName?props.item.toFirstName==="N/A"?"Anonymous":props.item.toFirstName:"Anonymous";
-    lastName = props.item.toLastName?props.item.toLastName==="N/A"?"":props.item.toLastName:"";
+    firstName = props.item.toFirstName
+      ? props.item.toFirstName === 'N/A'
+        ? 'Anonymous'
+        : props.item.toFirstName
+      : 'Anonymous';
+    lastName = props.item.toLastName
+      ? props.item.toLastName === 'N/A'
+        ? ''
+        : props.item.toLastName
+      : '';
     fullName = firstName + ' ' + lastName;
   } else {
-    firstName = props.item.fromFirstName?props.item.fromFirstName==="N/A"?"Anonymous":props.item.fromFirstName:"Anonymous";
-    lastName = props.item.fromLastName?props.item.fromLastName==="N/A"?"":props.item.fromLastName:"";
+    firstName = props.item.fromFirstName
+      ? props.item.fromFirstName === 'N/A'
+        ? 'Anonymous'
+        : props.item.fromFirstName
+      : 'Anonymous';
+    lastName = props.item.fromLastName
+      ? props.item.fromLastName === 'N/A'
+        ? ''
+        : props.item.fromLastName
+      : '';
     fullName = firstName + ' ' + lastName;
   }
 
@@ -148,14 +170,12 @@ const TransactionListComponent = props => {
                 fontSize: hp('1.46%'),
                 color: 'white',
               }}>
-              {firstName==="Anonymous"?"A":
-              firstName[0] + lastName[0]}
+              {firstName === 'Anonymous' ? 'A' : firstName[0] + lastName[0]}
             </Text>
           </View>
         </View>
         <View style={{flex: 0.7, marginLeft: wp('1.3%')}}>
-          <Text
-            style={{fontFamily: semiBoldFont, fontSize: hp('1.7%')}}>
+          <Text style={{fontFamily: semiBoldFont, fontSize: hp('1.7%')}}>
             {fullName}
           </Text>
           <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
@@ -163,16 +183,13 @@ const TransactionListComponent = props => {
           </Text>
         </View>
         <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-        {props.item.nftPreview !== 'null' ? (
+          {props.item.nftPreview !== 'null' ? (
             <Image
               source={{uri: props.item.nftPreview}}
               style={styles.imagePreviewStyle}
             />
           ) : (
-            <Image
-              source={coinImagePath}
-              style={styles.tokenIconStyle}
-            />
+            <Image source={coinImagePath} style={styles.tokenIconStyle} />
           )}
 
           <Text
@@ -208,6 +225,13 @@ const TransactionListComponent = props => {
   );
 };
 
+const isCloseToBottom = ({layoutMeasurement, contentOffset, contentSize}) => {
+  const paddingToBottom = 20;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
+};
 const TransactionListFunction = props => {
   let currentHeaderDate = null;
   let transactions = props.transactions;
@@ -215,100 +239,118 @@ const TransactionListFunction = props => {
   if (transactions.length > 0) {
     if (props.route === 'all') {
       return (
-        <View style={{flex: 1, backgroundColor: 'white'}}>
-            {transactions.map(item => {
-              let showHeader = false;
-              if (currentHeaderDate === null) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
-              if (
-                currentHeaderDate.getDate() +
-                  currentHeaderDate.getMonth() +
-                  currentHeaderDate.getFullYear() !==
-                item.timestamp.getDate() +
-                  item.timestamp.getMonth() +
-                  item.timestamp.getFullYear()
-              ) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
+        <ScrollView
+          onScroll={({nativeEvent}) => {
+            if (isCloseToBottom(nativeEvent)) {
+              props.onEndReached();
+            }
+          }}
+          style={{flex: 1, backgroundColor: 'white'}}>
+          {transactions.map(item => {
+            let showHeader = false;
+            if (currentHeaderDate === null) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
+            if (
+              currentHeaderDate.getDate() +
+                currentHeaderDate.getMonth() +
+                currentHeaderDate.getFullYear() !==
+              item.timestamp.getDate() +
+                item.timestamp.getMonth() +
+                item.timestamp.getFullYear()
+            ) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
 
-              return TransactionListComponent({
+            return TransactionListComponent({
+              showHeader,
+              currentHeaderDate,
+              item,
+              walletAddress,
+            });
+          })}
+        </ScrollView>
+      );
+    } else if (props.route === 'sent') {
+      return (
+        <ScrollView
+          onScroll={({nativeEvent}) => {
+            if (isCloseToBottom(nativeEvent)) {
+              props.onEndReached();
+            }
+          }}
+          style={{flex: 1, backgroundColor: 'white'}}>
+          {transactions.map(item => {
+            let showHeader = false;
+            if (currentHeaderDate === null) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
+            if (
+              currentHeaderDate.getDate() +
+                currentHeaderDate.getMonth() +
+                currentHeaderDate.getFullYear() !==
+              item.timestamp.getDate() +
+                item.timestamp.getMonth() +
+                item.timestamp.getFullYear()
+            ) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
+
+            return (
+              item.from === walletAddress &&
+              TransactionListComponent({
                 showHeader,
                 currentHeaderDate,
                 item,
                 walletAddress,
-              });
-            })}
-        </View>
-      );
-    } else if (props.route === 'sent') {
-      return (
-        <View style={{flex: 1, backgroundColor: 'white'}}>
-            {transactions.map(item => {
-              let showHeader = false;
-              if (currentHeaderDate === null) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
-              if (
-                currentHeaderDate.getDate() +
-                  currentHeaderDate.getMonth() +
-                  currentHeaderDate.getFullYear() !==
-                item.timestamp.getDate() +
-                  item.timestamp.getMonth() +
-                  item.timestamp.getFullYear()
-              ) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
-
-              return (
-                item.from === walletAddress &&
-                TransactionListComponent({
-                  showHeader,
-                  currentHeaderDate,
-                  item,
-                  walletAddress,
-                })
-              );
-            })}
-        </View>
+              })
+            );
+          })}
+        </ScrollView>
       );
     }
     if (props.route === 'received') {
       return (
-        <View style={{flex: 1, backgroundColor: 'white'}}>
-            {transactions.map(item => {
-              let showHeader = false;
-              if (currentHeaderDate === null) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
-              if (
-                currentHeaderDate.getDate() +
-                  currentHeaderDate.getMonth() +
-                  currentHeaderDate.getFullYear() !==
-                item.timestamp.getDate() +
-                  item.timestamp.getMonth() +
-                  item.timestamp.getFullYear()
-              ) {
-                currentHeaderDate = item.timestamp;
-                showHeader = true;
-              }
+        <ScrollView
+          onScroll={({nativeEvent}) => {
+            if (isCloseToBottom(nativeEvent)) {
+              props.onEndReached();
+            }
+          }}
+          style={{flex: 1, backgroundColor: 'white'}}>
+          {transactions.map(item => {
+            let showHeader = false;
+            if (currentHeaderDate === null) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
+            if (
+              currentHeaderDate.getDate() +
+                currentHeaderDate.getMonth() +
+                currentHeaderDate.getFullYear() !==
+              item.timestamp.getDate() +
+                item.timestamp.getMonth() +
+                item.timestamp.getFullYear()
+            ) {
+              currentHeaderDate = item.timestamp;
+              showHeader = true;
+            }
 
-              return (
-                item.to === walletAddress &&
-                TransactionListComponent({
-                  showHeader,
-                  currentHeaderDate,
-                  item,
-                  walletAddress,
-                })
-              );
-            })}
-        </View>
+            return (
+              item.to === walletAddress &&
+              TransactionListComponent({
+                showHeader,
+                currentHeaderDate,
+                item,
+                walletAddress,
+              })
+            );
+          })}
+        </ScrollView>
       );
     } else return null;
   } else {
@@ -387,10 +429,9 @@ class TransactionScreen extends Component {
               balance = balance;
               item.balance = item.senderBalance + '/' + item.nftTotal;
             } else {
-
               item.balance = item.receiverBalance + '/' + item.nftTotal;
             }
-          
+
             return item;
           } else if (
             item.from === this.state.walletAddress &&
@@ -398,7 +439,6 @@ class TransactionScreen extends Component {
           ) {
             item.balance = item.senderBalance;
             balance = balance - item.value;
-      
           } else {
             item.balance = item.receiverBalance;
             balance = balance + item.value;
@@ -433,10 +473,9 @@ class TransactionScreen extends Component {
                 balance = balance;
                 item.balance = item.senderBalance + '/' + item.nftTotal;
               } else {
-
                 item.balance = item.receiverBalance + '/' + item.nftTotal;
               }
-            
+
               return item;
             } else if (
               item.from === this.state.walletAddress &&
@@ -444,7 +483,6 @@ class TransactionScreen extends Component {
             ) {
               item.balance = item.senderBalance;
               balance = balance - item.value;
-        
             } else {
               item.balance = item.receiverBalance;
               balance = balance + item.value;
@@ -471,6 +509,20 @@ class TransactionScreen extends Component {
             route="all"
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
+            onEndReached={() => {
+              if (
+                this.props.walletReducer.transactions.length <
+                this.props.walletReducer.total
+              ) {
+                this.props.fetchTransaction(
+                  this.state.walletAddress,
+                  this.props.loginReducer.token,
+                  true,
+                  this.props.walletReducer.limit,
+                  this.props.walletReducer.offset,
+                );
+              }
+            }}
           />
         );
 
@@ -478,6 +530,20 @@ class TransactionScreen extends Component {
         return (
           <TransactionListFunction
             route="sent"
+            onEndReached={() => {
+              if (
+                this.props.walletReducer.transactions.length <
+                this.props.walletReducer.total
+              ) {
+                this.props.fetchTransaction(
+                  this.state.walletAddress,
+                  this.props.loginReducer.token,
+                  true,
+                  this.props.walletReducer.limit,
+                  this.props.walletReducer.offset,
+                );
+              }
+            }}
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
           />
@@ -487,6 +553,20 @@ class TransactionScreen extends Component {
         return (
           <TransactionListFunction
             route="received"
+            onEndReached={() => {
+              if (
+                this.props.walletReducer.transactions.length <
+                this.props.walletReducer.total
+              ) {
+                this.props.fetchTransaction(
+                  this.state.walletAddress,
+                  this.props.loginReducer.token,
+                  true,
+                  this.props.walletReducer.limit,
+                  this.props.walletReducer.offset,
+                );
+              }
+            }}
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
           />
@@ -522,15 +602,15 @@ class TransactionScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  tokenIconStyle:{
-    height: hp("3%"),
-    width: hp("3%")
+  tokenIconStyle: {
+    height: hp('3%'),
+    width: hp('3%'),
   },
   imagePreviewStyle: {
     height: hp('5%'),
     width: hp('7%'),
   },
-})
+});
 
 const mapStateToProps = state => {
   return {
@@ -538,9 +618,6 @@ const mapStateToProps = state => {
   };
 };
 
-module.exports = connect(
-  mapStateToProps,
-  {
-    fetchTransaction,
-  },
-)(TransactionScreen);
+module.exports = connect(mapStateToProps, {
+  fetchTransaction,
+})(TransactionScreen);
