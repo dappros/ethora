@@ -22,6 +22,7 @@ Messages from the Ethora development team:
 * Process erc721Create with Transactions Queue
 * Process erc721Transfer with Transactions Queue
 * Process erc20Transfer with Transactions Queue
+* Added Redis queue and limiter for B/C transactions. Limiter is set via BC_STACK_SIZE at .env file. This is done to avoid overloading B/C node with too many concurrent transaction. 
 
 
 ## v21.10
