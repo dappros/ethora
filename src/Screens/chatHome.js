@@ -476,7 +476,6 @@ class ChatHome extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    console.log(this.props.ChatReducer, 'chajsdkaksй3jdlasjdk');
     if (xmpp) {
       //when roster updated with human readable chat room names call the realm for the same.
       if (this.props.ChatReducer.isRosterUpdated) {
