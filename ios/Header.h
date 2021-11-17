@@ -10,3 +10,6 @@
 
 
 #endif /* Header_h */
+#import "React/RCTBridgeModule.h
+#import "RCTEventDispatcher.h"
+#import "RCTEventEmitter.h"

@@ -195,6 +195,7 @@ PODS:
   - libwebp/mux (1.2.1):
     - libwebp/demux
   - libwebp/webp (1.2.1)
+  - mobile-ffmpeg-https (4.4)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -423,6 +424,12 @@ PODS:
   - react-native-fbsdk-next/Share (4.6.0):
     - FBSDKShareKit (~> 9.3)
     - React-Core
+  - react-native-ffmpeg (0.5.2):
+    - React
+    - react-native-ffmpeg/https (= 0.5.2)
+  - react-native-ffmpeg/https (0.5.2):
+    - mobile-ffmpeg-https (= 4.4)
+    - React
   - react-native-get-random-values (1.7.0):
     - React-Core
   - react-native-image-picker (3.8.1):
@@ -528,8 +535,6 @@ PODS:
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
-  - RNCPicker (2.2.0):
-    - React-Core
   - RNCPushNotificationIOS (1.10.1):
     - React-Core
   - RNFastImage (8.5.11):
@@ -656,6 +661,7 @@ DEPENDENCIES:
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
+  - react-native-ffmpeg (from `../node_modules/react-native-ffmpeg`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -686,7 +692,6 @@ DEPENDENCIES:
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
-  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
@@ -735,6 +740,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - libevent
     - libwebp
+    - mobile-ffmpeg-https
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
@@ -787,6 +793,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-document-picker"
   react-native-fbsdk-next:
     :path: "../node_modules/react-native-fbsdk-next"
+  react-native-ffmpeg:
+    :path: "../node_modules/react-native-ffmpeg"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
@@ -847,8 +855,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-clipboard/clipboard"
   RNCMaskedView:
     :path: "../node_modules/@react-native-community/masked-view"
-  RNCPicker:
-    :path: "../node_modules/@react-native-picker/picker"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFastImage:
@@ -918,6 +924,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
+  mobile-ffmpeg-https: 311fc4a8f671cf36d1d6b8f421e8246b790978d9
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OGReactNativeWaveform: f789fabadbf3904c7cba84d183405395861b8fed
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
@@ -937,6 +944,7 @@ SPEC CHECKSUMS:
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-document-picker: f4cc4df2eff8c9015d862a59bdaef11a153f1292
   react-native-fbsdk-next: a0dd8905af573ec4d21b7bc398423ccaa2ce2b07
+  react-native-ffmpeg: 587fa045f985d775107f4b8cbb6c79df0ad68e63
   react-native-get-random-values: 237bffb1c7e05fb142092681531810a29ba53015
   react-native-image-picker: 31971f6184e7c1dcb4fc1f122e1ba2c3fb11ef1e
   react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
@@ -967,7 +975,6 @@ SPEC CHECKSUMS:
   RNCCheckbox: 6bd119c26c6eb8264a29d59ff66cb70a14de3349
   RNCClipboard: 99fc8ad669a376b756fbc8098ae2fd05c0ed0668
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
-  RNCPicker: 2568e0d0b4644dd9d5f2cec9eca197f5f3f5acb3
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNFBAnalytics: 3e250066a98d6ea0a7816c52de75f2633f726580
@@ -991,6 +998,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 44e78e2685b99e5e754eaa6de4494bd645a4ce19
+PODFILE CHECKSUM: 0789ab851d66260b29c1e4c0488a7cee005fdf18
 
 COCOAPODS: 1.11.2
