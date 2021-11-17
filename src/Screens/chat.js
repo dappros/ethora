@@ -17,6 +17,7 @@ import {
   Button,
   Animated,
   TouchableWithoutFeedback,
+  NativeModules,
 } from 'react-native';
 import emojiUtils from 'emoji-utils';
 import {connect} from 'react-redux';
@@ -84,6 +85,8 @@ import VideoRecorder from 'react-native-beautiful-video-recorder';
 import VideoPlayer from 'react-native-video-player';
 import WaveForm from 'react-native-audiowaveform';
 import Modal from 'react-native-modal';
+import base64 from 'react-native-base64';
+import {Buffer} from 'buffer';
 
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
@@ -92,9 +95,36 @@ import AudioRecorderPlayer, {
   AudioSet,
   AudioSourceAndroidType,
 } from 'react-native-audio-recorder-player';
+import {AudioContext, OfflineAudioContext} from 'standardized-audio-context';
+
 import Video from 'react-native-video';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import {fileUpload} from '../config/routesConstants';
+import axios from 'axios';
+import {RNFFmpeg, RNFFprobe} from 'react-native-ffmpeg';
+import Svg, {Path, Rect} from 'react-native-svg';
+import RNFS from 'react-native-fs';
+
+const normalizeData = filteredData => {
+  const maxValue = Math.max(...filteredData);
+  console.log(maxValue, '234i02-34923e');
+  const multiplier = maxValue ** -1;
+
+  return !maxValue ? filteredData : filteredData.map(val => val * multiplier);
+};
+function filterData(arr) {
+  const samples = 24;
+  const blockSize = Math.floor(arr.length / samples);
+  const res = new Array(samples)
+    .fill(0)
+    .map((_, i) =>
+      arr
+        .slice(i * blockSize, (i + 1) * blockSize)
+        .reduce((sum, val) => sum + Math.abs(val), 0),
+    );
+
+  return res;
+}
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, regularFont} = textStyles;
@@ -138,6 +168,7 @@ const scrollToBottomDesign = () => {
 };
 
 class Chat extends Component {
+  waveformArray = [];
   constructor(props) {
     super(props);
     this.state = {
@@ -163,28 +194,31 @@ class Chat extends Component {
       composingUsername: '',
       userAvatar: '',
       progressVal: 0,
-      playTime: '00:00:00',
       duration: '00:00:00',
-      recordSecs: 0,
-      recordTime: '00:00:00',
-      currentPositionSec: 0,
-      currentDurationSec: 0,
       recording: false,
       mediaContentModalVisible: false,
-      playingMessageId: '',
       mediaModalContent: {type: '', localURL: '', remoteUrl: ''},
       videoPaused: false,
+      recordSecs: '',
+      recordTime: '',
+      // waveformArray: [],
+      path: Platform.select({
+        ios: 'hello.m4a',
+        android: `${RNFetchBlob.fs.dirs.CacheDir}/hello.mp3`,
+      }),
     };
+
     this.audioRecorderPlayer = new AudioRecorderPlayer();
     this.audioRecorderPlayer.setSubscriptionDuration(0.09); // optional. Default is 0.1
     this.cameraRef = createRef();
     this.mediaButtonAnimation = new Animated.Value(1);
+    this.waveformArray = [];
   }
 
   //fucntion to get chat archive of a room
   animateMediaButtonIn = () => {
     Animated.spring(this.mediaButtonAnimation, {
-      toValue: 1.8,
+      toValue: 2.5,
       useNativeDriver: true,
     }).start();
   };
@@ -198,6 +232,14 @@ class Chat extends Component {
     }).start();
   };
   async componentDidMount() {
+    // this.audioRecorderPlayer.addRecordBackListener(e => {
+    //   this.setState({
+    //     recordTime: this.audioRecorderPlayer.mmssss(
+    //       Math.floor(e.currentPosition),
+    //     ),
+    //   });
+    // });
+    // this.getAudioData()
     let firstName = '';
     let lastName = '';
     let chatRoomDetails = this.props.ChatReducer.chatRoomDetails;
@@ -212,7 +254,6 @@ class Chat extends Component {
           chats.length > 0 ? chats.length - loadMessageAmount : 0;
         this.loadMessages(chats, loadMessageIndex);
       } else {
-        console.log('chat is empty:', chats);
       }
     });
     walletAddress = initialData.walletAddress;
@@ -280,6 +321,7 @@ class Chat extends Component {
           mimetype: item.mimetype,
           size: item.size,
           duration: item.duration,
+          waveForm: item.waveForm,
 
           user: {
             _id: item.user_id,
@@ -517,19 +559,30 @@ class Chat extends Component {
     return this.props.apiReducer.defaultUrl + route;
   };
   onStartRecord = async () => {
+    this.setState({recording: true});
     this.animateMediaButtonIn();
-    const dirs = RNFetchBlob.fs.dirs;
-    const path = Platform.select({
-      ios: 'hello.m4a',
-      android: `${dirs.CacheDir}/hello.mp3`,
-    });
-    const result = await this.audioRecorderPlayer.startRecorder(path);
+
+    // console.log(path, '23423094892304');
+    const audioSet = {
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.low,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+    };
+    const result = await this.audioRecorderPlayer.startRecorder(
+      this.state.path,
+      audioSet,
+      true,
+    );
 
     // this.setState({
     //   recording: true,
     // });
   };
   onStopRecord = async () => {
+    this.setState({recording: false});
+
     this.animateMediaButtonOut();
 
     // [{"fileCopyUri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3", "name": "hello.mp3", "size": 84384, "type": "audio/mpeg", "uri": "content://com.android.providers.downloads.documents/document/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fhello.mp3"}]
@@ -543,12 +596,11 @@ class Chat extends Component {
     this.setState({
       recording: false,
     });
-    console.log(result, 'ressslsllsl');
     const {token} = this.props.loginReducer;
     const filesApiURL = this.constructUrl(fileUpload);
     const FormData = require('form-data');
     let data = new FormData();
-
+    const waveform = await this.getAudioData();
     // let correctpath = '';
     // const str1 = 'file://';
     // const str2 = res.uri;
@@ -567,35 +619,39 @@ class Chat extends Component {
         logOut();
       },
       val => {
-        console.log('Progress:', val);
         this.setState({
           progressVal: val,
         });
       },
       async response => {
         if (response.results.length) {
-          // alert(JSON.stringify(data));
-          this.submitMediaMessage(response.results);
-          console.log(response, 'dsfjdksfklsdjfkdsjlfj');
+          this.submitMediaMessage(response.results, waveform);
         }
       },
     );
   };
-  onStartPlay = async () => {
-    console.log('onStartPlay');
-    const msg = await this.audioRecorderPlayer.startPlayer();
-    console.log(msg);
-    this.audioRecorderPlayer.addPlayBackListener(e => {
-      this.setState({
-        currentPositionSec: e.currentPosition,
-        currentDurationSec: e.duration,
-        playTime: this.audioRecorderPlayer.mmssss(
-          Math.floor(e.currentPosition),
-        ),
-        duration: this.audioRecorderPlayer.mmssss(Math.floor(e.duration)),
-      });
-      return;
-    });
+
+  getWaveformArray = async url => {
+    if (Platform.OS !== 'ios') {
+      let ddd = await NativeModules.Waveform.getDeviceName(url);
+      const data = JSON.parse(ddd);
+      return data;
+    } else {
+      const res = await NativeModules.RNWaveform.loadAudioFile();
+      return res;
+    }
+  };
+
+  getAudioData = async url => {
+    const audioPath =
+      url ||
+      (Platform.OS === 'ios'
+        ? `${RNFetchBlob.fs.dirs.CacheDir}/hello.m4a`
+        : this.state.path);
+    const data = await this.getWaveformArray(audioPath);
+    const normalizedData = normalizeData(filterData(data));
+
+    return normalizedData;
   };
 
   scrollToMessage(messageID) {
@@ -705,6 +761,7 @@ class Chat extends Component {
               mimetype: chatsLastObject.mimetype,
               size: chatsLastObject.size,
               duration: chatsLastObject.duration,
+              waveForm: chatsLastObject.waveForm,
 
               user: {
                 _id: chatsLastObject.user_id,
@@ -754,10 +811,7 @@ class Chat extends Component {
         const amount = this.props.walletReducer.tokenTransferSuccess.amount;
         const tokenName =
           this.props.walletReducer.tokenTransferSuccess.tokenName;
-        console.log(
-          this.props.walletReducer.tokenTransferSuccess,
-          'tradjnsakdjsdfjdskjf',
-        );
+
         let message = systemMessage({
           senderName,
           receiverName,
@@ -796,7 +850,6 @@ class Chat extends Component {
             },
           ];
         } else {
-          console.log(recentRealtimeChat.duration, 'asfdsklfjlksdjfkasdldsjf');
           messageObject = [
             {
               _id: recentRealtimeChat.message_id,
@@ -812,7 +865,7 @@ class Chat extends Component {
               mimetype: recentRealtimeChat.mimetype,
               size: recentRealtimeChat.size,
               duration: recentRealtimeChat.duration,
-
+              waveForm: recentRealtimeChat.waveForm,
               user: {
                 _id: recentRealtimeChat.user_id,
                 name: recentRealtimeChat.name,
@@ -952,7 +1005,7 @@ class Chat extends Component {
     );
   }
 
-  submitMediaMessage = props => {
+  submitMediaMessage = (props, waveForm) => {
     props.map(async item => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
 
@@ -996,6 +1049,7 @@ class Chat extends Component {
           duration: item?.duration,
           updatedAt: item.updatedAt,
           userId: item.userId,
+          waveForm: JSON.stringify(waveForm),
         }),
       );
 
@@ -1038,7 +1092,6 @@ class Chat extends Component {
           ? false
           : true,
     });
-    console.log(mimetype, '2329084234203');
     // if (isStoredFile) {
     //   this.setState({playingMessageId: id});
     //   //display image from store location path on modal view
@@ -1087,7 +1140,6 @@ class Chat extends Component {
     if (this.camera) {
       const options = {quality: 0.5, base64: true};
       const data = await this.camera.takePictureAsync(options);
-      console.log(data.uri);
     }
   };
 
@@ -1099,7 +1151,6 @@ class Chat extends Component {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    console.log((bytes / Math.pow(k, i)).toFixed(dm), 'Asdasdgbdfgbdfg', bytes);
 
     return {
       size: parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
@@ -1108,12 +1159,8 @@ class Chat extends Component {
   }
 
   videoRecord = async () => {
-    console.log('currentttt', this.cameraRef);
-
     if (this.cameraRef?.current) {
-      this.cameraRef.current.open({maxLength: 30}, data => {
-        console.log('captured datafdsfsdf', data); // data.uri is the file path
-      });
+      this.cameraRef.current.open({maxLength: 30}, data => {});
     }
   };
   RenderMediaModalContent = () => {
@@ -1127,6 +1174,7 @@ class Chat extends Component {
             onPress={() => this.toggleVideoModal(false)}
             activeOpacity={0.9}>
             <Image
+              resizeMode={'contain'}
               source={{uri: this.state.mediaModalContent.remoteUrl}}
               style={{width: '100%', height: '100%', borderRadius: 5}}
             />
@@ -1161,11 +1209,16 @@ class Chat extends Component {
     // }
   };
   renderMessageImage = props => {
-    const {image, realImageURL, mimetype, size, duration, id} =
+    const {image, realImageURL, mimetype, size, duration, waveForm, id} =
       props.currentMessage;
-    console.log(props.currentMessage, '234u2asdasda34');
     let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = this.formatBytes(parseFloat(size), 2);
+    let parsedWaveform = [];
+    try {
+      parsedWaveform = JSON.parse(waveForm);
+    } catch (error) {
+      console.log(error);
+    }
     if (
       mimetype === 'video/mp4' ||
       mimetype === 'image/jpeg' ||
@@ -1242,7 +1295,6 @@ class Chat extends Component {
       mimetype === 'audio/mpeg' ||
       mimetype === 'application/octet-stream'
     ) {
-      console.log(mimetype, '238942384923840');
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
         <TouchableOpacity
@@ -1322,16 +1374,23 @@ class Chat extends Component {
 
             {/* )} */}
 
-            {duration && (
-              <WaveForm
-                source={{uri: image}}
-                style={{width: 100, height: '100%'}}
-                waveFormStyle={{
-                  waveColor: primaryDarkColor,
-                  scrubColor: primaryDarkColor,
-                }}
-              />
+            {/* {duration && ( */}
+            {parsedWaveform && (
+              <Svg stroke={primaryDarkColor} width={100} height={55}>
+                {parsedWaveform.map((item, i) => (
+                  <Rect
+                    fill={'rgba(255,255,255,0.9)'}
+                    key={i}
+                    width={3}
+                    x={i * 4}
+                    y={35 + item}
+                    height={item === 0 ? -3 : -item * 25}
+                  />
+                ))}
+              </Svg>
             )}
+
+            {/* )} */}
             {/* </View> */}
           </View>
         </TouchableOpacity>
@@ -1387,7 +1446,7 @@ class Chat extends Component {
               ]}>
               <Entypo name="camera" color={'white'} size={hp('3%')} />
             </Animated.View>
-            
+
           </TouchableWithoutFeedback> */}
           {/* )} */}
         </View>
@@ -1423,11 +1482,9 @@ class Chat extends Component {
                 try {
                   const res = await DocumentPicker.pick({
                     type: [DocumentPicker.types.allFiles],
+                    copyTo: 'cachesDirectory',
                   });
-                  // console.log(
-                  //   res,
-                  //  'sdmflksdkjflu3iou490owiasdsa;lkdm'
-                  // );
+
                   const {token} = this.props.loginReducer;
                   const filesApiURL = this.constructUrl(fileUpload);
                   const FormData = require('form-data');
@@ -1439,8 +1496,8 @@ class Chat extends Component {
                     type: res[0].type,
                     name: res[0].name,
                   });
-                  console.log(res[0].uri, 'reasdklaskdl;sakd');
-
+                  console.log(res, 'reasdklaskdl;sakd');
+                  const absolutePath = res[0].fileCopyUri;
                   hitAPI.fileUpload(
                     filesApiURL,
                     data,
@@ -1456,7 +1513,12 @@ class Chat extends Component {
                     },
                     async response => {
                       if (response?.results?.length) {
-                        this.submitMediaMessage(response.results);
+                        if (response.results[0].mimetype === 'audio/mpeg') {
+                          let wave = await this.getAudioData(absolutePath);
+                          this.submitMediaMessage(response.results, wave);
+                        } else {
+                          this.submitMediaMessage(response.results);
+                        }
                       }
                     },
                   );
@@ -1490,7 +1552,7 @@ class Chat extends Component {
             }}
             icon={() => (
               <View style={{flexDirection: 'row'}}>
-               
+
                 {this.state.recording ? (
                   <TouchableOpacity
                     // onPress={this.takePicture}
@@ -1527,7 +1589,7 @@ class Chat extends Component {
             </TouchableOpacity>
           )}
 
-         
+
         /> */}
         </View>
       </View>
@@ -1697,6 +1759,12 @@ class Chat extends Component {
             {this.RenderMediaModalContent()}
           </>
         </Modal>
+        {/* {this.state.recording && (
+          <Text style={{position: 'absolute', bottom: 0, right: 100}}>
+            {this.state.recordTime}
+          </Text>
+        )}
+        */}
       </View>
     );
   }
