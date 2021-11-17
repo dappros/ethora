@@ -6,7 +6,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 
 import {unv_url, unv_url1} from '../../docs/config';
 
-export default parseChatLink = url => {
+const parseChatLink = url => {
   let parsedLink = '';
   if (url.includes(unv_url)) {
     parsedLink = url.replace(unv_url, '');
@@ -16,3 +16,4 @@ export default parseChatLink = url => {
   }
   return parsedLink;
 };
+export default parseChatLink;
