@@ -127,6 +127,7 @@ ext {
 }
 
 android {
+  packagingOptions { pickFirst '**/*.so' }
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -197,6 +198,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.github.lincollincol:amplituda:2.1.2'
 
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
