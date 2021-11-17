@@ -172,8 +172,14 @@ const TransactionListComponent = props => {
               : 'nan'}
           </Text>
         </View>
-        <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftPreview &&props.item.nftPreview !=='null'  ? (
+        <View
+          style={{
+            flex: props.item.nftPreview !== 'null' ? 0.3 : 0.2,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end'
+          }}>
+          {props.item.nftPreview && props.item.nftPreview !== 'null' ? (
             <Image
               source={{uri: props.item.nftPreview}}
               style={styles.imagePreviewStyle}
@@ -194,16 +200,14 @@ const TransactionListComponent = props => {
               props.item.from === props.walletAddress ? '#CB4141' : '#69CB41'
             }
             size={hp('1.7%')}
-            style={{margin: 5}}
           />
-          {props.item.from === props.item.to && (
+          {/* {props.item.from === props.item.to && (
             <AntIcon
               name="arrowdown"
               color="#69CB41"
               size={hp('1.7%')}
-              style={{margin: 5}}
             />
-          )}
+          )} */}
         </View>
       </View>
       <Divider />
