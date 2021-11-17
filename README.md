@@ -2,7 +2,11 @@
 Mobile app engine and platform for social tokenized communities. 
 
 ## wiki website
-Visit https://ethora.com/ for latest information regarding the project.
+Visit https://ethora.com/ for latest information regarding the project. 
+Some information below might be outdated as we update the above website most often. 
+
+## How to build
+Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 32 minutes: https://ethora.com/wiki/Step_By_Step_Guide
 
 ### Core features
 * iOS & Android
