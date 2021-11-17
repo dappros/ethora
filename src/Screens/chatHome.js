@@ -14,6 +14,7 @@ import {
   ImageBackground,
   Linking,
   Alert,
+  NativeModules,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -21,7 +22,7 @@ import Modal from 'react-native-modal';
 import {Card} from 'react-native-elements';
 import styles from './style/chatHomeStyle';
 import {CommonTextInput} from '../components/shared/customTextInputs';
-
+import parseChatLink from '../helpers/parseChatLink';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -56,6 +57,7 @@ import {commonColors, textStyles} from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import xml from '@xmpp/xml';
 
 const _ = require('lodash');
 const subscriptionsStanzaID = 'subscriptions';
@@ -78,7 +80,6 @@ const RenderDragItem = ({
   roomRoles,
   movingActive,
 }) => {
-  console.log(roomRoles, item, 'activeee');
   return (
     <TouchableOpacity
       onPress={() => openChat(item.jid, item.name)}
@@ -397,18 +398,19 @@ class ChatHome extends Component {
     this._menu.hide();
   };
 
-  showMenu = item => {
-    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
-    this.setState({
-      chat_name: item.chat_name,
-      chat_jid: item.chat_jid,
-    });
-    this._menu.show();
-  };
+  // showMenu = item => {
+  //   this.setState({
+  //     chat_name: item.chat_name,
+  //     chat_jid: item.chat_jid,
+  //   });
+  //   this._menu.show();
+  // };
 
   async componentDidMount() {
+
     const {token} = this.props.loginReducer;
     // this.props.getEmailList(token);
+    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
 
     Linking.getInitialURL().then(url => {
       if (url) {
@@ -474,6 +476,7 @@ class ChatHome extends Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
+    console.log(this.props.ChatReducer, 'chajsdkaksй3jdlasjdk');
     if (xmpp) {
       //when roster updated with human readable chat room names call the realm for the same.
       if (this.props.ChatReducer.isRosterUpdated) {
@@ -617,10 +620,14 @@ class ChatHome extends Component {
     }
   }
   onMenuItemPress = (index, jid, type, name) => {
-    const initialData = this.props.loginReducer.initialData;
-    let walletAddress = initialData.walletAddress;
-    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
-
+    if (type === 'rename') {
+      this.setState({
+        modalVisible: true,
+        pickedChatJid: jid,
+        newChatName: name,
+      });
+      this.hideMenu(index);
+    }
     if (type === 'mute') {
       this.unsubscribeFromRoom(jid);
       this.hideMenu(index);
@@ -630,14 +637,7 @@ class ChatHome extends Component {
       this.leaveTheRoom(jid);
       this.hideMenu(index);
     }
-    if (type === 'rename') {
-      this.setState({
-        modalVisible: true,
-        pickedChatJid: jid,
-        newChatName: name,
-      });
-      this.hideMenu(index);
-    }
+
     if (type === 'move') {
       this.setState({movingActive: true});
       this.hideMenu(index);
@@ -758,7 +758,6 @@ class ChatHome extends Component {
 
   showMenu = (index, item) => {
     this.setState({activeMenuIndex: index});
-
     this[`menu${index}`].show();
   };
 
@@ -979,6 +978,67 @@ class ChatHome extends Component {
       //   }
       //   style={{flex: 1}}>
       <>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          isVisible={this.state.modalVisible}
+          // onBackdropPress={this.onBackdropPress}
+        >
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+              borderRadius: 8,
+              paddingVertical: 20,
+            }}>
+            <CommonTextInput
+              maxLength={128}
+              containerStyle={{
+                borderWidth: 0.5,
+                // borderTopWidth: 0,
+                borderColor: primaryColor,
+                backgroundColor: 'white',
+                width: wp('81%'),
+                height: hp('6.8%'),
+                // padding: hp('2.4'),
+                paddingLeft: wp('3.73'),
+                borderRadius: 0,
+                marginBottom: 10,
+                // marginTop: 10
+              }}
+              fontsStyle={{
+                fontFamily: lightFont,
+                fontSize: hp('1.6%'),
+                color: 'black',
+              }}
+              value={this.state.newChatName}
+              onChangeText={text => this.onNameChange(text)}
+              placeholder="Enter new chat name"
+              placeholderTextColor={primaryColor}
+            />
+
+            <TouchableOpacity
+              onPress={() => this.setNewChatName()}
+              style={{
+                backgroundColor: primaryColor,
+                borderRadius: 5,
+                height: hp('4.3'),
+                padding: 4,
+              }}>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                }}>
+                <Text style={{...styles.createButtonText, color: 'white'}}>
+                  Done editing
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </Modal>
         <DraggableFlatList
           nestedScrollEnabled={true}
           onRelease={() => this.setState({movingActive: false})}
@@ -1011,72 +1071,6 @@ class ChatHome extends Component {
           keyExtractor={(item, index) => `draggable-item-${index}`}
           onDragEnd={({data}) => this.storeRosterList(data)}
         />
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          isVisible={this.state.modalVisible}
-          onBackdropPress={this.onBackdropPress}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
-          {true ? (
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'white',
-                borderRadius: 8,
-                paddingVertical: 20,
-              }}>
-              <CommonTextInput
-                maxLength={128}
-                containerStyle={{
-                  borderWidth: 0.5,
-                  // borderTopWidth: 0,
-                  borderColor: primaryColor,
-                  backgroundColor: 'white',
-                  width: wp('81%'),
-                  height: hp('6.8%'),
-                  // padding: hp('2.4'),
-                  paddingLeft: wp('3.73'),
-                  borderRadius: 0,
-                  marginBottom: 10,
-                  // marginTop: 10
-                }}
-                fontsStyle={{
-                  fontFamily: lightFont,
-                  fontSize: hp('1.6%'),
-                  color: 'black',
-                }}
-                value={this.state.newChatName}
-                onChangeText={text => this.onNameChange(text)}
-                placeholder="Enter new chat name"
-                placeholderTextColor={primaryColor}
-              />
-
-              <TouchableOpacity
-                onPress={() => this.setNewChatName()}
-                style={{
-                  backgroundColor: primaryColor,
-                  borderRadius: 5,
-                  height: hp('4.3'),
-                  padding: 4,
-                }}>
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flex: 1,
-                  }}>
-                  <Text style={{...styles.createButtonText, color: 'white'}}>
-                    Done editing
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          ) : null}
-        </Modal>
       </>
 
       // </ScrollView>

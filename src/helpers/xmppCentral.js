@@ -32,7 +32,6 @@ const debug = require('@xmpp/debug');
 
 let profileDescription = '';
 let profilePhoto = '';
-let rolesMap = {};
 let usersLastSeen = {};
 
 export let xmpp;
@@ -46,7 +45,7 @@ export const xmppListener = (
   finalMessageArrivalAction,
   participantsUpdateAction,
   updateMessageComposingState,
-  setRoomRoles,
+  setRoles,
   getStoredItems,
   setRosterAction,
   setRecentRealtimeChatAction,
@@ -58,6 +57,7 @@ export const xmppListener = (
   CONFERENCEDOMAIN,
 ) => {
   debug(xmpp, true);
+  let rolesMap = {};
 
   xmpp.on('error', err => {
     // xmpp.reconnect.start();
@@ -261,12 +261,12 @@ export const xmppListener = (
 
         let role = stanza.children[0].children[0].attrs.role;
         rolesMap[roomJID] = role;
-        usersLastSeen[userJID] = moment().format('DD hh:mm');
-        setRoomRoles(rolesMap);
-        console.log(usersLastSeen, 'reducadklsmads;kld');
+        // usersLastSeen[userJID] = moment().format('DD hh:mm');
         await setOtherUserDetails({
           anotherUserLastSeen: usersLastSeen,
         });
+        setRoles(rolesMap);
+
       }
 
       if (stanza.attrs.id === 'CreateRoom') {
@@ -426,6 +426,7 @@ export const xmppListener = (
         let mimetype = '';
         let size = '';
         let duration = '';
+        let waveForm = '';
 
         await singleMessageDetailArray.forEach(item => {
           if (item.name === 'body') {
@@ -456,6 +457,7 @@ export const xmppListener = (
 
             imageLocationPreview =
               item.attrs.locationPreview || item.attrs.location;
+            waveForm = item.attrs.waveForm;
             mimetype = item.attrs.mimetype;
             console.log(item, '3202394023-49-23');
             duration = item.attrs.duration;
@@ -486,6 +488,7 @@ export const xmppListener = (
               mimetype: mimetype,
               size: size,
               duration,
+              waveForm,
             };
           } else {
             messageObject = {
@@ -641,7 +644,6 @@ export const xmppListener = (
         stanza.children[0].attrs &&
         stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:tmp'
       ) {
-        console.log(stanza, 'asdasdasd');
         let text = ''; //the text message
         let _id = ''; //the id of the sender
         let user_name = '';
@@ -658,6 +660,7 @@ export const xmppListener = (
         let mimetype = '';
         let duration = '';
         let size = '';
+        let waveForm = '';
         stanza.children.map(item => {
           if (item.name === 'body') {
             text = item.children[0];
@@ -694,9 +697,10 @@ export const xmppListener = (
 
             imageLocationPreview =
               item.attrs.locationPreview || item.attrs.location;
-
+            console.log(item, '2349u0234920384293084');
             mimetype = item.attrs.mimetype;
             duration = item.attrs.duration;
+            waveForm = item.attrs.waveForm;
 
             size = item.attrs.size;
           }
@@ -724,6 +728,7 @@ export const xmppListener = (
               mimetype: mimetype,
               duration,
               size: size,
+              waveForm,
             };
           } else {
             messageObject = {
