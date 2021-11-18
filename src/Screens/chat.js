@@ -110,7 +110,6 @@ import {RecordingSecondsCounter} from '../components/RecordingSecondsCounter';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
-  console.log(maxValue, '234i02-34923e');
   const multiplier = maxValue ** -1;
 
   return !maxValue ? filteredData : filteredData.map(val => val * multiplier);
@@ -1230,7 +1229,9 @@ class Chat extends Component {
     ) {
       return (
         <TouchableOpacity
+          onLongPress={() => this.onLongPressMessage('', props.currentMessage)}
           onPress={() => this.startDownload(props)}
+          activeOpacity={0.7}
           style={{
             borderRadius: 5,
             // padding: 5,
@@ -1301,7 +1302,10 @@ class Chat extends Component {
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
         <TouchableOpacity
+          onLongPress={() => this.onLongPressMessage('', props.currentMessage)}
           onPress={() => this.startDownload(props)}
+          activeOpacity={0.7}
+
           style={{
             borderRadius: 5,
             // padding: 5,
@@ -1515,7 +1519,6 @@ class Chat extends Component {
                     type: res[0].type,
                     name: res[0].name,
                   });
-                  console.log(res, 'reasdklaskdl;sakd');
                   const absolutePath = res[0].fileCopyUri;
                   hitAPI.fileUpload(
                     filesApiURL,
@@ -1525,7 +1528,6 @@ class Chat extends Component {
                       logOut();
                     },
                     val => {
-                      console.log('Progress:', val);
                       this.setState({
                         progressVal: val,
                       });
@@ -1541,7 +1543,6 @@ class Chat extends Component {
                       }
                     },
                   );
-                  console.log(JSON.stringify(data), 'asdasasdasdkd');
                 } catch (err) {
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
