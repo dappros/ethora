@@ -54,6 +54,8 @@ import {
 import {systemMessage} from '../components/SystemMessage';
 import {xmpp} from '../helpers/xmppCentral';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -104,6 +106,7 @@ import axios from 'axios';
 import {RNFFmpeg, RNFFprobe} from 'react-native-ffmpeg';
 import Svg, {Path, Rect} from 'react-native-svg';
 import RNFS from 'react-native-fs';
+import {RecordingSecondsCounter} from '../components/RecordingSecondsCounter';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -1411,6 +1414,7 @@ class Chat extends Component {
             height: '100%',
             paddingHorizontal: 5,
             flexDirection: 'row',
+            position: 'relative',
           }}>
           <TouchableWithoutFeedback
             // onPress={this.start}
@@ -1449,10 +1453,31 @@ class Chat extends Component {
 
           </TouchableWithoutFeedback> */}
           {/* )} */}
+          {this.state.recording && (
+            <View style={{position: 'absolute', right: hp('10%')}}>
+              <RecordingSecondsCounter />
+            </View>
+          )}
         </View>
       );
     }
-    return <Send {...props} />;
+    return (
+      <Send {...props}>
+        <View
+          style={[
+            {
+              backgroundColor: primaryDarkColor,
+              borderRadius: 100,
+              padding: 5,
+              marginRight: 5,
+              paddingLeft: 7,
+              marginBottom: 5,
+            },
+          ]}>
+          <IonIcons name="ios-send" color={'white'} size={hp('3%')} />
+        </View>
+      </Send>
+    );
   };
 
   renderAttachment() {
@@ -1462,9 +1487,6 @@ class Chat extends Component {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
-            // position: 'absolute',
-            // left: 0
-            // width: hp('100%'),
           }}>
           <Actions
             containerStyle={{
@@ -1472,9 +1494,6 @@ class Chat extends Component {
               height: hp('4%'),
               alignItems: 'center',
               justifyContent: 'center',
-              // marginLeft: 3,
-              // marginRight: 3,
-              // marginBottom: 3,
             }}
             icon={() => <Entypo name="attachment" size={hp('3%')} />}
             options={{
@@ -1759,12 +1778,6 @@ class Chat extends Component {
             {this.RenderMediaModalContent()}
           </>
         </Modal>
-        {/* {this.state.recording && (
-          <Text style={{position: 'absolute', bottom: 0, right: 100}}>
-            {this.state.recordTime}
-          </Text>
-        )}
-        */}
       </View>
     );
   }

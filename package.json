@@ -63,6 +63,7 @@
     "react-native-material-menu": "^1.2.0",
     "react-native-modal": "^12.0.2",
     "react-native-permissions": "^3.0.5",
+    "react-native-pulse": "^1.0.7",
     "react-native-push-notification": "^7.4.0",
     "react-native-qrcode-scanner": "^1.4.0",
     "react-native-qrcode-svg": "^6.0.3",
