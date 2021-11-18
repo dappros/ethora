@@ -636,7 +636,7 @@ class Chat extends Component {
 
   getWaveformArray = async url => {
     if (Platform.OS !== 'ios') {
-      let ddd = await NativeModules.Waveform.getDeviceName(url);
+      let ddd = await NativeModules.Waveform.getWaveformArray(url);
       const data = JSON.parse(ddd);
       return data;
     } else {

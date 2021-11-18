@@ -37,7 +37,7 @@ public String getName() {
    return "Waveform";
 }
 @ReactMethod
-public void getDeviceName(String filePath, Promise promise ) {
+public void getWaveformArray(String filePath, Promise promise ) {
         this.processAudio(filePath);
     try{
        promise.resolve(this.result);
