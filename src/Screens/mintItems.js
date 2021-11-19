@@ -141,7 +141,7 @@ function MintItems(props) {
     } else {
       try {
         const res = await DocumentPicker.pick({
-          type: [DocumentPicker.types.allFiles],
+          type: [DocumentPicker.types.images],
         });
         console.log(res, 'formsasss');
         const data = new FormData();

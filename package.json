@@ -33,6 +33,7 @@
     "@xmpp/client": "^0.11.1",
     "@xmpp/debug": "^0.11.0",
     "axios": "^0.21.4",
+    "buffer": "^6.0.3",
     "emoji-utils": "^1.0.1",
     "jsqr": "^1.4.0",
     "moment": "^2.29.1",
@@ -40,6 +41,7 @@
     "react-native": "0.64.2",
     "react-native-audio-recorder-player": "^3.1.2",
     "react-native-audiowaveform": "^2.0.5",
+    "react-native-base64": "^0.2.1",
     "react-native-beautiful-video-recorder": "^2.0.1",
     "react-native-bootsplash": "^3.2.6",
     "react-native-camera": "^4.2.1",
@@ -48,6 +50,7 @@
     "react-native-elements": "^3.4.2",
     "react-native-fast-image": "^8.5.11",
     "react-native-fbsdk-next": "^4.4.0",
+    "react-native-ffmpeg": "^0.5.2",
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-get-random-values": "^1.7.0",
@@ -60,6 +63,7 @@
     "react-native-material-menu": "^1.2.0",
     "react-native-modal": "^12.0.2",
     "react-native-permissions": "^3.0.5",
+    "react-native-pulse": "^1.0.7",
     "react-native-push-notification": "^7.4.0",
     "react-native-qrcode-scanner": "^1.4.0",
     "react-native-qrcode-svg": "^6.0.3",
@@ -85,7 +89,8 @@
     "redux": "^4.1.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "rn-fetch-blob": "^0.12.0"
+    "rn-fetch-blob": "^0.12.0",
+    "standardized-audio-context": "^25.3.14"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
