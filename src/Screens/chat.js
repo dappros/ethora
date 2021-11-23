@@ -1740,6 +1740,9 @@ class Chat extends Component {
           onLongPress={(e, m) => this.onLongPressMessage(e, m)}
           onLongPressAvatar={e => this.onLongPressAvatar(e)}
           renderMessageImage={this.renderMessageImage}
+          textInputStyle={{
+            color: "#ffff"
+          }}
           parsePatterns={linkStyle => [
             {
               pattern:
