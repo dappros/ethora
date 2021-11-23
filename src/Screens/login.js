@@ -46,8 +46,12 @@ import {
   commonColors,
   textStyles,
   loginScreenBackgroundImage,
+  appEndpoint,
+  appVersion
 } from '../../docs/config';
 import {checkEmailExist} from '../config/routesConstants';
+import DeviceInfo from 'react-native-device-info';
+
 const hitAPI = new fetchFunction();
 
 const {primaryColor, secondaryColor} = commonColors;
@@ -350,9 +354,10 @@ class Login extends Component {
     await this.props.registerUser(dataObject, user);
   };
 
-  openMembership = () => {
-    Linking.openURL('https://www.goldenkey.org/golden-key-eligibility/');
-  };
+  // optional - specify a link for registering new members for your community
+//  openMembership = () => {
+//   Linking.openURL(‘https://www.yoursite/members-onboarding-page/’);
+// };
 
   revealPassword() {
     this.setState({
@@ -544,9 +549,9 @@ class Login extends Component {
                     style={{
                       color: 'grey',
                       fontFamily: lightFont,
-                      fontSize: hp('0.98%'),
+                      fontSize: hp('1%'),
                     }}>
-                    Version 21.10
+                    Version {appVersion}-{appEndpoint}
                   </Text>
                   <Text
                     style={{

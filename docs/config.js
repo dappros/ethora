@@ -5,6 +5,7 @@ const appTitle = "Ethora"; //done
 // LOGO (LOGIN SCREEN)
 // App logo (displayed in login screen) image path: 
 import logoPath from "../src/assets/logo.png"; //done
+import DeviceInfo from "react-native-device-info"
 
 //images for tutorial screens
 import slide1Image1 from "../src/assets/tutorials/slide1Img1.png";
@@ -106,7 +107,13 @@ const itemsMintingFee = 10;
 // Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default. 
 const appWalletName = "Anonymous";
 
-const allowIsTyping = false;
+const allowIsTyping = true;
+
+const endPoints = ["DEV", "QA", "PROD"];
+
+const appEndpoint = endPoints[0];
+
+const appVersion = DeviceInfo.getVersion()
 
 
 export{
@@ -138,5 +145,7 @@ export{
     slide3Image2,
     slide4Image1,
     slide4Image2,
-    allowIsTyping
+    allowIsTyping,
+    appEndpoint,
+    appVersion
 }

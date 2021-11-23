@@ -17,15 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>404321904154112</string>
+				<string>fb404321904154112</string>
 			</array>
 		</dict>
 		<dict>
@@ -37,9 +39,17 @@
 				<string>fb404321904154112</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>www.eto.li</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>404321904154112</string>
 	<key>FacebookClientToken</key>
@@ -62,7 +72,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>The app uses the camera to scan qr-codes</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string></string>
+	<string>The app needs access to microphone to record audio.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This App needs to access gallery</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Bold.ttf</string>
