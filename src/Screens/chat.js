@@ -107,6 +107,7 @@ import {RNFFmpeg, RNFFprobe} from 'react-native-ffmpeg';
 import Svg, {Path, Rect} from 'react-native-svg';
 import RNFS from 'react-native-fs';
 import {RecordingSecondsCounter} from '../components/RecordingSecondsCounter';
+import {addLogsApi} from '../actions/debugActions';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -627,6 +628,9 @@ class Chat extends Component {
       },
       async response => {
         if (response.results.length) {
+          console.log('2348902348239048230', response);
+          console.log('249230-409234', response);
+          this.props.addLogsApi(response.results);
           this.submitMediaMessage(response.results, waveform);
         }
       },
@@ -1090,7 +1094,9 @@ class Chat extends Component {
         remoteUrl: realImageURL,
       },
       mediaContentModalVisible:
-        mimetype === 'audio/mpeg' || mimetype === 'application/octet-stream'
+        mimetype === 'audio/mpeg' ||
+        mimetype === 'application/octet-stream' ||
+        mimetype === 'audio/x-m4a'
           ? false
           : true,
     });
@@ -1297,7 +1303,8 @@ class Chat extends Component {
       );
     } else if (
       mimetype === 'audio/mpeg' ||
-      mimetype === 'application/octet-stream'
+      mimetype === 'application/octet-stream' ||
+      mimetype === 'audio/x-m4a'
     ) {
       // console.log(mimetype, props.currentMessage, 'aksdfdsfslsdjaasdasldasskld')
       return (
@@ -1305,7 +1312,6 @@ class Chat extends Component {
           onLongPress={() => this.onLongPressMessage('', props.currentMessage)}
           onPress={() => this.startDownload(props)}
           activeOpacity={0.7}
-
           style={{
             borderRadius: 5,
             // padding: 5,
@@ -1536,8 +1542,14 @@ class Chat extends Component {
                       if (response?.results?.length) {
                         if (response.results[0].mimetype === 'audio/mpeg') {
                           let wave = await this.getAudioData(absolutePath);
+                          this.props.addLogsApi(wave);
+
+                          this.props.addLogsApi(response.results);
+
                           this.submitMediaMessage(response.results, wave);
                         } else {
+                          this.props.addLogsApi(response.results);
+
                           this.submitMediaMessage(response.results);
                         }
                       }
@@ -1688,7 +1700,7 @@ class Chat extends Component {
         />
 
         {(this.state.mediaModalContent.type === 'audio/mpeg' ||
-          this.state.mediaModalContent.type === 'application/octet-stream') && (
+          this.state.mediaModalContent.type === 'application/octet-stream' ||this.state.mediaModalContent.type === 'audio/x-m4a') && (
           <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
         )}
         <GiftedChat
@@ -1854,4 +1866,5 @@ module.exports = connect(mapStateToProps, {
   setOtherUserDetails,
   setIsPreviousUser,
   setCurrentChatDetails,
+  addLogsApi,
 })(Chat);
