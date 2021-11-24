@@ -4,6 +4,12 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
+/*
+Part of this file uses or imports open-source code from xmpp.js project. 
+Please note the xmpp.js code is distributed under its own license. At the time of this publication it is ISC which is functionally equivalent to the BSD 2-Clause and MIT license.
+Refer to xmpp.js project and its license via their official repository: https://github.com/xmppjs/xmpp.js/blob/main/LICENSE
+*/
+
 import React, {Component, Fragment} from 'react';
 import {
   Modal,
