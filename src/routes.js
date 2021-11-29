@@ -7,7 +7,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 import React, {Component} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {View, Image, SafeAreaView, AppState} from 'react-native';
+import {View, ActivityIndicator, SafeAreaView, AppState} from 'react-native';
 
 //routes
 import HeaderComponent from './components/shared/defaultHeader';
@@ -60,7 +60,7 @@ import * as schemaTypes from './constants/realmConstants';
 import store from './config/store';
 import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
 import {DebugScreen} from './Screens/DebugScreen';
-const {secondaryColor} = commonColors;
+const {primaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
 const {xml} = require('@xmpp/client');
@@ -616,7 +616,7 @@ class Routes extends Component {
     if (this.state.userToken === 'loading') {
       return (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Image source={logoPath} style={{height: 100, width: 100}} />
+          <ActivityIndicator size="large" color={primaryColor}/>
         </View>
       );
     }
