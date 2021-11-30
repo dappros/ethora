@@ -87,6 +87,7 @@ import VideoRecorder from 'react-native-beautiful-video-recorder';
 import VideoPlayer from 'react-native-video-player';
 import WaveForm from 'react-native-audiowaveform';
 import Modal from 'react-native-modal';
+import parseChatLink from '../helpers/parseChatLink';
 import base64 from 'react-native-base64';
 import {Buffer} from 'buffer';
 
