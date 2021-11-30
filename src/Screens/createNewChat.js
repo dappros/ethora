@@ -136,6 +136,9 @@ class CreateNewGroup extends Component {
     );
 
     xmpp.send(message);
+    // setTimeout(() => {
+    //   getUserRooms(manipulatedWalletAddress);
+    // }, 2000);
     setTimeout(() => {
       fetchRosterlist(
         manipulatedWalletAddress,

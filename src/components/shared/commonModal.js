@@ -486,6 +486,9 @@ class CommonModal extends Component {
       //   this.state.username,
       // );
 
+      // setTimeout(() => {
+      //   getUserRooms(manipulatedWalletAddress);
+      // }, 2000);
       setTimeout(() => {
         fetchRosterlist(manipulatedWalletAddress, 'subscriptions');
       }, 2000);

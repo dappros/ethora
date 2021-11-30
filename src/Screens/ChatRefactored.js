@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, {Component, Fragment, useRef} from 'react';
+import React, {Component, Fragment, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import Modal from 'react-native-modal';
 
 import {Card} from 'react-native-elements';
@@ -39,8 +39,6 @@ import {
 import {logOut} from '../actions/auth';
 import {getEmailList} from '../actions/accountAction';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import IonIcons from 'react-native-vector-icons/Ionicons';
-
 import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import {
@@ -48,7 +46,6 @@ import {
   updateRosterList,
   updateChatRoom,
   getChatRoom,
-  deleteChatRoom,
 } from '../components/realmModels/chatList';
 import {
   get_archive_by_room,
@@ -90,26 +87,17 @@ const RenderDragItem = ({
   onMenuHide,
   roomRoles,
 }) => {
-  const ref = useRef();
   const LeftActions = (progress, dragX) => {
     return (
       <>
-        <TouchableOpacity
-          onPress={() => {
-            unsubscribeFromRoom(item.jid);
-            ref.current.close();
-          }}>
+        <TouchableOpacity onPress={() => unsubscribeFromRoom(item.jid)}>
           <View
             style={[chatHomeStyles.swipeActionItem, {backgroundColor: 'grey'}]}>
-            <IonIcons name="notifications" size={hp('3%')} color={'white'} />
+            <MaterialIcon name="volume-mute" size={hp('3%')} color={'white'} />
           </View>
         </TouchableOpacity>
         {roomRoles[item.jid] !== 'participant' && (
-          <TouchableOpacity
-            onPress={() => {
-              renameChat(item.jid, item.name);
-              ref.current.close();
-            }}>
+          <TouchableOpacity onPress={() => renameChat(item.jid, item.name)}>
             <View
               style={[
                 chatHomeStyles.swipeActionItem,
@@ -125,11 +113,7 @@ const RenderDragItem = ({
   const RightActions = (progress, dragX) => {
     return (
       <>
-        <TouchableOpacity
-          onPress={() => {
-            leaveChat(item.jid);
-            ref.current.close();
-          }}>
+        <TouchableOpacity onPress={() => leaveChat(item.jid)}>
           <View
             style={[chatHomeStyles.swipeActionItem, {backgroundColor: 'red'}]}>
             <AntIcon color={'white'} size={hp('3%')} name={'delete'} />
@@ -140,7 +124,6 @@ const RenderDragItem = ({
   };
   return (
     <Swipeable
-      ref={ref}
       renderLeftActions={LeftActions}
       renderRightActions={RightActions}>
       <TouchableOpacity
@@ -332,42 +315,33 @@ const RenderDragItem = ({
   );
 };
 
-class ChatHome extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: true,
-      data: [],
-      error: null,
-      searchText: null,
-      isScanResult: false,
-      stanzaId: 'subscribed_rooms',
-      rosterListArray: [],
-      refreshing: false,
-      walletAddress: '',
-      username: '',
-      chat_jid: '',
-      chat_name: '',
-      lastUserName: '',
-      lastUserText: '',
-      pushChatName: '',
-      pushChatJID: '',
-      movingActive: false,
-      modalVisible: false,
-    };
-  }
+export const ChatHome = ({navigation}) => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [isScanResult, setIsScanResult] = useState(false);
+  const [stanzaId, setStanzaId] = useState('subscribed_rooms');
+  const [rosterListArray, setRosterListArray] = useState([]);
+  const [refreing, setRefreing] = useState(false);
+  const [walletAddress, setWalletAddres] = useState('');
+  const [username, setUsername] = useState('');
+  const [chatJID, setChatJID] = useState('');
+  const [chatName, setChatName] = useState('');
+  const [lastUserName, setLastUserName] = useState('');
+  const [lastUserText, setLastUserText] = useState('');
+  const [pushChatName, setPushChatName] = useState('');
+  const [pushChatText, setPushChatText] = useState('');
+  const [pushChatJID, setPushChatJID] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [pickedChatJid, setPickedChatJid] = useState('');
 
-  setMenuRef = ref => {
-    this._menu = ref;
-  };
+  const [newChatName, setNewChatName] = useState('');
+  const loginReducer = useSelector(state => state.loginReducer);
+  const chatReducer = useSelector(state => state.ChatReducer);
+  const apiReducer = useSelector(state => state.apiReducer);
 
-  onMenuHide = () => {
-    this.setState({activeMenuIndex: null});
-  };
-
-  hideMenu = () => {
-    this._menu.hide();
-  };
+  const dispatch = useDispatch();
 
   // showMenu = item => {
   //   this.setState({
@@ -376,11 +350,118 @@ class ChatHome extends Component {
   //   });
   //   this._menu.show();
   // };
-  getRosterList = () => {
-    fetchRosterList().then(rosterListFromRealm => {
-      console.log(rosterListFromRealm, 'roster from ');
-      let rosterListArray = [];
+
+  const getRosterFromRealm = async () => {
+    try {
+      let rosterListFromRealm = await fetchRosterList();
+
+      let rosterListArrayTemp = [];
       rosterListFromRealm.map(item => {
+        rosterListArrayTemp.push({
+          name: item.name,
+          participants: item.participants,
+          avatar: item.avatar,
+          jid: item.jid,
+          counter: item.counter,
+          lastUserText: item.lastUserText,
+          lastUserName: item.lastUserName,
+          priority: item.priority,
+          createdAt: item.createdAt,
+        });
+      });
+
+      setRosterListArray(rosterListArrayTemp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // useEffect(() => {
+  //   const {token} = loginReducer;
+  //   Linking.getInitialURL().then(url => {
+  //       if (url) {
+  //         const chatJID = parseChatLink(url);
+  //         setTimeout(() => {
+  //           openChatFromChatLink(
+  //             chatJID,
+  //             loginReducer.initialData.walletAddress,
+  //             dispatch(setCurrentChatDetails),
+  //             navigation,
+  //           );
+  //         }, 2000);
+  //       }
+  //     });
+
+  //     Linking.addEventListener('url', data => {
+  //       if (data.url) {
+  //         const chatJID = parseChatLink(data.url);
+  //         openChatFromChatLink(
+  //           chatJID,
+  //          loginReducer.initialData.walletAddress,
+  //           dispatch(setCurrentChatDetails),
+  //           navigation,
+  //         );
+  //       }
+  //     });
+
+  //     fetchRosterList().then(rosterListFromRealm => {
+  //       let loading = false;
+  //       let pushChatName = '';
+  //       let pushChatJID = '';
+  //       if (rosterListFromRealm) {
+  //         let roster = [];
+
+  //         rosterListFromRealm.map(item => {
+  //           if (item.jid === chatReducer.pushData.mucId) {
+  //             pushChatName = item.name;
+  //             pushChatJID = item.jid;
+  //             loading = true;
+  //           }
+
+  //           roster.push({
+  //             name: item.name,
+  //             participants: item.participants,
+  //             avatar: item.avatar,
+  //             jid: item.jid,
+  //             counter: item.counter,
+  //             lastUserText: item.lastUserText,
+  //             lastUserName: item.lastUserName,
+  //             priority: item.priority,
+  //             createdAt: item.createdAt,
+  //           });
+  //         });
+  //       }
+  // setRosterListArray(roster)
+  // setPushChatName(pushChatName)
+  // setPushChatJID(pushChatJID)
+  // setLoading(loading)
+
+  //     return () => {
+  //     }
+  // }, [])
+  useEffect(() => {
+    const getData = async () => {
+      await getRosterFromRealm();
+      dispatch(updatedRoster(false));
+    };
+
+    getData();
+    return () => {};
+  }, []);
+  useEffect(() => {
+    const getData = async () => {
+      await getRosterFromRealm();
+      dispatch(updatedRoster(false));
+    };
+
+    if (chatReducer.isRosterUpdated) getData();
+    return () => {};
+  }, [chatReducer.isRosterUpdated]);
+
+  useEffect(() => {
+    const rosterFromReducer = chatReducer.rosterList;
+    if (rosterFromReducer.length) {
+      let roster = [];
+      roster.map((item, index) => {
         rosterListArray.push({
           name: item.name,
           participants: item.participants,
@@ -389,277 +470,86 @@ class ChatHome extends Component {
           counter: item.counter,
           lastUserText: item.lastUserText,
           lastUserName: item.lastUserName,
-          createdAt: item.createdAt,
-          muted: item.muted,
           priority: item.priority,
+          createdAt: item.createdAt,
         });
       });
-      this.setState({
-        rosterListArray,
-      });
-    });
-  };
-  async componentDidMount() {
-    const {token} = this.props.loginReducer;
-    // this.props.getEmailList(token);
-    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
+      setRosterListArray(roster);
+      setLoading(false);
+    }
+  }, [chatReducer.rosterList.length]);
 
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        const chatJID = parseChatLink(url);
-        setTimeout(() => {
-          openChatFromChatLink(
-            chatJID,
-            this.props.loginReducer.initialData.walletAddress,
-            this.props.setCurrentChatDetails,
-            this.props.navigation,
-          );
-        }, 2000);
-      }
-    });
+  useEffect(() => {
+    const recentRealtimeChat = chatReducer.recentRealtimeChat; //the recent message object from the reducer
+    const from = recentRealtimeChat.name; //the nick name of the user who sent the message
+    const roomJID = recentRealtimeChat.room_name; // the jid of the room
+    const text = recentRealtimeChat.text; // the text message sent
+    const modifiedRoster = rosterListArray;
 
-    Linking.addEventListener('url', data => {
-      if (data.url) {
-        const chatJID = parseChatLink(data.url);
-        openChatFromChatLink(
-          chatJID,
-          this.props.loginReducer.initialData.walletAddress,
-          this.props.setCurrentChatDetails,
-          this.props.navigation,
-        );
-      }
-    });
-
-    fetchRosterList().then(rosterListFromRealm => {
-      let loading = false;
-      let pushChatName = '';
-      let pushChatJID = '';
-      if (rosterListFromRealm) {
-        let rosterListArray = [];
-
-        rosterListFromRealm.map(item => {
-          if (item.jid === this.props.ChatReducer.pushData.mucId) {
-            pushChatName = item.name;
-            pushChatJID = item.jid;
-            loading = true;
-          }
-
-          rosterListArray.push({
-            name: item.name,
-            participants: item.participants,
-            avatar: item.avatar,
-            jid: item.jid,
-            counter: item.counter,
-            lastUserText: item.lastUserText,
-            lastUserName: item.lastUserName,
-            priority: item.priority,
-            createdAt: item.createdAt,
-          });
-        });
-
-        this.setState({
-          rosterListArray,
-          pushChatName,
-          pushChatJID,
-          loading,
-        });
-      }
-    });
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    if (xmpp) {
-      //when roster updated with human readable chat room names call the realm for the same.
-      if (this.props.ChatReducer.isRosterUpdated) {
-        let {pushChatJID, pushChatName} = this.state;
-        fetchRosterList()
-          .then(rosterListFromRealm => {
-            if (rosterListFromRealm) {
-              let rosterListArrayTemp = [];
-              rosterListFromRealm.map(item => {
-                rosterListArrayTemp.push({
-                  name: item.name,
-                  participants: item.participants,
-                  avatar: item.avatar,
-                  jid: item.jid,
-                  counter: item.counter,
-                  lastUserText: item.lastUserText,
-                  lastUserName: item.lastUserName,
-                  priority: item.priority,
-                  createdAt: item.createdAt,
-                });
-              });
-
-              this.setState({
-                rosterListArray: rosterListArrayTemp,
-              });
-            }
-          })
-          .then(() => {
-            this.props.updatedRoster(false);
-          })
-          .then(() => {
-            if (pushChatJID && pushChatName) {
-              this.setState(
-                {
-                  pushChatJID: '',
-                  pushChatName: '',
-                  loading: false,
-                },
-                () => this.openChat(pushChatJID, pushChatName),
-              );
-            }
-          });
-      }
-
-      //execute if the component is updated with new chat_jid/room jid. When new room visited
-      if (
-        this.props.ChatReducer.rosterList.length !==
-          prevProps.ChatReducer.rosterList.length &&
-        this.props.ChatReducer.rosterList.length > 0
-      ) {
-        const rosterFromReducer = this.props.ChatReducer.rosterList;
-        if (rosterFromReducer) {
-          let rosterListArray = [];
-          rosterFromReducer.map((item, index) => {
-            rosterListArray.push({
-              name: item.name,
-              participants: item.participants,
-              avatar: item.avatar,
-              jid: item.jid,
-              counter: item.counter,
-              lastUserText: item.lastUserText,
-              lastUserName: item.lastUserName,
-              priority: item.priority,
-              createdAt: item.createdAt,
-            });
-          });
-
-          this.setState({
-            rosterListArray,
-            loading: false,
-          });
+    modifiedRoster.map(item => {
+      if (item.jid === roomJID) {
+        //the count will not happen if you are already inside the room
+        if (chatReducer.shouldCount) {
+          item.counter = item.counter + 1;
         }
-      }
-      if (
-        this.props.ChatReducer.recentRealtimeChat.message_id !==
-        prevProps.ChatReducer.recentRealtimeChat.message_id
-      ) {
-        const recentRealtimeChat = this.props.ChatReducer.recentRealtimeChat; //the recent message object from the reducer
-        const from = recentRealtimeChat.name; //the nick name of the user who sent the message
-        const roomJID = recentRealtimeChat.room_name; // the jid of the room
-        const text = recentRealtimeChat.text; // the text message sent
+        item.lastUserName = from;
+        item.lastUserText = text;
+        item.createdAt = recentRealtimeChat.createdAt;
+        item.priority = recentRealtimeChat?.priority;
 
-        let rosterListArray = this.state.rosterListArray;
-
-        rosterListArray.map(item => {
-          if (item.jid === roomJID) {
-            //the count will not happen if you are already inside the room
-            if (this.props.ChatReducer.shouldCount) {
-              item.counter = item.counter + 1;
-            }
-            item.lastUserName = from;
-            item.lastUserText = text;
-            item.createdAt = recentRealtimeChat.createdAt;
-            item.priority = recentRealtimeChat?.priority;
-
-            updateRosterList({
-              jid: roomJID,
-              lastUserName: from,
-              lastUserText: text,
-              counter: item.counter,
-              createdAt: recentRealtimeChat.createdAt,
-              participants: null,
-              name: null,
-            });
-          }
-        });
-
-        this.setState({
-          rosterListArray,
+        updateRosterList({
+          jid: roomJID,
+          lastUserName: from,
+          lastUserText: text,
+          counter: item.counter,
+          createdAt: recentRealtimeChat.createdAt,
+          participants: null,
+          name: null,
         });
       }
-
-      //participant number update
-      if (
-        this.props.ChatReducer.participantsUpdate !==
-          prevProps.ChatReducer.participantsUpdate &&
-        this.props.ChatReducer.participantsUpdate
-      ) {
-        fetchRosterList().then(rosterListFromRealm => {
-          let rosterListArray = [];
-          rosterListFromRealm.map(item => {
-            rosterListArray.push({
-              name: item.name,
-              participants: item.participants,
-              avatar: item.avatar,
-              jid: item.jid,
-              counter: item.counter,
-              lastUserText: item.lastUserText,
-              lastUserName: item.lastUserName,
-              priority: item.priority,
-              createdAt: item.createdAt,
-            });
-          });
-          this.setState({
-            rosterListArray,
-          });
-
-          this.props.participantsUpdateAction(false);
-        });
-      }
-    }
-  }
-  renameChat = (jid, name) => {
-    this.setState({
-      modalVisible: true,
-      pickedChatJid: jid,
-      newChatName: name,
     });
-  };
-  onMenuItemPress = (index, jid, type, name) => {
-    if (type === 'mute') {
-      this.unsubscribeFromRoom(jid);
-      this.hideMenu(index);
-    }
 
-    if (type === 'leave') {
-      this.leaveTheRoom(jid);
-      this.hideMenu(index);
-    }
+    setRosterListArray(modifiedRoster);
+  }, [chatReducer.recentRealtimeChat.message_id]);
+  //execute if the component is updated with new chat_jid/room jid. When new room visited
 
-    if (type === 'move') {
-      this.setState({movingActive: true});
-      this.hideMenu(index);
-    }
-    // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+  useEffect(() => {
+    const getData = async () => {
+      await getRosterFromRealm();
+      dispatch(updatedRoster(false));
+    };
+
+    getData();
+    dispatch(participantsUpdateAction(false));
+  }, [chatReducer.participantsUpdate]);
+
+  //participant number update
+
+  const renameChat = (jid, name) => {
+    setModalVisible(true);
+    setPushChatJID(jid);
+    setNewChatName(name);
   };
-  leaveTheRoom = async jid => {
+
+  const leaveTheRoom = jid => {
     // <presence
     // from='hag66@shakespeare.lit/pda'
     // to='coven@chat.shakespeare.lit/thirdwitch'
     // type='unavailable'/>
-    await deleteChatRoom(jid);
 
-    let walletAddress = this.props.loginReducer.initialData.walletAddress;
+    let walletAddress = loginReducer.initialData.walletAddress;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
     const presence = xml('presence', {
-      from:
-        manipulatedWalletAddress +
-        '@' +
-        this.props.apiReducer.xmppDomains.DOMAIN,
-      to: jid + '/' + this.props.loginReducer.initialData.username,
+      from: manipulatedWalletAddress + '@' + apiReducer.xmppDomains.DOMAIN,
+      to: jid + '/' + loginReducer.initialData.username,
       type: 'unavailable',
     });
     xmpp.send(presence);
-    this.unsubscribeFromRoom(jid);
-
-    this.getRosterList();
   };
 
-  renameTheRoom = (jid, name) => {
-    const initialData = this.props.loginReducer.initialData;
+  const renameTheRoom = (jid, name) => {
+    const initialData = loginReducer.initialData;
     let walletAddress = initialData.walletAddress;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
@@ -670,40 +560,41 @@ class ChatHome extends Component {
 
     // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
   };
-  unsubscribeFromRoom = jid => {
-    let walletAddress = this.props.loginReducer.initialData.walletAddress;
+  const unsubscribeFromRoom = async jid => {
+    let walletAddress = loginReducer.initialData.walletAddress;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
     getChatRoom(jid).then(room => {
-      // if (!room.muted) {
-      const message = xml(
-        'iq',
-        {
-          from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
-          to: jid,
-          type: 'set',
-          id: 'unsubscribe',
-        },
-        xml(
-          'unsubscribe',
+      if (!room.muted) {
+        const message = xml(
+          'iq',
           {
-            xmlns: 'urn:xmpp:mucsub:0',
-            // nick: nickName,
+            from: manipulatedWalletAddress + '@' + xmppConstants.DOMAIN,
+            to: jid,
+            type: 'set',
+            id: 'unsubscribe',
           },
-          xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-          xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-        ),
-      );
-      xmpp.send(message);
-      updateChatRoom(jid, 'muted', true);
-      // } else {
-      //   setSubscriptions(
-      //     manipulatedWalletAddress,
-      //     jid,
-      //     this.props.loginReducer.initialData.username,
-      //   );
-      //   updateChatRoom(jid, 'muted', false);
-      //   // Toast.show('Notifications unmuted', Toast.SHORT);
-      // }
+          xml(
+            'unsubscribe',
+            {
+              xmlns: 'urn:xmpp:mucsub:0',
+              // nick: nickName,
+            },
+            // xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+            // xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+          ),
+        );
+        xmpp.send(message);
+        updateChatRoom(jid, 'muted', true);
+      } else {
+        setSubscriptions(
+          manipulatedWalletAddress,
+          jid,
+          loginReducer.initialData.username,
+        );
+        updateChatRoom(jid, 'muted', false);
+        Toast.show('Notifications unmuted', Toast.SHORT);
+      }
+      //   await getRosterFromRealm();
     });
 
     //   <iq from='hag66@shakespeare.example'
@@ -714,32 +605,20 @@ class ChatHome extends Component {
 
     // </iq>
   };
-  setNewChatName = () => {
+  const setName = () => {
     // updateVCard(this.state.userAvatar, data);
-    if (this.state.newChatName) {
-      this.renameTheRoom(this.state.pickedChatJid, this.state.newChatName);
-      this.setState({newChatName: '', pickedChatJid: ''});
+    if (newChatName) {
+      renameTheRoom(pickedChatJid, newChatName);
+      setNewChatName('');
+      setPickedChatJid('');
+      setModalVisible(false);
     }
-    this.setState({modalVisible: false});
   };
-  onNameChange = text => {
-    this.setState({newChatName: text});
+  const onNameChange = text => {
+    setNewChatName(text);
   };
-  // setMenuRef = (ref, index) => {
-  //   this[`menu${index}`] = ref;
-  // };
-
-  // hideMenu = index => {
-  //   this[`menu${index}`].hide();
-  // };
-
-  // showMenu = (index, item) => {
-  //   this.setState({activeMenuIndex: index});
-  //   this[`menu${index}`].show();
-  // };
-
   //view to display when Chat Home component is empty
-  chatEmptyComponent = () => {
+  const chatEmptyComponent = () => {
     return (
       <View style={styles.emptyChatContainer}>
         <View>
@@ -770,16 +649,14 @@ class ChatHome extends Component {
           }}>
           {/* Button to create new chat qrcode */}
           <TouchableOpacity
-            onPress={() =>
-              this.props.navigation.navigate('CreateNewChatComponent')
-            }
+            onPress={() => navigation.navigate('CreateNewChatComponent')}
             style={styles.button1Container}>
             <Text style={styles.button1}>Create new</Text>
           </TouchableOpacity>
 
           {/* Button to scan a chat qrcode */}
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('QRScreenComponent')}
+            onPress={() => navigation.navigate('QRScreenComponent')}
             style={styles.button2Container}>
             <Text style={styles.button2}>Scan QR to join</Text>
           </TouchableOpacity>
@@ -789,7 +666,7 @@ class ChatHome extends Component {
   };
 
   //View to display invite card
-  joinNewChatCard = () => {
+  const joinNewChatCard = () => {
     return (
       <View>
         <Card containerStyle={{borderRadius: 4}}>
@@ -885,12 +762,10 @@ class ChatHome extends Component {
       </View>
     );
   };
-  onBackdropPress = () => {
-    this.setState({
-      modalVisible: false,
-    });
+  const onBackdropPress = () => {
+    setModalVisible(false);
   };
-  storeRosterList = async value => {
+  const storeRosterList = async value => {
     let map = {};
     let arr = value.map((item, index) => {
       item.priority = index;
@@ -906,14 +781,14 @@ class ChatHome extends Component {
       console.log('savingError');
     }
     //  console.log(map, 'arrrrrrr')
-    this.setState({rosterListArray: arr});
+    setRosterListArray(arr);
     // fetchStanzaRosterList(underscoreManipulation(this.props.loginReducer.initialData.walletAddress), subscriptionsStanzaID);
   };
 
   //fucntion to open a chat room
-  openChat(chat_jid, chat_name) {
-    let rosterListArray = this.state.rosterListArray;
-    rosterListArray.map(item => {
+  const openChat = (chat_jid, chat_name) => {
+    let changedRosterListArray = rosterListArray;
+    changedRosterListArray.map(item => {
       if (item.counter !== 0) {
         item.counter = 0;
       }
@@ -927,22 +802,16 @@ class ChatHome extends Component {
       createdAt: null,
       name: null,
     });
-    this.setState({
-      rosterListArray,
-    });
+    setRosterListArray(changedRosterListArray);
 
-    this.props.shouldCountAction(false); //this means we don't need to increase the counter as the user is already inside the room when this function was called
+    dispatch(shouldCountAction(false)); //this means we don't need to increase the counter as the user is already inside the room when this function was called
 
     get_archive_by_room(chat_jid);
-    this.props.setCurrentChatDetails(
-      chat_jid,
-      chat_name,
-      this.props.navigation,
-    );
-  }
+    dispatch(setCurrentChatDetails(chat_jid, chat_name, navigation));
+  };
 
   //View to display list of chats
-  chatListComponent = () => {
+  const chatListComponent = () => {
     return (
       // <ScrollView
       //   keyboardShouldPersistTaps="always"
@@ -958,7 +827,7 @@ class ChatHome extends Component {
         <Modal
           animationType="slide"
           transparent={true}
-          isVisible={this.state.modalVisible}
+          isVisible={modalVisible}
           // onBackdropPress={this.onBackdropPress}
         >
           <View
@@ -989,14 +858,14 @@ class ChatHome extends Component {
                 fontSize: hp('1.6%'),
                 color: 'black',
               }}
-              value={this.state.newChatName}
-              onChangeText={text => this.onNameChange(text)}
+              value={newChatName}
+              onChangeText={text => onNameChange(text)}
               placeholder="Enter new chat name"
               placeholderTextColor={primaryColor}
             />
 
             <TouchableOpacity
-              onPress={() => this.setNewChatName()}
+              onPress={() => setName()}
               style={{
                 backgroundColor: primaryColor,
                 borderRadius: 5,
@@ -1018,38 +887,28 @@ class ChatHome extends Component {
         </Modal>
         <DraggableFlatList
           nestedScrollEnabled={true}
-          onRelease={() => this.setState({movingActive: false})}
-          data={this.state.rosterListArray.sort(
-            (a, b) => a.priority - b.priority,
-          )}
+          //   onRelease={() => this.setState({movingActive: false})}
+          data={rosterListArray.sort((a, b) => a.priority - b.priority)}
           renderItem={({item, index, drag, isActive}) => {
             return (
               <RenderDragItem
                 key={index}
                 index={index}
-                roomRoles={this.props.ChatReducer.roomRoles}
+                roomRoles={chatReducer.roomRoles}
                 item={item}
-                isActive={isActive}
-                openChat={() => this.openChat(item.jid, item.name)}
-                showMenu={this.showMenu}
-                setMenuRef={this.setMenuRef}
+                isActive={true}
+                openChat={() => openChat(item.jid, item.name)}
                 drag={drag}
-                onMenuHide={this.onMenuHide}
-                activeMenuIndex={this.state.activeMenuIndex}
-                onMenuItemPress={this.onMenuItemPress}
-                renameChat={this.renameChat}
-                leaveChat={this.leaveTheRoom}
-                unsubscribeFromRoom={this.unsubscribeFromRoom}
-                movingActive={this.state.movingActive}
-                walletAddress={
-                  this.props.loginReducer.initialData.walletAddress
-                }
+                renameChat={renameChat}
+                leaveChat={leaveTheRoom}
+                unsubscribeFromRoom={unsubscribeFromRoom}
+                walletAddress={loginReducer.initialData.walletAddress}
                 // onPress={ () => this.assetSelected(item) }
               />
             );
           }}
           keyExtractor={(item, index) => `draggable-item-${index}`}
-          onDragEnd={({data}) => this.storeRosterList(data)}
+          onDragEnd={({data}) => storeRosterList(data)}
         />
       </>
 
@@ -1058,9 +917,9 @@ class ChatHome extends Component {
   };
 
   //function to decide which view to display
-  setScreenFucntion = () => {
+  const setScreenFucntion = () => {
     //loading view
-    if (this.state.loading) {
+    if (loading) {
       return (
         <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
           <Text>Loading...</Text>
@@ -1069,29 +928,27 @@ class ChatHome extends Component {
     }
 
     //when rosterListArray is empty and isScanresult is false display empty chat view
-    else if (!this.state.rosterListArray.length && !this.state.isScanResult) {
-      return this.chatEmptyComponent();
+    else if (!rosterListArray.length) {
+      return chatEmptyComponent();
     }
 
     //when isScanResult is true show invite card view
-    else if (this.state.isScanResult) {
-      return this.joinNewChatCard();
+    else if (isScanResult) {
+      return joinNewChatCard();
     }
 
     //when rosterListArray is not empty show Chat list view
-    else if (this.state.rosterListArray.length) {
-      return this.chatListComponent();
+    else if (rosterListArray.length) {
+      return chatListComponent();
     }
     //else show chat Empty defaultly
     else {
-      return this.chatEmptyComponent();
+      return chatEmptyComponent();
     }
   };
 
-  render() {
-    return <View style={styles.container}>{this.setScreenFucntion()}</View>;
-  }
-}
+  return setScreenFucntion();
+};
 
 const chatHomeStyles = StyleSheet.create({
   swipeActionItem: {
@@ -1131,18 +988,3 @@ const chatHomeStyles = StyleSheet.create({
     borderRadius: hp('0.7%'),
   },
 });
-
-const mapStateToProps = state => {
-  return {
-    ...state,
-  };
-};
-
-module.exports = connect(mapStateToProps, {
-  setCurrentChatDetails,
-  shouldCountAction,
-  participantsUpdateAction,
-  updatedRoster,
-  getEmailList,
-  logOut,
-})(ChatHome);

@@ -266,7 +266,6 @@ export const xmppListener = (
           anotherUserLastSeen: usersLastSeen,
         });
         setRoles(rolesMap);
-
       }
 
       if (stanza.attrs.id === 'CreateRoom') {
