@@ -69,6 +69,9 @@ import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 import xml from '@xmpp/xml';
 import {Swipeable} from 'react-native-gesture-handler';
+import {joinNewChatCard} from '../components/ChatHome/JoinNewChatCard';
+import {ChatEmptyComponent} from '../components/ChatHome/ChatEmpty';
+// import { ChatHomeItem } from '../components/ChatHome/ChatHomeItem';
 
 const _ = require('lodash');
 const subscriptionsStanzaID = 'subscriptions';
@@ -83,18 +86,15 @@ const RenderDragItem = ({
   renameChat,
   leaveChat,
   unsubscribeFromRoom,
-  isActive,
   openChat,
   activeMenuIndex,
-  walletAddress,
-  onMenuHide,
   roomRoles,
 }) => {
   const ref = useRef();
   const LeftActions = (progress, dragX) => {
     return (
       <>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             unsubscribeFromRoom(item.jid);
             ref.current.close();
@@ -103,7 +103,7 @@ const RenderDragItem = ({
             style={[chatHomeStyles.swipeActionItem, {backgroundColor: 'grey'}]}>
             <IonIcons name="notifications" size={hp('3%')} color={'white'} />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {roomRoles[item.jid] !== 'participant' && (
           <TouchableOpacity
             onPress={() => {
@@ -143,6 +143,7 @@ const RenderDragItem = ({
       ref={ref}
       renderLeftActions={LeftActions}
       renderRightActions={RightActions}>
+        {/* <ChatHomeItem onItemPress={() => openChat(item.jid, item.name)} onItemLongPress={drag} item={item} /> */}
       <TouchableOpacity
         onPress={() => openChat(item.jid, item.name)}
         activeOpacity={0.6}
@@ -182,7 +183,6 @@ const RenderDragItem = ({
                   style={{
                     height: hp('2.1%'),
                     width: hp('2.1%'),
-
                     borderRadius: hp('2.1') / 2,
                     backgroundColor: '#FF0000',
                     alignItems: 'center',
@@ -739,152 +739,9 @@ class ChatHome extends Component {
   // };
 
   //view to display when Chat Home component is empty
-  chatEmptyComponent = () => {
-    return (
-      <View style={styles.emptyChatContainer}>
-        <View>
-          <Image source={require('../assets/chatEmpty.png')} />
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            margin: 5,
-          }}>
-          <Text style={styles.noChatText}>No chats found</Text>
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            margin: 5,
-          }}>
-          <Text style={styles.descText}>
-            You can start by creating new chats orjoin existing chats
-          </Text>
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-            marginTop: 20,
-          }}>
-          {/* Button to create new chat qrcode */}
-          <TouchableOpacity
-            onPress={() =>
-              this.props.navigation.navigate('CreateNewChatComponent')
-            }
-            style={styles.button1Container}>
-            <Text style={styles.button1}>Create new</Text>
-          </TouchableOpacity>
-
-          {/* Button to scan a chat qrcode */}
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('QRScreenComponent')}
-            style={styles.button2Container}>
-            <Text style={styles.button2}>Scan QR to join</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
 
   //View to display invite card
-  joinNewChatCard = () => {
-    return (
-      <View>
-        <Card containerStyle={{borderRadius: 4}}>
-          <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 0.2}}>
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: primaryColor,
-                  height: hp('5.54%'),
-                  width: hp('5.54%'),
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: hp('0.7%'),
-                }}>
-                <MaterialIcon
-                  name="group"
-                  size={hp('4.06%')}
-                  style={{marginRight: hp('0.9%'), marginLeft: hp('0.4%')}}
-                  color={primaryColor}
-                />
-              </View>
-            </View>
-            <View style={{flex: 0.8}}>
-              <View>
-                <Text
-                  style={{
-                    color: '#4C5264',
-                    fontFamily: semiBoldFont,
-                    fontSize: hp('1.9%'),
-                  }}>
-                  Managing company
-                </Text>
-                <Text
-                  style={{
-                    color: '#4C5264',
-                    fontFamily: regularFont,
-                    fontSize: hp('1.6%'),
-                  }}>
-                  We are a group of blockchain expertsto help you in technical
-                  developmentand business queries.
-                </Text>
-              </View>
-              <View style={{flexDirection: 'row', marginTop: 20}}>
-                <TouchableOpacity
-                  style={{
-                    width: wp('25%'),
-                    height: hp('5%'),
-                    backgroundColor: primaryColor,
-                    borderRadius: 4,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginRight: 10,
-                  }}>
-                  <Text
-                    style={{
-                      color: '#FFFFFF',
-                      fontFamily: regularFont,
-                      fontSize: hp('1.8%'),
-                    }}>
-                    Join
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    width: wp('25%'),
-                    height: hp('5%'),
-                    borderWidth: 1,
-                    borderColor: '#FF0000',
-                    borderRadius: 4,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 10,
-                  }}>
-                  <Text
-                    style={{
-                      color: '#FF0000',
-                      fontFamily: regularFont,
-                      fontSize: hp('1.8%'),
-                    }}>
-                    Decline
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Card>
-        {/* <ModalList 
-                type="tokenTransfer"
-                show={this.state.showModal}
-                data={this.state.tokenDetails}
-                closeModal={this.closeModal}/> */}
-      </View>
-    );
-  };
+
   onBackdropPress = () => {
     this.setState({
       modalVisible: false,
@@ -961,34 +818,11 @@ class ChatHome extends Component {
           isVisible={this.state.modalVisible}
           // onBackdropPress={this.onBackdropPress}
         >
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              borderRadius: 8,
-              paddingVertical: 20,
-            }}>
+          <View style={chatHomeStyles.modalContainer}>
             <CommonTextInput
               maxLength={128}
-              containerStyle={{
-                borderWidth: 0.5,
-                // borderTopWidth: 0,
-                borderColor: primaryColor,
-                backgroundColor: 'white',
-                width: wp('81%'),
-                height: hp('6.8%'),
-                // padding: hp('2.4'),
-                paddingLeft: wp('3.73'),
-                borderRadius: 0,
-                marginBottom: 10,
-                // marginTop: 10
-              }}
-              fontsStyle={{
-                fontFamily: lightFont,
-                fontSize: hp('1.6%'),
-                color: 'black',
-              }}
+              containerStyle={chatHomeStyles.modalInput}
+              fontsStyle={chatHomeStyles.modalInputText}
               value={this.state.newChatName}
               onChangeText={text => this.onNameChange(text)}
               placeholder="Enter new chat name"
@@ -997,12 +831,7 @@ class ChatHome extends Component {
 
             <TouchableOpacity
               onPress={() => this.setNewChatName()}
-              style={{
-                backgroundColor: primaryColor,
-                borderRadius: 5,
-                height: hp('4.3'),
-                padding: 4,
-              }}>
+              style={chatHomeStyles.modalButton}>
               <View
                 style={{
                   justifyContent: 'center',
@@ -1070,12 +899,12 @@ class ChatHome extends Component {
 
     //when rosterListArray is empty and isScanresult is false display empty chat view
     else if (!this.state.rosterListArray.length && !this.state.isScanResult) {
-      return this.chatEmptyComponent();
+      return <ChatEmptyComponent navigation={this.props.navigation} />;
     }
 
     //when isScanResult is true show invite card view
     else if (this.state.isScanResult) {
-      return this.joinNewChatCard();
+      return <joinNewChatCard />;
     }
 
     //when rosterListArray is not empty show Chat list view
@@ -1084,7 +913,7 @@ class ChatHome extends Component {
     }
     //else show chat Empty defaultly
     else {
-      return this.chatEmptyComponent();
+      return <ChatEmptyComponent navigation={this.props.navigation} />;
     }
   };
 
@@ -1129,6 +958,37 @@ const chatHomeStyles = StyleSheet.create({
     textAlign: 'center',
     position: 'relative',
     borderRadius: hp('0.7%'),
+  },
+  modalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingVertical: 20,
+  },
+  modalInput: {
+    borderWidth: 0.5,
+    // borderTopWidth: 0,
+    borderColor: primaryColor,
+    backgroundColor: 'white',
+    width: wp('81%'),
+    height: hp('6.8%'),
+    // padding: hp('2.4'),
+    paddingLeft: wp('3.73'),
+    borderRadius: 0,
+    marginBottom: 10,
+    // marginTop: 10
+  },
+  modalButton: {
+    backgroundColor: primaryColor,
+    borderRadius: 5,
+    height: hp('4.3'),
+    padding: 4,
+  },
+  modalInputText: {
+    fontFamily: lightFont,
+    fontSize: hp('1.6%'),
+    color: 'black',
   },
 });
 
