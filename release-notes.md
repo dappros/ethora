@@ -15,8 +15,19 @@ Messages from the Ethora development team:
 * Nikhil Bankar (UX designer, Product Lead) - A user interface is like a joke. If you have to explain it, it’s not that good.
 * Taras Filatov (founder, CEO & CTO) - I devote my work on this product to my parents Vira and Sergii and my family Polina, Platon and Max. My thanks also go out to my ‘extended family’ - Dappros team who have worked on the blockchain and API backend, and the Ethora engine itself, and to DeepX team who have built the messaging infrastructure (Oleksii, Ihor, my brother Dima - thank you for sparing your time and resources towards this project). This project wouldn’t have been possible without you all!
 
-### Backend
+### Frontend
+* Config file improvements - implemented across all screens
+* Resolved realm issue and upgraded rn version back to 0.64.2
+* Config - ability to enable and disable NFT
+* Improved in-chat playback for audio & video messages, added duration etc
+* Improved UI/UX for audio messages recording
+* Users banning and roles 
+* Added waveform logic for Audio messages
+* Chat renaming - fixed, improved UI
+* Mint UI improvements
+* Profile bio - added chat links support
 
+### Backend
 * Add crypto wallets pre-creation to Transactions Queue process
 * Dappros Platform admin panel - annoying helper UI can be dismissed now 
 * Process erc721Create with Transactions Queue
