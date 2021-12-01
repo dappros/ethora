@@ -1737,6 +1737,9 @@ class Chat extends Component {
           onLoadEarlier={() => this.onLoadEarlierFunction()}
           ref={gift => (this.giftedRef = gift)}
           messages={this.state.messages}
+          textInputStyle={{
+            color:"#000000"
+          }}
           // isTyping={this.state.isTyping}
           // renderFooter={() => this.renderFooter()}
           onSend={messageString => this.submitMessage(messageString, false)}
