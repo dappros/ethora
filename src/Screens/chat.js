@@ -87,6 +87,7 @@ import VideoRecorder from 'react-native-beautiful-video-recorder';
 import VideoPlayer from 'react-native-video-player';
 import WaveForm from 'react-native-audiowaveform';
 import Modal from 'react-native-modal';
+import parseChatLink from '../helpers/parseChatLink';
 import base64 from 'react-native-base64';
 import {Buffer} from 'buffer';
 
@@ -1736,6 +1737,9 @@ class Chat extends Component {
           onLoadEarlier={() => this.onLoadEarlierFunction()}
           ref={gift => (this.giftedRef = gift)}
           messages={this.state.messages}
+          textInputStyle={{
+            color:"#000000"
+          }}
           // isTyping={this.state.isTyping}
           // renderFooter={() => this.renderFooter()}
           onSend={messageString => this.submitMessage(messageString, false)}
