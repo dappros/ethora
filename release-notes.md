@@ -26,6 +26,9 @@ Messages from the Ethora development team:
 * Chat renaming - fixed, improved UI
 * Mint UI improvements
 * Profile bio - added chat links support
+* Fixed UI/UX issue with attachments blocking the message tap menu
+* Added/improved debug mode - supports JSON API and XMPP verbose logging
+* Introduced swipe menu for managing chat rooms
 
 ### Backend
 * Add crypto wallets pre-creation to Transactions Queue process
