@@ -257,6 +257,7 @@ export function DebugScreen({navigation}) {
         title="Debug mode"
         onQRPressed={() => this.QRPressed()}
         navigation={navigation}
+        showVersion
       />
       <TabView
         renderTabBar={renderTabBar}
