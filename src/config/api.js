@@ -115,10 +115,10 @@ export default class ConnectionAPI {
                     text: 'Cancel',
                     onPress: () => console.log('Cancel'),
                   },
-                  {
-                    text: 'Retry',
-                    onPress: () => this.fetchGet(url, token, logOut, callback),
-                  },
+                  // {
+                  //   text: 'Retry',
+                  //   onPress: () => this.fetchGet(url, token, logOut, callback),
+                  // },
                 ]);
               }
             });
@@ -132,10 +132,10 @@ export default class ConnectionAPI {
                   text: 'Cancel',
                   onPress: () => console.log('Cancel'),
                 },
-                {
-                  text: 'Retry',
-                  onPress: () => this.fetchGet(url, token, logOut, callback),
-                },
+                // {
+                //   text: 'Retry',
+                //   onPress: () => this.fetchGet(url, token, logOut, callback),
+                // },
               ],
             );
           }
@@ -150,10 +150,10 @@ export default class ConnectionAPI {
               text: 'Cancel',
               onPress: () => console.log('Cancel'),
             },
-            {
-              text: 'Retry',
-              onPress: () => this.fetchGet(url, token, logOut, callback),
-            },
+            // {
+            //   text: 'Retry',
+            //   onPress: () => this.fetchGet(url, token, logOut, callback),
+            // },
           ],
         );
       }

@@ -466,8 +466,6 @@ class ChatHome extends Component {
   async componentDidMount() {
     const {token} = this.props.loginReducer;
     // this.props.getEmailList(token);
-    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
-
     Linking.getInitialURL().then(url => {
       if (url) {
         const chatJID = parseChatLink(url);

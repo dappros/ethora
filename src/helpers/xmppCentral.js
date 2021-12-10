@@ -426,7 +426,6 @@ export const xmppListener = (
         let size = '';
         let duration = '';
         let waveForm = '';
-
         await singleMessageDetailArray.forEach(item => {
           if (item.name === 'body') {
             text = item.children[0];
@@ -512,7 +511,14 @@ export const xmppListener = (
           };
         }
 
-        insertMessages(messageObject, roomName, tokenAmount, receiverMessageId);
+        if (receiverMessageId) {
+          insertMessages(
+            messageObject,
+            roomName,
+            tokenAmount,
+            receiverMessageId,
+          );
+        }
       }
     }
 
@@ -751,14 +757,15 @@ export const xmppListener = (
             system: true,
           };
         }
-        console.log(messageObject, 'gjutyhgrv');
-        setRecentRealtimeChatAction(
-          messageObject,
-          roomName,
-          true,
-          tokenAmount,
-          receiverMessageId,
-        );
+        if (receiverMessageId) {
+          setRecentRealtimeChatAction(
+            messageObject,
+            roomName,
+            true,
+            tokenAmount,
+            receiverMessageId,
+          );
+        }
       }
     }
   });
