@@ -24,7 +24,7 @@ export const insertTransaction = data =>
     data.map(item => {
       if (!item.nftTotal) item.nftTotal = '0';
       const data = {
-        blockNumber: item.blockNumber ? item.blockNumber : 'N/A',
+        blockNumber: item.blockNumber ? item.blockNumber : 0,
         from: item.from ? item.from : 'N/A',
         fromFirstName: item.fromFirstName ? item.fromFirstName : 'N/A',
         fromLastName: item.fromLastName ? item.fromLastName : 'N/A',

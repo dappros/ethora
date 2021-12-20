@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, useState} from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import CustomHeader from '../components/shared/customHeader';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
@@ -31,6 +32,7 @@ import {
   coinImagePath,
   coinsMainName,
 } from '../../docs/config';
+import { TransactionListItem } from '../components/TransactionListItem';
 
 const {primaryColor} = commonColors;
 
@@ -59,169 +61,6 @@ const renderTabBar = props => {
         </Text>
       )}
     />
-  );
-};
-
-const TransactionListComponent = props => {
-  const month = new Array();
-  month[0] = 'Jan';
-  month[1] = 'Feb';
-  month[2] = 'March';
-  month[3] = 'April';
-  month[4] = 'May';
-  month[5] = 'June';
-  month[6] = 'July';
-  month[7] = 'Aug';
-  month[8] = 'Sept';
-  month[9] = 'Oct';
-  month[10] = 'Nov';
-  month[11] = 'Dec';
-  const today = new Date();
-  let Header = null;
-
-  let fullName = '';
-  let firstName = '';
-  let lastName = '';
-
-  if (props.item.from === props.walletAddress) {
-    firstName = props.item.toFirstName
-      ? props.item.toFirstName === 'N/A'
-        ? 'Anonymous'
-        : props.item.toFirstName
-      : 'Anonymous';
-    lastName = props.item.toLastName
-      ? props.item.toLastName === 'N/A'
-        ? ''
-        : props.item.toLastName
-      : '';
-    fullName = firstName + ' ' + lastName;
-  } else {
-    firstName = props.item.fromFirstName
-      ? props.item.fromFirstName === 'N/A'
-        ? 'Anonymous'
-        : props.item.fromFirstName
-      : 'Anonymous';
-    lastName = props.item.fromLastName
-      ? props.item.fromLastName === 'N/A'
-        ? ''
-        : props.item.fromLastName
-      : '';
-    fullName = firstName + ' ' + lastName;
-  }
-
-  if (props.showHeader) {
-    if (props.currentHeaderDate.getTime() === today.getTime()) {
-      Header = (
-        <View
-          style={{
-            backgroundColor: '#7E7E7E',
-            height: hp('3%'),
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              fontFamily: lightFont,
-              textAlign: 'center',
-              color: 'white',
-            }}>
-            Today
-          </Text>
-        </View>
-      );
-    } else {
-      Header = (
-        <View
-          style={{
-            backgroundColor: '#7E7E7E',
-            height: hp('3%'),
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              fontFamily: lightFont,
-              textAlign: 'center',
-              color: 'white',
-            }}>
-            {props.currentHeaderDate.getDate()}{' '}
-            {month[props.currentHeaderDate.getMonth()]}{' '}
-            {props.currentHeaderDate.getFullYear()}
-          </Text>
-        </View>
-      );
-    }
-  }
-  return (
-    <View key={props.item.transactionHash} style={{flex: 1}}>
-      {Header}
-      <View style={{flexDirection: 'row', margin: 20}}>
-        <View style={{flex: 0.1}}>
-          <View
-            style={{
-              width: hp('3%'),
-              height: hp('3%'),
-              position: 'absolute',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: primaryColor,
-            }}
-            borderRadius={hp('3%') / 2}>
-            <Text
-              style={{
-                fontSize: hp('1.46%'),
-                color: 'white',
-              }}>
-              {firstName === 'Anonymous' ? 'A' : firstName[0] + lastName[0]}
-            </Text>
-          </View>
-        </View>
-        <View style={{flex: 0.7, marginLeft: wp('1.3%')}}>
-          <Text style={{fontFamily: semiBoldFont, fontSize: hp('1.7%')}}>
-            {fullName}
-          </Text>
-          <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-            Balance: {props.item.balance}
-          </Text>
-        </View>
-        <View style={{flex: 0.2, flexDirection: 'row', alignItems: 'center'}}>
-          {props.item.nftPreview !== 'null' ? (
-            <Image
-              source={{uri: props.item.nftPreview}}
-              style={styles.imagePreviewStyle}
-            />
-          ) : (
-            <Image source={coinImagePath} style={styles.tokenIconStyle} />
-          )}
-
-          <Text
-            style={{
-              fontFamily: semiBoldFont,
-              fontSize: hp('1.7%'),
-              margin: 5,
-            }}>
-            {props.item.value}
-          </Text>
-          <AntIcon
-            name={
-              props.item.from === props.walletAddress ? 'arrowup' : 'arrowdown'
-            }
-            color={
-              props.item.from === props.walletAddress ? '#CB4141' : '#69CB41'
-            }
-            size={hp('1.7%')}
-            style={{margin: 5}}
-          />
-          {props.item.from === props.item.to && (
-            <AntIcon
-              name="arrowdown"
-              color="#69CB41"
-              size={hp('1.7%')}
-              style={{margin: 5}}
-            />
-          )}
-        </View>
-      </View>
-      <Divider />
-    </View>
   );
 };
 
@@ -264,12 +103,14 @@ const TransactionListFunction = props => {
               showHeader = true;
             }
 
-            return TransactionListComponent({
-              showHeader,
-              currentHeaderDate,
-              item,
-              walletAddress,
-            });
+            return (
+              <TransactionListItem
+                showHeader={showHeader}
+                currentHeaderDate={currentHeaderDate}
+                item={item}
+                walletAddress={walletAddress}
+              />
+            );
           })}
         </ScrollView>
       );
@@ -301,13 +142,14 @@ const TransactionListFunction = props => {
             }
 
             return (
-              item.from === walletAddress &&
-              TransactionListComponent({
-                showHeader,
-                currentHeaderDate,
-                item,
-                walletAddress,
-              })
+              item.from === walletAddress && (
+                <TransactionListItem
+                  showHeader={showHeader}
+                  currentHeaderDate={currentHeaderDate}
+                  item={item}
+                  walletAddress={walletAddress}
+                />
+              )
             );
           })}
         </ScrollView>
@@ -341,13 +183,14 @@ const TransactionListFunction = props => {
             }
 
             return (
-              item.to === walletAddress &&
-              TransactionListComponent({
-                showHeader,
-                currentHeaderDate,
-                item,
-                walletAddress,
-              })
+              item.to === walletAddress && (
+                <TransactionListItem
+                  showHeader={showHeader}
+                  currentHeaderDate={currentHeaderDate}
+                  item={item}
+                  walletAddress={walletAddress}
+                />
+              )
             );
           })}
         </ScrollView>
@@ -609,6 +452,56 @@ const styles = StyleSheet.create({
   imagePreviewStyle: {
     height: hp('5%'),
     width: hp('7%'),
+  },
+  headerContainer: {
+    backgroundColor: '#7E7E7E',
+    height: hp('3%'),
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontFamily: lightFont,
+    textAlign: 'center',
+    color: 'white',
+  },
+  itemName: {
+    width: hp('3%'),
+    height: hp('3%'),
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: primaryColor,
+  },
+  itemNameText: {
+    fontSize: hp('1.46%'),
+    color: 'white',
+  },
+  rowEnd: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  tabItemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    borderWidth: 0.5,
+    borderColor: '#00000029',
+  },
+  tabItem: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    height: hp('8.12%'),
+  },
+  tabItemText: {
+    color: primaryColor,
+    fontSize: hp('2.216%'),
+    fontFamily: boldFont,
+  },
+  detailsItem: {
+    flexDirection: 'row',
+  },
+  detailsItemTextBold: {
+    fontWeight: '700',
   },
 });
 
