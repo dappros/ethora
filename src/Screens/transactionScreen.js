@@ -32,7 +32,7 @@ import {
   coinImagePath,
   coinsMainName,
 } from '../../docs/config';
-import { TransactionListItem } from '../components/TransactionListItem';
+import {TransactionListItem} from '../components/TransactionListItem';
 
 const {primaryColor} = commonColors;
 
@@ -340,6 +340,20 @@ class TransactionScreen extends Component {
       });
     }
   }
+  fetchTransaction = () => {
+    if (
+      this.props.walletReducer.transactions.length <
+      this.props.walletReducer.total
+    ) {
+      this.props.fetchTransaction(
+        this.state.walletAddress,
+        this.props.loginReducer.token,
+        true,
+        this.props.walletReducer.limit,
+        this.props.walletReducer.offset,
+      );
+    }
+  };
 
   renderScene = ({route}) => {
     const initialData = this.props.loginReducer.initialData;
@@ -352,20 +366,7 @@ class TransactionScreen extends Component {
             route="all"
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
-            onEndReached={() => {
-              if (
-                this.props.walletReducer.transactions.length <
-                this.props.walletReducer.total
-              ) {
-                this.props.fetchTransaction(
-                  this.state.walletAddress,
-                  this.props.loginReducer.token,
-                  true,
-                  this.props.walletReducer.limit,
-                  this.props.walletReducer.offset,
-                );
-              }
-            }}
+            onEndReached={this.fetchTransaction}
           />
         );
 
@@ -373,20 +374,7 @@ class TransactionScreen extends Component {
         return (
           <TransactionListFunction
             route="sent"
-            onEndReached={() => {
-              if (
-                this.props.walletReducer.transactions.length <
-                this.props.walletReducer.total
-              ) {
-                this.props.fetchTransaction(
-                  this.state.walletAddress,
-                  this.props.loginReducer.token,
-                  true,
-                  this.props.walletReducer.limit,
-                  this.props.walletReducer.offset,
-                );
-              }
-            }}
+            onEndReached={this.fetchTransaction}
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
           />
@@ -396,20 +384,7 @@ class TransactionScreen extends Component {
         return (
           <TransactionListFunction
             route="received"
-            onEndReached={() => {
-              if (
-                this.props.walletReducer.transactions.length <
-                this.props.walletReducer.total
-              ) {
-                this.props.fetchTransaction(
-                  this.state.walletAddress,
-                  this.props.loginReducer.token,
-                  true,
-                  this.props.walletReducer.limit,
-                  this.props.walletReducer.offset,
-                );
-              }
-            }}
+            onEndReached={this.fetchTransaction}
             walletAddress={walletAddress}
             transactions={this.state.transactionObject}
           />
