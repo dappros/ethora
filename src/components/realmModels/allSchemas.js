@@ -52,7 +52,7 @@ const TransactionSchema = {
   name: schemaTypes.TRANSACTION_SCHEMA,
   primaryKey: 'transactionHash',
   properties: {
-    // blockNumber:'int',
+    blockNumber: {type: 'int', optional: true},
     from: 'string',
     fromFirstName: 'string',
     fromLastName: 'string',

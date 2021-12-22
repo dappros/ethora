@@ -1,55 +1,55 @@
-// TITLE 
+// TITLE
 // App title / name shown in Login screen and top nav bar
-const appTitle = "Ethora"; //done
+const appTitle = 'Ethora'; //done
 
 // LOGO (LOGIN SCREEN)
-// App logo (displayed in login screen) image path: 
-import logoPath from "../src/assets/logo.png"; //done
-import DeviceInfo from "react-native-device-info"
+// App logo (displayed in login screen) image path:
+import logoPath from '../src/assets/logo.png'; //done
+import DeviceInfo from 'react-native-device-info';
 
 //images for tutorial screens
-import slide1Image1 from "../src/assets/tutorials/slide1Img1.png";
-import slide2Image1 from "../src/assets/tutorials/slide2Img1.png";
-import slide2Image2 from "../src/assets/tutorials/slide2Img2.png";
-import slide2Image3 from "../src/assets/tutorials/slide2Img3.png";
-import slide3Image1 from "../src/assets/tutorials/slide3Img1.png";
-import slide3Image2 from "../src/assets/tutorials/slide3Img2.png";
-import slide4Image1 from "../src/assets/tutorials/slide4Img1.png";
-import slide4Image2 from "../src/assets/tutorials/slide4Img2.png";
+import slide1Image1 from '../src/assets/tutorials/slide1Img1.png';
+import slide2Image1 from '../src/assets/tutorials/slide2Img1.png';
+import slide2Image2 from '../src/assets/tutorials/slide2Img2.png';
+import slide2Image3 from '../src/assets/tutorials/slide2Img3.png';
+import slide3Image1 from '../src/assets/tutorials/slide3Img1.png';
+import slide3Image2 from '../src/assets/tutorials/slide3Img2.png';
+import slide4Image1 from '../src/assets/tutorials/slide4Img1.png';
+import slide4Image2 from '../src/assets/tutorials/slide4Img2.png';
 
-import loginScreenBackgroundImage from "../src/assets/login_background.png";
-
+import loginScreenBackgroundImage from '../src/assets/login_background.png';
 
 //Application token
-const APP_TOKEN = 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxMTBlOTdiMWFjZWQ1MGE0ZGU3MDA0OSIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MTEwZTk2MDFhY2VkNTBhNGRlNzAwMDMiLCJjcmVhdGVkQXQiOiIyMDIxLTA4LTA5VDA4OjM4OjE5Ljk2OFoiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6IllqUzUvUmthMkNvcitFSStUNlRQUnV3ekZjNk8zZHZYaC8rRFBobHhITExKejlVaDZOSm1WcVNJQkRSYnBXSExuUEpoQzJLUDc0Y2NHZ21hKzFYUGJwcjFpNDV1RlhaeDNNMTdjZDRJTWtqS00yOS9yTERvN3IrYzdJRlpyckt0S3dsWUtwb3Nabi8yQmFEZjdISWRoWXUwdzVHaGp0VUlGcXdJKy94NFZrTyttRUtUIn0sImlhdCI6MTYyODQ5ODMwNX0.TzHlVy2bv-_gnrP9U7NyoYdNYvIBfVR9nUfH-RFg9e8'; //done
-
+const APP_TOKEN =
+  'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxYmM2ZWMxY2VlN2Q4MGIxOWVjMmE1ZiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWJjNmRhY2NlZTdkODBiMTllYzI5YjciLCJjcmVhdGVkQXQiOiIyMDIxLTEyLTE3VDExOjA0OjMzLjI2M1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImZycXlyMG53b0s5UElOdE5tSkg0Q3drVERZcW5uWUdzaU1Ib0hTL2w2RTVERjZyRnM3OUNFcHVJVVJBcWcvN0lmU0VTdjFRWitVNnMrQUo3elh3UTExaUFOMkdMU2dqMkVSaXRySjMxdmxVeGpxMEZ0STlLSzRWdUVQNlFqcUFiTyJ9LCJpYXQiOjE2Mzk3MzkwODN9.Vpm-iGCS9S_v5cejAsUhOxTs29nc5O_M92fqecld3tI'; //done
+  
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
 const navbarLogoShow = false; //done
 
 //universal link url
-const unv_url = "https://www.eto.li/go?c=";
-const unv_url1 = "https://www.eto.li/go/?c=";
+const unv_url = 'https://www.eto.li/go?c=';
+const unv_url1 = 'https://www.eto.li/go/?c=';
 
 // COLOUR THEME
 const commonColors = {
-    "primaryColor" : "#4E8AC2",
-    "primaryDarkColor" : "#3774AD",
-    "secondaryColor" : "#133452"
-} //done
+  primaryColor: '#4E8AC2',
+  primaryDarkColor: '#3774AD',
+  secondaryColor: '#133452',
+}; //done
 
 // FONTS
 const textStyles = {
-    "lightFont" : 'Montserrat-Light',
-    "regularFont" : 'Montserrat-Regular',
-    "mediumFont" : 'Montserrat-Medium',
-    "boldFont" : "Montserrat-Bold",
-    "semiBoldFont" : "Montserrat-SemiBold",
-    "thinFont" : "Montserrat-Thin"
-} //done
+  lightFont: 'Montserrat-Light',
+  regularFont: 'Montserrat-Regular',
+  mediumFont: 'Montserrat-Medium',
+  boldFont: 'Montserrat-Bold',
+  semiBoldFont: 'Montserrat-SemiBold',
+  thinFont: 'Montserrat-Thin',
+}; //done
 
 /* TUTORIAL */
-// If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default. 
+// If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
 const tutorialStartUponLogin = false; // show tutorial upon login //done
 const tutorialShowInMenu = false; // show tutorial item in the menu //done
 
@@ -62,7 +62,6 @@ const usersEmailsManageEnabled = false;
 // For discussion - include here possibility to enable custom “premium member check” logic - possibly via custom ‘include’ code and then use it elsewhere in the engine, without breaking compatibility if this isn’t enabled. E.g. Hubspot e-mail verification etc.
 // export const usersPremiumCheck = "src/usersPremiumCheck.js";
 
-
 /* LOBBY (CHATS) SCREEN */
 // LIST OF CHATS
 // Here we display a list of group chats that are going to be shown by default to all users joining the app. Users may later reorder or remove these chats.
@@ -74,22 +73,29 @@ const usersEmailsManageEnabled = false;
 “removable” - if false, users cannot remove or leave this chat room
 */
 const defaultChatRooms = [
-    {
-        "chatKey": "",
-        "chatDefaultOrder": "",
-        "premiumOnly": true,
-        "stickyOrder": false,
-        "removable": false
-    }
-]
+  {
+    chatKey: '',
+    chatDefaultOrder: '',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+];
+const defaultChats = {
+  f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5: {
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+};
 
 /* TOKEN ECONOMY */
 // Coins image path
 import coinImagePath from '../src/assets/coin.png'; //done
 
 // Coins symbol
-const coinsMainSymbol = "ETO"; //done
-const coinsMainName = "Ethora Coin" //done
+const coinsMainSymbol = 'ETO'; //done
+const coinsMainName = 'Ethora Coin'; //done
 
 //ITEMS
 //Allow Minting by users
@@ -104,48 +110,48 @@ const itemsTransfersAllowed = true;
 const itemsMintingFee = 10;
 
 // SYSTEM WALLET NAME FOR TRANSACTIONS
-// Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default. 
-const appWalletName = "Anonymous";
+// Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default.
+const appWalletName = 'Anonymous';
 
 const allowIsTyping = true;
 
-const endPoints = ["DEV", "QA", "PROD"];
+const endPoints = ['DEV', 'QA', 'PROD'];
 
 const appEndpoint = endPoints[0];
 
-const appVersion = DeviceInfo.getVersion()
+const appVersion = DeviceInfo.getVersion();
 
-
-export{
-    appTitle,
-    logoPath,
-    navbarLogoShow,
-    commonColors,
-    textStyles,
-    tutorialStartUponLogin,
-    tutorialShowInMenu,
-    usersEmailsManageEnabled,
-    defaultChatRooms,
-    coinImagePath,
-    coinsMainSymbol,
-    itemsMintingAllowed,
-    itemsTransfersAllowed,
-    itemsMintingFee,
-    appWalletName,
-    APP_TOKEN,
-    coinsMainName,
-    loginScreenBackgroundImage,
-    unv_url,
-    unv_url1,
-    slide1Image1,
-    slide2Image1,
-    slide2Image2,
-    slide2Image3,
-    slide3Image1,
-    slide3Image2,
-    slide4Image1,
-    slide4Image2,
-    allowIsTyping,
-    appEndpoint,
-    appVersion
-}
+export {
+  appTitle,
+  logoPath,
+  navbarLogoShow,
+  commonColors,
+  textStyles,
+  tutorialStartUponLogin,
+  tutorialShowInMenu,
+  usersEmailsManageEnabled,
+  defaultChatRooms,
+  coinImagePath,
+  coinsMainSymbol,
+  itemsMintingAllowed,
+  itemsTransfersAllowed,
+  itemsMintingFee,
+  appWalletName,
+  APP_TOKEN,
+  coinsMainName,
+  loginScreenBackgroundImage,
+  unv_url,
+  unv_url1,
+  slide1Image1,
+  slide2Image1,
+  slide2Image2,
+  slide2Image3,
+  slide3Image1,
+  slide3Image2,
+  slide4Image1,
+  slide4Image2,
+  allowIsTyping,
+  appEndpoint,
+  appVersion,
+  defaultChats
+};

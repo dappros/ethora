@@ -82,6 +82,7 @@ class HeaderComponent extends Component {
     let username = '';
     let screenName = '';
     let manipulatedWalletAddress;
+    const cachedBalance = await AsyncStorage.getItem('userBalance');
     await this.props.retrieveInitialData().then(() => {
       const initialData = this.props.loginReducer.initialData;
       walletAddress = initialData.walletAddress;
@@ -105,7 +106,7 @@ class HeaderComponent extends Component {
         walletAddress,
         username,
         manipulatedWalletAddress,
-        // balance,
+        balance: cachedBalance,
         pushToken,
       });
     });
@@ -131,21 +132,25 @@ class HeaderComponent extends Component {
       debugModeCounter: this.state.debugModeCounter + 1,
     });
   };
-
-  componentDidUpdate(prevProps, prevState) {
+  cacheBalance = async balance => {
+    await AsyncStorage.setItem('userBalance', JSON.stringify(balance));
+  };
+  async componentDidUpdate(prevProps, prevState) {
     if (
       this.props.walletReducer.balance !== undefined &&
       this.props.walletReducer.balance
     ) {
       let balance = 0;
       let tokenName = '';
+      const cachedBalance = await AsyncStorage.getItem('userBalance');
       this.props.walletReducer.balance.map((item, index) => {
         if (item.tokenName === coinsMainName) {
           if (parseInt(item.balance) !== this.state.balance) {
             balance = Math.round(item.balance * 100) / 100;
             tokenName = item.tokenName;
+            this.cacheBalance(balance);
             this.setState({
-              balance,
+              balance: balance || cachedBalance,
               tokenName,
             });
           }
@@ -326,10 +331,9 @@ class HeaderComponent extends Component {
               </TouchableOpacity>
             ) : null}
             <TouchableOpacity
-             
-           onPress={this.enableDebugMode}
-           activeOpacity={0.9}
-           style={{
+              onPress={this.enableDebugMode}
+              activeOpacity={0.9}
+              style={{
                 flex: navbarLogoShow ? 0.6 : 0.7,
                 justifyContent: 'center',
                 alignItems: 'flex-start',

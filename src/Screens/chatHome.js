@@ -4,7 +4,14 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, {Component, Fragment, useRef} from 'react';
+import React, {
+  Component,
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   View,
   Text,
@@ -18,6 +25,7 @@ import {
   TouchableHighlight,
   Animated,
   StyleSheet,
+  Easing,
 } from 'react-native';
 import {connect} from 'react-redux';
 import Modal from 'react-native-modal';
@@ -42,6 +50,8 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 
 import {
   fetchRosterList,
@@ -62,7 +72,7 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import Menu, {MenuItem} from 'react-native-material-menu';
 import fetchFunction from '../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {commonColors, textStyles} from '../../docs/config';
+import {commonColors, defaultChats, textStyles} from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import * as xmppConstants from '../constants/xmppConstants';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
@@ -71,6 +81,7 @@ import xml from '@xmpp/xml';
 import {Swipeable} from 'react-native-gesture-handler';
 import {joinNewChatCard} from '../components/ChatHome/JoinNewChatCard';
 import {ChatEmptyComponent} from '../components/ChatHome/ChatEmpty';
+import {FloatingActionButton} from '../components/FloatingActionButton';
 // import { ChatHomeItem } from '../components/ChatHome/ChatHomeItem';
 
 const _ = require('lodash');
@@ -89,8 +100,53 @@ const RenderDragItem = ({
   openChat,
   activeMenuIndex,
   roomRoles,
+  movingActive,
 }) => {
   const ref = useRef();
+  const [animation, setAnimation] = useState(new Animated.Value(0));
+  const stopAnimation = () => {
+    // Animated.sequence(animation).stop();
+    animation.stopAnimation();
+    animation.setValue(0);
+  };
+  const startShake = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }),
+        Animated.timing(animation, {
+          toValue: -1,
+          duration: 100,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }),
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 100,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        }),
+      ]),
+    ).start();
+  };
+
+  useEffect(() => {
+    if (movingActive) {
+      startShake();
+    } else {
+      stopAnimation();
+    }
+  }, [movingActive]);
   const LeftActions = (progress, dragX) => {
     return (
       <>
@@ -123,18 +179,24 @@ const RenderDragItem = ({
     );
   };
   const RightActions = (progress, dragX) => {
+    const jidWithoutConference = item.jid?.split('@')[0];
     return (
       <>
-        <TouchableOpacity
-          onPress={() => {
-            leaveChat(item.jid);
-            ref.current.close();
-          }}>
-          <View
-            style={[chatHomeStyles.swipeActionItem, {backgroundColor: 'red'}]}>
-            <AntIcon color={'white'} size={hp('3%')} name={'delete'} />
-          </View>
-        </TouchableOpacity>
+        {!defaultChats[jidWithoutConference] && (
+          <TouchableOpacity
+            onPress={() => {
+              leaveChat(item.jid);
+              ref.current.close();
+            }}>
+            <View
+              style={[
+                chatHomeStyles.swipeActionItem,
+                {backgroundColor: 'red'},
+              ]}>
+              <AntIcon color={'white'} size={hp('3%')} name={'delete'} />
+            </View>
+          </TouchableOpacity>
+        )}
       </>
     );
   };
@@ -143,191 +205,193 @@ const RenderDragItem = ({
       ref={ref}
       renderLeftActions={LeftActions}
       renderRightActions={RightActions}>
-        {/* <ChatHomeItem onItemPress={() => openChat(item.jid, item.name)} onItemLongPress={drag} item={item} /> */}
-      <TouchableOpacity
-        onPress={() => openChat(item.jid, item.name)}
-        activeOpacity={0.6}
-        onLongPress={drag}
-        style={{
-          backgroundColor: activeMenuIndex === index ? 'lightgrey' : 'white',
-        }}
-        key={index}>
-        <View
+      {/* <ChatHomeItem onItemPress={() => openChat(item.jid, item.name)} onItemLongPress={drag} item={item} /> */}
+      <Animated.View style={{transform: [{translateX: animation}]}}>
+        <TouchableOpacity
+          onPress={() => openChat(item.jid, item.name)}
+          activeOpacity={0.6}
+          onLongPress={() => movingActive && drag()}
           style={{
-            flexDirection: 'row',
-            margin: 20,
-            alignItems: 'center',
-            marginRight: 0,
-            marginLeft: 0,
-          }}>
+            backgroundColor: activeMenuIndex === index ? 'lightgrey' : 'white',
+          }}
+          key={index}>
           <View
             style={{
-              flex: 0.2,
-              justifyContent: 'center',
+              flexDirection: 'row',
+              margin: 20,
               alignItems: 'center',
+              marginRight: 0,
+              marginLeft: 0,
             }}>
-            {item.counter ? (
-              <View
-                style={{
-                  alignItems: 'flex-end',
-                  justifyContent: 'flex-end',
-                  flex: 1,
-                  zIndex: 1,
-                  alignSelf: 'flex-end',
-                  height: hp('5.5%'),
-                  width: hp('5.5%'),
-                  marginTop: hp('1%'),
-                  marginRight: hp('0.5'),
-                }}>
-                <View
-                  style={{
-                    height: hp('2.1%'),
-                    width: hp('2.1%'),
-                    borderRadius: hp('2.1') / 2,
-                    backgroundColor: '#FF0000',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: regularFont,
-                      fontSize: hp('1%'),
-
-                      color: '#FFFFFF',
-                    }}>
-                    {item.counter}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-            <ImageBackground
-              imageStyle={{borderRadius: 5}}
+            <View
               style={{
-                height: hp('5.5%'),
-                width: hp('5.5%'),
-                // flex: 1,
-                borderRadius: 5,
-                position: 'absolute',
-              }}>
-              <View style={chatHomeStyles.chatHomeItemIcon}>
-                <Text
-                  style={{
-                    color: 'white',
-                    marginRight: 3,
-                    //   fontFamily: mediumRobotoFont,
-                    textTransform: 'uppercase',
-                    textAlign: 'center',
-                  }}>
-                  {' '}
-                  {item.name[0] + (item.name[1] ? item.name[1] : '')}
-                </Text>
-              </View>
-            </ImageBackground>
-          </View>
-
-          <View
-            style={{
-              justifyContent: 'center',
-
-              marginLeft: wp('0.1%'),
-              flex: 1,
-            }}>
-            <Text
-              numberOfLines={1}
-              style={{
-                fontFamily: mediumFont,
-                fontSize: hp('2%'),
-                color: '#4C5264',
+                flex: 0.2,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              {item.name}
-              {item.muted && (
-                <IonIcon
-                  name="volume-mute-outline"
-                  size={hp('2%')}
+              {item.counter ? (
+                <View
                   style={{
-                    marginRight: hp('0.9%'),
-                    marginLeft: hp('0.4%'),
-                  }}
-                />
-              )}
-            </Text>
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-end',
+                    flex: 1,
+                    zIndex: 1,
+                    alignSelf: 'flex-end',
+                    height: hp('5.5%'),
+                    width: hp('5.5%'),
+                    marginTop: hp('1%'),
+                    marginRight: hp('0.5'),
+                  }}>
+                  <View
+                    style={{
+                      height: hp('2.1%'),
+                      width: hp('2.1%'),
+                      borderRadius: hp('2.1') / 2,
+                      backgroundColor: '#FF0000',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: regularFont,
+                        fontSize: hp('1%'),
 
-            {item.lastUserName ? (
-              <Fragment>
-                <View style={{flexDirection: 'row', marginTop: hp('0.8%')}}>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      fontFamily: regularFont,
-                      fontSize: hp('1.8%'),
-                      color: '#4C5264',
-                    }}>
-                    {item.lastUserName}:{' '}
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      fontFamily: thinFont,
-                      fontSize: hp('1.8%'),
-                      color: '#4C5264',
-                      width: wp('30%'),
-                    }}>
-                    {item.lastUserText}
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: regularFont,
-                      fontSize: hp('1.2%'),
-                      // flex: 1,
-                      color: '#BCC5D3',
-                      marginTop: hp('0.6%'),
-                    }}>{` ${item.createdAt.getHours()}:${item.createdAt.getMinutes()}`}</Text>
+                        color: '#FFFFFF',
+                      }}>
+                      {item.counter}
+                    </Text>
+                  </View>
                 </View>
-              </Fragment>
-            ) : (
+              ) : null}
+              <ImageBackground
+                imageStyle={{borderRadius: 5}}
+                style={{
+                  height: hp('5.5%'),
+                  width: hp('5.5%'),
+                  // flex: 1,
+                  borderRadius: 5,
+                  position: 'absolute',
+                }}>
+                <View style={chatHomeStyles.chatHomeItemIcon}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      marginRight: 3,
+                      //   fontFamily: mediumRobotoFont,
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                    }}>
+                    {' '}
+                    {item.name[0] + (item.name[1] ? item.name[1] : '')}
+                  </Text>
+                </View>
+              </ImageBackground>
+            </View>
+
+            <View
+              style={{
+                justifyContent: 'center',
+
+                marginLeft: wp('0.1%'),
+                flex: 1,
+              }}>
               <Text
                 numberOfLines={1}
                 style={{
-                  fontFamily: thinFont,
-                  fontSize: hp('1.8%'),
+                  fontFamily: mediumFont,
+                  fontSize: hp('2%'),
                   color: '#4C5264',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
-                Join this chat to view updates
-              </Text>
-            )}
-          </View>
-          <View style={{flex: 0.17}}>
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <View style={{height: hp('3.8%'), width: wp('15%')}}>
-                <View style={chatHomeStyles.chatHomeItemParticipants}>
-                  <MaterialIcon
-                    name="group"
+                {item.name}
+                {item.muted && (
+                  <IonIcon
+                    name="volume-mute-outline"
                     size={hp('2%')}
                     style={{
                       marginRight: hp('0.9%'),
                       marginLeft: hp('0.4%'),
                     }}
                   />
-                  <Text
-                    style={{
-                      fontSize: hp('1.5%'),
-                      fontFamily: regularFont,
-                    }}>
-                    {item.participants}
-                  </Text>
+                )}
+              </Text>
+
+              {item.lastUserName ? (
+                <Fragment>
+                  <View style={{flexDirection: 'row', marginTop: hp('0.8%')}}>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        fontFamily: regularFont,
+                        fontSize: hp('1.8%'),
+                        color: '#4C5264',
+                      }}>
+                      {item.lastUserName}:{' '}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={{
+                        fontFamily: thinFont,
+                        fontSize: hp('1.8%'),
+                        color: '#4C5264',
+                        width: wp('30%'),
+                      }}>
+                      {item.lastUserText}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: regularFont,
+                        fontSize: hp('1.2%'),
+                        // flex: 1,
+                        color: '#BCC5D3',
+                        marginTop: hp('0.6%'),
+                      }}>{` ${item.createdAt.getHours()}:${item.createdAt.getMinutes()}`}</Text>
+                  </View>
+                </Fragment>
+              ) : (
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontFamily: thinFont,
+                    fontSize: hp('1.8%'),
+                    color: '#4C5264',
+                  }}>
+                  Join this chat to view updates
+                </Text>
+              )}
+            </View>
+            <View style={{flex: 0.17}}>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View style={{height: hp('3.8%'), width: wp('15%')}}>
+                  <View style={chatHomeStyles.chatHomeItemParticipants}>
+                    <MaterialIcon
+                      name="group"
+                      size={hp('2%')}
+                      style={{
+                        marginRight: hp('0.9%'),
+                        marginLeft: hp('0.4%'),
+                      }}
+                    />
+                    <Text
+                      style={{
+                        fontSize: hp('1.5%'),
+                        fontFamily: regularFont,
+                      }}>
+                      {item.participants}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </Animated.View>
     </Swipeable>
   );
 };
@@ -402,8 +466,6 @@ class ChatHome extends Component {
   async componentDidMount() {
     const {token} = this.props.loginReducer;
     // this.props.getEmailList(token);
-    console.log(this.props.ChatReducer.roomRoles, 'rooldklnflkdjsf');
-
     Linking.getInitialURL().then(url => {
       if (url) {
         const chatJID = parseChatLink(url);
@@ -634,6 +696,10 @@ class ChatHome extends Component {
     }
     // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
   };
+
+  toggleMovingChats = () => {
+    this.setState({movingActive: !this.state.movingActive});
+  };
   leaveTheRoom = async jid => {
     // <presence
     // from='hag66@shakespeare.lit/pda'
@@ -845,9 +911,18 @@ class ChatHome extends Component {
             </TouchableOpacity>
           </View>
         </Modal>
+        <FloatingActionButton
+          style={{position: 'absolute', bottom: 10, right: 10}}
+          action={this.toggleMovingChats}>
+          {this.state.movingActive ? (
+            <AntIcon color={'white'} size={hp('3%')} name={'check'} />
+          ) : (
+            <Entypo color={'white'} size={hp('3%')} name={'list'} />
+          )}
+        </FloatingActionButton>
         <DraggableFlatList
           nestedScrollEnabled={true}
-          onRelease={() => this.setState({movingActive: false})}
+          // onRelease={() => this.setState({movingActive: false})}
           data={this.state.rosterListArray.sort(
             (a, b) => a.priority - b.priority,
           )}
