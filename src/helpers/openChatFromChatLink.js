@@ -4,27 +4,35 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import { underscoreManipulation } from "./underscoreLogic";
+import {underscoreManipulation} from './underscoreLogic';
 import {
-    subscribeAndOpenChat,
-    fetchRosterlist as fetchStanzaRosterList
-} from "./xmppStanzaRequestMessages";
+  subscribeAndOpenChat,
+  fetchRosterlist as fetchStanzaRosterList,
+} from './xmppStanzaRequestMessages';
 import {
-    CONFERENCEDOMAIN,
-    subscriptionsStanzaID
-} from "../constants/xmppConstants";
+  CONFERENCEDOMAIN,
+  subscriptionsStanzaID,
+} from '../constants/xmppConstants';
 
+const openChatFromChatLink = (
+  chatJID,
+  walletAddress,
+  setCurrentChatDetails,
+  navigation,
+) => {
+  const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-export default openChatFromChatLink=(chatJID, walletAddress, setCurrentChatDetails, navigation)=>{
-    const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+  subscribeAndOpenChat(
+    manipulatedWalletAddress,
+    `${chatJID}${CONFERENCEDOMAIN}`,
+  );
+  setCurrentChatDetails(
+    `${chatJID}${CONFERENCEDOMAIN}`,
+    'Loading...',
+    navigation,
+    false,
+  );
 
-    subscribeAndOpenChat(manipulatedWalletAddress, `${chatJID}${CONFERENCEDOMAIN}`);
-    setCurrentChatDetails(
-        `${chatJID}${CONFERENCEDOMAIN}`,
-        'Loading...',
-        navigation,
-        false
-    );
-
-    fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
-}
+  fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+};
+export default openChatFromChatLink;

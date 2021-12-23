@@ -43,6 +43,7 @@ import DocumentPicker from 'react-native-document-picker';
 import FastImage from 'react-native-fast-image';
 import {commonColors, textStyles} from '../../docs/config';
 import {fileUpload, nftTransferURL} from '../config/routesConstants';
+import {httpPost, httpUpload} from '../config/apiService';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -90,22 +91,34 @@ function MintItems(props) {
     setModalVisible(!isModalVisible);
   };
   const uploadToFilesApi = async (file, token, callback) => {
-    console.log(file, token, 'asdkasldh8q9e', constructUrl(fileUpload));
-    hitAPI.fileUpload(
-      constructUrl(fileUpload),
-      file,
-      token,
-      async () => {
-        logOut();
-      },
-      val => {
-        console.log('Progress Val: ', val);
-      },
-      async response => {
-        callback(response);
-        console.log(response, 'thisisit');
-      },
-    );
+    try {
+      const response = await httpUpload(
+        constructUrl(fileUpload),
+        file,
+        token,
+        console.log,
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      Toast.show('Cannot upload file, try again later', Toast.LONG);
+    }
+
+    // hitAPI.fileUpload(
+    //   constructUrl(fileUpload),
+    //   file,
+    //   token,
+    //   async () => {
+    //     logOut();
+    //   },
+    //   val => {
+    //     console.log('Progress Val: ', val);
+    //   },
+    //   async response => {
+    //     callback(response);
+    //     console.log(response, 'thisisit');
+    //   },
+    // );
   };
   const setChatAvatar = async type => {
     if (type === 'image') {
@@ -229,36 +242,56 @@ function MintItems(props) {
     }
   };
 
-  const sendFiles = data => {
+  const sendFiles = async data => {
     setLoading(true);
-    uploadToFilesApi(data, loginReducerData.token, resp => {
-      console.log(JSON.stringify(resp), 'sdfasdfadf');
-      setFileId(resp.results[0]['_id']);
+    try {
+      const response = await uploadToFilesApi(data, loginReducerData.token);
+      console.log(JSON.stringify(response), 'sdfasdfadf');
+      setFileId(response.results[0]['_id']);
       setLoading(false);
-      setAvatarSource(resp.results[0].location);
-    });
+      setAvatarSource(response.results[0].location);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const createNftItem = () => {
+  const createNftItem = async () => {
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
-    hitAPI.fetchPost(
-      constructUrl(nftTransferURL),
-      item,
-      loginReducerData.token,
-      async () => {
-        console.log('minted failed');
-      },
-      async data => {
-        // dispatch(addLogs(data));
-        console.log(data, 'createddskldjfdsflk');
-        props.fetchWalletBalance(
-          loginReducerData.initialData.walletAddress,
-          null,
-          loginReducerData.token,
-          true,
-        );
-      },
-    );
+    try {
+      await httpPost(
+        constructUrl(nftTransferURL),
+        item,
+        loginReducerData.token,
+      );
+      props.fetchWalletBalance(
+        loginReducerData.initialData.walletAddress,
+        null,
+        loginReducerData.token,
+        true,
+      );
+    } catch (error) {
+      Toast.show('Cannot create item, try again later', Toast.LONG);
+      console.log(error);
+    }
+
+    // hitAPI.fetchPost(
+    //   constructUrl(nftTransferURL),
+    //   item,
+    //   loginReducerData.token,
+    //   async () => {
+    //     console.log('minted failed');
+    //   },
+    //   async data => {
+    //     // dispatch(addLogs(data));
+    //     console.log(data, 'createddskldjfdsflk');
+    //     props.fetchWalletBalance(
+    //       loginReducerData.initialData.walletAddress,
+    //       null,
+    //       loginReducerData.token,
+    //       true,
+    //     );
+    //   },
+    // );
   };
 
   const clearData = () => {
@@ -307,9 +340,6 @@ function MintItems(props) {
   };
   const chooseImageOption = () => {
     Alert.alert('Choose a file', '', [
-      Platform.OS === 'ios'
-        ? {text: 'Take a photo', onPress: () => setChatAvatar('photo')}
-        : null,
       {text: 'Open from files', onPress: () => setChatAvatar('files')},
       {text: 'Dismiss', onPress: () => console.log('dismissed')},
 

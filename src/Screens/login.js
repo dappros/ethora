@@ -47,10 +47,12 @@ import {
   textStyles,
   loginScreenBackgroundImage,
   appEndpoint,
-  appVersion
+  appVersion,
 } from '../../docs/config';
 import {checkEmailExist} from '../config/routesConstants';
 import DeviceInfo from 'react-native-device-info';
+import Toast from 'react-native-simple-toast';
+import {httpGet} from '../config/apiService';
 
 const hitAPI = new fetchFunction();
 
@@ -316,19 +318,31 @@ class Login extends Component {
   loginOrRegisterSocialUser = async (user, userEmail, loginType) => {
     console.log('uers');
     const url = this.constructUrl(checkEmailExist) + userEmail;
+    try {
+      const response = await httpGet(url, this.props.apiReducer.defaultToken);
+      if (!response.data.success) {
+        this.props.loginUser(loginType, user.authToken, user.uid, user);
+      } else {
+        this.registerSocialUser(user, loginType);
+      }
+    } catch (error) {
+      Toast.show('Something went wrong, please try again later', Toast.LONG);
 
-    hitAPI.fetchGet(
-      url,
-      this.props.apiReducer.defaultToken,
-      this.props.logOut,
-      callback => {
-        if (!callback.success) {
-          this.props.loginUser(loginType, user.authToken, user.uid, user);
-        } else {
-          this.registerSocialUser(user, loginType);
-        }
-      },
-    );
+      console.log(error);
+    }
+
+    // hitAPI.fetchGet(
+    //   url,
+    //   this.props.apiReducer.defaultToken,
+    //   this.props.logOut,
+    //   callback => {
+    //     if (!callback.success) {
+    //       this.props.loginUser(loginType, user.authToken, user.uid, user);
+    //     } else {
+    //       this.registerSocialUser(user, loginType);
+    //     }
+    //   },
+    // );
   };
 
   registerSocialUser = async (user, loginType) => {
@@ -355,9 +369,9 @@ class Login extends Component {
   };
 
   // optional - specify a link for registering new members for your community
-//  openMembership = () => {
-//   Linking.openURL(‘https://www.yoursite/members-onboarding-page/’);
-// };
+  //  openMembership = () => {
+  //   Linking.openURL(‘https://www.yoursite/members-onboarding-page/’);
+  // };
 
   revealPassword() {
     this.setState({

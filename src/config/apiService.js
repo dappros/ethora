@@ -1,30 +1,35 @@
 import axios from 'axios';
 
-export class ApiService {
-  host = '';
-  constructor(host, token) {
-    this.host = host;
-    this.token = token;
-    this.http = axios.create({
-      baseURL: host,
-      headers: {Authorization: token},
-    });
-  }
+export const httpGet = async (url, token) => {
+  return await axios.get(url, {
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Authorization: token,
+    },
+  });
+};
+export const httpPost = async (url, body, token) => {
+  return await axios.post(url, body, {
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Authorization: token,
+    },
+  });
+};
+export const httpUpload = async (url, body, token, onProgress) => {
+  return await axios.post(url, body, {
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate, br',
 
-  httpGet = async route => {
-    try {
-      const res = await this.http.get(route);
-      return res;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  httpPost = async (route, body) => {
-    try {
-      const res = await this.http.post(route, body);
-      return res;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-}
+      'Content-Type': 'multipart/form-data',
+      Authorization: token,
+    },
+    onUploadProgress: ev => {
+      const progress = (ev.loaded / ev.total) * 100;
+      onProgress(Math.round(progress));
+    },
+  });
+};

@@ -14,6 +14,7 @@ import {APP_TOKEN} from '../../docs/config';
 import {addLogs} from './debugActions';
 import store from '../config/store';
 import {loginURL, registerUserURL} from '../config/routesConstants';
+import {httpPost} from '../config/apiService';
 
 const hitAPI = new fetchFunction();
 const getUrlFromStore = additionalUrl => {
@@ -166,55 +167,90 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
     "loginType": loginType,
     "authToken": authToken,
   };
-  return dispatch => {
-    console.log('in dispatch');
+  return async dispatch => {
     dispatch(fetchingCommonRequest());
     try {
-      console.log('in try');
-      hitAPI.fetchPost(
+      const response = await httpPost(
         getUrlFromStore(loginURL),
         bodyData,
         token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          if (data.success) {
-            saveUserToken(data.token)
-              .then(data => {
-                dispatch(loading(false));
-                dispatch(saveToken(data));
-              })
-              .catch(error => {
-                console.log(error);
-              });
-            // console.log(data,'loginData')
-            const photo = ssoUserData.photo;
-            let {firstName, lastName, username} = data.user;
-            if (!lastName) {
-              lastName = firstName.split(' ')[1];
-              firstName = firstName.split(' ')[0];
-            }
-            let {walletAddress} = data.user.defaultWallet;
-            // saveInitialData({firstName,lastName,walletAddress,image,username,password}).
-            // then((data)=>{
-            //     console.log('save initial data called')
-            //     dispatch(saveInitialDataAction(data))
-            // }).then(dispatch(loginUserSuccess(data)))
-            saveInitialData(
-              {firstName, lastName, walletAddress, photo, username, password},
-              callback => {
-                dispatch(saveInitialDataAction(callback));
-                dispatch(loginUserSuccess(data));
-              },
-            );
-
-            // navigation.navigate('ChatHomeComponent');
-          } else {
-            dispatch(fetchingCommonFailure(data.msg));
-          }
-        },
       );
+      if (response.data.success) {
+        saveUserToken(response.data.token)
+          .then(data => {
+            dispatch(loading(false));
+            dispatch(saveToken(data));
+          })
+          .catch(error => {
+            console.log(error);
+          });
+        const photo = ssoUserData.photo;
+        let {firstName, lastName, username} = response.data.user;
+        if (!lastName) {
+          lastName = firstName.split(' ')[1];
+          firstName = firstName.split(' ')[0];
+        }
+        let {walletAddress} = response.data.user.defaultWallet;
+        // saveInitialData({firstName,lastName,walletAddress,image,username,password}).
+        // then((data)=>{
+        //     console.log('save initial data called')
+        //     dispatch(saveInitialDataAction(data))
+        // }).then(dispatch(loginUserSuccess(data)))
+        saveInitialData(
+          {firstName, lastName, walletAddress, photo, username, password},
+          callback => {
+            dispatch(saveInitialDataAction(callback));
+            dispatch(loginUserSuccess(response.data));
+          },
+        );
+      } else {
+        dispatch(fetchingCommonFailure(response.data.msg));
+      }
+
+      // hitAPI.fetchPost(
+      //   getUrlFromStore(loginURL),
+      //   bodyData,
+      //   token,
+      //   () => {
+      //     dispatch(logOut());
+      //   },
+      //   data => {
+      //     if (data.success) {
+      //       saveUserToken(data.token)
+      //         .then(data => {
+      //           dispatch(loading(false));
+      //           dispatch(saveToken(data));
+      //         })
+      //         .catch(error => {
+      //           console.log(error);
+      //         });
+      //       // console.log(data,'loginData')
+      //       const photo = ssoUserData.photo;
+      //       let {firstName, lastName, username} = data.user;
+      //       if (!lastName) {
+      //         lastName = firstName.split(' ')[1];
+      //         firstName = firstName.split(' ')[0];
+      //       }
+      //       let {walletAddress} = data.user.defaultWallet;
+      //       // saveInitialData({firstName,lastName,walletAddress,image,username,password}).
+      //       // then((data)=>{
+      //       //     console.log('save initial data called')
+      //       //     dispatch(saveInitialDataAction(data))
+      //       // }).then(dispatch(loginUserSuccess(data)))
+      //       saveInitialData(
+      //         {firstName, lastName, walletAddress, photo, username, password},
+      //         callback => {
+      //           dispatch(saveInitialDataAction(callback));
+      //           dispatch(loginUserSuccess(data));
+      //         },
+      //       );
+
+      //       // navigation.navigate('ChatHomeComponent');
+      //     } else {
+      //       dispatch(fetchingCommonFailure(data.msg));
+      //     }
+      //   },
+      // );
     } catch (error) {
       console.log(error, 'asdfasdfcasdf');
       dispatch(fetchingCommonFailure('Something went wrong'));
@@ -264,34 +300,50 @@ const loginWordpressUser = (username, password) => {
 export const registerUser = (dataObject, ssoUserData) => {
   console.log(dataObject);
   const token = getTokenFromStore();
-  return dispatch => {
-    console.log('data', 'yedata');
-
+  return async dispatch => {
     try {
-      hitAPI.fetchPost(
+      const response = await httpPost(
         getUrlFromStore(registerUserURL),
         dataObject,
         token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          if (data.success === true) {
-            dispatch(registerUserSuccess());
-            dispatch(
-              loginUser(
-                dataObject.loginType,
-                dataObject.authToken,
-                dataObject.password,
-                ssoUserData,
-              ),
-            );
-            // dispatch(loginUser(dataObject.username,dataObject.password,navigation))
-          } else {
-            dispatch(fetchingCommonFailure(data));
-          }
-        },
       );
+      if (response.data.success) {
+        dispatch(registerUserSuccess());
+        dispatch(
+          loginUser(
+            dataObject.loginType,
+            dataObject.authToken,
+            dataObject.password,
+            ssoUserData,
+          ),
+        );
+      } else {
+        dispatch(fetchingCommonFailure(response.data));
+      }
+      // hitAPI.fetchPost(
+      //   getUrlFromStore(registerUserURL),
+      //   dataObject,
+      //   token,
+      //   () => {
+      //     dispatch(logOut());
+      //   },
+      //   data => {
+      //     if (data.success === true) {
+      //       dispatch(registerUserSuccess());
+      //       dispatch(
+      //         loginUser(
+      //           dataObject.loginType,
+      //           dataObject.authToken,
+      //           dataObject.password,
+      //           ssoUserData,
+      //         ),
+      //       );
+      //       // dispatch(loginUser(dataObject.username,dataObject.password,navigation))
+      //     } else {
+      //       dispatch(fetchingCommonFailure(data));
+      //     }
+      //   },
+      // );
     } catch (error) {
       console.log(error);
       dispatch(fetchingCommonFailure('Something went wrong'));

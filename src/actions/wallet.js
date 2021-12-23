@@ -19,6 +19,8 @@ import {
   tokenTransferURL,
   transactionURL,
 } from '../config/routesConstants';
+import {httpGet, httpPost} from '../config/apiService';
+import Toast from 'react-native-simple-toast';
 
 const hitAPI = new fetchFunction();
 
@@ -85,34 +87,45 @@ const getTokenBalanceURL = (walletAddress, tokenName) => {
 
 export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
   let url = getTokenBalanceURL(walletAddress, tokenName);
-  return dispatch => {
+  return async dispatch => {
     dispatch(fetchingWalletCommonRequest());
-    try {
-      hitAPI.fetchGet(
-        url,
-        token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          dispatch(addLogsApi(data));
 
-          if (data.success === true) {
-            console.log(data, 'asjkdkasdjlaks');
-            if (isOwn) {
-              dispatch(fetchTokenEtherBalance(data));
-            } else {
-              dispatch(fetchingOtherUserTokenBalance(data));
-            }
-          } else {
-            console.log(data);
-            dispatch(fetchingWalletCommonFailure(data));
-          }
-        },
-      );
+    try {
+      const response = await httpGet(url, token);
+      console.log(response, '2348902348902');
+
+      addLogsApi(response.data);
+      if (isOwn) {
+        dispatch(fetchTokenEtherBalance(response.data));
+      } else {
+        dispatch(fetchingOtherUserTokenBalance(response.data));
+      }
+      // hitAPI.fetchGet(
+      //   url,
+      //   token,
+      //   () => {
+      //     dispatch(logOut());
+      //   },
+      //   data => {
+      //     dispatch(addLogsApi(data));
+
+      //     if (data.success === true) {
+      //       console.log(data, 'asjkdkasdjlaks');
+      //       if (isOwn) {
+      //         dispatch(fetchTokenEtherBalance(data));
+      //       } else {
+      //         dispatch(fetchingOtherUserTokenBalance(data));
+      //       }
+      //     } else {
+      //       console.log(data);
+      //       dispatch(fetchingWalletCommonFailure(data));
+      //     }
+      //   },
+      // );
     } catch (error) {
       console.log(error);
       dispatch(fetchingWalletCommonFailure('Something went wrong'));
+      Toast.show('Cannot get wallet balance', Toast.LONG);
     }
   };
 };
@@ -142,35 +155,52 @@ export const transferTokens = (
       [{text: 'Ok', onPress: () => console.log('ok')}],
     );
   }
-  return dispatch => {
+  return async dispatch => {
     dispatch(fetchingWalletCommonRequest());
     try {
-      hitAPI.fetchPost(
-        url,
-        bodyData,
-        token,
-        async () => {
-          dispatch(logOut());
-        },
-        async data => {
-          dispatch(addLogsApi(data));
-          if (data.success) {
-            dispatch(
-              transferTokensSuccess({
-                success: true,
-                senderName,
-                receiverName,
-                amount: bodyData.amount,
-                receiverMessageId: receiverMessageId,
-                tokenName: bodyData.tokenName,
-              }),
-            );
-            dispatch(fetchWalletBalance(fromWallet, null, token, true));
-          } else {
-            dispatch(fetchingWalletCommonFailure(data.msg));
-          }
-        },
-      );
+      const response = await httpPost(url, bodyData, token);
+      dispatch(addLogsApi(response.data));
+      if (response.data.success) {
+        dispatch(
+          transferTokensSuccess({
+            success: true,
+            senderName,
+            receiverName,
+            amount: bodyData.amount,
+            receiverMessageId: receiverMessageId,
+            tokenName: bodyData.tokenName,
+          }),
+        );
+        dispatch(fetchWalletBalance(fromWallet, null, token, true));
+      } else {
+        dispatch(fetchingWalletCommonFailure(response.data.msg));
+      }
+      // hitAPI.fetchPost(
+      //   url,
+      //   bodyData,
+      //   token,
+      //   async () => {
+      //     dispatch(logOut());
+      //   },
+      //   async data => {
+      //     dispatch(addLogsApi(data));
+      //     if (data.success) {
+      //       dispatch(
+      //         transferTokensSuccess({
+      //           success: true,
+      //           senderName,
+      //           receiverName,
+      //           amount: bodyData.amount,
+      //           receiverMessageId: receiverMessageId,
+      //           tokenName: bodyData.tokenName,
+      //         }),
+      //       );
+      //       dispatch(fetchWalletBalance(fromWallet, null, token, true));
+      //     } else {
+      //       dispatch(fetchingWalletCommonFailure(data.msg));
+      //     }
+      //   },
+      // );
     } catch (error) {
       dispatch(fetchingWalletCommonFailure(error));
     }
@@ -209,7 +239,6 @@ export const fetchTransaction = (
                 dispatch(fetchingTransactionSuccess(data));
                 insertTransaction(data.items);
               } else {
-
                 dispatch(setOffset(data.limit));
                 dispatch(setTotal(data.total));
                 dispatch(fetchingOtherUserTransactionSuccess(data));

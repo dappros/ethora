@@ -109,6 +109,9 @@ import Svg, {Path, Rect} from 'react-native-svg';
 import RNFS from 'react-native-fs';
 import {RecordingSecondsCounter} from '../components/RecordingSecondsCounter';
 import {addLogsApi} from '../actions/debugActions';
+import {httpUpload} from '../config/apiService';
+import Toast from 'react-native-simple-toast';
+import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -584,6 +587,13 @@ class Chat extends Component {
     //   recording: true,
     // });
   };
+  setUploadProgress = val => {
+    console.log(val, 'dfkdspfjksk;');
+    this.setState({
+      progressVal: val,
+    });
+  };
+
   onStopRecord = async () => {
     this.setState({recording: false});
 
@@ -615,27 +625,44 @@ class Chat extends Component {
       type: 'audio/mpeg',
       name: 'sound.mp3',
     });
-    hitAPI.fileUpload(
-      filesApiURL,
-      data,
-      token,
-      async () => {
-        logOut();
-      },
-      val => {
-        this.setState({
-          progressVal: val,
-        });
-      },
-      async response => {
-        if (response.results.length) {
-          console.log('2348902348239048230', response);
-          console.log('249230-409234', response);
-          this.props.addLogsApi(response.results);
-          this.submitMediaMessage(response.results, waveform);
-        }
-      },
-    );
+    try {
+      const response = await httpUpload(
+        filesApiURL,
+        data,
+        token,
+        this.setUploadProgress,
+      );
+      if (response.data.results.length) {
+        console.log('2348902348239048230', response);
+        console.log('249230-409234', response);
+        this.props.addLogsApi(response.data.results);
+        this.submitMediaMessage(response.data.results, waveform);
+      }
+    } catch (error) {
+      Toast.show('Cannot upload file, try again later', Toast.LONG);
+    }
+
+    // hitAPI.fileUpload(
+    //   filesApiURL,
+    //   data,
+    //   token,
+    //   async () => {
+    //     logOut();
+    //   },
+    //   val => {
+    //     this.setState({
+    //       progressVal: val,
+    //     });
+    //   },
+    //   async response => {
+    //     if (response.results.length) {
+    //       console.log('2348902348239048230', response);
+    //       console.log('249230-409234', response);
+    //       this.props.addLogsApi(response.results);
+    //       this.submitMediaMessage(response.results, waveform);
+    //     }
+    //   },
+    // );
   };
 
   getWaveformArray = async url => {
@@ -1321,38 +1348,6 @@ class Chat extends Component {
             justifyContent: 'center',
             position: 'relative',
           }}>
-          {/* {mimetype === 'video/mp4' && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            height: 30,
-            // width: 100,
-            left: 10,
-            backgroundColor: 'rgba(0,0,0,0.6)',
-            zIndex: 9999,
-            padding: 5,
-            borderRadius: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <Ionicons
-            name="arrow-down-outline"
-            size={hp('1.7%')}
-            color={'white'}
-          />
-          <Text style={{color: 'white', fontSize: hp('1.6%')}}>
-            {formatedSize.size + ' ' + formatedSize.unit}
-          </Text>
-        </View>
-      )} */}
-
-          {/* <View style={styles.downloadContainer}> */}
-          {/* <View style={styles.sizeContainer}>
-          <Text style={styles.sizeTextStyle}>{formatedSize.size}</Text>
-          <Text style={styles.sizeTextStyle}>{formatedSize.unit}</Text>
-        </View> */}
-
           <View
             style={{
               marginTop: 10,
@@ -1364,18 +1359,6 @@ class Chat extends Component {
               // left: props.position === 'left' ? '150%': null,
               // zIndex: 10000
             }}>
-            {/* {this.state.playingMessageId === id ? (
-              <FontAwesome
-                name="pause-circle"
-                size={hp('3%')}
-                color={'white'}
-                style={{
-                  marginRight: 4,
-                  marginLeft: 10,
-                }}
-              />
-            ) : ( */}
-
             <AntDesign
               name="play"
               size={hp('3%')}
@@ -1385,10 +1368,6 @@ class Chat extends Component {
                 marginLeft: 10,
               }}
             />
-
-            {/* )} */}
-
-            {/* {duration && ( */}
             {parsedWaveform && (
               <Svg stroke={primaryDarkColor} width={100} height={55}>
                 {parsedWaveform.map((item, i) => (
@@ -1403,9 +1382,6 @@ class Chat extends Component {
                 ))}
               </Svg>
             )}
-
-            {/* )} */}
-            {/* </View> */}
           </View>
         </TouchableOpacity>
       );
@@ -1527,39 +1503,60 @@ class Chat extends Component {
                     name: res[0].name,
                   });
                   const absolutePath = res[0].fileCopyUri;
-                  hitAPI.fileUpload(
+                  const response = await httpUpload(
                     filesApiURL,
                     data,
                     token,
-                    async () => {
-                      logOut();
-                    },
-                    val => {
-                      this.setState({
-                        progressVal: val,
-                      });
-                    },
-                    async response => {
-                      if (response?.results?.length) {
-                        if (response.results[0].mimetype === 'audio/mpeg') {
-                          let wave = await this.getAudioData(absolutePath);
-                          this.props.addLogsApi(wave);
-
-                          this.props.addLogsApi(response.results);
-
-                          this.submitMediaMessage(response.results, wave);
-                        } else {
-                          this.props.addLogsApi(response.results);
-
-                          this.submitMediaMessage(response.results);
-                        }
-                      }
-                    },
+                    this.setUploadProgress,
                   );
+                  if (response.data.results?.length) {
+                    if (response.data.results[0].mimetype === 'audio/mpeg') {
+                      let wave = await this.getAudioData(absolutePath);
+                      this.props.addLogsApi(response.data.results);
+                      this.submitMediaMessage(response.data.results, wave);
+                    } else {
+                      this.props.addLogsApi(response.data.results);
+                      this.submitMediaMessage(response.data.results);
+                    }
+                  }
+                  // hitAPI.fileUpload(
+                  //   filesApiURL,
+                  //   data,
+                  //   token,
+                  //   async () => {
+                  //     logOut();
+                  //   },
+                  //   val => {
+                  //     this.setState({
+                  //       progressVal: val,
+                  //     });
+                  //   },
+                  //   async response => {
+                  //     if (response?.results?.length) {
+                  //       if (response.results[0].mimetype === 'audio/mpeg') {
+                  //         let wave = await this.getAudioData(absolutePath);
+                  //         this.props.addLogsApi(wave);
+
+                  //         this.props.addLogsApi(response.results);
+
+                  //         this.submitMediaMessage(response.results, wave);
+                  //       } else {
+                  //         this.props.addLogsApi(response.results);
+
+                  //         this.submitMediaMessage(response.results);
+                  //       }
+                  //     }
+                  //   },
+                  // );
                 } catch (err) {
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
                   } else {
+                    Toast.show(
+                      'Cannot upload file, try again later',
+                      Toast.LONG,
+                    );
+
                     throw err;
                   }
                 }
@@ -1701,7 +1698,8 @@ class Chat extends Component {
         />
 
         {(this.state.mediaModalContent.type === 'audio/mpeg' ||
-          this.state.mediaModalContent.type === 'application/octet-stream' ||this.state.mediaModalContent.type === 'audio/x-m4a') && (
+          this.state.mediaModalContent.type === 'application/octet-stream' ||
+          this.state.mediaModalContent.type === 'audio/x-m4a') && (
           <AudioPlayer audioUrl={this.state.mediaModalContent.remoteUrl} />
         )}
         <GiftedChat
@@ -1738,7 +1736,7 @@ class Chat extends Component {
           ref={gift => (this.giftedRef = gift)}
           messages={this.state.messages}
           textInputStyle={{
-            color:"#000000"
+            color: '#000000',
           }}
           // isTyping={this.state.isTyping}
           // renderFooter={() => this.renderFooter()}
