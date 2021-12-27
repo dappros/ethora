@@ -163,18 +163,18 @@ class HeaderComponent extends Component {
       });
     }
 
-    if (
-      this.props.walletReducer.transactions &&
-      this.props.walletReducer.transactions.length !=
-        prevProps.walletReducer.transactions.length
-    ) {
-      this.props.fetchWalletBalance(
-        this.state.walletAddress,
-        null,
-        this.props.loginReducer.token,
-        true,
-      );
-    }
+    // if (
+    //   this.props.walletReducer.transactions &&
+    //   this.props.walletReducer.transactions.length !=
+    //     prevProps.walletReducer.transactions.length
+    // ) {
+    //   this.props.fetchWalletBalance(
+    //     this.state.walletAddress,
+    //     null,
+    //     this.props.loginReducer.token,
+    //     true,
+    //   );
+    // }
   }
 
   //close the modal
@@ -415,7 +415,11 @@ class HeaderComponent extends Component {
                     Transactions
                   </MenuItem>
                   {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('settings')}>Settings</MenuItem> */}
-                  {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('account')}>Account</MenuItem> */}
+                  <MenuItem
+                    textStyle={styles.menuTextStyle}
+                    onPress={() => this.openKebabItem('account')}>
+                    Account
+                  </MenuItem>
                   <MenuItem
                     textStyle={styles.menuTextStyle}
                     onPress={() => this.openKebabItem('scan')}>

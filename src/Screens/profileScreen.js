@@ -787,7 +787,6 @@ class ProfileScreen extends Component {
       let itemsData = this.props.walletReducer.balance.filter(
         item => item.tokenType === 'NFT' && item.balance > 0,
       );
-      console.log(itemsData, 'itemsss');
       let coinData = this.props.walletReducer.balance.filter(
         item => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
       );
@@ -801,7 +800,6 @@ class ProfileScreen extends Component {
           if (item.balance.hasOwnProperty('_hex')) {
             coinBalance = coinBalance + parseInt(item.balance._hex, 16);
           } else coinBalance = coinBalance + parseFloat(item.balance);
-          console.log(coinData, 'adsadasd');
         });
       itemsData.map(
         item => (itemsBalance = itemsBalance + parseFloat(item.balance)),

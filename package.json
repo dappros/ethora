@@ -79,6 +79,7 @@
     "react-native-slider": "^0.11.0",
     "react-native-svg": "^12.0.3",
     "react-native-tab-view": "^2.14.0",
+    "react-native-toast-message": "^2.1.1",
     "react-native-typing-animation": "^0.1.7",
     "react-native-vector-icons": "^8.1.0",
     "react-native-video": "^5.2.0-alpha1",

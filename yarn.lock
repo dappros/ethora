@@ -7707,6 +7707,11 @@ react-native-tab-view@^2.14.0:
   resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.16.0.tgz#cae72c7084394bd328fac5fefb86cd966df37a86"
   integrity sha512-ac2DmT7+l13wzIFqtbfXn4wwfgtPoKzWjjZyrK1t+T8sdemuUvD4zIt+UImg03fu3s3VD8Wh/fBrIdcqQyZJWg==
 
+react-native-toast-message@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.1.tgz#4d56add4ced45153a2d66649d21363de10952637"
+  integrity sha512-0ZfmphT8RtrWUuZ28y/zwo/aKtvbMtWK4taEDFxOTf6Lwj29YuBv7mA0Nh/I2Xl4/prnMuZe/lZUORcKNuYfkQ==
+
 react-native-typing-animation@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/react-native-typing-animation/-/react-native-typing-animation-0.1.7.tgz#8f2cf08d9400ae543a110292eb7d71523dda5528"

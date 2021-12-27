@@ -314,7 +314,7 @@ const NftTransactionsHistoryComponent = props => {
               fontSize: hp('1.7%'),
               // margin: 5,
               textAlign: 'right',
-              justifySelf: 'center',
+              // justifySelf: 'center',
               alignSelf: 'center',
             }}>
             {props.item.value}
