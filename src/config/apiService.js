@@ -18,6 +18,17 @@ export const httpPost = async (url, body, token) => {
     },
   });
 };
+
+export const httpDelete = async (url, token) => {
+  return await axios.delete(url, {
+    headers: {
+      Authorization: token,
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
 export const httpUpload = async (url, body, token, onProgress) => {
   return await axios.post(url, body, {
     headers: {

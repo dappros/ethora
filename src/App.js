@@ -7,10 +7,11 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 import React, {Component} from 'react';
 import {Provider} from 'react-redux';
 import store from './config/store';
-import {Text} from 'react-native';
+import {Text, View} from 'react-native';
 import Routes from './routes';
 import RNBootSplash from 'react-native-bootsplash';
 import {StatusBar} from 'react-native';
+import {CustomToast} from './components/CustomToast';
 
 // Sentry.init({
 //   dsn: "https://daaa65328f6041fc915a0074ce208923@o301951.ingest.sentry.io/5843000",
@@ -29,12 +30,12 @@ class App extends Component {
     RNBootSplash.hide();
   }
 
-
   render() {
     return (
       <Provider store={store}>
         <StatusBar barStyle="dark-content" backgroundColor="white" />
         <Routes />
+        <CustomToast />
       </Provider>
     );
   }

@@ -8,7 +8,7 @@ import * as types from '../constants/types';
 import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
 import {logOut} from './auth';
-import { httpGet } from '../config/apiService';
+import {httpGet} from '../config/apiService';
 
 const hitAPI = new fetchFunction();
 
@@ -30,22 +30,12 @@ export const fetchUsers = token => {
   return async dispatch => {
     dispatch(fetchingCommonRequest());
     try {
-      const response = await httpGet(url, token);
-      hitAPI.fetchGet(
-        url,
-        token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          // console.log(data)
-          if (data.success) {
-            dispatch(fetchingAllUserSuccess(data));
-          } else {
-            dispatch(fetchingCommonFailure(data));
-          }
-        },
-      );
+      const res = await httpGet(url, token);
+      if (res.data.success) {
+        dispatch(fetchingAllUserSuccess(res.data));
+      } else {
+        dispatch(fetchingCommonFailure(res.data));
+      }
     } catch (error) {
       dispatch(fetchingCommonFailure(error));
     }

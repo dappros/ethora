@@ -8,6 +8,8 @@ import * as types from '../constants/types';
 import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
 import {logOut} from '../actions/auth';
+import {httpDelete, httpGet, httpPost} from '../config/apiService';
+import {showSuccess} from '../config/toastAction';
 
 const hitAPI = new fetchFunction();
 
@@ -54,23 +56,15 @@ const fetchingDeleteEmailFromListFailure = errorMsg => ({
 });
 
 export const getEmailList = token => {
-  return dispatch => {
+  return async dispatch => {
     dispatch(fetchingEmailList());
     try {
-      hitAPI.fetchGet(
-        connectionURL.getListOfEmails,
-        token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          if (data.success) {
-            dispatch(fetchingEmailListSuccess(data.emails));
-          } else {
-            dispatch(fetchingEmailListFailure(data));
-          }
-        },
-      );
+      const res = await httpGet(connectionURL.getListOfEmails, token);
+      if (res.data.success) {
+        dispatch(fetchingEmailListSuccess(res.data.emails));
+      } else {
+        dispatch(fetchingEmailListFailure(res.data));
+      }
     } catch (error) {
       dispatch(fetchingEmailListFailure(error));
     }
@@ -78,25 +72,17 @@ export const getEmailList = token => {
 };
 
 export const addEmailToList = (token, body) => {
-  return dispatch => {
+  return async dispatch => {
     dispatch(fetchingAddEmailToList());
     try {
-      hitAPI.fetchPost(
-        connectionURL.addOrDeleteEmail,
-        body,
-        token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          console.log(data, 'addemaildata');
-          if (data.success || data === '') {
-            dispatch(fetchingAddEmailToListSuccess('Email Added'));
-          } else {
-            dispatch(fetchingAddEmailToListFailure(data.msg));
-          }
-        },
-      );
+      const res = await httpPost(connectionURL.addOrDeleteEmail, body, token);
+      if (res.data.success || res.data === '') {
+        dispatch(getEmailList(token));
+        dispatch(fetchingAddEmailToListSuccess('Email Added'));
+        showSuccess('Success', 'Email added successfully');
+      } else {
+        dispatch(fetchingAddEmailToListFailure(res.data.msg));
+      }
     } catch (error) {
       dispatch(fetchingAddEmailToListFailure(error));
     }
@@ -105,25 +91,21 @@ export const addEmailToList = (token, body) => {
 
 export const deletEmailFromList = (token, email) => {
   const url = connectionURL.addOrDeleteEmail + '/' + email;
-  return dispatch => {
+  return async dispatch => {
     dispatch(fetchingDeleteEmailFromList());
+
     try {
-      hitAPI.fetchDelete(
-        url,
-        token,
-        () => {
-          dispatch(logOut());
-        },
-        data => {
-          console.log(data, 'deleteDAta');
-          if (data.success) {
-            dispatch(fetchingDeleteEmailFromListSuccess('Email Added'));
-          } else {
-            dispatch(fetchingDeleteEmailFromListFailure(data.msg));
-          }
-        },
-      );
+      const res = await httpDelete(url, token);
+      if (res.data.success) {
+        dispatch(getEmailList(token));
+        dispatch(fetchingDeleteEmailFromListSuccess('Email Added'));
+        showSuccess('Success', 'Email deleted successfully');
+      } else {
+        dispatch(fetchingDeleteEmailFromListFailure(res.data.msg));
+      }
     } catch (error) {
+      console.log(error.response);
+
       dispatch(fetchingDeleteEmailFromListFailure(error));
     }
   };

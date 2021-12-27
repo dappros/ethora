@@ -12,6 +12,8 @@ import {View, ActivityIndicator, SafeAreaView, AppState} from 'react-native';
 //routes
 import HeaderComponent from './components/shared/defaultHeader';
 import Login from './Screens/login';
+import AccountScreen from './Screens/AccountScreen';
+
 import Chat from './Screens/chat';
 import QRScreen from './Screens/qrcodescreen';
 import QRGenScreen from './Screens/qrCodeGenerator';
@@ -60,6 +62,7 @@ import * as schemaTypes from './constants/realmConstants';
 import store from './config/store';
 import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
 import {DebugScreen} from './Screens/DebugScreen';
+import { AccountScreenRefactored } from './Screens/AccountScreenRefactored';
 const {primaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
@@ -345,27 +348,27 @@ function settingsComponent({navigation}) {
   );
 }
 
-// function accountComponent({navigation}) {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen
-//         options={{
-//           header: () => (
-//             <HeaderComponent
-//               pushToken={pushToken}
-//               navigation={navigation}
-//               screenName="Account"
-//             />
-//           ),
-//           headerLeft: null,
-//         }}
-//         name="Account"
-//         initialParams={navigation}
-//         component={Account}
-//       />
-//     </Stack.Navigator>
-//   );
-// }
+function accountComponent({navigation}) {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        options={{
+          header: () => (
+            <HeaderComponent
+              pushToken={pushToken}
+              navigation={navigation}
+              screenName="Account"
+            />
+          ),
+          headerLeft: null,
+        }}
+        name="AccountScreen"
+        initialParams={navigation}
+        component={AccountScreenRefactored}
+      />
+    </Stack.Navigator>
+  );
+}
 
 class Routes extends Component {
   constructor(props) {
@@ -703,11 +706,11 @@ class Routes extends Component {
             name="QRGenScreenComponent"
             component={QRGenScreenComponent}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
             options={{headerShown: false}}
             name="AccountComponent"
             component={accountComponent}
-          />    */}
+          />   
         </Stack.Navigator>
       );
     }
