@@ -84,7 +84,7 @@ const defaultChatRooms = [
 const defaultChats = {
   f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5: {
     premiumOnly: true,
-    stickyOrder: false,
+    stickyOrder: true,
     removable: false,
   },
 };

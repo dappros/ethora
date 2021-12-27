@@ -91,10 +91,11 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
     dispatch(fetchingWalletCommonRequest());
 
     try {
-      const response = await httpGet(url, token);
-      console.log(response, '2348902348902');
 
+      const response = await httpGet(url, token);
       addLogsApi(response.data);
+      console.log(isOwn, '234asd29034239084')
+     
       if (isOwn) {
         dispatch(fetchTokenEtherBalance(response.data));
       } else {
@@ -202,6 +203,9 @@ export const transferTokens = (
       //   },
       // );
     } catch (error) {
+      Toast.show('Something went wrong, cannot transfer tokens', Toast.LONG);
+
+      console.log(error);
       dispatch(fetchingWalletCommonFailure(error));
     }
   };
@@ -220,34 +224,47 @@ export const fetchTransaction = (
     walletAddress +
     `&limit=${limit}&offset=${offset}`;
   // let url = connectionURL.transactionURL
-  return dispatch => {
+  return async dispatch => {
     // dispatch(fetchingWalletCommonRequest());
     try {
-      walletAddress &&
-        hitAPI.fetchGet(
-          url,
-          token,
-          () => {
-            dispatch(logOut());
-          },
-          data => {
-            dispatch(addLogsApi(data));
-            if (data.items) {
-              if (isOwn) {
-                dispatch(setOffset(data.limit));
-                dispatch(setTotal(data.total));
-                dispatch(fetchingTransactionSuccess(data));
-                insertTransaction(data.items);
-              } else {
-                dispatch(setOffset(data.limit));
-                dispatch(setTotal(data.total));
-                dispatch(fetchingOtherUserTransactionSuccess(data));
-              }
-            } else {
-              dispatch(fetchingWalletCommonFailure(data));
-            }
-          },
-        );
+      const response = await httpGet(url, token);
+      if (response.data.items) {
+        if (isOwn) {
+          dispatch(setOffset(response.data.limit));
+          dispatch(setTotal(response.data.total));
+          dispatch(fetchingTransactionSuccess(response.data));
+          insertTransaction(response.data.items);
+        } else {
+          dispatch(setOffset(response.data.limit));
+          dispatch(setTotal(response.data.total));
+          dispatch(fetchingOtherUserTransactionSuccess(response.data));
+        }
+      }
+      // walletAddress &&
+      //   hitAPI.fetchGet(
+      //     url,
+      //     token,
+      //     () => {
+      //       dispatch(logOut());
+      //     },
+      //     data => {
+      //       dispatch(addLogsApi(data));
+      //       if (data.items) {
+      //         if (isOwn) {
+      //           dispatch(setOffset(data.limit));
+      //           dispatch(setTotal(data.total));
+      //           dispatch(fetchingTransactionSuccess(data));
+      //           insertTransaction(data.items);
+      //         } else {
+      //           dispatch(setOffset(data.limit));
+      //           dispatch(setTotal(data.total));
+      //           dispatch(fetchingOtherUserTransactionSuccess(data));
+      //         }
+      //       } else {
+      //         dispatch(fetchingWalletCommonFailure(data));
+      //       }
+      //     },
+      //   );
     } catch (error) {
       dispatch(fetchingWalletCommonFailure(error));
     }
