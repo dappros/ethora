@@ -53,6 +53,7 @@ import {checkEmailExist} from '../config/routesConstants';
 import DeviceInfo from 'react-native-device-info';
 import Toast from 'react-native-simple-toast';
 import {httpGet} from '../config/apiService';
+import { showError } from '../config/toastAction';
 
 const hitAPI = new fetchFunction();
 
@@ -326,7 +327,8 @@ class Login extends Component {
         this.registerSocialUser(user, loginType);
       }
     } catch (error) {
-      Toast.show('Something went wrong, please try again later', Toast.LONG);
+      showError('Error', 'Something went wrong, please try again later')
+
 
       console.log(error);
     }

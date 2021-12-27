@@ -21,6 +21,7 @@ import {
 } from '../config/routesConstants';
 import {httpGet, httpPost} from '../config/apiService';
 import Toast from 'react-native-simple-toast';
+import {showError} from '../config/toastAction';
 
 const hitAPI = new fetchFunction();
 
@@ -91,11 +92,10 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
     dispatch(fetchingWalletCommonRequest());
 
     try {
-
       const response = await httpGet(url, token);
       addLogsApi(response.data);
-      console.log(isOwn, '234asd29034239084')
-     
+      console.log(isOwn, '234asd29034239084');
+
       if (isOwn) {
         dispatch(fetchTokenEtherBalance(response.data));
       } else {
@@ -126,7 +126,7 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
     } catch (error) {
       console.log(error);
       dispatch(fetchingWalletCommonFailure('Something went wrong'));
-      Toast.show('Cannot get wallet balance', Toast.LONG);
+      showError('Error', 'Cannot get wallet balance');
     }
   };
 };
@@ -203,7 +203,7 @@ export const transferTokens = (
       //   },
       // );
     } catch (error) {
-      Toast.show('Something went wrong, cannot transfer tokens', Toast.LONG);
+      showError('Error', 'Something went wrong, cannot transfer tokens');
 
       console.log(error);
       dispatch(fetchingWalletCommonFailure(error));

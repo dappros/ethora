@@ -19,6 +19,7 @@ import Toast from 'react-native-simple-toast';
 import {CONFERENCEDOMAIN} from '../constants/xmppConstants';
 import {unv_url} from '../../docs/config';
 import {connect} from 'react-redux';
+import { showInfo } from '../config/toastAction';
 
 const {primaryColor} = commonColors;
 const {mediumFont} = textStyles;
@@ -83,7 +84,7 @@ class QrCodeGenerator extends Component {
     );
     const chatLink = `${unv_url}${roomName}`;
     Clipboard.setString(chatLink);
-    Toast.show('Link Copied');
+    showInfo('Info', 'Link copied.')
   };
 
   render() {

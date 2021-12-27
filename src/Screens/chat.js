@@ -112,6 +112,7 @@ import {addLogsApi} from '../actions/debugActions';
 import {httpUpload} from '../config/apiService';
 import Toast from 'react-native-simple-toast';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import { showError } from '../config/toastAction';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -633,13 +634,12 @@ class Chat extends Component {
         this.setUploadProgress,
       );
       if (response.data.results.length) {
-        console.log('2348902348239048230', response);
-        console.log('249230-409234', response);
+      
         this.props.addLogsApi(response.data.results);
         this.submitMediaMessage(response.data.results, waveform);
       }
     } catch (error) {
-      Toast.show('Cannot upload file, try again later', Toast.LONG);
+      showError('Error', 'Cannot upload file, try again later')
     }
 
     // hitAPI.fileUpload(
@@ -1552,10 +1552,8 @@ class Chat extends Component {
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
                   } else {
-                    Toast.show(
-                      'Cannot upload file, try again later',
-                      Toast.LONG,
-                    );
+                    showError('Error', 'Cannot upload file, try again later')
+
 
                     throw err;
                   }

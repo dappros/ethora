@@ -44,6 +44,7 @@ import FastImage from 'react-native-fast-image';
 import {commonColors, textStyles} from '../../docs/config';
 import {fileUpload, nftTransferURL} from '../config/routesConstants';
 import {httpPost, httpUpload} from '../config/apiService';
+import {showError} from '../config/toastAction';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -101,7 +102,7 @@ function MintItems(props) {
       return response.data;
     } catch (error) {
       console.log(error);
-      Toast.show('Cannot upload file, try again later', Toast.LONG);
+      showError('Error', 'Cannot upload file, try again later');
     }
 
     // hitAPI.fileUpload(
@@ -270,7 +271,7 @@ function MintItems(props) {
         true,
       );
     } catch (error) {
-      Toast.show('Cannot create item, try again later', Toast.LONG);
+      showError('Error', 'Cannot create item, try again later');
       console.log(error);
     }
 
@@ -303,17 +304,18 @@ function MintItems(props) {
   };
   const onMintClick = () => {
     if (!avatarSource) {
-      Toast.show('Please load the image.', Toast.SHORT);
+      showError('Error', 'Please load the image.');
 
       return;
     }
     if (!itemName.length) {
-      Toast.show('Please fill the item name.', Toast.SHORT);
+      showError('Error', 'Please fill the item name.');
 
       return;
     }
     if (!isSelected) {
-      Toast.show('Please confirm distribution rights', Toast.SHORT);
+      showError('Error', 'Please confirm distribution rights');
+
       return;
     }
 
