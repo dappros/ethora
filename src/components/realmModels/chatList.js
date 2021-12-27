@@ -71,7 +71,6 @@ export const updateChatRoom = (jid, property, value) =>
 
 export const updateRosterList = data =>
   new Promise((resolve, reject) => {
-    console.log(realm, 'fromupdate');
     realm.write(() => {
       const chatList = realm.objectForPrimaryKey(
         schemaTypes.CHAT_LIST_SCHEMA,
@@ -111,7 +110,6 @@ export const getChatRoom = jid =>
 export const deleteChatRoom = jid =>
   new Promise((resolve, reject) => {
     const chat = realm.objectForPrimaryKey(schemaTypes.CHAT_LIST_SCHEMA, jid);
-    console.log(chat, '23498234239048')
     realm.write(() => {
       realm.delete(chat);
     });
@@ -121,7 +119,6 @@ export const deleteChatRoom = jid =>
 export const fetchRosterList = () =>
   new Promise((resolve, reject) => {
     const rosterList = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
-    console.log(realm, 'asdadfsfgdfg');
     rosterList.isValid()
       ? rosterList.isEmpty
         ? resolve(Array.from(rosterList))

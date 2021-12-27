@@ -6,7 +6,6 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 
 const {xml} = require('@xmpp/client');
 import {xmpp} from './xmppCentral';
-import * as xmppConstants from '../constants/xmppConstants';
 import * as types from '../constants/types';
 import store from '../config/store';
 //For now only subscibed muc are being fetched
@@ -29,9 +28,39 @@ export const fetchRosterlist = (walletAddress, stanzaId) => {
 
   xmpp.send(message);
 };
+export const unsubscribeFromChatXmpp = (manipulatedWalletAddress, jid) => {
+  const xmppDomains = getXmppFromStore();
+  const message = xml(
+    'iq',
+    {
+      from: manipulatedWalletAddress + '@' + xmppDomains.DOMAIN,
+      to: jid,
+      type: 'set',
+      id: 'unsubscribe',
+    },
+    xml(
+      'unsubscribe',
+      {
+        xmlns: 'urn:xmpp:mucsub:0',
+        // nick: nickName,
+      },
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+    ),
+  );
+  xmpp.send(message);
+};
+export const leaveRoomXmpp = (manipulatedWalletAddress, jid, username) => {
+  const xmppDomains = getXmppFromStore();
 
+  const presence = xml('presence', {
+    from: manipulatedWalletAddress + '@' + xmppDomains.DOMAIN,
+    to: jid + '/' + username,
+    type: 'unavailable',
+  });
+  xmpp.send(presence);
+};
 export const get_archive_by_room = chat_jid => {
-
   let message = xml(
     'iq',
     {

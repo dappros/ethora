@@ -457,7 +457,6 @@ export const xmppListener = (
               item.attrs.locationPreview || item.attrs.location;
             waveForm = item.attrs.waveForm;
             mimetype = item.attrs.mimetype;
-            console.log(item, '3202394023-49-23');
             duration = item.attrs.duration;
 
             size = item.attrs.size;

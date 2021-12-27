@@ -53,7 +53,6 @@ export const insertMessages = (
       };
     }
     if (data.system) {
-      console.log('yes system', data);
       messageObject = {
         message_id: data._id, //unique
         text: data.text,
@@ -93,7 +92,6 @@ export const queryRoomAllMessages = room_name =>
 //update message object
 export const updateMessageObject = data =>
   new Promise((resolve, reject) => {
-    console.log(data, 'Adsndfgytdscd');
     realm.write(() => {
       let messageObject = realm.objectForPrimaryKey(
         schemaTypes.MESSAGE_SCHEMA,

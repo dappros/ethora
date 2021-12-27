@@ -335,10 +335,6 @@ function AnotherProfile(props) {
       let allTransactions = walletReducerData.anotherUserTransaction
         // .reverse()
         .map(item => {
-          console.log(
-            'sdfdsfsdfdsfsdfsdsfsafsddfw4er',
-            walletReducerData.anotherUserTransaction,
-          );
           if (item.tokenId === 'NFT') {
             if (
               item.from === anotherUserWalletAddress &&
@@ -363,7 +359,6 @@ function AnotherProfile(props) {
             return item;
           } else {
             item.balance = item.receiverBalance;
-            console.log(item.receiverBalance, 'dfdsfsdfdsfsdfds');
             balance = balance + item.value;
             return item;
           }
@@ -373,18 +368,14 @@ function AnotherProfile(props) {
 
       setTransactionCount(walletReducerData.anotherUserTransaction.length);
       setIsLoading(false);
-      console.log(
-        'aaffdsfdasdfsf',
-        allReducers.loginReducer.anotherUserLastSeen,
-        loginReducerData.anotherUserWalletAddress,
-      );
+     
     }, 2500);
   }, [allReducers.walletReducer.anotherUserTransaction]);
 
   useEffect(() => {
     setTimeout(() => {
       let updatedCoinBalance = 0;
-      if (walletReducerData.anotherUserBalance.length > 0) {
+      if (walletReducerData.anotherUserBalance?.length > 0) {
         setCoinData(
           walletReducerData.anotherUserBalance.filter(
             item => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',

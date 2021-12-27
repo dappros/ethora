@@ -634,7 +634,6 @@ class Routes extends Component {
     }
 
     if (this.state.userToken && this.state.userToken !== 'loading') {
-      console.log('isskipforever', this.state.isSkipForever);
       return (
         <Stack.Navigator>
           {this.state.isSkipForever || !tutorialStartUponLogin ? null : (

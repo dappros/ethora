@@ -12,7 +12,7 @@ import reducer from "../reducers";
 const logger = createLogger({
     predicate: (getState, action) => __DEV__});
 
-const createStoreWithMiddleware = applyMiddleware(thunk,logger)(createStore);
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 
 const store = createStoreWithMiddleware(reducer);
 

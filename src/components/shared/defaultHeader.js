@@ -13,6 +13,7 @@ import {
   Platform,
   View,
   Text,
+  ActivityIndicator,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -71,6 +72,7 @@ class HeaderComponent extends Component {
       username: '',
       pushToken: '',
       debugModeCounter: 0,
+      loading: false,
     };
   }
 
@@ -82,6 +84,8 @@ class HeaderComponent extends Component {
     let username = '';
     let screenName = '';
     let manipulatedWalletAddress;
+    this.setState({loading: true});
+
     const cachedBalance = await AsyncStorage.getItem('userBalance');
     await this.props.retrieveInitialData().then(() => {
       const initialData = this.props.loginReducer.initialData;
@@ -101,14 +105,15 @@ class HeaderComponent extends Component {
       //         }
       //     })
       // }
-      this.setState({
-        screenName,
-        walletAddress,
-        username,
-        manipulatedWalletAddress,
-        balance: cachedBalance,
-        pushToken,
-      });
+    });
+    this.setState({
+      screenName,
+      walletAddress,
+      username,
+      manipulatedWalletAddress,
+      balance: cachedBalance,
+      pushToken,
+      loading: false,
     });
 
     if (pushToken) {
@@ -360,15 +365,21 @@ class HeaderComponent extends Component {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Image source={coinImagePath} style={styles.iconStyle} />
-                  <Text
-                    style={{
-                      color: primaryColor,
-                      fontFamily: mediumFont,
-                      fontSize: hp('1.97%'),
-                    }}>
-                    {this.state.balance}
-                  </Text>
+                  <>
+                    <Image source={coinImagePath} style={styles.iconStyle} />
+                    {this.state.loading ? (
+                      <ActivityIndicator size="small" color={primaryColor} />
+                    ) : (
+                      <Text
+                        style={{
+                          color: primaryColor,
+                          fontFamily: mediumFont,
+                          fontSize: hp('1.97%'),
+                        }}>
+                        {this.state.balance}
+                      </Text>
+                    )}
+                  </>
                 </View>
               </TouchableOpacity>
 
