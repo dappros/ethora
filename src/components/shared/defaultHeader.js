@@ -129,7 +129,6 @@ export const DefaultHeader = ({pushToken, navigation}) => {
   };
   const computeWalletBalance = async () => {
     let token = '';
-    const cachedBalance = await AsyncStorage.getItem('userBalance');
     walletReducer.balance.map((item, index) => {
       if (item.tokenName === coinsMainName) {
         const tokenBalance = Math.round(item.balance * 100) / 100;
@@ -278,12 +277,30 @@ export const DefaultHeader = ({pushToken, navigation}) => {
             <TouchableOpacity
               onPress={onPressGem}
               style={[styles.diamondContainer]}>
-              <View style={styles.balanceContainer}>
+              <View
+                style={[
+                  styles.balanceContainer,
+                  {
+                    backgroundColor: !walletReducer.balance.length
+                      ? 'grey'
+                      : '#fff',
+                  },
+                ]}>
                 <Image source={coinImagePath} style={styles.iconStyle} />
                 {loading || !balance ? (
                   <ActivityIndicator size="small" color={primaryColor} />
                 ) : (
-                  <Text style={styles.balanceText}>{balance}</Text>
+                  <Text
+                    style={[
+                      styles.balanceText,
+                      {
+                        color: !walletReducer.balance.length
+                          ? 'lightgrey'
+                          : primaryColor,
+                      },
+                    ]}>
+                    {balance}
+                  </Text>
                 )}
               </View>
             </TouchableOpacity>
