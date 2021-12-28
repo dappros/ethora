@@ -56,7 +56,7 @@ const {mediumFont} = textStyles;
 
 const menuItems = debug => [
   {value: 'newChat', label: 'New chat', visible: true},
-  {value: 'profile', label: 'Profile', visible: true},
+  {value: 'profile', label: 'My profile', visible: true},
   {value: 'transaction', label: 'Transactions', visible: true},
   // {value: 'settings', label: 'Settings', visible: true},
   {value: 'scan', label: 'Scan', visible: true},
@@ -72,7 +72,7 @@ export const DefaultHeader = ({pushToken, navigation}) => {
   // const [tokenname, setTokenName] = useState(coinsMainName);
   // const [text, setText] = useState('');
   // const [pushToken1, setPushToken] = useState('');
-  const [balance, setBalance] = useState(10);
+  const [balance, setBalance] = useState(null);
   const [debugModeCounter, setDebugModeCounter] = useState('');
   const [loading, setLoading] = useState('');
 
@@ -120,7 +120,9 @@ export const DefaultHeader = ({pushToken, navigation}) => {
 
     dispatch(retrieveInitialData());
     const cachedBalance = await AsyncStorage.getItem('userBalance');
-    setBalance(JSON.parse(cachedBalance));
+    if (cachedBalance) {
+      setBalance(JSON.parse(cachedBalance));
+    }
     setLoading(false);
 
     if (pushToken) subscribePush();
@@ -132,8 +134,8 @@ export const DefaultHeader = ({pushToken, navigation}) => {
       if (item.tokenName === coinsMainName) {
         const tokenBalance = Math.round(item.balance * 100) / 100;
         token = item.tokenName;
-        cacheBalance(balance);
-        setBalance(tokenBalance || JSON.parse(cachedBalance));
+        cacheBalance(tokenBalance);
+        setBalance(tokenBalance);
       }
     });
 
@@ -278,7 +280,7 @@ export const DefaultHeader = ({pushToken, navigation}) => {
               style={[styles.diamondContainer]}>
               <View style={styles.balanceContainer}>
                 <Image source={coinImagePath} style={styles.iconStyle} />
-                {loading ? (
+                {loading || !balance ? (
                   <ActivityIndicator size="small" color={primaryColor} />
                 ) : (
                   <Text style={styles.balanceText}>{balance}</Text>
