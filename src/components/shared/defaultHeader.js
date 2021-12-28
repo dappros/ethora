@@ -34,7 +34,6 @@ import {
 import {toggleDebugMode} from '../../actions/debugActions';
 import {sendSearchText} from '../../actions/searchAction';
 import Menu, {MenuItem} from 'react-native-material-menu';
-import * as XmppConstant from '../../constants/xmppConstants';
 import {
   setRosterAction,
   setRecentRealtimeChatAction,
@@ -124,7 +123,7 @@ class HeaderComponent extends Component {
         environment: 'Production',
         externalId: '',
         isSubscribed: '1',
-        jid: manipulatedWalletAddress + '@' + XmppConstant.DOMAIN,
+        jid: manipulatedWalletAddress + '@' +  this.props.apiReducer.xmppDomains.DOMAIN,
         screenName: screenName,
       });
     }

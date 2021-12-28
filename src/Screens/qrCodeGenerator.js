@@ -16,7 +16,6 @@ import {
 import {commonColors, textStyles} from '../../docs/config';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-simple-toast';
-import {CONFERENCEDOMAIN} from '../constants/xmppConstants';
 import {unv_url} from '../../docs/config';
 import {connect} from 'react-redux';
 import { showInfo } from '../config/toastAction';

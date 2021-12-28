@@ -7,7 +7,6 @@ import {
 export const prodXmpp = 'dxmpp.com';
 export const devXmpp = 'dev.dxmpp.com';
 
-
 const initialState = {
   modes: {
     dev: 'https://app-dev.dappros.com/v1',

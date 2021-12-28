@@ -5,14 +5,15 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import * as types from '../constants/types';
-import * as connectionURL from '../config/url';
 import fetchFunction from '../config/api';
-import {logOut} from '../actions/auth';
 import {httpDelete, httpGet, httpPost} from '../config/apiService';
 import {showSuccess} from '../config/toastAction';
+import store from '../config/store';
+import {addOrDeleteEmail, getListOfEmails} from '../config/routesConstants';
 
-const hitAPI = new fetchFunction();
-
+const getUrlFromStore = additionalUrl => {
+  return store.getState().apiReducer.defaultUrl + additionalUrl;
+};
 const fetchingEmailList = () => ({
   type: types.FETCHING_EMAIL_LIST,
 });
@@ -56,10 +57,12 @@ const fetchingDeleteEmailFromListFailure = errorMsg => ({
 });
 
 export const getEmailList = token => {
+  const url = getUrlFromStore(getListOfEmails);
+
   return async dispatch => {
     dispatch(fetchingEmailList());
     try {
-      const res = await httpGet(connectionURL.getListOfEmails, token);
+      const res = await httpGet(url, token);
       if (res.data.success) {
         dispatch(fetchingEmailListSuccess(res.data.emails));
       } else {
@@ -72,10 +75,11 @@ export const getEmailList = token => {
 };
 
 export const addEmailToList = (token, body) => {
+  const url = getUrlFromStore(addOrDeleteEmail);
   return async dispatch => {
     dispatch(fetchingAddEmailToList());
     try {
-      const res = await httpPost(connectionURL.addOrDeleteEmail, body, token);
+      const res = await httpPost(url, body, token);
       if (res.data.success || res.data === '') {
         dispatch(getEmailList(token));
         dispatch(fetchingAddEmailToListSuccess('Email Added'));
@@ -90,7 +94,8 @@ export const addEmailToList = (token, body) => {
 };
 
 export const deletEmailFromList = (token, email) => {
-  const url = connectionURL.addOrDeleteEmail + '/' + email;
+  const url = getUrlFromStore(addOrDeleteEmail) + '/' + email;
+  // const url = connectionURL.addOrDeleteEmail + '/' + email;
   return async dispatch => {
     dispatch(fetchingDeleteEmailFromList());
 

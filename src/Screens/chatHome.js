@@ -71,7 +71,6 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors, defaultChats, textStyles} from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
-import * as xmppConstants from '../constants/xmppConstants';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
 
 import xml from '@xmpp/xml';

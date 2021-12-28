@@ -30,7 +30,6 @@ import QRGenerator from '../../Screens/qrCodeGenerator';
 import {ActivityIndicator} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native';
 import PrivacyPolicy from './PrivacyPolicy';
-import * as xmppConstants from '../../constants/xmppConstants';
 import {
   setCurrentChatDetails,
   shouldCountAction,

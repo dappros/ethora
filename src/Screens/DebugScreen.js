@@ -19,7 +19,6 @@ import {
 } from 'react-native-responsive-screen';
 import {urlDefault} from '../config/url';
 import {fetchWalletBalance} from '../actions/wallet';
-import {ApiService} from '../config/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {changeApiMode, changeToken, changeXmpp} from '../actions/apiAction';
 import {devXmpp, nextToken, prodXmpp} from '../reducers/apiReducer';
@@ -107,14 +106,13 @@ const DebugScreenApi = ({navigation}) => {
   const walletAddress = useSelector(
     state => state.loginReducer.initialData.walletAddress,
   );
-  const [url, setUrl] = useState(urlDefault);
 
   const [searchText, setSearchText] = useState('');
   const [textForSearch, setTextForSearch] = useState('');
-  const dispatch = useDispatch();
-  const http = new ApiService(url, APP_TOKEN);
   const [apiMode, setApiMode] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
+  const dispatch = useDispatch();
+
   const submit = async () => {
     // let res = await http.httpGet('wallets/balance/' + walletAddress);
     // console.log(res);
@@ -124,9 +122,7 @@ const DebugScreenApi = ({navigation}) => {
 
     setTextForSearch(searchText);
   };
-  useEffect(() => {
-    // dispatch(fetchWalletBalance());
-  }, []);
+ 
 
   const pickApiMode = mode => {
     setModalVisible(false);

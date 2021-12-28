@@ -54,7 +54,6 @@ import {
 } from './actions/chatAction';
 import {addLogsXmpp} from './actions/debugActions';
 import {xmppConnect, xmpp, xmppListener} from './helpers/xmppCentral';
-import * as xmppConstant from './constants/xmppConstants';
 import {underscoreManipulation} from './helpers/underscoreLogic';
 import {fetchWalletBalance} from './actions/wallet';
 import {realm} from './components/realmModels/allSchemas';
@@ -505,14 +504,14 @@ class Routes extends Component {
       {
         id: 'sendMessage',
         type: 'groupchat',
-        from: this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+        from: this.state.manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         to: chatJID,
       },
       xml('body', {}, messageObject[0].text),
       xml('data', {
-        xmlns: 'http://' + xmppConstant.DOMAIN,
+        xmlns: 'http://' +  this.props.apiReducer.xmppDomains.DOMAIN,
         senderJID:
-          this.state.manipulatedWalletAddress + '@' + xmppConstant.DOMAIN,
+          this.state.manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         senderFirstName: this.props.loginReducer.initialData.firstName,
         senderLastName: this.props.loginReducer.initialData.lastName,
         senderWalletAddress: this.props.loginReducer.initialData.walletAddress,

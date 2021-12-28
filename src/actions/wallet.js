@@ -94,8 +94,6 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
     try {
       const response = await httpGet(url, token);
       addLogsApi(response.data);
-      console.log(isOwn, '234asd29034239084');
-
       if (isOwn) {
         dispatch(fetchTokenEtherBalance(response.data));
       } else {
@@ -125,6 +123,8 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
       // );
     } catch (error) {
       console.log(error);
+      addLogsApi(error);
+
       dispatch(fetchingWalletCommonFailure('Something went wrong'));
       showError('Error', 'Cannot get wallet balance');
     }
@@ -229,6 +229,7 @@ export const fetchTransaction = (
     try {
       const response = await httpGet(url, token);
       if (response.data.items) {
+        dispatch(addLogsApi(response.data))
         if (isOwn) {
           dispatch(setOffset(response.data.limit));
           dispatch(setTotal(response.data.total));
@@ -266,6 +267,8 @@ export const fetchTransaction = (
       //     },
       //   );
     } catch (error) {
+      dispatch(addLogsApi(error))
+
       dispatch(fetchingWalletCommonFailure(error));
     }
   };

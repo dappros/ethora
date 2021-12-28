@@ -25,7 +25,6 @@ import CustomHeader from '../components/shared/customHeader';
 import {roomCreated} from '../actions/chatAction';
 import {connect} from 'react-redux';
 import {xmpp} from '../helpers/xmppCentral';
-import * as xmppConstants from '../constants/xmppConstants';
 import {sha256} from 'react-native-sha256';
 import {
   roomConfigurationForm,
@@ -34,6 +33,7 @@ import {
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors} from '../../docs/config';
+import {subscriptionsStanzaID} from '../constants/xmppConstants';
 
 const {primaryColor} = commonColors;
 
@@ -85,10 +85,13 @@ class CreateNewGroup extends Component {
       'presence',
       {
         id: 'CreateRoom',
-        from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+        from:
+          manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         to:
           roomHash +
-         this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN +
+          this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN +
           '/' +
           manipulatedWalletAddress,
       },
@@ -101,7 +104,10 @@ class CreateNewGroup extends Component {
       'iq',
       {
         to: roomHash + this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
-        from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+        from:
+          manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         id: 'setOwner',
         type: 'get',
       },
@@ -119,7 +125,10 @@ class CreateNewGroup extends Component {
     message = xml(
       'iq',
       {
-        from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+        from:
+          manipulatedWalletAddress +
+          '@' +
+          this.props.apiReducer.xmppDomains.DOMAIN,
         to: roomHash + this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
         type: 'set',
         id: 'subscription',
@@ -140,10 +149,7 @@ class CreateNewGroup extends Component {
     //   getUserRooms(manipulatedWalletAddress);
     // }, 2000);
     setTimeout(() => {
-      fetchRosterlist(
-        manipulatedWalletAddress,
-        xmppConstants.subscriptionsStanzaID,
-      );
+      fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
     }, 2000);
 
     roomCreated(true, navigation);

@@ -18,10 +18,6 @@ import {httpPost} from '../config/apiService';
 
 const hitAPI = new fetchFunction();
 const getUrlFromStore = additionalUrl => {
-  console.log(
-    store.getState().apiReducer.defaultUrl + additionalUrl,
-    'getjkadlfjal',
-  );
   return store.getState().apiReducer.defaultUrl + additionalUrl;
 };
 const getTokenFromStore = () => {

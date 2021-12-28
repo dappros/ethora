@@ -72,7 +72,6 @@ import {
 } from '../helpers/xmppStanzaRequestMessages';
 import {APP_TOKEN} from '../../docs/config';
 import {coinsMainName} from '../../docs/config';
-import * as xmppConstants from '../../src/constants/xmppConstants';
 import {Player} from '@react-native-community/audio-toolkit';
 import DocumentPicker from 'react-native-document-picker';
 import * as connectionURL from '../config/url';
@@ -88,8 +87,6 @@ import VideoPlayer from 'react-native-video-player';
 import WaveForm from 'react-native-audiowaveform';
 import Modal from 'react-native-modal';
 import parseChatLink from '../helpers/parseChatLink';
-import base64 from 'react-native-base64';
-import {Buffer} from 'buffer';
 
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,

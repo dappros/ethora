@@ -20,7 +20,6 @@ function checkTransactionExist(transactionHash, callback) {
 
 export const insertTransaction = data =>
   new Promise((resolve, reject) => {
-    console.log(data, 'dsflkjs8');
     data.map(item => {
       if (!item.nftTotal) item.nftTotal = '0';
       const data = {

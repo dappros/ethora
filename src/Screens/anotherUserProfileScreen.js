@@ -35,7 +35,6 @@ import {
   itemsTransfersAllowed,
 } from '../../docs/config';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
-import * as xmppConstants from '../constants/xmppConstants';
 import {
   clearPaginationData,
   fetchTransaction,

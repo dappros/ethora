@@ -33,7 +33,6 @@ import {
   fetchRosterlist,
 } from '../helpers/xmppStanzaRequestMessages';
 import CustomHeader from '../components/shared/customHeader';
-import * as xmppConstants from '../constants/xmppConstants';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
