@@ -72,7 +72,7 @@ export const DefaultHeader = ({pushToken, navigation}) => {
   // const [tokenname, setTokenName] = useState(coinsMainName);
   // const [text, setText] = useState('');
   // const [pushToken1, setPushToken] = useState('');
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState(10);
   const [debugModeCounter, setDebugModeCounter] = useState('');
   const [loading, setLoading] = useState('');
 
@@ -120,24 +120,23 @@ export const DefaultHeader = ({pushToken, navigation}) => {
 
     dispatch(retrieveInitialData());
     const cachedBalance = await AsyncStorage.getItem('userBalance');
-    setBalance(cachedBalance);
-    if (pushToken) subscribePush();
+    setBalance(JSON.parse(cachedBalance));
     setLoading(false);
+
+    if (pushToken) subscribePush();
   };
   const computeWalletBalance = async () => {
-    let balance = 0;
     let token = '';
     const cachedBalance = await AsyncStorage.getItem('userBalance');
     walletReducer.balance.map((item, index) => {
       if (item.tokenName === coinsMainName) {
-        if (parseInt(item.balance) !== balance) {
-          balance = Math.round(item.balance * 100) / 100;
-          token = item.tokenName;
-        }
+        const tokenBalance = Math.round(item.balance * 100) / 100;
+        token = item.tokenName;
+        cacheBalance(balance);
+        setBalance(tokenBalance || JSON.parse(cachedBalance));
       }
     });
-    cacheBalance(balance);
-    setBalance(balance || cachedBalance);
+
     // setTokenName(token);
   };
 

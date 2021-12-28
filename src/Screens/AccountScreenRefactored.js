@@ -232,7 +232,11 @@ export const AccountScreenRefactored = ({navigation}) => {
 
           {/* Email List */}
           <View style={style.emailListStyle}>
-            {renderEmailList(accountReducer.emailList)}
+            {!accountReducer.emailList.length ? (
+              <ActivityIndicator size="large" color={primaryDarkColor} />
+            ) : (
+              renderEmailList(accountReducer.emailList)
+            )}
           </View>
           {/* Email List */}
 
