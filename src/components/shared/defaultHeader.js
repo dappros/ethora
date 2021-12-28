@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, {Component} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -20,7 +20,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import {
   fetchWalletBalance,
   transferTokens,
@@ -34,12 +34,7 @@ import {
 import {toggleDebugMode} from '../../actions/debugActions';
 import {sendSearchText} from '../../actions/searchAction';
 import Menu, {MenuItem} from 'react-native-material-menu';
-import {
-  setRosterAction,
-  setRecentRealtimeChatAction,
-  finalMessageArrivalAction,
-  participantsUpdateAction,
-} from '../../actions/chatAction';
+
 import {coinsMainName, itemsMintingAllowed} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,418 +51,316 @@ import {
 
 const {primaryColor} = commonColors;
 const {mediumFont} = textStyles;
-class HeaderComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      balance: 0,
-      name: '',
-      tokenName: coinsMainName,
-      tokenDetails: [],
-      showModal: false,
-      text: null,
-      walletAddress: '',
-      manipulatedWalletAddress: '',
-      username: '',
-      pushToken: '',
-      debugModeCounter: 0,
-      loading: false,
-    };
-  }
 
-  async componentDidMount() {
-    let pushToken = this.props.pushToken;
-    let walletAddress = '';
-    let firstName = '';
-    let lastName = '';
-    let username = '';
-    let screenName = '';
-    let manipulatedWalletAddress;
-    this.setState({loading: true});
+// import React from 'react'
 
-    const cachedBalance = await AsyncStorage.getItem('userBalance');
-    await this.props.retrieveInitialData().then(() => {
-      const initialData = this.props.loginReducer.initialData;
-      walletAddress = initialData.walletAddress;
-      manipulatedWalletAddress = underscoreManipulation(walletAddress);
-      firstName = initialData.firstName;
-      lastName = initialData.lastName;
-      username = initialData.username;
-      screenName = firstName + ' ' + lastName;
-      // let balance="0"
-      // if(this.props.walletReducer.balance){
-      //     this.props.walletReducer.balance.map((item)=>{
-      //         if(item.tokenName===coinsMainName){
-      //             if(item.balance.hasOwnProperty("_hex")){
-      //                 balance =  parseInt(item.balance._hex, 16);
-      //             }else balance = item.balance;
-      //         }
-      //     })
-      // }
-    });
-    this.setState({
-      screenName,
-      walletAddress,
-      username,
-      manipulatedWalletAddress,
-      balance: cachedBalance,
-      pushToken,
-      loading: false,
-    });
+const menuItems = debug => [
+  {value: 'newChat', label: 'New chat', visible: true},
+  {value: 'profile', label: 'Profile', visible: true},
+  {value: 'transaction', label: 'Transactions', visible: true},
+  // {value: 'settings', label: 'Settings', visible: true},
+  {value: 'scan', label: 'Scan', visible: true},
+  // {value: 'myQr', label: 'QR', visible: true},
+  {value: 'mint', label: 'Mint items', visible: itemsMintingAllowed},
+  {value: 'tutorial', label: 'Tutorial', visible: tutorialShowInMenu},
+  {value: 'account', label: 'Account', visible: true},
+  {value: 'debug', label: 'Debug', visible: debug},
+  {value: 'logOut', label: 'Logout', visible: true},
+];
 
-    if (pushToken) {
-      this.props.pushSubscription({
+export const DefaultHeader = ({pushToken, navigation}) => {
+  // const [tokenname, setTokenName] = useState(coinsMainName);
+  // const [text, setText] = useState('');
+  // const [pushToken1, setPushToken] = useState('');
+  const [balance, setBalance] = useState(0);
+  const [debugModeCounter, setDebugModeCounter] = useState('');
+  const [loading, setLoading] = useState('');
+
+  const apiReducer = useSelector(state => state.apiReducer);
+  const loginReducer = useSelector(state => state.loginReducer);
+  const walletReducer = useSelector(state => state.walletReducer);
+  const debugReducer = useSelector(state => state.debugReducer);
+  const manipulatedWalletAddress = underscoreManipulation(
+    loginReducer.initialData.walletAddress,
+  );
+  const menuRef = useRef();
+
+  const dispatch = useDispatch();
+
+  const enableDebugMode = () => {
+    if (debugModeCounter >= 2) {
+      dispatch(toggleDebugMode(true));
+    }
+    setDebugModeCounter(prev => prev + 1);
+  };
+  const cacheBalance = async updatedBalance => {
+    await AsyncStorage.setItem('userBalance', JSON.stringify(updatedBalance));
+  };
+
+  const subscribePush = () => {
+    dispatch(
+      pushSubscription({
         appId: 'Ethora',
         deviceId: pushToken,
         deviceType: Platform.OS === 'ios' ? '0' : '1',
         environment: 'Production',
         externalId: '',
         isSubscribed: '1',
-        jid: manipulatedWalletAddress + '@' +  this.props.apiReducer.xmppDomains.DOMAIN,
-        screenName: screenName,
-      });
-    }
-  }
-  enableDebugMode = () => {
-    if (this.state.debugModeCounter === 2) {
-      this.props.toggleDebugMode(true);
-    }
-    this.setState({
-      debugModeCounter: this.state.debugModeCounter + 1,
-    });
-  };
-  cacheBalance = async balance => {
-    await AsyncStorage.setItem('userBalance', JSON.stringify(balance));
-  };
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      this.props.walletReducer.balance !== undefined &&
-      this.props.walletReducer.balance
-    ) {
-      let balance = 0;
-      let tokenName = '';
-      const cachedBalance = await AsyncStorage.getItem('userBalance');
-      this.props.walletReducer.balance.map((item, index) => {
-        if (item.tokenName === coinsMainName) {
-          if (parseInt(item.balance) !== this.state.balance) {
-            balance = Math.round(item.balance * 100) / 100;
-            tokenName = item.tokenName;
-            this.cacheBalance(balance);
-            this.setState({
-              balance: balance || cachedBalance,
-              tokenName,
-            });
-          }
-        }
-      });
-    }
-
-    // if (
-    //   this.props.walletReducer.transactions &&
-    //   this.props.walletReducer.transactions.length !=
-    //     prevProps.walletReducer.transactions.length
-    // ) {
-    //   this.props.fetchWalletBalance(
-    //     this.state.walletAddress,
-    //     null,
-    //     this.props.loginReducer.token,
-    //     true,
-    //   );
-    // }
-  }
-
-  //close the modal
-  closeModal = (tokenName, balance) => {
-    let roundBalance = Math.round(balance * 100) / 100;
-    this.setState({
-      showModal: false,
-      tokenName,
-      balance: roundBalance,
-    });
-  };
-
-  updateSearch(text) {
-    this.setState({text});
-    this.props.sendSearchText(text);
-  }
-
-  // _menu = null;
-
-  setMenuRef = ref => {
-    this._menu = ref;
-  };
-
-  hideMenu = () => {
-    this._menu.hide();
-  };
-
-  showMenu = () => {
-    this._menu.show();
-  };
-
-  openWallet = async () => {
-    let initialData = this.props.loginReducer.initialData;
-    let walletAddress = initialData.walletAddress;
-    await this.props.fetchTransaction(
-      walletAddress,
-      this.props.loginReducer.token,
-      true,
+        jid: manipulatedWalletAddress + '@' + apiReducer.xmppDomains.DOMAIN,
+        screenName:
+          loginReducer.initialData.firstName +
+          ' ' +
+          loginReducer.initialData.lastName,
+      }),
     );
   };
 
-  onPressGem = async () => {
-    await this.openWallet();
-    this.props.navigation.navigate('ProfileComponent');
+  const getInitialData = async () => {
+    setLoading(true);
+
+    dispatch(retrieveInitialData());
+    const cachedBalance = await AsyncStorage.getItem('userBalance');
+    setBalance(cachedBalance);
+    if (pushToken) subscribePush();
+    setLoading(false);
+  };
+  const computeWalletBalance = async () => {
+    let balance = 0;
+    let token = '';
+    const cachedBalance = await AsyncStorage.getItem('userBalance');
+    walletReducer.balance.map((item, index) => {
+      if (item.tokenName === coinsMainName) {
+        if (parseInt(item.balance) !== balance) {
+          balance = Math.round(item.balance * 100) / 100;
+          token = item.tokenName;
+        }
+      }
+    });
+    cacheBalance(balance);
+    setBalance(balance || cachedBalance);
+    // setTokenName(token);
   };
 
-  openKebabItem = type => {
+  const openWallet = () => {
+    dispatch(
+      fetchTransaction(
+        loginReducer.initialData.walletAddress,
+        loginReducer.token,
+        true,
+      ),
+    );
+  };
+  const updateSearch = text => {
+    // setText(text);
+    dispatch(sendSearchText(text));
+  };
+
+  // _menu = null;
+
+  const hideMenu = () => {
+    menuRef.current.hide();
+  };
+
+  const showMenu = () => {
+    menuRef.current.show();
+  };
+  const onPressGem = async () => {
+    openWallet();
+    navigation.navigate('ProfileComponent');
+  };
+
+  const openKebabItem = type => {
     switch (type) {
       case 'newChat':
-        this.props.navigation.navigate('CreateNewChatComponent');
-        this.hideMenu();
+        navigation.navigate('CreateNewChatComponent');
         break;
 
       case 'profile':
-        this.hideMenu();
-        this.openWallet();
-        this.props.navigation.navigate('ProfileComponent');
+        openWallet();
+        navigation.navigate('ProfileComponent');
         break;
 
       case 'transaction':
-        this.hideMenu();
-        this.openWallet();
-        this.props.navigation.navigate('TransactionComponent');
+        openWallet();
+        navigation.navigate('TransactionComponent');
         break;
 
       case 'settings':
-        this.hideMenu();
-        this.props.navigation.navigate('SettingsComponent');
+        navigation.navigate('SettingsComponent');
         break;
 
       case 'scan':
-        this.hideMenu();
-        this.props.navigation.navigate('QRScreenComponent');
+        navigation.navigate('QRScreenComponent');
         break;
 
       case 'myQr':
-        this.hideMenu();
-        this.props.navigation.navigate('QRGenScreenComponent');
+        navigation.navigate('QRGenScreenComponent');
         break;
 
       case 'mint':
-        this.hideMenu();
-        this.props.navigation.navigate('MintItemsComponent');
+        navigation.navigate('MintItemsComponent');
         break;
 
       case 'tutorial':
         AsyncStorage.setItem('@skipForever', '0');
-        this.hideMenu();
-        this.props.navigation.navigate('AppIntroComponent');
+
+        navigation.navigate('AppIntroComponent');
         break;
 
       case 'account':
-        this.hideMenu();
-        this.props.navigation.navigate('AccountComponent');
+        navigation.navigate('AccountComponent');
         break;
       case 'debug':
-        this.hideMenu();
-        this.props.navigation.navigate('DebugScreenComponent');
+        navigation.navigate('DebugScreenComponent');
         break;
 
       case 'logOut':
-        this.hideMenu();
         xmpp.stop().catch(console.error);
-        this.props.logOut();
+        dispatch(logOut());
         break;
       // this.props.navigation.navigate('CreatNewChatComponent')
 
       default:
         return null;
     }
+    hideMenu();
   };
+  useEffect(() => {
+    getInitialData();
+    return () => {};
+  }, []);
 
-  render() {
-    return (
-      <View
-        style={{
-          backgroundColor: primaryColor,
-          paddingBottom: 0,
-          justifyContent: 'center',
-        }}>
-        <SafeAreaView style={styles.container}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              height: hp('10%'),
-              margin: 8,
-              marginRight: wp('0%'),
-            }}>
-            {navbarLogoShow ? (
-              <TouchableOpacity
-                onPress={() =>
-                  this.props.navigation.navigate('ChatHomeComponent')
-                }
-                style={{
-                  flex: 0.1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  margin: 5,
-                  marginLeft: wp('3%'),
-                  marginRight: 18,
-                }}>
-                <View
-                  style={{
-                    height: hp('7%'),
-                    width: hp('7%'),
-                    borderRadius: hp('7%') / 2,
-                    borderWidth: 1,
-                    borderColor: 'transparent',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <Image
-                    style={{width: hp('7%'), height: hp('7%')}}
-                    source={logoPath}
-                  />
-                </View>
-              </TouchableOpacity>
-            ) : null}
+  useEffect(() => {
+    computeWalletBalance();
+    return () => {};
+  }, [walletReducer.balance]);
+
+  // useEffect(() => {
+  //   dispatch(
+  //     fetchWalletBalance(
+  //       loginReducer.initialData.walletAddress,
+  //       null,
+  //       loginReducer.token,
+  //       true,
+  //     ),
+  //   );
+  //   return () => {};
+  // }, [walletReducer.transactions.length]);
+
+  return (
+    <View style={styles.main}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.navContainer}>
+          {!!navbarLogoShow && (
             <TouchableOpacity
-              onPress={this.enableDebugMode}
-              activeOpacity={0.9}
-              style={{
-                flex: navbarLogoShow ? 0.6 : 0.7,
-                justifyContent: 'center',
-                alignItems: 'flex-start',
-              }}>
-              <Text
-                style={{
-                  fontSize: hp('3%'),
-                  color: '#ffff',
-                  fontFamily: mediumFont,
-                }}>
-                {appTitle}
-              </Text>
+              onPress={() => navigation.navigate('ChatHomeComponent')}
+              style={styles.logoButton}>
+              <View style={styles.logoContainer}>
+                <Image
+                  style={{width: hp('7%'), height: hp('7%')}}
+                  source={logoPath}
+                />
+              </View>
             </TouchableOpacity>
-            <View style={{flex: 0.3, flexDirection: 'row'}}>
-              <TouchableOpacity
-                onPress={() => this.onPressGem()}
-                style={[styles.diamondContainer]}>
-                <View
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    width: wp('14%'),
-                    height: wp('12%'),
-                    borderRadius: 5,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <>
-                    <Image source={coinImagePath} style={styles.iconStyle} />
-                    {this.state.loading ? (
-                      <ActivityIndicator size="small" color={primaryColor} />
-                    ) : (
-                      <Text
-                        style={{
-                          color: primaryColor,
-                          fontFamily: mediumFont,
-                          fontSize: hp('1.97%'),
-                        }}>
-                        {this.state.balance}
-                      </Text>
-                    )}
-                  </>
-                </View>
-              </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={enableDebugMode}
+            activeOpacity={0.9}
+            style={{
+              flex: navbarLogoShow ? 0.6 : 0.7,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
+            <Text style={styles.titleText}>{appTitle}</Text>
+          </TouchableOpacity>
+          <View style={{flex: 0.3, flexDirection: 'row'}}>
+            <TouchableOpacity
+              onPress={onPressGem}
+              style={[styles.diamondContainer]}>
+              <View style={styles.balanceContainer}>
+                <Image source={coinImagePath} style={styles.iconStyle} />
+                {loading ? (
+                  <ActivityIndicator size="small" color={primaryColor} />
+                ) : (
+                  <Text style={styles.balanceText}>{balance}</Text>
+                )}
+              </View>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={this.showMenu}
-                style={{
-                  flex: 0.5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: wp('20%'),
-                  marginLeft: wp('1%'),
-                }}>
-                <Menu
-                  ref={ref => (this._menu = ref)}
-                  button={
-                    <View>
-                      <Icon name="ellipsis-v" color="#FFFFFF" size={hp('3%')} />
-                    </View>
-                  }>
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('newChat')}>
-                    New chat
-                  </MenuItem>
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('profile')}>
-                    My profile
-                  </MenuItem>
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('transaction')}>
-                    Transactions
-                  </MenuItem>
-                  {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('settings')}>Settings</MenuItem> */}
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('account')}>
-                    Account
-                  </MenuItem>
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('scan')}>
-                    Scan
-                  </MenuItem>
-                  {this.props.debugReducer.debugMode && (
-                    <MenuItem
-                      textStyle={styles.menuTextStyle}
-                      onPress={() => this.openKebabItem('debug')}>
-                      Debug
-                    </MenuItem>
-                  )}
-                  {itemsMintingAllowed && (
-                    <MenuItem
-                      textStyle={styles.menuTextStyle}
-                      onPress={() => this.openKebabItem('mint')}>
-                      Mint items
-                    </MenuItem>
-                  )}
-                  {/* <MenuItem textStyle={styles.menuTextStyle} onPress={()=>this.openKebabItem('myQr')}>My QR</MenuItem> */}
-                  {tutorialShowInMenu ? (
-                    <MenuItem
-                      textStyle={styles.menuTextStyle}
-                      onPress={() => this.openKebabItem('tutorial')}>
-                      Tutorial
-                    </MenuItem>
-                  ) : null}
-                  <MenuItem
-                    textStyle={styles.menuTextStyle}
-                    onPress={() => this.openKebabItem('logOut')}>
-                    Log out
-                  </MenuItem>
-                </Menu>
-              </TouchableOpacity>
-              {/* <TouchableOpacity onPress={()=>this.openKebab()} style={{justifyContent:'center', alignItems:'flex-end', marginLeft:25}}>
+            <TouchableOpacity onPress={showMenu} style={styles.menuButton}>
+              <Menu
+                ref={menuRef}
+                button={
+                  <View>
+                    <Icon name="ellipsis-v" color="#FFFFFF" size={hp('3%')} />
+                  </View>
+                }>
+                {menuItems(debugReducer.debugMode).map(item => {
+                  if (item.visible) {
+                    return (
+                      <MenuItem
+                        key={item.value}
+                        textStyle={styles.menuTextStyle}
+                        onPress={() => openKebabItem(item.value)}>
+                        {item.label}
+                      </MenuItem>
+                    );
+                  }
+                })}
+              </Menu>
+            </TouchableOpacity>
+            {/* <TouchableOpacity onPress={()=>this.openKebab()} style={{justifyContent:'center', alignItems:'flex-end', marginLeft:25}}>
                                 <Icon name="ellipsis-v" color="#FFFFFF" size={hp('3%')} />
                             </TouchableOpacity> */}
-            </View>
           </View>
-        </SafeAreaView>
-      </View>
-    );
-  }
-}
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
+  main: {
+    backgroundColor: primaryColor,
+    paddingBottom: 0,
+    justifyContent: 'center',
+  },
   container: {
     width: wp('100%'),
     height: Platform.OS == 'ios' ? hp('14%') : hp('10%'),
+  },
+  balanceContainer: {
+    backgroundColor: '#FFFFFF',
+    width: wp('14%'),
+    height: wp('12%'),
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: hp('10%'),
+    margin: 8,
+    marginRight: wp('0%'),
+  },
+  logoContainer: {
+    height: hp('7%'),
+    width: hp('7%'),
+    borderRadius: hp('7%') / 2,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoButton: {
+    flex: 0.1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 5,
+    marginLeft: wp('3%'),
+    marginRight: 18,
   },
   diamondContainer: {
     flex: 0.5,
@@ -484,29 +377,26 @@ const styles = StyleSheet.create({
     fontFamily: mediumFont,
     fontSize: hp('1.6%'),
   },
+  titleText: {
+    fontSize: hp('3%'),
+    color: '#ffff',
+    fontFamily: mediumFont,
+  },
+  balanceText: {
+    color: primaryColor,
+    fontFamily: mediumFont,
+    fontSize: hp('1.97%'),
+  },
+  menuButton: {
+    flex: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: wp('20%'),
+    marginLeft: wp('1%'),
+  },
   iconStyle: {
     height: hp('3%'),
     width: hp('3%'),
   },
 });
-
-const mapStateToProps = state => {
-  return {
-    ...state,
-  };
-};
-
-module.exports = connect(mapStateToProps, {
-  fetchWalletBalance,
-  retrieveInitialData,
-  transferTokens,
-  sendSearchText,
-  fetchTransaction,
-  logOut,
-  setRosterAction,
-  setRecentRealtimeChatAction,
-  finalMessageArrivalAction,
-  participantsUpdateAction,
-  pushSubscription,
-  toggleDebugMode,
-})(HeaderComponent);
+export default DefaultHeader;
