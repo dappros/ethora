@@ -95,6 +95,9 @@ export const updateRosterList = data =>
       if (data.priority) {
         chatList.priority = data.priority;
       }
+      if (data.muted) {
+        chatList.muted = data.muted;
+      }
 
       resolve();
     });

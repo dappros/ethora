@@ -65,6 +65,9 @@ import {
   roomConfigurationForm,
   unsubscribeFromChatXmpp,
   leaveRoomXmpp,
+  getUserRooms,
+  setSubscriptions,
+  subscribeToRoom,
 } from '../helpers/xmppStanzaRequestMessages';
 import {xmpp} from '../helpers/xmppCentral';
 import DraggableFlatList from 'react-native-draggable-flatlist';
@@ -211,6 +214,7 @@ class ChatHome extends Component {
             lastUserName: item.lastUserName,
             priority: item.priority,
             createdAt: item.createdAt,
+            muted: item.muted,
           });
         });
 
@@ -244,6 +248,7 @@ class ChatHome extends Component {
                   lastUserName: item.lastUserName,
                   priority: item.priority,
                   createdAt: item.createdAt,
+                  muted: item.muted,
                 });
               });
 
@@ -356,6 +361,7 @@ class ChatHome extends Component {
               lastUserName: item.lastUserName,
               priority: item.priority,
               createdAt: item.createdAt,
+              muted: item.muted,
             });
           });
           this.setState({
@@ -423,7 +429,8 @@ class ChatHome extends Component {
     roomConfigurationForm(manipulatedWalletAddress, jid, {
       roomName: name,
     });
-    fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+    // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+    getUserRooms(manipulatedWalletAddress);
 
     // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
   };
@@ -431,18 +438,17 @@ class ChatHome extends Component {
     let walletAddress = this.props.loginReducer.initialData.walletAddress;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
     getChatRoom(jid).then(room => {
-      // if (!room.muted) {
-      unsubscribeFromChatXmpp(manipulatedWalletAddress, jid);
-      updateChatRoom(jid, 'muted', true);
-      // } else {
-      //   setSubscriptions(
-      //     manipulatedWalletAddress,
-      //     jid,
-      //     this.props.loginReducer.initialData.username,
-      //   );
-      //   updateChatRoom(jid, 'muted', false);
-      //   // Toast.show('Notifications unmuted', Toast.SHORT);
-      // }
+      if (!room.muted) {
+        unsubscribeFromChatXmpp(manipulatedWalletAddress, jid);
+      } else {
+        
+
+        subscribeToRoom(jid, manipulatedWalletAddress);
+        // updateChatRoom(jid, 'muted', false);
+        this.getRosterList();
+
+        // Toast.show('Notifications unmuted', Toast.SHORT);
+      }
     });
 
     //   <iq from='hag66@shakespeare.example'
@@ -464,7 +470,6 @@ class ChatHome extends Component {
   onNameChange = text => {
     this.setState({newChatName: text});
   };
-
 
   onBackdropPress = () => {
     this.setState({
@@ -620,10 +625,10 @@ class ChatHome extends Component {
                 badgeStyle={{
                   borderWidth: 0,
                   backgroundColor: commonColors.primaryDarkColor,
-                  marginTop: 16
+                  marginTop: 16,
                 }}
                 value={props.navigationState.notificationsCount[route.key]}
-                  />
+              />
             );
         }}
         indicatorStyle={{backgroundColor: 'white'}}

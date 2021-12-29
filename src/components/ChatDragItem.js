@@ -84,16 +84,15 @@ export const ChatDragItem = ({
   const LeftActions = (progress, dragX) => {
     return (
       <>
-        {/* <TouchableOpacity
-            onPress={() => {
-              unsubscribeFromRoom(item.jid);
-              ref.current.close();
-            }}>
-            <View
-              style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
-              <IonIcons name="notifications" size={hp('3%')} color={'white'} />
-            </View>
-          </TouchableOpacity> */}
+        <TouchableOpacity
+          onPress={() => {
+            unsubscribeFromRoom(item.jid);
+            ref.current.close();
+          }}>
+          <View style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
+            <IonIcon name="notifications" size={hp('3%')} color={'white'} />
+          </View>
+        </TouchableOpacity>
         {roomRoles[item.jid] !== 'participant' && (
           <TouchableOpacity
             onPress={() => {
@@ -186,19 +185,23 @@ export const ChatDragItem = ({
                 marginLeft: wp('0.1%'),
                 flex: 1,
               }}>
+                <View style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+
               <Text numberOfLines={1} style={styles.textName}>
                 {item.name}
-                {item.muted && (
-                  <IonIcon
-                    name="volume-mute-outline"
-                    size={hp('2%')}
-                    style={{
-                      marginRight: hp('0.9%'),
-                      marginLeft: hp('0.4%'),
-                    }}
-                  />
-                )}
+                
               </Text>
+              {item.muted && (
+                    <IonIcon
+                      name="volume-mute-outline"
+                      size={hp('2%')}
+                      style={{
+                        marginRight: hp('0.9%'),
+                        marginLeft: wp('1%'),
+                      }}
+                    />
+                )}
+                </View>
 
               {item.lastUserName ? (
                 <View style={{flexDirection: 'row', marginTop: hp('0.8%')}}>

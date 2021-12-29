@@ -45,6 +45,7 @@ const ChatListSchema = {
     lastUserName: 'string',
     createdAt: 'date?',
     priority: {type: 'int', optional: true},
+    muted: {type: 'bool', optional: true},
   },
 };
 
