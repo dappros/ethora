@@ -74,7 +74,7 @@ export const DefaultHeader = ({pushToken, navigation}) => {
   // const [pushToken1, setPushToken] = useState('');
   const [balance, setBalance] = useState(null);
   const [debugModeCounter, setDebugModeCounter] = useState('');
-  const [loading, setLoading] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const apiReducer = useSelector(state => state.apiReducer);
   const loginReducer = useSelector(state => state.loginReducer);
@@ -281,9 +281,10 @@ export const DefaultHeader = ({pushToken, navigation}) => {
                 style={[
                   styles.balanceContainer,
                   {
-                    backgroundColor: !walletReducer.balance.length
-                      ? 'grey'
-                      : '#fff',
+                    backgroundColor:
+                      !loading && !walletReducer.balance.length
+                        ? 'grey'
+                        : '#fff',
                   },
                 ]}>
                 <Image source={coinImagePath} style={styles.iconStyle} />
@@ -294,7 +295,7 @@ export const DefaultHeader = ({pushToken, navigation}) => {
                     style={[
                       styles.balanceText,
                       {
-                        color: !walletReducer.balance.length
+                        color: !loading && !walletReducer.balance.length
                           ? 'lightgrey'
                           : primaryColor,
                       },

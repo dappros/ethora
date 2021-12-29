@@ -8,6 +8,7 @@ import {underscoreManipulation} from './underscoreLogic';
 import {
   subscribeAndOpenChat,
   fetchRosterlist as fetchStanzaRosterList,
+  getUserRooms,
 } from './xmppStanzaRequestMessages';
 import {
   CONFERENCEDOMAIN,
@@ -34,5 +35,7 @@ const openChatFromChatLink = (
   );
 
   fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
+  getUserRooms(manipulatedWalletAddress)
+
 };
 export default openChatFromChatLink;

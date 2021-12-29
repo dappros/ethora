@@ -110,6 +110,7 @@ import {httpUpload} from '../config/apiService';
 import Toast from 'react-native-simple-toast';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
 import { showError } from '../config/toastAction';
+import { SEND_MESSAGE } from '../constants/xmppConstants';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -385,7 +386,7 @@ class Chat extends Component {
     const message = xml(
       'message',
       {
-        id: 'sendMessage',
+        id: SEND_MESSAGE,
         type: 'groupchat',
         from:
           this.state.manipulatedWalletAddress +
@@ -1043,7 +1044,7 @@ class Chat extends Component {
       const message = xml(
         'message',
         {
-          id: 'sendMessage',
+          id: SEND_MESSAGE,
           type: 'groupchat',
           from:
             this.state.manipulatedWalletAddress +

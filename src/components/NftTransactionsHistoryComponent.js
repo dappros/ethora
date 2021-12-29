@@ -62,7 +62,6 @@ const NftTransactionsHistoryComponent = props => {
   let lastName = '';
   // console.log(props.item)
   // console.log(props.item.balance)
-  console.log(props.item, 'dsfdsfdsf');
   //   if (props.item.from === props.walletAddress) {
   //     firstName = props.item.toFirstName
   //       ? props.item.toFirstName === 'N/A'

@@ -387,7 +387,6 @@ function AnotherProfile(props) {
         );
         coinData
           ? coinData.map(item => {
-              console.log(coinData, 'dasdasd');
 
               updatedCoinBalance =
                 updatedCoinBalance + parseFloat(item.balance);

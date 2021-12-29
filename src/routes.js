@@ -62,6 +62,7 @@ import store from './config/store';
 import {commonColors, logoPath, tutorialStartUponLogin} from '../docs/config';
 import {DebugScreen} from './Screens/DebugScreen';
 import { AccountScreenRefactored } from './Screens/AccountScreenRefactored';
+import { SEND_MESSAGE } from './constants/xmppConstants';
 const {primaryColor} = commonColors;
 
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
@@ -502,7 +503,7 @@ class Routes extends Component {
     const message = xml(
       'message',
       {
-        id: 'sendMessage',
+        id: SEND_MESSAGE,
         type: 'groupchat',
         from: this.state.manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         to: chatJID,

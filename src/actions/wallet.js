@@ -149,7 +149,6 @@ export const transferTokens = (
     url = getUrlFromStore(etherTransferURL);
   }
   if (bodyData.nftId) {
-    console.log(bodyData.tokenName, 'tokenjsdkfhdksjf');
     Alert.alert(
       'Item transfer',
       `You have successfully sent ${bodyData.tokenName}. After confirming the blockchain transaction, it will appear in the recipient's profile.`,
