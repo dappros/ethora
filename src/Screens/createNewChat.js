@@ -29,11 +29,12 @@ import {sha256} from 'react-native-sha256';
 import {
   roomConfigurationForm,
   fetchRosterlist,
+  getUserRooms,
 } from '../helpers/xmppStanzaRequestMessages';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {commonColors} from '../../docs/config';
-import {subscriptionsStanzaID} from '../constants/xmppConstants';
+import {CREATE_ROOM, subscriptionsStanzaID} from '../constants/xmppConstants';
 
 const {primaryColor} = commonColors;
 
@@ -84,7 +85,7 @@ class CreateNewGroup extends Component {
     let message = xml(
       'presence',
       {
-        id: 'CreateRoom',
+        id: CREATE_ROOM,
         from:
           manipulatedWalletAddress +
           '@' +
@@ -149,7 +150,9 @@ class CreateNewGroup extends Component {
     //   getUserRooms(manipulatedWalletAddress);
     // }, 2000);
     setTimeout(() => {
-      fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+      // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+      getUserRooms(manipulatedWalletAddress)
+
     }, 2000);
 
     roomCreated(true, navigation);

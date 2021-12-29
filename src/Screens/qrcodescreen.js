@@ -31,6 +31,7 @@ import {xmpp} from '../helpers/xmppCentral';
 import {
   get_archive_by_room,
   fetchRosterlist,
+  getUserRooms,
 } from '../helpers/xmppStanzaRequestMessages';
 import CustomHeader from '../components/shared/customHeader';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
@@ -124,8 +125,8 @@ class qrcodescreen extends Component {
       chatJID,
       this.props.loginReducer.initialData.walletAddress,
       this.props.setCurrentChatDetails,
-      this.props.navigation
-    )
+      this.props.navigation,
+    );
   };
 
   subscribeRoomAndOpenChat(chat_jid) {
@@ -160,7 +161,8 @@ class qrcodescreen extends Component {
     this.setState({
       isLoading: false,
     });
-    fetchRosterlist(this.state.manipulatedWalletAddress, subscriptionsStanzaID);
+    // fetchRosterlist(this.state.manipulatedWalletAddress, subscriptionsStanzaID);
+    getUserRooms(this.state.manipulatedWalletAddress);
   }
 
   async openChat(chat_jid) {
@@ -168,7 +170,7 @@ class qrcodescreen extends Component {
     // {
     //   chat_name=chat_jid.split("@"+xmppConstants.CONFERENCEDOMAIN)[0]
     // }
-        this.subscribeRoomAndOpenChat(chat_jid)
+    this.subscribeRoomAndOpenChat(chat_jid);
   }
 
   openGallery() {
