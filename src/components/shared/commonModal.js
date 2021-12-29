@@ -39,6 +39,7 @@ import {
   fetchRosterlist,
   roomConfigurationForm,
   get_archive_by_room,
+  getUserRooms,
 } from '../../helpers/xmppStanzaRequestMessages';
 import {sha256} from 'react-native-sha256';
 const {xml} = require('@xmpp/client');
@@ -50,6 +51,7 @@ import {
   coinsMainName,
   itemsTransfersAllowed,
 } from '../../../docs/config';
+import { CREATE_ROOM } from '../../constants/xmppConstants';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, semiBoldFont} = textStyles;
@@ -343,7 +345,6 @@ class CommonModal extends Component {
   };
 
   setSelectedItem = item => {
-    console.log(item);
     this.setState({selectedItem: item});
   };
 
@@ -406,7 +407,7 @@ class CommonModal extends Component {
       let message = xml(
         'presence',
         {
-          id: 'CreateRoom',
+          id: CREATE_ROOM,
           from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
           to:
             combinedWalletAddress +
@@ -489,7 +490,9 @@ class CommonModal extends Component {
       //   getUserRooms(manipulatedWalletAddress);
       // }, 2000);
       setTimeout(() => {
-        fetchRosterlist(manipulatedWalletAddress, 'subscriptions');
+        // fetchRosterlist(manipulatedWalletAddress, 'subscriptions');
+        getUserRooms(manipulatedWalletAddress)
+
       }, 2000);
 
       // roomCreated(true, this.props.navigation,);

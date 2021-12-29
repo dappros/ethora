@@ -8,6 +8,7 @@ const {xml} = require('@xmpp/client');
 import {xmpp} from './xmppCentral';
 import * as types from '../constants/types';
 import store from '../config/store';
+import { GET_PARTICIPANTS, GET_USER_ROOMS, newSubscription, subscriptionsStanzaID, UNSUBSCRIBE_FROM_ROOM } from '../constants/xmppConstants';
 //For now only subscibed muc are being fetched
 
 const getXmppFromStore = () => {
@@ -28,6 +29,30 @@ export const fetchRosterlist = (walletAddress, stanzaId) => {
 
   xmpp.send(message);
 };
+
+export const subscribeToRoom = (roomJID, manipulatedWalletAddress) => {
+  const xmppDomains = getXmppFromStore();
+
+  const message = xml(
+    'iq',
+    {
+      from: manipulatedWalletAddress + '@' + xmppDomains.DOMAIN,
+      to: roomJID,
+      type: 'set',
+      id: newSubscription,
+    },
+    xml(
+      'subscribe',
+      {xmlns: 'urn:xmpp:mucsub:0', nick: manipulatedWalletAddress},
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:presence'}),
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:subscribers'}),
+      xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+    ),
+  );
+
+  xmpp.send(message);
+};
 export const unsubscribeFromChatXmpp = (manipulatedWalletAddress, jid) => {
   const xmppDomains = getXmppFromStore();
   const message = xml(
@@ -36,7 +61,7 @@ export const unsubscribeFromChatXmpp = (manipulatedWalletAddress, jid) => {
       from: manipulatedWalletAddress + '@' + xmppDomains.DOMAIN,
       to: jid,
       type: 'set',
-      id: 'unsubscribe',
+      id: UNSUBSCRIBE_FROM_ROOM,
     },
     xml(
       'unsubscribe',
@@ -74,10 +99,25 @@ export const get_archive_by_room = chat_jid => {
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 300),
+        xml('max', {}, 20),
         xml('before'),
       ),
     ),
+  );
+  xmpp.send(message);
+};
+
+export const getUserRooms = manipulatedWalletAddress => {
+  const xmppDomains = getXmppFromStore();
+
+  const message = xml(
+    'iq',
+    {
+      type: 'get',
+      from: manipulatedWalletAddress + '@' + xmppDomains.DOMAIN,
+      id: GET_USER_ROOMS,
+    },
+    xml('query', {xmlns: 'ns:getrooms'}),
   );
   xmpp.send(message);
 };
@@ -91,7 +131,7 @@ export const get_list_of_subscribers = (chat_jid, walletAddress) => {
       from: walletAddress + '@' + xmppDomains.DOMAIN,
       to: chat_jid,
       type: 'get',
-      id: 'participants',
+      id: GET_PARTICIPANTS,
     },
     xml('subscriptions', 'urn:xmpp:mucsub:0'),
   );
