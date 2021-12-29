@@ -5,13 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import {
+  CREATE_ROOM,
+  GET_PARTICIPANTS,
+  GET_USER_ROOMS,
   newSubscription,
+  ROOM_PRESENCE,
+  SEND_MESSAGE,
   subscriptionsStanzaID,
+  UNSUBSCRIBE_FROM_ROOM,
 } from '../constants/xmppConstants';
 import {
   insertRosterList,
   fetchRosterList as fetchChatListRealm,
   updateRosterList,
+  updateChatRoom,
 } from '../components/realmModels/chatList';
 import {insertMessages} from '../components/realmModels/messages';
 import {
@@ -21,6 +28,8 @@ import {
   commonDiscover,
   getRoomInfo,
   updateVCard,
+  getUserRooms,
+  subscribeToRoom,
 } from './xmppStanzaRequestMessages';
 import Toast from 'react-native-simple-toast';
 import {Alert} from 'react-native';
@@ -102,8 +111,8 @@ export const xmppListener = (
         stanza?.children[0]?.attrs?.queryid === 'userArchive' &&
         stanza?.children[0]?.attrs?.complete
       ) {
-        console.log(stanza, 'archiveksdlfsdfdsfjsdlfjkls');
-        fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+        // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+        getUserRooms(manipulatedWalletAddress);
       }
       if (stanza.attrs.id === 'disco1') {
         stanza.children[0].children.map(item => {
@@ -151,7 +160,6 @@ export const xmppListener = (
 
       //capture vcard request response
       if (stanza.attrs.id === types.V_CARD_REQUEST) {
-        console.log(stanza, 'vcarddddddd');
         if (!stanza.children[0].children.length) {
           profilePhoto = initialData.photo;
           profileDescription = 'No description';
@@ -207,12 +215,20 @@ export const xmppListener = (
           finalMessageArrivalAction(true);
         }
       }
+      if (stanza.attrs.id === UNSUBSCRIBE_FROM_ROOM) {
+        const roomJID = stanza.attrs.from;
+
+        updateChatRoom(roomJID, 'muted', true).then(_ => {
+          updatedRoster(true);
+        });
+      }
 
       //capture participants of subscribed room
-      if (stanza.attrs.id === 'participants') {
+      if (stanza.attrs.id === GET_PARTICIPANTS) {
         const chat_jid = stanza.attrs.from;
         const numberOfParticipants = stanza.children[0].children.length;
         let exist = false;
+        console.log(numberOfParticipants, chat_jid, 'moderator')
         fetchChatListRealm()
           .then(chatList => {
             if (chatList.length) {
@@ -243,10 +259,7 @@ export const xmppListener = (
     if (stanza.is('presence')) {
       //catch when "you have joined too many conference issue"
       if (stanza.attrs.type === 'error') {
-        console.log(
-          stanza.children[1].children[1].children[0],
-          'fdsmlfnsdddsdffslfmn',
-        );
+        
         // stanza.children[1].children[1].children[0] ===
         //   'You have been banned from this room' &&
         //   Alert.alert(' You have been banned from this room');
@@ -255,7 +268,7 @@ export const xmppListener = (
           xmpp.reconnect.stop();
         }
       }
-      if (stanza.attrs.id === 'roomPresence') {
+      if (stanza.attrs.id === ROOM_PRESENCE) {
         let roomJID = stanza.attrs.from.split('/')[0];
         let userJID = stanza.attrs.from.split('/')[1];
 
@@ -268,16 +281,18 @@ export const xmppListener = (
         setRoles(rolesMap);
       }
 
-      if (stanza.attrs.id === 'CreateRoom') {
+      if (stanza.attrs.id === CREATE_ROOM) {
         if (stanza.children[1] !== undefined) {
           if (stanza.children[1].children[1].attrs.code === '201') {
             Toast.show('Room created successfully', Toast.LONG);
-            fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+            // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+            getUserRooms(manipulatedWalletAddress);
           }
 
           if (stanza.children[1].children[1].attrs.code === '110') {
             Toast.show('Room joined successfully', Toast.LONG);
-            fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+            // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+            getUserRooms(manipulatedWalletAddress);
           }
         }
       }
@@ -292,7 +307,6 @@ export const xmppListener = (
         let jid =
           stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
             ?.jid;
-        console.log(jid, 'messageforвапвminvid');
         const subscribe = xml(
           'iq',
           {
@@ -324,35 +338,35 @@ export const xmppListener = (
         xmpp.send(presence);
       }
       if (stanza?.children[2]?.children[0]?.name === 'invite') {
-        console.log(stanza, 'invite');
 
         const jid = stanza.children[3].attrs.jid;
         // console.log(jid, 'dsfjkdshjfksdu439782374')
-        const subscribe = xml(
-          'iq',
-          {
-            from: manipulatedWalletAddress + '@' + DOMAIN,
-            to: jid,
-            type: 'set',
-            id: newSubscription,
-          },
-          xml(
-            'subscribe',
-            {
-              xmlns: 'urn:xmpp:mucsub:0',
-              nick: manipulatedWalletAddress,
-            },
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-          ),
-        );
+        // const subscribe = xml(
+        //   'iq',
+        //   {
+        //     from: manipulatedWalletAddress + '@' + DOMAIN,
+        //     to: jid,
+        //     type: 'set',
+        //     id: newSubscription,
+        //   },
+        //   xml(
+        //     'subscribe',
+        //     {
+        //       xmlns: 'urn:xmpp:mucsub:0',
+        //       nick: manipulatedWalletAddress,
+        //     },
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+        //   ),
+        // );
 
-        xmpp.send(subscribe);
+        // xmpp.send(subscribe);
+
+        subscribeToRoom(jid, manipulatedWalletAddress);
       }
 
       if (stanza.attrs.id === types.IS_COMPOSING) {
         const mucRoom = stanza.attrs.from.split('/')[0];
-        console.log('captured');
 
         const fullName = stanza.children[1].attrs.fullName;
         const manipulatedWalletAddress =
@@ -367,7 +381,6 @@ export const xmppListener = (
 
       //capture message composing pause
       if (stanza.attrs.id === types.PAUSED_COMPOSING) {
-        console.log('pause');
         const mucRoom = stanza.attrs.from.split('/')[0];
         const manipulatedWalletAddress =
           stanza.children[1].attrs.manipulatedWalletAddress;
@@ -378,31 +391,33 @@ export const xmppListener = (
         });
       }
       if (stanza?.children[2]?.children[0]?.name === 'invite') {
-        console.log(stanza, 'invite');
 
         const jid = stanza.children[3].attrs.jid;
         // console.log(jid, 'dsfjkdshjfksdu439782374')
-        const subscribe = xml(
-          'iq',
-          {
-            from: manipulatedWalletAddress + '@' + DOMAIN,
-            to: jid,
-            type: 'set',
-            id: newSubscription,
-          },
-          xml(
-            'subscribe',
-            {
-              xmlns: 'urn:xmpp:mucsub:0',
-              nick: manipulatedWalletAddress,
-            },
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-            xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-          ),
-        );
+        // const subscribe = xml(
+        //   'iq',
+        //   {
+        //     from: manipulatedWalletAddress + '@' + DOMAIN,
+        //     to: jid,
+        //     type: 'set',
+        //     id: newSubscription,
+        //   },
+        //   xml(
+        //     'subscribe',
+        //     {
+        //       xmlns: 'urn:xmpp:mucsub:0',
+        //       nick: manipulatedWalletAddress,
+        //     },
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+        //   ),
+        // );
 
-        xmpp.send(subscribe);
-        fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+        // xmpp.send(subscribe);
+        subscribeToRoom(jid, manipulatedWalletAddress);
+
+        // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+        getUserRooms(manipulatedWalletAddress);
       }
 
       //capture archived message of a room
@@ -520,23 +535,7 @@ export const xmppListener = (
         }
       }
     }
-
-    //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
-    if (stanza.attrs.id === newSubscription) {
-      const presence = xml(
-        'presence',
-        {
-          from: manipulatedWalletAddress + '@' + DOMAIN,
-          to: stanza.attrs.from + '/' + manipulatedWalletAddress,
-        },
-        xml('x', 'http://jabber.org/protocol/muc'),
-      );
-      xmpp.send(presence);
-      fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
-    }
-
-    //To capture the response for list of rosters (for now only subscribed muc)
-    if (stanza.attrs.id === subscriptionsStanzaID) {
+    if (stanza.attrs.id === GET_USER_ROOMS) {
       const rosterFromXmpp = stanza.children[0].children;
       let rosterListArray = [];
       let rosterMap = await getStoredItems();
@@ -595,7 +594,136 @@ export const xmppListener = (
         const presence = xml(
           'presence',
           {
-            id: 'roomPresence',
+            id: ROOM_PRESENCE,
+            from: manipulatedWalletAddress + '@' + DOMAIN,
+            to: item.attrs.jid + '/' + manipulatedWalletAddress,
+          },
+          // xml('data', {
+          //   senderName: this.props.loginReducer.initialData.firstName + ' ' + this.props.loginReducer.initialData.lastName
+          // }),
+          xml('x', 'http://jabber.org/protocol/muc'),
+        );
+
+        xmpp.send(presence);
+        let message = joinSystemMessage({
+          username: initialData.firstName + ' ' + initialData.lastName,
+        });
+        // this.submitMessage(message, item.attrs.jid);
+        get_list_of_subscribers(item.attrs.jid, manipulatedWalletAddress);
+        setTimeout(function () {
+          getRoomInfo(manipulatedWalletAddress, item.attrs.jid);
+        }, 2000);
+      });
+
+      if (!nonMemberchat.exist) {
+        // const subscribe = xml(
+        //   'iq',
+        //   {
+        //     from: manipulatedWalletAddress + '@' + DOMAIN,
+        //     to: nonMemberchat.name + CONFERENCEDOMAIN,
+        //     type: 'set',
+        //     id: newSubscription,
+        //   },
+        //   xml(
+        //     'subscribe',
+        //     {
+        //       xmlns: 'urn:xmpp:mucsub:0',
+        //       nick: manipulatedWalletAddress,
+        //     },
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
+        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
+        //   ),
+        // );
+
+        // xmpp.send(subscribe);
+        subscribeToRoom(
+          nonMemberchat.name + CONFERENCEDOMAIN,
+          manipulatedWalletAddress,
+        );
+      }
+
+      setRosterAction(rosterListArray);
+    }
+
+    //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
+    if (stanza.attrs.id === newSubscription) {
+      const presence = xml(
+        'presence',
+        {
+          from: manipulatedWalletAddress + '@' + DOMAIN,
+          to: stanza.attrs.from + '/' + manipulatedWalletAddress,
+        },
+        xml('x', 'http://jabber.org/protocol/muc'),
+      );
+      xmpp.send(presence);
+      updateChatRoom(stanza.attrs.from, 'muted', false).then(_ => {
+        updatedRoster(true);
+      });
+      // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+      // getUserRooms(manipulatedWalletAddress);
+    }
+
+    //To capture the response for list of rosters (for now only subscribed muc)
+    if (stanza.attrs.id === 'subscriptionsStanzaIDasd') {
+      const rosterFromXmpp = stanza.children[0].children;
+      let rosterListArray = [];
+      let rosterMap = await getStoredItems();
+
+      let nonMemberchat = {
+        name: 'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5',
+        exist: false,
+      };
+
+      rosterFromXmpp.map(item => {
+        //check if the default rooms already subscribed, if not then subscibe it
+        const rosterObject = {
+          name: 'Loading...',
+          jid: item.attrs.jid,
+          participants: 0,
+          avatar: 'https://placeimg.com/140/140/any',
+          counter: 0,
+          lastUserText: '',
+          lastUserName: '',
+          createdAt: new Date(),
+          // pri
+        };
+
+        if (item.attrs.jid.split(CONFERENCEDOMAIN)[0] === nonMemberchat.name) {
+          nonMemberchat.exist = true;
+        }
+        let exist = false;
+        fetchChatListRealm()
+          .then(chatListFromRealm => {
+            if (chatListFromRealm.length) {
+              chatListFromRealm.map(chat => {
+                if (!!rosterMap) {
+                  rosterObject.priority = rosterMap[item.attrs.jid];
+                  // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
+                  insertRosterList(rosterObject);
+                }
+
+                // if(chat.jid === item.attrs.jid){
+                //   exist = true;
+                // }else{
+                //   exist = false;
+                // }
+              });
+            } else {
+              exist = false;
+            }
+          })
+          .then(() => {
+            if (!exist) {
+              insertRosterList(rosterObject);
+              rosterListArray.push(rosterObject);
+            }
+          });
+
+        //presence is sent to every contact in roster
+        const presence = xml(
+          'presence',
+          {
+            id: ROOM_PRESENCE,
             from: manipulatedWalletAddress + '@' + DOMAIN,
             to: item.attrs.jid + '/' + manipulatedWalletAddress,
           },
@@ -643,7 +771,7 @@ export const xmppListener = (
     }
 
     //to capture realtime incoming message
-    if (stanza.attrs.id === 'sendMessage') {
+    if (stanza.attrs.id === SEND_MESSAGE) {
       if (
         stanza.children[0].attrs &&
         stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:tmp'
@@ -701,7 +829,6 @@ export const xmppListener = (
 
             imageLocationPreview =
               item.attrs.locationPreview || item.attrs.location;
-            console.log(item, '2349u0234920384293084');
             mimetype = item.attrs.mimetype;
             duration = item.attrs.duration;
             waveForm = item.attrs.waveForm;
@@ -773,7 +900,9 @@ export const xmppListener = (
     xmpp.reconnect.delay = 2000;
     xmpp.send(xml('presence'));
 
-    fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+    // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
+    // getUserRooms(manipulatedWalletAddress + '@' + DOMAIN)
+    getUserRooms(manipulatedWalletAddress);
 
     commonDiscover(manipulatedWalletAddress, DOMAIN);
     vcardRetrievalRequest(manipulatedWalletAddress);

@@ -12,3 +12,10 @@ export const CONF_WITHOUT = 'conference.dev.dxmpp.com';
 //stanza id constants
 export const subscriptionsStanzaID = 'subscriptions';
 export const newSubscription = 'newSubscription';
+export const GET_USER_ROOMS = 'userRooms';
+export const UNSUBSCRIBE_FROM_ROOM = 'unsubscribeFromRoom';
+export const GET_PARTICIPANTS = 'participants';
+export const CREATE_ROOM = 'CreateRoom';
+export const ROOM_PRESENCE = 'roomPresence';
+
+export const SEND_MESSAGE = 'sendMessage';
