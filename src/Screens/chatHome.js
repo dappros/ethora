@@ -414,6 +414,7 @@ class ChatHome extends Component {
       chat_name: '',
       lastUserName: '',
       lastUserText: '',
+      firstUserMessageID:'',
       pushChatName: '',
       pushChatJID: '',
       movingActive: false,
@@ -453,6 +454,8 @@ class ChatHome extends Component {
           counter: item.counter,
           lastUserText: item.lastUserText,
           lastUserName: item.lastUserName,
+          lastUserMessageID: item.lastUserMessageID,
+          firstUserMessageID: item.firstUserMessageID,
           createdAt: item.createdAt,
           muted: item.muted,
           priority: item.priority,
@@ -514,6 +517,8 @@ class ChatHome extends Component {
             counter: item.counter,
             lastUserText: item.lastUserText,
             lastUserName: item.lastUserName,
+            lastUserMessageID: item.lastUserMessageID,
+            firstUserMessageID: item.firstUserMessageID,
             priority: item.priority,
             createdAt: item.createdAt,
           });
@@ -547,6 +552,8 @@ class ChatHome extends Component {
                   counter: item.counter,
                   lastUserText: item.lastUserText,
                   lastUserName: item.lastUserName,
+                  lastUserMessageID:item.lastUserMessageID,
+                  firstUserMessageID: item.firstUserMessageID,
                   priority: item.priority,
                   createdAt: item.createdAt,
                 });
@@ -592,6 +599,8 @@ class ChatHome extends Component {
               counter: item.counter,
               lastUserText: item.lastUserText,
               lastUserName: item.lastUserName,
+              lastUserMessageID: item.lastUserMessageID,
+              firstUserMessageID: item.firstUserMessageID,
               priority: item.priority,
               createdAt: item.createdAt,
             });
@@ -610,6 +619,7 @@ class ChatHome extends Component {
         const recentRealtimeChat = this.props.ChatReducer.recentRealtimeChat; //the recent message object from the reducer
         const from = recentRealtimeChat.name; //the nick name of the user who sent the message
         const roomJID = recentRealtimeChat.room_name; // the jid of the room
+        const lastUserMessageID = recentRealtimeChat.message_id
         const text = recentRealtimeChat.text; // the text message sent
 
         let rosterListArray = this.state.rosterListArray;
@@ -622,6 +632,8 @@ class ChatHome extends Component {
             }
             item.lastUserName = from;
             item.lastUserText = text;
+            item.lastUserMessageID = lastUserMessageID;
+            item.firstUserMessageID = firstUserMessageID;
             item.createdAt = recentRealtimeChat.createdAt;
             item.priority = recentRealtimeChat?.priority;
 
@@ -629,6 +641,8 @@ class ChatHome extends Component {
               jid: roomJID,
               lastUserName: from,
               lastUserText: text,
+              lastUserMessageID:lastUserMessageID,
+              firstUserMessageID:firstUserMessageID,
               counter: item.counter,
               createdAt: recentRealtimeChat.createdAt,
               participants: null,
@@ -659,6 +673,8 @@ class ChatHome extends Component {
               counter: item.counter,
               lastUserText: item.lastUserText,
               lastUserName: item.lastUserName,
+              lastUserMessageID: item.lastUserMessageID,
+              firstUserMessageID: item.firstUserMessageID,
               priority: item.priority,
               createdAt: item.createdAt,
             });
@@ -834,7 +850,8 @@ class ChatHome extends Component {
   };
 
   //fucntion to open a chat room
-  openChat(chat_jid, chat_name) {
+  openChat(chat_jid, chat_name, firstUserMessageID) {
+    // alert(lastUserMessageID);
     let rosterListArray = this.state.rosterListArray;
     rosterListArray.map(item => {
       if (item.counter !== 0) {
@@ -846,6 +863,8 @@ class ChatHome extends Component {
       jid: chat_jid,
       lastUserName: null,
       lastUserText: null,
+      lastUserMessageID:null,
+      firstUserMessageID:null,
       participants: null,
       createdAt: null,
       name: null,
@@ -856,7 +875,7 @@ class ChatHome extends Component {
 
     this.props.shouldCountAction(false); //this means we don't need to increase the counter as the user is already inside the room when this function was called
 
-    get_archive_by_room(chat_jid);
+    get_archive_by_room(chat_jid, firstUserMessageID);
     this.props.setCurrentChatDetails(
       chat_jid,
       chat_name,
@@ -934,7 +953,7 @@ class ChatHome extends Component {
                 roomRoles={this.props.ChatReducer.roomRoles}
                 item={item}
                 isActive={isActive}
-                openChat={() => this.openChat(item.jid, item.name)}
+                openChat={() => this.openChat(item.jid, item.name, item.firstUserMessageID)}
                 showMenu={this.showMenu}
                 setMenuRef={this.setMenuRef}
                 drag={drag}

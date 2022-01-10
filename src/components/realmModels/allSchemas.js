@@ -43,6 +43,8 @@ const ChatListSchema = {
     counter: 'int',
     lastUserText: 'string',
     lastUserName: 'string',
+    lastUserMessageID:'string',
+    firstUserMessageID:'string',
     createdAt: 'date?',
     priority: {type: 'int', optional: true},
   },

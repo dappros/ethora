@@ -69,6 +69,7 @@ import {
   pausedComposing,
   activeChatState,
   retrieveOtherUserVcard,
+  get_archive_by_room,
 } from '../helpers/xmppStanzaRequestMessages';
 import {APP_TOKEN} from '../../docs/config';
 import {coinsMainName} from '../../docs/config';
@@ -258,6 +259,7 @@ class Chat extends Component {
           chats.length > 0 ? chats.length - loadMessageAmount : 0;
         this.loadMessages(chats, loadMessageIndex);
       } else {
+        get_archive_by_room(chatRoomDetails.chat_jid,0)
       }
     });
     walletAddress = initialData.walletAddress;
@@ -968,7 +970,11 @@ class Chat extends Component {
   onLoadEarlierFunction() {
     queryRoomAllMessages(this.props.ChatReducer.chatRoomDetails.chat_jid).then(
       chats => {
-        this.loadMessages(chats, this.state.loadMessageIndex);
+        get_archive_by_room(
+          this.props.ChatReducer.chatRoomDetails.chat_jid,
+          chats[0].message_id
+        )
+        // this.loadMessages(chats, this.state.loadMessageIndex);
       },
     );
   }
@@ -1708,7 +1714,7 @@ class Chat extends Component {
           renderLoading={() => (
             <ActivityIndicator size="large" color={primaryColor} />
           )}
-          // loadEarlier={true}
+          loadEarlier={true}
           renderLoadEarlier={e => this.renderLoadEarlierFunction(e)}
           renderUsernameOnMessage
           usernameStyle={{

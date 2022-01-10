@@ -22,6 +22,8 @@ export const insertRosterList = chatsObject =>
       queryRoomAllMessages(chatsObject.jid).then(chats => {
         const lastUserName = chats.length ? chats[chats.length - 1].name : '';
         const lastUserText = chats.length ? chats[chats.length - 1].text : '';
+        const lastUserMessageID = chats.length ? chats[chats.length - 1].message_id:'';
+        const firstUserMessageID = chats.length ? chats[0].message_id:'';
         const createdAt = chats.length
           ? chats[chats.length - 1].createdAt
           : new Date();
@@ -33,6 +35,8 @@ export const insertRosterList = chatsObject =>
           counter: chatsObject.counter,
           lastUserName: lastUserName,
           lastUserText: lastUserText,
+          lastUserMessageID:lastUserMessageID,
+          firstUserMessageID:firstUserMessageID,
           createdAt: createdAt,
           priority: chatsObject.priority,
         };

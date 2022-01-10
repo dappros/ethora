@@ -30,7 +30,7 @@ export const fetchRosterlist = (walletAddress, stanzaId) => {
   xmpp.send(message);
 };
 
-export const get_archive_by_room = chat_jid => {
+export const get_archive_by_room = (chat_jid, firstUserMessageID) => {
 
   let message = xml(
     'iq',
@@ -45,8 +45,8 @@ export const get_archive_by_room = chat_jid => {
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 300),
-        xml('before'),
+        xml('max', {}, 25),
+        xml('before',{}, firstUserMessageID),
       ),
     ),
   );
