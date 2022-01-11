@@ -875,7 +875,7 @@ class ChatHome extends Component {
 
     this.props.shouldCountAction(false); //this means we don't need to increase the counter as the user is already inside the room when this function was called
 
-    get_archive_by_room(chat_jid, firstUserMessageID);
+    // get_archive_by_room(chat_jid, firstUserMessageID);
     this.props.setCurrentChatDetails(
       chat_jid,
       chat_name,
