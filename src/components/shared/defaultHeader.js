@@ -116,14 +116,13 @@ export const DefaultHeader = ({pushToken, navigation}) => {
   };
 
   const getInitialData = async () => {
-    setLoading(true);
+
 
     dispatch(retrieveInitialData());
     const cachedBalance = await AsyncStorage.getItem('userBalance');
     if (cachedBalance) {
       setBalance(JSON.parse(cachedBalance));
     }
-    setLoading(false);
 
     if (pushToken) subscribePush();
   };
@@ -288,16 +287,17 @@ export const DefaultHeader = ({pushToken, navigation}) => {
                   },
                 ]}>
                 <Image source={coinImagePath} style={styles.iconStyle} />
-                {loading || !balance ? (
+                {loading || (!balance && balance !== 0) ? (
                   <ActivityIndicator size="small" color={primaryColor} />
                 ) : (
                   <Text
                     style={[
                       styles.balanceText,
                       {
-                        color: !loading && !walletReducer.balance.length
-                          ? 'lightgrey'
-                          : primaryColor,
+                        color:
+                          !loading && !walletReducer.balance.length
+                            ? 'lightgrey'
+                            : primaryColor,
                       },
                     ]}>
                     {balance}
