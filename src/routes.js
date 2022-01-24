@@ -572,6 +572,8 @@ class Routes extends Component {
       const walletAddress = initialData.walletAddress;
       const password = initialData.password;
       const username = initialData.username;
+      const xmppPassword = initialData.xmppPassword;
+
       this.props.fetchWalletBalance(
         walletAddress,
         null,
@@ -579,7 +581,6 @@ class Routes extends Component {
         true,
       );
       let manipulatedWalletAddress = underscoreManipulation(walletAddress);
-      console.log(manipulatedWalletAddress, 'manipulated');
       this.setState({
         password,
         walletAddress,
@@ -588,7 +589,7 @@ class Routes extends Component {
       });
       xmppConnect(
         manipulatedWalletAddress,
-        password,
+        xmppPassword,
         this.props.apiReducer.xmppDomains.DOMAIN,
         this.props.apiReducer.xmppDomains.SERVICE,
       );

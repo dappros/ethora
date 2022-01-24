@@ -181,7 +181,7 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
             console.log(error);
           });
         const photo = ssoUserData.photo;
-        let {firstName, lastName, username} = response.data.user;
+        let {firstName, lastName, username, xmppPassword} = response.data.user;
         if (!lastName) {
           lastName = firstName.split(' ')[1];
           firstName = firstName.split(' ')[0];
@@ -193,7 +193,15 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
         //     dispatch(saveInitialDataAction(data))
         // }).then(dispatch(loginUserSuccess(data)))
         saveInitialData(
-          {firstName, lastName, walletAddress, photo, username, password},
+          {
+            firstName,
+            lastName,
+            walletAddress,
+            photo,
+            username,
+            password,
+            xmppPassword,
+          },
           callback => {
             dispatch(saveInitialDataAction(callback));
             dispatch(loginUserSuccess(response.data));
@@ -248,7 +256,7 @@ export const loginUser = (loginType, authToken, password, ssoUserData) => {
       //   },
       // );
     } catch (error) {
-      console.log(error, 'asdfasdfcasdf');
+      console.log(error.response, 'asdfasdfcasdf');
       dispatch(fetchingCommonFailure('Something went wrong'));
     }
   };
@@ -294,7 +302,6 @@ const loginWordpressUser = (username, password) => {
 };
 
 export const registerUser = (dataObject, ssoUserData) => {
-  console.log(dataObject);
   const token = getTokenFromStore();
   return async dispatch => {
     try {
@@ -303,6 +310,7 @@ export const registerUser = (dataObject, ssoUserData) => {
         dataObject,
         token,
       );
+      console.log(response, 'register24234234');
       if (response.data.success) {
         dispatch(registerUserSuccess());
         dispatch(
