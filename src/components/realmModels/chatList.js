@@ -48,6 +48,13 @@ export const insertRosterList = chatsObject =>
               'priority',
               chatsObject.priority,
             );
+            updateChatRoom(chatsObject.jid, 'name', chatsObject.name);
+            updateChatRoom(
+              chatsObject.jid,
+              'participants',
+              chatsObject.participants,
+            );
+
             resolve(chat);
           }
         });
@@ -56,6 +63,7 @@ export const insertRosterList = chatsObject =>
       reject(error);
     }
   });
+
 export const updateChatRoom = (jid, property, value) =>
   new Promise((resolve, reject) => {
     realm.write(() => {
@@ -64,7 +72,10 @@ export const updateChatRoom = (jid, property, value) =>
         jid,
       );
 
-      chatRoom[property] = value;
+      if (chatRoom) {
+        chatRoom[property] = value;
+      }
+
       resolve();
     });
   });

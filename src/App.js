@@ -12,6 +12,7 @@ import Routes from './routes';
 import RNBootSplash from 'react-native-bootsplash';
 import {StatusBar} from 'react-native';
 import {CustomToast} from './components/CustomToast';
+import RefactoredRoutes from './refactoredRoutes';
 
 // Sentry.init({
 //   dsn: "https://daaa65328f6041fc915a0074ce208923@o301951.ingest.sentry.io/5843000",

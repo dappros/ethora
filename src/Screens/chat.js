@@ -368,7 +368,7 @@ class Chat extends Component {
         isLoadingEarlier: false,
         loadEarlier: true,
       }),
-      () => (pushNotiMessageIndex ? this.shouldScrollTo(10) : null),
+      // () => (pushNotiMessageIndex ? this.shouldScrollTo(10) : null),
     );
   }
 

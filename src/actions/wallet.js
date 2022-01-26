@@ -87,6 +87,7 @@ const getTokenBalanceURL = (walletAddress, tokenName) => {
 };
 
 export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
+  console.log(walletAddress)
   let url = getTokenBalanceURL(walletAddress, tokenName);
   return async dispatch => {
     dispatch(fetchingWalletCommonRequest());
@@ -99,30 +100,8 @@ export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
       } else {
         dispatch(fetchingOtherUserTokenBalance(response.data));
       }
-      // hitAPI.fetchGet(
-      //   url,
-      //   token,
-      //   () => {
-      //     dispatch(logOut());
-      //   },
-      //   data => {
-      //     dispatch(addLogsApi(data));
-
-      //     if (data.success === true) {
-      //       console.log(data, 'asjkdkasdjlaks');
-      //       if (isOwn) {
-      //         dispatch(fetchTokenEtherBalance(data));
-      //       } else {
-      //         dispatch(fetchingOtherUserTokenBalance(data));
-      //       }
-      //     } else {
-      //       console.log(data);
-      //       dispatch(fetchingWalletCommonFailure(data));
-      //     }
-      //   },
-      // );
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
       addLogsApi(error);
 
       dispatch(fetchingWalletCommonFailure('Something went wrong'));
@@ -228,7 +207,7 @@ export const fetchTransaction = (
     try {
       const response = await httpGet(url, token);
       if (response.data.items) {
-        dispatch(addLogsApi(response.data))
+        dispatch(addLogsApi(response.data));
         if (isOwn) {
           dispatch(setOffset(response.data.limit));
           dispatch(setTotal(response.data.total));
@@ -266,7 +245,7 @@ export const fetchTransaction = (
       //     },
       //   );
     } catch (error) {
-      dispatch(addLogsApi(error))
+      dispatch(addLogsApi(error));
 
       dispatch(fetchingWalletCommonFailure(error));
     }

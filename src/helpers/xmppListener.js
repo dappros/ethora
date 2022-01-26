@@ -35,6 +35,25 @@ import Toast from 'react-native-simple-toast';
 import {Alert} from 'react-native';
 import * as types from '../constants/types';
 import {joinSystemMessage} from '../components/SystemMessage';
+import {useDispatch, useSelector} from 'react-redux';
+import {underscoreManipulation} from './underscoreLogic';
+import {
+  finalMessageArrivalAction,
+  participantsUpdateAction,
+  setRecentRealtimeChatAction,
+  setRoomRoles,
+  setRosterAction,
+  updatedRoster,
+  updateMessageComposingState,
+} from '../actions/chatAction';
+import {
+  logOut,
+  setOtherUserDetails,
+  setOtherUserVcard,
+  updateUserProfile,
+} from '../actions/auth';
+import {addLogsXmpp} from '../actions/debugActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {client, xml} = require('@xmpp/client');
 const debug = require('@xmpp/debug');
@@ -44,27 +63,45 @@ let profilePhoto = '';
 let usersLastSeen = {};
 
 export let xmpp;
+export const xmppConnect = (walletAddress, password, DOMAIN, SERVICE) => {
+  xmpp = client({
+    service: SERVICE,
+    domain: DOMAIN,
+    username: walletAddress,
+    password: password,
+  });
+  xmpp.start();
+};
 
-export const xmppListener = (
-  manipulatedWalletAddress,
-  updatedRoster,
-  initialData,
-  updateUserProfile,
-  setOtherUserVcard,
-  finalMessageArrivalAction,
-  participantsUpdateAction,
-  updateMessageComposingState,
-  setRoles,
-  getStoredItems,
-  setRosterAction,
-  setRecentRealtimeChatAction,
-  setOtherUserDetails,
-  logOut,
-  appDebugMode,
-  printLogs,
-  DOMAIN,
-  CONFERENCEDOMAIN,
-) => {
+export const useXmppListener = () => {
+  const walletAddress = useSelector(
+    state => state.loginReducer.initialData.walletAddress,
+  );
+  const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+  const initialData = useSelector(state =>
+    underscoreManipulation(state.loginReducer.initialData),
+  );
+  const debugMode = useSelector(state => state.debugReducer.debugMode);
+  const DOMAIN = useSelector(state => state.apiReducer.xmppDomains.DOMAIN);
+  const CONFERENCEDOMAIN = useSelector(
+    state => state.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+  );
+
+  const dispatch = useDispatch();
+
+  const getStoredItems = async () => {
+    try {
+      const value = await AsyncStorage.getItem('rosterListHashMap');
+      if (value !== null) {
+        // value previously stored
+        console.log(JSON.parse(value), 'parsedValue from home2');
+        return JSON.parse(value);
+      }
+    } catch (e) {
+      // error reading value
+      console.log(e, 'error reading');
+    }
+  };
   debug(xmpp, true);
   let rolesMap = {};
 
@@ -78,7 +115,7 @@ export const xmppListener = (
         [
           {
             text: 'Ok',
-            onPress: () => logOut(),
+            onPress: () => dispatch(logOut()),
           },
         ],
       );
@@ -103,7 +140,7 @@ export const xmppListener = (
   });
 
   xmpp.on('stanza', async stanza => {
-    printLogs(stanza);
+    dispatch(addLogsXmpp(stanza));
     console.log(stanza, 'stanza');
     let featureList = {};
     if (stanza.is('iq')) {
@@ -152,7 +189,7 @@ export const xmppListener = (
             if (!exist) {
               updateRosterList({jid: roomJID, name: roomName}).then(() => {
                 //roasterUpdatedAction
-                updatedRoster(true);
+                dispatch(updatedRoster(true));
               });
             }
           });
@@ -173,10 +210,12 @@ export const xmppListener = (
               profilePhoto = initialData.photo;
             }
           });
-          updateUserProfile({
-            desc: profileDescription,
-            photoURL: profilePhoto,
-          });
+          dispatch(
+            updateUserProfile({
+              desc: profileDescription,
+              photoURL: profilePhoto,
+            }),
+          );
         }
       }
 
@@ -192,10 +231,12 @@ export const xmppListener = (
             anotherUserAvatar = item.children[0].children[0];
           }
         });
-        setOtherUserVcard({
-          anotherUserAvatar,
-          anotherUserDescription,
-        });
+        dispatch(
+          setOtherUserVcard({
+            anotherUserAvatar,
+            anotherUserDescription,
+          }),
+        );
       }
 
       if (stanza.attrs.id === types.UPDATE_VCARD) {
@@ -212,14 +253,14 @@ export const xmppListener = (
       if (stanza.attrs.id === 'GetArchive') {
         if (stanza.children[0].name === 'fin') {
           console.log('finevent', stanza);
-          finalMessageArrivalAction(true);
+          dispatch(finalMessageArrivalAction(true));
         }
       }
       if (stanza.attrs.id === UNSUBSCRIBE_FROM_ROOM) {
         const roomJID = stanza.attrs.from;
 
         updateChatRoom(roomJID, 'muted', true).then(_ => {
-          updatedRoster(true);
+          dispatch(updatedRoster(true));
         });
       }
 
@@ -249,7 +290,7 @@ export const xmppListener = (
                 jid: chat_jid,
                 participants: numberOfParticipants,
               }).then(() => {
-                participantsUpdateAction(true);
+                dispatch(participantsUpdateAction(true));
               });
             }
           });
@@ -274,10 +315,12 @@ export const xmppListener = (
         let role = stanza.children[0].children[0].attrs.role;
         rolesMap[roomJID] = role;
         // usersLastSeen[userJID] = moment().format('DD hh:mm');
-        await setOtherUserDetails({
-          anotherUserLastSeen: usersLastSeen,
-        });
-        setRoles(rolesMap);
+        dispatch(
+          setOtherUserDetails({
+            anotherUserLastSeen: usersLastSeen,
+          }),
+        );
+        dispatch(setRoomRoles(rolesMap));
       }
 
       if (stanza.attrs.id === CREATE_ROOM) {
@@ -369,12 +412,14 @@ export const xmppListener = (
         const fullName = stanza.children[1].attrs.fullName;
         const manipulatedWalletAddress =
           stanza.children[1].attrs.manipulatedWalletAddress;
-        await updateMessageComposingState({
-          state: true,
-          username: fullName,
-          manipulatedWalletAddress,
-          mucRoom,
-        });
+        dispatch(
+          updateMessageComposingState({
+            state: true,
+            username: fullName,
+            manipulatedWalletAddress,
+            mucRoom,
+          }),
+        );
       }
 
       //capture message composing pause
@@ -382,11 +427,13 @@ export const xmppListener = (
         const mucRoom = stanza.attrs.from.split('/')[0];
         const manipulatedWalletAddress =
           stanza.children[1].attrs.manipulatedWalletAddress;
-        await updateMessageComposingState({
-          state: false,
-          manipulatedWalletAddress,
-          mucRoom,
-        });
+        dispatch(
+          updateMessageComposingState({
+            state: false,
+            manipulatedWalletAddress,
+            mucRoom,
+          }),
+        );
       }
       if (stanza?.children[2]?.children[0]?.name === 'invite') {
         const jid = stanza.children[3].attrs.jid;
@@ -583,7 +630,7 @@ export const xmppListener = (
           .then(() => {
             insertRosterList(rosterObject);
             rosterListArray.push(rosterObject);
-            updatedRoster(true);
+            dispatch(updatedRoster(true));
 
             // if (!exist) {
 
@@ -642,7 +689,7 @@ export const xmppListener = (
         );
       }
 
-      setRosterAction(rosterListArray);
+      dispatch(setRosterAction(rosterListArray));
     }
 
     //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
@@ -657,7 +704,7 @@ export const xmppListener = (
       );
       xmpp.send(presence);
       updateChatRoom(stanza.attrs.from, 'muted', false).then(_ => {
-        updatedRoster(true);
+        dispatch(updatedRoster(true));
       });
       // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
       // getUserRooms(manipulatedWalletAddress);
@@ -767,7 +814,7 @@ export const xmppListener = (
         xmpp.send(subscribe);
       }
 
-      setRosterAction(rosterListArray);
+      dispatch(setRosterAction(rosterListArray));
     }
 
     //to capture realtime incoming message
@@ -884,12 +931,14 @@ export const xmppListener = (
           };
         }
         if (receiverMessageId) {
-          setRecentRealtimeChatAction(
-            messageObject,
-            roomName,
-            true,
-            tokenAmount,
-            receiverMessageId,
+          dispatch(
+            setRecentRealtimeChatAction(
+              messageObject,
+              roomName,
+              true,
+              tokenAmount,
+              receiverMessageId,
+            ),
           );
         }
       }
@@ -907,14 +956,4 @@ export const xmppListener = (
     commonDiscover(manipulatedWalletAddress, DOMAIN);
     vcardRetrievalRequest(manipulatedWalletAddress);
   });
-};
-
-export const xmppConnect = (walletAddress, password, DOMAIN, SERVICE) => {
-  xmpp = client({
-    service: SERVICE,
-    domain: DOMAIN,
-    username: walletAddress,
-    password: password,
-  });
-  xmpp.start();
 };

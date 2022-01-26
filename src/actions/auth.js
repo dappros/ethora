@@ -136,6 +136,7 @@ export const isSkipForever = bool => ({
 
 export const getUserToken = () => dispatch =>
   AsyncStorage.getItem('token').then(data => {
+    console.log(data, '3242349')
     dispatch(loading(false));
     dispatch(getToken(data));
   });

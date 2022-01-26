@@ -294,6 +294,7 @@ class ChatHome extends Component {
               lastUserName: item.lastUserName,
               priority: item.priority,
               createdAt: item.createdAt,
+              muted: item.muted,
             });
           });
 
@@ -441,8 +442,6 @@ class ChatHome extends Component {
       if (!room.muted) {
         unsubscribeFromChatXmpp(manipulatedWalletAddress, jid);
       } else {
-        
-
         subscribeToRoom(jid, manipulatedWalletAddress);
         // updateChatRoom(jid, 'muted', false);
         this.getRosterList();
@@ -501,8 +500,10 @@ class ChatHome extends Component {
   //fucntion to open a chat room
   openChat(chat_jid, chat_name) {
     let rosterListArray = this.state.rosterListArray;
+    let pickedChatItem = null;
     rosterListArray.map(item => {
-      if (item.counter !== 0) {
+      if (item.jid === chat_jid) {
+        pickedChatItem = item;
         item.counter = 0;
       }
     });
@@ -514,6 +515,7 @@ class ChatHome extends Component {
       participants: null,
       createdAt: null,
       name: null,
+      priority: pickedChatItem.priority,
     });
     this.setState({
       rosterListArray,
@@ -666,7 +668,9 @@ class ChatHome extends Component {
         groups: 0,
       };
       const privateChats = this.state.rosterListArray.filter(item => {
-        if (item.participants < 3) {
+        const splitedJid = item.jid.split('@')[0];
+
+        if (item.participants < 3 && !defaultChats[splitedJid]) {
           notificationsCount['private'] += item.counter;
           return item;
         }

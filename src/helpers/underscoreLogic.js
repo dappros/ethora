@@ -6,12 +6,17 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 
 //replace any caps in a string with "_" followed with respective small case
 
-export const underscoreManipulation = (str)=>{
-    return str.replace(/([A-Z])/g, '_$1').toLowerCase();
-}
+export const underscoreManipulation = str => {
+  try {
+    const rep = str.replace(/([A-Z])/g, '_$1').toLowerCase();
+    return rep;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export const reverseUnderScoreManipulation = (str) => {
-    return str.replace(/_([a-z])/gm, (m1, m2)=>{
-        return m2.toUpperCase();
-    });
-}
+export const reverseUnderScoreManipulation = str => {
+  return str.replace(/_([a-z])/gm, (m1, m2) => {
+    return m2.toUpperCase();
+  });
+};

@@ -7,7 +7,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 import * as types from '../constants/types';
 import fetchFunction from '../config/api';
 import {httpDelete, httpGet, httpPost} from '../config/apiService';
-import {showSuccess} from '../config/toastAction';
+import {showError, showSuccess} from '../config/toastAction';
 import store from '../config/store';
 import {addOrDeleteEmail, getListOfEmails} from '../config/routesConstants';
 
@@ -88,6 +88,8 @@ export const addEmailToList = (token, body) => {
         dispatch(fetchingAddEmailToListFailure(res.data.msg));
       }
     } catch (error) {
+      showError('Error', 'This email already exists');
+
       dispatch(fetchingAddEmailToListFailure(error));
     }
   };

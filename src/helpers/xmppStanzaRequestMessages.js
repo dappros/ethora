@@ -99,7 +99,7 @@ export const get_archive_by_room = chat_jid => {
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 20),
+        xml('max', {}, 25),
         xml('before'),
       ),
     ),

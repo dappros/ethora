@@ -53,7 +53,7 @@ import {checkEmailExist} from '../config/routesConstants';
 import DeviceInfo from 'react-native-device-info';
 import Toast from 'react-native-simple-toast';
 import {httpGet} from '../config/apiService';
-import { showError } from '../config/toastAction';
+import {showError} from '../config/toastAction';
 
 const hitAPI = new fetchFunction();
 
@@ -317,20 +317,17 @@ class Login extends Component {
   };
 
   loginOrRegisterSocialUser = async (user, userEmail, loginType) => {
-    console.log('uers');
     const url = this.constructUrl(checkEmailExist) + userEmail;
     try {
       const response = await httpGet(url, this.props.apiReducer.defaultToken);
+
       if (!response.data.success) {
         this.props.loginUser(loginType, user.authToken, user.uid, user);
       } else {
         this.registerSocialUser(user, loginType);
       }
     } catch (error) {
-      showError('Error', 'Something went wrong, please try again later')
-
-
-      console.log(error);
+      showError('Error', 'Something went wrong, please try again later');
     }
 
     // hitAPI.fetchGet(
@@ -544,7 +541,7 @@ class Login extends Component {
                 <View style={{justifyContent: 'center', padding: 10}}>
                   <ActivityIndicator
                     size="small"
-                    color={'white'}
+                    color={primaryColor}
                     animating={isFetching}
                   />
                 </View>
