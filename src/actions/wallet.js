@@ -87,7 +87,7 @@ const getTokenBalanceURL = (walletAddress, tokenName) => {
 };
 
 export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
-  console.log(walletAddress)
+  console.log(walletAddress);
   let url = getTokenBalanceURL(walletAddress, tokenName);
   return async dispatch => {
     dispatch(fetchingWalletCommonRequest());
@@ -203,6 +203,8 @@ export const fetchTransaction = (
     `&limit=${limit}&offset=${offset}`;
   // let url = connectionURL.transactionURL
   return async dispatch => {
+    if (!walletAddress) return;
+
     // dispatch(fetchingWalletCommonRequest());
     try {
       const response = await httpGet(url, token);
