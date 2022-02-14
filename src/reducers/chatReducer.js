@@ -25,6 +25,8 @@ const initialState = {
     shouldUpdateChatScreen: true,
     mimetype: '',
   },
+  archivesRequested: {},
+
   finalMessageArrived: false,
   shouldCount: true,
   participantsUpdate: false,
@@ -39,7 +41,11 @@ const chatReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.FETCH_CHAT_HEADER:
       return {...state, chatRoomDetails: action.payload};
-
+    case types.SET_REQUESTED_ARCHIVES_FOR_CHATS:
+      return {
+        ...state,
+        archivesRequested: {...state.archivesRequested, ...action.payload},
+      };
     case types.IS_ROOM_CREATED:
       return {...state, isRoom: action.payload};
 

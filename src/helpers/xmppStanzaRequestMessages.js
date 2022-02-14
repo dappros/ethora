@@ -8,7 +8,13 @@ const {xml} = require('@xmpp/client');
 import {xmpp} from './xmppCentral';
 import * as types from '../constants/types';
 import store from '../config/store';
-import { GET_PARTICIPANTS, GET_USER_ROOMS, newSubscription, subscriptionsStanzaID, UNSUBSCRIBE_FROM_ROOM } from '../constants/xmppConstants';
+import {
+  GET_PARTICIPANTS,
+  GET_USER_ROOMS,
+  newSubscription,
+  subscriptionsStanzaID,
+  UNSUBSCRIBE_FROM_ROOM,
+} from '../constants/xmppConstants';
 //For now only subscibed muc are being fetched
 
 const getXmppFromStore = () => {
@@ -29,7 +35,27 @@ export const fetchRosterlist = (walletAddress, stanzaId) => {
 
   xmpp.send(message);
 };
-
+export const getPaginatedArchive = (chat_jid, firstUserMessageID) => {
+  let message = xml(
+    'iq',
+    {
+      type: 'set',
+      to: chat_jid,
+      id: 'GetArchive',
+    },
+    xml(
+      'query',
+      {xmlns: 'urn:xmpp:mam:2'},
+      xml(
+        'set',
+        {xmlns: 'http://jabber.org/protocol/rsm'},
+        xml('max', {}, 25),
+        xml('before', {}, firstUserMessageID),
+      ),
+    ),
+  );
+  xmpp.send(message);
+};
 export const subscribeToRoom = (roomJID, manipulatedWalletAddress) => {
   const xmppDomains = getXmppFromStore();
 

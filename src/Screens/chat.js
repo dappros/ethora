@@ -69,6 +69,7 @@ import {
   pausedComposing,
   activeChatState,
   retrieveOtherUserVcard,
+  getPaginatedArchive,
 } from '../helpers/xmppStanzaRequestMessages';
 import {APP_TOKEN} from '../../docs/config';
 import {coinsMainName} from '../../docs/config';
@@ -109,8 +110,8 @@ import {addLogsApi} from '../actions/debugActions';
 import {httpUpload} from '../config/apiService';
 import Toast from 'react-native-simple-toast';
 import openChatFromChatLink from '../helpers/openChatFromChatLink';
-import { showError } from '../config/toastAction';
-import { SEND_MESSAGE } from '../constants/xmppConstants';
+import {showError} from '../config/toastAction';
+import {SEND_MESSAGE} from '../constants/xmppConstants';
 
 const normalizeData = filteredData => {
   const maxValue = Math.max(...filteredData);
@@ -632,12 +633,11 @@ class Chat extends Component {
         this.setUploadProgress,
       );
       if (response.data.results.length) {
-      
         this.props.addLogsApi(response.data.results);
         this.submitMediaMessage(response.data.results, waveform);
       }
     } catch (error) {
-      showError('Error', 'Cannot upload file, try again later')
+      showError('Error', 'Cannot upload file, try again later');
     }
 
     // hitAPI.fileUpload(
@@ -993,7 +993,12 @@ class Chat extends Component {
   onLoadEarlierFunction() {
     queryRoomAllMessages(this.props.ChatReducer.chatRoomDetails.chat_jid).then(
       chats => {
-        this.loadMessages(chats, this.state.loadMessageIndex);
+        // this.loadMessages(chats, this.state.loadMessageIndex);
+        getPaginatedArchive(
+          this.props.ChatReducer.chatRoomDetails.chat_jid,
+          chats[0].message_id,
+        );
+        this.loadMessages(chats, 0);
       },
     );
   }
@@ -1550,8 +1555,7 @@ class Chat extends Component {
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
                   } else {
-                    showError('Error', 'Cannot upload file, try again later')
-
+                    showError('Error', 'Cannot upload file, try again later');
 
                     throw err;
                   }
@@ -1728,9 +1732,13 @@ class Chat extends Component {
           renderChatEmpty={() => emptyChatComponent()}
           isLoadingEarlier={this.state.isLoadingEarlier}
           onInputTextChanged={() => this.handleInputChange()}
-          onLoadEarlier={() => this.onLoadEarlierFunction()}
+          // onLoadEarlier={() => this.onLoadEarlierFunction()}
           ref={gift => (this.giftedRef = gift)}
           messages={this.state.messages}
+          listViewProps={{
+            onEndReached: this.onLoadEarlierFunction.bind(this),
+            onEndReachedThreshold: 0.5,
+          }}
           textInputStyle={{
             color: '#000000',
           }}

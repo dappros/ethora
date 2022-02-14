@@ -258,14 +258,15 @@ export const xmppListener = (
 
     if (stanza.is('presence')) {
       //catch when "you have joined too many conference issue"
-      if (stanza.attrs.type === 'error') {
+      if (
+        stanza.attrs.type === 'error' &&
+        stanza.children[1].attrs.code === '500'
+      ) {
         // stanza.children[1].children[1].children[0] ===
         //   'You have been banned from this room' &&
         //   Alert.alert(' You have been banned from this room');
-        if (stanza.children[1].attrs.code === '500') {
-          console.log(stanza.children[1].children[1].children[0], 'xmpperrorr');
-          xmpp.reconnect.stop();
-        }
+        console.log(stanza.children[1].children[1].children[0], 'xmpperrorr');
+        xmpp.reconnect.stop();
       }
       if (stanza.attrs.id === ROOM_PRESENCE) {
         let roomJID = stanza.attrs.from.split('/')[0];
@@ -274,26 +275,20 @@ export const xmppListener = (
         let role = stanza.children[0].children[0].attrs.role;
         rolesMap[roomJID] = role;
         // usersLastSeen[userJID] = moment().format('DD hh:mm');
-        await setOtherUserDetails({
-          anotherUserLastSeen: usersLastSeen,
-        });
+        // setOtherUserDetails({
+        //   anotherUserLastSeen: usersLastSeen,
+        // });
         setRoles(rolesMap);
       }
 
-      if (stanza.attrs.id === CREATE_ROOM) {
-        if (stanza.children[1] !== undefined) {
-          if (stanza.children[1].children[1].attrs.code === '201') {
-            Toast.show('Room created successfully', Toast.LONG);
-            // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
-            getUserRooms(manipulatedWalletAddress);
-          }
-
-          if (stanza.children[1].children[1].attrs.code === '110') {
-            Toast.show('Room joined successfully', Toast.LONG);
-            // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
-            getUserRooms(manipulatedWalletAddress);
-          }
-        }
+      if (
+        stanza.attrs.id === CREATE_ROOM &&
+        stanza.children[1] !== undefined &&
+        (stanza.children[1].children[1].attrs.code === '110' ||
+          stanza.children[1].children[1].attrs.code === '201')
+      ) {
+        Toast.show('Room joined successfully', Toast.LONG);
+        getUserRooms(manipulatedWalletAddress);
       }
     }
 
