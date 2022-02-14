@@ -43,6 +43,7 @@ import {
   shouldCountAction,
   participantsUpdateAction,
   updatedRoster,
+  setRequestedArchives
 } from '../actions/chatAction';
 import {logOut} from '../actions/auth';
 import {getEmailList} from '../actions/accountAction';
@@ -498,12 +499,11 @@ class ChatHome extends Component {
   };
 
   //fucntion to open a chat room
-  openChat(chat_jid, chat_name) {
+  async openChat(chat_jid, chat_name) {
+    const localStorageArchiveKey = 'archiveRequestedObject';
     let rosterListArray = this.state.rosterListArray;
-    let pickedChatItem = null;
     rosterListArray.map(item => {
-      if (item.jid === chat_jid) {
-        pickedChatItem = item;
+      if (item.counter !== 0) {
         item.counter = 0;
       }
     });
@@ -515,22 +515,45 @@ class ChatHome extends Component {
       participants: null,
       createdAt: null,
       name: null,
-      priority: pickedChatItem.priority,
     });
     this.setState({
       rosterListArray,
     });
 
-    this.props.shouldCountAction(false); //this means we don't need to increase the counter as the user is already inside the room when this function was called
+    this.props.shouldCountAction(true);
+    const archiveRequestedObjectFromLocalStorage = await AsyncStorage.getItem(
+      localStorageArchiveKey,
+    );
+    const parsedArchive = JSON.parse(archiveRequestedObjectFromLocalStorage);
 
-    get_archive_by_room(chat_jid);
+    const archiveNeverRequested =
+      !this.props.ChatReducer.archivesRequested[chat_jid] &&
+      !parsedArchive?.[chat_jid];
+    const archiveRequestedThisSession =
+      parsedArchive?.[chat_jid] &&
+      !this.props.ChatReducer.archivesRequested[chat_jid];
+    if (archiveNeverRequested) {
+      console.log('notparseddsklfjsdlkjfklsd');
+
+      this.props.setRequestedArchives({[chat_jid]: true});
+      await AsyncStorage.setItem(
+        localStorageArchiveKey,
+        JSON.stringify(this.props.ChatReducer.archivesRequested),
+      );
+      get_archive_by_room(chat_jid);
+    } else if (archiveRequestedThisSession) {
+      console.log(parsedArchive[chat_jid], 'parseddsjfklsjdflksd');
+      this.props.setRequestedArchives({[chat_jid]: true});
+      get_archive_by_room(chat_jid, 30);
+    } else {
+      console.log('parsed and checked');
+    }
     this.props.setCurrentChatDetails(
       chat_jid,
       chat_name,
       this.props.navigation,
     );
   }
-
   //View to display list of chats
   chatListComponent = chats => {
     // console.log(chats)
@@ -805,5 +828,6 @@ module.exports = connect(mapStateToProps, {
   participantsUpdateAction,
   updatedRoster,
   getEmailList,
+  setRequestedArchives,
   logOut,
 })(ChatHome);

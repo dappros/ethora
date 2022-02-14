@@ -26,6 +26,10 @@ export const updatedRoster = data => ({
   type: types.UPDATED_ROASTER,
   payload: data,
 });
+export const setRequestedArchives = data => ({
+  type: types.SET_REQUESTED_ARCHIVES_FOR_CHATS,
+  payload: data,
+});
 
 export const finalMessageArrived = data => ({
   type: types.FINAL_MESSAGE_ARRIVED,
