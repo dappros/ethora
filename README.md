@@ -1,7 +1,7 @@
 # ethora: open-source tokenized community engine (iOS/Android, ERC-20/NFT, chat/messaging)
 Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💵 communities 👥👥. 
 
-Proudly built in UA 🇺🇦, IN 🇮🇳 & UK 🇬🇧
+Proudly built in Ukraine 🇺🇦, India 🇮🇳 & U.K. 🇬🇧 (and inviting further collaborators)
 
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
