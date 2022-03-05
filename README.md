@@ -3,6 +3,8 @@ Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenize
 
 Proudly built in Ukraine 🇺🇦, India 🇮🇳 & U.K. 🇬🇧 (and inviting further collaborators)
 
+![alt text](https://ethora.com/images/5/50/Ethora_Profile_Transactions.gif "Ethora app demo")
+
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
 Some information below might be outdated as we update the above website most often. 
