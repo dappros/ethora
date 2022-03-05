@@ -5,6 +5,9 @@ Proudly built in Ukraine 🇺🇦, India 🇮🇳 & U.K. 🇬🇧 (and inviting 
 
 ![alt text](https://ethora.com/images/5/50/Ethora_Profile_Transactions.gif "Ethora app demo")
 
+<img src="https://ethora.com/images/5/50/Ethora_Profile_Transactions.gif" width="50">
+
+
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
 Some information below might be outdated as we update the above website most often. 
