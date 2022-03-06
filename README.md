@@ -80,7 +80,7 @@ Currently (2022) Dappros is a privately owned company that offers an open-source
 * Decentralized governance - platform stakeholders make important decisions for the public network 
 * Meritocracy - governance stakes are earned through supporting platform infrastructure (running nodes), R&D work and platform promotion
 
-## Contact 📞
+## Contact 💬
 
 Drop us <a href="https://www.dappros.com/contact-us/">a line</a> if you’re interested to find out more or to become a contributor to the project. 
 
