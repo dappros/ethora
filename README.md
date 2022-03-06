@@ -10,10 +10,10 @@ Visit https://ethora.com/ for latest information regarding the project.
 
 *Note: Some information below might be outdated as we update the above website most often.* 
 
-## How to build
+## How to build ❓
 Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 32 minutes: https://ethora.com/wiki/Step_By_Step_Guide
 
-## Core features
+## Core features 💡
 * iOS & Android
 * Social sign-in & Crypto wallets
 * Coins (ERC-20 tokens)
@@ -24,7 +24,7 @@ Please check this Step by Step build guide - it shows how to build a new app usi
 * Chat & Social profiles
 * Push notifications
 
-## Disclaimer
+## Disclaimer 📜
 
 Our platform provides technology for ecosystems built on the principles of openness, transparency and decentralization. By design, certain information such as user profiles, rankings, and the transactions of digital assets will be available to the whole ecosystem or to the public. You should not use the standard version of this product for secure or commercially sensitive communications. You should not use any versions of this product for emergency communications. You should not share information or content through our platform in cases where you may not be comfortable or authorized to share it with the public.
 
@@ -42,7 +42,7 @@ BACKEND. The server-side functionality of Ethora is provided by Dappros Platform
 
 When using Ethora engine, your default backend option is to <a href="https://app.dappros.com/register">sign up</a> for a free account of Dappros Platform. This provides backend infrastructure for your application(s) including Users, Wallets, Tokens, Chat/Messaging etc. Normally our users only need to customize client-side code and we did not have requests to open-source the backend code yet, but we are open to doing that and it is in our roadmap (more on that below).
 
-## Commercial model
+## Commercial model 🛒
 
 *  Client-side: free, open-source.
 *  Server-side: freemium (free plan + optional paid SLA plans for medium/large businesses)
@@ -50,7 +50,7 @@ When using Ethora engine, your default backend option is to <a href="https://app
 We intend to forever support a generous free tier of Dappros Platform for startups, small businesses and non-profit organizations.
 Platform R&D and the free tier infrastructure are supported through our paid entrerprise-level SLA packages and consulting services.
 
-## Project governance and roadmap
+## Project governance and roadmap 📅
 
 ### DAO governance vision
 
@@ -80,7 +80,7 @@ Currently (2022) Dappros is a privately owned company that offers an open-source
 * Decentralized governance - platform stakeholders make important decisions for the public network 
 * Meritocracy - governance stakes are earned through supporting platform infrastructure (running nodes), R&D work and platform promotion
 
-## Contact
+## Contact 📞
 
 Drop us <a href="https://www.dappros.com/contact-us/">a line</a> if you’re interested to find out more or to become a contributor to the project. 
 
