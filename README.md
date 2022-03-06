@@ -30,7 +30,7 @@ Our platform provides technology for ecosystems built on the principles of openn
 
 Note: enterprise-level version of Ethora engine (additional security layers, custom user sign-on mechanisms, SLA package) is available under a separate license from <a href="https://www.dappros.com/contact-us/">Dappros</a>.
 
-## License and Open-source roadmap
+## License and Open-source roadmap ⚖️
 
 LICENSE. The project codebase of Ethora developed by the project contributors is released under Apache 2.0 license. 
 This is a commercial friendly license allowing you to build your own projects using this codebase without a requirement for you to make your modifications open source.
