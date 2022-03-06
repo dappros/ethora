@@ -13,7 +13,7 @@ Visit https://ethora.com/ for latest information regarding the project.
 ## How to build
 Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 32 minutes: https://ethora.com/wiki/Step_By_Step_Guide
 
-### Core features
+## Core features
 * iOS & Android
 * Social sign-in & Crypto wallets
 * Coins (ERC-20 tokens)
@@ -24,13 +24,13 @@ Please check this Step by Step build guide - it shows how to build a new app usi
 * Chat & Social profiles
 * Push notifications
 
-### Disclaimer
+## Disclaimer
 
 Our platform provides technology for ecosystems built on the principles of openness, transparency and decentralization. By design, certain information such as user profiles, rankings, and the transactions of digital assets will be available to the whole ecosystem or to the public. You should not use the standard version of this product for secure or commercially sensitive communications. You should not use any versions of this product for emergency communications. You should not share information or content through our platform in cases where you may not be comfortable or authorized to share it with the public.
 
 Note: enterprise-level version of Ethora engine (additional security layers, custom user sign-on mechanisms, SLA package) is available under a separate license from <a href="https://www.dappros.com/contact-us/">Dappros</a>.
 
-### License and Open-source roadmap
+## License and Open-source roadmap
 
 LICENSE. The project codebase of Ethora developed by the project contributors is released under Apache 2.0 license. 
 This is a commercial friendly license allowing you to build your own projects using this codebase without a requirement for you to make your modifications open source.
@@ -42,17 +42,19 @@ BACKEND. The server-side functionality of Ethora is provided by Dappros Platform
 
 When using Ethora engine, your default backend option is to <a href="https://app.dappros.com/register">sign up</a> for a free account of Dappros Platform. This provides backend infrastructure for your application(s) including Users, Wallets, Tokens, Chat/Messaging etc. Normally our users only need to customize client-side code and we did not have requests to open-source the backend code yet, but we are open to doing that and it is in our roadmap (more on that below).
 
-### Commercial model
+## Commercial model
 
 *  Client-side: free, open-source.
-*  Server-side: freemium (free plan + optional paid SLA plans for businesses)
+*  Server-side: freemium (free plan + optional paid SLA plans for medium/large businesses)
 
-We intend to forever support a generous free tier of Dappros Platform for startups, small businesses and non-profit organizations. 
+We intend to forever support a generous free tier of Dappros Platform for startups, small businesses and non-profit organizations.
 Platform R&D and the free tier infrastructure are supported through our paid entrerprise-level SLA packages and consulting services.
+
+## Project governance and roadmap
 
 ### DAO governance vision
 
-Currently (2021) Dappros is a privately owned company that offers an open-source mobile app, open-source private blockchain and closed-source backend. Our founders promote decentralized economy and free p2p communication technologies for many years. We are developing a roadmap where the platform will become fully open and its governance can be transferred to a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. Our only limiting factor here is funding and time constraints. 
+Currently (2022) Dappros is a privately owned company that offers an open-source mobile app, open-source private blockchain and closed-source backend. Our founders promote decentralized economy and free p2p communication technologies for many years. We are developing a roadmap where the platform will become fully open and its governance can be transferred to a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. Our only limiting factor here is funding and time constraints. 
 
 ### Key principles (short term):
 
@@ -78,7 +80,7 @@ Currently (2021) Dappros is a privately owned company that offers an open-source
 * Decentralized governance - platform stakeholders make important decisions for the public network 
 * Meritocracy - governance stakes are earned through supporting platform infrastructure (running nodes), R&D work and platform promotion
 
-### Contact
+## Contact
 
 Drop us <a href="https://www.dappros.com/contact-us/">a line</a> if you’re interested to find out more or to become a contributor to the project. 
 
