@@ -11,23 +11,22 @@ import {
   ViewPropTypes,
   StyleSheet,
   Text,
-  ImageBackground
+  ImageBackground,
 } from 'react-native';
 
-import { Avatar, Day, utils, SystemMessage } from 'react-native-gifted-chat';
+import {Avatar, Day, utils, SystemMessage} from 'react-native-gifted-chat';
 import Bubble from './MessageBubble';
 
-const { isSameUser, isSameDay } = utils;
+const {isSameUser, isSameDay} = utils;
 
 export default class Message extends React.Component {
-
   getInnerComponentProps() {
-    const { containerStyle, ...props } = this.props;
+    const {containerStyle, ...props} = this.props;
     return {
       ...props,
       isSameUser,
       isSameDay,
-      containerStyle
+      containerStyle,
     };
   }
 
@@ -43,99 +42,109 @@ export default class Message extends React.Component {
   }
 
   renderBubble() {
-    const { containerStyle, ...props } = this.props;
-        if (this.props.renderBubble) {
-            return this.props.renderBubble(props);
-        }
-        // @ts-ignore
-        return <Bubble {...props}/>;
+    const {containerStyle, ...props} = this.props;
+    if (this.props.renderBubble) {
+      return this.props.renderBubble(props);
+    }
+    // @ts-ignore
+    return <Bubble {...props} />;
   }
 
   renderAvatar() {
-    const { user, currentMessage, showUserAvatar } = this.props;
-    if (user &&
-        user._id &&
-        currentMessage &&
-        currentMessage.user &&
-        user._id === currentMessage.user._id &&
-        !showUserAvatar) {
-        return null;
+    const {user, currentMessage, showUserAvatar} = this.props;
+    if (
+      user &&
+      user._id &&
+      currentMessage &&
+      currentMessage.user &&
+      user._id === currentMessage.user._id &&
+      !showUserAvatar
+    ) {
+      return null;
     }
-    if (currentMessage &&
-        currentMessage.user &&
-        currentMessage.user.avatar === null) {
-        return null;
+    if (
+      currentMessage &&
+      currentMessage.user &&
+      currentMessage.user.avatar === null
+    ) {
+      return null;
     }
-    const { containerStyle, ...props } = this.props;
-    return <Avatar {...props}/>;
+    const {containerStyle, ...props} = this.props;
+    return <Avatar {...props} />;
   }
 
   renderSystemMessage() {
-    const { containerStyle, ...props } = this.props;
+    const {containerStyle, ...props} = this.props;
     if (this.props.renderSystemMessage) {
-        return this.props.renderSystemMessage(props);
+      return this.props.renderSystemMessage(props);
     }
-    return <SystemMessage {...props} textStyle={{textAlign: 'center'}}/>;
+    return <SystemMessage {...props} textStyle={{textAlign: 'center'}} />;
   }
 
   render() {
-    const { currentMessage, nextMessage, position, containerStyle } = this.props;
-        if (currentMessage) {
-            const sameUser = isSameUser(currentMessage, nextMessage);
-            return (<View>
+    const {currentMessage, nextMessage, position, containerStyle} = this.props;
+    if (currentMessage) {
+      const sameUser = isSameUser(currentMessage, nextMessage);
+      return (
+        <View>
           {this.renderDay()}
-          {currentMessage.system ? (this.renderSystemMessage()) : (<View style={[
+          {currentMessage.system ? (
+            this.renderSystemMessage()
+          ) : (
+            <View
+              style={[
                 styles[position].container,
-                { marginBottom: sameUser ? 2 : 10 },
-                !this.props.inverted && { marginBottom: 2 },
+                {marginBottom: sameUser ? 2 : 10},
+                !this.props.inverted && {marginBottom: 2},
                 containerStyle && containerStyle[position],
-            ]}>
+              ]}>
               {this.props.position === 'left' ? this.renderAvatar() : null}
               {this.renderBubble()}
               {this.props.position === 'right' ? this.renderAvatar() : null}
-            </View>)}
-        </View>);
-      }
+            </View>
+          )}
+        </View>
+      );
+    }
     return null;
   }
-
 }
 
 const styles = {
   left: StyleSheet.create({
-      container: {
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-          justifyContent: 'flex-start',
-          marginLeft: 8,
-          marginRight: 0,
-      },
+    container: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'flex-start',
+      marginLeft: 8,
+      marginRight: 0,
+    },
   }),
   right: StyleSheet.create({
-      container: {
-          flexDirection: 'row',
-          alignItems: 'flex-end',
-          justifyContent: 'flex-end',
-          marginLeft: 0,
-          marginRight: 8,
-      },
+    container: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'flex-end',
+      marginLeft: 0,
+      marginRight: 8,
+    },
   }),
 };
 
 Message.defaultProps = {
   renderAvatar: undefined,
-    renderBubble: null,
-    renderDay: null,
-    renderSystemMessage: null,
-    position: 'left',
-    currentMessage: {},
-    nextMessage: {},
-    previousMessage: {},
-    user: {},
-    containerStyle: {},
-    showUserAvatar: false,
-    inverted: true,
-    shouldUpdateMessage: undefined,
+  renderBubble: null,
+  renderDay: null,
+  renderSystemMessage: null,
+  position: 'left',
+  currentMessage: {},
+  nextMessage: {},
+  previousMessage: {},
+  user: {},
+  containerStyle: {},
+  showUserAvatar: false,
+  inverted: true,
+  shouldUpdateMessage: undefined,
 };
 
 Message.propTypes = {
