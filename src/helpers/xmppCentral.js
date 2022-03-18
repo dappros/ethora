@@ -19,6 +19,8 @@ import {
   fetchRosterList as fetchChatListRealm,
   updateRosterList,
   updateChatRoom,
+  getChatRoom,
+  addChatRoom,
 } from '../components/realmModels/chatList';
 import {insertMessages} from '../components/realmModels/messages';
 import {
@@ -65,7 +67,7 @@ export const xmppListener = (
   DOMAIN,
   CONFERENCEDOMAIN,
 ) => {
-  debug(xmpp, true);
+  // debug(xmpp, true);
   let rolesMap = {};
 
   xmpp.on('error', err => {
@@ -104,7 +106,7 @@ export const xmppListener = (
 
   xmpp.on('stanza', async stanza => {
     printLogs(stanza);
-    console.log(stanza, 'stanza');
+    // console.log(stanza, 'stanza');
     let featureList = {};
     if (stanza.is('iq')) {
       if (
@@ -134,28 +136,28 @@ export const xmppListener = (
         const roomName = stanza.children[0].children[0].attrs.name;
         const roomJID = stanza.attrs.from;
         let exist = false;
-        fetchChatListRealm()
-          .then(chatList => {
-            if (chatList.length) {
-              chatList.map(chat => {
-                if (chat.jid === roomJID && chat.name === roomName) {
-                  exist = true;
-                } else {
-                  exist = false;
-                }
-              });
-            } else {
-              exist = false;
-            }
-          })
-          .then(() => {
-            if (!exist) {
-              updateRosterList({jid: roomJID, name: roomName}).then(() => {
-                //roasterUpdatedAction
-                updatedRoster(true);
-              });
-            }
-          });
+        // fetchChatListRealm()
+        //   .then(chatList => {
+        //     if (chatList.length) {
+        //       chatList.map(chat => {
+        //         if (chat.jid === roomJID && chat.name === roomName) {
+        //           exist = true;
+        //         } else {
+        //           exist = false;
+        //         }
+        //       });
+        //     } else {
+        //       exist = false;
+        //     }
+        //   })
+        //   .then(() => {
+        //     if (!exist) {
+        //       updateRosterList({jid: roomJID, name: roomName}).then(() => {
+        //         //roasterUpdatedAction
+        //         updatedRoster(true);
+        //       });
+        //     }
+        //   });
       }
 
       //capture vcard request response
@@ -219,7 +221,7 @@ export const xmppListener = (
         const roomJID = stanza.attrs.from;
 
         updateChatRoom(roomJID, 'muted', true).then(_ => {
-          updatedRoster(true);
+          participantsUpdateAction(true);
         });
       }
 
@@ -229,30 +231,30 @@ export const xmppListener = (
         const numberOfParticipants = stanza.children[0].children.length;
         let exist = false;
         console.log(numberOfParticipants, chat_jid, 'moderator');
-        fetchChatListRealm()
-          .then(chatList => {
-            if (chatList.length) {
-              chatList.map(chat => {
-                if (chat.participants === numberOfParticipants) {
-                  exist = true;
-                } else {
-                  exist = false;
-                }
-              });
-            } else {
-              exist = false;
-            }
-          })
-          .then(() => {
-            if (!exist) {
-              updateRosterList({
-                jid: chat_jid,
-                participants: numberOfParticipants,
-              }).then(() => {
-                participantsUpdateAction(true);
-              });
-            }
-          });
+        // fetchChatListRealm()
+        //   .then(chatList => {
+        //     if (chatList.length) {
+        //       chatList.map(chat => {
+        //         if (chat.participants === numberOfParticipants) {
+        //           exist = true;
+        //         } else {
+        //           exist = false;
+        //         }
+        //       });
+        //     } else {
+        //       exist = false;
+        //     }
+        //   })
+        //   .then(() => {
+        //     if (!exist) {
+        //       updateRosterList({
+        //         jid: chat_jid,
+        //         participants: numberOfParticipants,
+        //       }).then(() => {
+        //         participantsUpdateAction(true);
+        //       });
+        //     }
+        //   });
       }
     }
 
@@ -281,12 +283,7 @@ export const xmppListener = (
         setRoles(rolesMap);
       }
 
-      if (
-        stanza.attrs.id === CREATE_ROOM &&
-        stanza.children[1] !== undefined &&
-        (stanza.children[1].children[1].attrs.code === '110' ||
-          stanza.children[1].children[1].attrs.code === '201')
-      ) {
+      if (stanza.attrs.id === CREATE_ROOM) {
         Toast.show('Room joined successfully', Toast.LONG);
         getUserRooms(manipulatedWalletAddress);
       }
@@ -652,7 +649,7 @@ export const xmppListener = (
       );
       xmpp.send(presence);
       updateChatRoom(stanza.attrs.from, 'muted', false).then(_ => {
-        updatedRoster(true);
+        participantsUpdateAction(true);
       });
       // fetchRosterlist(manipulatedWalletAddress, subscriptionsStanzaID);
       // getUserRooms(manipulatedWalletAddress);
@@ -687,32 +684,13 @@ export const xmppListener = (
           nonMemberchat.exist = true;
         }
         let exist = false;
-        fetchChatListRealm()
-          .then(chatListFromRealm => {
-            if (chatListFromRealm.length) {
-              chatListFromRealm.map(chat => {
-                if (!!rosterMap) {
-                  rosterObject.priority = rosterMap[item.attrs.jid];
-                  // console.log(rosterMap[item.attrs.jid], rosterObject, 'helsdflosdkhjfskdfjh')
-                  insertRosterList(rosterObject);
-                }
-
-                // if(chat.jid === item.attrs.jid){
-                //   exist = true;
-                // }else{
-                //   exist = false;
-                // }
-              });
-            } else {
-              exist = false;
-            }
-          })
-          .then(() => {
-            if (!exist) {
-              insertRosterList(rosterObject);
-              rosterListArray.push(rosterObject);
-            }
-          });
+        getChatRoom(item.attrs.jid).then(room => {
+          if (!room) {
+            addChatRoom(rosterObject);
+          } else {
+            updateChatRoom(room.jid, 'priority', rosterMap[room.jid]);
+          }
+        });
 
         //presence is sent to every contact in roster
         const presence = xml(
@@ -763,6 +741,7 @@ export const xmppListener = (
       }
 
       setRosterAction(rosterListArray);
+      participantsUpdateAction(true);
     }
 
     //to capture realtime incoming message

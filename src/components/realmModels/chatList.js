@@ -139,3 +139,15 @@ export const fetchRosterList = () =>
         : reject('is empty')
       : reject('not valid');
   });
+
+export const addChatRoom = chatsObject =>
+  new Promise((resolve, reject) => {
+    try {
+      realm.write(() => {
+        realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatsObject);
+        resolve(chatsObject);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
