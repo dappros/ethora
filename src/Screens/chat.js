@@ -70,6 +70,8 @@ import {
   activeChatState,
   retrieveOtherUserVcard,
   getPaginatedArchive,
+  get_archive_by_room,
+  getUserRooms,
 } from '../helpers/xmppStanzaRequestMessages';
 import {APP_TOKEN} from '../../docs/config';
 import {coinsMainName} from '../../docs/config';
@@ -1667,13 +1669,18 @@ class Chat extends Component {
 
   handleChatLinks = chatLink => {
     const walletAddress = this.props.loginReducer.initialData.walletAddress;
-    const chatJID = parseChatLink(chatLink);
-    openChatFromChatLink(
+    const chatJID =
+      parseChatLink(chatLink) +
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
+    this.props.navigation.navigate('ChatHomeComponent');
+    this.props.setCurrentChatDetails(
       chatJID,
-      walletAddress,
-      this.props.setCurrentChatDetails,
+      'Loading...',
       this.props.navigation,
+      true,
     );
+    getUserRooms(underscoreManipulation(walletAddress));
+    get_archive_by_room(chatJID);
   };
   start = () => {
     // 30 seconds
