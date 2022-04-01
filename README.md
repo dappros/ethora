@@ -6,7 +6,7 @@ Proudly built in Ukraine 🇺🇦 (8 team members), India 🇮🇳 (4 team membe
 <img src="https://ethora.com/images/thumb/3/39/Ethora_social_sign-in.jpg/450px-Ethora_social_sign-in.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/5/56/Ethora_chat_room.jpg/450px-Ethora_chat_room.jpg" width="200" alt="Demo: chat tokenized gamification" /> <img src="https://ethora.com/images/thumb/f/fd/Ethora_User_Profile.jpg/450px-Ethora_User_Profile.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/c/ce/RN_app_NFT_mint_14.jpg/450px-RN_app_NFT_mint_14.jpg" width="200" alt="Demo: sign in page" /> 
 
 Video demo: 
-[![Ethora video demo]](https://www.youtube.com/watch?v=FvOTFyLVbKM)
+[![Ethora video demo]()](https://www.youtube.com/watch?v=FvOTFyLVbKM)
 
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
