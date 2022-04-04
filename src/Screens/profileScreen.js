@@ -56,11 +56,15 @@ import {
   itemsTransfersAllowed,
 } from '../../docs/config';
 import {registerUserURL} from '../config/routesConstants';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
+import {imageMimetypes} from '../constants/mimetypes';
+import { NftListItem } from '../components/NftListItem';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 
 const {mediumFont, regularFont, boldFont, lightFont} = textStyles;
-
+const playImageUrl =
+  'https://e7.pngegg.com/pngimages/960/372/png-clipart-computer-icons-button-google-play-play-angle-text-thumbnail.png';
 export const changeUserName = async (url, data, token) => {
   console.log(data, 'datainnewname');
   return await axios.put(url, data, {
@@ -81,7 +85,7 @@ const renderItem = ({item, index}) => (
   />
 );
 const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
-  <AssetItem
+  <NftListItem
     image={item.imagePreview || item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
@@ -89,133 +93,15 @@ const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
     onClick={onClick}
     selectedItem={selectedItem}
     nftId={item.nftId}
+    mimetype={item.nftMimetype}
     // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
     item={item}
     index={index}
   />
 );
-const AssetItem = ({
-  image,
-  assetsYouHave,
-  totalAssets,
-  name,
-  nftId,
-  onClick,
-  index,
-  item,
-}) => {
-  const rightSwipe = () => {
-    return (
-      <View
-        style={{
-          height: hp('8.62%'),
-          zIndex: 99999,
-          // position: 'absolute',
-          width: wp('26.6%'),
-          // flex: 0.266,
-          // paddingHorizontal: wp('7.2%'),
-          backgroundColor: '#31974c',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <TouchableOpacity
-          // onPress={() => Alert.alert('hi')}
-          style={{
-            width: '100%',
-            textAlign: 'center',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{color: 'white', fontSize: hp('1.84%')}}>Buy now</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
-  return (
-    <TouchableWithoutFeedback onPress={onClick}>
-      {/* <Swipeable renderRightActions={rightSwipe}> */}
 
-      <View
-        onPress={onClick}
-        style={{
-          height: hp('8.62%'),
-          width: '100%',
-          // backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
-          backgroundColor: '#F4F5F8',
-
-          justifyContent: 'center',
-          marginBottom: 10,
-          padding: null,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-around',
-          }}>
-          <View
-            style={{
-              // flex: 0.494,
-              width: wp('100%'),
-
-              // maxWidth: '100%',
-              backgroundColor: '#F4F5F8',
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              textAlign: 'center',
-            }}>
-            <View
-              style={{
-                width: wp('24%'),
-                // flex: 0.24,
-                // marginLeft: wp('13%'),
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Image
-                style={{width: '100%', height: '100%'}}
-                source={{
-                  uri: image,
-                }}
-              />
-            </View>
-            <View style={{width: wp('70%')}}>
-              <Text
-                style={{
-                  fontFamily: regularFont,
-                  fontSize: hp('2.2%'),
-                  color: '#000000',
-                  marginLeft: 20,
-                  // alignSelf: 'left'
-                }}>
-                {name}
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              // flex: 0.1,
-              // width: wp('70%'),
-              backgroundColor: '#F4F5F8',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingRight: 20,
-            }}>
-            <Text>
-              {assetsYouHave}/{totalAssets}
-            </Text>
-          </View>
-        </View>
-      </View>
-      {/* </Swipeable> */}
-    </TouchableWithoutFeedback>
-  );
-};
-
-const Item = ({tokenSymbol, tokenName, balance, index}) => (
+const Item = ({tokenSymbol, tokenName, balance, mimetype, index}) => (
   <View
     style={{
       height: hp('4.9%'),
@@ -310,6 +196,10 @@ class ProfileScreen extends Component {
       modalTypeForEditing: 'name',
       debugModeCounter: 0,
       endOfListReached: false,
+      audioPlayerConfig: {
+        show: false,
+        url: '',
+      },
     };
     coinRef = createRef();
   }
@@ -491,7 +381,7 @@ class ProfileScreen extends Component {
                   <RenderAssetItem
                     item={e.item}
                     index={e.index}
-                    onClick={() =>
+                    onClick={() => {
                       this.props.navigation.navigate(
                         'NftItemHistoryComponent',
                         {
@@ -501,8 +391,8 @@ class ProfileScreen extends Component {
                             userWalletAddress: this.state.walletAddress,
                           },
                         },
-                      )
-                    }
+                      );
+                    }}
                     selectedItem={this.state.selectedItem}
                   />
                 )}
@@ -568,10 +458,10 @@ class ProfileScreen extends Component {
     let coinData = this.props.walletReducer.balance.filter(
       item => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
     );
-    console.log(coinData, 'sdfdsfdsf');
     let itemsData = this.props.walletReducer.balance.filter(
       item => item.tokenType === 'NFT',
     );
+    console.log(itemsData, '3249203482304');
     // let itemsData =
     let coinBalance = 0;
     let itemsBalance = 0;
@@ -621,9 +511,7 @@ class ProfileScreen extends Component {
           coinBalance = coinBalance + parseInt(item.balance._hex, 16);
         } else coinBalance = coinBalance + parseFloat(item.balance);
       });
-    // console.log(coinData, 'itemmmsmmsms');
     itemsData.map(item => {
-      // console.log(item.balance, 'ssssssssss');
 
       itemsBalance = itemsBalance + parseFloat(item.balance);
     });
@@ -1114,6 +1002,9 @@ class ProfileScreen extends Component {
     });
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+        {this.state.audioPlayerConfig.show && (
+          <AudioPlayer audioUrl={this.state.audioPlayerConfig.url} />
+        )}
         <View
           nestedScrollEnabled={true}
           style={{backgroundColor: primaryDarkColor, flex: 1}}>

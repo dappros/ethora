@@ -89,6 +89,7 @@ const getTokenBalanceURL = (walletAddress, tokenName) => {
 export const fetchWalletBalance = (walletAddress, tokenName, token, isOwn) => {
   console.log(walletAddress);
   let url = getTokenBalanceURL(walletAddress, tokenName);
+  
   return async dispatch => {
     dispatch(fetchingWalletCommonRequest());
 

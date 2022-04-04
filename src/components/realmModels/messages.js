@@ -21,7 +21,11 @@ function filter(query, schema, callback) {
   let check = schemaSelected.filtered(query);
   callback(Array.from(check));
 }
-
+export const getMessage = id =>
+  new Promise((resolve, reject) => {
+    const chatList = realm.objectForPrimaryKey(schemaTypes.MESSAGE_SCHEMA, id);
+    resolve(chatList);
+  });
 //insert message
 export const insertMessages = (
   data,
@@ -61,19 +65,29 @@ export const insertMessages = (
         room_name,
       };
     }
-    //check if message_id already exists
-    filter(`message_id="${data._id}"`, schemaTypes.MESSAGE_SCHEMA, callback => {
-      //if not
-      if (callback.length === 0) {
+
+    getMessage(data._id).then(message => {
+      if(!message) {
         realm.write(() => {
           realm.create(schemaTypes.MESSAGE_SCHEMA, messageObject);
           resolve(messageObject);
         });
         updateMessageObject({tokenAmount, receiverMessageId});
       }
-      //if yes
-      else return null;
-    });
+    })
+    //check if message_id already exists
+    // filter(`message_id="${data._id}"`, schemaTypes.MESSAGE_SCHEMA, callback => {
+    //   //if not
+    //   if (callback.length === 0) {
+    //     realm.write(() => {
+    //       realm.create(schemaTypes.MESSAGE_SCHEMA, messageObject);
+    //       resolve(messageObject);
+    //     });
+    //     updateMessageObject({tokenAmount, receiverMessageId});
+    //   }
+    //   //if yes
+    //   else return null;
+    // });
   });
 
 //fetch message object of a particular room

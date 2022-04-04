@@ -41,6 +41,7 @@ import {
   setOffset,
   setTotal,
 } from '../actions/wallet';
+import { NftListItem } from '../components/NftListItem';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -117,7 +118,7 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
   </View>
 );
 const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
-  <AssetItem
+  <NftListItem
     image={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
@@ -125,129 +126,11 @@ const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
     onClick={onClick}
     selectedItem={selectedItem}
     nftId={item.nftId}
-    // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
+    mimetype={item.nftMimetype}
     index={index}
   />
 );
-const AssetItem = ({
-  image,
-  assetsYouHave,
-  totalAssets,
-  name,
-  nftId,
-  onClick,
-  index,
-}) => {
-  const rightSwipe = () => {
-    return (
-      <View
-        style={{
-          height: hp('8.62%'),
-          zIndex: 99999,
-          // position: 'absolute',
-          width: wp('26.6%'),
-          // flex: 0.266,
-          // paddingHorizontal: wp('7.2%'),
-          backgroundColor: '#31974c',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <TouchableOpacity
-          // onPress={() => Alert.alert('hi')}
-          style={{
-            width: '100%',
-            textAlign: 'center',
-            height: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{color: 'white', fontSize: hp('1.84%')}}>Buy now</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
 
-  return (
-    <TouchableWithoutFeedback onPress={onClick}>
-      {/* <Swipeable renderRightActions={rightSwipe}> */}
-
-      <View
-        onPress={onClick}
-        style={{
-          height: hp('8.62%'),
-          width: '100%',
-          // backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
-          backgroundColor: '#F4F5F8',
-
-          justifyContent: 'center',
-          marginBottom: 10,
-          padding: null,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-around',
-          }}>
-          <View
-            style={{
-              // flex: 0.494,
-              width: wp('100%'),
-
-              // maxWidth: '100%',
-              backgroundColor: '#F4F5F8',
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              textAlign: 'center',
-            }}>
-            <View
-              style={{
-                width: wp('24%'),
-                // flex: 0.24,
-                // marginLeft: wp('13%'),
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Image
-                style={{width: '100%', height: '100%'}}
-                source={{
-                  uri: image,
-                }}
-              />
-            </View>
-            <View style={{width: wp('70%')}}>
-              <Text
-                style={{
-                  fontFamily: regularFont,
-                  fontSize: hp('2.2%'),
-                  color: '#000000',
-                  marginLeft: 20,
-                  // alignSelf: 'left'
-                }}>
-                {name}
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              // flex: 0.1,
-              // width: wp('70%'),
-              backgroundColor: '#F4F5F8',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingRight: 20,
-            }}>
-            <Text>
-              {assetsYouHave}/{totalAssets}
-            </Text>
-          </View>
-        </View>
-      </View>
-      {/* </Swipeable> */}
-    </TouchableWithoutFeedback>
-  );
-};
 
 const firstLayout = [
   {
@@ -407,8 +290,6 @@ function AnotherProfile(props) {
         })
       : null;
     itemsData.map(item => {
-      console.log(item, 'ssssssssss');
-
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);

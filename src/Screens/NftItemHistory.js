@@ -8,39 +8,30 @@ import React, {Component, useEffect, Fragment, useState} from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  ImageBackground,
   StyleSheet,
   Image,
   ActivityIndicator,
-  PermissionsAndroid,
-  Linking,
 } from 'react-native';
-import {useSelector, useDispatch, connect} from 'react-redux';
+import {useSelector, connect} from 'react-redux';
 import {fetchTransaction, fetchWalletBalance} from '../actions/wallet';
 
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import styles from './style/createNewChatStyle';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import CustomHeader from '../components/shared/customHeader';
-import * as connectionURL from '../config/url';
 import * as token from '../config/token';
-import axios from 'axios';
 import Modal from 'react-native-modal';
-import {
-  commonColors,
-  textStyles,
-  coinImagePath,
-  coinsMainName,
-} from '../../docs/config';
+import {commonColors, textStyles} from '../../docs/config';
 import NftTransactionListTab from '../components/NftTransactionsHistoryComponent';
 import {transactionURL} from '../config/routesConstants';
+import {httpGet} from '../config/apiService';
+import {audioMimetypes, imageMimetypes} from '../constants/mimetypes';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -48,20 +39,16 @@ const {regularFont, lightFont} = textStyles;
 function NftItemHistory(props) {
   const [avatarSource, setAvatarSource] = useState(null);
   const [itemName, setItemName] = useState('');
-  const [selectedValue, setSelectedValue] = useState(1);
-  const [fileId, setFileId] = useState('');
   const [loading, setLoading] = useState(false);
-  const [cameraPermission, setCameraPermission] = useState(false);
   const [isSelected, setSelection] = useState(true);
-  const [open, setOpen] = useState(false);
   const allReducers = useSelector(state => state);
-  const [width, setWidth] = useState('40%');
   const [itemTransactions, setItemTransactions] = useState([]);
 
-  const loginReducerData = allReducers.loginReducer;
-  const [walletAddress, setWalletAddress] =
-    loginReducerData.initialData.walletAddress;
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalData, setModalData] = useState({
+    visible: false,
+    url: '',
+    mimetype: '',
+  });
   const {item, userWalletAddress} = props.route.params;
   const getItemTransactionsHistory = async (walletAddress, nftId) => {
     // let axios = require('axios');
@@ -73,28 +60,13 @@ function NftItemHistory(props) {
       '&' +
       'nftId=' +
       nftId;
-    return await axios.get(url, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: token,
-        'Accept-encoding': 'gzip, deflate',
-      },
-    });
+    return await httpGet(url, token);
   };
 
-  // const [value, setValue] = useState(1);
-  const [items, setItems] = useState([
-    {label: '1', value: 1},
-    // {label: '1', value: '1'}
-  ]);
-
   useEffect(() => {
-    // requestCameraPermission();
     setAvatarSource({uri: item.nftFileUrl});
-    // console.log(item, 'sdf49835430895dsf')
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
       const allTransactions = res.data.items.map(item => {
-        // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')
         if (item.from === userWalletAddress && item.from !== item.to) {
           // balance = balance;
           item.balance = item.senderBalance + '/' + item.nftTotal;
@@ -108,7 +80,6 @@ function NftItemHistory(props) {
 
       setItemTransactions(
         allTransactions.sort((a, b) => {
-          // console.log(new Date(a.createdAt).toUTCString(), 'dadsadasdasdsa')
           return (
             new Date(a.createdAt).toUTCString() -
             new Date(b.createdAt).toUTCString()
@@ -118,14 +89,22 @@ function NftItemHistory(props) {
     });
     return () => {};
   }, [item]);
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
+
+  const onPreviewClick = () => {
+    console.log(item);
+    setModalData({
+      url: item.nftFileUrl,
+      mimetype: item.nftMimetype,
+      visible: true,
+    });
+  };
+  const closeModal = () => {
+    setModalData(prev => ({...prev, visible: false, url: ''}));
   };
 
   const clearData = () => {
     setLoading(false);
     setAvatarSource(null);
-    // setSelectedValue('')
     setItemName('');
     setSelection(false);
   };
@@ -137,106 +116,36 @@ function NftItemHistory(props) {
       </View>
       <ScrollView style={styles.container}>
         <View style={{...styles.contentContainer, margin: 0}}>
-          {/* <View style={styles.section1}>
-            <TextInput
-              value={itemName}
-              onChangeText={itemName => setItemName(itemName)}
-              placeholder="Item Name"
-              placeholderTextColor={primaryColor}
-              style={classes.itemNameInput}
-              maxLength={120}
-            />
-          </View> */}
-
-          {/* <TextInput
-              scrollEnabled
-              placeholder="Rarity"
-              placeholderTextColor={primaryColor}
-            //   multiline
-              style={styles.textInputOuter}
-            //   numberOfLines={5}
-            /> */}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: 20,
-            }}>
+          <View style={classes.justifyBetween}>
             <TouchableOpacity
-              // onPress={chooseImageOption}
-              onPress={() => item.nftFileUrl && setModalVisible(true)}
+              onPress={onPreviewClick}
               style={{alignItems: 'center', width: wp('60%')}}>
-              <View
-                // onPress={chooseImageOption}/
-
-                style={{
-                  ...classes.alignCenter,
-                  width: wp('60%'),
-                  height: wp('40%'),
-                  borderRadius: 5,
-                  borderColor: !item.nftFileUrl ? primaryColor : 'white',
-                  borderWidth: 1,
-                  marginRight: wp('5%'),
-                  marginLeft: wp('7%'),
-                }}>
-                {item.nftFileUrl ? (
-                  <Image
-                    source={avatarSource}
-                    style={{
-                      width: wp('60%'),
-                      height: wp('40%'),
-                      borderRadius: 5,
-                    }}
+              <View style={[classes.alignCenter, classes.imageContainer]}>
+                {imageMimetypes[item.nftMimetype] && (
+                  <Image source={avatarSource} style={classes.tokenImage} />
+                )}
+                {audioMimetypes[item.nftMimetype] && (
+                  <AntIcon
+                    name={'playcircleo'}
+                    color={primaryColor}
+                    size={hp('10%')}
+                    // style={{marginRight: 40}}
                   />
-                ) : (
-                  <View
-                    style={{justifyContent: 'center', alignItems: 'center'}}>
-                    {/* <AntIcon
-                      name="plus"
-                      size={hp('10%')}
-                      color={primaryColor}
-                    /> */}
-                    <Text
-                      style={{
-                        marginTop: 'auto',
-                        fontFamily: lightFont,
-                        fontSize: hp('2.6%'),
-                        color: primaryColor,
-                      }}>
-                      Image not found
-                    </Text>
-                  </View>
                 )}
               </View>
             </TouchableOpacity>
-            <View
-              style={{
-                // borderColor: primaryColor,
-                // borderWidth: 1,
-                // marginTop: 10,
-                borderRadius: 5,
-                marginLeft: 10,
-                // flexDirection: 'row',
-                alignItems: 'flex-start',
-                justifyContent: 'space-around',
-                width: wp('40%'),
-                // height: wp('10%'),
-                paddingRight: 10,
-              }}>
+            <View style={classes.tokenDescriptionContainer}>
               <Text
                 style={{
                   ...classes.textStyle,
                   wordWrap: 'wrap',
                   fontWeight: 'bold',
-                  // left: 5,
                 }}>
                 {item.tokenName}
               </Text>
               <Text
                 style={{
                   ...classes.textStyle,
-                  // right: 40,
                   marginTop: 10,
                   alignSelf: 'flex-start',
                 }}>
@@ -244,23 +153,6 @@ function NftItemHistory(props) {
               </Text>
 
               <View />
-              {/* {Platform.OS === 'android' ? (
-                <Picker
-                  // disabled
-                  selectedValue={selectedValue}
-                  style={{height: 10, width: 30, color: primaryColor}}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedValue(itemValue)
-                  }>
-                  <Picker.Item label="1" value={1} />
-                  <Picker.Item label="2" value={2} />
-                  <Picker.Item label="3" value={3} />
-                  <Picker.Item label="4" value={4} />
-                  <Picker.Item label="5" value={5} />
-                </Picker>
-              ) : ( */}
-
-              {/* )} */}
             </View>
           </View>
 
@@ -307,12 +199,7 @@ function NftItemHistory(props) {
                 </Text>
                 <Image
                   source={require('../assets/transactions-empty.png')}
-                  style={{
-                    marginTop: 20,
-                    resizeMode: 'stretch',
-                    height: hp('21.50%'),
-                    width: wp('47.69%'),
-                  }}
+                  style={classes.noTransactionsImage}
                 />
               </View>
             )}
@@ -320,30 +207,20 @@ function NftItemHistory(props) {
         </View>
       </ScrollView>
       <Modal
-        onBackdropPress={() => setModalVisible(false)}
-        isVisible={isModalVisible}>
-        <View
-          style={{
-            backgroundColor: 'white',
-            borderRadius: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: wp('90%'),
-            height: wp('90%'),
-          }}>
-          <TouchableOpacity onPress={() => setModalVisible(false)}>
-            <Image
-              // onPress={setChatAvatar}
-              source={avatarSource}
-              style={{
-                width: wp('90%'),
-                height: wp('90%'),
-                borderRadius: 10,
-              }}
-            />
-          </TouchableOpacity>
-
-          {/* <Button title="Hide modal" onPress={toggleModal} /> */}
+        onBackdropPress={closeModal}
+        onRequestClose={closeModal}
+        isVisible={modalData.visible}>
+        <View style={classes.modal}>
+          {audioMimetypes[modalData.mimetype] && (
+            <View style={{position: 'absolute', top: '50%'}}>
+              <AudioPlayer audioUrl={modalData.url} />
+            </View>
+          )}
+          {imageMimetypes[modalData.mimetype] && (
+            <TouchableOpacity onPress={closeModal}>
+              <Image source={avatarSource} style={classes.modalImage} />
+            </TouchableOpacity>
+          )}
         </View>
       </Modal>
     </Fragment>
@@ -354,6 +231,17 @@ const classes = StyleSheet.create({
   tokenIconStyle: {
     height: hp('3%'),
     width: hp('3%'),
+  },
+  justifyBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  tokenImage: {
+    width: wp('60%'),
+    height: wp('40%'),
+    borderRadius: 5,
   },
   alignCenter: {
     justifyContent: 'center',
@@ -392,6 +280,51 @@ const classes = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  imageContainer: {
+    width: wp('60%'),
+    height: wp('40%'),
+    borderRadius: 10,
+    borderWidth: 1,
+    marginRight: wp('5%'),
+    marginLeft: wp('7%'),
+    borderColor: 'lightgrey',
+  },
+  notFoundImageText: {
+    marginTop: 'auto',
+    fontFamily: lightFont,
+    fontSize: hp('2.6%'),
+    color: primaryColor,
+  },
+  tokenDescriptionContainer: {
+    borderRadius: 5,
+    marginLeft: 10,
+    // flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-around',
+    width: wp('40%'),
+    // height: wp('10%'),
+    paddingRight: 10,
+  },
+  noTransactionsImage: {
+    marginTop: 20,
+    resizeMode: 'stretch',
+    height: hp('21.50%'),
+    width: wp('47.69%'),
+  },
+  modal: {
+    // backgroundColor: 'white',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: wp('90%'),
+    height: wp('90%'),
+  },
+  modalImage: {
+    width: wp('90%'),
+    height: wp('90%'),
+    borderRadius: 10,
   },
 });
 const mapStateToProps = state => {

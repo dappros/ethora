@@ -52,6 +52,7 @@ import {
   itemsTransfersAllowed,
 } from '../../../docs/config';
 import { CREATE_ROOM } from '../../constants/xmppConstants';
+import { NftListItem } from '../NftListItem';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, semiBoldFont} = textStyles;
@@ -63,138 +64,20 @@ const QRCodeComponent = props => {
   );
 };
 
-const RenderAssetItem = ({item, index, itemTransferFunc, selectedItem}) => (
-  <AssetItem
+const RenderAssetItem = ({item, index, itemTransferFunc, itemSelected}) => (
+  <NftListItem
     image={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
-    itemTransferFunc={itemTransferFunc}
-    selectedItem={selectedItem}
+    onClick={itemTransferFunc}
+    itemSelected={itemSelected}
     nftId={item.nftId}
-    // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
+    mimetype={item.nftMimetype}
     index={index}
   />
 );
-const AssetItem = ({
-  image,
-  assetsYouHave,
-  totalAssets,
-  name,
-  index,
-  itemTransferFunc,
-  selectedItem,
-  nftId,
-}) => {
-  // const rightSwipe = () => {
-  //   return (
-  //     <View
-  //       style={{
-  //         height: hp('8.62%'),
-  //         zIndex: 99999,
-  //         // position: 'absolute',
-  //         width: wp('26.6%'),
-  //         // flex: 0.266,
-  //         // paddingHorizontal: wp('7.2%'),
-  //         backgroundColor: '#31974c',
-  //         alignItems: 'center',
-  //         justifyContent: 'center',
-  //       }}>
-  //       <TouchableOpacity
-  //         onPress={() => Alert.alert('hi')}
-  //         style={{
-  //           width: '100%',
-  //           textAlign: 'center',
-  //           height: '100%',
-  //           justifyContent: 'center',
-  //           alignItems: 'center',
-  //         }}>
-  //         <Text style={{color: 'white', fontSize: hp('1.84%')}}>Buy now</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // };
 
-  return (
-    <TouchableWithoutFeedback onPress={itemTransferFunc}>
-      <View
-        style={{
-          height: hp('8.62%'),
-          width: '100%',
-          backgroundColor: '#c8fcbc',
-          backgroundColor:
-            selectedItem.nftId === nftId ? 'rgba(190, 190, 181, 1)' : '#F4F5F8',
-
-          justifyContent: 'center',
-          marginBottom: 10,
-          padding: null,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            width: '100%',
-            justifyContent: 'space-around',
-          }}>
-          <View
-            style={{
-              // flex: 0.494,
-              width: wp('100%'),
-
-              // maxWidth: '100%',
-              // backgroundColor: selectedItem.nftId === nftId ? 'rgba(190, 190, 181, 1)' : '#F4F5F8',
-
-              flexDirection: 'row',
-              alignItems: 'center',
-
-              textAlign: 'center',
-            }}>
-            <View
-              style={{
-                width: wp('24%'),
-                // flex: 0.24,
-                // marginLeft: wp('13%'),
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Image
-                style={{width: '100%', height: '100%'}}
-                source={{
-                  uri: image,
-                }}
-              />
-            </View>
-            <View style={{width: wp('60%')}}>
-              <Text
-                style={{
-                  fontFamily: regularFont,
-                  fontSize: hp('2.2%'),
-                  color: '#000000',
-                  marginLeft: 20,
-                  // alignSelf: 'left'
-                }}>
-                {name}
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              // flex: 0.1,
-              // width: wp('70%'),
-              // backgroundColor: selectedItem.nftId === nftId? '#000' : '#F4F5F8',
-
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              paddingRight: 50,
-            }}>
-            <Text>
-              {assetsYouHave}/{totalAssets}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
-  );
-};
 
 const TokenTransfer = props => {
   return (
@@ -771,7 +654,7 @@ class CommonModal extends Component {
             item={e.item}
             index={e.index}
             itemTransferFunc={() => this.setSelectedItem(e.item)}
-            selectedItem={this.state.selectedItem}
+            itemSelected={this.state.selectedItem.nftId === e.item.nftId}
           />
         )}
         nestedScrollEnabled={true}
