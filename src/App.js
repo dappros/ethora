@@ -8,11 +8,13 @@ import React, {Component} from 'react';
 import {Provider} from 'react-redux';
 import store from './config/store';
 import {Text, View} from 'react-native';
-import Routes from './routes';
+import Routes from './Routes';
 import RNBootSplash from 'react-native-bootsplash';
 import {StatusBar} from 'react-native';
 import {CustomToast} from './components/CustomToast';
 import RefactoredRoutes from './refactoredRoutes';
+import { NativeBaseProvider } from "native-base";
+import { StoreProvider } from './stores/context';
 
 // Sentry.init({
 //   dsn: "https://daaa65328f6041fc915a0074ce208923@o301951.ingest.sentry.io/5843000",
@@ -33,11 +35,15 @@ class App extends Component {
 
   render() {
     return (
-      <Provider store={store}>
-        <StatusBar barStyle="dark-content" backgroundColor="white" />
-        <Routes />
-        <CustomToast />
-      </Provider>
+      // <Provider store={store}>
+      <StoreProvider>
+        <NativeBaseProvider>
+          <StatusBar barStyle="dark-content" backgroundColor="white" />
+          <Routes />
+          <CustomToast />
+        </NativeBaseProvider>
+      </StoreProvider>
+      // </Provider>
     );
   }
 }

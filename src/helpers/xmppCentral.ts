@@ -11,13 +11,11 @@ import {
   newSubscription,
   ROOM_PRESENCE,
   SEND_MESSAGE,
-  subscriptionsStanzaID,
   UNSUBSCRIBE_FROM_ROOM,
 } from '../constants/xmppConstants';
 import {
   insertRosterList,
   fetchRosterList as fetchChatListRealm,
-  updateRosterList,
   updateChatRoom,
   getChatRoom,
   addChatRoom,
@@ -37,6 +35,7 @@ import Toast from 'react-native-simple-toast';
 import {Alert} from 'react-native';
 import * as types from '../constants/types';
 import {joinSystemMessage} from '../components/SystemMessage';
+import { InitialDataProps } from '../stores/loginStore';
 
 const {client, xml} = require('@xmpp/client');
 const debug = require('@xmpp/debug');
@@ -45,30 +44,46 @@ let profileDescription = '';
 let profilePhoto = '';
 let usersLastSeen = {};
 
-export let xmpp;
+export let xmpp: { start: () => void; on: (arg0: string, arg1: { (err: any): void; (): void; (stanza: any): Promise<void>; (address: any): Promise<void>; }) => void; stop: () => Promise<any>; reconnect: { on: (arg0: string, arg1: () => void) => void; stop: () => void; delay: number; }; send: (arg0: any) => void; statues: string; status: string; };
+
+export const xmppConnect = (
+  walletAddress: string,
+  password: string,
+  DOMAIN: string,
+  SERVICE: string
+  ) => {
+    xmpp = client({
+      service: SERVICE,
+      domain: DOMAIN,
+      username: walletAddress,
+      password: password,
+    });
+    xmpp.start();
+};
+
 
 export const xmppListener = (
-  manipulatedWalletAddress,
-  updatedRoster,
-  initialData,
-  updateUserProfile,
-  setOtherUserVcard,
-  finalMessageArrivalAction,
-  participantsUpdateAction,
-  updateMessageComposingState,
-  setRoles,
-  getStoredItems,
-  setRosterAction,
-  setRecentRealtimeChatAction,
-  setOtherUserDetails,
-  logOut,
-  appDebugMode,
-  printLogs,
-  DOMAIN,
-  CONFERENCEDOMAIN,
+  manipulatedWalletAddress: string,
+  updatedRoster: { (data: boolean): void},
+  initialData: InitialDataProps,
+  updateUserProfile: { (data: any): void},
+  setOtherUserVcard: { (data: any): void},
+  finalMessageArrivalAction: { (data: boolean): void},
+  participantsUpdateAction: { (data: boolean): void},
+  updateMessageComposingState:{ (data: any): void},
+  setRoles: { (data: any): void},
+  getStoredItems: { (): Promise<any>; (): void; (): any; },
+  setRosterAction:{ (data: any): void},
+  setRecentRealtimeChatAction: { (messageObject: { system: any; createdAt: any; _id: any; text: any; user: { avatar: any; name: any; _id: any; }; mimetype: any; image: any; realImageURL: any; isStoredFile: any; size: any; duration: any; waveForm: any; }, roomName: any, shouldUpdateChatScreen: any, tokenAmount: any, receiverMessageId: any): void },
+  setOtherUserDetails:{ (data: any): void},
+  logOut: { (): Promise<void> },
+  appDebugMode: boolean,
+  printLogs: { (log: any): void},
+  DOMAIN: string,
+  CONFERENCEDOMAIN: string,
 ) => {
   // debug(xmpp, true);
-  let rolesMap = {};
+  let rolesMap = [];
 
   xmpp.on('error', err => {
     // xmpp.reconnect.start();
@@ -176,8 +191,8 @@ export const xmppListener = (
             }
           });
           updateUserProfile({
-            desc: profileDescription,
-            photoURL: profilePhoto,
+            userDescription: profileDescription,
+            userAvatar: profilePhoto,
           });
         }
       }
@@ -330,28 +345,6 @@ export const xmppListener = (
       }
       if (stanza?.children[2]?.children[0]?.name === 'invite') {
         const jid = stanza.children[3].attrs.jid;
-        // console.log(jid, 'dsfjkdshjfksdu439782374')
-        // const subscribe = xml(
-        //   'iq',
-        //   {
-        //     from: manipulatedWalletAddress + '@' + DOMAIN,
-        //     to: jid,
-        //     type: 'set',
-        //     id: newSubscription,
-        //   },
-        //   xml(
-        //     'subscribe',
-        //     {
-        //       xmlns: 'urn:xmpp:mucsub:0',
-        //       nick: manipulatedWalletAddress,
-        //     },
-        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:messages'}),
-        //     xml('event', {node: 'urn:xmpp:mucsub:nodes:subject'}),
-        //   ),
-        // );
-
-        // xmpp.send(subscribe);
-
         subscribeToRoom(jid, manipulatedWalletAddress);
       }
 
@@ -881,14 +874,4 @@ export const xmppListener = (
     commonDiscover(manipulatedWalletAddress, DOMAIN);
     vcardRetrievalRequest(manipulatedWalletAddress);
   });
-};
-
-export const xmppConnect = (walletAddress, password, DOMAIN, SERVICE) => {
-  xmpp = client({
-    service: SERVICE,
-    domain: DOMAIN,
-    username: walletAddress,
-    password: password,
-  });
-  xmpp.start();
 };

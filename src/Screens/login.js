@@ -54,6 +54,7 @@ import DeviceInfo from 'react-native-device-info';
 import Toast from 'react-native-simple-toast';
 import {httpGet} from '../config/apiService';
 import {showError} from '../config/toastAction';
+import {useStores} from '../stores/context';
 
 const hitAPI = new fetchFunction();
 
@@ -77,6 +78,8 @@ class Login extends Component {
       email: '',
     };
   }
+
+
 
   async componentDidMount() {
     const date = new Date();
@@ -322,7 +325,13 @@ class Login extends Component {
       const response = await httpGet(url, this.props.apiReducer.defaultToken);
 
       if (!response.data.success) {
-        this.props.loginUser(loginType, user.authToken, user.uid, user);
+        useStores().loginStore.loginUser(
+          loginType,
+          user.authToken,
+          user.uid,
+          user
+        )
+        // this.props.loginUser(loginType, user.authToken, user.uid, user);
       } else {
         this.registerSocialUser(user, loginType);
       }

@@ -65,6 +65,8 @@ import { AccountScreenRefactored } from './Screens/AccountScreenRefactored';
 import { SEND_MESSAGE } from './constants/xmppConstants';
 const {primaryColor} = commonColors;
 
+import {observer} from 'mobx-react';
+
 const messageObjectRealm = realm.objects(schemaTypes.MESSAGE_SCHEMA);
 const {xml} = require('@xmpp/client');
 
@@ -537,15 +539,18 @@ class Routes extends Component {
         // value previously stored
         console.log(JSON.parse(value), 'parsedValue from home2');
         return JSON.parse(value);
+      }else{
+        return null
       }
     } catch (e) {
+      return null
       // error reading value
       console.log(e, 'error reading');
     }
   };
 
   async componentDidUpdate(prevProps) {
-    //check if premium
+    //check if premium 
     if (
       this.props.AccountReducer.isPremium &&
       this.props.AccountReducer.isPremium !== prevProps.AccountReducer.isPremium
