@@ -59,3 +59,6 @@ buck-out/
 /ios/Pods/
 
 /docs/config.js/
+
+#Bots
+./bots/huthut/node_modules
