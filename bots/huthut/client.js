@@ -61,7 +61,7 @@ xmpp.on("stanza", async stanza => {
 xmpp.on('online', jid => {
     console.log('ONLINE:', jid.toString());
 
-    xmpp.send(xml('presence', {}, xml('show', {}, 'chat'), xml('status', {}, 'Bot Online'),));
+    xmpp.send(xml('presence', {}, xml('show', {}, 'chat'), xml('status', {}, messages.general.botStatusOnline),));
 
     connectRoom(xmpp, jid.toString());
 });

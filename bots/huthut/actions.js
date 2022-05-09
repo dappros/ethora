@@ -22,7 +22,7 @@ const connectRoom = (xmpp, address) => {
 
     console.log('=> Sending a welcome message: ', roomAddress);
 
-    sendMessage(xmpp, roomAddress, 'groupchat', messages.hello)
+    sendMessage(xmpp, roomAddress, 'groupchat', messages.general.welcomeMessage)
 }
 
 export { sendMessage, connectRoom };
