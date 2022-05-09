@@ -61,4 +61,5 @@ buck-out/
 /docs/config.js/
 
 #Bots
-./bots/huthut/node_modules
+/bots/huthut/node_modules
+/bots/huthut/config/connect.js
