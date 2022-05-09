@@ -33,7 +33,7 @@ xmpp.on("stanza", async stanza => {
 
                     if (child.name === 'x' && msg.match(/\binvite\S*\b/g)) {
                         console.log('=> The bot was invited to the chat room ', jid);
-                        connectRoom(jid);
+                        connectRoom(xmpp, jid);
                     }
 
                     if (child.name === 'body') {
