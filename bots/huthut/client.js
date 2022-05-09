@@ -77,8 +77,9 @@ const connectRoom = (address) => {
     console.log('=> Connecting to the room: ', roomAddress);
 
     xmpp.send(xml('presence', {
-        from: address, to: myRoomAddress,
-    }, xml('x', 'http://jabber.org/protocol/muc'))).catch(console.error);
+        from: address,
+        to: myRoomAddress,
+    }, xml('x', 'http://jabber.org/protocol/muc', xml('history', {maxstanzas: 0})))).catch(console.error);
 
     console.log('=> Sending a welcome message: ', roomAddress);
 
