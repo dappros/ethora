@@ -1,6 +1,8 @@
 import connectData from './config/connect.js'
 import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
+import {sendMessage, connectRoom} from './actions.js';
+import messages from "./config/messages.js";
 
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
@@ -37,21 +39,15 @@ xmpp.on("stanza", async stanza => {
                     if (child.name === 'body') {
                         console.log('=> Message received from ', jid, msg)
                         if (msg === 'test') {
-                            xmpp.send(xml('message', {to: jid, type: 'chat'}, xml('body', {}, 'Test response')));
+                            sendMessage(xmpp, jid, 'message', messages.testMessage)
                         }
 
                         if (msg === 'Turn your back to the forest, hut, hut.') {
-                            xmpp.send(xml('message', {
-                                to: jid,
-                                type: 'chat'
-                            }, xml('body', {}, 'Screeches and creaks are heard from the woods as you approach what looks like a hut on chicken legs. The hut seems to be on alert waiting for what you have to say.')));
+                            sendMessage(xmpp, jid, 'message', messages.visiteingHut.firstGreeting)
                         }
 
                         if (msg === 'Turn your front to me, hut, hut.') {
-                            xmpp.send(xml('message', {
-                                to: jid,
-                                type: 'chat'
-                            }, xml('body', {}, 'Further blood-curdling screeches and creaks are heard as the hideous Hut spins around. It finally comes to a stop with its door towards you. Will you dare entering?')));
+                            sendMessage(xmpp, jid, 'message', messages.visiteingHut.openingHut)
                         }
 
                     }
@@ -67,24 +63,7 @@ xmpp.on('online', jid => {
 
     xmpp.send(xml('presence', {}, xml('show', {}, 'chat'), xml('status', {}, 'Bot Online'),));
 
-    connectRoom(jid.toString());
+    connectRoom(xmpp, jid.toString());
 });
-
-const connectRoom = (address) => {
-    let roomAddress = 'hliuch' + connectData.conferenceAddress;
-    let myRoomAddress = 'hliuch' + connectData.conferenceAddress + '/' + connectData.botName;
-
-    console.log('=> Connecting to the room: ', roomAddress);
-
-    xmpp.send(xml('presence', {
-        from: address,
-        to: myRoomAddress,
-    }, xml('x', 'http://jabber.org/protocol/muc', xml('history', {maxstanzas: 0})))).catch(console.error);
-
-    console.log('=> Sending a welcome message: ', roomAddress);
-
-    xmpp.send(xml('message', {to: roomAddress, type: 'groupchat'}, xml('body', {}, 'Hey! Hut Hut Bot launched')));
-
-}
 
 xmpp.start().catch(console.error);
