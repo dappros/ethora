@@ -1,0 +1,99 @@
+ 
+/* BRANDING */
+
+// TITLE 
+// App title / name shown in Login screen and top nav bar
+appTitle = “Ethora”;
+
+// LOGO (LOGIN SCREEN)
+// App logo (displayed in login screen) image path: 
+// /assets/logo.png
+
+// NAVBAR LOGO
+// If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
+navbarLogoShow = true;
+
+// COLOUR THEME
+export const commonColors = {
+"primaryColor" : "#F0B310",
+"primaryDarkColor" : "#C59002",
+"secondaryColor" : "#133452"
+}
+
+// FONTS
+export const textStyles = {
+"lightFont" : 'Montserrat-Light',
+"regularFont" : 'Montserrat-Regular',
+"mediumFont" : 'Montserrat-Medium',
+"boldFont" : "Montserrat-Bold",
+"semiBoldFont" : "Montserrat-SemiBold",
+"thinFont" : "Montserrat-Thin"
+}
+
+
+/* TUTORIAL */
+
+// If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default. 
+tutorialStartUponLogin = false; // show tutorial upon login
+tutorialShowInMenu = false; // show tutorial item in the menu
+
+
+/* USERS AND ACCOUNTS */
+
+// EMAIL MANAGEMENT
+// If enabled, we allow users to add / remove additional e-mails via E-mail menu item. This allows the system to “merge” user accounts when they use different social sign-in (SSO) mechanisms or 3rd parties for user accounts sign in, verification and premium features.
+usersEmailsManageEnabled = false;
+
+// PREMIUM MEMBER CHECK
+// For discussion - include here possibility to enable custom “premium member check” logic - possibly via custom ‘include’ code and then use it elsewhere in the engine, without breaking compatibility if this isn’t enabled. E.g. Hubspot e-mail verification etc.
+// usersPremiumCheck = “src/usersPremiumCheck.js”;
+
+
+/* LOBBY (CHATS) SCREEN */
+
+// LIST OF CHATS
+// Here we display a list of group chats that are going to be shown by default to all users joining the app. Users may later reorder or remove these chats.
+/*
+"chatKey" - public key or Ethereum wallet address of the chat room
+“chatDefaultOrder” - default sorting order of the chat room in the users screen
+“premiumOnly” - if true, only show this room to premium users
+“stickyOrder” - if true, users can’t change the order of this chat room 
+“removable” - if false, users cannot remove or leave this chat room
+*/
+
+chatsDefault[] = {chatKey:”ec75f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865”, chatDefaultOrder:1, premiumOnly: false, stickyOrder:false, removable:true}
+chatsDefault[] = {chatKey:”2275f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865”, chatDefaultOrder:2, premiumOnly: false, stickyOrder:false, removable:true}
+chatsDefault[] = {chatKey:”3375f79040af17557c450e94a4214a484350634a433592d2eb31784c5a46e865”, chatDefaultOrder:3, premiumOnly: false, stickyOrder:false, removable:true}
+
+
+/* TOKEN ECONOMY */
+
+// COINS 
+// Under Coin we mean the default ERC-20 token used for the purpose of internal currency or ‘merit’ mechanism in the app
+
+// Coins image path
+// An icon image for your main Coin token to be displayed in top bar, transactions, wallet and chat rooms. It’s a coin image by default, but you can replace it with a diamond, star, currency symbol etc.
+// "/assets/coin.png"
+
+// Coins symbol
+// (a short abbreviation for your main Coin token to be displayed in chat rooms and transactions where relevant. Typically 3 or 4 symbols derived from application / project name with “C” added for coin, but can be anything you like. E.g. your app is called “Tolkien Fans Group”, you can then call your Coin “TFGC” for “Tolkien Fans Group Coin”)
+coinsMainSymbol = “ETO”;
+
+// ITEMS
+// (these are NFT, or ERC-721 - the unique tokens that may be circulated between users or displayed as “badges” or “achievements” in their profiles)
+
+// Allow Minting by users
+// ("minting” means creating items - when set to ’true’ your users will be able to create their own Items via app menu)
+itemsMintingAllowed = true;
+
+// Allow Transfers by users
+// if set to ‘false’ users won’t be able to transfer items between each other or drop them in the chat rooms. This way you may, for example, support “badges” or “achievements”, as well as other scenarios where you may want Items to only be received from the system or chat bots.
+itemsTransfersAllowed = true;
+
+// Minting Fee
+// (a proposed parameter, not implemented yet, if set will require N Coins to be spent towards minting each Item or a copy of an Item)
+// itemsMintingFee = 10; 
+
+// SYSTEM WALLET NAME FOR TRANSACTIONS
+// Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default. 
+appWalletName = “Anonymous”; 
