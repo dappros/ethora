@@ -1,7 +1,7 @@
 import connectData from './config/connect.js'
 import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
-import {sendMessage, connectRoom} from './actions.js';
+import {sendMessage, connectRoom, messageCheck} from './actions.js';
 import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 
@@ -40,15 +40,15 @@ xmpp.on("stanza", async stanza => {
 
                     if (child.name === 'body') {
                         console.log('=> Message received from ', jid, msg)
-                        if (msg === 'test') {
+                        if (messageCheck(msg, 'hut test')) {
                             sendMessage(xmpp, jid, 'message', messages.testMessage)
                         }
 
-                        if (msg === 'Turn your back to the forest, hut, hut.') {
+                        if (messageCheck(msg, 'hut back turn forest')) {
                             sendMessage(xmpp, jid, 'message', messages.visiteingHut.firstGreeting)
                         }
 
-                        if (msg === 'Turn your front to me, hut, hut.') {
+                        if (messageCheck(msg, 'hut front turn me')) {
                             sendMessage(xmpp, jid, 'message', messages.visiteingHut.openingHut)
                         }
 

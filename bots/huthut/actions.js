@@ -3,6 +3,7 @@ import connectData from "./config/connect.js";
 import messages from "./config/messages.js";
 
 const sendMessage = (xmpp, jid, type, message) => {
+    // console.log('===========>', jid, type)
     xmpp.send(xml('message', {
         to: jid,
         type: type
@@ -10,7 +11,7 @@ const sendMessage = (xmpp, jid, type, message) => {
 }
 
 const connectRoom = (xmpp, address, roomAddress) => {
-    let myRoomAddress = roomAddress+'/'+connectData.botName;
+    let myRoomAddress = roomAddress + '/' + connectData.botName;
 
     console.log('=> Connecting to the room: ', roomAddress);
 
@@ -24,4 +25,18 @@ const connectRoom = (xmpp, address, roomAddress) => {
     sendMessage(xmpp, roomAddress, 'groupchat', messages.general.welcomeMessage)
 }
 
-export { sendMessage, connectRoom };
+const buildRegEx = (str, keywords) => {
+    return new RegExp("(?=.*?\\b" +
+        keywords
+            .split(" ")
+            .join(")(?=.*?\\b") +
+        ").*",
+        "i"
+    );
+}
+
+const messageCheck = (str, keywords) => {
+    return buildRegEx(str, keywords).test(str) === true
+}
+
+export {sendMessage, connectRoom, messageCheck};
