@@ -9,9 +9,8 @@ const sendMessage = (xmpp, jid, type, message) => {
     }, xml('body', {}, message)));
 }
 
-const connectRoom = (xmpp, address) => {
-    let roomAddress = 'hliuch' + connectData.conferenceAddress;
-    let myRoomAddress = 'hliuch' + connectData.conferenceAddress + '/' + connectData.botName;
+const connectRoom = (xmpp, address, roomAddress) => {
+    let myRoomAddress = roomAddress+'/'+connectData.botName;
 
     console.log('=> Connecting to the room: ', roomAddress);
 

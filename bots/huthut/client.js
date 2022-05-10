@@ -3,6 +3,7 @@ import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
 import {sendMessage, connectRoom} from './actions.js';
 import messages from "./config/messages.js";
+import botOptions from "./config/config.js";
 
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
@@ -28,12 +29,13 @@ xmpp.on("stanza", async stanza => {
         if (stanza.is("message") && stanza.attrs.from !== xmpp.jid) {
             stanza.children.forEach(child => {
 
+                    const address = stanza.attrs.to;
                     const jid = stanza.attrs.from;
                     const msg = child.children.join('\n');
 
                     if (child.name === 'x' && msg.match(/\binvite\S*\b/g)) {
                         console.log('=> The bot was invited to the chat room ', jid);
-                        connectRoom(xmpp, jid);
+                        connectRoom(xmpp, address, jid);
                     }
 
                     if (child.name === 'body') {
@@ -55,15 +57,21 @@ xmpp.on("stanza", async stanza => {
             )
         }
     }
-)
-;
+);
 
 xmpp.on('online', jid => {
     console.log('ONLINE:', jid.toString());
 
     xmpp.send(xml('presence', {}, xml('show', {}, 'chat'), xml('status', {}, messages.general.botStatusOnline),));
 
-    connectRoom(xmpp, jid.toString());
+    let roomAddress;
+    for (let roomData of botOptions.allowedRooms) {
+        if (roomData.conferenceAddress === connectData.conferenceAddress) {
+            roomAddress = roomData.name + roomData.conferenceAddress;
+            connectRoom(xmpp, jid.toString(), roomAddress);
+        }
+    }
+
 });
 
 xmpp.start().catch(console.error);
