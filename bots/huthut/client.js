@@ -1,7 +1,7 @@
 import connectData from './config/connect.js'
 import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
-import {sendMessage, connectRoom, messageCheck} from './actions.js';
+import {connectRoom} from './actions.js';
 import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 import {router} from "./router.js";
@@ -25,10 +25,13 @@ xmpp.on("stanza", async stanza => {
             xmpp.send(xml('presence', {to: stanza.attrs.from, type: 'subscribed'}));
         }
 
-    console.log('TEST => ', stanza.attrs.from, xmpp.jid)
+        //Get the address of the bot in the current chat room
+        let userRoomAddress;
+        if (stanza.attrs.from) {
+            userRoomAddress = stanza.attrs.from.replace(/\w+[.!?]?$/, '') + connectData.botName;
+        }
 
-
-    if (stanza.is("message") && stanza.attrs.from !== xmpp.jid) {
+        if (stanza.is("message") && stanza.attrs.from !== userRoomAddress) {
             stanza.children.forEach(child => {
 
                     const address = stanza.attrs.to;
