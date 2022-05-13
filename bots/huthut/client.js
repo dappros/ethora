@@ -6,6 +6,8 @@ import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 import {router} from "./router.js";
 
+botOptions.serverType = process.argv[0];
+
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
 });

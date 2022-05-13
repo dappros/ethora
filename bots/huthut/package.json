@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node client.js"
+    "start": "node client.js prod",
+    "dev": "node client.js dev"
   },
   "dependencies": {
     "@xmpp/client": "^0.13.1",
