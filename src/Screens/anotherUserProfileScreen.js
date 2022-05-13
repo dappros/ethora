@@ -41,7 +41,8 @@ import {
   setOffset,
   setTotal,
 } from '../actions/wallet';
-import { NftListItem } from '../components/NftListItem';
+import {NftListItem} from '../components/NftListItem';
+import {NftMediaModal} from '../components/NftMediaModal';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -117,9 +118,15 @@ const Item = ({tokenSymbol, tokenName, balance, index}) => (
     </View>
   </View>
 );
-const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
+const RenderAssetItem = ({
+  item,
+  index,
+  onClick,
+  selectedItem,
+  onAssetPress,
+}) => (
   <NftListItem
-    image={item.nftFileUrl}
+    assetUrl={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -128,9 +135,9 @@ const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
     nftId={item.nftId}
     mimetype={item.nftMimetype}
     index={index}
+    onAssetPress={onAssetPress}
   />
 );
-
 
 const firstLayout = [
   {
@@ -182,6 +189,8 @@ function AnotherProfile(props) {
   const [xTabThree, setXTabThree] = useState(0);
   const [xCoinTabOne, setXCoinTabOne] = useState(0);
   const [xCoinTabTwo, setXCoinTabTwo] = useState(0);
+  const [mediaModalVisible, setMediaModalVisible] = useState(false);
+  const [mediaModalData, setMediaModalData] = useState({url: '', mimetype: ''});
 
   const [translateX, setTranslateX] = useState(new Animated.Value(0));
   const [textColorAnim, setTextColorAnim] = useState(new Animated.Value(0));
@@ -250,7 +259,6 @@ function AnotherProfile(props) {
 
       setTransactionCount(walletReducerData.anotherUserTransaction.length);
       setIsLoading(false);
-     
     }, 2500);
   }, [allReducers.walletReducer.anotherUserTransaction]);
 
@@ -270,7 +278,6 @@ function AnotherProfile(props) {
         );
         coinData
           ? coinData.map(item => {
-
               updatedCoinBalance =
                 updatedCoinBalance + parseFloat(item.balance);
             })
@@ -428,6 +435,13 @@ function AnotherProfile(props) {
                   <RenderAssetItem
                     item={e.item}
                     index={e.index}
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                      setMediaModalVisible(true);
+                    }}
                     onClick={() =>
                       props.navigation.navigate('NftItemHistoryComponent', {
                         screen: 'NftItemHistory',
@@ -731,6 +745,12 @@ function AnotherProfile(props) {
             /> */}
         </View>
       </View>
+      <NftMediaModal
+        modalVisible={mediaModalVisible}
+        closeModal={() => setMediaModalVisible(false)}
+        url={mediaModalData.url}
+        mimetype={mediaModalData.mimetype}
+      />
     </SafeAreaView>
   );
 }

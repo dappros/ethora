@@ -29,9 +29,15 @@ import {commonColors, textStyles} from '../../docs/config';
 import NftTransactionListTab from '../components/NftTransactionsHistoryComponent';
 import {transactionURL} from '../config/routesConstants';
 import {httpGet} from '../config/apiService';
-import {audioMimetypes, imageMimetypes} from '../constants/mimetypes';
+import {
+  audioMimetypes,
+  imageMimetypes,
+  videoMimetypes,
+} from '../constants/mimetypes';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import VideoPlayer from 'react-native-video-player';
+import FastImage from 'react-native-fast-image';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -49,6 +55,7 @@ function NftItemHistory(props) {
     url: '',
     mimetype: '',
   });
+  const [videoPaused, setVideoPaused] = useState(true);
   const {item, userWalletAddress} = props.route.params;
   const getItemTransactionsHistory = async (walletAddress, nftId) => {
     // let axios = require('axios');
@@ -122,7 +129,44 @@ function NftItemHistory(props) {
               style={{alignItems: 'center', width: wp('60%')}}>
               <View style={[classes.alignCenter, classes.imageContainer]}>
                 {imageMimetypes[item.nftMimetype] && (
-                  <Image source={avatarSource} style={classes.tokenImage} />
+                  <FastImage
+                    style={classes.tokenImage}
+                    source={{
+                      uri: avatarSource?.uri,
+                      priority: FastImage.priority.normal,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                )}
+                {videoMimetypes[item.nftMimetype] && (
+                  <View style={{position: 'relative'}}>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        zIndex: 99999,
+                        backgroundColor: 'rgba(0,0,0,0.2)',
+                        width: '100%',
+                        justifyContent: 'center', alignItems: 'center',
+                        width: wp('60%'),
+                        height: wp('40%')
+                      }}>
+                      <AntIcon
+                        name={'playcircleo'}
+                        color={'white'}
+                        size={hp('5%')}
+                        // style={{marginRight: 40}}
+                      />
+                    </View>
+
+                    <FastImage
+                      style={classes.tokenImage}
+                      source={{
+                        uri: avatarSource?.uri,
+                        priority: FastImage.priority.normal,
+                      }}
+                      resizeMode={FastImage.resizeMode.cover}
+                    />
+                  </View>
                 )}
                 {audioMimetypes[item.nftMimetype] && (
                   <AntIcon
@@ -219,6 +263,23 @@ function NftItemHistory(props) {
           {imageMimetypes[modalData.mimetype] && (
             <TouchableOpacity onPress={closeModal}>
               <Image source={avatarSource} style={classes.modalImage} />
+            </TouchableOpacity>
+          )}
+
+          {videoMimetypes[modalData.mimetype] && (
+            <TouchableOpacity
+              onPress={() => setVideoPaused(prev => !prev)}
+              activeOpacity={1}
+              style={{height: hp('100%'), width: '100%'}}>
+              <VideoPlayer
+                video={{
+                  uri: modalData.url,
+                }}
+                autoplay
+                videoWidth={wp('100%')}
+                videoHeight={hp('100%')}
+                // thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
+              />
             </TouchableOpacity>
           )}
         </View>

@@ -66,7 +66,7 @@ const QRCodeComponent = props => {
 
 const RenderAssetItem = ({item, index, itemTransferFunc, itemSelected}) => (
   <NftListItem
-    image={item.nftFileUrl}
+  assetUrl={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}

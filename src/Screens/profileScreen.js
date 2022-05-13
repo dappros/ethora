@@ -58,7 +58,8 @@ import {
 import {registerUserURL} from '../config/routesConstants';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import {imageMimetypes} from '../constants/mimetypes';
-import { NftListItem } from '../components/NftListItem';
+import {NftListItem} from '../components/NftListItem';
+import {NftMediaModal} from '../components/NftMediaModal';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 
@@ -84,9 +85,15 @@ const renderItem = ({item, index}) => (
     index={index}
   />
 );
-const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
+const RenderAssetItem = ({
+  item,
+  index,
+  onClick,
+  selectedItem,
+  onAssetPress,
+}) => (
   <NftListItem
-    image={item.imagePreview || item.nftFileUrl}
+    assetUrl={item.imagePreview || item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -94,12 +101,12 @@ const RenderAssetItem = ({item, index, onClick, selectedItem}) => (
     selectedItem={selectedItem}
     nftId={item.nftId}
     mimetype={item.nftMimetype}
+    onAssetPress={onAssetPress}
     // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
     item={item}
     index={index}
   />
 );
-
 
 const Item = ({tokenSymbol, tokenName, balance, mimetype, index}) => (
   <View
@@ -196,6 +203,8 @@ class ProfileScreen extends Component {
       modalTypeForEditing: 'name',
       debugModeCounter: 0,
       endOfListReached: false,
+      mediaModalVisible: false,
+      mediaModalData: {url: '', mimetype: ''},
       audioPlayerConfig: {
         show: false,
         url: '',
@@ -381,6 +390,15 @@ class ProfileScreen extends Component {
                   <RenderAssetItem
                     item={e.item}
                     index={e.index}
+                    onAssetPress={() => {
+                      this.setState({
+                        mediaModalVisible: true,
+                        mediaModalData: {
+                          url: e.item.nftFileUrl,
+                          mimetype: e.item.nftMimetype,
+                        },
+                      });
+                    }}
                     onClick={() => {
                       this.props.navigation.navigate(
                         'NftItemHistoryComponent',
@@ -512,7 +530,6 @@ class ProfileScreen extends Component {
         } else coinBalance = coinBalance + parseFloat(item.balance);
       });
     itemsData.map(item => {
-
       itemsBalance = itemsBalance + parseFloat(item.balance);
     });
     console.log(coinBalance, 'ieeeeee');
@@ -826,7 +843,9 @@ class ProfileScreen extends Component {
       modalVisible: false,
     });
   };
-
+  closeMediaModal = () => {
+    this.setState({mediaModalVisible: false});
+  };
   handleChatLinks = async chatLink => {
     const walletAddress = this.props.loginReducer.initialData.walletAddress;
     const chatJID = parseChatLink(chatLink);
@@ -1234,6 +1253,12 @@ class ProfileScreen extends Component {
                 }}>
                 {this.modalContent()}
               </Modal>
+              <NftMediaModal
+                modalVisible={this.state.mediaModalVisible}
+                closeModal={this.closeMediaModal}
+                url={this.state.mediaModalData.url}
+                mimetype={this.state.mediaModalData.mimetype}
+              />
             </View>
           </View>
         </View>

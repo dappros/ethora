@@ -45,6 +45,7 @@ import {commonColors, textStyles} from '../../docs/config';
 import {fileUpload, nftTransferURL} from '../config/routesConstants';
 import {httpPost, httpUpload} from '../config/apiService';
 import {showError} from '../config/toastAction';
+import {audioMimetypes} from '../constants/mimetypes';
 
 const {primaryColor} = commonColors;
 const {regularFont, lightFont} = textStyles;
@@ -71,14 +72,9 @@ function MintItems(props) {
   const allReducers = useSelector(state => state);
   const loginReducerData = allReducers.loginReducer;
   const dispatch = useDispatch();
-  const [walletAddress, setWalletAddress] =
-    loginReducerData.initialData.walletAddress;
+  const [filePickResult, setFilePickResult] = useState({});
+
   const [isModalVisible, setModalVisible] = useState(false);
-  // const [value, setValue] = useState(1);
-  const [items, setItems] = useState([
-    {label: '1', value: 1},
-    // {label: '1', value: '1'}
-  ]);
 
   useEffect(() => {
     requestCameraPermission();
@@ -104,22 +100,6 @@ function MintItems(props) {
       console.log(error);
       showError('Error', 'Cannot upload file, try again later');
     }
-
-    // hitAPI.fileUpload(
-    //   constructUrl(fileUpload),
-    //   file,
-    //   token,
-    //   async () => {
-    //     logOut();
-    //   },
-    //   val => {
-    //     console.log('Progress Val: ', val);
-    //   },
-    //   async response => {
-    //     callback(response);
-    //     console.log(response, 'thisisit');
-    //   },
-    // );
   };
   const setChatAvatar = async type => {
     if (type === 'image') {
@@ -143,7 +123,6 @@ function MintItems(props) {
       });
     } else if (type === 'photo') {
       launchCamera(options, response => {
-        console.log(response);
         const data = new FormData();
         data.append('files', {
           name: response.fileName,
@@ -155,9 +134,13 @@ function MintItems(props) {
     } else {
       try {
         const res = await DocumentPicker.pick({
-          type: [DocumentPicker.types.images, DocumentPicker.types.audio],
+          type: [
+            DocumentPicker.types.images,
+            DocumentPicker.types.audio,
+            DocumentPicker.types.video,
+          ],
         });
-        console.log(res, 'formsasss');
+        setFilePickResult(res[0]);
         const data = new FormData();
         data.append('files', {
           name: res[0].name,
@@ -361,6 +344,7 @@ function MintItems(props) {
     setModalVisible(false);
   };
 
+  console.log(filePickResult, '2348902384')
   return (
     <Fragment>
       <View>
@@ -401,19 +385,29 @@ function MintItems(props) {
                   marginRight: wp('5%'),
                 }}>
                 {avatarSource !== null ? (
-                  <FastImage
-                    onPress={setChatAvatar}
-                    source={{
-                      uri: avatarSource,
-                      priority: FastImage.priority.normal,
-                    }}
-                    resizeMode={FastImage.resizeMode.cover}
-                    style={{
-                      width: wp('50%'),
-                      height: wp('50%'),
-                      borderRadius: 10,
-                    }}
-                  />
+                  <>
+                    {audioMimetypes[filePickResult.type] ? (
+                      <AntIcon
+                        name={'playcircleo'}
+                        color={commonColors.primaryColor}
+                        size={hp('5%')}
+                      />
+                    ) : (
+                      <FastImage
+                        onPress={setChatAvatar}
+                        source={{
+                          uri: avatarSource,
+                          priority: FastImage.priority.normal,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                        style={{
+                          width: wp('50%'),
+                          height: wp('50%'),
+                          borderRadius: 10,
+                        }}
+                      />
+                    )}
+                  </>
                 ) : (
                   <View style={{}}>
                     <AntIcon

@@ -548,7 +548,7 @@ class Login extends Component {
 
                 <View style={{alignItems: 'center'}}>
                   {error ? (
-                    <Text style={{color: 'red'}}>{errorMessage}</Text>
+                    <Text style={{color: 'red'}}>{typeof errorMessage === 'string' && errorMessage}</Text>
                   ) : null}
                 </View>
 

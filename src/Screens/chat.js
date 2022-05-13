@@ -639,30 +639,11 @@ class Chat extends Component {
         this.submitMediaMessage(response.data.results, waveform);
       }
     } catch (error) {
+      console.log(error)
       showError('Error', 'Cannot upload file, try again later');
     }
 
-    // hitAPI.fileUpload(
-    //   filesApiURL,
-    //   data,
-    //   token,
-    //   async () => {
-    //     logOut();
-    //   },
-    //   val => {
-    //     this.setState({
-    //       progressVal: val,
-    //     });
-    //   },
-    //   async response => {
-    //     if (response.results.length) {
-    //       console.log('2348902348239048230', response);
-    //       console.log('249230-409234', response);
-    //       this.props.addLogsApi(response.results);
-    //       this.submitMediaMessage(response.results, waveform);
-    //     }
-    //   },
-    // );
+ 
   };
 
   getWaveformArray = async url => {
@@ -1524,36 +1505,9 @@ class Chat extends Component {
                       this.submitMediaMessage(response.data.results);
                     }
                   }
-                  // hitAPI.fileUpload(
-                  //   filesApiURL,
-                  //   data,
-                  //   token,
-                  //   async () => {
-                  //     logOut();
-                  //   },
-                  //   val => {
-                  //     this.setState({
-                  //       progressVal: val,
-                  //     });
-                  //   },
-                  //   async response => {
-                  //     if (response?.results?.length) {
-                  //       if (response.results[0].mimetype === 'audio/mpeg') {
-                  //         let wave = await this.getAudioData(absolutePath);
-                  //         this.props.addLogsApi(wave);
-
-                  //         this.props.addLogsApi(response.results);
-
-                  //         this.submitMediaMessage(response.results, wave);
-                  //       } else {
-                  //         this.props.addLogsApi(response.results);
-
-                  //         this.submitMediaMessage(response.results);
-                  //       }
-                  //     }
-                  //   },
-                  // );
+                 
                 } catch (err) {
+                  console.log(err)
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
                   } else {
