@@ -6,10 +6,16 @@ let botOptions = {
             conferenceAddress: '@chat.jabb.im'
         },
         {
-            name: 'name',
+            name: 'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5',
             conferenceAddress: '@conference.dev.dxmpp.com'
         }
-    ]
+    ],
+    botData: {
+        firstName: 'Hut hut',
+        lastName: 'Bot',
+        walletAddress: '',
+        photoURL: 'https://cdn-icons-png.flaticon.com/512/7450/7450534.png'
+    }
 }
 
 export default botOptions;
