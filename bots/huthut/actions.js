@@ -1,6 +1,7 @@
 import {xml} from "@xmpp/client";
 import connectData from "./config/connect.js";
 import messages from "./config/messages.js";
+import botOptions from "./config/config.js";
 
 let userStepsList = [];
 
@@ -9,8 +10,14 @@ let userStepsList = [];
 const sendMessage = (xmpp, jid, type, message) => {
     xmpp.send(xml('message', {
         to: jid,
-        type: type
-    }, xml('body', {}, message)));
+        type: type,
+        id: "sendMessage"
+    }, xml('data', {
+        xmlns: "http://"+connectData.botAddress,
+        senderFirstName: botOptions.botData.firstName,
+        senderLastName: botOptions.botData.lastName,
+        photoURL: botOptions.botData.photoURL
+    }), xml('body', {}, message)));
 }
 
 const connectRoom = (xmpp, address, roomAddress) => {
@@ -46,17 +53,17 @@ const userSteps = (type, jid, newStep) => {
     console.log('=>=> Run user steps, find user. Type: ', type, ' user jid: ', jid);
     let userIndex = userStepsList.findIndex(user => user.name === jid);
 
-    if(userIndex < 0){
+    if (userIndex < 0) {
         console.log('=>=> Create user step', jid);
         userStepsList.push({name: jid, step: 1});
         return 1;
     }
 
-    if(type === 'getStep'){
+    if (type === 'getStep') {
         return userStepsList[userIndex].step;
     }
 
-    if (type === 'setStep'){
+    if (type === 'setStep') {
         console.log('=>=> Set new step for user ', jid)
         userStepsList[userIndex].step = newStep;
         return true;
