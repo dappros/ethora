@@ -8,7 +8,7 @@ import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
 
-const router = (xmpp, message, sender, receiver, requestType) => {
+const router = (xmpp, message, sender, receiver, requestType, receiverData) => {
     if (requestType === 'x' && message.match(/\binvite\S*\b/g)) {
         console.log('=> The bot was invited to the chat room ', receiver);
         connectRoom(xmpp, sender, receiver);
@@ -19,11 +19,11 @@ const router = (xmpp, message, sender, receiver, requestType) => {
         //actions that are performed in the first step, when the bot does not yet know what the user wants
         if (userStep === 1) {
             if (messageCheck(message, 'hut test')) {
-                testHandler(xmpp, sender, receiver, message);
+                testHandler(xmpp, sender, receiver, message, receiverData);
             } else if (messageCheck(message, 'hut back turn forest')) {
-                backTurnForestHandler(xmpp, sender, receiver, message);
+                backTurnForestHandler(xmpp, sender, receiver, message, receiverData);
             } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
-                helpHandler(xmpp, sender, receiver, message, userStep);
+                helpHandler(xmpp, sender, receiver, message, userStep, receiverData);
             }
         }
 
@@ -31,26 +31,26 @@ const router = (xmpp, message, sender, receiver, requestType) => {
             if (messageCheck(message, 'hut front turn me')) {
                 frontTurnMe(xmpp, sender, receiver, message);
             }else if(messageCheck(message, 'hut') || messageCheck(message, 'hut help')){
-                helpHandler(xmpp, sender, receiver, message, userStep);
+                helpHandler(xmpp, sender, receiver, message, userStep, receiverData);
             }
         }
 
         if (userStep === 3) {
             if(Number.isInteger(Number(message)) && message <= 3){
                 if(message === 1){
-                    storeItemHandler(xmpp, sender, receiver, message);
+                    storeItemHandler(xmpp, sender, receiver, message, receiverData);
                 }else if(message === 2){
-                    searchItemsHandler(xmpp, sender, receiver, message);
+                    searchItemsHandler(xmpp, sender, receiver, message, receiverData);
                 }else{
-                    leaveHandler(xmpp, sender, receiver, message, userStep);
+                    leaveHandler(xmpp, sender, receiver, message, userStep, receiverData);
                 }
             }else{
-                errorHandler(xmpp, sender, receiver, message, userStep);
+                errorHandler(xmpp, sender, receiver, message, userStep, receiverData);
             }
         }
 
         if (messageCheck(message, 'hut close') || messageCheck(message, 'hut leave')) {
-            leaveHandler(xmpp, sender, receiver, message, userStep);
+            leaveHandler(xmpp, sender, receiver, message, userStep, receiverData);
         }
 
     }
