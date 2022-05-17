@@ -1,5 +1,5 @@
 let botOptions = {
-    serverType: 'dev',
+    serverType: 'prod',
     allowedRooms: [
         {
             name: 'hliuch',
