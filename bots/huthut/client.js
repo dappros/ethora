@@ -32,15 +32,20 @@ xmpp.on("stanza", async stanza => {
         }
 
         if (stanza.is("message") && stanza.attrs.from !== userRoomAddress) {
-            stanza.children.forEach(child => {
 
-                    const address = stanza.attrs.to;
-                    const jid = stanza.attrs.from;
-                    const msg = child.children.join('\n');
+            let body = stanza.getChild('body');
+            let data = stanza.getChild('data');
 
-                    router(xmpp, msg, address, jid, child.name);
-                }
-            )
+            let message;
+
+            if(body && data){
+                message = body.getText();
+
+                const sender = stanza.attrs.to;
+                const receiver = stanza.attrs.from;
+
+                router(xmpp, message, sender, receiver, body.name, data);
+            }
         }
     }
 );
