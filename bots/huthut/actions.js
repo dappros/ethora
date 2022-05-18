@@ -9,19 +9,15 @@ let userStepsList = [];
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
 const sendMessage = (xmpp, jid, type, message, receiverData) => {
     xmpp.send(xml('message', {
-        // to: receiverData ? receiverData.attrs.roomJid : jid,
-        to: 'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5@conference.dev.dxmpp.com',
-        type: 'groupchat',
+        to: receiverData ? receiverData.attrs.roomJid : jid,
+        type: receiverData ? 'groupchat' : type,
         id: "sendMessage"
     }, xml('data', {
-        xmlns: "http://"+connectData.botAddress,
+        xmlns: "http://" + connectData.botAddress,
         senderFirstName: botOptions.botData.firstName,
         senderLastName: botOptions.botData.lastName,
         photoURL: botOptions.botData.photoURL
-    }), xml('body', {}, receiverData.attrs.senderFirstName ? receiverData.attrs.senderFirstName+': '+message : message)));
-// }), xml('body', {}, receiverData ? receiverData.attrs.senderFirstName+': '+message : message)));
-
-return true;
+    }), xml('body', {}, receiverData ? receiverData.attrs.senderFirstName + ': ' + message : message)));
 }
 
 const connectRoom = (xmpp, address, roomAddress) => {
