@@ -3,7 +3,7 @@ import {testHandler} from "./handlers/test.js";
 import {backTurnForestHandler} from "./handlers/backTurnForest.js";
 import {helpHandler} from "./handlers/help.js";
 import {leaveHandler} from "./handlers/leave.js";
-import {frontTurnMe} from "./handlers/frontTurnMe.js";
+import {frontTurnMeHandler} from "./handlers/frontTurnMe.js";
 import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
@@ -29,7 +29,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData) => {
 
         if (userStep === 2) {
             if (messageCheck(message, 'hut front turn me')) {
-                frontTurnMe(xmpp, sender, receiver, message);
+                frontTurnMeHandler(xmpp, sender, receiver, message, receiverData);
             }else if(messageCheck(message, 'hut') || messageCheck(message, 'hut help')){
                 helpHandler(xmpp, sender, receiver, message, userStep, receiverData);
             }
@@ -37,12 +37,14 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData) => {
 
         if (userStep === 3) {
             if(Number.isInteger(Number(message)) && message <= 3){
-                if(message === 1){
+                if(Number(message) === 1){
                     storeItemHandler(xmpp, sender, receiver, message, receiverData);
-                }else if(message === 2){
+                }else if(Number(message) === 2){
                     searchItemsHandler(xmpp, sender, receiver, message, receiverData);
+                }else if(Number(message) === 3){
+                    leaveHandler(xmpp, sender, receiver, message, receiverData);
                 }else{
-                    leaveHandler(xmpp, sender, receiver, message, userStep, receiverData);
+                    errorHandler(xmpp, sender, receiver, message, userStep, receiverData);
                 }
             }else{
                 errorHandler(xmpp, sender, receiver, message, userStep, receiverData);
