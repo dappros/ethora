@@ -1,8 +1,8 @@
 import {sendMessage, userSteps} from "../actions.js";
 import messages from "../config/messages.js";
 
-export const frontTurnMe = (xmpp, sender, receiver, message, receiverData) => {
-    console.log('=> Message received from ', receiver, message);
-    userSteps('setStep', sender, 3);
+export const frontTurnMeHandler = (xmpp, sender, receiver, message, receiverData) => {
+    console.log('=> frontTurnMe | Message received from ', receiver, message);
     sendMessage(xmpp, receiver, 'message', messages.visitingHut.openingHut, receiverData);
+    userSteps('setStep', sender, 3);
 }
