@@ -14,7 +14,8 @@ let botOptions = {
         firstName: 'Hut hut',
         lastName: 'Bot',
         walletAddress: '',
-        photoURL: 'https://cdn-icons-png.flaticon.com/512/7450/7450534.png'
+        photoURL: 'https://cdn-icons-png.flaticon.com/512/7450/7450534.png',
+        senderWalletAddress: '0xdC997088C118402C8919eDfC8Bfc3f8DD43CE33c',
     }
 }
 
