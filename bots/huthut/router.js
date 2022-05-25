@@ -7,8 +7,9 @@ import {frontTurnMeHandler} from "./handlers/frontTurnMe.js";
 import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
+import {transferCoinHandler} from "./handlers/transferCoin.js";
 
-const router = (xmpp, message, sender, receiver, requestType, receiverData) => {
+const router = (xmpp, message, sender, receiver, requestType, receiverData, messageId) => {
     if (requestType === 'x' && message.match(/\binvite\S*\b/g)) {
         console.log('=> The bot was invited to the chat room ', receiver);
         connectRoom(xmpp, sender, receiver);
@@ -16,43 +17,56 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData) => {
 
     if (requestType === 'body') {
         let userStep = userSteps('getStep', sender, null);
+
+        let handlerData = {
+            xmpp,
+            sender,
+            receiver,
+            message,
+            userStep,
+            receiverData,
+            messageId,
+        };
+
         //actions that are performed in the first step, when the bot does not yet know what the user wants
         if (userStep === 1) {
             if (messageCheck(message, 'hut test')) {
-                testHandler(xmpp, sender, receiver, message, receiverData);
+                testHandler(handlerData);
+            } else if (messageCheck(message, 'hut send')) {
+                transferCoinHandler(handlerData);
             } else if (messageCheck(message, 'hut back turn forest')) {
-                backTurnForestHandler(xmpp, sender, receiver, message, receiverData);
+                backTurnForestHandler(handlerData);
             } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
-                helpHandler(xmpp, sender, receiver, message, userStep, receiverData);
+                helpHandler(handlerData);
             }
         }
 
         if (userStep === 2) {
             if (messageCheck(message, 'hut front turn me')) {
-                frontTurnMeHandler(xmpp, sender, receiver, message, receiverData);
-            }else if(messageCheck(message, 'hut') || messageCheck(message, 'hut help')){
-                helpHandler(xmpp, sender, receiver, message, userStep, receiverData);
+                frontTurnMeHandler(handlerData);
+            } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
+                helpHandler(handlerData);
             }
         }
 
         if (userStep === 3) {
-            if(Number.isInteger(Number(message)) && message <= 3){
-                if(Number(message) === 1){
-                    storeItemHandler(xmpp, sender, receiver, message, receiverData);
-                }else if(Number(message) === 2){
-                    searchItemsHandler(xmpp, sender, receiver, message, receiverData);
-                }else if(Number(message) === 3){
-                    leaveHandler(xmpp, sender, receiver, message, receiverData);
-                }else{
-                    errorHandler(xmpp, sender, receiver, message, userStep, receiverData);
+            if (Number.isInteger(Number(message)) && message <= 3) {
+                if (Number(message) === 1) {
+                    storeItemHandler(handlerData);
+                } else if (Number(message) === 2) {
+                    searchItemsHandler(handlerData);
+                } else if (Number(message) === 3) {
+                    leaveHandler(handlerData);
+                } else {
+                    errorHandler(handlerData);
                 }
-            }else{
-                errorHandler(xmpp, sender, receiver, message, userStep, receiverData);
+            } else {
+                errorHandler(handlerData);
             }
         }
 
         if (messageCheck(message, 'hut close') || messageCheck(message, 'hut leave')) {
-            leaveHandler(xmpp, sender, receiver, message, userStep, receiverData);
+            leaveHandler(handlerData);
         }
 
     }
