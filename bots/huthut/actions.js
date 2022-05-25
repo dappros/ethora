@@ -7,7 +7,7 @@ let userStepsList = [];
 
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
-const sendMessage = (xmpp, jid, type, message, receiverData) => {
+const sendMessage = (xmpp, jid, type, message, receiverData, isSystemMessage, tokenAmount, messageId) => {
     xmpp.send(xml('message', {
         to: receiverData ? receiverData.attrs.roomJid : jid,
         type: receiverData ? 'groupchat' : type,
@@ -16,8 +16,14 @@ const sendMessage = (xmpp, jid, type, message, receiverData) => {
         xmlns: "http://" + connectData.botAddress,
         senderFirstName: botOptions.botData.firstName,
         senderLastName: botOptions.botData.lastName,
-        photoURL: botOptions.botData.photoURL
-    }), xml('body', {}, receiverData ? receiverData.attrs.senderFirstName + ': ' + message : message)));
+        photoURL: botOptions.botData.photoURL,
+        senderJID: connectData.botName+'@'+connectData.botAddress,
+        senderWalletAddress: botOptions.botData.senderWalletAddress,
+        isSystemMessage: isSystemMessage,
+        tokenAmount: tokenAmount,
+        receiverMessageId: messageId,
+        roomJid: receiverData ? receiverData.attrs.roomJid : '',
+    }), xml('body', {}, receiverData ? isSystemMessage ? message : receiverData.attrs.senderFirstName + ': ' + message : message)));
 }
 
 const connectRoom = (xmpp, address, roomAddress) => {
@@ -32,7 +38,16 @@ const connectRoom = (xmpp, address, roomAddress) => {
 
     console.log('=> Sending a welcome message: ', roomAddress);
 
-    sendMessage(xmpp, roomAddress, 'groupchat', messages.general.welcomeMessage)
+    sendMessage(
+        xmpp,
+        roomAddress,
+        'groupchat',
+        messages.general.welcomeMessage,
+        null,
+        false,
+        0,
+        0
+    );
 }
 
 const buildRegEx = (str, keywords) => {
