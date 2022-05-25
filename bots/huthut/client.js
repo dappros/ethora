@@ -35,16 +35,18 @@ xmpp.on("stanza", async stanza => {
 
             let body = stanza.getChild('body');
             let data = stanza.getChild('data');
+            let stanzaId = stanza.getChild('stanza-id');
 
             let message;
 
-            if(body && data){
+            if(body && data && stanzaId){
+
                 message = body.getText();
 
                 const sender = stanza.attrs.to;
                 const receiver = stanza.attrs.from;
 
-                router(xmpp, message, sender, receiver, body.name, data);
+                router(xmpp, message, sender, receiver, body.name, data, stanzaId.attrs.id);
             }
         }
     }
