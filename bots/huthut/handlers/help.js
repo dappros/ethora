@@ -1,13 +1,16 @@
 import {sendMessage} from "../actions.js";
 import messages from "../config/messages.js";
 
-export const helpHandler = (xmpp, sender, receiver, message, userStep, receiverData) => {
-    console.log('=> helpHandler | Message received from ', receiver, message);
-    if(userStep === 1){
-        sendMessage(xmpp, receiver, 'message', messages.help.whereToBegin, receiverData);
-    }
-
-    if(userStep === 2){
-        sendMessage(xmpp, receiver, 'message', messages.help.secondStep, receiverData);
-    }
+export const helpHandler = (data) => {
+    console.log('=> helpHandler | Message received from ', data.receiver, data.message);
+    sendMessage(
+        data.xmpp,
+        data.receiver,
+        'message',
+        data.userStep === 1 ? messages.help.whereToBegin : messages.help.secondStep,
+        data.receiverData,
+        false,
+        0,
+        data.messageId
+    );
 }
