@@ -46,7 +46,7 @@ xmpp.on("stanza", async stanza => {
                 const sender = stanza.attrs.to;
                 const receiver = stanza.attrs.from;
 
-                router(xmpp, message, sender, receiver, body.name, data, stanzaId.attrs.id);
+                router(xmpp, message, sender, receiver, body.name, data, stanzaId);
             }
         }
     }
