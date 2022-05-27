@@ -8,8 +8,9 @@ import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
 import {transferCoinHandler} from "./handlers/transferCoin.js";
+import botOptions from "./config/config.js";
 
-const router = (xmpp, message, sender, receiver, requestType, receiverData, messageId) => {
+const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId) => {
     if (requestType === 'x' && message.match(/\binvite\S*\b/g)) {
         console.log('=> The bot was invited to the chat room ', receiver);
         connectRoom(xmpp, sender, receiver);
@@ -25,15 +26,13 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, mess
             message,
             userStep,
             receiverData,
-            messageId,
+            stanzaId,
         };
 
         //actions that are performed in the first step, when the bot does not yet know what the user wants
         if (userStep === 1) {
             if (messageCheck(message, 'hut test')) {
                 testHandler(handlerData);
-            } else if (messageCheck(message, 'hut send')) {
-                transferCoinHandler(handlerData);
             } else if (messageCheck(message, 'hut back turn forest')) {
                 backTurnForestHandler(handlerData);
             } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
@@ -42,10 +41,20 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, mess
         }
 
         if (userStep === 2) {
-            if (messageCheck(message, 'hut front turn me')) {
-                frontTurnMeHandler(handlerData);
-            } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
-                helpHandler(handlerData);
+            if(receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount >= 1){
+                let test = botOptions.botData.firstName+' '+botOptions.botData.lastName+' Coin';
+                console.log('===========>', test)
+                if (messageCheck(message, test)) {
+                    transferCoinHandler(handlerData)
+                }else{
+                    errorHandler(handlerData);
+                }
+            }else{
+                if (messageCheck(message, 'hut front turn me')) {
+                    frontTurnMeHandler(handlerData);
+                } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
+                    helpHandler(handlerData);
+                }
             }
         }
 

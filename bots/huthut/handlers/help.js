@@ -11,6 +11,6 @@ export const helpHandler = (data) => {
         data.receiverData,
         false,
         0,
-        data.messageId
+        data.stanzaId
     );
 }

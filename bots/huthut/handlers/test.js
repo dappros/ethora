@@ -1,4 +1,4 @@
-import {sendMessage} from "../actions.js";
+import {sendMessage, userSteps} from "../actions.js";
 import messages from "../config/messages.js";
 
 export const testHandler = (data) => {
@@ -11,6 +11,7 @@ export const testHandler = (data) => {
         data.receiverData,
         false,
         0,
-        data.messageId
+        data.stanzaId
     );
+    userSteps('setStep', data.sender, 2);
 }

@@ -11,7 +11,7 @@ export const frontTurnMeHandler = (data) => {
         data.receiverData,
         false,
         0,
-        data.messageId
+        data.stanzaId
     );
     userSteps('setStep', data.sender, 3);
 }

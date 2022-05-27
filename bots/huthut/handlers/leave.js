@@ -12,6 +12,6 @@ export const leaveHandler = (data) => {
         data.receiverData,
         false,
         0,
-        data.messageId
+        data.stanzaId
     );
 }

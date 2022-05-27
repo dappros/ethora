@@ -12,6 +12,6 @@ export const searchItemsHandler = (data) => {
         data.receiverData,
         false,
         0,
-        data.messageId
+        data.stanzaId
     );
 }
