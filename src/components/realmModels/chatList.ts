@@ -68,7 +68,7 @@ export const insertRosterList = (chatsObject:any) =>
     }
   });
 
-export const updateChatRoom = (jid:string, property:string, value:string) =>
+export const updateChatRoom = (jid:string, property:string, value:any) =>
   new Promise(async(resolve, reject) => {
     const realm = await Realm.open(databaseOptions)
     realm.write(() => {
@@ -121,12 +121,22 @@ export const updateRosterList = (data:any) =>
   });
 export const getChatRoom = (jid:string) =>
   new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
-    const chatList = realm.objectForPrimaryKey(
-      schemaTypes.CHAT_LIST_SCHEMA,
-      jid,
-    );
-    resolve(chatList);
+    // const realm = await Realm.open(databaseOptions)
+
+    // const chatList = realm.objectForPrimaryKey(
+    //   schemaTypes.CHAT_LIST_SCHEMA,
+    //   jid,
+    // );
+    //   console.log(chatList)
+    // return(true);
+    Realm.open(databaseOptions).then((realm)=>{
+      const chatList = realm.objectForPrimaryKey(
+        schemaTypes.CHAT_LIST_SCHEMA,
+        jid
+      )
+
+      console.log(chatList)
+    })
   });
 export const deleteChatRoom = (jid:string) =>
   new Promise(async(resolve, reject) => {

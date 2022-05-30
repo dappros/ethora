@@ -3,7 +3,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import {formatBytes} from '../../helpers/formatBytes';
+import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 
 interface ImageMessageProps{

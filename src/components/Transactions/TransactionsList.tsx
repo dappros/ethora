@@ -1,11 +1,11 @@
 import {observer} from 'mobx-react-lite';
 import React, {useState} from 'react';
-import {FlatList} from 'react-native-gesture-handler';
+// import {FlatList} from 'react-native-gesture-handler';
 import {useStores} from '../../stores/context';
 import {TransactionFilter} from './TransactionFilter';
 import {TransactionsListItem} from './TransactionsListItem';
-import {compareTransactionsDate} from '../../helpers/compareTransactionsDate';
-import {Box} from 'native-base';
+import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
+import {Box, FlatList} from 'native-base';
 import { FILTERS } from '../../constants/transactionsFilter';
 
 const RenderTransactionItem = ({item, transactionOwnerWalletAddress}:any) => {
@@ -51,42 +51,52 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}:any) => {
   );
 };
 
-const TransactionsList = observer(
-  ({boxHeight = '100%', transactions}:any) => {
-    const {loginStore} = useStores();
-    const [activeFilter, setActiveFilter] = useState('all');
+interface TransactionListProps{
+  transactions:any,
+  walletAddress:string,
+  onEndReached:any,
+}
 
+const TransactionsList = observer(
+  ({transactions, walletAddress, onEndReached}:TransactionListProps) => {
+    const [activeFilter, setActiveFilter] = useState( FILTERS.all);
+    
     const getFilteredTransactions = () => {
       if (activeFilter === FILTERS.all) {
         return transactions;
       }
       if (activeFilter === FILTERS.sent) {
         const filteredTransactions = transactions.filter(
-          (item:any) => item.from === loginStore.walletAddress,
+          (item:any) => item.from === walletAddress,
         );
         return filteredTransactions;
       }
 
-      const filteredTransactions = transactions.filter(
-        (item:any) => item.to === loginStore.walletAddress,
-      );
-      return filteredTransactions;
+      if (activeFilter === FILTERS.received) {
+        const filteredTransactions = transactions.filter(
+          (item:any) => item.to === walletAddress,
+        );
+        return filteredTransactions;
+      }
+
     };
 
     return (
-      <Box h={boxHeight}>
+      <Box>
         <TransactionFilter
           activeFilter={activeFilter}
           setActiveFilter={setActiveFilter}
         />
         <FlatList
+        height={"100%"}
+        scrollEnabled
           renderItem={({item}) => (
             <RenderTransactionItem
               item={item}
-              transactionOwnerWalletAddress={loginStore.walletAddress}
-              // showHeaderDate={}
+              transactionOwnerWalletAddress={walletAddress}
             />
           )}
+          onEndReached={()=>onEndReached()}
           data={compareTransactionsDate(getFilteredTransactions())}
           keyExtractor={item => item._id}
         />

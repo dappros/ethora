@@ -269,6 +269,8 @@ dependencies {
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    implementation 'com.github.lincollincol:amplituda:2.1.2'
+
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

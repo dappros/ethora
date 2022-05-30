@@ -2,7 +2,7 @@ import {observer} from 'mobx-react-lite';
 import React from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
-import {asyncStorageSetItem} from '../../helpers/asyncStorageSetItem';
+import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 import {useStores} from '../../stores/context';
 import {RoomListItem} from './RoomListItem';
 
@@ -13,6 +13,7 @@ export const RoomList = observer(({roomsList}:any) => {
       chatStore.roomsInfoMap[a.jid]?.priority -
       chatStore.roomsInfoMap[b.jid]?.priority,
   );
+  
 
   const onDragEnd = async (partialReorderedList:any) => {
     const partialListCopy = partialReorderedList.map((item:any, index:number) => {
@@ -47,6 +48,7 @@ export const RoomList = observer(({roomsList}:any) => {
             lastUserName={room?.lastUserName}
             lastUserText={room?.lastUserText}
             lastMessageTime={room?.lastMessageTime}
+            counter={item.counter}
           />
         );
       }}

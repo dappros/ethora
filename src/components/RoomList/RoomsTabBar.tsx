@@ -30,41 +30,42 @@ export const RoomsTabBar = observer(() => {
   ];
 
   const {chatStore} = useStores();
-  const roomsList = chatStore.roomList;
+  // const roomsList = chatStore.roomList;
   const notificationsCount = {
     official: 0,
     private: 0,
     groups: 0,
   };
 
+
   const privateChats = useMemo(
     () =>
-      roomsList?.filter((item:any) => {
+    chatStore.roomList?.filter((item:any) => {
         const splitedJid = item.jid.split('@')[0];
-
+        console.log(chatStore.roomList,"asdasdadasd")
         if (item.participants < 3 && !defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;
         }
       }),
-    [roomsList],
+    [chatStore.roomList],
   );
 
   const officialChats = useMemo(
     () =>
-      roomsList.filter(item => {
+    chatStore.roomList.filter(item => {
         const splitedJid = item.jid.split('@')[0];
         if (defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.official] += item.counter;
           return item;
         }
       }),
-    [roomsList],
+    [chatStore.roomList],
   );
 
   const groupsChats = useMemo(
     () =>
-      roomsList.filter((item:any) => {
+    chatStore.roomList.filter((item:any) => {
         const splitedJid = item.jid.split('@')[0];
 
         if (item.participants > 2 && !defaultChats[splitedJid]) {
@@ -72,7 +73,7 @@ export const RoomsTabBar = observer(() => {
           return item;
         }
       }),
-    [roomsList],
+    [chatStore.roomList],
   );
 
   return (

@@ -14,4 +14,5 @@ export const ROUTES = {
     NEWCHAT: 'NewChatScreen',
     OTHERUSERPROFILESCREEN: 'OtherUserPorfileScreen',
     SPLASHSCREEN: 'SplashScreen',
+    NFTITEMHISTORY: 'NftItemHistory'
   };  

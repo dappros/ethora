@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {RoomListItemIcon} from './RoomListItemIcon';
 import {ROUTES} from '../../constants/routes';
@@ -12,12 +12,12 @@ import {
 } from 'native-base';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-
+import { observer } from 'mobx-react-lite';
 
 interface RoomListProps{
   jid:string,
   name:string,
-  counter:string,
+  counter:number,
   lastMessageTime:any,
   lastUserText:string,
   lastUserName:string,
@@ -26,7 +26,7 @@ interface RoomListProps{
   drag:any
 }
 
-export const RoomListItem = ({
+export const RoomListItem = observer(({
   jid,
   name,
   counter,
@@ -37,10 +37,10 @@ export const RoomListItem = ({
   muted,drag
 }:RoomListProps) => {
   const navigation = useNavigation();
-
   const navigateToChat = () => {
     navigation.navigate(ROUTES.CHAT, {chatJid: jid, chatName: name});
   };
+
   return (
     <Box
       borderBottomWidth="1"
@@ -53,7 +53,10 @@ export const RoomListItem = ({
       py="2">
       <Pressable onLongPress={drag} onPress={navigateToChat}>
         <HStack space={3} justifyContent="space-between">
-          <RoomListItemIcon name={name} />
+          <RoomListItemIcon
+          name={name}
+          counter={counter}
+          />
           <VStack>
             <Text
               _dark={{
@@ -110,4 +113,4 @@ export const RoomListItem = ({
       </Pressable>
     </Box>
   );
-};
+})

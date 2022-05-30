@@ -1,7 +1,13 @@
 import {makeAutoObservable, runInAction} from 'mobx';
 import { Alert } from 'react-native';
 import { httpGet, httpPost } from '../config/apiService';
-import { etherTransferURL, itemTransferURL, tokenEtherBalanceURL, tokenTransferURL, transactionURL } from '../config/routesConstants';
+import {
+    etherTransferURL,
+    itemTransferURL,
+    tokenEtherBalanceURL,
+    tokenTransferURL,
+    transactionURL
+} from '../config/routesConstants';
 import {insertTransaction} from '../components/realmModels/transaction';
 import { RootStore } from './context';
 import { coinsMainName } from '../../docs/config';
@@ -11,9 +17,9 @@ export class WalletStore{
     isFetching = false;
     error = false;
     errorMessage = '';
-    transactions= [];
-    anotherUserTransaction= [];
-    anotherUserBalance= [];
+    transactions:any= [];
+    anotherUserTransaction:[]= [];
+    anotherUserBalance:[]= [];
     balance= [];
     offset= 0;
     limit= 10;
@@ -35,7 +41,7 @@ export class WalletStore{
     };
     stores:RootStore={};
     defaultUrl = ''
-    coinBalance: string | undefined=undefined;
+    coinBalance: []=[];
 
     constructor(stores:RootStore){
         makeAutoObservable(this);
@@ -68,6 +74,14 @@ export class WalletStore{
     }
 
     async fetchWalletBalance(walletAddress:string, token:string, isOwn:boolean){
+        if(!walletAddress||!token||!isOwn){
+            showToast(
+                'error',
+                'Error',
+                'Args miss for Fetch bal',
+                'top'
+            )
+        }
         let url = this.defaultUrl + tokenEtherBalanceURL + walletAddress;
         runInAction(()=>{
             this.isFetching = true;
@@ -112,6 +126,7 @@ export class WalletStore{
         receiverMessageId:string,
         itemUrl:string
     ){
+        console.log(bodyData,"body data for token transfer")
         let url = '';
         if(bodyData.tokenName && !itemUrl){
             url = this.defaultUrl + tokenTransferURL;
@@ -129,68 +144,109 @@ export class WalletStore{
             )
         }
 
-        this.isFetching = true;
-
+        runInAction(()=>{
+            this.isFetching = true;
+        })
+        
         try{
-            const response = await httpPost(url, bodyData, token);
-            this.isFetching = false;
-            this.stores.debugStore.addLogsApi(response.data);
+            const response = await httpPost(url, bodyData, token)
 
+            runInAction(()=>{
+                this.isFetching = false;
+                this.stores.debugStore.addLogsApi(response.data);
+            })
+            
             if(response.data.success){
-                this.tokenTransferSuccess = {
-                    success: true,
-                    senderName,
-                    receiverName,
-                    amount: bodyData.amount,
-                    receiverMessageId,
-                    tokenName: bodyData.tokenName
-                }
+                runInAction(()=>{
+                    this.tokenTransferSuccess = {
+                        success: true,
+                        senderName,
+                        receiverName,
+                        amount: bodyData.amount,
+                        receiverMessageId,
+                        tokenName: bodyData.tokenName
+                    }
+                })
 
                 this.fetchWalletBalance(fromWallet, null, token, true);
             }else{
-                this.error = true;
-                this.errorMessage = response.data.msg;
+                runInAction(()=>{
+                    this.error = true;
+                    this.errorMessage = response.data.msg;
+                })
+                
             }
         }catch(error:any){
-            this.isFetching = false;
-            this.error = true;
-            this.errorMessage = error;
+            runInAction(()=>{
+                this.isFetching = false;
+                this.error = true;
+                this.errorMessage = error;
+            })
 
             showToast('error','Error', JSON.stringify(error), 'top');
         }
     }
 
     async fetchTransaction(
-        walletAddress,
-        token,
-        isOwn,
-        limit: 10,
-        offset: 0
+        walletAddress:string,
+        token:string,
+        isOwn:boolean,
+        limit:number,
+        offset:number
     ){
         let url = this.defaultUrl + transactionURL +
         'walletAddress=' +
         walletAddress +
         `&limit=${limit}&offset=${offset}`;
-
         if(!walletAddress) return;
 
         try{
-            const response = await httpGet(url, token);
+            const response = await httpGet(url, null);
+            console.log(response,"sadfdsaf")
             if(response.data.items){
                 this.stores.debugStore.addLogsApi(response.data);
                 this.offset = this.offset + response.data.limit;
                 this.total = response.data.total;
                 if(isOwn){
-                    this.transactions = [...this.transactions, ...response.data.items];
-                    insertTransaction(response.data.items);
+                    runInAction(()=>{
+                        this.transactions = [...this.transactions, ...response.data.items];
+                    })
+                    // insertTransaction(response.data.items);
                 }else{
-                    this.anotherUserTransaction = [...this.anotherUserTransaction, ...response.data.items];
+                    runInAction(()=>{
+                        this.anotherUserTransaction = [...this.anotherUserTransaction, ...response.data.items];
+                    })
                 }
             }
         }catch(error){
-            this.stores.debugStore.addLogsApi(error)
-            this.error = true;
-            this.errorMessage = JSON.stringify(error);
+            runInAction(()=>{
+                this.stores.debugStore.addLogsApi(error)
+                this.error = true;
+                this.errorMessage = JSON.stringify(error);
+            })
         }
+    }
+
+    //clear pagination data
+    clearPaginationData(){
+        runInAction(()=>{
+            this.offset = 0;
+            this.limit = 10;
+            this.total = 0;
+            this.anotherUserTransaction = [];
+        })
+    }
+
+    //set the offset for retrieving transaction data
+    setOffset(value:number){
+        runInAction(()=>{
+            this.offset = value
+        })
+    }
+
+    setTotal(value:number){
+        runInAction(()=>{
+            this.total = value
+        })
     }
 }

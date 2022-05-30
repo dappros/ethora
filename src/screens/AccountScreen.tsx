@@ -6,10 +6,10 @@ import {
     SafeAreaView, 
     Image, 
     TextInput, 
-    ActivityIndicator, 
+    ActivityIndicator,
+    TouchableOpacity,
     Alert
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -24,6 +24,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import RenderEmailList from '../components/Account/RenderEmailList';
 import { showToast } from '../components/Toast/toast';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { observer } from 'mobx-react-lite';
 
 interface AccountScreenProps {}
 
@@ -31,7 +32,7 @@ const newEmailAddedAlertText =
   " added to your profile's e-mail addresses. We have sent you a verification link to that address. Please open it to confirm this e-mail belongs to you.";
 const emailRemovedAlertText = " removed from your profile's e-mail addresses.";
 
-const AccountScreen = (props: AccountScreenProps) => {
+const AccountScreen = observer((props: AccountScreenProps) => {
 
     const {
         loginStore,
@@ -67,7 +68,12 @@ const AccountScreen = (props: AccountScreenProps) => {
                     'Verification sent',
                     currentEmail + newEmailAddedAlertText,
                     [{text: 'OK', onPress: () => null}],
-                  );
+                );
+                
+                setLoading(false);
+                setIsAddEmail(false);
+                setCurrentEmail(null);
+                setAddEmailActive(false)
             }
 
             //when email is removed successfully send alert
@@ -90,7 +96,7 @@ const AccountScreen = (props: AccountScreenProps) => {
           {
             text: 'Yes',
             onPress: () => {
-            accountStore.deletEmailFromList(userToken, email)
+            accountStore.deleteEmailFromList(userToken, email)
             },
           },
         ]);
@@ -115,7 +121,7 @@ const AccountScreen = (props: AccountScreenProps) => {
                 email: newEmail,
             };
 
-            accountStore.addEmailToList(userToken, addEmailBody);
+            accountStore.addEmailToList(userToken, addEmailBody)
         };
     }
 
@@ -242,7 +248,7 @@ const AccountScreen = (props: AccountScreenProps) => {
             <View style={styles.addButtonStyleComponent}>
             <TouchableOpacity
                 disabled={addEmailActive}
-                onPress={() => setAddEmailActive(true)}
+                onPress={() =>setAddEmailActive(true)}
                 style={[
                 styles.addEmailButtonStyle,
                 {backgroundColor: addEmailActive ? '#1212124D' : '#FBFBFB'},
@@ -256,7 +262,7 @@ const AccountScreen = (props: AccountScreenProps) => {
         </View>
     </SafeAreaView>
     );
-};
+});
 
 export default AccountScreen;
 

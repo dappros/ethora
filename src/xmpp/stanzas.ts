@@ -78,6 +78,54 @@ export const sendMessageStanza = (from:string, to:string, messageText:string, da
   );
   xmpp.send(message);
 };
+
+export const sendMediaMessageStanza = async(from:string, to:string, data:any, xmpp:any) => {
+  const message = xml(
+    'message',
+    {
+      id: XMPP_TYPES.sendMessage,
+      type: 'groupchat',
+      from:
+       from +
+        '@' + DOMAIN,
+      to: to,
+    },
+    xml('body', {}, 'media file'),
+    xml('data', {
+      xmlns: 'http://' + DOMAIN,
+      senderJID:
+        from +
+        '@' +
+        DOMAIN,
+      senderFirstName: data.firstName,
+      senderLastName: data.lastName,
+      senderWalletAddress: data.walletAddress,
+      isSystemMessage: false,
+      tokenAmount: '0',
+      receiverMessageId: '0',
+      mucname: data.chatName,
+      photoURL: data.userAvatar ? data.userAvatar : '',
+      isMediafile: true,
+      createdAt: data.createdAt,
+      expiresAt: data.expiresAt,
+      filename: data.filename,
+      isVisible: data.isVisible,
+      location: data.location,
+      locationPreview: data.locationPreview,
+      mimetype: data.mimetype,
+      originalname: data.originalname,
+      ownerKey: data.ownerKey,
+      size: data.size,
+      duration: data?.duration,
+      updatedAt: data.updatedAt,
+      userId: data.userId,
+      waveForm: JSON.stringify(data.waveForm),
+    }),
+  );
+
+  await xmpp.send(message);
+}
+
 export const fetchRosterlist = (walletAddress:string, stanzaId:string, xmpp:any) => {
   const message = xml(
     'iq',

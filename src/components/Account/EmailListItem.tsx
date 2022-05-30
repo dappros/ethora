@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -27,6 +26,7 @@ const EmailListItem = (props: EmailListItemProps) => {
         setTooltipVisible,
         deleteEmail
     } = props;
+    console.log(emailList,"emaillistitem")
     const {email, verified} = emailList.item;
     const index = emailList.index;
     

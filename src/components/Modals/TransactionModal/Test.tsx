@@ -1,6 +1,5 @@
 import React,{useEffect, useState} from 'react';
-import { Text, View, StyleSheet, Modal, ActivityIndicator } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Text, View, StyleSheet, Modal, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { modalTypes } from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -23,7 +22,7 @@ import QRCodeGenerator from '../../QRCodeGenerator';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface TransactionModalProps {
-    type:string,
+    type:string|undefined,
     extraData?:any
     closeModal?:any,
     isVisible?:boolean
@@ -77,12 +76,6 @@ const TransactionModal = (props: TransactionModalProps) => {
           <FlatList
             data={itemsData}
             renderItem={e => (
-            //   <RenderAssetItem
-            //     item={e.item}
-            //     index={e.index}
-            //     itemTransferFunc={() => this.setSelectedItem(e.item)}
-            //     selectedItem={selectedItem}
-            //   />
               <AssetItem
               image={e.item.nftFileUrl}
               name={e.item.tokenName}
@@ -129,9 +122,10 @@ const TransactionModal = (props: TransactionModalProps) => {
         });
         if (walletBalance) {
           if (amt <= walletBalance) {
+            console.log(apiStore.defaultToken)
             await walletStore.transferTokens(
               bodyData,
-              apiStore.defaultToken,
+              loginStore.userToken,
               fromWalletAddress,
               senderName,
               receiverName,

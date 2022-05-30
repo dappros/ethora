@@ -1,4 +1,4 @@
-import { Button } from 'native-base';
+import { Button, Text } from 'native-base';
 import { ColorType } from 'native-base/lib/typescript/components/types';
 import * as React from 'react';
 import { GestureResponderEvent } from 'react-native';
@@ -37,7 +37,7 @@ const SocialButton = (props: SocialButtonProps) => {
     _text={{
         color:color?color:'black'
     }}
-    // color={color?color:'black'}
+    colorScheme={'black'}
     fontFamily={fontFamily?fontFamily:undefined}
     textTransform={'uppercase'}
     fontSize={fontSize?fontSize:undefined}
@@ -45,7 +45,9 @@ const SocialButton = (props: SocialButtonProps) => {
     h={hp('5.91%')}
     leftIcon={leftIcon?leftIcon:undefined}
     >
-      {label?label:"Button label"}
+      <Text color={color}>
+        {label?label:"Button label"}
+      </Text>
     </Button>
   );
 };

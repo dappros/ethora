@@ -25,11 +25,10 @@ import {
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useStores } from '../stores/context';
 import { observer } from 'mobx-react-lite';
-import { socialLoginHandle } from '../helpers/socialLoginHandle';
+import { socialLoginHandle } from '../helpers/login/socialLoginHandle';
 import { socialLoginType } from '../constants/socialLoginConstants';
 import { httpGet } from '../config/apiService';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import Clipboard from '@react-native-clipboard/clipboard';
 
 interface LoginScreenProps {}
 
@@ -108,7 +107,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           />
           <SocialButton
             label='Sign in with Google'
-            color='blue'
+            color='black'
             fontFamily={textStyles.boldFont}
             fontSize={hp('1.47%')}
             leftIcon={
@@ -143,7 +142,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         <Spinner/>
         }
 
-        <Text onPress={()=>Clipboard.setString(apiStore.defaultToken)}>{apiStore.defaultToken}</Text>
+        {/* <Text onPress={()=>Clipboard.setString(apiStore.defaultToken)}>{apiStore.defaultToken}</Text> */}
 
       </ImageBackground>
   );

@@ -1,15 +1,26 @@
 import React from 'react';
 import {ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import { commonColors } from '../../../docs/config';
+import { commonColors, textStyles } from '../../../docs/config';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
-export const RoomListItemIcon = ({name}) => {
+export const RoomListItemIcon = ({name,counter}:{name:string,counter:number}) => {
   return (
     <ImageBackground imageStyle={{borderRadius: 5}} style={styles.imageBg}>
       <View style={styles.chatHomeItemIcon}>
         <Text style={styles.fullName}>
           {name&&name[0] + (name[1] ? name[1] : '')}
         </Text>
+        {counter ? (
+            <View style={styles.counterContainer}>
+              <View style={styles.counterInnerContainer}>
+                <Text style={styles.counterText}>{counter}</Text>
+              </View>
+            </View>
+          ) : null}
       </View>
     </ImageBackground>
   );
@@ -42,5 +53,31 @@ const styles = StyleSheet.create({
     //   fontFamily: mediumRobotoFont,
     textTransform: 'uppercase',
     textAlign: 'center',
+  },
+  counterContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    flex: 1,
+    zIndex: 1,
+    alignSelf: 'flex-end',
+    height: hp('5.5%'),
+    width: hp('5.5%'),
+    marginTop: hp('1%'),
+    marginRight: hp('0.5'),
+    position:'absolute'
+  },
+  counterInnerContainer: {
+    height: hp('2.1%'),
+    width: hp('2.1%'),
+    borderRadius: hp('2.1') / 2,
+    backgroundColor: '#FF0000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  counterText: {
+    fontFamily: textStyles.regularFont,
+    fontSize: hp('1%'),
+
+    color: '#FFFFFF',
   },
 });

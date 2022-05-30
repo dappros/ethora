@@ -16,6 +16,8 @@ import { Center, View } from 'native-base';
 import { Text } from 'react-native-svg';
 import ScanScreen from '../screens/ScanScreen';
 import AccountScreen from '../screens/AccountScreen';
+import MintScreen from '../screens/MintScreen';
+import NftItemHistoryScreen from '../screens/NftItemHistoryScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -98,6 +100,20 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.ACCOUNT}
         component={AccountScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.MINT}
+        component={MintScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.NFTITEMHISTORY}
+        component={NftItemHistoryScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

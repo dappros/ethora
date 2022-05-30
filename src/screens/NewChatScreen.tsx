@@ -9,6 +9,8 @@ import { sha256 } from 'react-native-sha256';
 import { useStores } from '../stores/context';
 import { underscoreManipulation } from '../helpers/underscoreLogic';
 import { createNewRoom, getUserRoomsStanza, roomConfig, setOwner, subscribeStanza } from '../xmpp/stanzas';
+import { useNavigation } from '@react-navigation/native';
+import { ROUTES } from '../constants/routes';
 
 interface NewChatScreenProps {}
 
@@ -29,6 +31,8 @@ const NewChatScreen = (props: NewChatScreenProps) => {
 
     const {walletAddress} = loginStore.initialData;
     const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+
+    const navigation = useNavigation()
 
     const handleChatAvatar=() => {
         launchImageLibrary(options, response => {
@@ -92,6 +96,8 @@ const NewChatScreen = (props: NewChatScreenProps) => {
                 )
           
             }, 2000);
+
+            navigation.navigate(ROUTES.ROOMSLIST)
 
           }
         });

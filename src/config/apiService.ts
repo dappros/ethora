@@ -7,10 +7,11 @@ export const httpGet = async (url:string, token:string) => {
       'Content-Type': 'application/json',
       Authorization: token,
     },
-  });
+  })
 };
 
 export const httpPost = async (url:string, body:any, token:string) => {
+  console.log(body)
   return await axios.post(url, body, {
     headers: {
       'Accept-Encoding': 'gzip, deflate, br',
@@ -35,7 +36,6 @@ export const httpUpload = async (url, body, token, onProgress) => {
     headers: {
       Accept: 'application/json',
       'Accept-Encoding': 'gzip, deflate, br',
-
       'Content-Type': 'multipart/form-data',
       Authorization: token,
     },

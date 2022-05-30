@@ -1,10 +1,10 @@
 import {client, xml} from '@xmpp/client';
 import { action, makeAutoObservable, runInAction} from 'mobx';
-import { insertRosterList } from '../components/realmModels/chatList';
+import { getChatRoom, insertRosterList } from '../components/realmModels/chatList';
 import { insertMessages } from '../components/realmModels/messages';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
-import {asyncStorageGetItem} from '../helpers/asyncStorageGetItem';
-import {createMessageObject} from '../helpers/createMessageObject';
+import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import {createMessageObject} from '../helpers/chat/createMessageObject';
 import { underscoreManipulation } from '../helpers/underscoreLogic';
 import {
   getUserRoomsStanza,
@@ -53,7 +53,7 @@ export class ChatStore {
   messages:any = [];
   xmpp:any = null;
   xmppError:any = '';
-  roomList:any = [];
+  roomList:roomListProps|[]=[];
   stores:RootStore;
   roomsInfoMap:any = {};
   allMessagesArrived:boolean = false;
@@ -142,6 +142,23 @@ export class ChatStore {
       this.roomList = roomsArray;
     });
   };
+
+  updateBadgeCounter=action((roomJid:string,type:string)=>{
+    this.roomList.map((item:any, index:number)=>{
+      if(item.jid === roomJid){
+        if(type==="CLEAR"){
+          runInAction(()=>{
+            return item.counter = 0;
+          })
+
+        }
+        if(type==="UPDATE"){
+          console.log(item)
+          item.counter = item.counter + 1;
+        }
+      }
+    })
+  })
 
   setRecentRealtimeChatAction = (
     messageObject:any,
@@ -309,13 +326,11 @@ export class ChatStore {
         }
         if (stanza?.children[2]?.children[0]?.name === 'invite') {
           const jid = stanza.children[3].attrs.jid;
-          // console.log(jid, 'dsfjkdshjfksdu439782374')
           subscribeStanza(xmppUsername, jid, this.xmpp);
         }
 
         if (stanza?.children[2]?.children[0]?.name === XMPP_TYPES.invite) {
           const jid = stanza.children[3].attrs.jid;
-          // console.log(jid, 'dsfjkdshjfksdu439782374')
           subscribeStanza(xmppUsername, jid, this.xmpp);
           getUserRoomsStanza(xmppUsername, this.xmpp);
         }
@@ -358,7 +373,18 @@ export class ChatStore {
         ) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-
+          if(this.shouldCount){
+            // let data = {
+            //   jid:message.roomJid,
+            //   counter:
+            // }
+              // this.roomList?.map((item:any, index:number)=>{
+              //   if(item.jid === message.roomJid){
+              //       item.counter = item.counter + 1;
+              //   }
+              // })
+              this.updateBadgeCounter(message.roomJid, 'UPDATE')
+          }
           this.addMessage(message);
         }
 

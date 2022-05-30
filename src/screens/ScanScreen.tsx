@@ -1,5 +1,12 @@
 import React, {useRef, useState} from 'react';
-import { Text, View, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { 
+  Text, 
+  View, 
+  StyleSheet, 
+  Platform, 
+  ActivityIndicator,
+  TouchableOpacity
+} from 'react-native';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {
@@ -9,9 +16,8 @@ import {
 import parseChatLink from '../helpers/parseChatLink';
 import { useStores } from '../stores/context';
 import { underscoreManipulation } from '../helpers/underscoreLogic';
-import openChatFromChatLink from '../helpers/openChatFromChatLink';
+import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { launchImageLibrary } from 'react-native-image-picker';
 import {PNG} from 'pngjs/browser';
 import JpegDecoder from 'jpeg-js';
@@ -140,11 +146,11 @@ const ScanScreen = (props: ScanScreenProps) => {
                 width: '100%',
                 justifyContent: 'flex-start',
             }}
-            bottomViewStyle={{flex: 0.2}}
+            bottomViewStyle={{flex: 1}}
             onRead={e => onSuccess(e)}
             bottomContent={
 (                <TouchableOpacity
-                    onPress={()=>alert('hi')}
+                    onPress={()=>openGallery()}
                     style={styles.buttonTouchable}>
                     <Text style={styles.buttonTextStyle}>
                     Upload from gallery.

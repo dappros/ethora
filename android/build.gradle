@@ -5,10 +5,11 @@ import org.apache.tools.ant.taskdefs.condition.Os
 buildscript {
     ext {
         buildToolsVersion = "31.0.0"
-        minSdkVersion = 21
+        minSdkVersion = 24
         compileSdkVersion = 31
         targetSdkVersion = 30
         androidXCore = "1.7.0"
+        kotlinVersion = '1.5.0'
         googlePlayServicesAuthVersion = "19.2.0"
 
         if (System.properties['os.arch'] == "aarch64") {
@@ -32,6 +33,7 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("de.undercouch:gradle-download-task:4.1.2")
         classpath 'com.google.gms:google-services:4.3.10'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -55,6 +57,11 @@ allprojects {
             }
         }
         google()
+        jcenter() {
+            content {
+                includeModule("com.yqritc", "android-scalablevideoview")
+            }
+        }
         maven { url 'https://www.jitpack.io' }
     }
 }

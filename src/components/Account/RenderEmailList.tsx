@@ -17,14 +17,14 @@ const RenderEmailList = (props: RenderEmailListProps) => {
         setTooltipVisible,
         tooltipVisible
     } = props
+    console.log(emailList,"emaillistinrender")
     return (
         <FlatList
         data={emailList}
-        key={emailList.email}
-        keyExtractor={emailList.email}
+        keyExtractor={(item:any)=>item.email}
         renderItem={item => 
             <EmailListItem
-            emailList={emailList}
+            emailList={item}
             deleteEmail={deleteEmail}
             setTooltipVisible={setTooltipVisible}
             tooltipVisible={tooltipVisible}

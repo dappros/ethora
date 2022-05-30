@@ -26,12 +26,12 @@ export class AccountStore{
     }
 
     async getEmailList(token:any){
-        const url = this.defaultUrl + getListOfEmails;
+        const url = this.stores.apiStore.defaultUrl + getListOfEmails;
         runInAction(()=>{
             this.isFetching = true;
         })
         try{
-            const res = await httpGet(url,token);
+            const res = await httpGet(url,token)
             this.isFetching = false;
             if(res.data.success){
                 runInAction(()=>{
@@ -53,43 +53,65 @@ export class AccountStore{
     }
 
     async addEmailToList(token:any, body:any){
-        const url = this.defaultUrl + addOrDeleteEmail;
+        const url = this.stores.apiStore.defaultUrl + addOrDeleteEmail;
         this.isFetching = true;
+
         try{
-            const res:any = await httpPost(url, body, token);
-            this.isFetching = false;
+            const res = await httpPost(url, body, token)
+            
+            runInAction(()=>{
+                this.isFetching = false;
+            });
+
             if(res.data.success || res.data === ''){
                 this.getEmailList(token);
-                showToast('success','Success', 'This email already exists', 'top');
+                showToast('success', 'Success', 'Email added succesfully','top')
             }else{
-                this.error = true;
-                this.errorMessage = res.data.msg;
+                runInAction(()=>{
+                    this.error = true;
+                    this.errorMessage = res.data.msg;
+                })
             }
         }catch(error:any){
-            showToast('error','Error', 'This email already exists', 'top');
-            this.isFetching = false;
-            this.error = true;
-            this.errorMessage = error;
+            showToast('error', 'Error', error, 'top');
+            runInAction(()=>{
+                this.isFetching = false;
+                this.error = true;
+                this.errorMessage = error;
+            })
         }
     }
 
-    async deletEmailFromList(token:any, email:any){
-        const url = this.defaultUrl + addOrDeleteEmail + '/' + email;
-        this.isFetching = true
+    async deleteEmailFromList(token:any, email:any){
+        const url = this.stores.apiStore.defaultUrl + addOrDeleteEmail + '/' + email;
+        
+        runInAction(()=>{
+            this.isFetching = true
+        })
+
         try {
             const res = await httpDelete(url, token);
-            this.isFetching = false;
+            console.log(res.status)
+            runInAction(()=>{
+                this.isFetching = true
+            })
             if (res.data.success) {
                 this.getEmailList(token);
                 showToast('success','Success', 'Email deleted successfully', 'top');
             } else {
-                this.error = true;
-                this.errorMessage = res.data.msg
+                runInAction(()=>{
+                    this.error = true;
+                    this.errorMessage = res.data.msg;
+                })
             }
         } catch (error:any) {
-            this.isFetching = false;
-            this.error = true;
-            this.errorMessage = error;
+            runInAction(()=>{
+                this.isFetching = false;
+                this.error = true;
+                this.errorMessage = error;
+            })
+            console.log(JSON.stringify(error))
+            showToast('error','Error', error, 'top');
         }
     };
 }

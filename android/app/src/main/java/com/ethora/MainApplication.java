@@ -12,6 +12,7 @@ import com.facebook.soloader.SoLoader;
 import com.ethora.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.ethora.WaveformPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
