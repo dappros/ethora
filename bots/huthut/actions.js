@@ -26,27 +26,24 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
     }), xml('body', {}, data.receiverData ? isSystemMessage ? message : data.receiverData.attrs.senderFirstName + ': ' + message : message)));
 }
 
-const connectRoom = (xmpp, address, roomAddress) => {
-    let myRoomAddress = roomAddress + '/' + connectData.botName;
+const connectRoom = (xmpp, address, receiver) => {
+    let myRoomAddress = receiver + '/' + connectData.botName;
 
-    console.log('=> Connecting to the room: ', roomAddress);
+    console.log('=> Connecting to the room: ', receiver);
 
     xmpp.send(xml('presence', {
         from: address,
         to: myRoomAddress,
     }, xml('x', 'http://jabber.org/protocol/muc', xml('history', {maxstanzas: 0})))).catch(console.error);
 
-    console.log('=> Sending a welcome message: ', roomAddress);
+    console.log('=> Sending a welcome message: ', receiver);
 
     sendMessage(
-        xmpp,
-        roomAddress,
-        'groupchat',
+        {xmpp, receiver},
         messages.general.welcomeMessage,
-        null,
+        'groupchat',
         false,
         0,
-        null
     );
 }
 
