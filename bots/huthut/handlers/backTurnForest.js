@@ -4,14 +4,11 @@ import messages from "../config/messages.js";
 export const backTurnForestHandler = (data) => {
     console.log('=> backTurnForestHandler | Message received from ', data.receiver, data.message);
     sendMessage(
-        data.xmpp,
-        data.receiver,
-        'message',
+        data,
         messages.visitingHut.firstGreeting,
-        data.receiverData,
+        'message',
         false,
         0,
-        data.stanzaId
     );
     userSteps('setStep', data.sender, 2);
 }

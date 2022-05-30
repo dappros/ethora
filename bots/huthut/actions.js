@@ -7,10 +7,10 @@ let userStepsList = [];
 
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
-const sendMessage = (xmpp, receiverAddress, type, message, receiverData, isSystemMessage, tokenAmount, stanzaId) => {
-    xmpp.send(xml('message', {
-        to: stanzaId ? stanzaId.attrs.by : receiverAddress,
-        type: receiverData ? 'groupchat' : type,
+const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
+    data.xmpp.send(xml('message', {
+        to: data.stanzaId ? data.stanzaId.attrs.by : data.receiver,
+        type: data.receiverData ? 'groupchat' : type,
         id: "sendMessage"
     }, xml('data', {
         xmlns: "http://" + connectData.botAddress,
@@ -21,9 +21,9 @@ const sendMessage = (xmpp, receiverAddress, type, message, receiverData, isSyste
         senderWalletAddress: botOptions.botData.senderWalletAddress,
         isSystemMessage: isSystemMessage,
         tokenAmount: tokenAmount,
-        receiverMessageId: stanzaId ? stanzaId.attrs.id : 0,
-        roomJid: receiverData ? receiverData.attrs.roomJid : '',
-    }), xml('body', {}, receiverData ? isSystemMessage ? message : receiverData.attrs.senderFirstName + ': ' + message : message)));
+        receiverMessageId: data.stanzaId ? data.stanzaId.attrs.id : 0,
+        roomJid: data.receiverData ? data.receiverData.attrs.roomJid : '',
+    }), xml('body', {}, data.receiverData ? isSystemMessage ? message : data.receiverData.attrs.senderFirstName + ': ' + message : message)));
 }
 
 const connectRoom = (xmpp, address, roomAddress) => {
