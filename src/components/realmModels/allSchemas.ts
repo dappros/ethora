@@ -8,10 +8,21 @@ import * as schemaTypes from '../../constants/realmConstants';
 // const Realm = require('realm');
 import Realm from 'realm';
 
+const UserSchema = {
+  name: 'User',
+  embeded: true,
+  properties: {
+    _id: 'string',
+    name: 'string',
+    avatar: 'string',
+  },
+};
+
 const MessageSchema = {
   name: schemaTypes.MESSAGE_SCHEMA,
   primaryKey: 'message_id',
   properties: {
+    _id: 'string',
     message_id: 'string',
     text: 'string',
     createdAt: 'date',
@@ -19,6 +30,7 @@ const MessageSchema = {
     name: 'string?',
     avatar: 'string?',
     room_name: 'string',
+    roomJid: 'string?',
     system: 'bool',
     tokenAmount: 'int?',
     realImageURL: 'string?',
@@ -27,6 +39,7 @@ const MessageSchema = {
     isStoredFile: 'bool?',
     mimetype: 'string?',
     size: 'string?',
+    user: 'User',
     duration: {type: 'string', optional: true},
     waveForm: {type: 'string', optional: true},
   },
@@ -55,14 +68,14 @@ const TransactionSchema = {
   properties: {
     blockNumber: {type: 'int', optional: true},
     from: 'string',
-    fromFirstName: 'string',
-    fromLastName: 'string',
-    toFirstName: 'string',
-    toLastName: 'string',
+    senderFirstName: 'string',
+    senderLastName: 'string',
+    receiverFirstName: 'string',
+    receiverLastName: 'string',
     timestamp: 'date',
     to: 'string',
     tokenId: 'string',
-    nftTotal: 'string',
+    nftTotal: {type: 'string', optional: true},
     receiverBalance: 'string',
     // _id: 'string',
     tokenName: 'string',
@@ -70,20 +83,18 @@ const TransactionSchema = {
     senderBalance: 'string',
     type: 'string',
     value: 'int',
-    nftPreview: 'string',
-    nftFileUrl: 'string',
+    nftPreview: {type: 'string', optional: true},
+    nftFileUrl: {type: 'string', optional: true},
   },
 };
 
 export const databaseOptions = {
-  path: 'ethoraTest.realm',
-  schema: [MessageSchema, ChatListSchema, TransactionSchema],
-  schemaVersion: 0, //optional
+  // path: 'ethoraTest.realm',
+  schema: [MessageSchema, ChatListSchema, TransactionSchema, UserSchema],
+  // schemaVersion: 1, //optional
 };
 
-
 export const realm = new Realm(databaseOptions);
-
 
 export const deleteAllRealm = () => {
   realm.write(() => {

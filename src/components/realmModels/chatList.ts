@@ -5,22 +5,22 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 import Realm from 'realm';
 import * as schemaTypes from '../../constants/realmConstants';
-import { databaseOptions } from './allSchemas';
+import {databaseOptions} from './allSchemas';
 import {queryRoomAllMessages} from './messages';
 
 //check for room name
-const checkRoomExist=async(jid:any, callback:any)=> {
-  const realm = await Realm.open(databaseOptions)
+const checkRoomExist = async (jid: any, callback: any) => {
+  const realm = await Realm.open(databaseOptions);
   let chatObject = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
   if (Array.from(chatObject.filtered(`jid="${jid}"`)).length > 0) {
     callback(true);
   } else callback(false);
-}
+};
 
-export const insertRosterList = (chatsObject:any) =>
+export const insertRosterList = (chatsObject: any) =>
   new Promise((resolve, reject) => {
     try {
-      queryRoomAllMessages(chatsObject.jid).then((chats:any) => {
+      queryRoomAllMessages(chatsObject.jid).then((chats: any) => {
         const lastUserName = chats.length ? chats[chats.length - 1].name : '';
         const lastUserText = chats.length ? chats[chats.length - 1].text : '';
         const createdAt = chats.length
@@ -37,10 +37,10 @@ export const insertRosterList = (chatsObject:any) =>
           createdAt: createdAt,
           priority: chatsObject.priority,
         };
-        checkRoomExist(chatsObject.jid, async(callback:boolean) => {
+        checkRoomExist(chatsObject.jid, async (callback: boolean) => {
           if (!callback) {
-            const realm = await Realm.open(databaseOptions)
-            console.log(realm.path)
+            const realm = await Realm.open(databaseOptions);
+            console.log(realm.path);
             realm.write(() => {
               realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatListObject);
               resolve(chatListObject);
@@ -63,16 +63,16 @@ export const insertRosterList = (chatsObject:any) =>
         });
       });
     } catch (error) {
-      alert(error)
+      alert(error);
       reject(error);
     }
   });
 
-export const updateChatRoom = (jid:string, property:string, value:any) =>
-  new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
+export const updateChatRoom = (jid: string, property: string, value: any) =>
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
     realm.write(() => {
-      const chatRoom:any = realm.objectForPrimaryKey(
+      const chatRoom: any = realm.objectForPrimaryKey(
         schemaTypes.CHAT_LIST_SCHEMA,
         jid,
       );
@@ -85,11 +85,11 @@ export const updateChatRoom = (jid:string, property:string, value:any) =>
     });
   });
 
-export const updateRosterList = (data:any) =>
-  new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
+export const updateRosterList = (data: any) =>
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
     realm.write(() => {
-      const chatList:any = realm.objectForPrimaryKey(
+      const chatList: any = realm.objectForPrimaryKey(
         schemaTypes.CHAT_LIST_SCHEMA,
         data.jid,
       );
@@ -119,8 +119,8 @@ export const updateRosterList = (data:any) =>
       resolve(true);
     });
   });
-export const getChatRoom = (jid:string) =>
-  new Promise(async(resolve, reject) => {
+export const getChatRoom = (jid: string) =>
+  new Promise(async (resolve, reject) => {
     // const realm = await Realm.open(databaseOptions)
 
     // const chatList = realm.objectForPrimaryKey(
@@ -129,18 +129,16 @@ export const getChatRoom = (jid:string) =>
     // );
     //   console.log(chatList)
     // return(true);
-    Realm.open(databaseOptions).then((realm)=>{
-      const chatList = realm.objectForPrimaryKey(
-        schemaTypes.CHAT_LIST_SCHEMA,
-        jid
-      )
-
-      console.log(chatList)
-    })
+    const realm = await Realm.open(databaseOptions);
+    const chatList = realm.objectForPrimaryKey(
+      schemaTypes.CHAT_LIST_SCHEMA,
+      jid,
+    );
+    resolve(chatList);
   });
-export const deleteChatRoom = (jid:string) =>
-  new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
+export const deleteChatRoom = (jid: string) =>
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
     const chat = realm.objectForPrimaryKey(schemaTypes.CHAT_LIST_SCHEMA, jid);
     realm.write(() => {
       realm.delete(chat);
@@ -149,9 +147,9 @@ export const deleteChatRoom = (jid:string) =>
   });
 
 export const fetchRosterList = () =>
-  new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
-    const rosterList:any = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
+    const rosterList: any = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
     rosterList.isValid()
       ? rosterList.isEmpty
         ? resolve(Array.from(rosterList))
@@ -159,25 +157,22 @@ export const fetchRosterList = () =>
       : reject('not valid');
   });
 
-export const getRoomList = async() => {
-  const realm = await Realm.open(databaseOptions)
-  const rosterList = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
-  if(rosterList.isValid()&&!rosterList.isEmpty()){
-    return Array.from(rosterList)
-  }else{
-    return false
-  }
-}
+export const getRoomList = async () => {
+  const realm = await Realm.open(databaseOptions);
+  const roomsList = realm.objects(schemaTypes.CHAT_LIST_SCHEMA);
+  return roomsList;
+};
 
-export const addChatRoom = (chatsObject:any) =>
-  new Promise(async(resolve, reject) => {
-    const realm = await Realm.open(databaseOptions)
+export const addChatRoom = (chatsObject: any) =>
+  new Promise(async (resolve, reject) => {
     try {
+      const realm = await Realm.open(databaseOptions);
       realm.write(() => {
         realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatsObject);
         resolve(chatsObject);
       });
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });

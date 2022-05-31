@@ -5,11 +5,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import Realm from 'realm';
-import { databaseOptions, realm } from './allSchemas';
+import {databaseOptions} from './allSchemas';
 import * as schemaTypes from '../../constants/realmConstants';
 
 async function checkTransactionExist(transactionHash, callback) {
   // const realm = new Realm(databaseOptions)
+  const realm = await Realm.open(databaseOptions);
+
   let transactionObject = realm.objects(schemaTypes.TRANSACTION_SCHEMA);
   if (
     Array.from(
@@ -20,8 +22,29 @@ async function checkTransactionExist(transactionHash, callback) {
   } else callback(false);
 }
 
+export const getTransaction = async hash => {
+  try {
+    const realm = await Realm.open(databaseOptions);
+    const transaction = realm.objectForPrimaryKey(schemaTypes.TRANSACTION_SCHEMA, hash);
+
+    return transaction;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+export const addTransaction = async transaction => {
+  try {
+    const realm = await Realm.open(databaseOptions);
+    realm.write(() => {
+      realm.create(schemaTypes.TRANSACTION_SCHEMA, transaction);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const insertTransaction = data =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
     data.map(item => {
       if (!item.nftTotal) item.nftTotal = '0';
       const data = {
@@ -44,8 +67,10 @@ export const insertTransaction = data =>
         nftPreview: item.nftPreview ? item.nftPreview : 'null',
         nftFileUrl: item.nftFileUrl || 'null',
       };
-      checkTransactionExist(item.transactionHash, async(callback) => {
+      checkTransactionExist(item.transactionHash, async callback => {
         if (!callback) {
+          const realm = await Realm.open(databaseOptions);
+
           const date = new Date(item.timestamp);
           item.timestamp = date;
           item.tokenId = item.tokenId === undefined ? 'Ether' : item.tokenId;
@@ -63,8 +88,10 @@ export const insertTransaction = data =>
     });
   });
 
-export const queryAllTransactions = tokenName =>
-  new Promise(async(resolve, reject) => {
+export const queryAllTransactions = () =>
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
+
     // const realm = new Realm(databaseOptions)
     let transactions = realm
       .objects(schemaTypes.TRANSACTION_SCHEMA)
