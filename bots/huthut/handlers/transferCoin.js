@@ -29,7 +29,7 @@ export const transferCoinHandler = (data) => {
                 0,
             );
             transferNft(response.nftId, data.receiverData.attrs.senderWalletAddress, tokenAmount).then(responseNft => {
-                console.log('=> Transfer success', responseNft.data);
+                console.log('=> Transfer success', responseNft);
                 return sendMessage(
                     data,
                     botOptions.botData.firstName + ' ' + botOptions.botData.lastName + ' -> ' + tokenAmount + ' ' + response.tokenName + ' -> ' + data.receiverData.attrs.senderFirstName,
