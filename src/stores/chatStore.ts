@@ -1,11 +1,22 @@
 import {client, xml} from '@xmpp/client';
-import { action, makeAutoObservable, runInAction} from 'mobx';
-import { getChatRoom, insertRosterList } from '../components/realmModels/chatList';
-import { insertMessages } from '../components/realmModels/messages';
+import { format } from 'date-fns';
+import {action, makeAutoObservable, runInAction} from 'mobx';
+import {
+  addChatRoom,
+  getChatRoom,
+  getRoomList,
+  insertRosterList,
+} from '../components/realmModels/chatList';
+import {
+  getAllMessages,
+  insertMessages,
+  queryRoomAllMessages,
+} from '../components/realmModels/messages';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {createMessageObject} from '../helpers/chat/createMessageObject';
-import { underscoreManipulation } from '../helpers/underscoreLogic';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getUserRoomsStanza,
   presenceStanza,
@@ -15,63 +26,67 @@ import {
   vcardRetrievalRequest,
 } from '../xmpp/stanzas';
 import {DOMAIN, SERVICE, XMPP_TYPES} from '../xmpp/xmppConstants';
-import { RootStore } from './context';
+import {RootStore} from './context';
 
-interface recentRealtimeChatProps{
-  avatar?:string,
-  createdAt:any,
-  message_id:string,
-  name?:string,
-  room_name:string,
-  text:string,
-  user_id?:string,
-  system:boolean,
-  shouldUpdateChatScreen:boolean,
-  mimetype?:string,
-  tokenAmount?:string,
-  image?:string,
-  realImageURL?:string,
-  isStoredFile?:boolean,
-  size?:string,
-  duration?:any,
-  waveForm?:any,
+interface recentRealtimeChatProps {
+  avatar?: string;
+  createdAt: any;
+  message_id: string;
+  name?: string;
+  room_name: string;
+  text: string;
+  user_id?: string;
+  system: boolean;
+  shouldUpdateChatScreen: boolean;
+  mimetype?: string;
+  tokenAmount?: string;
+  image?: string;
+  realImageURL?: string;
+  isStoredFile?: boolean;
+  size?: string;
+  duration?: any;
+  waveForm?: any;
 }
 
-interface roomListProps{
-  name: string,
-  participants: number,
-  avatar: string,
-  jid: string,
-  counter: number,
-  lastUserText: string,
-  lastUserName: string,
-  createdAt: string,
-  priority?: number,
-  muted?: boolean,
+interface roomListProps {
+  name: string;
+  participants: number;
+  avatar: string;
+  jid: string;
+  counter: number;
+  lastUserText: string;
+  lastUserName: string;
+  createdAt: string;
+  priority?: number;
+  muted?: boolean;
 }
 export class ChatStore {
-  messages:any = [];
-  xmpp:any = null;
-  xmppError:any = '';
-  roomList:roomListProps|[]=[];
-  stores:RootStore;
-  roomsInfoMap:any = {};
-  allMessagesArrived:boolean = false;
-  recentRealtimeChat:recentRealtimeChatProps = {
+  messages: any = [];
+  xmpp: any = null;
+  xmppError: any = '';
+  roomList: roomListProps | [] = [];
+  stores: RootStore;
+  roomsInfoMap: any = {};
+  allMessagesArrived: boolean = false;
+  recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
     message_id: '',
     room_name: '',
     text: '',
     system: false,
-    shouldUpdateChatScreen: false
-  }
-  shouldCount:boolean = true
-  roomRoles = []
+    shouldUpdateChatScreen: false,
+  };
+  shouldCount: boolean = true;
+  roomRoles = [];
 
-  constructor(stores:RootStore) {
+  constructor(stores: RootStore) {
     makeAutoObservable(this);
     this.stores = stores;
   }
+
+  toggleShouldCount = action((value: boolean) => {
+    this.shouldCount = value;
+  });
 
   setInitialState=action(()=>{
     this.messages = [];
@@ -90,16 +105,11 @@ export class ChatStore {
     }
     this.roomRoles=[]
   })
+  setRoomRoles = action((data: any) => {
+    this.roomRoles = data;
+  });
 
-  toggleShouldCount = action((value:boolean) => {
-    this.shouldCount = value
-  })
-
-  setRoomRoles = action((data:any)=>{
-    this.roomRoles = data
-  })
-
-  xmppConnect = (username:string, password:string) => {
+  xmppConnect = (username: string, password: string) => {
     runInAction(() => {
       this.xmpp = client({
         service: SERVICE,
@@ -110,7 +120,20 @@ export class ChatStore {
     });
     this.xmpp.start().catch(console.log);
   };
-
+  getRoomsFromCache = async () => {
+    try {
+      const rooms = await getRoomList();
+      runInAction(() => {
+        this.roomList = rooms;
+      });
+    } catch (error) {}
+  };
+  getCachedMessages = async () => {
+    const messages = await getAllMessages();
+    runInAction(() => {
+      this.messages = messages;
+    });
+  };
   getCachedRoomsInfo = async () => {
     const res = await asyncStorageGetItem(
       asyncStorageConstants.roomsListHashMap,
@@ -121,58 +144,57 @@ export class ChatStore {
       });
     }
   };
-  updateRoomInfo = (jid:string, data:any) => {
+
+  updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
     });
+    await asyncStorageSetItem(
+      asyncStorageConstants.roomsListHashMap,
+      this.roomsInfoMap,
+    );
   };
 
-  addMessage = (message:any) => {
+  addMessage = (message: any) => {
     runInAction(() => {
       this.messages.push(message);
     });
   };
-  addRoom = (room:any) => {
+  addRoom = (room: any) => {
     runInAction(() => {
       this.roomList.push(room);
     });
   };
-  setRooms = (roomsArray:any) => {
+  setRooms = (roomsArray: any) => {
     runInAction(() => {
       this.roomList = roomsArray;
     });
   };
 
-  updateBadgeCounter=action((roomJid:string,type:string)=>{
-    this.roomList.map((item:any, index:number)=>{
-      if(item.jid === roomJid){
-        if(type==="CLEAR"){
-          runInAction(()=>{
-            return item.counter = 0;
-          })
-
+  updateBadgeCounter = action((roomJid: string, type: string) => {
+    this.roomList.map((item: any, index: number) => {
+      if (item.jid === roomJid) {
+        if (type === 'CLEAR') {
+          runInAction(() => {
+            return (item.counter = 0);
+          });
         }
-        if(type==="UPDATE"){
-          console.log(item)
+        if (type === 'UPDATE') {
+          console.log(item);
           item.counter = item.counter + 1;
         }
       }
-    })
-  })
+    });
+  });
 
   setRecentRealtimeChatAction = (
-    messageObject:any,
-    roomName:string,
-    shouldUpdateChatScreen:boolean,
-    tokenAmount:string,
-    receiverMessageId:string
+    messageObject: any,
+    roomName: string,
+    shouldUpdateChatScreen: boolean,
+    tokenAmount: string,
+    receiverMessageId: string,
   ) => {
-    insertMessages(
-      messageObject,
-      roomName,
-      tokenAmount,
-      receiverMessageId
-    );
+    insertMessages(messageObject, roomName, tokenAmount, receiverMessageId);
 
     if (messageObject.system) {
       this.recentRealtimeChat.createdAt = messageObject.createdAt;
@@ -181,40 +203,38 @@ export class ChatStore {
       this.recentRealtimeChat.text = messageObject.text;
       this.recentRealtimeChat.system = true;
       this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
-      this.recentRealtimeChat.tokenAmount = tokenAmount
+      this.recentRealtimeChat.tokenAmount = tokenAmount;
     }
     if (!messageObject.system) {
+      this.recentRealtimeChat.avatar = messageObject.user.avatar;
+      this.recentRealtimeChat.createdAt = messageObject.createdAt;
+      this.recentRealtimeChat.message_id = messageObject._id;
+      this.recentRealtimeChat.name = messageObject.user.name;
+      this.recentRealtimeChat.room_name = roomName;
+      this.recentRealtimeChat.text = messageObject.text;
+      this.recentRealtimeChat.system = false;
+      this.recentRealtimeChat.mimetype = messageObject.mimetype;
 
-       this.recentRealtimeChat.avatar = messageObject.user.avatar;
-       this.recentRealtimeChat.createdAt = messageObject.createdAt;
-       this.recentRealtimeChat.message_id = messageObject._id;
-       this.recentRealtimeChat.name = messageObject.user.name;
-       this.recentRealtimeChat.room_name = roomName;
-       this.recentRealtimeChat.text = messageObject.text;
-       this.recentRealtimeChat.system = false;
-       this.recentRealtimeChat.mimetype = messageObject.mimetype;
+      this.recentRealtimeChat.image = messageObject.image;
+      this.recentRealtimeChat.realImageURL = messageObject.realImageURL;
+      this.recentRealtimeChat.isStoredFile = messageObject.isStoredFile;
+      this.recentRealtimeChat.size = messageObject.size;
+      this.recentRealtimeChat.duration = messageObject.duration;
 
-       this.recentRealtimeChat.image = messageObject.image;
-       this.recentRealtimeChat.realImageURL = messageObject.realImageURL;
-       this.recentRealtimeChat.isStoredFile = messageObject.isStoredFile;
-       this.recentRealtimeChat.size = messageObject.size;
-       this.recentRealtimeChat.duration = messageObject.duration;
-
-       this.recentRealtimeChat.waveForm = messageObject.waveForm;
-       this.recentRealtimeChat.user_id = messageObject.user._id;
-       this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
+      this.recentRealtimeChat.waveForm = messageObject.waveForm;
+      this.recentRealtimeChat.user_id = messageObject.user._id;
+      this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
     }
-
-  }
+  };
 
   xmppListener = async () => {
     const xmppUsername = this.stores.loginStore.initialData.xmppUsername;
     // xmpp.reconnect.start();
-    this.xmpp.on('stanza', async (stanza:any) => {
+    this.xmpp.on('stanza', async (stanza: any) => {
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
         let anotherUserDescription = '';
-        stanza.children[0].children.map((item:any) => {
+        stanza.children[0].children.map((item: any) => {
           if (item.name === 'DESC') {
             anotherUserDescription = item.children[0];
           }
@@ -233,7 +253,7 @@ export class ChatStore {
         if (!stanza.children[0].children.length) {
           updateVCard(profilePhoto, profileDescription, this.xmpp);
         } else {
-          stanza.children[0].children.map((item:any) => {
+          stanza.children[0].children.map((item: any) => {
             if (item.name === 'DESC') {
               profileDescription = item.children[0];
             }
@@ -276,9 +296,9 @@ export class ChatStore {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
-        const roomsArray:any = [];
+        const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
-        rosterFromXmpp.forEach((item:any) => {
+        rosterFromXmpp.forEach((item: any) => {
           const rosterObject = {
             name: item.attrs.name,
             jid: item.attrs.jid,
@@ -290,20 +310,20 @@ export class ChatStore {
             createdAt: new Date(),
             priority: 0,
           };
-          presenceStanza(
-            xmppUsername,
-            item.attrs.jid,
-            this.xmpp,
-          );
-          subscribeToRoom(
-            item.attrs.jid,
-            xmppUsername,
-            this.xmpp,
-          );
+          presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
+          subscribeToRoom(item.attrs.jid, xmppUsername, this.xmpp);
           this.updateRoomInfo(item.attrs.jid, {
             name: item.attrs.name,
             participants: +item.attrs.users_cnt,
           });
+          getChatRoom(item.attrs.jid).then(cachedChat => {
+            if (!cachedChat?.jid) {
+              addChatRoom(rosterObject).then(item =>
+                console.log('hello added'),
+              );
+            }
+          });
+
           roomsArray.push(rosterObject);
 
           //insert the list of rooms in realm
@@ -340,7 +360,7 @@ export class ChatStore {
           const singleMessageDetailArray =
             stanza.children[0].children[0].children[0].children;
 
-          const roomJID = stanza.attrs.from
+          const roomJID = stanza.attrs.from;
           const message = createMessageObject(singleMessageDetailArray);
           if (message.system) {
             const messageIndexToUpdate = this.messages.findIndex(
@@ -356,6 +376,12 @@ export class ChatStore {
           );
           if (messageAlreadyExist === -1) {
             this.addMessage(message);
+            insertMessages(
+              message,
+              stanza.attrs.from,
+              message.receiverMessageId,
+            );
+
             // if(message.receiverMessageId){
             //   insertMessages(
             //     message,
@@ -373,28 +399,32 @@ export class ChatStore {
         ) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-          if(this.shouldCount){
+          if (this.shouldCount) {
             // let data = {
             //   jid:message.roomJid,
             //   counter:
             // }
-              // this.roomList?.map((item:any, index:number)=>{
-              //   if(item.jid === message.roomJid){
-              //       item.counter = item.counter + 1;
-              //   }
-              // })
-              this.updateBadgeCounter(message.roomJid, 'UPDATE')
+            // this.roomList?.map((item:any, index:number)=>{
+            //   if(item.jid === message.roomJid){
+            //       item.counter = item.counter + 1;
+            //   }
+            // })
+            this.updateBadgeCounter(message.roomJid, 'UPDATE');
           }
           this.addMessage(message);
+
+          this.updateRoomInfo(message.roomJid, {
+            lastUserText: message?.text,
+            lastUserName: message?.user?.name,
+            messageTime:
+              message?.createdAt && format(message?.createdAt, 'hh:mm'),
+          });
+          insertMessages(message, stanza.attrs.from, message.receiverMessageId);
         }
 
         //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
         if (stanza.attrs.id === XMPP_TYPES.newSubscription) {
-          presenceStanza(
-            xmppUsername,
-            stanza.attrs.from,
-            this.xmpp,
-          );
+          presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
         }
 
         //To capture the response for list of rosters (for now only subscribed muc)
