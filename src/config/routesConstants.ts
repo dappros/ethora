@@ -1,27 +1,28 @@
-export const loginURL:string = '/users/login';
+export const loginURL = '/users/login';
 
-export const tokenEtherBalanceURL:string = '/wallets/balance/';
+export const tokenEtherBalanceURL = '/wallets/balance/';
 
-export const etherTransferURL:string = '/ethers/transfer';
+export const etherTransferURL = '/ethers/transfer';
 
-export const tokenTransferURL:string = '/tokens/transfer';
+export const tokenTransferURL = '/tokens/transfer';
 
-export const transactionURL:string = '/explorer/transactions?';
+export const transactionURL = '/explorer/transactions?';
 
-export const registerUserURL:string = '/users';
+export const registerUserURL = '/users';
 
-export const checkPushSubscribe:string =
+export const checkPushSubscribe =
   'https://dev.dxmpp.com/' + 'subscriptions/deviceId/';
 
-export const subscribePushNotification:string = 'subscriptions';
+export const subscribePushNotification =
+  'https://dev.dxmpp.com:7777/api/v1/subscriptions/deviceId/';
 
-export const getListOfEmails:string = '/users/emails';
+export const getListOfEmails = '/users/emails';
 
-export const addOrDeleteEmail:string = '/users/emails';
+export const addOrDeleteEmail = '/users/emails';
 
-export const checkEmailExist:string = '/users/checkEmail/';
+export const checkEmailExist = '/users/checkEmail/';
 
-export const fileUpload:string = '/files/';
-export const nftTransferURL:string = '/tokens/items';
-export const itemTransferURL:string = '/tokens/transfer/items';
-export const refreshTokenURL:string = '/users/login/refresh';
+export const fileUpload = '/files/';
+export const nftTransferURL = '/tokens/items';
+export const itemTransferURL = '/tokens/transfer/items';
+export const refreshTokenURL = '/users/login/refresh';
