@@ -1,8 +1,8 @@
 import {formatDate} from '../chat/formatDate';
 
-export const compareTransactionsDate = (transactions:any) => {
+export const compareTransactionsDate = (transactions: any) => {
   let currentDate = '';
-  return transactions.map((item:any) => {
+  return transactions.map((item: any) => {
     let showDate = false;
     let formattedDate = '';
     const formattedTimestamp = formatDate(item.timestamp);
@@ -13,6 +13,8 @@ export const compareTransactionsDate = (transactions:any) => {
     } else {
       showDate = false;
     }
-    return {...item, showDate, formattedDate};
+    item.showDate = showDate;
+    item.formattedDate = formattedDate;
+    return item;
   });
 };
