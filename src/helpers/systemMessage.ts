@@ -2,7 +2,7 @@ import { coinsMainSymbol } from "../../docs/config";
 
 interface systemMessageProps{
     senderName:string,
-    amount:number,
+    tokenAmount:number,
     tokenName:string,
     receiverMessageId:string,
     receiverName:string

@@ -1,27 +1,32 @@
 import {observer} from 'mobx-react-lite';
-import React from 'react';
+import React, {useEffect} from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 import {useStores} from '../../stores/context';
+import {fetchRosterList, getRoomList} from '../realmModels/chatList';
 import {RoomListItem} from './RoomListItem';
+import {TouchableOpacity, Text} from 'react-native';
+import {deleteAllRealm} from '../../components/realmModels/allSchemas';
+import {getUserRoomsStanza} from '../../xmpp/stanzas';
 
-export const RoomList = observer(({roomsList}:any) => {
-  const {chatStore} = useStores();
+export const RoomList = observer(({roomsList}: any) => {
+  const {chatStore, loginStore} = useStores();
   const sortedRoomsList = roomsList.sort(
-    (a:any, b:any) =>
+    (a: any, b: any) =>
       chatStore.roomsInfoMap[a.jid]?.priority -
       chatStore.roomsInfoMap[b.jid]?.priority,
   );
-  
 
-  const onDragEnd = async (partialReorderedList:any) => {
-    const partialListCopy = partialReorderedList.map((item:any, index:number) => {
-      chatStore.updateRoomInfo(item.jid, {priority: index});
-      return {...item, priority: index};
-    });
+  const onDragEnd = async (partialReorderedList: any) => {
+    const partialListCopy = partialReorderedList.map(
+      (item: any, index: number) => {
+        chatStore.updateRoomInfo(item.jid, {priority: index});
+        return {...item, priority: index};
+      },
+    );
     const restOfTheList = chatStore.roomList.filter(
-      (item:any) => !partialListCopy.find((el:any) => item.jid === el.jid),
+      (item: any) => !partialListCopy.find((el: any) => item.jid === el.jid),
     );
     const fullRoomsList = partialListCopy.concat(restOfTheList);
     chatStore.setRooms(fullRoomsList);
@@ -53,7 +58,7 @@ export const RoomList = observer(({roomsList}:any) => {
         );
       }}
       onDragEnd={({data}) => onDragEnd(data)}
-      keyExtractor={(item:any) => `draggable-item-${item.jid}`}
+      keyExtractor={(item: any) => `draggable-item-${item.jid}`}
     />
   );
   // });

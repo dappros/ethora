@@ -4,7 +4,7 @@ import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
-import { commonColors, defaultChats } from '../../../docs/config';
+import {commonColors, defaultChats} from '../../../docs/config';
 
 const ROOM_KEYS = {
   official: 'official',
@@ -12,7 +12,7 @@ const ROOM_KEYS = {
   groups: 'groups',
 };
 
-const renderTabBar = (props:any) => {
+const renderTabBar = (props: any) => {
   return (
     <TabBar
       {...props}
@@ -37,12 +37,10 @@ export const RoomsTabBar = observer(() => {
     groups: 0,
   };
 
-
   const privateChats = useMemo(
     () =>
-    chatStore.roomList?.filter((item:any) => {
+      chatStore.roomList?.filter((item: any) => {
         const splitedJid = item.jid.split('@')[0];
-        console.log(chatStore.roomList,"asdasdadasd")
         if (item.participants < 3 && !defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;
@@ -53,7 +51,7 @@ export const RoomsTabBar = observer(() => {
 
   const officialChats = useMemo(
     () =>
-    chatStore.roomList.filter(item => {
+      chatStore.roomList.filter(item => {
         const splitedJid = item.jid.split('@')[0];
         if (defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.official] += item.counter;
@@ -65,7 +63,7 @@ export const RoomsTabBar = observer(() => {
 
   const groupsChats = useMemo(
     () =>
-    chatStore.roomList.filter((item:any) => {
+      chatStore.roomList.filter((item: any) => {
         const splitedJid = item.jid.split('@')[0];
 
         if (item.participants > 2 && !defaultChats[splitedJid]) {
