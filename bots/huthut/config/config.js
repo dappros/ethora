@@ -16,7 +16,12 @@ let botOptions = {
         walletAddress: '',
         photoURL: 'https://cdn-icons-png.flaticon.com/512/7450/7450534.png',
         senderWalletAddress: '0xdC997088C118402C8919eDfC8Bfc3f8DD43CE33c',
-    }
+        tokenName: 'Hablar Coin',
+        tokenSymbol: 'HAB',
+        storeFee: 1,
+        collectFee: 3
+    },
+    apiUrl: 'https://app-dev.dappros.com/v1/'
 }
 
 export default botOptions;
