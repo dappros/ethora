@@ -11,62 +11,61 @@ import {
   sendMessageStanza,
 } from '../xmpp/stanzas';
 import MessageBody from '../components/Chat/MessageBody';
-import {Animated, NativeModules, Platform, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {
+  Animated,
+  NativeModules,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {DOMAIN, XMPP_TYPES} from '../xmpp/xmppConstants';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {format} from 'date-fns';
-import {reverseUnderScoreManipulation, underscoreManipulation} from '../helpers/underscoreLogic';
+import {
+  reverseUnderScoreManipulation,
+  underscoreManipulation,
+} from '../helpers/underscoreLogic';
 import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
-import { Spinner, View } from 'native-base';
+import {Spinner, View} from 'native-base';
 import TransactionModal from '../components/Modals/TransactionModal/Test';
-import { modalTypes } from '../constants/modalTypes';
-import { systemMessage } from '../helpers/systemMessage';
+import {modalTypes} from '../constants/modalTypes';
+import {systemMessage} from '../helpers/systemMessage';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
-import AudioRecorderPlayer,{ 
-  AudioEncoderAndroidType, 
-  AudioSourceAndroidType, 
-  AVEncoderAudioQualityIOSType, 
-  AVEncodingOption 
+import AudioRecorderPlayer, {
+  AudioEncoderAndroidType,
+  AudioSourceAndroidType,
+  AVEncoderAudioQualityIOSType,
+  AVEncodingOption,
 } from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
-import { commonColors } from '../../docs/config';
+import {commonColors} from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import { RecordingSecondsCounter } from '../components/Recorder/RecordingSecondsCounter';
+import {RecordingSecondsCounter} from '../components/Recorder/RecordingSecondsCounter';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { fileUpload } from '../config/routesConstants';
-import { httpUpload } from '../config/apiService';
-import { showToast } from '../components/Toast/toast';
+import {fileUpload} from '../config/routesConstants';
+import {httpUpload} from '../config/apiService';
+import {showToast} from '../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
 
-const ChatScreen = observer(({route, navigation}:any) => {
-
-  const [modalType, setModalType] = useState<string|undefined>(undefined);
+const ChatScreen = observer(({route, navigation}: any) => {
+  const [modalType, setModalType] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [extraData, setExtraData] = useState<{}>({});
   const [recording, setRecording] = useState<boolean>(false);
   const [progressVal, setProgressVal] = useState<any>();
 
-  const {
-    loginStore,
-    chatStore,
-    walletStore,
-    apiStore,
-    debugStore
-  } = useStores();
+  const {loginStore, chatStore, walletStore, apiStore, debugStore} =
+    useStores();
 
-  const {
-    firstName,
-    lastName,
-    walletAddress,
-  } = loginStore.initialData
+  const {firstName, lastName, walletAddress} = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
 
@@ -74,12 +73,12 @@ const ChatScreen = observer(({route, navigation}:any) => {
 
   const mediaButtonAnimation = new Animated.Value(1);
 
-  const manipulatedWalletAddress = underscoreManipulation(walletAddress)
+  const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  const path= Platform.select({
+  const path = Platform.select({
     ios: 'hello.m4a',
     android: `${RNFetchBlob.fs.dirs.CacheDir}/hello.mp3`,
-  })
+  });
 
   const {chatJid, chatName} = route.params;
   const [mediaModal, setMediaModal] = useState({
@@ -89,18 +88,14 @@ const ChatScreen = observer(({route, navigation}:any) => {
   });
 
   const messages = chatStore.messages
-    .filter((item:any) => item.roomJid === chatJid)
-    .sort((a:any, b:any) => b._id - a._id);
-
-
-  useEffect(()=>{
-    console.log("mount ho gaya")
-    chatStore.toggleShouldCount(false)
+    .filter((item: any) => item.roomJid === chatJid)
+    .sort((a: any, b: any) => b._id - a._id);
+  useEffect(() => {
+    chatStore.toggleShouldCount(false);
     return function cleanup() {
-      console.log("dismount ho gaya");
-      chatStore.updateBadgeCounter(chatJid,"CLEAR")
-    }
-  },[])
+      chatStore.updateBadgeCounter(chatJid, 'CLEAR');
+    };
+  }, []);
 
   useEffect(() => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
@@ -116,19 +111,19 @@ const ChatScreen = observer(({route, navigation}:any) => {
     });
   }, [chatJid]);
 
-  useEffect(()=>{
-    if(tokenTransferSuccess.success){
+  useEffect(() => {
+    if (tokenTransferSuccess.success) {
       const data = {
-        senderName:tokenTransferSuccess.senderName,
-        amount:tokenTransferSuccess.amount,
-        tokenName:tokenTransferSuccess.tokenName,
-        receiverMessageId:tokenTransferSuccess.receiverMessageId,
-        receiverName:tokenTransferSuccess.receiverName
-      }
+        senderName: tokenTransferSuccess.senderName,
+        tokenAmount: tokenTransferSuccess.amount,
+        tokenName: tokenTransferSuccess.tokenName,
+        receiverMessageId: tokenTransferSuccess.receiverMessageId,
+        receiverName: tokenTransferSuccess.receiverName,
+      };
       const message = systemMessage(data);
       sendMessage(message, true);
     }
-  },[tokenTransferSuccess.success])
+  }, [tokenTransferSuccess.success]);
 
   // useEffect(()=>{
   //   chatStore.toggleShouldCount(false);
@@ -149,12 +144,14 @@ const ChatScreen = observer(({route, navigation}:any) => {
     getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
   };
 
-  const sendMessage = (messageString:any, isSystemMessage:boolean) => {
+  const sendMessage = (messageString: any, isSystemMessage: boolean) => {
     const messageText = messageString[0].text;
     const tokenAmount = messageString[0].tokenAmount || 0;
 
     const receiverMessageId = messageString[0].receiverMessageId || 0;
-    const manipulatedWalletAddress = underscoreManipulation(loginStore.initialData.walletAddress)
+    const manipulatedWalletAddress = underscoreManipulation(
+      loginStore.initialData.walletAddress,
+    );
     const data = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
@@ -175,14 +172,13 @@ const ChatScreen = observer(({route, navigation}:any) => {
     );
   };
 
-  const onUserAvatarPress = (props:any) => {
+  const onUserAvatarPress = (props: any) => {
     const {avatar, name, _id} = props;
     const firstName = name.split(' ')[0];
     const lastName = name.split(' ')[1];
     const xmppID = _id.split('@')[0];
     // const {anotherUserWalletAddress} = this.props.loginReducer;
     const walletAddress = reverseUnderScoreManipulation(xmppID);
-    console.log(walletAddress, loginStore.initialData.xmppUsername)
     if (walletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate(ROUTES.PROFILE);
       return;
@@ -199,28 +195,26 @@ const ChatScreen = observer(({route, navigation}:any) => {
       chatStore.xmpp,
     );
 
-    loginStore.setOtherUserDetails(
-      {
-        anotherUserFirstname:firstName,
-        anotherUserLastname:lastName,
-        anotherUserLastSeen:{},
-        anotherUserWalletAddress:walletAddress
-      }
-    )
+    loginStore.setOtherUserDetails({
+      anotherUserFirstname: firstName,
+      anotherUserLastname: lastName,
+      anotherUserLastSeen: {},
+      anotherUserWalletAddress: walletAddress,
+    });
 
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
 
     navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
   };
-  const onMediaMessagePress = (type:any, url:any) => {
+  const onMediaMessagePress = (type: any, url: any) => {
     setMediaModal({open: true, type, url});
   };
 
   const closeMediaModal = () => {
     setMediaModal({type: '', open: false, url: ''});
   };
-  const renderMessageImage = (props:any) => {
+  const renderMessageImage = (props: any) => {
     const {
       image,
       realImageURL,
@@ -244,12 +238,19 @@ const ChatScreen = observer(({route, navigation}:any) => {
     }
   };
 
-  const handleOnLongPress=(context:any, message:any)=>{
+  const handleOnLongPress = (context: any, message: any) => {
     let extraData = {};
-    if (!message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)) {
-      const jid = message.user._id.split(
-        '@' + apiStore.xmppDomains.DOMAIN,
-      )[0];
+    if (
+      message.user._id.includes(
+        underscoreManipulation(loginStore.initialData.walletAddress),
+      )
+    ) {
+      return;
+    }
+    if (
+      !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
+    ) {
+      const jid = message.user._id.split('@' + apiStore.xmppDomains.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = loginStore.userToken;
 
@@ -271,30 +272,29 @@ const ChatScreen = observer(({route, navigation}:any) => {
         name: message.user.name,
         chatJid,
         message_id: message._id,
-        jid:message.jid,
+        jid: message.jid,
         senderName: message.name,
       };
     }
-    setShowModal(true)
+    setShowModal(true);
     setModalType(modalTypes.TOKENTRANSFER);
-    setExtraData(extraData)
-  }
+    setExtraData(extraData);
+  };
 
   const closeModal = () => {
     setShowModal(false);
-  }
-
-    //on QRCode pressed function
-  const QRPressed = () => {
-    setShowModal(true);
-    setModalType(modalTypes.GENERATEQR)
-    setExtraData(chatJid)
   };
 
-  const handleChatLinks = (chatLink:string) => {
+  //on QRCode pressed function
+  const QRPressed = () => {
+    setShowModal(true);
+    setModalType(modalTypes.GENERATEQR);
+    setExtraData(chatJid);
+  };
+
+  const handleChatLinks = (chatLink: string) => {
     const chatJID =
-      parseChatLink(chatLink) +
-      apiStore.xmppDomains.CONFERENCEDOMAIN
+      parseChatLink(chatLink) + apiStore.xmppDomains.CONFERENCEDOMAIN;
     // navigation.navigate(ROUTES.ROOMSLIST);
     // // getUserRoomsStanza(
     // //   underscoreManipulation(loginStore.walletAddress),
@@ -304,8 +304,8 @@ const ChatScreen = observer(({route, navigation}:any) => {
       chatJID,
       loginStore.initialData.walletAddress,
       navigation,
-      chatStore.xmpp
-    )
+      chatStore.xmpp,
+    );
   };
 
   const animateMediaButtonIn = () => {
@@ -328,7 +328,6 @@ const ChatScreen = observer(({route, navigation}:any) => {
     setRecording(true);
     animateMediaButtonIn();
 
-
     const audioSet = {
       AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
       AudioSourceAndroid: AudioSourceAndroidType.MIC,
@@ -347,7 +346,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
     // });
   };
 
-  const getWaveformArray = async (url:string) => {
+  const getWaveformArray = async (url: string) => {
     if (Platform.OS !== 'ios') {
       let ddd = await NativeModules.Waveform.getWaveformArray(url);
       const data = JSON.parse(ddd);
@@ -358,11 +357,13 @@ const ChatScreen = observer(({route, navigation}:any) => {
     }
   };
 
-  const normalizeData = (filteredData:any) => {
+  const normalizeData = (filteredData: any) => {
     const maxValue = Math.max(...filteredData);
     const multiplier = maxValue ** -1;
-  
-    return !maxValue ? filteredData : filteredData.map((val:any) => val * multiplier);
+
+    return !maxValue
+      ? filteredData
+      : filteredData.map((val: any) => val * multiplier);
   };
 
   function filterData(arr) {
@@ -375,11 +376,11 @@ const ChatScreen = observer(({route, navigation}:any) => {
           .slice(i * blockSize, (i + 1) * blockSize)
           .reduce((sum, val) => sum + Math.abs(val), 0),
       );
-  
+
     return res;
   }
 
-  const getAudioData = async (url?:string) => {
+  const getAudioData = async (url?: string) => {
     const audioPath =
       url ||
       (Platform.OS === 'ios'
@@ -391,13 +392,12 @@ const ChatScreen = observer(({route, navigation}:any) => {
     return normalizedData;
   };
 
-  const setUploadProgress = (val:any) => {
+  const setUploadProgress = (val: any) => {
     setProgressVal(val);
   };
-  
 
-  const submitMediaMessage = (props:any, waveForm?:any) => {
-    props.map(async (item:any) => {
+  const submitMediaMessage = (props: any, waveForm?: any) => {
+    props.map(async (item: any) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
 
       const data = {
@@ -405,7 +405,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
         lastName,
         walletAddress,
         chatName,
-        userAvatar:loginStore.userAvatar,
+        userAvatar: loginStore.userAvatar,
         createdAt: item.createdAt,
         expiresAt: item.expiresAt,
         filename: item.filename,
@@ -419,15 +419,15 @@ const ChatScreen = observer(({route, navigation}:any) => {
         duration: item?.duration,
         updatedAt: item.updatedAt,
         userId: item.userId,
-        waveForm: waveForm
-      }
+        waveForm: waveForm,
+      };
 
       sendMediaMessageStanza(
         manipulatedWalletAddress,
         chatJid,
         data,
-        chatStore.xmpp
-      )
+        chatStore.xmpp,
+      );
     });
   };
 
@@ -436,7 +436,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
     animateMediaButtonOut();
 
     const result = await audioRecorderPlayer.stopRecorder();
-    
+
     const filesApiURL = apiStore.defaultUrl + fileUpload;
     const FormData = require('form-data');
     let data = new FormData();
@@ -463,20 +463,12 @@ const ChatScreen = observer(({route, navigation}:any) => {
         submitMediaMessage(response.data.results, waveform);
       }
     } catch (error) {
-      console.log(error)
-      showToast(
-        'error',
-        'Error',
-        'Cannot upload file, try again later',
-        'top'
-      )
+      console.log(error);
+      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
     }
-
- 
   };
 
-  
-  const renderAttachment=()=> {
+  const renderAttachment = () => {
     return (
       <View style={{position: 'relative'}}>
         <View
@@ -491,7 +483,9 @@ const ChatScreen = observer(({route, navigation}:any) => {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            icon={() => <Entypo name="attachment" color={'black'} size={hp('3%')} />}
+            icon={() => (
+              <Entypo name="attachment" color={'black'} size={hp('3%')} />
+            )}
             options={{
               'Upload File': async () => {
                 try {
@@ -500,7 +494,6 @@ const ChatScreen = observer(({route, navigation}:any) => {
                     copyTo: 'cachesDirectory',
                   });
 
-                  
                   const filesApiURL = apiStore.defaultUrl + fileUpload;
                   const FormData = require('form-data');
                   let data = new FormData();
@@ -519,7 +512,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
                     setUploadProgress,
                   );
                   if (response.data.results?.length) {
-                    debugStore.addLogsApi(response.data.results)
+                    debugStore.addLogsApi(response.data.results);
                     if (response.data.results[0].mimetype === 'audio/mpeg') {
                       let wave = await getAudioData(absolutePath);
                       submitMediaMessage(response.data.results, wave);
@@ -527,9 +520,8 @@ const ChatScreen = observer(({route, navigation}:any) => {
                       submitMediaMessage(response.data.results);
                     }
                   }
-                 
                 } catch (err) {
-                  console.log(err)
+                  console.log(err);
                   if (DocumentPicker.isCancel(err)) {
                     // User cancelled the picker, exit any dialogs or menus and move on
                   } else {
@@ -537,8 +529,8 @@ const ChatScreen = observer(({route, navigation}:any) => {
                       'error',
                       'Error',
                       'Cannot upload file, try again later',
-                      'top'
-                    )
+                      'top',
+                    );
                     throw err;
                   }
                 }
@@ -552,9 +544,9 @@ const ChatScreen = observer(({route, navigation}:any) => {
         </View>
       </View>
     );
-  }
+  };
 
-  const renderSend = (props:any) => {
+  const renderSend = (props: any) => {
     const animateMediaButtonStyle = {
       transform: [{scale: mediaButtonAnimation}],
     };
@@ -577,7 +569,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
             <Animated.View
               style={[
                 {
-                  backgroundColor:commonColors.primaryDarkColor,
+                  backgroundColor: commonColors.primaryDarkColor,
                   borderRadius: 50,
                   padding: 5,
                 },
@@ -600,7 +592,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
         <View
           style={[
             {
-              backgroundColor:commonColors.primaryDarkColor,
+              backgroundColor: commonColors.primaryDarkColor,
               borderRadius: 100,
               padding: 5,
               marginRight: 5,
@@ -614,18 +606,13 @@ const ChatScreen = observer(({route, navigation}:any) => {
     );
   };
 
-
   return (
     <>
-      <SecondaryHeader 
-      title={chatName}
-      isQR={true}
-      onQRPressed={QRPressed}
-      />
+      <SecondaryHeader title={chatName} isQR={true} onQRPressed={QRPressed} />
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
-        renderLoading={()=><Spinner/>}
+        renderLoading={() => <Spinner />}
         renderUsernameOnMessage
         renderMessage={renderMessage}
         renderMessageImage={props => renderMessageImage(props)}
@@ -637,7 +624,7 @@ const ChatScreen = observer(({route, navigation}:any) => {
           onEndReachedThreshold: 0.05,
         }}
         textInputProps={{
-          color:"black"
+          color: 'black',
         }}
         keyboardShouldPersistTaps={'handled'}
         onSend={messageString => sendMessage(messageString, false)}
@@ -648,7 +635,9 @@ const ChatScreen = observer(({route, navigation}:any) => {
         inverted={true}
         alwaysShowSend
         showUserAvatar
-        onLongPress={(context:any, message:any)=>handleOnLongPress(context, message)}
+        onLongPress={(context: any, message: any) =>
+          handleOnLongPress(context, message)
+        }
         // onInputTextChanged={()=>{alert('hhh')}}
         parsePatterns={linkStyle => [
           {
