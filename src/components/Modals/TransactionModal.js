@@ -51,13 +51,13 @@ import {
   coinsMainName,
   itemsTransfersAllowed,
 } from '../../../docs/config';
-import { CREATE_ROOM } from '../../constants/xmppConstants';
+import {CREATE_ROOM} from '../../constants/xmppConstants';
 
 const {primaryColor, secondaryColor} = commonColors;
 const {regularFont, semiBoldFont} = textStyles;
 const QRCodeComponent = props => {
   return (
-    <View >
+    <View>
       <QRGenerator close={() => props.closeModal()} value={props.chat_key} />
     </View>
   );
@@ -408,10 +408,13 @@ class CommonModal extends Component {
         'presence',
         {
           id: CREATE_ROOM,
-          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+          from:
+            manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           to:
             combinedWalletAddress +
-           this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN +
+            this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN +
             '/' +
             username,
         },
@@ -428,8 +431,13 @@ class CommonModal extends Component {
       message = xml(
         'iq',
         {
-          to: combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
-          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+          to:
+            combinedWalletAddress +
+            this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+          from:
+            manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
           id: 'setOwner',
           type: 'get',
         },
@@ -455,15 +463,21 @@ class CommonModal extends Component {
 
       roomConfigurationForm(
         manipulatedWalletAddress,
-        combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+        combinedWalletAddress +
+          this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
         {roomName: chatName},
       );
 
       message = xml(
         'iq',
         {
-          from: manipulatedWalletAddress + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
-          to: combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
+          from:
+            manipulatedWalletAddress +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
+          to:
+            combinedWalletAddress +
+            this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN,
           type: 'set',
           id: 'subscription',
         },
@@ -491,8 +505,7 @@ class CommonModal extends Component {
       // }, 2000);
       setTimeout(() => {
         // fetchRosterlist(manipulatedWalletAddress, 'subscriptions');
-        getUserRooms(manipulatedWalletAddress)
-
+        getUserRooms(manipulatedWalletAddress);
       }, 2000);
 
       // roomCreated(true, this.props.navigation,);
@@ -507,7 +520,10 @@ class CommonModal extends Component {
   sendInvite = (username, chatName, to) => {
     const stanza = xml(
       'message',
-      {from: username + '@' + this.props.apiReducer.xmppDomains.DOMAIN, to: chatName},
+      {
+        from: username + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+        to: chatName,
+      },
       xml(
         'x',
         'http://jabber.org/protocol/muc#user',
@@ -524,12 +540,20 @@ class CommonModal extends Component {
 
   onDirectMessagePress = async () => {
     const otherUserWalletAddress = this.props.extraData?.walletFromJid;
+    console.log(
+      combinedWalletAddress,
+      underscoreManipulation(myWalletAddress),
+      'combined',
+    );
     const myWalletAddress = this.props.loginReducer.initialData.walletAddress;
+    
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
       .sort()
       .join('_');
-
-    const roomJid = combinedWalletAddress +this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
+     
+    const roomJid =
+      combinedWalletAddress +
+      this.props.apiReducer.xmppDomains.CONFERENCEDOMAIN;
     const combinedUsersName = [
       this.props.loginReducer.initialData.firstName,
       this.props.extraData.name.split(' ')[0],
@@ -539,11 +563,7 @@ class CommonModal extends Component {
     // this.props.loginReducer.initialData.firstName +
     // ' and ' +
     // this.props.extraData.name.split(' ')[0];
-    console.log(
-      combinedWalletAddress,
-      underscoreManipulation(myWalletAddress),
-      'combined',
-    );
+   
     this.createChatRoom(
       underscoreManipulation(myWalletAddress),
       combinedWalletAddress.toLowerCase(),
@@ -746,7 +766,8 @@ class CommonModal extends Component {
       {
         id: 'ban_user',
         to: roomJID,
-        from: senderWalletAddres + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+        from:
+          senderWalletAddres + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
         type: 'set',
       },
       xml(
@@ -754,7 +775,10 @@ class CommonModal extends Component {
         'http://jabber.org/protocol/muc#owner',
         xml('item', {
           affiliation: 'outcast',
-          jid: bannedUserWalletAddres + '@' + this.props.apiReducer.xmppDomains.DOMAIN,
+          jid:
+            bannedUserWalletAddres +
+            '@' +
+            this.props.apiReducer.xmppDomains.DOMAIN,
         }),
       ),
     );
@@ -994,8 +1018,8 @@ class CommonModal extends Component {
                 ] !== 'participant' && (
                   <>
                     <Seperator />
-                    <ReportAndBlockButton  onPress={this.banUser} type="1" />
-                  </> 
+                    <ReportAndBlockButton onPress={this.banUser} type="1" />
+                  </>
                 )}
                 {/* <ReportAndBlockButton type="0" />  */}
               </View>
@@ -1023,7 +1047,7 @@ class CommonModal extends Component {
                 onPress={() => this.closeModal()}>
                 <MaterialIcons name="close" size={hp('3.5%')} />
               </TouchableOpacity>
-              <View style={{flex:1}}>
+              <View style={{flex: 1}}>
                 <QRCodeComponent
                   closeModal={() => this.closeModal()}
                   chat_key={extraData}
