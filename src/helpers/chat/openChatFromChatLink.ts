@@ -5,11 +5,8 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 import {underscoreManipulation} from '../underscoreLogic';
-import {
-  subscribeToRoom,
-  getUserRoomsStanza
-} from '../../xmpp/stanzas';
-import { ROUTES } from '../../constants/routes';
+import {subscribeToRoom, getUserRoomsStanza} from '../../xmpp/stanzas';
+import {ROUTES} from '../../constants/routes';
 // import {
 //   subscribeAndOpenChat,
 //   fetchRosterlist as fetchStanzaRosterList,
@@ -21,22 +18,18 @@ import { ROUTES } from '../../constants/routes';
 // } from '../constants/xmppConstants';
 
 const openChatFromChatLink = (
-  chatJID:string,
-  walletAddress:string,
-  navigation:any,
-  xmpp:any
+  chatJID: string,
+  walletAddress: string,
+  navigation: any,
+  xmpp: any,
 ) => {
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  subscribeToRoom(
-    chatJID,
-    manipulatedWalletAddress,
-    xmpp
-  )
+  subscribeToRoom(chatJID, manipulatedWalletAddress, xmpp);
 
   // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
-  getUserRoomsStanza(manipulatedWalletAddress,xmpp)
+  getUserRoomsStanza(manipulatedWalletAddress, xmpp);
 
-  navigation.navigate(ROUTES.CHAT, {chatJid: chatJID, chatName: "Loading..."});
+  navigation.navigate(ROUTES.CHAT, {chatJid: chatJID, chatName: 'Loading...'});
 };
 export default openChatFromChatLink;

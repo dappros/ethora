@@ -6,9 +6,9 @@ import {TransactionFilter} from './TransactionFilter';
 import {TransactionsListItem} from './TransactionsListItem';
 import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
 import {Box, FlatList} from 'native-base';
-import { FILTERS } from '../../constants/transactionsFilter';
+import {FILTERS} from '../../constants/transactionsFilter';
 
-const RenderTransactionItem = ({item, transactionOwnerWalletAddress}:any) => {
+const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
   const {
     tokenId,
     from,
@@ -51,34 +51,33 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}:any) => {
   );
 };
 
-interface TransactionListProps{
-  transactions:any,
-  walletAddress:string,
-  onEndReached:any,
+interface TransactionListProps {
+  transactions: any;
+  walletAddress: string;
+  onEndReached: any;
 }
 
 const TransactionsList = observer(
-  ({transactions, walletAddress, onEndReached}:TransactionListProps) => {
-    const [activeFilter, setActiveFilter] = useState( FILTERS.all);
-    
+  ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
+    const [activeFilter, setActiveFilter] = useState(FILTERS.all);
+
     const getFilteredTransactions = () => {
       if (activeFilter === FILTERS.all) {
         return transactions;
       }
       if (activeFilter === FILTERS.sent) {
         const filteredTransactions = transactions.filter(
-          (item:any) => item.from === walletAddress,
+          (item: any) => item.from === walletAddress,
         );
         return filteredTransactions;
       }
 
       if (activeFilter === FILTERS.received) {
         const filteredTransactions = transactions.filter(
-          (item:any) => item.to === walletAddress,
+          (item: any) => item.to === walletAddress,
         );
         return filteredTransactions;
       }
-
     };
 
     return (
@@ -88,15 +87,15 @@ const TransactionsList = observer(
           setActiveFilter={setActiveFilter}
         />
         <FlatList
-        height={"100%"}
-        scrollEnabled
+          height={'100%'}
+          scrollEnabled
           renderItem={({item}) => (
             <RenderTransactionItem
               item={item}
               transactionOwnerWalletAddress={walletAddress}
             />
           )}
-          onEndReached={()=>onEndReached()}
+          onEndReached={() => onEndReached()}
           data={compareTransactionsDate(getFilteredTransactions())}
           keyExtractor={item => item._id}
         />
