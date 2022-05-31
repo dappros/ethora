@@ -39,38 +39,41 @@ import {underscoreManipulation} from '../helpers/underscoreLogic';
 //   setOffset,
 //   setTotal,
 // } from '../actions/wallet';
-import { NftListItem } from '../components/Transactions/NftListItem';
-import { useStores } from '../stores/context';
-import { Button } from 'native-base';
+import {NftListItem} from '../components/Transactions/NftListItem';
+import {useStores} from '../stores/context';
+import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import { ROUTES } from '../constants/routes';
+import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
 
 const handleSlide = (
-  type:number | Animated.Value | Animated.ValueXY | {
-  x: number;
-  y: number;
-  },
-  translateX:Animated.Value | Animated.ValueXY,
-  textColorAnim:Animated.Value | Animated.ValueXY
-  ) => {
+  type:
+    | number
+    | Animated.Value
+    | Animated.ValueXY
+    | {
+        x: number;
+        y: number;
+      },
+  translateX: Animated.Value | Animated.ValueXY,
+  textColorAnim: Animated.Value | Animated.ValueXY,
+) => {
   textColorAnim.setValue(0);
   Animated.spring(translateX, {
     toValue: type,
-    useNativeDriver: false
-}).start();
+    useNativeDriver: false,
+  }).start();
   Animated.timing(textColorAnim, {
     toValue: 1,
     duration: 700,
-    useNativeDriver: false
-}).start();
+    useNativeDriver: false,
+  }).start();
 };
 
-
-const renderItem = ({item, index}:{item:any,index:number}) => (
+const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
     tokenSymbol={item.tokenSymbol}
     tokenName={item.tokenName}
@@ -79,7 +82,17 @@ const renderItem = ({item, index}:{item:any,index:number}) => (
   />
 );
 
-const Item = ({tokenSymbol, tokenName, balance, index}:{tokenSymbol:string, tokenName:string, balance:string|number, index:number}) => (
+const Item = ({
+  tokenSymbol,
+  tokenName,
+  balance,
+  index,
+}: {
+  tokenSymbol: string;
+  tokenName: string;
+  balance: string | number;
+  index: number;
+}) => (
   <View
     style={{
       height: hp('4.9%'),
@@ -129,10 +142,17 @@ const Item = ({tokenSymbol, tokenName, balance, index}:{tokenSymbol:string, toke
     </View>
   </View>
 );
-const RenderAssetItem = (
-  {item, index, onClick, selectedItem}:
-  {item:any, index:number, onClick:any, selectedItem:string}
-  ) => (
+const RenderAssetItem = ({
+  item,
+  index,
+  onClick,
+  selectedItem,
+}: {
+  item: any;
+  index: number;
+  onClick: any;
+  selectedItem: string;
+}) => (
   <NftListItem
     image={item.nftFileUrl}
     name={item.tokenName}
@@ -142,10 +162,10 @@ const RenderAssetItem = (
     itemSelected={selectedItem}
     nftId={item.nftId}
     mimetype={item.nftMimetype}
-    index={index} 
-    item={undefined}  />
+    index={index}
+    item={undefined}
+  />
 );
-
 
 const firstLayout = [
   {
@@ -172,31 +192,15 @@ const firstLayout = [
   },
 ];
 
-const ProfileScreen=(props:any)=> {
-  const {
-    loginStore,
-    walletStore,
-  } = useStores()
+const ProfileScreen = (props: any) => {
+  const {loginStore, walletStore} = useStores();
 
-  const {
-    setOffset,
-    setTotal,
-    clearPaginationData,
-    balance,
-    transactions
-  } = walletStore;
+  const {setOffset, setTotal, clearPaginationData, balance, transactions} =
+    walletStore;
 
-  const {
-    userAvatar,
-    userDescription,
-    initialData
-  } = loginStore
+  const {userAvatar, userDescription, initialData} = loginStore;
 
-  const {
-    firstName,
-    lastName,
-    walletAddress
-  } = initialData
+  const {firstName, lastName, walletAddress} = initialData;
 
   const [userTransactions, setUserTransactions] = useState<any>(null);
 
@@ -234,88 +238,34 @@ const ProfileScreen=(props:any)=> {
 
   useEffect(() => {
     setOffset(0);
-    setTotal(0)
-    walletStore.fetchTransaction(
-      walletAddress,
-      loginStore.userToken,
-      true,
-      walletStore.limit,
-      walletStore.offset
-    )
+    setTotal(0);
+    // walletStore.fetchOwnTransactions(
+    //   walletAddress,
+
+    //   walletStore.limit,
+    //   walletStore.offset,
+    // );
     return () => {
-      clearPaginationData()
+      clearPaginationData();
     };
   }, []);
 
   useEffect(() => {
-    console.log(balance,"balanceee")
-    setTimeout(() => {
-      let balance = 0;
-      let allTransactions:any = transactions
-        // .reverse()
-        .map((item:any) => {
-          if (item.tokenId === 'NFT') {
-            if (
-              item.from === walletAddress &&
-              item.from !== item.to
-            ) {
-              balance = balance;
-              item.balance = item.senderBalance + '/' + item.nftTotal;
-            } else {
-              item.balance = item.receiverBalance + '/' + item.nftTotal;
-            }
+    if (balance?.length > 0) {
+      setCoinData(
+        balance.filter(
+          (item: any) =>
+            item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
+        ),
+      );
+      setItemsData(
+        balance
+          .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
+          .reverse(),
+      );
 
-            return item;
-          } else if (
-            item.from === walletAddress &&
-            item.from !== item.to
-          ) {
-            item.balance = item.senderBalance;
-            balance = balance - item.value;
-            return item;
-          } else if (item.from === item.to) {
-            item.balance = item.receiverBalance;
-            return item;
-          } else {
-            item.balance = item.receiverBalance;
-            balance = balance + item.value;
-            return item;
-          }
-        });
-
-        setUserTransactions(allTransactions);
-
-      setTransactionCount(walletStore.transactions.length);
-      setIsLoading(false);
-     
-    }, 2500);
-  }, [walletStore.transactions]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      let updatedCoinBalance = 0;
-      if (balance?.length > 0) {
-        setCoinData(
-          balance.filter(
-            (item:any) => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
-          ),
-        );
-        setItemsData(
-          balance
-            .filter((item:any) => item.tokenType === 'NFT' && item.balance > 0)
-            .reverse(),
-        );
-        coinData
-          ? coinData.map((item:any) => {
-
-              updatedCoinBalance =
-                updatedCoinBalance + parseFloat(item.balance);
-            })
-          : null;
-
-        setAssetCount(itemsBalance + updatedCoinBalance);
-      }
-    }, 2500);
+      setAssetCount(itemsBalance + coinData.length);
+    }
   }, [balance]);
 
   useEffect(() => {
@@ -323,11 +273,11 @@ const ProfileScreen=(props:any)=> {
     let updatedItemsBalance = 0;
 
     coinData
-      ? coinData.map((item:any) => {
+      ? coinData.map((item: any) => {
           updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
         })
       : null;
-    itemsData.map((item:any) => {
+    itemsData.map((item: any) => {
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);
@@ -338,8 +288,7 @@ const ProfileScreen=(props:any)=> {
     return () => {};
   }, [itemsData, coinData]);
 
-
-  const loadTabContent = (props:any) => {
+  const loadTabContent = (props: any) => {
     const {
       activeTab,
       coinData,
@@ -390,8 +339,7 @@ const ProfileScreen=(props:any)=> {
               </Animated.Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
-              <TouchableOpacity
-                onPress={() => setActiveAssetTab(1)}>
+              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
                 <Animated.Text
                   style={{
                     fontSize: hp('1.97%'),
@@ -444,19 +392,15 @@ const ProfileScreen=(props:any)=> {
       return (
         <SafeAreaView style={{paddingBottom: '100%'}}>
           <TransactionsList
-            transactions={transactions}
+            transactions={transactions.reverse()}
             walletAddress={walletAddress}
             onEndReached={() => {
-              if (
-                transactions.length < walletStore.total
-              ) {
-                walletStore.fetchTransaction(
+              if (transactions.length < walletStore.total) {
+                walletStore.fetchOwnTransactions(
                   walletAddress,
-                  loginStore.userToken,
-                  true,
                   walletStore.limit,
-                  walletStore.offset
-                )
+                  walletStore.offset,
+                );
               }
             }}
           />
@@ -468,16 +412,7 @@ const ProfileScreen=(props:any)=> {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        {/* <CustomHeader
-          // isQR={true}
-          title="User's profile"
-          onQRPressed={() => this.QRPressed()}
-          navigation={navigation}
-        /> */}
-
-        <SecondaryHeader
-        title={"User's profile"}
-        />
+        <SecondaryHeader title={"User's profile"} />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <View
@@ -601,7 +536,7 @@ const ProfileScreen=(props:any)=> {
                           fontFamily: 'Montserrat-Bold',
                           color: activeTab === 1 ? '#000000' : '#0000004D',
                         }}>
-                        Transactions ({transactionCount})
+                        Transactions ({walletStore.transactions.length})
                       </Animated.Text>
                     </TouchableOpacity>
                   </View>
@@ -655,7 +590,7 @@ const ProfileScreen=(props:any)=> {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
