@@ -1,11 +1,13 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node client.js prod",
-    "dev": "node client.js dev"
+    "start": "node -r dotenv/config client.js dotenv_config_path=.env.production",
+    "dev": "node -r dotenv/config client.js dotenv_config_path=.env.development"
   },
   "dependencies": {
     "@xmpp/client": "^0.13.1",
-    "@xmpp/debug": "^0.13.0"
+    "@xmpp/debug": "^0.13.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1"
   }
 }
