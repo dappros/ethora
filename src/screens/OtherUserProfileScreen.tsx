@@ -40,36 +40,39 @@ import {underscoreManipulation} from '../helpers/underscoreLogic';
 //   setOffset,
 //   setTotal,
 // } from '../actions/wallet';
-import { NftListItem } from '../components/Transactions/NftListItem';
-import { useStores } from '../stores/context';
-import { Button } from 'native-base';
+import {NftListItem} from '../components/Transactions/NftListItem';
+import {useStores} from '../stores/context';
+import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
 
 const handleSlide = (
-  type:number | Animated.Value | Animated.ValueXY | {
-  x: number;
-  y: number;
-  },
-  translateX:Animated.Value | Animated.ValueXY,
-  textColorAnim:Animated.Value | Animated.ValueXY
-  ) => {
+  type:
+    | number
+    | Animated.Value
+    | Animated.ValueXY
+    | {
+        x: number;
+        y: number;
+      },
+  translateX: Animated.Value | Animated.ValueXY,
+  textColorAnim: Animated.Value | Animated.ValueXY,
+) => {
   textColorAnim.setValue(0);
   Animated.spring(translateX, {
     toValue: type,
-    useNativeDriver: false
-}).start();
+    useNativeDriver: false,
+  }).start();
   Animated.timing(textColorAnim, {
     toValue: 1,
     duration: 700,
-    useNativeDriver: false
-}).start();
+    useNativeDriver: false,
+  }).start();
 };
 
-
-const renderItem = ({item, index}:{item:any,index:number}) => (
+const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
     tokenSymbol={item.tokenSymbol}
     tokenName={item.tokenName}
@@ -78,7 +81,17 @@ const renderItem = ({item, index}:{item:any,index:number}) => (
   />
 );
 
-const Item = ({tokenSymbol, tokenName, balance, index}:{tokenSymbol:string, tokenName:string, balance:string|number, index:number}) => (
+const Item = ({
+  tokenSymbol,
+  tokenName,
+  balance,
+  index,
+}: {
+  tokenSymbol: string;
+  tokenName: string;
+  balance: string | number;
+  index: number;
+}) => (
   <View
     style={{
       height: hp('4.9%'),
@@ -128,10 +141,17 @@ const Item = ({tokenSymbol, tokenName, balance, index}:{tokenSymbol:string, toke
     </View>
   </View>
 );
-const RenderAssetItem = (
-  {item, index, onClick, selectedItem}:
-  {item:any, index:number, onClick:any, selectedItem:string}
-  ) => (
+const RenderAssetItem = ({
+  item,
+  index,
+  onClick,
+  selectedItem,
+}: {
+  item: any;
+  index: number;
+  onClick: any;
+  selectedItem: string;
+}) => (
   <NftListItem
     image={item.nftFileUrl}
     name={item.tokenName}
@@ -141,10 +161,10 @@ const RenderAssetItem = (
     itemSelected={selectedItem}
     nftId={item.nftId}
     mimetype={item.nftMimetype}
-    index={index} 
-    item={undefined}  />
+    index={index}
+    item={undefined}
+  />
 );
-
 
 const firstLayout = [
   {
@@ -171,21 +191,18 @@ const firstLayout = [
   },
 ];
 
-const OtherUserProfileScreen=(props:any)=> {
+const OtherUserProfileScreen = (props: any) => {
   // const allReducers = useSelector(state => state);
   // const loginReducerData = allReducers.loginReducer;
   // const walletReducerData = allReducers.walletReducer;
-  const {
-    loginStore,
-    walletStore,
-  } = useStores()
+  const {loginStore, walletStore} = useStores();
 
   const {
     setOffset,
     setTotal,
     clearPaginationData,
     // anotherUserTransaction,
-    anotherUserBalance
+    anotherUserBalance,
   } = walletStore;
 
   // const {
@@ -238,18 +255,18 @@ const OtherUserProfileScreen=(props:any)=> {
 
   useEffect(() => {
     setOffset(0);
-    setTotal(0)
+    setTotal(0);
     return () => {
-      clearPaginationData()
+      clearPaginationData();
     };
   }, []);
 
   useEffect(() => {
     setTimeout(() => {
       let balance = 0;
-      let allTransactions:any = walletStore.anotherUserTransaction
+      let allTransactions: any = walletStore.anotherUserTransaction
         // .reverse()
-        .map((item:any) => {
+        .map((item: any) => {
           if (item.tokenId === 'NFT') {
             if (
               item.from === anotherUserWalletAddress &&
@@ -283,7 +300,6 @@ const OtherUserProfileScreen=(props:any)=> {
 
       setTransactionCount(walletStore.anotherUserTransaction.length);
       setIsLoading(false);
-     
     }, 2500);
   }, [walletStore.anotherUserTransaction]);
 
@@ -293,17 +309,17 @@ const OtherUserProfileScreen=(props:any)=> {
       if (anotherUserBalance?.length > 0) {
         setCoinData(
           anotherUserBalance.filter(
-            (item:any) => item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
+            (item: any) =>
+              item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
           ),
         );
         setItemsData(
           anotherUserBalance
-            .filter((item:any) => item.tokenType === 'NFT' && item.balance > 0)
+            .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
             .reverse(),
         );
         coinData
-          ? coinData.map((item:any) => {
-
+          ? coinData.map((item: any) => {
               updatedCoinBalance =
                 updatedCoinBalance + parseFloat(item.balance);
             })
@@ -319,11 +335,11 @@ const OtherUserProfileScreen=(props:any)=> {
     let updatedItemsBalance = 0;
 
     coinData
-      ? coinData.map((item:any) => {
+      ? coinData.map((item: any) => {
           updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
         })
       : null;
-    itemsData.map((item:any) => {
+    itemsData.map((item: any) => {
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);
@@ -344,18 +360,17 @@ const OtherUserProfileScreen=(props:any)=> {
     }, 2000);
   }, [loginStore.anotherUserAvatar]);
 
-  useEffect(()=>{
+  useEffect(() => {
     walletStore.fetchTransaction(
       loginStore.anotherUserWalletAddress,
       loginStore.userToken,
       false,
       10,
-      0
-    )
-  },[loginStore.anotherUserWalletAddress])
+      0,
+    );
+  }, [loginStore.anotherUserWalletAddress]);
 
   useEffect(() => {
-
     return function cleanup() {
       setAnotherUserAvatar('');
       setAnotherUserFirstname('null');
@@ -371,7 +386,7 @@ const OtherUserProfileScreen=(props:any)=> {
     };
   }, []);
 
-  const loadTabContent = (props:any) => {
+  const loadTabContent = (props: any) => {
     const {
       activeTab,
       coinData,
@@ -423,8 +438,7 @@ const OtherUserProfileScreen=(props:any)=> {
               </Animated.Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
-              <TouchableOpacity
-                onPress={() => setActiveAssetTab(1)}>
+              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
                 <Animated.Text
                   style={{
                     fontSize: hp('1.97%'),
@@ -480,16 +494,14 @@ const OtherUserProfileScreen=(props:any)=> {
             transactions={walletStore.anotherUserTransaction}
             walletAddress={loginStore.anotherUserWalletAddress}
             onEndReached={() => {
-              if (
-                anotherUserTransaction.length < walletStore.total
-              ) {
+              if (anotherUserTransaction.length < walletStore.total) {
                 walletStore.fetchTransaction(
                   anotherUserWalletAddress,
                   loginStore.userToken,
                   false,
                   walletStore.limit,
-                  walletStore.offset
-                )
+                  walletStore.offset,
+                );
               }
             }}
           />
@@ -523,21 +535,20 @@ const OtherUserProfileScreen=(props:any)=> {
             }}
           /> */}
           <Button
-          bg={"#114592"}
-          padding={5}
-          w={wp('51%')}
-          h={hp('6.7%')}
-          borderRadius={5}
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('2.21%')}
-          color={'#FFFF'}
-          onPress={()=>{
-            Linking.openURL(
-              'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
-            )
-          }}
-          >
-          3D Garage
+            bg={'#114592'}
+            padding={5}
+            w={wp('51%')}
+            h={hp('6.7%')}
+            borderRadius={5}
+            fontFamily={textStyles.boldFont}
+            fontSize={hp('2.21%')}
+            color={'#FFFF'}
+            onPress={() => {
+              Linking.openURL(
+                'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
+              );
+            }}>
+            3D Garage
           </Button>
         </View>
       );
@@ -556,9 +567,7 @@ const OtherUserProfileScreen=(props:any)=> {
           navigation={navigation}
         /> */}
 
-        <SecondaryHeader
-        title={"User's profile"}
-        />
+        <SecondaryHeader title={"User's profile"} />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <View
@@ -755,7 +764,7 @@ const OtherUserProfileScreen=(props:any)=> {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
