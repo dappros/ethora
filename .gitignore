@@ -63,3 +63,5 @@ buck-out/
 #Bots
 /bots/huthut/node_modules
 /bots/huthut/config/connect.js
+/bots/huthut/.env.production
+/bots/huthut/.env.development
