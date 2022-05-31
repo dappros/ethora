@@ -1,17 +1,13 @@
-import {sendMessage, userSteps} from "../actions.js";
+import {sendMessage} from "../actions.js";
 import messages from "../config/messages.js";
 
 export const testHandler = (data) => {
     console.log('=> Message received from ', data.receiver, data.message);
     sendMessage(
-        data.xmpp,
-        data.receiver,
-        'message',
+        data,
         messages.testMessage,
-        data.receiverData,
+        'message',
         false,
         0,
-        data.stanzaId
     );
-    userSteps('setStep', data.sender, 2);
 }
