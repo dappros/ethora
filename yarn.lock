@@ -8036,7 +8036,7 @@ qrcode@^1.5.0:
     pngjs "^5.0.0"
     yargs "^15.3.1"
 
-qs@^6.1.0:
+qs@^6.1.0, qs@^6.10.3:
   version "6.10.3"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
   integrity sha512-wr7M2E0OFRfIfJZjKGieI8lBKb7fRCH4Fv5KNPEs7gJ8jadvotdsS08PzOKR7opXhZ/Xkjtt3WF9g38drmyRqQ==
@@ -8311,6 +8311,11 @@ react-native-pulse@^1.0.7:
   resolved "https://registry.yarnpkg.com/react-native-pulse/-/react-native-pulse-1.0.7.tgz#5a8dc60cb6585f90ce8400beb74fbf89e5f7cd1b"
   integrity sha512-PQvek/hC2YZddzJgyJT9FZbg37eZKl1rcYNlHbSItL3XZ0n3zF5jxFRrYLyGqHnRuRPHoY7qnrdHe4qVwy3Jnw==
 
+react-native-push-notification@^8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-push-notification/-/react-native-push-notification-8.1.1.tgz#a41d20c70ea5a7709417e96261b225461f8dc73a"
+  integrity sha512-XpBtG/w+a6WXTxu6l1dNYyTiHnbgnvjoc3KxPTxYkaIABRmvuJZkFxqruyGvfCw7ELAlZEAJO+dthdTabCe1XA==
+
 react-native-qrcode-scanner@^1.5.5:
   version "1.5.5"
   resolved "https://registry.yarnpkg.com/react-native-qrcode-scanner/-/react-native-qrcode-scanner-1.5.5.tgz#0d20101712715da108742a2bbbd0397569031b01"
@@ -8328,7 +8333,7 @@ react-native-qrcode-svg@^6.1.2:
     prop-types "^15.7.2"
     qrcode "^1.5.0"
 
-react-native-reanimated@^2.8.0:
+react-native-reanimated@^2.2.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.8.0.tgz#93c06ca84d91fb3865110b0857c49a24e316130e"
   integrity sha512-kJvf/UWLBMaGCs9X66MKq5zdFMgwx8D0nHnolbHR7s8ZnbLdb7TlQ/yuzIXqn/9wABfnwtNRI3CyaP1aHWMmZg==
@@ -8621,10 +8626,37 @@ realm-network-transport@^0.7.2:
     abort-controller "^3.0.0"
     node-fetch "^2.6.0"
 
-realm@>=10, realm@^10.17.0:
+realm@>=10:
   version "10.18.0"
   resolved "https://registry.yarnpkg.com/realm/-/realm-10.18.0.tgz#8934dd3faf7fade0913b3f136b637a56952b8486"
   integrity sha512-P1WcxXGUnSaF9fzs+U9kRWR8BC7GWvUktbzk0LT7ulSE7afaEhtUb2iJD/f258g8L1Wt9mVe6Uj0VoxZ2G4LBQ==
+  dependencies:
+    "@realm.io/common" "^0.1.1"
+    bindings "^1.5.0"
+    bson "4.4.1"
+    clang-format "^1.6.0"
+    command-line-args "^5.1.1"
+    deepmerge "2.1.0"
+    fs-extra "^4.0.3"
+    https-proxy-agent "^2.2.4"
+    ini "^1.3.7"
+    node-addon-api "4.2.0"
+    node-fetch "^2.6.1"
+    node-machine-id "^1.1.10"
+    prebuild-install "^7.0.1"
+    progress "^2.0.3"
+    prop-types "^15.6.2"
+    realm-network-transport "^0.7.2"
+    request "^2.88.0"
+    stream-counter "^1.0.0"
+    sync-request "^3.0.1"
+    tar "^6.0.1"
+    url-parse "^1.4.4"
+
+realm@^10.20.0-beta.5:
+  version "10.20.0-beta.5"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-10.20.0-beta.5.tgz#8bcd4e62c6fa1d2376c93cc5a9b0f083830d70e6"
+  integrity sha512-NI6DUaD8+WfcPMUn4KD/KEmPmBus2T4ScjUKiYQ0YuUR31qtoQZ6A2WM6Mf2WBM+XGStqBxM09hte+eX0Q6XcQ==
   dependencies:
     "@realm.io/common" "^0.1.1"
     bindings "^1.5.0"
