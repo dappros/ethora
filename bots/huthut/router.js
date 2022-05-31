@@ -8,7 +8,7 @@ import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
 import {transferCoinHandler} from "./handlers/transferCoin.js";
-import botOptions from "./config/config.js";
+import {userPayHandler} from "./handlers/userPay.js";
 
 const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId) => {
     if (requestType === 'x' && message.match(/\binvite\S*\b/g)) {
@@ -32,50 +32,51 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
         //actions that are performed in the first step, when the bot does not yet know what the user wants
         if (userStep === 1) {
             if (messageCheck(message, 'hut test')) {
-                testHandler(handlerData);
-            } else if (messageCheck(message, 'hut back turn forest')) {
-                backTurnForestHandler(handlerData);
-            } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
-                helpHandler(handlerData);
+                return testHandler(handlerData);
+            }
+
+            if (messageCheck(message, 'hut back turn')) {
+                return backTurnForestHandler(handlerData);
             }
         }
 
         if (userStep === 2) {
-            if(receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount >= 1){
-                let test = botOptions.botData.firstName+' '+botOptions.botData.lastName+' Coin';
-                console.log('===========>', test)
-                if (messageCheck(message, test)) {
-                    transferCoinHandler(handlerData)
-                }else{
-                    errorHandler(handlerData);
-                }
-            }else{
-                if (messageCheck(message, 'hut front turn me')) {
-                    frontTurnMeHandler(handlerData);
-                } else if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
-                    helpHandler(handlerData);
-                }
+            if (messageCheck(message, 'hut front turn')) {
+                return frontTurnMeHandler(handlerData);
             }
         }
 
         if (userStep === 3) {
-            if (Number.isInteger(Number(message)) && message <= 3) {
-                if (Number(message) === 1) {
-                    storeItemHandler(handlerData);
-                } else if (Number(message) === 2) {
-                    searchItemsHandler(handlerData);
-                } else if (Number(message) === 3) {
-                    leaveHandler(handlerData);
-                } else {
-                    errorHandler(handlerData);
+            if (Number.isInteger(Number(message)) && message <= 3 && message > 0) {
+                if (Number(message) === 1 || Number(message) === 2) {
+                    return userPayHandler(handlerData, Number(message));
+                }
+
+                if (Number(message) === 3) {
+                    return leaveHandler(handlerData);
                 }
             } else {
-                errorHandler(handlerData);
+                return errorHandler(handlerData);
             }
         }
 
+        //In userPayHandler, step 4 is specified to handle the item placement operation
+        if (userStep === 4 && receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount >= 1) {
+            return storeItemHandler(handlerData)
+        }
+
+        //In userPayHandler, step 5 is specified to handle the get item operation.
+        if (userStep === 5 && receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount >= 1) {
+            return transferCoinHandler(handlerData)
+        }
+
+        //Global message handlers not associated with steps
         if (messageCheck(message, 'hut close') || messageCheck(message, 'hut leave')) {
-            leaveHandler(handlerData);
+            return leaveHandler(handlerData);
+        }
+
+        if (messageCheck(message, 'hut') || messageCheck(message, 'hut help')) {
+            return helpHandler(handlerData);
         }
 
     }
