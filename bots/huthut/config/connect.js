@@ -1,24 +1,18 @@
-import botOptions from './config.js'
-
 const connectData = () => {
-    let data;
-    if (botOptions.serverType === 'prod') {
-        console.log('=> Bot launch on PROD server xmpp selected')
-        data = {
-            botName: '0xd_c997088_c118402_c8919e_df_c8_bfc3f8_d_d43_c_e33c',
-            botAddress: 'dev.dxmpp.com',
-            botPassword: 'rlndbzemfY',
-            conferenceAddress: '@conference.dev.dxmpp.com',
-        }
-    } else {
-        console.log('=> Bot launch on DEV server xmpp selected')
-        data = {
-            botName: 'huttest',
-            botAddress: 'jabber.sk',
-            botPassword: '1q2w3e4r',
-            conferenceAddress: '@chat.jabb.im',
-        }
+    console.log('=> Running a bot on a '+process.env.TYPE+' server')
+    let data = {
+        botName: process.env.BOT_NAME,
+        botAddress: process.env.BOT_ADDRESS,
+        botPassword: process.env.BOT_PASSWORD,
+        conferenceAddress: process.env.CONFERENCE_ADDRESS,
+        appUsername: process.env.APP_USERNAME,
+        appPassword: process.env.APP_PASSWORD
     }
-    return data;
+    if (data.botName && data.botAddress && data.botPassword && data.conferenceAddress && data.appUsername && data.appPassword) {
+        return data;
+    } else {
+        console.log('=> Error: Not all data is specified in the configuration file, stop the startup process')
+        return false;
+    }
 }
 export default connectData();
