@@ -76,7 +76,7 @@ xmpp.on('online', jid => {
 
     let roomAddress;
     for (let roomData of botOptions.allowedRooms) {
-        if (roomData.conferenceAddress === connectData.conferenceAddress) {
+        if (roomData.conferenceAddress === connectData.conferenceAddress && roomData.type === connectData.type) {
             roomAddress = roomData.name + roomData.conferenceAddress;
             connectRoom(xmpp, jid.toString(), roomAddress);
         }
