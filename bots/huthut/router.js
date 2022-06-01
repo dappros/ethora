@@ -1,4 +1,4 @@
-import {connectRoom, messageCheck, userSteps} from "./actions.js";
+import {connectRoom, messageCheck, sendMessage, userSteps} from "./actions.js";
 import {testHandler} from "./handlers/test.js";
 import {backTurnForestHandler} from "./handlers/backTurnForest.js";
 import {helpHandler} from "./handlers/help.js";
@@ -8,6 +8,7 @@ import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
 import {userPayHandler} from "./handlers/userPay.js";
+import messages from "./config/messages.js";
 
 const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId) => {
     if (requestType === 'x' && message.match(/\binvite\S*\b/g)) {
@@ -70,6 +71,16 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
         }
 
         //Global message handlers not associated with steps
+        if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0) {
+            return sendMessage(
+                handlerData,
+                messages.visitingHut.tnxForTransaction,
+                'message',
+                false,
+                0,
+            );
+        }
+
         if (messageCheck(message, 'hut close') || messageCheck(message, 'hut leave')) {
             return leaveHandler(handlerData);
         }

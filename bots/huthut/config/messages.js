@@ -22,7 +22,8 @@ const messages = () => {
             randomlyGotItem: 'You randomly got an item ',
             noItemsInBot: 'Unfortunately there are no items in the hut (',
             toPlaceItemNeed: 'To place an item you need '+botOptions.botData.storeFee +' coins',
-            toGetItemNeed: 'To get an item you need '+botOptions.botData.collectFee +' coins'
+            toGetItemNeed: 'To get an item you need '+botOptions.botData.collectFee +' coins',
+            tnxForTransaction: 'Thank you very much for your donation )'
         },
         errors: {
             wrongNumber: 'Oops, you entered text or wrong number, please try again',
