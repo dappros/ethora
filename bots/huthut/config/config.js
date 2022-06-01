@@ -1,13 +1,19 @@
 let botOptions = {
-    serverType: 'prod',
     allowedRooms: [
         {
             name: 'hliuch',
-            conferenceAddress: '@chat.jabb.im'
+            conferenceAddress: '@chat.jabb.im',
+            type: 'PROD'
         },
         {
             name: 'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5',
-            conferenceAddress: '@conference.dev.dxmpp.com'
+            conferenceAddress: '@conference.dev.dxmpp.com',
+            type: 'PROD'
+        },
+        {
+            name: '657d0762a27d3e00d809ff08022b98cf5914357c58da1706ca4441d32ba7b07f',
+            conferenceAddress: '@conference.dev.dxmpp.com',
+            type: 'DEV'
         }
     ],
     botData: {
@@ -15,7 +21,6 @@ let botOptions = {
         lastName: 'Bot',
         walletAddress: '',
         photoURL: 'https://cdn-icons-png.flaticon.com/512/7450/7450534.png',
-        senderWalletAddress: '0xdC997088C118402C8919eDfC8Bfc3f8DD43CE33c',
         tokenName: 'Hablar Coin',
         tokenSymbol: 'HAB',
         storeFee: 1,
