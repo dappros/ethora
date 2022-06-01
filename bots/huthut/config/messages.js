@@ -30,7 +30,8 @@ const messages = () => {
                 paymentError: 'Please transfer the coin to the message',
                 getRandomItemError: 'Sorry, there was an error getting the items list, that\'s awful',
                 transferTokenError: 'An error occurred while transferring the token',
-                wrongAmount: 'You have not sent enough coins, please send the required amount'
+                wrongAmount: 'You have not sent enough coins, please send the required amount',
+                userPaymentVerifyErr: 'An error occurred while checking user payment'
             }
         }
     };
