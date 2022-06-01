@@ -1,12 +1,13 @@
 import axios from "axios";
 import botOptions from "./config/config.js";
+import connectData from "./config/connect.js";
 
 let loginData = [];
 
 export const getRandomItem = async () => {
     try {
-        const response = await axios.get(botOptions.apiUrl + 'wallets/balance/' + botOptions.botData.senderWalletAddress);
-        const nftItemList = response.data.balance.filter(data => data.tokenType === 'NFT');
+        const response = await axios.get(botOptions.apiUrl + 'wallets/balance/' + connectData.walletAddress);
+        const nftItemList = response.data.balance.filter(data => data.tokenType === 'NFT' && data.balance > 0);
         if (nftItemList.length > 0) {
             return nftItemList[Math.floor(Math.random() * nftItemList.length)];
         } else {
@@ -99,4 +100,14 @@ const handlerRefreshToken = (amount, wallet) => {
     }).catch(() => {
         return false;
     });
+}
+
+export const userPaymentVerify = async (data, amount) => {
+    try {
+        const request = await axios.get(botOptions.apiUrl + 'explorer/transactions/?limit=1&offset=0&walletAddress=' + data.receiverData.attrs.senderWalletAddress);
+        let checkDate = (new Date() - new Date(request.data.items[0].timestamp)) / (60 * 60 * 24 * 1000);
+        return !(checkDate > 1 || request.data.items[0].value !== amount || request.data.items[0].to !== connectData.walletAddress);
+    } catch (error) {
+        return error;
+    }
 }
