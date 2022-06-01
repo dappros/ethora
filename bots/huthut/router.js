@@ -7,7 +7,6 @@ import {frontTurnMeHandler} from "./handlers/frontTurnMe.js";
 import {errorHandler} from "./handlers/error.js";
 import {storeItemHandler} from "./handlers/storeItem.js";
 import {searchItemsHandler} from "./handlers/searchItems.js";
-import {transferCoinHandler} from "./handlers/transferCoin.js";
 import {userPayHandler} from "./handlers/userPay.js";
 
 const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId) => {
@@ -67,7 +66,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
 
         //In userPayHandler, step 5 is specified to handle the get item operation.
         if (userStep === 5 && receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount >= 1) {
-            return transferCoinHandler(handlerData)
+            return searchItemsHandler(handlerData)
         }
 
         //Global message handlers not associated with steps
