@@ -18,7 +18,7 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
         senderLastName: botOptions.botData.lastName,
         photoURL: botOptions.botData.photoURL,
         senderJID: connectData.botName+'@'+connectData.botAddress,
-        senderWalletAddress: botOptions.botData.senderWalletAddress,
+        senderWalletAddress: connectData.walletAddress,
         isSystemMessage: isSystemMessage,
         tokenAmount: tokenAmount,
         receiverMessageId: data.stanzaId ? data.stanzaId.attrs.id : 0,
