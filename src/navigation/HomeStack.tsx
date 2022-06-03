@@ -44,7 +44,7 @@ export const HomeStackScreen = observer(() => {
       onRegister: async function (token) {
         console.log('TOKEN:', token);
         const res = await subscribeForPushNotifications({
-          appId: 'Dxtap',
+          appId: 'Ethora',
           deviceId: token.token,
           deviceType: Platform.OS === 'ios' ? '0' : '1',
           environment: 'Production',
