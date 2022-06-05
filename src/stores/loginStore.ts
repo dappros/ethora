@@ -11,7 +11,7 @@ import {
   setAsyncStore,
 } from '../helpers/cache/setAndGetAsyncStore';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
-import {RootStore} from './context';
+import {rootStore, RootStore} from './context';
 
 export interface InitialDataProps {
   firstName: string;
@@ -72,66 +72,72 @@ export class LoginStore {
     },
   };
   skipForever: boolean = false;
-  stores: RootStore;
-  userToken: string | undefined;
-  refreshToken: string | undefined;
-  walletAddress: string | undefined;
-  xmppUsername: any;
+  stores: RootStore|{} = {}
+  userToken: string = '';
+  refreshToken: string = '';
+  walletAddress: string = '';
+  xmppUsername: string = '';
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
     this.stores = stores;
   }
-  setInitialState=action(()=>{
-    this.isFetching = false;
+  setInitialState=()=>{
+    runInAction(()=>{
+      this.isFetching = false;
       this.loading = false;
       this.error = false;
-      this.errorMessage = "";
-      this.userToken = undefined;
+      this.errorMessage = '';
       this.initialData = {
-          firstName: '',
-          lastName: '',
-          walletAddress: '',
-          photo: '',
-          username: '',
-          password: '',
-          desc: '',
-      xmppPassword: '',
-      xmppUsername: ''
+        firstName: '',
+        lastName: '',
+        walletAddress: '',
+        photo: '',
+        username: '',
+        password: '',
+        desc: '',
+        xmppPassword: '',
+        xmppUsername: '',
       };
-      this.userDescription = "";
-      this.userAvatar = "";
-      this.anotherUserAvatar = "";
-      this.anotherUserDescription = "";
-      this.anotherUserFirstname = "Loading";
-      this.anotherUserLastname = "...";
+      this.userDescription = '';
+      this.userAvatar = '';
+      this.anotherUserAvatar = '';
+      this.anotherUserDescription = '';
+      this.anotherUserFirstname = 'Loading';
+      this.anotherUserLastname = '...';
       this.anotherUserLastSeen = {};
       this.anotherUserWalletAddress = {};
       this.isPreviousUser = false;
-      this.pushSubscriptionData= {
-          ok: false,
-          subscription_info: {
-        appId: '',
-        country: '',
-        createdAt: null,
-        deviceId: '',
-        deviceType: null,
-        environment: 'Development',
-        expiresAt: null,
-        externalId: '',
-        id: null,
-        isSubscribed: '0',
-        jid: null,
-        language: 'en',
-        lat: '',
-        long: '',
-        screenName: null,
-        timezone: 0,
-        updatedAt: 0,
-          },
-      }
-      this.skipForever= false;
+      this.pushSubscriptionData = {
+        ok: false,
+        subscription_info: {
+          appId: '',
+          country: '',
+          createdAt: null,
+          deviceId: '',
+          deviceType: null,
+          environment: 'Development',
+          expiresAt: null,
+          externalId: '',
+          id: null,
+          isSubscribed: '0',
+          jid: null,
+          language: 'en',
+          lat: '',
+          long: '',
+          screenName: null,
+          timezone: 0,
+          updatedAt: 0,
+        },
+      };
+      this.skipForever = false;
+      this.userToken = '';
+      this.refreshToken = '';
+      this.walletAddress = '';
+      this.xmppUsername = '';
     })
+
+  }
  
 
   updateUserPhotoAndDescription(avatar: string, description: string) {
@@ -170,8 +176,7 @@ export class LoginStore {
         // console.log(e)
       }
       deleteAllRealm();
-      this.setInitialState();
-      this.stores.chatStore.setInitialState();
+      rootStore.resetStore()
     } catch (error: any) {
       runInAction(() => {
         this.isFetching = false;
@@ -281,13 +286,15 @@ export class LoginStore {
     // 	this.loading = false;
     // }))ni
     getAsyncStore('userToken', userToken => {
-      this.userToken = userToken ? userToken : undefined;
-      this.loading = false;
+      runInAction(()=>{
+        this.userToken = userToken ? userToken : '';
+        this.loading = false;
+      })
     });
 
     getAsyncStore('refreshToken', refreshToken => {
       runInAction(() => {
-        this.refreshToken = refreshToken ? refreshToken : undefined;
+        this.refreshToken = refreshToken ? refreshToken : '';
         this.loading = false;
       });
     });

@@ -202,8 +202,6 @@ const ProfileScreen = (props: any) => {
 
   const {firstName, lastName, walletAddress} = initialData;
 
-  const [userTransactions, setUserTransactions] = useState<any>(null);
-
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
@@ -396,8 +394,10 @@ const ProfileScreen = (props: any) => {
             walletAddress={walletAddress}
             onEndReached={() => {
               if (transactions.length < walletStore.total) {
-                walletStore.fetchOwnTransactions(
+                walletStore.fetchTransaction(
                   walletAddress,
+                  loginStore.userToken,
+                  true,
                   walletStore.limit,
                   walletStore.offset,
                 );

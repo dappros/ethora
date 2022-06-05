@@ -1,0 +1,104 @@
+import React from 'react';
+import { View } from "native-base";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import { commonColors, defaultChats } from "../../../docs/config";
+import { useStores } from "../../stores/context";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
+interface LeftActionsProps{
+    unsubscribeFromRoom:any,
+    swipeRef:any,
+    jid:string,
+    name:string
+    renameChat:any
+}
+
+export const LeftActions = (props:LeftActionsProps) => {
+    
+    const {
+        unsubscribeFromRoom,
+        swipeRef,
+        name,
+        jid,
+        renameChat
+    } = props
+
+    const {
+      chatStore
+    } = useStores()
+
+    return (
+      <>
+        <TouchableOpacity
+          onPress={() => {
+            unsubscribeFromRoom(jid);
+            swipeRef.current.close();
+          }}>
+          <View style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
+            <IonIcon name="notifications" size={hp('3%')} color={'white'} />
+          </View>
+        </TouchableOpacity>
+        {chatStore.roomRoles[jid] !== 'participant' && (
+          <TouchableOpacity
+            onPress={() => {
+              renameChat(jid, name);
+              swipeRef.current.close();
+            }}>
+            <View
+              style={[
+                styles.swipeActionItem,
+                {backgroundColor:commonColors.primaryDarkColor},
+              ]}>
+              <AntIcon color={'white'} size={hp('3%')} name={'edit'} />
+            </View>
+          </TouchableOpacity>
+        )}
+      </>
+    );
+};
+
+interface RightActionsProps{
+  jid:string,
+  leaveChat:any,
+  swipeRef:any
+}
+
+export const RightActions = (props:RightActionsProps) => {
+
+    const {
+      jid,
+      leaveChat,
+      swipeRef
+    } = props
+    const jidWithoutConference = jid?.split('@')[0];
+    return (
+      <>
+        {!defaultChats[jidWithoutConference] && (
+          <TouchableOpacity
+            onPress={() => {
+              leaveChat(jid);
+              swipeRef.current.close();
+            }}>
+            <View style={[styles.swipeActionItem, {backgroundColor: 'red'}]}>
+              <AntIcon color={'white'} size={hp('3%')} name={'delete'} />
+            </View>
+          </TouchableOpacity>
+        )}
+      </>
+    );
+};
+
+const styles = StyleSheet.create({
+  swipeActionItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    // borderRadius: 4
+  },
+})

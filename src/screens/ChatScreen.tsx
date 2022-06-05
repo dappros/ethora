@@ -90,8 +90,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const messages = chatStore.messages
     .filter((item: any) => item.roomJid === chatJid)
     .sort((a: any, b: any) => b._id - a._id);
+
   useEffect(() => {
     chatStore.toggleShouldCount(false);
+    chatStore.getCachedMessages();
     return function cleanup() {
       chatStore.updateBadgeCounter(chatJid, 'CLEAR');
     };
@@ -101,14 +103,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
       getRoomArchiveStanza(chatJid, chatStore.xmpp);
     }
-    const lastMessage = messages?.[0];
-    chatStore.updateRoomInfo(chatJid, {
-      archiveRequested: true,
-      lastUserText: lastMessage?.text,
-      lastUserName: lastMessage?.user?.name,
-      lastMessageTime:
-        lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
-    });
+
   }, [chatJid]);
 
   useEffect(() => {
@@ -124,6 +119,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
       sendMessage(message, true);
     }
   }, [tokenTransferSuccess.success]);
+
+  useEffect(()=>{
+    const lastMessage = messages?.[0];
+    chatStore.updateRoomInfo(chatJid, {
+      archiveRequested: true,
+      lastUserText: lastMessage?.text,
+      lastUserName: lastMessage?.user?.name,
+      lastMessageTime:
+        lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
+    });
+  },[messages])
 
   // useEffect(()=>{
   //   chatStore.toggleShouldCount(false);
@@ -348,7 +354,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== 'ios') {
+
       let ddd = await NativeModules.Waveform.getWaveformArray(url);
+
       const data = JSON.parse(ddd);
       return data;
     } else {

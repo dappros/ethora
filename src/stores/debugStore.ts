@@ -1,10 +1,11 @@
-import {makeAutoObservable} from 'mobx';
+import {makeAutoObservable, runInAction} from 'mobx';
+import { RootStore } from './context';
 
 export class DebugStore{
-    xmppLogs= [];
-    apiLogs= [];
-    debugMode= false;
-    stores= {};
+    xmppLogs:any= [];
+    apiLogs:any= [];
+    debugMode:boolean= false;
+    stores: RootStore|{}= {};
 
     constructor(stores:any){
         makeAutoObservable(this);
@@ -12,10 +13,11 @@ export class DebugStore{
     }
 
     setInitialState(){
-        this.xmppLogs= [];
-        this.apiLogs= [];
-        this.debugMode= false;
-        this.stores= {};
+        runInAction(()=>{
+            this.xmppLogs= [];
+            this.apiLogs= [];
+            this.debugMode= false;
+        })
     }
 
     addLogsXmpp(log:any){

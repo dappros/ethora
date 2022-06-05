@@ -33,7 +33,7 @@ export const getMessage = id =>
     resolve(chatList);
   });
 //insert message
-export const insertMessages = (messageObject, room_name, receiverMessageId) =>
+export const insertMessages = (messageObject:any) =>
   new Promise((resolve, reject) => {
     const a = {
       ...messageObject,

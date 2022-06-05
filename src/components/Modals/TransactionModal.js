@@ -1045,7 +1045,7 @@ class CommonModal extends Component {
                   width: hp('3.5%'),
                 }}
                 onPress={() => this.closeModal()}>
-                <MaterialIcons name="close" size={hp('3.5%')} />
+                <MaterialIcons color={"black"} name="close" size={hp('3.5%')} />
               </TouchableOpacity>
               <View style={{flex: 1}}>
                 <QRCodeComponent

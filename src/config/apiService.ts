@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const httpGet = async (url:string, token:string) => {
+export const httpGet = async (url:string, token:string|null) => {
   return await axios.get(url, {
     headers: {
       'Accept-Encoding': 'gzip, deflate, br',

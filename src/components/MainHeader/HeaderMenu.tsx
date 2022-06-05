@@ -26,14 +26,7 @@ export const HeaderMenu = () => {
   const [open, setOpen] = useState(false);
 
   const {
-    loginStore,
-    accountStore,
-    apiStore,
-    chatStore,
-    debugStore,
-    otherUserStore,
-    transactionsStore,
-    walletStore
+    loginStore
   } = useStores()
 
   const toggleMenu = () => {
@@ -43,17 +36,7 @@ export const HeaderMenu = () => {
       if(value===ROUTES.LOGOUT){
         // resetStore()
         // useStores().resetStore()
-          // loginStore.logOut()
-          loginStore.setInitialState()
-          accountStore.setInitialState()
-
-          chatStore.setInitialState()
-          transactionsStore.setInitialState()
-          walletStore.setInitialState()
-          debugStore.setInitialState()
-          otherUserStore.setInitialState()
-          apiStore.setInitialState()
-          loginStore.setInitialState()
+          loginStore.logOut()
       }else{
       navigation.navigate(value);
       }

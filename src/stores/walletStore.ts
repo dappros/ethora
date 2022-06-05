@@ -44,7 +44,7 @@ export class WalletStore {
     receiverMessageId: '',
     tokenName: '',
   };
-  stores: RootStore = {};
+  stores: RootStore|{} = {};
   defaultUrl = '';
   coinBalance: [] = [];
 
@@ -55,51 +55,30 @@ export class WalletStore {
   }
 
   setInitialState() {
-    this.isFetching = false;
-    this.error = false;
-    this.errorMessage = '';
-    this.transactions = [];
-    this.anotherUserTransaction = [];
-    this.anotherUserBalance = [];
-    this.balance = [];
-    this.offset = 0;
-    this.limit = 10;
-    this.total = 0;
-    this.tokenTransferSuccess = {
-      success: false,
-      senderName: '',
-      receiverName: '',
-      amount: 0,
-      receiverMessageId: '',
-      tokenName: '',
-    };
-    this.stores = {};
-    this.defaultUrl = '';
-    this.coinBalance = undefined;
-  }
-  setInitialState(){
-    this.isFetching = false;
-    this.error = false;
-    this.errorMessage = '';
-    this.transactions= [];
-    this.anotherUserTransaction= [];
-    this.anotherUserBalance= [];
-    this.balance= [];
-    this.offset= 0;
-    this.limit= 10;
-    this.total= 0;
-    this.tokenTransferSuccess= {
+    runInAction(()=>{
+      this.isFetching = false;
+      this.error = false;
+      this.errorMessage = '';
+      this.transactions = [];
+      this.anotherUserTransaction = [];
+      this.anotherUserBalance = [];
+      this.balance = [];
+      this.offset = 0;
+      this.limit = 10;
+      this.total = 0;
+      this.tokenTransferSuccess = {
         success: false,
         senderName: '',
         receiverName: '',
         amount: 0,
         receiverMessageId: '',
-        tokenName: ''
-    };
-    this.stores={};
-    this.defaultUrl = ''
-    this.coinBalance=undefined;
-}
+        tokenName: '',
+      };
+      this.defaultUrl = this.stores.apiStore.defaultUrl;
+      this.coinBalance= [];
+    })
+  }
+
   async fetchWalletBalance(
     walletAddress: string,
     token: string,
@@ -112,17 +91,17 @@ export class WalletStore {
     runInAction(() => {
       this.isFetching = true;
     });
+
     try {
       const response = await httpGet(url, token);
       runInAction(() => {
         this.isFetching = false;
       });
       this.stores.debugStore.addLogsApi(response.data);
-
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance;
-          this.coinBalance = response.data.balance.map(item => {
+          this.coinBalance = response.data.balance.map((item:any) => {
             if (item.tokenName === coinsMainName) {
               return item.balance;
             }

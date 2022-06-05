@@ -40,12 +40,12 @@ const commonColors = {
 
 // FONTS
 const textStyles = {
-  lightFont: 'Montserrat-Light',
-  regularFont: 'Montserrat-Regular',
-  mediumFont: 'Montserrat-Medium',
-  boldFont: 'Montserrat-Bold',
-  semiBoldFont: 'Montserrat-SemiBold',
-  thinFont: 'Montserrat-Thin',
+  lightFont: 'Poppins-Light',
+  regularFont: 'Poppins-Regular',
+  mediumFont: 'Poppins-Medium',
+  boldFont: 'Poppins-Bold',
+  semiBoldFont: 'Poppins-SemiBold',
+  thinFont: 'Poppins-Thin',
 }; //done
 
 /* TUTORIAL */

@@ -1,7 +1,7 @@
 import {makeAutoObservable, runInAction} from 'mobx';
 export class OtherUserStore {
   userAvatar = '';
-  description = 'Test Desc';
+  description = '';
   firstName = '';
   lastName = '';
   anotherUserLastSeen = {};
@@ -12,12 +12,14 @@ export class OtherUserStore {
   }
 
   setInitialState(){
-    this.userAvatar = '';
-    this.description = 'Test Desc';
-    this.firstName = '';
-    this.lastName = '';
-    this.anotherUserLastSeen = {};
-    this.transactions = [];
+    runInAction(()=>{
+      this.userAvatar = '';
+      this.description = '';
+      this.firstName = '';
+      this.lastName = '';
+      this.anotherUserLastSeen = {};
+      this.transactions = [];
+    })
   }
 
   setDataFromVCard(description:string, avatar:string) {

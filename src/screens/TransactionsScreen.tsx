@@ -9,8 +9,10 @@ import {useStores} from '../stores/context';
 const TransactionsScreen = observer(() => {
   const {walletStore, loginStore} = useStores();
   useEffect(() => {
-    walletStore.fetchOwnTransactions(
-      loginStore.walletAddress,
+    walletStore.fetchTransaction(
+      loginStore.initialData.walletAddress,
+      loginStore.userToken,
+      true,
       walletStore.limit,
       walletStore.offset,
     );
@@ -24,8 +26,10 @@ const TransactionsScreen = observer(() => {
         transactions={walletStore.transactions.slice().reverse()}
         onEndReached={() => {
           if (walletStore.transactions.length < walletStore.total) {
-            walletStore.fetchOwnTransactions(
-              loginStore.walletAddress,
+            walletStore.fetchTransaction(
+              loginStore.initialData.walletAddress,
+              loginStore.userToken,
+              true,
               walletStore.limit,
               walletStore.offset,
             );

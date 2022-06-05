@@ -7,11 +7,10 @@ import { getRoomList } from '../components/realmModels/chatList';
 
 const RoomListScreen = observer(() => {
   const {chatStore, loginStore} = useStores()
-  // const roomList = getRoomList()
+  const roomList = getRoomList()
 
   let rosterListArray: { name: any; participants: any; avatar: any; jid: any; counter: any; lastUserText: any; lastUserName: any; createdAt: any; muted: any; priority: any; }[] = [];
 
-  console.log(loginStore.userToken,'usertoken')
   // if(roomList.length){
   //   roomList.map((item:any) => {
   //     rosterListArray.push({
@@ -30,26 +29,27 @@ const RoomListScreen = observer(() => {
 
   //   chatStore.setRooms(rosterListArray)
   // }
-  // useEffect(()=>{
-  //   if(roomList.length)
-  //   {
-  //     roomList.map((item:any)=>{
-  //     rosterListArray.push({
-  //       name: item.name,
-  //       participants: item.participants,
-  //       avatar: item.avatar,
-  //       jid: item.jid,
-  //       counter: item.counter,
-  //       lastUserText: item.lastUserText,
-  //       lastUserName: item.lastUserName,
-  //       createdAt: item.createdAt,
-  //       muted: item.muted,
-  //       priority: item.priority,
-  //     })
-  //     })
-  //     chatStore.setRooms(rosterListArray)
-  //   }
-  // },[roomList])
+  useEffect(()=>{
+    console.log(roomList,"roomlistssss")
+    if(roomList.length)
+    {
+      roomList.map((item:any)=>{
+      rosterListArray.push({
+        name: item.name,
+        participants: item.participants,
+        avatar: item.avatar,
+        jid: item.jid,
+        counter: item.counter,
+        lastUserText: item.lastUserText,
+        lastUserName: item.lastUserName,
+        createdAt: item.createdAt,
+        muted: item.muted,
+        priority: item.priority,
+      })
+      })
+      chatStore.setRooms(rosterListArray)
+    }
+  },[roomList])
 
   return <RoomsTabBar />;
 });

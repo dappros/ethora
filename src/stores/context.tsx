@@ -5,7 +5,6 @@ import { ChatStore } from "./chatStore";
 import { DebugStore } from "./debugStore";
 import { LoginStore } from "./loginStore";
 import { OtherUserStore } from "./otherUserStore";
-import { TransactionsStore } from "./transactionsStore";
 import { WalletStore } from "./walletStore";
 
 
@@ -16,7 +15,6 @@ export class RootStore{
     otherUserStore: OtherUserStore;
     debugStore: DebugStore;
     walletStore: WalletStore;
-    transactionsStore: TransactionsStore;
     accountStore: AccountStore;
 
     constructor(){
@@ -26,16 +24,23 @@ export class RootStore{
         this.chatStore = new ChatStore(this);
         this.debugStore = new DebugStore(this);
         this.walletStore = new WalletStore(this);
-        this.transactionsStore = new TransactionsStore(this);
         this.accountStore = new AccountStore(this);
     }
 
-    resetStore=()=>{
-        this.loginStore.setInitialState()
+    resetStore(){
+        this.loginStore.setInitialState();
+        this.apiStore.setInitialState();
+        this.otherUserStore.setInitialState();
+        this.chatStore.setInitialState();
+        this.debugStore.setInitialState();
+        this.walletStore.setInitialState();
+        this.accountStore.setInitialState();
     }
 }
 
-const rootStore = new RootStore();
+
+
+export const rootStore = new RootStore();
 
 const StoreContext = createContext<RootStore>(rootStore);
 

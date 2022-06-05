@@ -38,6 +38,7 @@ export const insertRosterList = (chatsObject: any) =>
           priority: chatsObject.priority,
         };
         checkRoomExist(chatsObject.jid, async (callback: boolean) => {
+          console.log(callback,"hjnfgnb")
           if (!callback) {
             const realm = await Realm.open(databaseOptions);
             console.log(realm.path);

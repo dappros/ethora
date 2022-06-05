@@ -65,7 +65,7 @@ export class ChatStore {
   xmpp: any = null;
   xmppError: any = '';
   roomList: roomListProps | [] = [];
-  stores: RootStore;
+  stores: RootStore|{} = {};
   roomsInfoMap: any = {};
   allMessagesArrived: boolean = false;
   recentRealtimeChat: recentRealtimeChatProps = {
@@ -88,23 +88,27 @@ export class ChatStore {
     this.shouldCount = value;
   });
 
-  setInitialState=action(()=>{
-    this.messages = [];
-    this.xmpp = [];
-    this.xmppError = '';
-    this.roomList = [];
-    this.roomsInfoMap = {};
-    this.allMessagesArrived = false;
-    this.recentRealtimeChat = {
-      createdAt: undefined,
-      message_id: '',
-      room_name: '',
-      text: '',
-      system: false,
-      shouldUpdateChatScreen: false
-    }
-    this.roomRoles=[]
-  })
+  setInitialState=()=>{
+    runInAction(()=>{
+      this.messages = [];
+      this.xmpp = null;
+      this.xmppError = '';
+      this.roomList = [];
+      this.roomsInfoMap = {};
+      this.allMessagesArrived = false;
+      this.recentRealtimeChat = {
+        createdAt: undefined,
+        message_id: '',
+        room_name: '',
+        text: '',
+        system: false,
+        shouldUpdateChatScreen: false,
+      };
+      this.shouldCount = true;
+      this.roomRoles = [];
+    })
+  }
+
   setRoomRoles = action((data: any) => {
     this.roomRoles = data;
   });
@@ -122,7 +126,7 @@ export class ChatStore {
   };
   getRoomsFromCache = async () => {
     try {
-      const rooms = await getRoomList();
+      const rooms:roomListProps = await getRoomList();
       runInAction(() => {
         this.roomList = rooms;
       });
@@ -146,6 +150,7 @@ export class ChatStore {
   };
 
   updateRoomInfo = async (jid: string, data: any) => {
+    console.log(data,"updateroominfo")
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
     });
@@ -194,7 +199,7 @@ export class ChatStore {
     tokenAmount: string,
     receiverMessageId: string,
   ) => {
-    insertMessages(messageObject, roomName, tokenAmount, receiverMessageId);
+    insertMessages(messageObject);
 
     if (messageObject.system) {
       this.recentRealtimeChat.createdAt = messageObject.createdAt;
@@ -377,9 +382,7 @@ export class ChatStore {
           if (messageAlreadyExist === -1) {
             this.addMessage(message);
             insertMessages(
-              message,
-              stanza.attrs.from,
-              message.receiverMessageId,
+              message
             );
 
             // if(message.receiverMessageId){
@@ -419,7 +422,7 @@ export class ChatStore {
             messageTime:
               message?.createdAt && format(message?.createdAt, 'hh:mm'),
           });
-          insertMessages(message, stanza.attrs.from, message.receiverMessageId);
+          insertMessages(message);
         }
 
         //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen

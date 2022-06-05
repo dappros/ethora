@@ -13,12 +13,12 @@ export const systemMessage = (data:systemMessageProps) => {
     return [
       {
         _id: 1,
-        text: `${data.senderName} -> ${data.amount} ${
+        text: `${data.senderName} -> ${data.tokenAmount} ${
           data.tokenName || coinsMainSymbol
         } -> ${data.receiverName}`,
         createdAt: new Date(),
         system: true,
-        tokenAmount: data.amount,
+        tokenAmount: data.tokenAmount,
         receiverMessageId: data.receiverMessageId,
         tokenName: data.tokenName,
       },

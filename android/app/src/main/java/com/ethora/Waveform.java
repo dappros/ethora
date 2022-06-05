@@ -28,22 +28,24 @@ public class Waveform extends ReactContextBaseJavaModule {
                         System.out.println("IO Exception!");
                     }
                 });
-    }
-public void getAmpResult(AmplitudaResult<?> input) {
-    result = input.amplitudesAsJson();
-}
-@Override
-public String getName() {
-   return "Waveform";
-}
 
-@ReactMethod
-public void getWaveformArray(String filePath, Promise promise ) {
-    this.processAudio(filePath);
-    try{
-       promise.resolve(this.result);
-    }catch (Exception e){
-        promise.reject("Create Event Error", e);
+
     }
-}
+    public void getAmpResult(AmplitudaResult<?> input) {
+        result = input.amplitudesAsJson();
+    }
+    @Override
+    public String getName() {
+    return "Waveform";
+    }
+
+    @ReactMethod
+    public void getWaveformArray(String filePath, Promise promise ) {
+            this.processAudio(filePath);
+        try{
+        promise.resolve(this.result);
+        }catch (Exception e){
+            promise.reject("Create Event Error", e);
+        }
+    }
 }

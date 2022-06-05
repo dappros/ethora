@@ -2,14 +2,14 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import { showToast } from '../components/Toast/toast';
 import { httpDelete, httpGet, httpPost } from '../config/apiService';
 import { addOrDeleteEmail, getListOfEmails } from '../config/routesConstants';
-import { RootStore } from './context';
+import { rootStore, RootStore } from './context';
 
 export class AccountStore{
     isFetching = false
     error = false
     errorMessage = ''  
     emailList = [];
-    stores:RootStore;
+    stores:RootStore|{} = {};
     defaultUrl = '';
 
     constructor(stores:RootStore){
@@ -18,11 +18,13 @@ export class AccountStore{
     }
 
     setInitialState(){
-        this.isFetching = false;
-        this.error = false;
-        this.errorMessage = '';
-        this.emailList = [];
-        this.defaultUrl = '';
+        runInAction(()=>{
+            this.isFetching = false;
+            this.error = false;
+            this.errorMessage = '';
+            this.emailList = [];
+            this.defaultUrl = '';
+        })
     }
 
     async getEmailList(token:any){

@@ -5,6 +5,7 @@ import { StoreProvider } from './stores/context';
 import { NativeBaseProvider } from "native-base";
 import Toast from 'react-native-toast-message';
 import NetInfo from "@react-native-community/netinfo";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const App = () => {
 
@@ -19,11 +20,13 @@ const App = () => {
   },[])
   return (
     <StoreProvider>
-      <NativeBaseProvider>
-        <NavigationContainer>
-          <RootStack/>
-        </NavigationContainer>
-      </NativeBaseProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NativeBaseProvider>
+          <NavigationContainer>
+            <RootStack/>
+          </NavigationContainer>
+        </NativeBaseProvider>
+      </GestureHandlerRootView>
       <Toast/>
     </StoreProvider>
   );
