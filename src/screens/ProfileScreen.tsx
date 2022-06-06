@@ -45,6 +45,7 @@ import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
+import {NftMediaModal} from '../components/NftMediaModal';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -147,14 +148,16 @@ const RenderAssetItem = ({
   index,
   onClick,
   selectedItem,
+  onAssetPress,
 }: {
   item: any;
   index: number;
   onClick: any;
   selectedItem: string;
+  onAssetPress: () => void;
 }) => (
   <NftListItem
-    image={item.nftFileUrl}
+    assetUrl={item.imagePreview || item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -162,8 +165,10 @@ const RenderAssetItem = ({
     itemSelected={selectedItem}
     nftId={item.nftId}
     mimetype={item.nftMimetype}
+    onAssetPress={onAssetPress}
+    // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
+    item={item}
     index={index}
-    item={undefined}
   />
 );
 
@@ -205,17 +210,12 @@ const ProfileScreen = (props: any) => {
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
-  const [allTransactions, setAllTransactions] = useState(null);
-  const [transactionCount, setTransactionCount] = useState(0);
-
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
 
   const [xTabOne, setXTabOne] = useState(0);
   const [xTabTwo, setXTabTwo] = useState(0);
   const [xTabThree, setXTabThree] = useState(0);
-  const [xCoinTabOne, setXCoinTabOne] = useState(0);
-  const [xCoinTabTwo, setXCoinTabTwo] = useState(0);
 
   const [translateX, setTranslateX] = useState(new Animated.Value(0));
   const [textColorAnim, setTextColorAnim] = useState(new Animated.Value(0));
@@ -225,7 +225,11 @@ const ProfileScreen = (props: any) => {
 
   const [assetCount, setAssetCount] = useState(1);
   const [itemsBalance, setItemsBalance] = useState(0);
-
+  const [mediaModalData, setMediaModalData] = useState({
+    open: false,
+    url: '',
+    mimetype: '',
+  });
   useEffect(() => {
     handleSlide(
       activeTab === 0 ? xTabOne : activeTab === 1 ? xTabTwo : xTabThree,
@@ -374,7 +378,13 @@ const ProfileScreen = (props: any) => {
                         },
                       })
                     }
-                    selectedItem
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        open: true,
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                    }}
                   />
                 )}
                 nestedScrollEnabled={true}
@@ -588,6 +598,12 @@ const ProfileScreen = (props: any) => {
             /> */}
         </View>
       </View>
+      <NftMediaModal
+        modalVisible={mediaModalData.open}
+        closeModal={() => setMediaModalData(prev => ({...prev, open: false}))}
+        url={mediaModalData.url}
+        mimetype={mediaModalData.mimetype}
+      />
     </SafeAreaView>
   );
 };

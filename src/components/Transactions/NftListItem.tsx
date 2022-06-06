@@ -10,26 +10,28 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {imageMimetypes} from '../../constants/mimeTypes';
+import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { commonColors, textStyles } from '../../../docs/config';
+import {commonColors, textStyles} from '../../../docs/config';
+import FastImage from 'react-native-fast-image';
 
-interface NftListItemProps{
-    image:string,
-    assetsYouHave:string,
-    totalAssets:string,
-    name:string,
-    onClick:any,
-    nftId:string,
-    index:number,
-    item:any,
-    mimetype:string,
-    itemSelected:string,
+interface NftListItemProps {
+  assetUrl: string;
+  assetsYouHave: string;
+  totalAssets: string;
+  name: string;
+  onClick: any;
+  nftId: string;
+  index: number;
+  item: any;
+  mimetype: string;
+  itemSelected: string;
+  onAssetPress: () => void;
 }
 
-export const NftListItem = (props:NftListItemProps) => {
+export const NftListItem = (props: NftListItemProps) => {
   const {
-    image,
+    assetUrl,
     assetsYouHave,
     totalAssets,
     name,
@@ -39,45 +41,57 @@ export const NftListItem = (props:NftListItemProps) => {
     item,
     mimetype,
     itemSelected,
-  }= props
+    onAssetPress,
+  } = props;
   return (
-    <TouchableWithoutFeedback onPress={onClick}>
-      <View
-        onPress={onClick}
-        style={[
-          styles.container,
-          {backgroundColor: itemSelected ? 'rgba(0,0,0,0.15)' : '#F4F5F8'},
-        ]}>
-        <View style={styles.justifyAround}>
-          <View style={styles.itemContainer}>
-            <View style={styles.imageContainer}>
-              {imageMimetypes[mimetype] ? (
-                <Image
+    <View
+      onPress={onClick}
+      style={[
+        styles.container,
+        {backgroundColor: itemSelected ? 'rgba(0,0,0,0.15)' : '#F4F5F8'},
+      ]}>
+      <View style={styles.justifyAround}>
+        <View style={styles.itemContainer}>
+          <View style={styles.imageContainer}>
+            {imageMimetypes[mimetype] || videoMimetypes[mimetype] ? (
+              <TouchableWithoutFeedback onPress={onAssetPress}>
+                <FastImage
                   style={styles.image}
                   source={{
-                    uri: image,
+                    // @ts-ignore
+                    uri: assetUrl,
+                    priority: FastImage.priority.normal,
                   }}
+                  resizeMode={FastImage.resizeMode.cover}
                 />
-              ) : (
+              </TouchableWithoutFeedback>
+            ) : (
+              <TouchableWithoutFeedback onPress={onAssetPress}>
                 <AntIcon
                   name={'playcircleo'}
                   color={commonColors.primaryColor}
                   size={hp('5%')}
                 />
-              )}
-            </View>
+              </TouchableWithoutFeedback>
+            )}
+          </View>
+          <TouchableWithoutFeedback
+            onPress={onClick}
+            style={{width: wp('70%'), height: '100%'}}>
             <View style={{width: wp('70%')}}>
               <Text style={styles.itemName}>{name}</Text>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
+        </View>
+        <TouchableWithoutFeedback onPress={onClick}>
           <View style={styles.itemCount}>
             <Text>
               {assetsYouHave}/{totalAssets}
             </Text>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 const styles = StyleSheet.create({
