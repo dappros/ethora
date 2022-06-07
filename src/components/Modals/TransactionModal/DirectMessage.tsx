@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import {StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import { commonColors } from '../../../../docs/config';
+import { Text, View } from 'native-base';
 
 interface DirectMessageProps {
     onPress:any

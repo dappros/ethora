@@ -133,6 +133,7 @@ export class ChatStore {
     } catch (error) {}
   };
   getCachedMessages = async () => {
+    console.log("incachedmessages")
     const messages = await getAllMessages();
     runInAction(() => {
       this.messages = messages;

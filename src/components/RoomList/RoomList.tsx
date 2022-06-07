@@ -39,10 +39,6 @@ export const RoomList = observer(({roomsList}:any) => {
       chatStore.roomsInfoMap[b.jid]?.priority,
   );
 
-  useEffect(()=>{
-    console.log(roomsInfoMap,"roomsinfomapsss");
-  },[roomsInfoMap])
-
   const onDragEnd = async (partialReorderedList: any) => {
     const partialListCopy = partialReorderedList.map(
       (item: any, index: number) => {
@@ -167,7 +163,7 @@ export const RoomList = observer(({roomsList}:any) => {
       keyExtractor={(item:any) => `draggable-item-${item.jid}`}
       renderItem={({item, drag, isActive})=>{
         const room = chatStore.roomsInfoMap[item.jid];
-
+        console.log(room,"this is rooom")
         return(
           <RoomListItem
           counter={item.counter}

@@ -1,5 +1,6 @@
 import {xml} from '@xmpp/client';
 import {autorun, reaction} from 'mobx';
+import { showToast } from '../components/Toast/toast';
 import {ApiStore} from '../stores/apiStore';
 import {CONFERENCEDOMAIN, XMPP_TYPES} from './xmppConstants';
 const store = new ApiStore();
