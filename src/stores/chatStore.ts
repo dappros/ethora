@@ -1,6 +1,7 @@
 import {client, xml} from '@xmpp/client';
-import { format } from 'date-fns';
+import {format} from 'date-fns';
 import {action, makeAutoObservable, runInAction} from 'mobx';
+import { Toast } from 'native-base';
 import {
   addChatRoom,
   getChatRoom,
@@ -12,6 +13,7 @@ import {
   insertMessages,
   queryRoomAllMessages,
 } from '../components/realmModels/messages';
+import {showToast} from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -65,7 +67,7 @@ export class ChatStore {
   xmpp: any = null;
   xmppError: any = '';
   roomList: roomListProps | [] = [];
-  stores: RootStore|{} = {};
+  stores: RootStore | {} = {};
   roomsInfoMap: any = {};
   allMessagesArrived: boolean = false;
   recentRealtimeChat: recentRealtimeChatProps = {
@@ -88,8 +90,8 @@ export class ChatStore {
     this.shouldCount = value;
   });
 
-  setInitialState=()=>{
-    runInAction(()=>{
+  setInitialState = () => {
+    runInAction(() => {
       this.messages = [];
       this.xmpp = null;
       this.xmppError = '';
@@ -106,8 +108,8 @@ export class ChatStore {
       };
       this.shouldCount = true;
       this.roomRoles = [];
-    })
-  }
+    });
+  };
 
   setRoomRoles = action((data: any) => {
     this.roomRoles = data;
@@ -126,14 +128,14 @@ export class ChatStore {
   };
   getRoomsFromCache = async () => {
     try {
-      const rooms:roomListProps = await getRoomList();
+      const rooms: roomListProps = await getRoomList();
       runInAction(() => {
         this.roomList = rooms;
       });
     } catch (error) {}
   };
   getCachedMessages = async () => {
-    console.log("incachedmessages")
+    console.log('incachedmessages');
     const messages = await getAllMessages();
     runInAction(() => {
       this.messages = messages;
@@ -151,7 +153,6 @@ export class ChatStore {
   };
 
   updateRoomInfo = async (jid: string, data: any) => {
-    console.log(data,"updateroominfo")
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
     });
@@ -237,6 +238,7 @@ export class ChatStore {
     const xmppUsername = this.stores.loginStore.initialData.xmppUsername;
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
+      // console.log(stanza)
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
         let anotherUserDescription = '';
@@ -293,12 +295,7 @@ export class ChatStore {
           vcardRetrievalRequest(xmppUsername, this.xmpp);
         }
       }
-      if (
-        stanza.attrs.id === XMPP_TYPES.createRoom &&
-        stanza.children[1] !== undefined &&
-        (stanza.children[1].children[1].attrs.code === '110' ||
-          stanza.children[1].children[1].attrs.code === '201')
-      ) {
+      if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
@@ -382,9 +379,7 @@ export class ChatStore {
           );
           if (messageAlreadyExist === -1) {
             this.addMessage(message);
-            insertMessages(
-              message
-            );
+            insertMessages(message);
 
             // if(message.receiverMessageId){
             //   insertMessages(
@@ -429,6 +424,7 @@ export class ChatStore {
         //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
         if (stanza.attrs.id === XMPP_TYPES.newSubscription) {
           presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
+          getUserRoomsStanza(xmppUsername, this.xmpp);
         }
 
         //To capture the response for list of rosters (for now only subscribed muc)

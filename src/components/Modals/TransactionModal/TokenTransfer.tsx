@@ -1,92 +1,73 @@
-import React,{Fragment} from 'react';
+import React, {Fragment} from 'react';
 // import { Text, View, StyleSheet, Pressable, Image } from 'react-native';
-import { coinImagePath, textStyles } from '../../../../docs/config';
+import {coinImagePath, textStyles} from '../../../../docs/config';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
-import { HStack, Image, Pressable, Text, View } from 'native-base';
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {HStack, Image, Pressable, Text, View} from 'native-base';
 
 interface TokenTransferProps {
-    name:string,
-    tokenTransferFunc:any,
-    tokenAmount:any
+  name: string;
+  tokenTransferFunc: (amount: number) => void;
+  tokenAmount: number;
 }
 
-interface CoinComponentProps{
-  tokenTransferFunc:any,
-  tokenAmount:number,
-  amt:number
+interface CoinComponentProps {
+  tokenTransferFunc: any;
+  tokenAmount: number;
+  amt: number;
 }
 
-const CoinComponent=(props:CoinComponentProps)=>{
-  return(
+const CoinComponent = (props: CoinComponentProps) => {
+  return (
     <Pressable
-    onPress={() => props.tokenTransferFunc(props.amt)}
-    justifyContent="center"
-    alignItems={"center"}
-    borderWidth={props.tokenAmount === props.amt ? props.amt : null}
-    borderColor={props.tokenAmount === props.amt ? '#A1A9B4':null}
-    >
-    <Image
-    alt='Coin Image'
-    source={coinImagePath}
-    h={hp('3%')}
-    w={hp('3%')}
-    />
-    <Text
-    fontFamily={textStyles.boldFont}
-    >{props.amt}</Text>
-  </Pressable>
-  )
-}
+      onPress={() => props.tokenTransferFunc(props.amt)}
+      justifyContent="center"
+      alignItems={'center'}
+      borderWidth={props.tokenAmount === props.amt ? props.amt : null}
+      borderColor={props.tokenAmount === props.amt ? '#A1A9B4' : null}>
+      <Image
+        alt="Coin Image"
+        source={coinImagePath}
+        h={hp('3%')}
+        w={hp('3%')}
+      />
+      <Text fontFamily={textStyles.boldFont}>{props.amt}</Text>
+    </Pressable>
+  );
+};
 
-const TokenTransfer = (props: TokenTransferProps) => {
+const TokenTransfer = ({
+  name,
+  tokenAmount,
+  tokenTransferFunc,
+}: TokenTransferProps) => {
+  const coinsList = [1, 3, 5, 7];
   return (
     <Fragment>
       <Text
-       fontFamily={textStyles.regularFont}
-       fontSize={hp('1.5%')}
-       margin={5}
-       textAlign={'center'}
-      >
+        fontFamily={textStyles.regularFont}
+        fontSize={hp('1.5%')}
+        margin={5}
+        textAlign={'center'}>
         Reward{' '}
-        <Text
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('1.5%')}
-        >
-          {props.name}
+        <Text fontFamily={textStyles.boldFont} fontSize={hp('1.5%')}>
+          {name}
         </Text>{' '}
         with coins
       </Text>
-      <HStack
-      w={'100%'}
-      justifyContent={"space-evenly"}
-      >
-        <CoinComponent
-          amt={1}
-          tokenAmount={props.tokenAmount}
-          tokenTransferFunc={props.tokenTransferFunc}
-        />
-
-        <CoinComponent
-          amt={3}
-          tokenAmount={props.tokenAmount}
-          tokenTransferFunc={props.tokenTransferFunc}
-        />
-
-        <CoinComponent
-          amt={5}
-          tokenAmount={props.tokenAmount}
-          tokenTransferFunc={props.tokenTransferFunc}
-        />
-
-        <CoinComponent
-          amt={7}
-          tokenAmount={props.tokenAmount}
-          tokenTransferFunc={props.tokenTransferFunc}
-        />
-
+      <HStack w={'100%'} justifyContent={'space-evenly'}>
+        {coinsList.map(item => {
+          return (
+            <CoinComponent
+              key={item}
+              amt={item}
+              tokenAmount={tokenAmount}
+              tokenTransferFunc={tokenTransferFunc}
+            />
+          );
+        })}
       </HStack>
 
       {/* <View style={{flexDirection:'row', justifyContent:'center', width:'100%'}}>

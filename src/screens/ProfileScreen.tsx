@@ -208,7 +208,6 @@ const ProfileScreen = (props: any) => {
   const {firstName, lastName, walletAddress} = initialData;
 
   const [coinData, setCoinData] = useState([]);
-  const [itemsData, setItemsData] = useState([]);
 
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
@@ -241,12 +240,12 @@ const ProfileScreen = (props: any) => {
   useEffect(() => {
     setOffset(0);
     setTotal(0);
-    // walletStore.fetchOwnTransactions(
-    //   walletAddress,
+    walletStore.fetchOwnTransactions(
+      walletAddress,
 
-    //   walletStore.limit,
-    //   walletStore.offset,
-    // );
+      walletStore.limit,
+      walletStore.offset,
+    );
     return () => {
       clearPaginationData();
     };
@@ -260,11 +259,7 @@ const ProfileScreen = (props: any) => {
             item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
         ),
       );
-      setItemsData(
-        balance
-          .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
-          .reverse(),
-      );
+     
 
       setAssetCount(itemsBalance + coinData.length);
     }
@@ -279,7 +274,7 @@ const ProfileScreen = (props: any) => {
           updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
         })
       : null;
-    itemsData.map((item: any) => {
+    walletStore.nftItems.map((item: any) => {
       updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
     });
     setItemsBalance(updatedItemsBalance);
@@ -288,7 +283,7 @@ const ProfileScreen = (props: any) => {
     );
 
     return () => {};
-  }, [itemsData, coinData]);
+  }, [walletStore.nftItem, coinData]);
 
   const loadTabContent = (props: any) => {
     const {
@@ -404,10 +399,8 @@ const ProfileScreen = (props: any) => {
             walletAddress={walletAddress}
             onEndReached={() => {
               if (transactions.length < walletStore.total) {
-                walletStore.fetchTransaction(
+                walletStore.fetchOwnTransactions(
                   walletAddress,
-                  loginStore.userToken,
-                  true,
                   walletStore.limit,
                   walletStore.offset,
                 );
@@ -583,7 +576,7 @@ const ProfileScreen = (props: any) => {
                   walletAddress,
                   activeAssetTab,
                   setActiveAssetTab,
-                  itemsData,
+                  itemsData: walletStore.nftItems,
                   itemsBalance,
                   navigation: props.navigation,
                 })}

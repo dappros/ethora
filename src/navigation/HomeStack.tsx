@@ -61,7 +61,7 @@ export const HomeStackScreen = observer(() => {
       onNotification: function (notification) {
         console.log('NOTIFICATION:', notification);
       },
-  
+
       onAction: function (notification) {
         console.log('ACTION:', notification.action);
       },
@@ -93,7 +93,7 @@ export const HomeStackScreen = observer(() => {
   }, [initialData.xmppPassword]);
 
   useEffect(() => {
-    getPushToken()
+    getPushToken();
   }, []);
   return (
     <HomeStack.Navigator options={{headerShown: true, headerTitle: ''}}>

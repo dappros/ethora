@@ -1,6 +1,6 @@
 import {xml} from '@xmpp/client';
 import {autorun, reaction} from 'mobx';
-import { showToast } from '../components/Toast/toast';
+import {showToast} from '../components/Toast/toast';
 import {ApiStore} from '../stores/apiStore';
 import {CONFERENCEDOMAIN, XMPP_TYPES} from './xmppConstants';
 const store = new ApiStore();
@@ -8,8 +8,7 @@ const store = new ApiStore();
 let DOMAIN = store.xmppDomains.DOMAIN;
 let CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT;
 
-
-export const subscribeStanza = (from:string, to:string, xmpp:any) => {
+export const subscribeStanza = (from: string, to: string, xmpp: any) => {
   const subscribe = xml(
     'iq',
     {
@@ -31,7 +30,7 @@ export const subscribeStanza = (from:string, to:string, xmpp:any) => {
   xmpp.send(subscribe);
 };
 
-export const presenceStanza = (from:string, to:string, xmpp:any) => {
+export const presenceStanza = (from: string, to: string, xmpp: any) => {
   const presence = xml(
     'presence',
     {
@@ -42,7 +41,10 @@ export const presenceStanza = (from:string, to:string, xmpp:any) => {
   );
   xmpp.send(presence);
 };
-export const getUserRoomsStanza = (manipulatedWalletAddress:string, xmpp:any) => {
+export const getUserRoomsStanza = (
+  manipulatedWalletAddress: string,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -61,7 +63,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 */
 
 //For now only subscibed muc are being fetched
-export const sendMessageStanza = (from:string, to:string, messageText:string, data:any, xmpp:any) => {
+export const sendMessageStanza = (
+  from: string,
+  to: string,
+  messageText: string,
+  data: any,
+  xmpp: any,
+) => {
   const message = xml(
     'message',
     {
@@ -80,24 +88,24 @@ export const sendMessageStanza = (from:string, to:string, messageText:string, da
   xmpp.send(message);
 };
 
-export const sendMediaMessageStanza = async(from:string, to:string, data:any, xmpp:any) => {
+export const sendMediaMessageStanza = async (
+  from: string,
+  to: string,
+  data: any,
+  xmpp: any,
+) => {
   const message = xml(
     'message',
     {
       id: XMPP_TYPES.sendMessage,
       type: 'groupchat',
-      from:
-       from +
-        '@' + DOMAIN,
+      from: from + '@' + DOMAIN,
       to: to,
     },
     xml('body', {}, 'media file'),
     xml('data', {
       xmlns: 'http://' + DOMAIN,
-      senderJID:
-        from +
-        '@' +
-        DOMAIN,
+      senderJID: from + '@' + DOMAIN,
       senderFirstName: data.firstName,
       senderLastName: data.lastName,
       senderWalletAddress: data.walletAddress,
@@ -125,9 +133,13 @@ export const sendMediaMessageStanza = async(from:string, to:string, data:any, xm
   );
 
   await xmpp.send(message);
-}
+};
 
-export const fetchRosterlist = (walletAddress:string, stanzaId:string, xmpp:any) => {
+export const fetchRosterlist = (
+  walletAddress: string,
+  stanzaId: string,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -141,7 +153,11 @@ export const fetchRosterlist = (walletAddress:string, stanzaId:string, xmpp:any)
 
   xmpp.send(message);
 };
-export const getPaginatedArchive = (chat_jid:string, firstUserMessageID:string, xmpp:any) => {
+export const getPaginatedArchive = (
+  chat_jid: string,
+  firstUserMessageID: string,
+  xmpp: any,
+) => {
   let message = xml(
     'iq',
     {
@@ -162,7 +178,11 @@ export const getPaginatedArchive = (chat_jid:string, firstUserMessageID:string, 
   );
   xmpp.send(message);
 };
-export const subscribeToRoom = (roomJID:string, manipulatedWalletAddress:string, xmpp:any) => {
+export const subscribeToRoom = (
+  roomJID: string,
+  manipulatedWalletAddress: string,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -184,9 +204,9 @@ export const subscribeToRoom = (roomJID:string, manipulatedWalletAddress:string,
   xmpp.send(message);
 };
 export const unsubscribeFromChatXmpp = (
-  manipulatedWalletAddress:string,
-  jid:string,
-  xmpp:any,
+  manipulatedWalletAddress: string,
+  jid: string,
+  xmpp: any,
 ) => {
   const message = xml(
     'iq',
@@ -209,10 +229,10 @@ export const unsubscribeFromChatXmpp = (
   xmpp.send(message);
 };
 export const leaveRoomXmpp = (
-  manipulatedWalletAddress:string,
-  jid:string,
-  username:string,
-  xmpp:any,
+  manipulatedWalletAddress: string,
+  jid: string,
+  username: string,
+  xmpp: any,
 ) => {
   const presence = xml('presence', {
     from: manipulatedWalletAddress + '@' + DOMAIN,
@@ -221,7 +241,7 @@ export const leaveRoomXmpp = (
   });
   xmpp.send(presence);
 };
-export const getRoomArchiveStanza = (chat_jid:string, xmpp:any) => {
+export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
   let message = xml(
     'iq',
     {
@@ -242,7 +262,11 @@ export const getRoomArchiveStanza = (chat_jid:string, xmpp:any) => {
   );
   xmpp.send(message);
 };
-export const get_list_of_subscribers = (chat_jid:string, walletAddress:string, xmpp:any) => {
+export const get_list_of_subscribers = (
+  chat_jid: string,
+  walletAddress: string,
+  xmpp: any,
+) => {
   let message = xml(
     'iq',
     {
@@ -256,7 +280,12 @@ export const get_list_of_subscribers = (chat_jid:string, walletAddress:string, x
   xmpp.send(message);
 };
 
-export const roomConfigurationForm = (user_jid:string, chat_jid:string, roomConfig:any, xmpp:any) => {
+export const roomConfigurationForm = (
+  user_jid: string,
+  chat_jid: string,
+  roomConfig: any,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -288,7 +317,11 @@ export const roomConfigurationForm = (user_jid:string, chat_jid:string, roomConf
   xmpp.send(message);
 };
 
-export const getRoomInfo = (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const getRoomInfo = (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -303,7 +336,12 @@ export const getRoomInfo = (walletAddress:string, chat_jid:string, xmpp:any) => 
   xmpp.send(message);
 };
 
-export const isComposing = async (walletAddress:string, chat_jid:string, fullName:string, xmpp:any) => {
+export const isComposing = async (
+  walletAddress: string,
+  chat_jid: string,
+  fullName: string,
+  xmpp: any,
+) => {
   // <message
   // from='bernardo@shakespeare.lit/pda'
   // to='francisco@shakespeare.lit/elsinore'
@@ -333,7 +371,11 @@ export const isComposing = async (walletAddress:string, chat_jid:string, fullNam
   // }, 100);
 };
 
-export const pausedComposing = async (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const pausedComposing = async (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   //     <message
   //     from='romeo@montague.net/orchard'
   //     to='juliet@capulet.com/balcony'
@@ -362,7 +404,11 @@ export const pausedComposing = async (walletAddress:string, chat_jid:string, xmp
   xmpp.send(message);
 };
 
-export const activeChatState = async (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const activeChatState = async (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   // <message
   //     from='bernardo@shakespeare.lit/pda'
   //     to='francisco@shakespeare.lit/elsinore'
@@ -387,7 +433,11 @@ export const activeChatState = async (walletAddress:string, chat_jid:string, xmp
   xmpp.send(message);
 };
 
-export const commonDiscover = (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const commonDiscover = (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   //     <iq from='romeo@shakespeare.lit/orchard'
   //     id='disco1'
   //     to='juliet@capulet.com/balcony'
@@ -411,7 +461,11 @@ export const commonDiscover = (walletAddress:string, chat_jid:string, xmpp:any) 
   xmpp.send(message);
 };
 
-export const discoverProfileSupport = (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const discoverProfileSupport = (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   //     <iq type='get'
   //     from='hamlet@denmark.lit/elsinore'
   //     to='shakespeare.lit'
@@ -435,7 +489,11 @@ export const discoverProfileSupport = (walletAddress:string, chat_jid:string, xm
   xmpp.send(message);
 };
 
-export const discoverChatStates = (walletAddress:string, chat_jid:string, xmpp:any) => {
+export const discoverChatStates = (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
   //     <iq from='juliet@capulet.com/balcony'
   //     id='disco1'
   //     to='romeo@shakespeare.lit/orchard'
@@ -450,7 +508,7 @@ export const discoverChatStates = (walletAddress:string, chat_jid:string, xmpp:a
   // })
 };
 
-export const vcardRetrievalRequest = (walletAddress:string, xmpp:any) => {
+export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   //     <iq from='stpeter@jabber.org/roundabout'
   //     id='v1'
   //     type='get'>
@@ -472,7 +530,7 @@ export const vcardRetrievalRequest = (walletAddress:string, xmpp:any) => {
   xmpp.send(message);
 };
 
-export const updateVCard = (photoURL:string, desc:string, xmpp:any) => {
+export const updateVCard = (photoURL: string, desc: string, xmpp: any) => {
   const message = xml(
     'iq',
     {
@@ -491,7 +549,11 @@ export const updateVCard = (photoURL:string, desc:string, xmpp:any) => {
   xmpp.send(message);
 };
 
-export const retrieveOtherUserVcard = (username:string, userJID:string, xmpp:any) => {
+export const retrieveOtherUserVcard = (
+  username: string,
+  userJID: string,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -506,40 +568,26 @@ export const retrieveOtherUserVcard = (username:string, userJID:string, xmpp:any
   xmpp.send(message);
 };
 
-export const createNewRoom = (
-  from,
-  to,
-  xmpp
-) => {
+export const createNewRoom = (from, to, xmpp) => {
   let message = xml(
     'presence',
     {
       id: XMPP_TYPES.createRoom,
-      from:
-        from +
-        '@' +
-        DOMAIN,
-      to:
-        to +
-        CONFERENCEDOMAIN +
-        '/' +
-        from,
+      from: from + '@' + DOMAIN,
+      to: to + CONFERENCEDOMAIN + '/' + from,
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );
   // console.log(message.toString());
   xmpp.send(message);
-}
+};
 
 export const setOwner = (from, to, xmpp) => {
   const message = xml(
     'iq',
     {
       to: to + CONFERENCEDOMAIN,
-      from:
-        from +
-        '@' +
-        DOMAIN,
+      from: from + '@' + DOMAIN,
       id: XMPP_TYPES.setOwner,
       type: 'get',
     },
@@ -547,7 +595,7 @@ export const setOwner = (from, to, xmpp) => {
   );
 
   xmpp.send(message);
-}
+};
 
 export const roomConfig = (from, to, data, xmpp) => {
   const message = xml(
@@ -579,9 +627,14 @@ export const roomConfig = (from, to, data, xmpp) => {
   );
 
   xmpp.send(message);
-}
+};
 
-export const sendInvite = (from:string, to:string, otherUserId:string, xmpp:any) => {
+export const sendInvite = (
+  from: string,
+  to: string,
+  otherUserId: string,
+  xmpp: any,
+) => {
   const stanza = xml(
     'message',
     {from: from + '@' + DOMAIN, to: to},
@@ -597,18 +650,23 @@ export const sendInvite = (from:string, to:string, otherUserId:string, xmpp:any)
   );
 
   xmpp.send(stanza);
-}
+};
 
-export const banUser = (to:string, from:string, bannedUserWalletAddres:string, xmpp:any) => {
-    //   <iq from='kinghenryv@shakespeare.lit/throne'
-    //     id='ban1'
-    //     to=
-    //     type='set'>
-    //   <query xmlns='http://jabber.org/protocol/muc#admin'>
-    //     <item affiliation='outcast'
-    //           jid='earlofcambridge@shakespeare.lit'/>
-    //   </query>
-    // </iq>
+export const banUser = (
+  to: string,
+  from: string,
+  bannedUserWalletAddres: string,
+  xmpp: any,
+) => {
+  //   <iq from='kinghenryv@shakespeare.lit/throne'
+  //     id='ban1'
+  //     to=
+  //     type='set'>
+  //   <query xmlns='http://jabber.org/protocol/muc#admin'>
+  //     <item affiliation='outcast'
+  //           jid='earlofcambridge@shakespeare.lit'/>
+  //   </query>
+  // </iq>
   const message = xml(
     'iq',
     {
@@ -627,4 +685,4 @@ export const banUser = (to:string, from:string, bannedUserWalletAddres:string, x
     ),
   );
   xmpp.send(message);
-}
+};

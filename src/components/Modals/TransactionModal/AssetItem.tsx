@@ -1,36 +1,35 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import {Text, View, StyleSheet, Image} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
-import { textStyles } from '../../../../docs/config';
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {textStyles} from '../../../../docs/config';
 
 interface AssetItemProps {
-    image:string,
-    assetsYouHave:any,
-    totalAssets:any,
-    name:string,
-    index:any,
-    itemTransferFunc:any,
-    selectedItem:any,
-    nftId:any,
+  image: string;
+  assetsYouHave: any;
+  totalAssets: any;
+  name: string;
+  index: any;
+  itemTransferFunc: any;
+  selectedItem: any;
+  nftId: any;
 }
 
 const AssetItem = (props: AssetItemProps) => {
+  const {
+    itemTransferFunc,
+    selectedItem,
+    nftId,
+    image,
+    name,
+    assetsYouHave,
+    totalAssets,
+  } = props;
 
-    const {
-        itemTransferFunc,
-        selectedItem,
-        nftId,
-        image,
-        name,
-        assetsYouHave,
-        totalAssets
-    } = props;
-
-    return (
+  return (
     <TouchableWithoutFeedback onPress={itemTransferFunc}>
       <View
         style={{

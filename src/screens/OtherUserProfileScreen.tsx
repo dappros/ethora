@@ -244,6 +244,11 @@ const OtherUserProfileScreen = (props: any) => {
 
   const [assetCount, setAssetCount] = useState(1);
   const [itemsBalance, setItemsBalance] = useState(0);
+  const [mediaModalData, setMediaModalData] = useState({
+    open: false,
+    url: '',
+    mimetype: '',
+  });
 
   useEffect(() => {
     handleSlide(
@@ -511,29 +516,7 @@ const OtherUserProfileScreen = (props: any) => {
     if (activeTab === 2) {
       return (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          {/* <CommonButton
-            style={{
-              backgroundColor: '#114592',
-              padding: 5,
-              width: wp('51%'),
-              height: hp('6.7%'),
-              borderRadius: 5,
-              fontFamily: lightFont,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={() =>
-              Linking.openURL(
-                'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
-              )
-            }
-            buttonText="3D Garage"
-            textStyle={{
-              fontSize: hp('2.21%'),
-              color: '#FFFFFF',
-              fontFamily: boldFont,
-            }}
-          /> */}
+         
           <Button
             bg={'#114592'}
             padding={5}
