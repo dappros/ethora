@@ -1,31 +1,28 @@
 import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { commonColors } from '../../../../docs/config';
+import {Text, View, StyleSheet} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {commonColors} from '../../../../docs/config';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import { Pressable } from 'native-base';
 
 interface SendItemProps {
-    displayItems:any,
-
+  onPress: () => void;
 }
 
-const SendItem = (props: SendItemProps) => {
+const SendItem = ({onPress}: SendItemProps) => {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        props.displayItems();
-      }}>
+    <Pressable onPress={onPress}>
       <View style={styles.sendItemAndDMContainer}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontistoIcon name="arrow-swap" size={15} color="black" />
         </View>
         <Text>Send Items</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
