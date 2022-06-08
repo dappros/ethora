@@ -29,6 +29,7 @@ export class WalletStore {
   offset = 0;
   limit = 10;
   total = 0;
+  nftItems = [];
   tokenTransferSuccess: {
     success: boolean;
     senderName: string;
@@ -44,7 +45,7 @@ export class WalletStore {
     receiverMessageId: '',
     tokenName: '',
   };
-  stores: RootStore|{} = {};
+  stores: RootStore | {} = {};
   defaultUrl = '';
   coinBalance: [] = [];
 
@@ -55,7 +56,7 @@ export class WalletStore {
   }
 
   setInitialState() {
-    runInAction(()=>{
+    runInAction(() => {
       this.isFetching = false;
       this.error = false;
       this.errorMessage = '';
@@ -66,6 +67,7 @@ export class WalletStore {
       this.offset = 0;
       this.limit = 10;
       this.total = 0;
+      this.nftItems = [];
       this.tokenTransferSuccess = {
         success: false,
         senderName: '',
@@ -75,8 +77,8 @@ export class WalletStore {
         tokenName: '',
       };
       this.defaultUrl = this.stores.apiStore.defaultUrl;
-      this.coinBalance= [];
-    })
+      this.coinBalance = [];
+    });
   }
 
   async fetchWalletBalance(
@@ -101,7 +103,10 @@ export class WalletStore {
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance;
-          this.coinBalance = response.data.balance.map((item:any) => {
+          this.nftItems = response.data.balance
+            .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
+            .reverse();
+          this.coinBalance = response.data.balance.map((item: any) => {
             if (item.tokenName === coinsMainName) {
               return item.balance;
             }
@@ -121,6 +126,19 @@ export class WalletStore {
       });
     }
   }
+
+  clearPreviousTransfer = () => {
+    runInAction(() => {
+      this.tokenTransferSuccess = {
+        success: false,
+        senderName: '',
+        receiverName: '',
+        amount: 0,
+        receiverMessageId: '',
+        tokenName: '',
+      };
+    });
+  };
 
   async transferTokens(
     bodyData: any,
@@ -173,7 +191,11 @@ export class WalletStore {
           };
         });
 
-        this.fetchWalletBalance(fromWallet, this.stores.loginStore.userToken, true,);
+        this.fetchWalletBalance(
+          fromWallet,
+          this.stores.loginStore.userToken,
+          true,
+        );
       } else {
         runInAction(() => {
           this.error = true;
@@ -215,6 +237,7 @@ export class WalletStore {
         runInAction(() => {
           this.transactions = response.data.items;
         });
+        console.log(response.data)
         const modifiedTransactions = response.data.items.map((item: any) => {
           if (item.tokenId === 'NFT') {
             if (item.from === walletAddress && item.from !== item.to) {

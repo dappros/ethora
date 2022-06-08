@@ -3,7 +3,11 @@ import {makeAutoObservable, runInAction, autorun, action} from 'mobx';
 import {LoginManager} from 'react-native-fbsdk-next';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
 import {httpPost} from '../config/apiService';
-import {loginURL, registerUserURL} from '../config/routesConstants';
+import {
+  loginURL,
+  refreshTokenURL,
+  registerUserURL,
+} from '../config/routesConstants';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {constructUrl} from '../helpers/constructUrl';
 import {
@@ -72,7 +76,7 @@ export class LoginStore {
     },
   };
   skipForever: boolean = false;
-  stores: RootStore|{} = {}
+  stores: RootStore | {} = {};
   userToken: string = '';
   refreshToken: string = '';
   walletAddress: string = '';
@@ -82,8 +86,8 @@ export class LoginStore {
     makeAutoObservable(this);
     this.stores = stores;
   }
-  setInitialState=()=>{
-    runInAction(()=>{
+  setInitialState = () => {
+    runInAction(() => {
       this.isFetching = false;
       this.loading = false;
       this.error = false;
@@ -135,10 +139,8 @@ export class LoginStore {
       this.refreshToken = '';
       this.walletAddress = '';
       this.xmppUsername = '';
-    })
-
-  }
- 
+    });
+  };
 
   updateUserPhotoAndDescription(avatar: string, description: string) {
     runInAction(() => {
@@ -176,7 +178,7 @@ export class LoginStore {
         // console.log(e)
       }
       deleteAllRealm();
-      rootStore.resetStore()
+      rootStore.resetStore();
     } catch (error: any) {
       runInAction(() => {
         this.isFetching = false;
@@ -185,6 +187,24 @@ export class LoginStore {
       });
     }
   }
+
+  getRefreshToken = async () => {
+    try {
+      const response = await httpPost(
+        this.stores.apiStore.defaultUrl + refreshTokenURL,
+        {},
+        this.refreshToken,
+      );
+      runInAction(() => {
+        this.userToken = response.data.token;
+        this.refreshToken = response.data.refreshToken;
+      });
+      await asyncStorageSetItem('userToken', response.data.token);
+      await asyncStorageSetItem('refreshToken', response.data.refreshToken);
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   loginUser = async (
     loginType: any,
@@ -286,10 +306,10 @@ export class LoginStore {
     // 	this.loading = false;
     // }))ni
     getAsyncStore('userToken', userToken => {
-      runInAction(()=>{
+      runInAction(() => {
         this.userToken = userToken ? userToken : '';
         this.loading = false;
-      })
+      });
     });
 
     getAsyncStore('refreshToken', refreshToken => {
