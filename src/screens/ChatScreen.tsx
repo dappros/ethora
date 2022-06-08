@@ -54,13 +54,14 @@ import {fileUpload} from '../config/routesConstants';
 import {httpUpload} from '../config/apiService';
 import {showToast} from '../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
+import {imageMimetypes, videoMimetypes} from '../constants/mimeTypes';
 
 const ChatScreen = observer(({route, navigation}: any) => {
   const [modalType, setModalType] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [extraData, setExtraData] = useState<{}>({});
   const [recording, setRecording] = useState<boolean>(false);
-  const [progressVal, setProgressVal] = useState<any>();
+  const [fileUploadProgress, setFileUploadProgress] = useState(0);
 
   const {loginStore, chatStore, walletStore, apiStore, debugStore} =
     useStores();
@@ -103,24 +104,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
       getRoomArchiveStanza(chatJid, chatStore.xmpp);
     }
-
   }, [chatJid]);
 
   useEffect(() => {
     if (tokenTransferSuccess.success) {
-      const data = {
-        senderName: tokenTransferSuccess.senderName,
+      const message = systemMessage({
+        ...tokenTransferSuccess,
         tokenAmount: tokenTransferSuccess.amount,
-        tokenName: tokenTransferSuccess.tokenName,
-        receiverMessageId: tokenTransferSuccess.receiverMessageId,
-        receiverName: tokenTransferSuccess.receiverName,
-      };
-      const message = systemMessage(data);
+      });
       sendMessage(message, true);
+      walletStore.clearPreviousTransfer();
     }
   }, [tokenTransferSuccess.success]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const lastMessage = messages?.[0];
     chatStore.updateRoomInfo(chatJid, {
       archiveRequested: true,
@@ -129,7 +126,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       lastMessageTime:
         lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
     });
-  },[messages])
+  }, [messages]);
 
   // useEffect(()=>{
   //   chatStore.toggleShouldCount(false);
@@ -214,6 +211,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
   };
   const onMediaMessagePress = (type: any, url: any) => {
+    console.log(url);
     setMediaModal({open: true, type, url});
   };
 
@@ -231,12 +229,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
       id,
       imageLocation,
     } = props.currentMessage;
-    if (mimetype === 'image/jpeg' || mimetype === 'image/png') {
+    if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
       return (
         <ImageMessage
-          url={imageLocation}
+          url={image}
           size={size}
-          onPress={() => onMediaMessagePress(mimetype, imageLocation)}
+          onPress={() => onMediaMessagePress(mimetype, image)}
         />
       );
     } else {
@@ -269,17 +267,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         chatJid,
         token,
         jid,
-        senderName: message.user.name,
-      };
-    } else {
-      extraData = {
-        type: 'transfer',
-        amnt: null,
-        name: message.user.name,
-        chatJid,
-        message_id: message._id,
-        jid: message.jid,
-        senderName: message.name,
+        senderName:
+          loginStore.initialData.firstName +
+          ' ' +
+          loginStore.initialData.lastName,
       };
     }
     setShowModal(true);
@@ -346,15 +337,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
       audioSet,
       true,
     );
-
-    // this.setState({
-    //   recording: true,
-    // });
   };
 
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== 'ios') {
-
       let ddd = await NativeModules.Waveform.getWaveformArray(url);
 
       const data = JSON.parse(ddd);
@@ -398,10 +384,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const normalizedData = normalizeData(filterData(data));
 
     return normalizedData;
-  };
-
-  const setUploadProgress = (val: any) => {
-    setProgressVal(val);
   };
 
   const submitMediaMessage = (props: any, waveForm?: any) => {
@@ -464,8 +446,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         filesApiURL,
         data,
         loginStore.userToken,
-        setUploadProgress,
+        setFileUploadProgress,
       );
+      setFileUploadProgress(0);
+
       if (response.data.results.length) {
         debugStore.addLogsApi(response.data.results);
         submitMediaMessage(response.data.results, waveform);
@@ -517,8 +501,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
                     filesApiURL,
                     data,
                     loginStore.userToken,
-                    setUploadProgress,
+                    setFileUploadProgress,
                   );
+                  setFileUploadProgress(0);
                   if (response.data.results?.length) {
                     debugStore.addLogsApi(response.data.results);
                     if (response.data.results[0].mimetype === 'audio/mpeg') {
@@ -627,6 +612,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
         messages={messages}
         renderAvatarOnTop
         onPressAvatar={onUserAvatarPress}
+        placeholder={
+          fileUploadProgress > 0
+            ? 'File uploaded on: ' + fileUploadProgress + '%'
+            : 'Type a message'
+        }
         listViewProps={{
           onEndReached: onLoadEarlier,
           onEndReachedThreshold: 0.05,
