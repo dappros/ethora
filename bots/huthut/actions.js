@@ -62,11 +62,11 @@ const messageCheck = (str, keywords) => {
 }
 
 const userSteps = (type, jid, newStep) => {
-    // console.log('=>=> Run user steps, find user. Type: ', type, ' user jid: ', jid);
+    console.log('=>=> Run user steps, find user. Type: ', type, ' user jid: ', jid);
     let userIndex = userStepsList.findIndex(user => user.name === jid);
 
     if (userIndex < 0) {
-        // console.log('=>=> Create user step', jid);
+        console.log('=>=> Create user step', jid);
         userStepsList.push({name: jid, step: 1});
         return 1;
     }
@@ -76,7 +76,7 @@ const userSteps = (type, jid, newStep) => {
     }
 
     if (type === 'setStep') {
-        // console.log('=>=> Set new step for user ', jid)
+        console.log('=>=> Set new step for user ', jid)
         userStepsList[userIndex].step = newStep;
         return true;
     }

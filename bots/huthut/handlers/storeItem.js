@@ -15,7 +15,7 @@ export const storeItemHandler = (data) => {
                 0,
             );
         }
-        userSteps('setStep', data.sender, 1);
+        userSteps('setStep', data.receiver, 1);
         return sendMessage(
             data,
             messages.visitingHut.storeItemSuccess,

@@ -17,7 +17,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
     }
 
     if (requestType === 'body') {
-        let userStep = userSteps('getStep', sender, null);
+        let userStep = userSteps('getStep', receiver, null);
 
         let handlerData = {
             xmpp,

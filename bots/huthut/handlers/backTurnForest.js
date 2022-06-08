@@ -10,5 +10,5 @@ export const backTurnForestHandler = (data) => {
         false,
         0,
     );
-    userSteps('setStep', data.sender, 2);
+    userSteps('setStep', data.receiver, 2);
 }

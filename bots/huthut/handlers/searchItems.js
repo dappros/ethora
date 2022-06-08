@@ -19,7 +19,7 @@ export const searchItemsHandler = (data) => {
         }
 
         getRandomItem().then((response) => {
-            userSteps('setStep', data.sender, 1);
+            userSteps('setStep', data.receiver, 1);
             if (response) {
                 sendMessage(
                     data,
