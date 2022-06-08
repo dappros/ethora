@@ -8,13 +8,11 @@ import {router} from "./router.js";
 import {botLogin} from "./api.js";
 import 'dotenv/config';
 
-botOptions.serverType = process.argv[0];
-
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
 });
 
-debug(xmpp, true);
+debug(xmpp, false);
 
 xmpp.on("offline", () => console.log("OFFLINE: xmpp disconnected and no automatic attempt to reconnect will happen"));
 
@@ -68,6 +66,10 @@ xmpp.on('online', jid => {
         console.log('CONNECTED')
     }).catch(error => {
         console.log('botLogin Error: ', error);
+        xmpp.stop().catch(console.error);
+        return xmpp.on("offline", () => {
+            console.log("offline");
+        });
     });
 
     console.log('ONLINE:', jid.toString());
