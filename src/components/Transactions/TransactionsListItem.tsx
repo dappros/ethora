@@ -1,10 +1,13 @@
 import {Box, HStack, Image, Text, VStack} from 'native-base';
-import React from 'react';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {coinImagePath, commonColors} from '../../../docs/config';
+import React, {useState} from 'react';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { TransactionsListitemDate } from './TransactionsListItemDate';
-// import {TransactionsListitemDate} from './TransactionsListitemDate';
+import {TransactionsListitemDate} from './TransactionsListItemDate';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
 export const TransactionsListItem = ({
   transactionReceiver,
@@ -17,11 +20,16 @@ export const TransactionsListItem = ({
   transactionOwnerWalletAddress,
   showDate,
   formattedDate,
-}:any) => {
+  blockNumber,
+  transactionHash,
+  timestamp,
+  image,
+}: any) => {
   const isTransactionOwner =
     senderWalletAddress === transactionOwnerWalletAddress;
+  const [expanded, setExpanded] = useState(false);
   return (
-    <Box>
+    <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
       <Box borderColor="coolGray.200" borderWidth="1" p={'3'}>
         <HStack justifyContent={'space-between'}>
@@ -57,12 +65,21 @@ export const TransactionsListItem = ({
           </HStack>
           <HStack justifyContent={'center'} space={1} alignItems={'center'}>
             <Box>
-              <Image
-                alt="logo"
-                height={hp('3%')}
-                width={hp('3%')}
-                source={coinImagePath}
-              />
+              {image ? (
+                <Image
+                  alt="logo"
+                  height={hp('5%')}
+                  width={hp('7%')}
+                  source={{uri: image}}
+                />
+              ) : (
+                <Image
+                  alt="logo"
+                  height={hp('3%')}
+                  width={hp('3%')}
+                  source={coinImagePath}
+                />
+              )}
             </Box>
             <Box>
               <Text fontWeight={'bold'}>{transactionValue}</Text>
@@ -76,7 +93,118 @@ export const TransactionsListItem = ({
             </Box>
           </HStack>
         </HStack>
+        {expanded && (
+          <View style={{paddingHorizontal: 20}}>
+            {/* <Text style={styles.detailsItemTextBold}>Details:</Text> */}
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>TX hash: </Text>
+              <Text style={{textAlign: 'left', color: 'black'}}>
+                {transactionHash}
+              </Text>
+            </View>
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>From:</Text>
+              <View>
+                <Text style={{textAlign: 'left'}}>{transactionSender}</Text>
+              </View>
+            </View>
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>To:</Text>
+              <View>
+                <Text style={{textAlign: 'left'}}>{transactionReceiver}</Text>
+              </View>
+            </View>
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
+              <View>
+                <Text style={{textAlign: 'left'}}>{timestamp}</Text>
+              </View>
+            </View>
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>Value:</Text>
+              <View>
+                <Text style={{textAlign: 'left'}}>{transactionValue}</Text>
+              </View>
+            </View>
+            <View style={styles.detailsItem}>
+              <Text style={styles.detailsItemTextBold}>Block:</Text>
+              <View>
+                <Text style={{textAlign: 'left'}}>
+                  {String(blockNumber).replace(/(.)(?=(\d{3})+$)/g, '$1,')}
+                </Text>
+              </View>
+            </View>
+
+            {/* <Text>To: {JSON.stringify(item)}</Text> */}
+          </View>
+        )}
       </Box>
-    </Box>
+    </TouchableOpacity>
   );
 };
+const styles = StyleSheet.create({
+  tokenIconStyle: {
+    height: hp('3%'),
+    width: hp('3%'),
+  },
+  imagePreviewStyle: {
+    height: hp('5%'),
+    width: hp('7%'),
+  },
+  headerContainer: {
+    backgroundColor: '#7E7E7E',
+    height: hp('3%'),
+    justifyContent: 'center',
+  },
+  headerText: {
+    fontFamily: textStyles.lightFont,
+    textAlign: 'center',
+    color: 'white',
+  },
+  itemName: {
+    width: hp('4%'),
+    height: hp('4%'),
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: commonColors.primaryColor,
+    marginTop: 2,
+  },
+  itemNameText: {
+    fontSize: hp('1.46%'),
+    color: 'white',
+  },
+  rowEnd: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  tabItemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    borderWidth: 0.5,
+    borderColor: '#00000029',
+  },
+  tabItem: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    height: hp('8.12%'),
+  },
+  tabItemText: {
+    color: commonColors.primaryColor,
+    fontSize: hp('2.216%'),
+    fontFamily: textStyles.boldFont,
+  },
+  detailsItem: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 5,
+    paddingRight: wp('20%'),
+    maxWidth: '100%',
+  },
+  detailsItemTextBold: {
+    width: wp('23%'),
+    fontWeight: '700',
+  },
+});

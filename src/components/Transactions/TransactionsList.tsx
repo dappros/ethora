@@ -45,8 +45,12 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
       transactionReceiver={receiverFirstName + ' ' + receiverLastName}
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
       item={item}
+      blockNumber={blockNumber}
+      transactionHash={transactionHash}
+      timestamp={timestamp}
       showDate={showDate}
       formattedDate={formattedDate}
+      image={item.nftFileUrl || item.nftPreview}
     />
   );
 };
@@ -60,7 +64,6 @@ interface TransactionListProps {
 const TransactionsList = observer(
   ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
     const [activeFilter, setActiveFilter] = useState(FILTERS.all);
-
     const getFilteredTransactions = () => {
       if (activeFilter === FILTERS.all) {
         return transactions;
@@ -95,7 +98,7 @@ const TransactionsList = observer(
               transactionOwnerWalletAddress={walletAddress}
             />
           )}
-          onEndReached={() => onEndReached()}
+          onEndReached={onEndReached}
           data={compareTransactionsDate(getFilteredTransactions())}
           keyExtractor={item => item._id}
         />

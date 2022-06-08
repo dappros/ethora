@@ -25,7 +25,7 @@ interface NftListItemProps {
   index: number;
   item: any;
   mimetype: string;
-  itemSelected: string;
+  itemSelected: boolean;
   onAssetPress: () => void;
 }
 
