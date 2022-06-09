@@ -71,7 +71,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
         }
 
         //Global message handlers not associated with steps
-        if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0) {
+        if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0 && messageCheck(message, 'hut')) {
             return sendMessage(
                 handlerData,
                 messages.visitingHut.tnxForTransaction,
