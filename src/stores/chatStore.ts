@@ -1,7 +1,7 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
 import {action, makeAutoObservable, runInAction} from 'mobx';
-import { Toast } from 'native-base';
+import {Toast} from 'native-base';
 import {
   addChatRoom,
   getChatRoom,
@@ -27,7 +27,12 @@ import {
   updateVCard,
   vcardRetrievalRequest,
 } from '../xmpp/stanzas';
-import {DOMAIN, SERVICE, XMPP_TYPES} from '../xmpp/xmppConstants';
+import {
+  CONFERENCEDOMAIN,
+  DOMAIN,
+  SERVICE,
+  XMPP_TYPES,
+} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
 
 interface recentRealtimeChatProps {
@@ -135,7 +140,6 @@ export class ChatStore {
     } catch (error) {}
   };
   getCachedMessages = async () => {
-    console.log('incachedmessages');
     const messages = await getAllMessages();
     runInAction(() => {
       this.messages = messages;
@@ -235,7 +239,9 @@ export class ChatStore {
   };
 
   xmppListener = async () => {
-    const xmppUsername = this.stores.loginStore.initialData.xmppUsername;
+    const xmppUsername = underscoreManipulation(
+      this.stores.loginStore.initialData.walletAddress,
+    );
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
       // console.log(stanza)
@@ -314,16 +320,14 @@ export class ChatStore {
             priority: 0,
           };
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-          subscribeToRoom(item.attrs.jid, xmppUsername, this.xmpp);
           this.updateRoomInfo(item.attrs.jid, {
             name: item.attrs.name,
             participants: +item.attrs.users_cnt,
           });
+          console.log(item.attrs.name);
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat?.jid) {
-              addChatRoom(rosterObject).then(item =>
-                console.log('hello added'),
-              );
+              addChatRoom(rosterObject).then(item => console.log('added room'));
             }
           });
 
@@ -335,7 +339,11 @@ export class ChatStore {
         this.setRooms(roomsArray);
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
-      if (stanza.name === 'message') {
+      if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
+        presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
+        getUserRoomsStanza(xmppUsername, this.xmpp);
+      }
+      if (stanza.is('message')) {
         //capture message composing
         if (
           stanza?.children[0]?.children[0]?.children[0]?.children[2]
@@ -422,10 +430,6 @@ export class ChatStore {
         }
 
         //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
-        if (stanza.attrs.id === XMPP_TYPES.newSubscription) {
-          presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
-          getUserRoomsStanza(xmppUsername, this.xmpp);
-        }
 
         //To capture the response for list of rosters (for now only subscribed muc)
 
@@ -436,6 +440,16 @@ export class ChatStore {
     this.xmpp.on('online', async address => {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
+      const nonMembersChatjid =
+        'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5' +
+        CONFERENCEDOMAIN;
+      subscribeToRoom(
+        nonMembersChatjid,
+        underscoreManipulation(
+          this.stores.loginStore.initialData.walletAddress,
+        ),
+        this.xmpp,
+      );
       getUserRoomsStanza(xmppUsername, this.xmpp);
 
       // commonDiscover(xmppUsername, DOMAIN, this.xmpp);
