@@ -23,6 +23,7 @@ import Modal from 'react-native-modal';
 import {Input, Text, View} from 'native-base';
 import {commonColors} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
+import { deleteChatRoom } from '../realmModels/chatList';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
@@ -77,10 +78,11 @@ export const RoomList = observer(({roomsList}: any) => {
     unsubscribeFromRoom(jid);
   };
 
-  const unsubscribeFromRoom = (jid: string) => {
+  const unsubscribeFromRoom = async (jid: string) => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, jid, chatStore.xmpp);
-
-    getUserRoomsStanza(manipulatedWalletAddress, chatStore.xmpp);
+    await deleteChatRoom(jid);
+    chatStore.getRoomsFromCache()
+    chatStore.updateRoomInfo(jid, {archiveRequested: false})
   };
 
   const toggleMovingChats = () => {
