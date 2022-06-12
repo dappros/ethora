@@ -14,7 +14,7 @@ const UserSchema = {
   properties: {
     _id: 'string',
     name: 'string',
-    avatar: 'string',
+    avatar: {type: 'string', optional: true},
   },
 };
 
