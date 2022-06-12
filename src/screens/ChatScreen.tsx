@@ -55,6 +55,7 @@ import {httpUpload} from '../config/apiService';
 import {showToast} from '../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
 import {imageMimetypes, videoMimetypes} from '../constants/mimeTypes';
+import { normalizeData } from '../helpers/normalizeData';
 
 const ChatScreen = observer(({route, navigation}: any) => {
   const [modalType, setModalType] = useState<string | undefined>(undefined);
@@ -95,9 +96,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   useEffect(() => {
     chatStore.toggleShouldCount(false);
     chatStore.getCachedMessages();
-    return function cleanup() {
-      chatStore.updateBadgeCounter(chatJid, 'CLEAR');
-    };
   }, []);
 
   useEffect(() => {
@@ -126,14 +124,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       lastMessageTime:
         lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
     });
-  }, [messages]);
-
-  // useEffect(()=>{
-  //   chatStore.toggleShouldCount(false);
-  //   return function cleanup() {
-  //     chatStore.toggleShouldCount(true)
-  //   };
-  // },[])
+  }, [!!messages]);
 
   const renderMessage = props => {
     return <MessageBody {...props} />;
@@ -351,14 +342,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
   };
 
-  const normalizeData = (filteredData: any) => {
-    const maxValue = Math.max(...filteredData);
-    const multiplier = maxValue ** -1;
-
-    return !maxValue
-      ? filteredData
-      : filteredData.map((val: any) => val * multiplier);
-  };
+ 
 
   function filterData(arr) {
     const samples = 24;
@@ -598,10 +582,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
       </Send>
     );
   };
-
   return (
     <>
-      <SecondaryHeader title={chatName} isQR={true} onQRPressed={QRPressed} />
+      <SecondaryHeader
+        title={chatStore.roomsInfoMap[chatJid]?.name}
+        isQR={true}
+        onQRPressed={QRPressed}
+      />
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
