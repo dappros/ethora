@@ -54,8 +54,17 @@ import {fileUpload} from '../config/routesConstants';
 import {httpUpload} from '../config/apiService';
 import {showToast} from '../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
-import {imageMimetypes, videoMimetypes} from '../constants/mimeTypes';
-import { normalizeData } from '../helpers/normalizeData';
+import {
+  audioMimetypes,
+  imageMimetypes,
+  videoMimetypes,
+} from '../constants/mimeTypes';
+import {normalizeData} from '../helpers/normalizeData';
+import {formatBytes} from '../helpers/chat/formatBytes';
+import {AudioMessage} from '../components/Chat/AudioMessage';
+import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
+
+const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
   const [modalType, setModalType] = useState<string | undefined>(undefined);
@@ -70,8 +79,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const {firstName, lastName, walletAddress} = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
-
-  const audioRecorderPlayer = new AudioRecorderPlayer();
 
   const mediaButtonAnimation = new Animated.Value(1);
 
@@ -220,12 +227,30 @@ const ChatScreen = observer(({route, navigation}: any) => {
       id,
       imageLocation,
     } = props.currentMessage;
+
+    let formatedSize = {size: 0, unit: 'KB'};
+    formatedSize = formatBytes(parseFloat(size), 2);
+    let parsedWaveform = [];
+    try {
+      parsedWaveform = JSON.parse(waveForm);
+    } catch (error) {
+      console.log('cant parse wave');
+    }
     if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
       return (
         <ImageMessage
           url={image}
           size={size}
           onPress={() => onMediaMessagePress(mimetype, image)}
+        />
+      );
+    } else if (audioMimetypes[mimetype]) {
+      return (
+        <AudioMessage
+          waveform={parsedWaveform}
+          message={props}
+          onPress={() => onMediaMessagePress(mimetype, image)}
+          onLongPress={handleOnLongPress}
         />
       );
     } else {
@@ -328,6 +353,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       audioSet,
       true,
     );
+    console.log(result);
   };
 
   const getWaveformArray = async (url: string) => {
@@ -341,8 +367,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
       return res;
     }
   };
-
- 
 
   function filterData(arr) {
     const samples = 24;
@@ -366,7 +390,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
         : path);
     const data = await getWaveformArray(audioPath);
     const normalizedData = normalizeData(filterData(data));
-
     return normalizedData;
   };
 
@@ -589,6 +612,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
         isQR={true}
         onQRPressed={QRPressed}
       />
+       {audioMimetypes[mediaModal.type] && (
+        <AudioPlayer audioUrl={mediaModal.url} />
+      )}
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
@@ -638,11 +664,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
           },
         ]}
       />
+      
+
       <ChatMediaModal
         url={mediaModal.url}
         type={mediaModal.type}
         onClose={closeMediaModal}
-        open={mediaModal.open}
+        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
       />
       <TransactionModal
         type={modalType}
@@ -650,6 +678,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         extraData={extraData}
         isVisible={showModal}
       />
+     
     </>
   );
 });

@@ -22,6 +22,7 @@ import PushNotification from 'react-native-push-notification';
 import axios from 'axios';
 import {subscribePushNotification} from '../config/routesConstants';
 import {Platform} from 'react-native';
+import { DebugScreen } from '../screens/DebugScreen';
 
 const HomeStack = createNativeStackNavigator();
 export const subscribeForPushNotifications = async data => {
@@ -54,7 +55,7 @@ export const HomeStackScreen = observer(() => {
             underscoreManipulation(loginStore.initialData.walletAddress) +
             '@' +
             apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT,
-          screenName: 'dxtap',
+          screenName: 'Ethora',
         });
         console.log(res.data);
       },
@@ -149,6 +150,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.ACCOUNT}
         component={AccountScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+       <HomeStack.Screen
+        name={ROUTES.DEBUG}
+        component={DebugScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}
