@@ -245,6 +245,7 @@ export class ChatStore {
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
       // console.log(stanza)
+      this.stores.debugStore.addLogsXmpp(stanza)
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
         let anotherUserDescription = '';
