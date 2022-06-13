@@ -5,41 +5,40 @@ import {TouchableOpacity} from 'react-native';
 import {ROUTES} from '../../constants/routes';
 import Icon from 'react-native-vector-icons/Entypo';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { itemsMintingAllowed } from '../../../docs/config';
-import { useStores } from '../../stores/context';
+import {itemsMintingAllowed} from '../../../docs/config';
+import {useStores} from '../../stores/context';
 
-const menuItems = (debug: boolean) => [
-  {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
-  {value: ROUTES.PROFILE, label: 'My profile', visible: true},
-  {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-  // {value: 'settings', label: 'Settings', visible: true},
-  {value: ROUTES.SCAN, label: 'Scan', visible: true},
-  // {value: 'myQr', label: 'QR', visible: true},
-  {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed},
-  {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
-  {value: ROUTES.DEBUG, label: 'Debug', visible: debug},
-  {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
-];
 
 export const HeaderMenu = () => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
-  const {
-    loginStore
-  } = useStores()
+  const {loginStore, debugStore} = useStores();
 
   const toggleMenu = () => {
     open ? setOpen(false) : setOpen(true);
   };
-  const onMenuItemPress = (value:any) => {
-      if(value===ROUTES.LOGOUT){
-        // resetStore()
-        // useStores().resetStore()
-          loginStore.logOut()
-      }else{
+  const menuItems = (debug: boolean) => [
+    {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
+    {value: ROUTES.PROFILE, label: 'My profile', visible: true},
+    {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
+    // {value: 'settings', label: 'Settings', visible: true},
+    {value: ROUTES.SCAN, label: 'Scan', visible: true},
+    // {value: 'myQr', label: 'QR', visible: true},
+    {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed},
+    {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
+    {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
+    {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
+  ];
+  
+  const onMenuItemPress = (value: any) => {
+    if (value === ROUTES.LOGOUT) {
+      // resetStore()
+      // useStores().resetStore()
+      loginStore.logOut();
+    } else {
       navigation.navigate(value);
-      }
+    }
   };
   return (
     <Box
@@ -57,7 +56,7 @@ export const HeaderMenu = () => {
             <TouchableOpacity
               {...triggerProps}
               style={{zIndex: 99999}}
-              onPress={()=>toggleMenu()}
+              onPress={() => toggleMenu()}
               accessibilityLabel="More options menu">
               <Icon name="menu" color="#FFFFFF" size={hp('3%')} />
             </TouchableOpacity>
