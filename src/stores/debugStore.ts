@@ -1,39 +1,43 @@
 import {makeAutoObservable, runInAction} from 'mobx';
-import { RootStore } from './context';
+import {RootStore} from './context';
 
-export class DebugStore{
-    xmppLogs:any= [];
-    apiLogs:any= [];
-    debugMode:boolean= false;
-    stores: RootStore|{}= {};
+export class DebugStore {
+  xmppLogs: any = [];
+  apiLogs: any = [];
+  debugMode: boolean = false;
+  stores: RootStore | {} = {};
 
-    constructor(stores:any){
-        makeAutoObservable(this);
-        this.stores = stores;
-    }
+  constructor(stores: any) {
+    makeAutoObservable(this);
+    this.stores = stores;
+  }
 
-    setInitialState(){
-        runInAction(()=>{
-            this.xmppLogs= [];
-            this.apiLogs= [];
-            this.debugMode= false;
-        })
-    }
+  setInitialState() {
+    runInAction(() => {
+      this.xmppLogs = [];
+      this.apiLogs = [];
+      this.debugMode = false;
+    });
+  }
 
-    addLogsXmpp(log:any){
-        this.xmppLogs = [...this.xmppLogs, log];
-    }
+  addLogsXmpp(log: any) {
+    runInAction(() => {
+       this.xmppLogs.push(log);
+    });
+  }
 
-    addLogsApi(log:any){
-        this.apiLogs = [...this.apiLogs, log];
-    }
+  addLogsApi(log: any) {
+    runInAction(() => {
+     this.apiLogs.push(log);
+    });
+  }
 
-    toggleDebugMode(value:boolean){
-        this.debugMode = value;
-    }
+  toggleDebugMode(value: boolean) {
+    this.debugMode = value;
+  }
 
-    clearLogs(){
-        this.xmppLogs = [];
-        this.apiLogs = [];
-    }
+  clearLogs() {
+    this.xmppLogs = [];
+    this.apiLogs = [];
+  }
 }
