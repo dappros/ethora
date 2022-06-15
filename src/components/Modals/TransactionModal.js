@@ -288,7 +288,7 @@ const SendItem = props => {
         <View style={styles.sendItemAndDMIconContainer}>
           <FontistoIcon name="arrow-swap" size={15} color="black" />
         </View>
-        <Text>Send Items</Text>
+        <Text style={{color: 'black'}}>Send Items</Text>
       </View>
     </TouchableOpacity>
   );

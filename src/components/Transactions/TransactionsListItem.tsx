@@ -117,7 +117,7 @@ export const TransactionsListItem = ({
             <View style={styles.detailsItem}>
               <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
               <View>
-                <Text style={{textAlign: 'left'}}>{timestamp}</Text>
+                <Text style={{textAlign: 'left'}}>{new Date(timestamp).getTime()}</Text>
               </View>
             </View>
             <View style={styles.detailsItem}>

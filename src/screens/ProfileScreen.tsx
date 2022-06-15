@@ -46,6 +46,7 @@ import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
 import {NftMediaModal} from '../components/NftMediaModal';
+import { observer } from 'mobx-react-lite';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont, lightFont, regularFont} = textStyles;
@@ -197,7 +198,7 @@ const firstLayout = [
   },
 ];
 
-const ProfileScreen = (props: any) => {
+export const ProfileScreen = observer((props: any) => {
   const {loginStore, walletStore} = useStores();
 
   const {setOffset, setTotal, clearPaginationData, balance, transactions} =
@@ -241,10 +242,7 @@ const ProfileScreen = (props: any) => {
     setOffset(0);
     setTotal(0);
     walletStore.fetchOwnTransactions(
-      walletAddress,
-
-      walletStore.limit,
-      walletStore.offset,
+      walletAddress,walletStore.limit, walletStore.offset
     );
     return () => {
       clearPaginationData();
@@ -259,7 +257,6 @@ const ProfileScreen = (props: any) => {
             item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
         ),
       );
-     
 
       setAssetCount(itemsBalance + coinData.length);
     }
@@ -393,9 +390,9 @@ const ProfileScreen = (props: any) => {
 
     if (activeTab === 1) {
       return (
-        <SafeAreaView style={{paddingBottom: '100%'}}>
+        <SafeAreaView style={{paddingBottom:hp('59%')}}>
           <TransactionsList
-            transactions={transactions.reverse()}
+            transactions={transactions}
             walletAddress={walletAddress}
             onEndReached={() => {
               if (transactions.length < walletStore.total) {
@@ -599,7 +596,7 @@ const ProfileScreen = (props: any) => {
       />
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
@@ -696,4 +693,3 @@ const styles = StyleSheet.create({
   contentSkeletonContainerStyle: {},
 });
 
-export default ProfileScreen;

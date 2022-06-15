@@ -7,7 +7,7 @@ import {ROUTES} from '../constants/routes';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import ChatScreen from '../screens/ChatScreen';
 import OtherUserPorfileScreen from '../screens/OtherUserProfileScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import {ProfileScreen} from '../screens/ProfileScreen';
 import RoomListScreen from '../screens/RoomListScreen';
 import TransactionsScreen from '../screens/TransactionsScreen';
 import NewChatScreen from '../screens/NewChatScreen';

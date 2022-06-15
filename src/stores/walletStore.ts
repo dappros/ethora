@@ -234,10 +234,6 @@ export class WalletStore {
         this.stores.debugStore.addLogsApi(response.data);
         this.offset = this.offset + response.data.limit;
         this.total = response.data.total;
-        runInAction(() => {
-          this.transactions = response.data.items;
-        });
-        console.log(response.data)
         const modifiedTransactions = response.data.items.map((item: any) => {
           if (item.tokenId === 'NFT') {
             if (item.from === walletAddress && item.from !== item.to) {
@@ -260,11 +256,12 @@ export class WalletStore {
         });
         for (const item of modifiedTransactions) {
           const transaction = await getTransaction(item.transactionHash);
-          if (!transaction) {
+          if (!transaction?.transactionHash) {
             await addTransaction(item);
           }
         }
-        // insertTransaction(response.data.items);
+        console.log(this.transactions.length)
+        this.getCachedTransactions();
       }
     } catch (error) {
       runInAction(() => {
@@ -278,7 +275,10 @@ export class WalletStore {
   getCachedTransactions = async () => {
     const transactions = await queryAllTransactions();
     runInAction(() => {
-      this.transactions = transactions;
+      this.transactions = transactions.sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      );
     });
   };
 

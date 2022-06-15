@@ -2,6 +2,7 @@ import {observer} from 'mobx-react-lite';
 import {View} from 'native-base';
 import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import TransactionsList from '../components/Transactions/TransactionsList';
 import {useStores} from '../stores/context';
@@ -9,10 +10,8 @@ import {useStores} from '../stores/context';
 const TransactionsScreen = observer(() => {
   const {walletStore, loginStore} = useStores();
   useEffect(() => {
-    walletStore.fetchTransaction(
+    walletStore.fetchOwnTransactions(
       loginStore.initialData.walletAddress,
-      loginStore.userToken,
-      true,
       walletStore.limit,
       walletStore.offset,
     );
@@ -20,10 +19,10 @@ const TransactionsScreen = observer(() => {
   }, []);
 
   return (
-    <View flex={1}>
+    <View flex={1} pb={heightPercentageToDP('15%')}>
       <SecondaryHeader title="Transactions" />
       <TransactionsList
-        transactions={walletStore.transactions.slice().reverse()}
+        transactions={walletStore.transactions}
         onEndReached={() => {
           if (walletStore.transactions.length < walletStore.total) {
             walletStore.fetchTransaction(

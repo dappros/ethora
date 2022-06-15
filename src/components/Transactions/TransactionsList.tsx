@@ -92,6 +92,7 @@ const TransactionsList = observer(
         <FlatList
           height={'100%'}
           scrollEnabled
+          style={{paddingBottom: 50}}
           renderItem={({item}) => (
             <RenderTransactionItem
               item={item}

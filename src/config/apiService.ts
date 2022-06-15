@@ -68,6 +68,7 @@ export const httpUpload = async (url, body, token, onProgress) => {
     },
     onUploadProgress: ev => {
       const progress = (ev.loaded / ev.total) * 100;
+      console.log(ev)
       onProgress(Math.round(progress));
     },
   });
