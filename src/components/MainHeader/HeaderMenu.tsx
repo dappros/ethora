@@ -5,59 +5,39 @@ import {TouchableOpacity} from 'react-native';
 import {ROUTES} from '../../constants/routes';
 import Icon from 'react-native-vector-icons/Entypo';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { itemsMintingAllowed, textStyles } from '../../../docs/config';
-import { useStores } from '../../stores/context';
+import {itemsMintingAllowed, textStyles} from '../../../docs/config';
+import {useStores} from '../../stores/context';
 import SubMenu from './SubMenu';
-
-
-
 
 export const HeaderMenu = () => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
-  const {
-    loginStore,
-    debugStore
-  } = useStores()
+  const {loginStore, debugStore} = useStores();
 
   const AccountMenuItems = [
     {value: ROUTES.PROFILE, label: 'My profile', visible: true},
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
     {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
-  ]
-  
+  ];
+
   const ActionsMenuItems = [
     {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
     {value: ROUTES.SCAN, label: 'Scan', visible: true},
-    {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed}
-  ]
-  
+    {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed},
+  ];
+
   const SystemMenuItems = [
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
-    {value: ROUTES.LOGOUT, label: 'Logout', visible: true}
-  ]
+    {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
+  ];
 
   const toggleMenu = () => {
     open ? setOpen(false) : setOpen(true);
   };
-  const menuItems = (debug: boolean) => [
-    {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
-    {value: ROUTES.PROFILE, label: 'My profile', visible: true},
-    {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-    // {value: 'settings', label: 'Settings', visible: true},
-    {value: ROUTES.SCAN, label: 'Scan', visible: true},
-    // {value: 'myQr', label: 'QR', visible: true},
-    {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed},
-    {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
-    {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
-    {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
-  ];
-  
+
   const onMenuItemPress = (value: any) => {
     if (value === ROUTES.LOGOUT) {
-      // resetStore()
-      // useStores().resetStore()
       loginStore.logOut();
     } else {
       navigation.navigate(value);
@@ -86,23 +66,23 @@ export const HeaderMenu = () => {
             </TouchableOpacity>
           );
         }}>
-          <SubMenu
-          title='ACCOUNT'
+        <SubMenu
+          title="ACCOUNT"
           menuItems={AccountMenuItems}
           onMenuItemPress={onMenuItemPress}
-          />
-          <Divider/>
-          <SubMenu
-          title='ACTIONS'
+        />
+        <Divider />
+        <SubMenu
+          title="ACTIONS"
           menuItems={ActionsMenuItems}
           onMenuItemPress={onMenuItemPress}
-          />
-          <Divider/>
-          <SubMenu
-          title='SYSTEM'
+        />
+        <Divider />
+        <SubMenu
+          title="SYSTEM"
           menuItems={SystemMenuItems}
           onMenuItemPress={onMenuItemPress}
-          />
+        />
       </Menu>
     </Box>
   );
