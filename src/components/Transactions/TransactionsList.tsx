@@ -101,7 +101,7 @@ const TransactionsList = observer(
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(getFilteredTransactions())}
-          keyExtractor={item => item._id}
+          keyExtractor={item => item.transactionHash}
         />
       </Box>
     );
