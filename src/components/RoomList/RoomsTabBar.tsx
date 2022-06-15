@@ -4,7 +4,8 @@ import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
-import {commonColors, defaultChats} from '../../../docs/config';
+import {commonColors, defaultChats, textStyles} from '../../../docs/config';
+import { Text } from 'native-base';
 
 const ROOM_KEYS = {
   official: 'official',
@@ -15,6 +16,13 @@ const ROOM_KEYS = {
 const renderTabBar = (props: any) => {
   return (
     <TabBar
+      renderLabel={({route, focused})=>(
+        <Text
+        color={focused?'white':'info.200'}
+        fontFamily={textStyles.semiBoldFont}>
+          {route.title}
+        </Text>
+      )}
       {...props}
       indicatorStyle={{backgroundColor: 'white'}}
       style={{backgroundColor: commonColors.primaryDarkColor}}

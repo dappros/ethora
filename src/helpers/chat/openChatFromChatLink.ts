@@ -7,15 +7,6 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 import {underscoreManipulation} from '../underscoreLogic';
 import {subscribeToRoom, getUserRoomsStanza} from '../../xmpp/stanzas';
 import {ROUTES} from '../../constants/routes';
-// import {
-//   subscribeAndOpenChat,
-//   fetchRosterlist as fetchStanzaRosterList,
-//   getUserRooms,
-// } from './xmppStanzaRequestMessages';
-// import {
-//   CONFERENCEDOMAIN,
-//   subscriptionsStanzaID,
-// } from '../constants/xmppConstants';
 
 const openChatFromChatLink = (
   chatJID: string,

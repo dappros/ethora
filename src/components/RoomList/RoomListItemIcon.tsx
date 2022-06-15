@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   fullName: {
     color: 'white',
     marginRight: 3,
-    //   fontFamily: mediumRobotoFont,
+      fontFamily: textStyles.boldFont,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
   counterText: {
     fontFamily: textStyles.regularFont,
     fontSize: hp('1%'),
-
     color: '#FFFFFF',
   },
 });

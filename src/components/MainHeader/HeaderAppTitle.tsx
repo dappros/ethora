@@ -2,7 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Box, Text} from 'native-base';
 import React from 'react';
 import {Pressable, StyleSheet} from 'react-native';
-import {appTitle} from '../../../docs/config';
+import { appTitle, textStyles } from '../../../docs/config';
 import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
 let counter = 0;
@@ -19,7 +19,10 @@ export const HeaderAppTitle = () => {
   return (
     <Box ml={2} alignItems={'center'} justifyContent={'center'}>
       <Pressable onPress={onTitlePress} style={styles.appTitleButton}>
-        <Text fontSize={'2xl'} color={'white'}>
+        <Text
+        fontFamily={textStyles.boldFont}
+        fontSize={'2xl'}
+        color={'white'}>
           {appTitle}
         </Text>
       </Pressable>

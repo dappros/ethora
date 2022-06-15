@@ -19,26 +19,16 @@ import {
 import TransactionListTab from '../components/Transactions/TransactionsList';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import Icon from 'react-native-vector-icons/FontAwesome';
-// import {useDispatch, useSelector} from 'react-redux';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-// import CustomHeader from '../components/shared/customHeader';
-// import {CommonButton} from '../components/shared/customButtons';
 import {
   commonColors,
   textStyles,
   coinImagePath,
   itemsTransfersAllowed,
 } from '../../docs/config';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-// import {
-//   clearPaginationData,
-//   fetchTransaction,
-//   setOffset,
-//   setTotal,
-// } from '../actions/wallet';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
 import {Button} from 'native-base';
@@ -47,9 +37,20 @@ import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
 import {NftMediaModal} from '../components/NftMediaModal';
 import { observer } from 'mobx-react-lite';
+import Hyperlink from 'react-native-hyperlink';
+import parseChatLink from '../helpers/parseChatLink';
+import { pattern1, pattern2 } from '../helpers/chat/chatLinkpattern';
+import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+import { useNavigation } from '@react-navigation/native';
+import AntIcon from 'react-native-vector-icons/AntDesign';
+import ProfileModal from '../components/Modals/Profile/ProfileModal';
+import { updateVCard } from '../xmpp/stanzas';
+import axios from 'axios';
+import { registerUserURL } from '../config/routesConstants';
+import { showToast } from '../components/Toast/toast';
 
 const {primaryColor, primaryDarkColor} = commonColors;
-const {boldFont, lightFont, regularFont} = textStyles;
+const {boldFont} = textStyles;
 
 const handleSlide = (
   type:
@@ -198,13 +199,15 @@ const firstLayout = [
   },
 ];
 
-export const ProfileScreen = observer((props: any) => {
-  const {loginStore, walletStore} = useStores();
+export const ProfileScreen = (props: any) => {
+  const {loginStore, walletStore, chatStore, apiStore} = useStores();
+
+  const navigation = useNavigation()
 
   const {setOffset, setTotal, clearPaginationData, balance, transactions} =
     walletStore;
 
-  const {userAvatar, userDescription, initialData} = loginStore;
+  const {userAvatar, userDescription, initialData, updateUserDisplayName, userToken} = loginStore;
 
   const {firstName, lastName, walletAddress} = initialData;
 
@@ -230,6 +233,16 @@ export const ProfileScreen = observer((props: any) => {
     url: '',
     mimetype: '',
   });
+
+  const [modalType, setModalType] = useState<'name'|'description'|''>('');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [isDescriptionEditable, setIsDescriptionEditable] = useState<boolean>(false);
+  const [descriptionLocal, setDescriptionLocal] = useState<string>(userDescription);
+  const [firstNameLocal, setFirstNameLocal] = useState<string>(firstName);
+  const [lastNameLocal, setLastNameLocal] = useState<string>(lastName);
+  const [userAvatarLocal, setUserAvatarLocal] = useState<string>(userAvatar)
+
+
   useEffect(() => {
     handleSlide(
       activeTab === 0 ? xTabOne : activeTab === 1 ? xTabTwo : xTabThree,
@@ -409,10 +422,96 @@ export const ProfileScreen = observer((props: any) => {
     }
   };
 
+  const onNamePressed = () => {
+    setModalType('name');
+    setModalVisible(true);
+  }
+
+  const onDescriptionPressed = () => {
+    setIsDescriptionEditable(true);
+    setModalType('description');
+    setModalVisible(true)
+  }
+
+  //changes the user description locally
+  const onDescriptionChange = (text:string) => {
+    setDescriptionLocal(text);
+  }
+
+  //when user clicks on the backdrop of the modal
+  const onBackdropPress = () => {
+    setFirstNameLocal(firstName);
+    setLastNameLocal(lastName);
+    setDescriptionLocal(userDescription);
+    setIsDescriptionEditable(!isDescriptionEditable);
+    setModalVisible(false)
+  };
+
+
+  //changes the user's profile name locally
+  const onNameChange = (type:'firstName'|'lastName',text:string) => {
+    if(type==='firstName'){
+      setFirstNameLocal(text)
+    }else{
+      setLastNameLocal(text)
+    }
+  }
+
+  const setDescription = () => {
+    if(userAvatarLocal && descriptionLocal){
+      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp)
+    }
+
+    if(!descriptionLocal){
+      updateVCard(userAvatarLocal, "No description", chatStore.xmpp)
+    }
+    setIsDescriptionEditable(false);
+    setModalVisible(false)
+  }
+
+
+  const setNewName = () => {
+    //call api to dapp server to change username
+    //save in async storage
+    //and then change in mobx store
+    if(firstNameLocal){
+      const bodyData = {
+        firstName: firstNameLocal,
+        lastName: lastNameLocal
+      }
+      updateUserDisplayName(bodyData);
+    }else{
+      setFirstNameLocal(firstName);
+      showToast('error','Error','First name is required', 'top')
+    }
+    setModalVisible(false)
+  }
+
+
+  const handleChatLinks = (url:string) => {
+
+    const chatJid = parseChatLink(url);
+
+    //argument url can be a chatlink or simple link
+    //first check if url is a chat link if yes then open chatlink else open the link via browser 
+    if(pattern1.test(url) || pattern2.test(url)){
+      openChatFromChatLink(
+        chatJid,
+        walletAddress,
+        navigation,
+        chatStore.xmpp
+      )
+    }else{
+      Linking.openURL(url);
+    }
+
+  }
+  
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        <SecondaryHeader title={"User's profile"} />
+        <SecondaryHeader title={"User's profile"} isQR />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <View
@@ -428,10 +527,10 @@ export const ProfileScreen = observer((props: any) => {
             <SkeletonContent
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
-              isLoading={!userAvatar}>
-              {userAvatar ? (
+              isLoading={!userAvatarLocal}>
+              {userAvatarLocal ? (
                 <Image
-                  source={{uri: userAvatar}}
+                  source={{uri: userAvatarLocal}}
                   style={{
                     height: hp('10.46%'),
                     width: hp('10.46%'),
@@ -444,7 +543,7 @@ export const ProfileScreen = observer((props: any) => {
                     fontSize: 40,
                     color: 'white',
                   }}>
-                  {firstName[0] + lastName[0]}
+                  {firstNameLocal[0] + lastNameLocal[0]}
                 </Text>
               )}
             </SkeletonContent>
@@ -465,15 +564,19 @@ export const ProfileScreen = observer((props: any) => {
                 layout={[
                   {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
                 ]}
-                isLoading={!firstName}>
-                <Text
-                  style={{
-                    fontSize: hp('2.216%'),
-                    fontFamily: 'Montserrat-Medium',
-                    color: '#000000',
-                  }}>
-                  {firstName} {lastName}
-                </Text>
+                isLoading={!firstNameLocal}>
+                <TouchableOpacity
+                 onPress={onNamePressed}
+                >
+                  <Text
+                    style={{
+                      fontSize: hp('2.216%'),
+                      fontFamily: 'Montserrat-Medium',
+                      color: '#000000',
+                    }}>
+                    {firstNameLocal} {lastNameLocal}
+                  </Text>
+                </TouchableOpacity>
               </SkeletonContent>
               <View
                 style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
@@ -483,20 +586,32 @@ export const ProfileScreen = observer((props: any) => {
                     paddingBottom: 0,
                     paddingTop: 0,
                   }}>
-                  <SkeletonContent
-                    containerStyle={{width: wp('100%'), alignItems: 'center'}}
-                    layout={[{width: wp('60%'), height: 70, marginBottom: 6}]}
-                    isLoading={!userDescription}>
-                    <Text
-                      style={{
-                        fontSize: hp('2.23%'),
-                        fontFamily: 'Montserrat-Regular',
-                        textAlign: 'center',
-                        color: primaryColor,
+                    <Hyperlink
+                      onPress={url => handleChatLinks(url)}
+                      linkStyle={{
+                        color: '#2980b9',
+                        fontSize: hp('1.8%'),
+                        textDecorationLine: 'underline',
                       }}>
-                      {userDescription}
-                    </Text>
-                  </SkeletonContent>
+                        <Text
+                          style={{
+                            fontSize: hp('2.23%'),
+                            fontFamily: 'Montserrat-Regular',
+                            textAlign: 'center',
+                            color: primaryColor,
+                          }}>
+                          {
+                            descriptionLocal && !isDescriptionEditable?
+                            descriptionLocal:
+                            'Add your description'
+                          }
+                        </Text>
+                        <TouchableOpacity
+                        onPress={onDescriptionPressed}
+                        style={{alignItems: 'center', margin: 10}}>
+                          <AntIcon name="edit" color={commonColors.primaryColor} size={hp('2%')} />
+                        </TouchableOpacity>
+                    </Hyperlink>
                 </View>
               </View>
             </View>
@@ -588,6 +703,19 @@ export const ProfileScreen = observer((props: any) => {
             /> */}
         </View>
       </View>
+      <ProfileModal
+        description={descriptionLocal}
+        firstName={firstNameLocal}
+        lastName={lastNameLocal}
+        isDescriptionEditable={isDescriptionEditable}
+        isVisible={modalVisible}
+        modalType={modalType}
+        onBackdropPress={onBackdropPress}
+        onDescriptionChange={onDescriptionChange}
+        onNameChange={onNameChange}
+        setDescription={setDescription}
+        setNewName={setNewName}
+      />
       <NftMediaModal
         modalVisible={mediaModalData.open}
         closeModal={() => setMediaModalData(prev => ({...prev, open: false}))}

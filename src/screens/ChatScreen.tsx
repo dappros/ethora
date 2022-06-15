@@ -6,6 +6,8 @@ import {
   getPaginatedArchive,
   getRoomArchiveStanza,
   getUserRoomsStanza,
+  isComposing,
+  pausedComposing,
   retrieveOtherUserVcard,
   sendMediaMessageStanza,
   sendMessageStanza,
@@ -30,7 +32,7 @@ import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
 import {Spinner, View} from 'native-base';
-import TransactionModal from '../components/Modals/TransactionModal/Test';
+import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
 import parseChatLink from '../helpers/parseChatLink';
@@ -42,7 +44,7 @@ import AudioRecorderPlayer, {
   AVEncodingOption,
 } from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
-import {commonColors} from '../../docs/config';
+import {allowIsTyping, commonColors} from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {RecordingSecondsCounter} from '../components/Recorder/RecordingSecondsCounter';
@@ -63,26 +65,39 @@ import {normalizeData} from '../helpers/normalizeData';
 import {formatBytes} from '../helpers/chat/formatBytes';
 import {AudioMessage} from '../components/Chat/AudioMessage';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
-
+import RenderChatFooter from '../components/Chat/RenderChatFooter';
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
-  const [modalType, setModalType] = useState<string | undefined>(undefined);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [extraData, setExtraData] = useState<{}>({});
-  const [recording, setRecording] = useState<boolean>(false);
-  const [fileUploadProgress, setFileUploadProgress] = useState(0);
+  const {
+    loginStore,
+    chatStore,
+    walletStore,
+    apiStore,
+    debugStore
+  } = useStores();
 
-  const {loginStore, chatStore, walletStore, apiStore, debugStore} =
-    useStores();
-
-  const {firstName, lastName, walletAddress} = loginStore.initialData;
+  const {
+    firstName,
+    lastName,
+    walletAddress
+  } = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
 
   const mediaButtonAnimation = new Animated.Value(1);
 
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+
+  const [modalType, setModalType] = useState<string | undefined>(undefined);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [extraData, setExtraData] = useState<{}>({});
+  const [recording, setRecording] = useState<boolean>(false);
+  const [fileUploadProgress, setFileUploadProgress] = useState<number>(0);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [composingUsername, setComposingUsername] = useState<string>('');
+
+  let inputTimer:any = 0;
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -132,6 +147,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
         lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
     });
   }, [!!messages]);
+
+  useEffect(() => {
+    if(chatStore.isComposing.chatJID === chatJid){
+      if(chatStore.isComposing.manipulatedWalletAddress !== manipulatedWalletAddress){
+        setIsTyping(chatStore.isComposing.state);
+        setComposingUsername(chatStore.isComposing.username)
+      }
+    }
+  },[chatStore.isComposing.state])
 
   const renderMessage = props => {
     return <MessageBody {...props} />;
@@ -216,6 +240,26 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const closeMediaModal = () => {
     setMediaModal({type: '', open: false, url: ''});
   };
+
+  const handleInputChange = () => {
+  const duration = 2000;
+  const fullName = firstName + ' ' + lastName;
+  clearTimeout(inputTimer);
+  isComposing(
+    manipulatedWalletAddress,
+    chatJid,
+    fullName,
+    chatStore.xmpp
+  ).then(() => {
+    inputTimer = setTimeout(() => {
+      pausedComposing(
+        manipulatedWalletAddress,
+        chatJid,
+        chatStore.xmpp);
+    }, duration);
+  });
+  }
+  
   const renderMessageImage = (props: any) => {
     const {
       image,
@@ -327,6 +371,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       useNativeDriver: true,
     }).start();
   };
+
   const animateMediaButtonOut = () => {
     Animated.spring(mediaButtonAnimation, {
       toValue: 1,
@@ -605,6 +650,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       </Send>
     );
   };
+
   return (
     <>
       <SecondaryHeader
@@ -620,11 +666,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderActions={renderAttachment}
         renderLoading={() => <Spinner />}
         renderUsernameOnMessage
+        onInputTextChanged={handleInputChange}
+        
         renderMessage={renderMessage}
         renderMessageImage={props => renderMessageImage(props)}
         messages={messages}
         renderAvatarOnTop
         onPressAvatar={onUserAvatarPress}
+        renderChatFooter={()=>
+          <RenderChatFooter
+          allowIsTyping={allowIsTyping}
+          composingUsername={composingUsername}
+          fileUploadProgress={fileUploadProgress}
+          isTyping={isTyping}
+          setFileUploadProgress={setFileUploadProgress}
+        />
+      }
         placeholder={
           fileUploadProgress > 0
             ? 'File uploaded on: ' + fileUploadProgress + '%'

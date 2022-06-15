@@ -21,7 +21,10 @@ import NftItemHistoryScreen from '../screens/NftItemHistoryScreen';
 import PushNotification from 'react-native-push-notification';
 import axios from 'axios';
 import {subscribePushNotification} from '../config/routesConstants';
-import {Platform} from 'react-native';
+import {Linking, Platform} from 'react-native';
+import parseChatLink from '../helpers/parseChatLink';
+import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+import { useNavigation } from '@react-navigation/native';
 import { DebugScreen } from '../screens/DebugScreen';
 
 const HomeStack = createNativeStackNavigator();
@@ -39,6 +42,8 @@ export const HomeStackScreen = observer(() => {
   const {chatStore, loginStore, walletStore, apiStore} = useStores();
   const {initialData} = loginStore;
   const {xmppPassword, xmppUsername, password, walletAddress} = initialData;
+  const navigation = useNavigation()
+
   const getPushToken = async () => {
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
@@ -95,7 +100,38 @@ export const HomeStackScreen = observer(() => {
 
   useEffect(() => {
     getPushToken();
+
+    //when the app opens for the first time, when clicked url from outside, this will be called
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        const chatJID = parseChatLink(url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
+        setTimeout(() => {
+          openChatFromChatLink(
+            chatJID,
+            initialData.walletAddress,
+            navigation,
+            chatStore.xmpp,
+          );
+        }, 2000);
+      }
+    });
+
+    //when the app is already open and url is clicked from outside this will be called
+    Linking.addEventListener('url', data => {
+      if (data.url) {
+        const chatJID = parseChatLink(data.url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
+        openChatFromChatLink(
+          chatJID,
+          initialData.walletAddress,
+          navigation,
+          chatStore.xmpp,
+        );
+      }
+    });
+
+
   }, []);
+
   return (
     <HomeStack.Navigator options={{headerShown: true, headerTitle: ''}}>
       <HomeStack.Screen

@@ -38,14 +38,15 @@ const SocialButton = (props: SocialButtonProps) => {
         color:color?color:'black'
     }}
     colorScheme={'black'}
-    fontFamily={fontFamily?fontFamily:undefined}
     textTransform={'uppercase'}
     fontSize={fontSize?fontSize:undefined}
     w={wp('80%')}
     h={hp('5.91%')}
     leftIcon={leftIcon?leftIcon:undefined}
     >
-      <Text color={color}>
+      <Text
+      fontFamily={fontFamily?fontFamily:undefined}
+      color={color}>
         {label?label:"Button label"}
       </Text>
     </Button>

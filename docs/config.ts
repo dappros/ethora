@@ -33,8 +33,8 @@ const unv_url1 = 'https://www.eto.li/go/?c=';
 
 // COLOUR THEME
 const commonColors = {
-  primaryColor: '#4E8AC2',
-  primaryDarkColor: '#3774AD',
+  primaryColor: '#003E9C',
+  primaryDarkColor: '#2775EA',
   secondaryColor: '#133452',
 }; //done
 

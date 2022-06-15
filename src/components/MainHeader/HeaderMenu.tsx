@@ -1,19 +1,42 @@
 import {useNavigation} from '@react-navigation/native';
-import {Box, Menu} from 'native-base';
+import {Box, Divider, Menu, Text, View} from 'native-base';
 import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native';
 import {ROUTES} from '../../constants/routes';
 import Icon from 'react-native-vector-icons/Entypo';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {itemsMintingAllowed} from '../../../docs/config';
-import {useStores} from '../../stores/context';
+import { itemsMintingAllowed, textStyles } from '../../../docs/config';
+import { useStores } from '../../stores/context';
+import SubMenu from './SubMenu';
+
+
 
 
 export const HeaderMenu = () => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
-  const {loginStore, debugStore} = useStores();
+  const {
+    loginStore,
+    debugStore
+  } = useStores()
+
+  const AccountMenuItems = [
+    {value: ROUTES.PROFILE, label: 'My profile', visible: true},
+    {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
+    {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
+  ]
+  
+  const ActionsMenuItems = [
+    {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
+    {value: ROUTES.SCAN, label: 'Scan', visible: true},
+    {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed}
+  ]
+  
+  const SystemMenuItems = [
+    {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
+    {value: ROUTES.LOGOUT, label: 'Logout', visible: true}
+  ]
 
   const toggleMenu = () => {
     open ? setOpen(false) : setOpen(true);
@@ -48,6 +71,7 @@ export const HeaderMenu = () => {
       shadow={'9'}
       justifyContent={'center'}>
       <Menu
+        w="190"
         isOpen={open}
         placement={'bottom'}
         onClose={() => setOpen(false)}
@@ -62,16 +86,23 @@ export const HeaderMenu = () => {
             </TouchableOpacity>
           );
         }}>
-        {menuItems(true).map(item => {
-          if (!item.visible) return null;
-          return (
-            <Menu.Item
-              onPress={() => onMenuItemPress(item.value)}
-              key={item.label}>
-              {item.label}
-            </Menu.Item>
-          );
-        })}
+          <SubMenu
+          title='ACCOUNT'
+          menuItems={AccountMenuItems}
+          onMenuItemPress={onMenuItemPress}
+          />
+          <Divider/>
+          <SubMenu
+          title='ACTIONS'
+          menuItems={ActionsMenuItems}
+          onMenuItemPress={onMenuItemPress}
+          />
+          <Divider/>
+          <SubMenu
+          title='SYSTEM'
+          menuItems={SystemMenuItems}
+          onMenuItemPress={onMenuItemPress}
+          />
       </Menu>
     </Box>
   );

@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 
 import {Avatar, Day, utils, SystemMessage} from 'react-native-gifted-chat';
+import { textStyles } from '../../../docs/config';
 import Bubble from './MessageBubble';
 
 const {isSameUser, isSameDay} = utils;
@@ -47,7 +48,7 @@ export default class Message extends React.Component {
       return this.props.renderBubble(props);
     }
     // @ts-ignore
-    return <Bubble {...props} />;
+    return <Bubble  usernameStyle={{fontFamily:textStyles.regularFont}} {...props} />;
   }
 
   renderAvatar() {
@@ -118,6 +119,7 @@ const styles = {
       justifyContent: 'flex-start',
       marginLeft: 8,
       marginRight: 0,
+      fontFamily:textStyles.regularFont
     },
   }),
   right: StyleSheet.create({
@@ -127,6 +129,7 @@ const styles = {
       justifyContent: 'flex-end',
       marginLeft: 0,
       marginRight: 8,
+      fontFamily:textStyles.regularFont
     },
   }),
 };

@@ -5,7 +5,7 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { appVersion, commonColors } from '../../../docs/config';
+import { appVersion, commonColors, textStyles } from '../../../docs/config';
 
 interface SecondaryHeaderProps{
   title:string,
@@ -31,7 +31,10 @@ const SecondaryHeader = (props:SecondaryHeaderProps) => {
               size={hp('3%')}
               color={'white'}
             />
-            <Text fontSize={hp('2.2%')} color={'white'}>
+            <Text
+            fontFamily={textStyles.semiBoldFont}
+            fontSize={hp('2.2%')}
+            color={'white'}>
               {props.title}
             </Text>
           </Box>

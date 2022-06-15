@@ -26,6 +26,7 @@ import {getUserRoomsStanza, subscribeToRoom} from '../xmpp/stanzas';
 import {ROUTES} from '../constants/routes';
 import {commonColors, textStyles} from '../../docs/config';
 import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
+import { showToast } from '../components/Toast/toast';
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
 
@@ -102,23 +103,29 @@ const ScanScreen = (props: ScanScreenProps) => {
           response.assets[0].type,
         );
 
-        const jid = parseChatLink(res.data);
+        if(res){
+          const jid = parseChatLink(res.data);
 
-        if (jid) {
-          subscribeToRoom(
-            jid + CONFERENCEDOMAIN,
-            manipulatedWalletAddress,
-            chatStore.xmpp,
-          );
-          setIsLoading(false);
-          navigation.navigate(ROUTES.CHAT, {
-            chatJid: jid + CONFERENCEDOMAIN,
-            // chatName: 'Loading...',
-          });
-        } else {
-          alert('Invalid QR');
+          if (jid) {
+            subscribeToRoom(
+              jid + CONFERENCEDOMAIN,
+              manipulatedWalletAddress,
+              chatStore.xmpp,
+            );
+            setIsLoading(false);
+            navigation.navigate(ROUTES.CHAT, {
+              chatJid: jid + CONFERENCEDOMAIN,
+              // chatName: 'Loading...',
+            });
+          } else {
+            showToast('error','Error','Invalid QR','top');
+            setIsLoading(false);
+          }
+        }else {
+          showToast('error','Error','Invalid QR','top');
           setIsLoading(false);
         }
+        
       }
     });
   };

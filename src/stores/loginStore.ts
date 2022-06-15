@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {makeAutoObservable, runInAction, autorun, action} from 'mobx';
 import {LoginManager} from 'react-native-fbsdk-next';
 import {deleteAllRealm} from '../components/realmModels/allSchemas';
-import {httpPost} from '../config/apiService';
+import {httpPost, httpPut} from '../config/apiService';
 import {
   loginURL,
   refreshTokenURL,
@@ -275,15 +275,6 @@ export class LoginStore {
               this.initialData = callback;
               this.isFetching = false;
             });
-
-            // this.initialData.firstName = callback.firstName;
-            // this.initialData.lastName = callback.lastName;
-            // this.initialData.walletAddress = callback.walletAddress;
-            // this.initialData.photo = callback.photo;
-            // this.initialData.username = callback.username;
-            // this.initialData.password = callback.password;
-            // this.initialData.xmppUsername = underscoreManipulation(walletAddress);
-            // this.initialData.xmppPassword = callback.xmppPassword;
           },
         );
       } else {
@@ -295,6 +286,37 @@ export class LoginStore {
       this.errorMessage = error.response;
     }
   };
+
+  updateInitialData = (data:{
+    firstName:string
+    lastName:string
+    walletAddress:string
+    photo:string
+    username:string
+    password:string
+    xmppPassword:string
+    xmppUsername:string
+  }) => {
+    setAsyncStore(
+      {
+        firstName:data.firstName,
+        lastName:data.lastName,
+        walletAddress:data.walletAddress,
+        photo:data.photo,
+        username:data.username,
+        password:data.password,
+        xmppPassword:data.xmppPassword,
+        xmppUsername:data.xmppUsername,
+      },
+      'initialLoginData',
+      (callback: any) => {
+        runInAction(() => {
+          this.initialData = callback;
+          this.isFetching = false;
+        });
+      },
+    );
+  }
 
   setTokenFromAsyncStorage = async () => {
     runInAction(() => {
@@ -359,4 +381,24 @@ export class LoginStore {
       });
     }
   };
+
+
+
+  //this will first hit dapp api to update user's display name
+  //will call updateInitialData which will store the updated data in async store and then in mobx store.
+  updateUserDisplayName = async(bodyData:{firstName:string,lastName:string}) => {
+    const url = this.stores.apiStore.defaultUrl + registerUserURL;
+    const response:any = await httpPut(url, bodyData, this.userToken);
+
+    if(response.data.success){
+      const updatedData = {
+        ...this.initialData,
+        firstName:bodyData.firstName,
+        lastName:bodyData.lastName
+      }
+      this.updateInitialData(updatedData)
+    }
+  }
 }
+
+

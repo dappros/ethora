@@ -21,7 +21,7 @@ import {
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
 import {MessageText, MessageImage, Time, utils} from 'react-native-gifted-chat';
-import { coinImagePath } from '../../../docs/config';
+import { coinImagePath, textStyles } from '../../../docs/config';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -409,6 +409,7 @@ const styles = {
     },
     tokenTextStyle: {
       color: colors.white,
+      fontFamily:textStyles.regularFont,
       fontSize: 10,
       fontWeight: 'bold',
       backgroundColor: 'transparent',
@@ -451,6 +452,7 @@ const styles = {
     },
     tokenTextStyle: {
       color: colors.white,
+      fontFamily:textStyles.regularFont,
       fontSize: 10,
       fontWeight: 'bold',
       backgroundColor: 'transparent',
@@ -466,6 +468,7 @@ const styles = {
   }),
   content: StyleSheet.create({
     tick: {
+      fontFamily:textStyles.regularFont,
       fontSize: 10,
       backgroundColor: colors.backgroundTransparent,
       color: colors.white,
@@ -486,6 +489,7 @@ const styles = {
       marginHorizontal: 10,
     },
     userTextStyleLeft: {
+      fontFamily:textStyles.regularFont,
       color: '#FFFF',
     },
   }),

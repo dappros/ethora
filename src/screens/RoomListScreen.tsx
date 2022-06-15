@@ -21,25 +21,7 @@ const RoomListScreen = observer(() => {
     muted: any;
     priority: any;
   }[] = [];
-
-  // if(roomList.length){
-  //   roomList.map((item:any) => {
-  //     rosterListArray.push({
-  //       name: item.name,
-  //       participants: item.participants,
-  //       avatar: item.avatar,
-  //       jid: item.jid,
-  //       counter: item.counter,
-  //       lastUserText: item.lastUserText,
-  //       lastUserName: item.lastUserName,
-  //       createdAt: item.createdAt,
-  //       muted: item.muted,
-  //       priority: item.priority,
-  //     });
-  //   })
-
-  //   chatStore.setRooms(rosterListArray)
-  // }
+  
   useEffect(() => {
     if (roomList.length) {
       roomList.map((item: any) => {

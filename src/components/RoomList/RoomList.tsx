@@ -21,7 +21,7 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import {Input, Text, View} from 'native-base';
-import {commonColors} from '../../../docs/config';
+import {commonColors, textStyles} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import { deleteChatRoom } from '../realmModels/chatList';
 
@@ -120,7 +120,12 @@ export const RoomList = observer(({roomsList}: any) => {
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
+          <Text fontFamily={textStyles.regularFont}>
+            Change room name
+          </Text>
           <Input
+            margin={10}
+            fontFamily={textStyles.regularFont}
             maxLength={128}
             value={newChatName}
             onChangeText={text => setNewChatName(text)}
@@ -137,7 +142,9 @@ export const RoomList = observer(({roomsList}: any) => {
                 alignItems: 'center',
                 flex: 1,
               }}>
-              <Text style={{color: 'white'}}>Done editing</Text>
+              <Text
+              fontFamily={textStyles.semiBoldFont}
+              style={{color: 'white'}}>Done editing</Text>
             </View>
           </TouchableOpacity>
         </View>

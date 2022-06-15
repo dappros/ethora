@@ -4,9 +4,7 @@ import {
     View, 
     StyleSheet, 
     SafeAreaView, 
-    Image, 
-    TextInput, 
-    ActivityIndicator,
+    Image,
     TouchableOpacity,
     Alert
 } from 'react-native';
@@ -20,11 +18,10 @@ import {
 } from '../../docs/config';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import { useStores } from '../stores/context';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 import RenderEmailList from '../components/Account/RenderEmailList';
 import { showToast } from '../components/Toast/toast';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { observer } from 'mobx-react-lite';
+import AddNewEmailModal from '../components/Modals/Account/AddNewEmail';
 
 interface AccountScreenProps {}
 
@@ -213,37 +210,6 @@ const AccountScreen = observer((props: AccountScreenProps) => {
             </View>
             {/* Email List */}
 
-            {/* Add new email textInput */}
-            {addEmailActive ? (
-            <View style={styles.emailListComponentContainerStyle}>
-                <TextInput
-                //   style={style.addEmailTextInputTextStyle}
-                placeholder="Add Email"
-                onChangeText={email => setNewEmail(email)}
-                style={styles.emailDisplayBoxContainer}
-                />
-                <TouchableOpacity
-                onPress={submitEmail}
-                style={styles.submitButton}>
-                {loading ? (
-                    <ActivityIndicator
-                    animating={loading}
-                    size="small"
-                    color={'white'}
-                    />
-                ) : (
-                    <Text style={styles.submitTextStyle}>Submit</Text>
-                )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                onPress={() => setAddEmailActive(false)}
-                style={styles.iconContainer}>
-                <EntypoIcon name="cross" size={hp('2.35%')} />
-                </TouchableOpacity>
-            </View>
-            ) : null}
-            {/* Add new email textInput */}
-
             {/* Add Email Button */}
             <View style={styles.addButtonStyleComponent}>
             <TouchableOpacity
@@ -260,6 +226,14 @@ const AccountScreen = observer((props: AccountScreenProps) => {
         </View>
         {/* White border radius wall */}
         </View>
+        <AddNewEmailModal
+        isVisible={addEmailActive}
+        loading={loading}
+        setAddEmailActive={setAddEmailActive}
+        setNewEmail={setNewEmail}
+        submitEmail={submitEmail}
+        onBackdropPress={()=>setAddEmailActive(false)}
+        />
     </SafeAreaView>
     );
 });

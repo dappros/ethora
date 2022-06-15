@@ -9,6 +9,7 @@ import {observer} from 'mobx-react-lite';
 import {Animated, Easing, TouchableOpacity} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {LeftActions, RightActions} from './LeftAndRightDragAction';
+import { textStyles } from '../../../docs/config';
 
 interface RoomListProps {
   isActive: boolean;
@@ -129,16 +130,17 @@ export const RoomListItem = observer(
                 <RoomListItemIcon name={name} counter={counter} />
                 <VStack>
                   <Text
+                    fontFamily={textStyles.semiBoldFont}
                     _dark={{
                       color: 'warmGray.50',
                     }}
-                    color="coolGray.800"
-                    bold>
+                    color="coolGray.800">
                     {name}
                   </Text>
                   {name && lastUserName && lastUserText ? (
                     <HStack space={1}>
                       <Text
+                      fontFamily={textStyles.regularFont}
                         color="coolGray.600"
                         _dark={{
                           color: 'warmGray.200',
@@ -154,7 +156,9 @@ export const RoomListItem = observer(
                       </Text>
                     </HStack>
                   ) : (
-                    <Text>{defaultText}</Text>
+                    <Text
+                    fontFamily={textStyles.regularFont}
+                    >{defaultText}</Text>
                   )}
                 </VStack>
                 <Spacer />

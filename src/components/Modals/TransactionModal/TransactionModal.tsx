@@ -465,7 +465,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                   width: hp('3.5%'),
                 }}
                 onPress={() => closeModal()}>
-                <MaterialIcons name="close" size={hp('3.5%')} />
+                <MaterialIcons name="close" color={"black"} size={hp('3.5%')} />
               </TouchableOpacity>
               <View style={{flex: 1}}>
                 <QRCodeGenerator

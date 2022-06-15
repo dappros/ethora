@@ -67,6 +67,13 @@ interface roomListProps {
   priority?: number;
   muted?: boolean;
 }
+
+interface isComposingProps {
+  state:boolean,
+  username:string,
+  manipulatedWalletAddress:string,
+  chatJID:string
+}
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -85,6 +92,12 @@ export class ChatStore {
   };
   shouldCount: boolean = true;
   roomRoles = [];
+  isComposing:isComposingProps= {
+    state:false,
+    username:'',
+    manipulatedWalletAddress:'',
+    chatJID:''
+  }
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -113,6 +126,12 @@ export class ChatStore {
       };
       this.shouldCount = true;
       this.roomRoles = [];
+      this.isComposing  = {
+        state:false,
+        username:'',
+        manipulatedWalletAddress:'',
+        chatJID:''
+      }
     });
   };
 
@@ -237,6 +256,12 @@ export class ChatStore {
       this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
     }
   };
+
+  updateMessageComposingState = (props:isComposingProps) => {
+    runInAction(()=>{
+      this.isComposing = props
+    })
+  }
 
   xmppListener = async () => {
     const xmppUsername = underscoreManipulation(
@@ -389,34 +414,15 @@ export class ChatStore {
           if (messageAlreadyExist === -1) {
             this.addMessage(message);
             insertMessages(message);
-
-            // if(message.receiverMessageId){
-            //   insertMessages(
-            //     message,
-            //     roomJID,
-            //     parseInt(message.tokenAmount),
-            //     message.receiverMessageId
-            //   )
-            // }
           }
         }
 
         if (
           stanza.attrs.id === XMPP_TYPES.sendMessage
-          // stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:tmp'
         ) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
           if (this.shouldCount) {
-            // let data = {
-            //   jid:message.roomJid,
-            //   counter:
-            // }
-            // this.roomList?.map((item:any, index:number)=>{
-            //   if(item.jid === message.roomJid){
-            //       item.counter = item.counter + 1;
-            //   }
-            // })
             this.updateBadgeCounter(message.roomJid, 'UPDATE');
           }
           this.addMessage(message);
@@ -430,11 +436,32 @@ export class ChatStore {
           insertMessages(message);
         }
 
-        //when default rooms are just subscribed, this function will send presence to them and fetch it again to display in chat home screen
-
-        //To capture the response for list of rosters (for now only subscribed muc)
-
-        //to capture realtime incoming message
+        if (stanza.attrs.id === XMPP_TYPES.isComposing) {
+          const chatJID = stanza.attrs.from.split('/')[0];
+  
+          const fullName = stanza.children[1].attrs.fullName;
+          const manipulatedWalletAddress =
+            stanza.children[1].attrs.manipulatedWalletAddress;
+          this.updateMessageComposingState({
+            state: true,
+            username: fullName,
+            manipulatedWalletAddress,
+            chatJID,
+          });
+        }
+  
+        //capture message composing pause
+        if (stanza.attrs.id === XMPP_TYPES.pausedComposing) {
+          const chatJID = stanza.attrs.from.split('/')[0];
+          const manipulatedWalletAddress =
+            stanza.children[1].attrs.manipulatedWalletAddress;
+           this.updateMessageComposingState({
+            state: false,
+            manipulatedWalletAddress,
+            chatJID,
+            username:''
+          });
+        }
       }
     });
 

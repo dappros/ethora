@@ -2,7 +2,7 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import { showToast } from '../components/Toast/toast';
 import { httpDelete, httpGet, httpPost } from '../config/apiService';
 import { addOrDeleteEmail, getListOfEmails } from '../config/routesConstants';
-import { rootStore, RootStore } from './context';
+import { RootStore } from './context';
 
 export class AccountStore{
     isFetching = false
@@ -113,7 +113,10 @@ export class AccountStore{
                 this.errorMessage = error;
             })
             console.log(JSON.stringify(error))
-            showToast('error','Error', error, 'top');
+            if(error.code === 'ERR_BAD_REQUEST'){
+                showToast('error','Error', "You cannot delete your primary email", 'top');
+            }
+            
         }
     };
 }

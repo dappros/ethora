@@ -149,4 +149,3 @@ const LoginScreen = observer((props: LoginScreenProps) => {
 });
 
 export default LoginScreen;
-
