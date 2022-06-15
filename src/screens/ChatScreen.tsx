@@ -69,19 +69,10 @@ import RenderChatFooter from '../components/Chat/RenderChatFooter';
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
-  const {
-    loginStore,
-    chatStore,
-    walletStore,
-    apiStore,
-    debugStore
-  } = useStores();
+  const {loginStore, chatStore, walletStore, apiStore, debugStore} =
+    useStores();
 
-  const {
-    firstName,
-    lastName,
-    walletAddress
-  } = loginStore.initialData;
+  const {firstName, lastName, walletAddress} = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
 
@@ -97,7 +88,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [composingUsername, setComposingUsername] = useState<string>('');
 
-  let inputTimer:any = 0;
+  let inputTimer: any = 0;
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -149,13 +140,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [!!messages]);
 
   useEffect(() => {
-    if(chatStore.isComposing.chatJID === chatJid){
-      if(chatStore.isComposing.manipulatedWalletAddress !== manipulatedWalletAddress){
-        setIsTyping(chatStore.isComposing.state);
-        setComposingUsername(chatStore.isComposing.username)
-      }
+    if (
+      chatStore.isComposing.chatJID === chatJid &&
+      chatStore.isComposing.manipulatedWalletAddress !==
+        manipulatedWalletAddress
+    ) {
+      setIsTyping(chatStore.isComposing.state);
+      setComposingUsername(chatStore.isComposing.username);
     }
-  },[chatStore.isComposing.state])
+  }, [chatStore.isComposing.state]);
 
   const renderMessage = props => {
     return <MessageBody {...props} />;
@@ -233,7 +226,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
     navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
   };
   const onMediaMessagePress = (type: any, url: any) => {
-    console.log(url);
     setMediaModal({open: true, type, url});
   };
 
@@ -242,24 +234,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleInputChange = () => {
-  const duration = 2000;
-  const fullName = firstName + ' ' + lastName;
-  clearTimeout(inputTimer);
-  isComposing(
-    manipulatedWalletAddress,
-    chatJid,
-    fullName,
-    chatStore.xmpp
-  ).then(() => {
-    inputTimer = setTimeout(() => {
-      pausedComposing(
-        manipulatedWalletAddress,
-        chatJid,
-        chatStore.xmpp);
-    }, duration);
-  });
-  }
-  
+    const duration = 2000;
+    const fullName = firstName + ' ' + lastName;
+    clearTimeout(inputTimer);
+    isComposing(
+      manipulatedWalletAddress,
+      chatJid,
+      fullName,
+      chatStore.xmpp,
+    ).then(() => {
+      inputTimer = setTimeout(() => {
+        pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
+      }, duration);
+    });
+  };
+
   const renderMessageImage = (props: any) => {
     const {
       image,
@@ -275,11 +264,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
     let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = formatBytes(parseFloat(size), 2);
     let parsedWaveform = [];
-    try {
-      parsedWaveform = JSON.parse(waveForm);
-    } catch (error) {
-      console.log('cant parse wave');
+    if (waveForm) {
+      try {
+        parsedWaveform = JSON.parse(waveForm);
+      } catch (error) {
+        console.log('cant parse wave');
+      }
     }
+
     if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
       return (
         <ImageMessage
@@ -658,7 +650,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         isQR={true}
         onQRPressed={QRPressed}
       />
-       {audioMimetypes[mediaModal.type] && (
+      {audioMimetypes[mediaModal.type] && (
         <AudioPlayer audioUrl={mediaModal.url} />
       )}
       <GiftedChat
@@ -667,26 +659,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderLoading={() => <Spinner />}
         renderUsernameOnMessage
         onInputTextChanged={handleInputChange}
-        
         renderMessage={renderMessage}
         renderMessageImage={props => renderMessageImage(props)}
         messages={messages}
         renderAvatarOnTop
         onPressAvatar={onUserAvatarPress}
-        renderChatFooter={()=>
+        renderChatFooter={() => (
           <RenderChatFooter
-          allowIsTyping={allowIsTyping}
-          composingUsername={composingUsername}
-          fileUploadProgress={fileUploadProgress}
-          isTyping={isTyping}
-          setFileUploadProgress={setFileUploadProgress}
-        />
-      }
-        placeholder={
-          fileUploadProgress > 0
-            ? 'File uploaded on: ' + fileUploadProgress + '%'
-            : 'Type a message'
-        }
+            allowIsTyping={allowIsTyping}
+            composingUsername={composingUsername}
+            fileUploadProgress={fileUploadProgress}
+            isTyping={isTyping}
+            setFileUploadProgress={setFileUploadProgress}
+          />
+        )}
+        placeholder={'Type a message'}
         listViewProps={{
           onEndReached: onLoadEarlier,
           onEndReachedThreshold: 0.05,
@@ -721,7 +708,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
           },
         ]}
       />
-      
 
       <ChatMediaModal
         url={mediaModal.url}
@@ -735,7 +721,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
         extraData={extraData}
         isVisible={showModal}
       />
-     
     </>
   );
 });
