@@ -36,18 +36,18 @@ import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
 import {NftMediaModal} from '../components/NftMediaModal';
-import { observer } from 'mobx-react-lite';
+import {observer} from 'mobx-react-lite';
 import Hyperlink from 'react-native-hyperlink';
 import parseChatLink from '../helpers/parseChatLink';
-import { pattern1, pattern2 } from '../helpers/chat/chatLinkpattern';
+import {pattern1, pattern2} from '../helpers/chat/chatLinkpattern';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import ProfileModal from '../components/Modals/Profile/ProfileModal';
-import { updateVCard } from '../xmpp/stanzas';
+import {updateVCard} from '../xmpp/stanzas';
 import axios from 'axios';
-import { registerUserURL } from '../config/routesConstants';
-import { showToast } from '../components/Toast/toast';
+import {registerUserURL} from '../config/routesConstants';
+import {showToast} from '../components/Toast/toast';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -199,15 +199,21 @@ const firstLayout = [
   },
 ];
 
-export const ProfileScreen = (props: any) => {
+export const ProfileScreen = observer((props: any) => {
   const {loginStore, walletStore, chatStore, apiStore} = useStores();
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const {setOffset, setTotal, clearPaginationData, balance, transactions} =
     walletStore;
 
-  const {userAvatar, userDescription, initialData, updateUserDisplayName, userToken} = loginStore;
+  const {
+    userAvatar,
+    userDescription,
+    initialData,
+    updateUserDisplayName,
+    userToken,
+  } = loginStore;
 
   const {firstName, lastName, walletAddress} = initialData;
 
@@ -234,14 +240,15 @@ export const ProfileScreen = (props: any) => {
     mimetype: '',
   });
 
-  const [modalType, setModalType] = useState<'name'|'description'|''>('');
+  const [modalType, setModalType] = useState<'name' | 'description' | ''>('');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [isDescriptionEditable, setIsDescriptionEditable] = useState<boolean>(false);
-  const [descriptionLocal, setDescriptionLocal] = useState<string>(userDescription);
+  const [isDescriptionEditable, setIsDescriptionEditable] =
+    useState<boolean>(false);
+  const [descriptionLocal, setDescriptionLocal] =
+    useState<string>(userDescription);
   const [firstNameLocal, setFirstNameLocal] = useState<string>(firstName);
   const [lastNameLocal, setLastNameLocal] = useState<string>(lastName);
-  const [userAvatarLocal, setUserAvatarLocal] = useState<string>(userAvatar)
-
+  const [userAvatarLocal, setUserAvatarLocal] = useState<string>(userAvatar);
 
   useEffect(() => {
     handleSlide(
@@ -254,9 +261,7 @@ export const ProfileScreen = (props: any) => {
   useEffect(() => {
     setOffset(0);
     setTotal(0);
-    walletStore.fetchOwnTransactions(
-      walletAddress,walletStore.limit, walletStore.offset
-    );
+    walletStore.fetchOwnTransactions(walletAddress, walletStore.limit, 0);
     return () => {
       clearPaginationData();
     };
@@ -403,7 +408,7 @@ export const ProfileScreen = (props: any) => {
 
     if (activeTab === 1) {
       return (
-        <SafeAreaView style={{paddingBottom:hp('59%')}}>
+        <View style={{paddingBottom: hp('63%')}}>
           <TransactionsList
             transactions={transactions}
             walletAddress={walletAddress}
@@ -417,7 +422,7 @@ export const ProfileScreen = (props: any) => {
               }
             }}
           />
-        </SafeAreaView>
+        </View>
       );
     }
   };
@@ -425,18 +430,18 @@ export const ProfileScreen = (props: any) => {
   const onNamePressed = () => {
     setModalType('name');
     setModalVisible(true);
-  }
+  };
 
   const onDescriptionPressed = () => {
     setIsDescriptionEditable(true);
     setModalType('description');
-    setModalVisible(true)
-  }
+    setModalVisible(true);
+  };
 
   //changes the user description locally
-  const onDescriptionChange = (text:string) => {
+  const onDescriptionChange = (text: string) => {
     setDescriptionLocal(text);
-  }
+  };
 
   //when user clicks on the backdrop of the modal
   const onBackdropPress = () => {
@@ -444,69 +449,58 @@ export const ProfileScreen = (props: any) => {
     setLastNameLocal(lastName);
     setDescriptionLocal(userDescription);
     setIsDescriptionEditable(!isDescriptionEditable);
-    setModalVisible(false)
+    setModalVisible(false);
   };
 
-
   //changes the user's profile name locally
-  const onNameChange = (type:'firstName'|'lastName',text:string) => {
-    if(type==='firstName'){
-      setFirstNameLocal(text)
-    }else{
-      setLastNameLocal(text)
+  const onNameChange = (type: 'firstName' | 'lastName', text: string) => {
+    if (type === 'firstName') {
+      setFirstNameLocal(text);
+    } else {
+      setLastNameLocal(text);
     }
-  }
+  };
 
   const setDescription = () => {
-    if(userAvatarLocal && descriptionLocal){
-      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp)
+    if (userAvatarLocal && descriptionLocal) {
+      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp);
     }
 
-    if(!descriptionLocal){
-      updateVCard(userAvatarLocal, "No description", chatStore.xmpp)
+    if (!descriptionLocal) {
+      updateVCard(userAvatarLocal, 'No description', chatStore.xmpp);
     }
     setIsDescriptionEditable(false);
-    setModalVisible(false)
-  }
-
+    setModalVisible(false);
+  };
 
   const setNewName = () => {
     //call api to dapp server to change username
     //save in async storage
     //and then change in mobx store
-    if(firstNameLocal){
+    if (firstNameLocal) {
       const bodyData = {
         firstName: firstNameLocal,
-        lastName: lastNameLocal
-      }
+        lastName: lastNameLocal,
+      };
       updateUserDisplayName(bodyData);
-    }else{
+    } else {
       setFirstNameLocal(firstName);
-      showToast('error','Error','First name is required', 'top')
+      showToast('error', 'Error', 'First name is required', 'top');
     }
-    setModalVisible(false)
-  }
+    setModalVisible(false);
+  };
 
-
-  const handleChatLinks = (url:string) => {
-
+  const handleChatLinks = (url: string) => {
     const chatJid = parseChatLink(url);
 
     //argument url can be a chatlink or simple link
-    //first check if url is a chat link if yes then open chatlink else open the link via browser 
-    if(pattern1.test(url) || pattern2.test(url)){
-      openChatFromChatLink(
-        chatJid,
-        walletAddress,
-        navigation,
-        chatStore.xmpp
-      )
-    }else{
+    //first check if url is a chat link if yes then open chatlink else open the link via browser
+    if (pattern1.test(url) || pattern2.test(url)) {
+      openChatFromChatLink(chatJid, walletAddress, navigation, chatStore.xmpp);
+    } else {
       Linking.openURL(url);
     }
-
-  }
-  
+  };
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -565,9 +559,7 @@ export const ProfileScreen = (props: any) => {
                   {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
                 ]}
                 isLoading={!firstNameLocal}>
-                <TouchableOpacity
-                 onPress={onNamePressed}
-                >
+                <TouchableOpacity onPress={onNamePressed}>
                   <Text
                     style={{
                       fontSize: hp('2.216%'),
@@ -586,32 +578,34 @@ export const ProfileScreen = (props: any) => {
                     paddingBottom: 0,
                     paddingTop: 0,
                   }}>
-                    <Hyperlink
-                      onPress={url => handleChatLinks(url)}
-                      linkStyle={{
-                        color: '#2980b9',
-                        fontSize: hp('1.8%'),
-                        textDecorationLine: 'underline',
+                  <Hyperlink
+                    onPress={url => handleChatLinks(url)}
+                    linkStyle={{
+                      color: '#2980b9',
+                      fontSize: hp('1.8%'),
+                      textDecorationLine: 'underline',
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: hp('2.23%'),
+                        fontFamily: 'Montserrat-Regular',
+                        textAlign: 'center',
+                        color: primaryColor,
                       }}>
-                        <Text
-                          style={{
-                            fontSize: hp('2.23%'),
-                            fontFamily: 'Montserrat-Regular',
-                            textAlign: 'center',
-                            color: primaryColor,
-                          }}>
-                          {
-                            descriptionLocal && !isDescriptionEditable?
-                            descriptionLocal:
-                            'Add your description'
-                          }
-                        </Text>
-                        <TouchableOpacity
-                        onPress={onDescriptionPressed}
-                        style={{alignItems: 'center', margin: 10}}>
-                          <AntIcon name="edit" color={commonColors.primaryColor} size={hp('2%')} />
-                        </TouchableOpacity>
-                    </Hyperlink>
+                      {descriptionLocal && !isDescriptionEditable
+                        ? descriptionLocal
+                        : 'Add your description'}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={onDescriptionPressed}
+                      style={{alignItems: 'center', margin: 10}}>
+                      <AntIcon
+                        name="edit"
+                        color={commonColors.primaryColor}
+                        size={hp('2%')}
+                      />
+                    </TouchableOpacity>
+                  </Hyperlink>
                 </View>
               </View>
             </View>
@@ -820,4 +814,3 @@ const styles = StyleSheet.create({
   },
   contentSkeletonContainerStyle: {},
 });
-
