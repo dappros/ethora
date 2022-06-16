@@ -24,25 +24,4 @@ export const helpHandler = (data) => {
         );
     }
 
-    if(data.userStep === 4){
-        return sendMessage(
-            data,
-            messages.visitingHut.toPlaceItemNeed,
-            'message',
-            false,
-            0,
-        );
-    }
-
-    if(data.userStep === 5){
-        return sendMessage(
-            data,
-            messages.visitingHut.toGetItemNeed,
-            'message',
-            false,
-            0,
-        );
-    }
-
-
 }
