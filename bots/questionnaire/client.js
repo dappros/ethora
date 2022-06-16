@@ -7,6 +7,7 @@ import botOptions from "./config/config.js";
 import {router} from "./router.js";
 import {botLogin} from "./api.js";
 import 'dotenv/config';
+import {connectToDb} from "./dataBase.js";
 
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
@@ -59,6 +60,13 @@ xmpp.on('online', jid => {
             console.log("offline");
         });
     }
+
+    connectToDb().then(() => {
+        console.log('==> Successful database connection');
+    }).catch(error =>{
+        console.log('==> Error connecting to database: ', error);
+        return xmpp.stop().catch(console.error);
+    });
 
     console.log('CONNECT TO APP: ', connectData.appUsername, connectData.appPassword);
 
