@@ -17,6 +17,7 @@ let botOptions = {
         photoURL: 'https://cdn-icons-png.flaticon.com/512/6569/6569264.png',
         tokenName: 'Hablar Coin',
         tokenSymbol: 'HAB',
+        userReward: 1,
         storeFee: 1,
         collectFee: 3
     },
