@@ -8,9 +8,9 @@ export const setAnswer = async (questionId, answer, user_jid) => {
     }
 }
 
-export const getListAnswers = async () => {
+export const getListAnswers = async (userJid) => {
     try {
-        return await Answer.find({}).exec();
+        return await Answer.find({user_jid: userJid}).exec();
     } catch (error) {
         return error;
     }
