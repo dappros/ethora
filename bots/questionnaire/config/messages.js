@@ -24,7 +24,8 @@ const messages = () => {
         },
         bot: {
             answeredAllQuestions: 'You have already answered all the questions, thanks!',
-            answerSaved: 'Your answer has been successfully saved! Thank you I give you a reward'
+            answerSaved: 'Your answer has been successfully saved! Thank you I give you a reward',
+            tnxForTransaction: 'Thank you very much for your donation )'
         }
     };
 }
