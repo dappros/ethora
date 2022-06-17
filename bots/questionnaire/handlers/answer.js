@@ -10,7 +10,6 @@ export const answerHandler = (data) => {
     const userMessage = data.message.split(' ').slice(1).join(' ');
     getListAnswers(data.receiver).then(result => {
         const answerId = result.length+1;
-        console.log('ANSWER ID => ',answerId)
         setAnswer(answerId, userMessage, data.receiver).then(() => {
             sendMessage(
                 data,
