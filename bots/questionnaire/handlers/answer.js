@@ -8,10 +8,10 @@ import {questionHandler} from "./question.js";
 export const answerHandler = (data) => {
     console.log('=> answerHandler | Message received from ', data.receiver, data.message);
     const userMessage = data.message.split(' ').slice(1).join(' ');
-    getListAnswers(data.xmpp.jid._local).then(result => {
+    getListAnswers(data.receiver).then(result => {
         const answerId = result.length+1;
         console.log('ANSWER ID => ',answerId)
-        setAnswer(answerId, userMessage, data.xmpp.jid._local).then(() => {
+        setAnswer(answerId, userMessage, data.receiver).then(() => {
             sendMessage(
                 data,
                 messages.bot.answerSaved,

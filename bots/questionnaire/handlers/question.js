@@ -4,10 +4,9 @@ import {getListAnswers} from "../controllers/answers.js";
 import {getListQuestions} from "../controllers/questions.js";
 
 export const questionHandler = (data) => {
-    console.log('=> questionHandler | Message received from ', data.receiver, data.message);
     getListQuestions().then(result => {
         let questions = result;
-        getListAnswers(data.xmpp.jid._local).then(result => {
+        getListAnswers(data.receiver).then(result => {
             if(questions.length === result.length){
                 return sendMessage(
                     data,
