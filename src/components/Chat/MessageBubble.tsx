@@ -179,9 +179,7 @@ export default class Bubble extends React.Component {
   }
 
   renderTokenCount() {
-    // console.log(this.props.currentMessage.tokenAmount)
     if (+this.props.currentMessage.tokenAmount) {
-      // this.startAnimation();
       const {containerStyle, position, wrapperStyle} = this.props;
       return (
         <View style={[styles[position].tokenContainerStyle]}>

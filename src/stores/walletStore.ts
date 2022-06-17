@@ -149,7 +149,6 @@ export class WalletStore {
     receiverMessageId: string,
     itemUrl: string,
   ) {
-    console.log(bodyData, 'body data for token transfer');
     let url = '';
     if (bodyData.tokenName && !itemUrl) {
       url = this.defaultUrl + tokenTransferURL;

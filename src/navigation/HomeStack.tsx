@@ -130,7 +130,7 @@ export const HomeStackScreen = observer(() => {
     });
 
     return () => {
-      Linking.removeAllListeners()
+      Linking.removeAllListeners('url')
     }
   }, []);
 

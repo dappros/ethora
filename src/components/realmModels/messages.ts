@@ -33,17 +33,17 @@ export const getMessage = id =>
     resolve(chatList);
   });
 //insert message
-export const insertMessages = (messageObject:any) =>
-  new Promise((resolve, reject) => {
+export const insertMessages = (messageObject: any) =>
+  new Promise(async (resolve, reject) => {
+    const realm = await Realm.open(databaseOptions);
     const a = {
       ...messageObject,
       message_id: messageObject._id,
       room_name: messageObject.roomJid,
       tokenAmount: +messageObject.tokenAmount,
     };
-    getMessage(messageObject._id).then(async message => {
+    getMessage(messageObject._id).then(message => {
       if (!message) {
-        const realm = await Realm.open(databaseOptions);
         realm.write(() => {
           realm.create(schemaTypes.MESSAGE_SCHEMA, a);
           resolve(messageObject);
@@ -70,24 +70,19 @@ export const getAllMessages = async () => {
   }
 };
 //update message object
-export const updateMessageObject = data =>
-  new Promise(async (resolve, reject) => {
+export const updateTokenAmount = async (messageId, tokenAmount) => {
+  try {
     const realm = await Realm.open(databaseOptions);
-    realm.write(() => {
-      let messageObject = realm.objectForPrimaryKey(
-        schemaTypes.MESSAGE_SCHEMA,
-        data.receiverMessageId,
-      );
-      // console.log(messageObject.tokenAmount,"Bgvdsbfshjmgfvd")
-      //update token amount for a message
-      if (data.tokenAmount) {
-        messageObject.tokenAmount =
-          messageObject.tokenAmount + data.tokenAmount;
-      }
+    let message = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId,
+    );
 
-      if (data.localURL) {
-        messageObject.localURL = data.localURL;
-        messageObject.isStoredFile = true;
-      }
+    realm.write(() => {
+      message.tokenAmount =  message.tokenAmount + tokenAmount;
     });
-  });
+
+  } catch (error) {
+    console.log(error);
+  }
+};

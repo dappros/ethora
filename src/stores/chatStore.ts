@@ -1,6 +1,12 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
-import {action, makeAutoObservable, runInAction} from 'mobx';
+import {
+  action,
+  isObservableObject,
+  makeAutoObservable,
+  runInAction,
+  toJS,
+} from 'mobx';
 import {Toast} from 'native-base';
 import {
   addChatRoom,
@@ -12,6 +18,7 @@ import {
   getAllMessages,
   insertMessages,
   queryRoomAllMessages,
+  updateTokenAmount,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
@@ -69,10 +76,10 @@ interface roomListProps {
 }
 
 interface isComposingProps {
-  state:boolean,
-  username:string,
-  manipulatedWalletAddress:string,
-  chatJID:string
+  state: boolean;
+  username: string;
+  manipulatedWalletAddress: string;
+  chatJID: string;
 }
 export class ChatStore {
   messages: any = [];
@@ -92,12 +99,12 @@ export class ChatStore {
   };
   shouldCount: boolean = true;
   roomRoles = [];
-  isComposing:isComposingProps= {
-    state:false,
-    username:'',
-    manipulatedWalletAddress:'',
-    chatJID:''
-  }
+  isComposing: isComposingProps = {
+    state: false,
+    username: '',
+    manipulatedWalletAddress: '',
+    chatJID: '',
+  };
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -126,12 +133,12 @@ export class ChatStore {
       };
       this.shouldCount = true;
       this.roomRoles = [];
-      this.isComposing  = {
-        state:false,
-        username:'',
-        manipulatedWalletAddress:'',
-        chatJID:''
-      }
+      this.isComposing = {
+        state: false,
+        username: '',
+        manipulatedWalletAddress: '',
+        chatJID: '',
+      };
     });
   };
 
@@ -200,6 +207,20 @@ export class ChatStore {
       this.roomList = roomsArray;
     });
   };
+  updateMessageTokenAmount = (messageId, tokenAmount) => {
+    const messages = toJS(this.messages);
+    const index = messages.findIndex(item => item._id === messageId);
+
+    if (index !== -1) {
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[index])),
+        tokenAmount: messages[index].tokenAmount + tokenAmount,
+      };
+      runInAction(() => {
+        this.messages[index] = message;
+      });
+    }
+  };
 
   updateBadgeCounter = action((roomJid: string, type: string) => {
     this.roomList.map((item: any, index: number) => {
@@ -217,51 +238,11 @@ export class ChatStore {
     });
   });
 
-  setRecentRealtimeChatAction = (
-    messageObject: any,
-    roomName: string,
-    shouldUpdateChatScreen: boolean,
-    tokenAmount: string,
-    receiverMessageId: string,
-  ) => {
-    insertMessages(messageObject);
-
-    if (messageObject.system) {
-      this.recentRealtimeChat.createdAt = messageObject.createdAt;
-      this.recentRealtimeChat.message_id = messageObject._id;
-      this.recentRealtimeChat.room_name = roomName;
-      this.recentRealtimeChat.text = messageObject.text;
-      this.recentRealtimeChat.system = true;
-      this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
-      this.recentRealtimeChat.tokenAmount = tokenAmount;
-    }
-    if (!messageObject.system) {
-      this.recentRealtimeChat.avatar = messageObject.user.avatar;
-      this.recentRealtimeChat.createdAt = messageObject.createdAt;
-      this.recentRealtimeChat.message_id = messageObject._id;
-      this.recentRealtimeChat.name = messageObject.user.name;
-      this.recentRealtimeChat.room_name = roomName;
-      this.recentRealtimeChat.text = messageObject.text;
-      this.recentRealtimeChat.system = false;
-      this.recentRealtimeChat.mimetype = messageObject.mimetype;
-
-      this.recentRealtimeChat.image = messageObject.image;
-      this.recentRealtimeChat.realImageURL = messageObject.realImageURL;
-      this.recentRealtimeChat.isStoredFile = messageObject.isStoredFile;
-      this.recentRealtimeChat.size = messageObject.size;
-      this.recentRealtimeChat.duration = messageObject.duration;
-
-      this.recentRealtimeChat.waveForm = messageObject.waveForm;
-      this.recentRealtimeChat.user_id = messageObject.user._id;
-      this.recentRealtimeChat.shouldUpdateChatScreen = shouldUpdateChatScreen;
-    }
+  updateMessageComposingState = (props: isComposingProps) => {
+    runInAction(() => {
+      this.isComposing = props;
+    });
   };
-
-  updateMessageComposingState = (props:isComposingProps) => {
-    runInAction(()=>{
-      this.isComposing = props
-    })
-  }
 
   xmppListener = async () => {
     const xmppUsername = underscoreManipulation(
@@ -270,7 +251,7 @@ export class ChatStore {
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
       // console.log(stanza)
-      this.stores.debugStore.addLogsXmpp(stanza)
+      this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
         let anotherUserDescription = '';
@@ -287,6 +268,13 @@ export class ChatStore {
           anotherUserAvatar,
         );
       }
+      if (
+        stanza.attrs.id === 'GetArchive' &&
+        stanza.children[0].name === 'fin'
+      ) {
+        this.getCachedMessages();
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.vCardRequest) {
         let profilePhoto = this.stores.loginStore.initialData.photo;
         let profileDescription = 'No description';
@@ -350,7 +338,6 @@ export class ChatStore {
             name: item.attrs.name,
             participants: +item.attrs.users_cnt,
           });
-          console.log(item.attrs.name);
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat?.jid) {
               addChatRoom(rosterObject).then(item => console.log('added room'));
@@ -399,14 +386,12 @@ export class ChatStore {
 
           const roomJID = stanza.attrs.from;
           const message = createMessageObject(singleMessageDetailArray);
+
           if (message.system) {
-            const messageIndexToUpdate = this.messages.findIndex(
-              item => item._id === message.receiverMessageId,
+            await updateTokenAmount(
+              message.receiverMessageId,
+              message.tokenAmount,
             );
-            runInAction(() => {
-              this.messages[messageIndexToUpdate].tokenAmount =
-                message.tokenAmount;
-            });
           }
           const messageAlreadyExist = this.messages.findIndex(
             x => x._id === message._id,
@@ -417,9 +402,7 @@ export class ChatStore {
           }
         }
 
-        if (
-          stanza.attrs.id === XMPP_TYPES.sendMessage
-        ) {
+        if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
           if (this.shouldCount) {
@@ -433,12 +416,22 @@ export class ChatStore {
             messageTime:
               message?.createdAt && format(message?.createdAt, 'hh:mm'),
           });
+          if (message.system) {
+            this.updateMessageTokenAmount(
+              message.receiverMessageId,
+              message.tokenAmount,
+            );
+            await updateTokenAmount(
+              message.receiverMessageId,
+              message.tokenAmount,
+            );
+          }
           insertMessages(message);
         }
 
         if (stanza.attrs.id === XMPP_TYPES.isComposing) {
           const chatJID = stanza.attrs.from.split('/')[0];
-  
+
           const fullName = stanza.children[1].attrs.fullName;
           const manipulatedWalletAddress =
             stanza.children[1].attrs.manipulatedWalletAddress;
@@ -449,17 +442,17 @@ export class ChatStore {
             chatJID,
           });
         }
-  
+
         //capture message composing pause
         if (stanza.attrs.id === XMPP_TYPES.pausedComposing) {
           const chatJID = stanza.attrs.from.split('/')[0];
           const manipulatedWalletAddress =
             stanza.children[1].attrs.manipulatedWalletAddress;
-           this.updateMessageComposingState({
+          this.updateMessageComposingState({
             state: false,
             manipulatedWalletAddress,
             chatJID,
-            username:''
+            username: '',
           });
         }
       }

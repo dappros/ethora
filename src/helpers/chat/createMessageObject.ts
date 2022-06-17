@@ -65,9 +65,7 @@ export const createMessageObject = (
       message.user._id = item.attrs.senderJID;
       const isSystem = item.attrs.isSystemMessage === 'true';
       message.system = isSystem;
-
-      message.tokenAmount = item.attrs?.tokenAmount || 0;
-
+      message.tokenAmount = +item.attrs?.tokenAmount || 0;
       message.user.avatar = item.attrs.photoURL || null;
       message.imageLocation = item.attrs.location;
       message.imageLocationPreview =
@@ -77,7 +75,7 @@ export const createMessageObject = (
       message.duration = item.attrs.duration;
       message.size = item.attrs.size;
       message.image = item.attrs.location;
-      message.receiverMessageId = item.attrs.receiverMessageId;
+      message.receiverMessageId = item.attrs.receiverMessageId.toString();
       // message.roomJid = item.attrs.roomJid;
     }
   });

@@ -9,7 +9,6 @@ interface systemMessageProps {
 }
 
 export const systemMessage = (data: systemMessageProps) => {
-  console.log(data, 'systemmessaggeahj');
   return [
     {
       _id: 1,
