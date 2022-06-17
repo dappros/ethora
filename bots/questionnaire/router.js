@@ -39,7 +39,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
         if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0 && messageCheck(message, 'bot')) {
             return sendMessage(
                 handlerData,
-                messages.visitingHut.tnxForTransaction,
+                messages.bot.tnxForTransaction,
                 'message',
                 false,
                 0,
