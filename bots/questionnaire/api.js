@@ -2,7 +2,7 @@ import axios from "axios";
 import botOptions from "./config/config.js";
 import connectData from "./config/connect.js";
 
-let loginData = [];
+export let loginData = [];
 
 export const getRandomItem = async () => {
     try {
