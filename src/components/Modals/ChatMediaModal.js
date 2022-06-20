@@ -13,7 +13,7 @@ export const ChatMediaModal = ({open, url, type, onClose}) => {
   const renderModalContent = () => {
     if (imageMimetypes[type]) {
       return (
-        <Image alt="image" source={{uri: url}} w={'100%'} height={'100%'} />
+        <Image alt="image" resizeMode={'contain'} source={{uri: url}} w={'100%'} height={'100%'} />
       );
     }
     if (videoMimetypes[type]) {
