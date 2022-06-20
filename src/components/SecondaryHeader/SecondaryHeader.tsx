@@ -5,17 +5,17 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { appVersion, commonColors, textStyles } from '../../../docs/config';
+import {appVersion, commonColors, textStyles} from '../../../docs/config';
 
-interface SecondaryHeaderProps{
-  title:string,
-  isQR?:boolean,
-  type?:string,
-  showVersion?:boolean,
-  onQRPressed?:any
+interface SecondaryHeaderProps {
+  title: string;
+  isQR?: boolean;
+  type?: string;
+  showVersion?: boolean;
+  onQRPressed?: any;
 }
 
-const SecondaryHeader = (props:SecondaryHeaderProps) => {
+const SecondaryHeader = (props: SecondaryHeaderProps) => {
   const navigation = useNavigation();
   const onArrowClick = () => {
     navigation.goBack();
@@ -32,23 +32,23 @@ const SecondaryHeader = (props:SecondaryHeaderProps) => {
               color={'white'}
             />
             <Text
-            fontFamily={textStyles.semiBoldFont}
-            fontSize={hp('2.2%')}
-            color={'white'}>
+              fontFamily={textStyles.semiBoldFont}
+              fontSize={hp('2.2%')}
+              color={'white'}>
               {props.title}
             </Text>
           </Box>
         </TouchableOpacity>
-        {props.isQR?
+        {props.isQR ? (
           <TouchableOpacity
-          onPress={props.onQRPressed}
-          style={{marginRight: 10}}>
+            onPress={props.onQRPressed}
+            style={{marginRight: 10}}>
             <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />
-          </TouchableOpacity>:null
-        }
+          </TouchableOpacity>
+        ) : null}
         {props.type === 'transaction' ? (
           <TouchableOpacity
-            onPress={() => console.log("")}
+            onPress={() => console.log('')}
             style={{flex: 0.2, alignItems: 'flex-end', marginRight: 10}}>
             <AntIcon name="filter" color="#FFFF" size={hp('3%')} />
           </TouchableOpacity>
