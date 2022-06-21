@@ -48,6 +48,9 @@ import {updateVCard} from '../xmpp/stanzas';
 import axios from 'axios';
 import {registerUserURL} from '../config/routesConstants';
 import {showToast} from '../components/Toast/toast';
+import QrModal from '../components/Modals/TransactionModal/TransactionModal';
+import { modalTypes } from '../constants/modalTypes';
+import { DOMAIN } from '../xmpp/xmppConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -242,6 +245,10 @@ export const ProfileScreen = observer((props: any) => {
 
   const [modalType, setModalType] = useState<'name' | 'description' | ''>('');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
+  const [extraQrData, setExtraQrData] = useState<string>("");
+
   const [isDescriptionEditable, setIsDescriptionEditable] =
     useState<boolean>(false);
   const [descriptionLocal, setDescriptionLocal] =
@@ -502,10 +509,21 @@ export const ProfileScreen = observer((props: any) => {
     }
   };
 
+  const QRPressed = () => {
+    const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN
+    const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
+    setExtraQrData(profileLink);
+    setQrModalVisible(true);
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        <SecondaryHeader title={"User's profile"} isQR />
+        <SecondaryHeader 
+        title={"User's profile"} 
+        isQR
+        onQRPressed = {QRPressed}
+        />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <View
@@ -715,6 +733,12 @@ export const ProfileScreen = observer((props: any) => {
         closeModal={() => setMediaModalData(prev => ({...prev, open: false}))}
         url={mediaModalData.url}
         mimetype={mediaModalData.mimetype}
+      />
+      <QrModal
+      type={modalTypes.GENERATEQR}
+      closeModal={() => setQrModalVisible(false)}
+      extraData={extraQrData}
+      isVisible={qrModalVisible}
       />
     </SafeAreaView>
   );

@@ -75,6 +75,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const {firstName, lastName, walletAddress} = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
+  const duration = 2000;
+
+  const fullName = firstName + ' ' + lastName;
 
   const mediaButtonAnimation = new Animated.Value(1);
 
@@ -88,7 +91,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [composingUsername, setComposingUsername] = useState<string>('');
 
-  let inputTimer: any = 0;
+  let inputTimer2: any = 0;
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -234,19 +237,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleInputChange = () => {
-    const duration = 2000;
-    const fullName = firstName + ' ' + lastName;
-    clearTimeout(inputTimer);
+    const date = new Date()
+    clearTimeout(inputTimer2)
+    inputTimer2 = setTimeout(()=>{
     isComposing(
       manipulatedWalletAddress,
       chatJid,
       fullName,
       chatStore.xmpp,
     ).then(() => {
-      inputTimer = setTimeout(() => {
         pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
-      }, duration);
     });
+    },duration)
+    
   };
 
   const renderMessageImage = (props: any) => {

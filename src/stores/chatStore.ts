@@ -8,6 +8,7 @@ import {
   toJS,
 } from 'mobx';
 import {Toast} from 'native-base';
+import { defaultChats } from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -81,6 +82,14 @@ interface isComposingProps {
   manipulatedWalletAddress: string;
   chatJID: string;
 }
+
+interface defaultChatProps {
+  name:string,
+  premiumOnly: boolean,
+  stickyOrder: boolean,
+  removable: boolean,
+}
+
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -244,14 +253,26 @@ export class ChatStore {
     });
   };
 
+  subscribeToDefaultChats = () => {
+    Object.entries(defaultChats).forEach(([key,value]) => {
+      const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
+      const manipulatedWalletAddress = underscoreManipulation(this.stores.loginStore.initialData.walletAddress)
+      subscribeToRoom(
+        jid,
+        manipulatedWalletAddress,
+        this.xmpp
+      )
+    })
+  }
+
   xmppListener = async () => {
     const xmppUsername = underscoreManipulation(
       this.stores.loginStore.initialData.walletAddress,
     );
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
-      // console.log(stanza)
-      this.stores.debugStore.addLogsXmpp(stanza);
+
+      this.stores.debugStore.addLogsXmpp(stanza)
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
         let anotherUserDescription = '';
@@ -315,9 +336,16 @@ export class ChatStore {
           vcardRetrievalRequest(xmppUsername, this.xmpp);
         }
       }
+
+      //to catch error
+      if(stanza.attrs.type === 'error'){
+        console.log(stanza.children, 'stanzaerror-------')
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
+
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
@@ -337,10 +365,10 @@ export class ChatStore {
           this.updateRoomInfo(item.attrs.jid, {
             name: item.attrs.name,
             participants: +item.attrs.users_cnt,
-          });
+          });       
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat?.jid) {
-              addChatRoom(rosterObject).then(item => console.log('added room'));
+              addChatRoom(rosterObject)
             }
           });
 
@@ -461,16 +489,19 @@ export class ChatStore {
     this.xmpp.on('online', async address => {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
-      const nonMembersChatjid =
-        'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5' +
-        CONFERENCEDOMAIN;
-      subscribeToRoom(
-        nonMembersChatjid,
-        underscoreManipulation(
-          this.stores.loginStore.initialData.walletAddress,
-        ),
-        this.xmpp,
-      );
+      // const nonMembersChatjid =
+      //   'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5' +
+      //   CONFERENCEDOMAIN;
+      
+      
+      // subscribeToRoom(
+      //   nonMembersChatjid,
+      //   underscoreManipulation(
+      //     this.stores.loginStore.initialData.walletAddress,
+      //   ),
+      //   this.xmpp,
+      // );
+      this.subscribeToDefaultChats();
       getUserRoomsStanza(xmppUsername, this.xmpp);
 
       // commonDiscover(xmppUsername, DOMAIN, this.xmpp);

@@ -17,7 +17,6 @@ const RenderEmailList = (props: RenderEmailListProps) => {
         setTooltipVisible,
         tooltipVisible
     } = props
-    console.log(emailList,"emaillistinrender")
     return (
         <FlatList
         data={emailList}

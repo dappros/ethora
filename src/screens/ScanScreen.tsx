@@ -22,7 +22,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {PNG} from 'pngjs/browser';
 import JpegDecoder from 'jpeg-js';
 import jsQR from 'jsqr';
-import {getUserRoomsStanza, subscribeToRoom} from '../xmpp/stanzas';
+import { retrieveOtherUserVcard, subscribeToRoom} from '../xmpp/stanzas';
 import {ROUTES} from '../constants/routes';
 import {commonColors, textStyles} from '../../docs/config';
 import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
@@ -74,15 +74,65 @@ const ScanScreen = (props: ScanScreenProps) => {
   const navigation = useNavigation();
 
   const onSuccess = (e: any) => {
-    const jid = parseChatLink(e.data) + CONFERENCEDOMAIN;
-    setResult(jid);
-    setScan(false);
-    setScanResult(true);
-    subscribeToRoom(jid, manipulatedWalletAddress, chatStore.xmpp);
-    navigation.navigate(ROUTES.CHAT, {
-      chatJid: jid,
-      // chatName: 'Loading...',
-    });
+    if(e.data.includes('profileLink')){
+      const params = e.data.split('https://www.eto.li/go')[1];
+      const queryParams = new URLSearchParams(params);
+      const firstName:string = queryParams.get("firstName");
+      const lastName:string = queryParams.get("lastName");
+      const xmppId:string = queryParams.get("xmppId");
+      const walletAddressFromLink:string = queryParams.get("walletAddress");
+
+      if(loginStore.initialData.walletAddress===walletAddressFromLink){
+        navigation.navigate(ROUTES.PROFILE);
+      }else{
+          retrieveOtherUserVcard(
+            loginStore.initialData.xmppUsername,
+            xmppId,
+            chatStore.xmpp
+          );
+          
+          loginStore.setOtherUserDetails({
+            anotherUserFirstname: firstName,
+            anotherUserLastname: lastName,
+            anotherUserLastSeen: {},
+            anotherUserWalletAddress: walletAddressFromLink
+          })
+        navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+      }
+    }else{
+      // const jid = parseChatLink(e.data) + CONFERENCEDOMAIN;
+      // setResult(jid);
+      // setScan(false);
+      // setScanResult(true);
+      // subscribeToRoom(jid, manipulatedWalletAddress, chatStore.xmpp);
+      // navigation.navigate(ROUTES.CHAT, {
+      //   chatJid: jid,
+      //   // chatName: 'Loading...',
+      // });
+
+      if(e.data){
+        const jid = parseChatLink(e.data);
+
+        if (jid) {
+          subscribeToRoom(
+            jid + CONFERENCEDOMAIN,
+            manipulatedWalletAddress,
+            chatStore.xmpp,
+          );
+          setIsLoading(false);
+          navigation.navigate(ROUTES.CHAT, {
+            chatJid: jid + CONFERENCEDOMAIN,
+            // chatName: 'Loading...',
+          });
+        } else {
+          showToast('error','Error','Invalid QR','top');
+          setIsLoading(false);
+        }
+      }else {
+        showToast('error','Error','Invalid QR','top');
+        setIsLoading(false);
+      }
+    }
   };
 
   const openGallery = () => {
@@ -103,28 +153,7 @@ const ScanScreen = (props: ScanScreenProps) => {
           response.assets[0].type,
         );
 
-        if(res){
-          const jid = parseChatLink(res.data);
-
-          if (jid) {
-            subscribeToRoom(
-              jid + CONFERENCEDOMAIN,
-              manipulatedWalletAddress,
-              chatStore.xmpp,
-            );
-            setIsLoading(false);
-            navigation.navigate(ROUTES.CHAT, {
-              chatJid: jid + CONFERENCEDOMAIN,
-              // chatName: 'Loading...',
-            });
-          } else {
-            showToast('error','Error','Invalid QR','top');
-            setIsLoading(false);
-          }
-        }else {
-          showToast('error','Error','Invalid QR','top');
-          setIsLoading(false);
-        }
+        onSuccess(res);
         
       }
     });

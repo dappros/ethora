@@ -90,7 +90,6 @@ const TransactionModal = (props: TransactionModalProps) => {
   };
 
   const tokenTransferFunc = async amt => {
-    console.log(amt);
     closeModal();
     const receiverName = extraData.name;
     const receiverMessageId = extraData.message_id;
@@ -470,7 +469,7 @@ const TransactionModal = (props: TransactionModalProps) => {
               <View style={{flex: 1}}>
                 <QRCodeGenerator
                   close={() => closeModal()}
-                  chatKey={extraData}
+                  shareKey={extraData}
                 />
               </View>
             </View>

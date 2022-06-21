@@ -29,7 +29,6 @@ const navbarLogoShow = false; //done
 
 //universal link url
 const unv_url = 'https://www.eto.li/go?c=';
-const unv_url1 = 'https://www.eto.li/go/?c=';
 
 // COLOUR THEME
 const commonColors = {
@@ -81,13 +80,30 @@ const defaultChatRooms = [
     removable: false,
   },
 ];
+
+
 const defaultChats = {
-  f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5: {
+  '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc':{
+    name: 'Agora (Start here) 🇬🇧🏛️👋💬',
     premiumOnly: true,
-    stickyOrder: true,
+    stickyOrder: false,
     removable: false,
   },
+  'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22':{
+    name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+  'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e':{
+    name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+
 };
+defaultChats['1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc']
 
 /* TOKEN ECONOMY */
 // Coins image path
@@ -147,7 +163,6 @@ export {
   coinsMainName,
   loginScreenBackgroundImage,
   unv_url,
-  unv_url1,
   slide1Image1,
   slide2Image1,
   slide2Image2,

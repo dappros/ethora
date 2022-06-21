@@ -56,7 +56,6 @@ export default function AudioPlayer({audioUrl}:{audioUrl:any}) {
   }, [audioUrl]);
 
   const onPausePress = async () => {
-    console.log(audioUrl, 'auidaopd');
 
     setisAlreadyPlay(false);
     audioRecorderPlayer.pausePlayer();

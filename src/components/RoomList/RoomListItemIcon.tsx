@@ -1,11 +1,12 @@
 import React from 'react';
-import {ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {ImageBackground, StyleSheet} from 'react-native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import { commonColors, textStyles } from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import { Text, View } from 'native-base';
 
 export const RoomListItemIcon = ({name,counter}:{name:string,counter:number}) => {
   return (

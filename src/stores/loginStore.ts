@@ -150,8 +150,10 @@ export class LoginStore {
   }
 
   setOtherUserVcard(data: any) {
-    this.anotherUserAvatar = data.anotherUserAvatar;
-    this.anotherUserDescription = data.anotherUserDescription;
+    runInAction(()=>{
+      this.anotherUserAvatar = data.anotherUserAvatar;
+      this.anotherUserDescription = data.anotherUserDescription;
+    })
   }
 
   setOtherUserDetails(data: {
@@ -160,10 +162,12 @@ export class LoginStore {
     anotherUserLastSeen?: any;
     anotherUserWalletAddress?: string;
   }) {
-    this.anotherUserFirstname = data.anotherUserFirstname;
-    this.anotherUserLastname = data.anotherUserLastname;
-    this.anotherUserLastSeen = data.anotherUserLastSeen;
-    this.anotherUserWalletAddress = data.anotherUserWalletAddress;
+    runInAction(()=>{
+      this.anotherUserFirstname = data.anotherUserFirstname;
+      this.anotherUserLastname = data.anotherUserLastname;
+      this.anotherUserLastSeen = data.anotherUserLastSeen;
+      this.anotherUserWalletAddress = data.anotherUserWalletAddress;
+    })
   }
 
   async logOut() {

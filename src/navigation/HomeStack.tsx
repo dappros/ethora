@@ -12,8 +12,6 @@ import RoomListScreen from '../screens/RoomListScreen';
 import TransactionsScreen from '../screens/TransactionsScreen';
 import NewChatScreen from '../screens/NewChatScreen';
 import {useStores} from '../stores/context';
-import {Center, View} from 'native-base';
-import {Text} from 'react-native-svg';
 import ScanScreen from '../screens/ScanScreen';
 import AccountScreen from '../screens/AccountScreen';
 import MintScreen from '../screens/MintScreen';
@@ -26,6 +24,7 @@ import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import { useNavigation } from '@react-navigation/native';
 import { DebugScreen } from '../screens/DebugScreen';
+import { retrieveOtherUserVcard } from '../xmpp/stanzas';
 
 const HomeStack = createNativeStackNavigator();
 export const subscribeForPushNotifications = async data => {
@@ -104,33 +103,89 @@ export const HomeStackScreen = observer(() => {
     //when the app opens for the first time, when clicked url from outside, this will be called
     Linking.getInitialURL().then(url => {
       if (url) {
-        const chatJID = parseChatLink(url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
-        setTimeout(() => {
+        if(url.includes('profileLink')){
+          const params = url.split('https://www.eto.li/go')[1];
+          const queryParams = new URLSearchParams(params);
+          const firstName:string = queryParams.get("firstName");
+          const lastName:string = queryParams.get("lastName");
+          const xmppId:string = queryParams.get("xmppId");
+          const walletAddressFromLink:string = queryParams.get("walletAddress");
+          
+          if(walletAddress===walletAddressFromLink){
+            navigation.navigate(ROUTES.PROFILE);
+          }else{
+            setTimeout(()=>{
+              retrieveOtherUserVcard(
+                initialData.xmppUsername,
+                xmppId,
+                chatStore.xmpp
+              );
+              
+              loginStore.setOtherUserDetails({
+                anotherUserFirstname: firstName,
+                anotherUserLastname: lastName,
+                anotherUserLastSeen: {},
+                anotherUserWalletAddress: walletAddressFromLink
+              })
+            },2000)
+            navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+          }
+        }else{
+          const chatJID = parseChatLink(url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
+          setTimeout(() => {
+            openChatFromChatLink(
+              chatJID,
+              initialData.walletAddress,
+              navigation,
+              chatStore.xmpp,
+            );
+          }, 2000);
+        }
+        
+      }
+    });
+
+    //when the app is already open and url is clicked from outside this will be called
+    const removeListner = Linking.addEventListener('url', data => {
+      if (data.url) {
+        if(data.url.includes('profileLink')){
+          const params = data.url.split('https://www.eto.li/go')[1];
+          const queryParams = new URLSearchParams(params);
+          const firstName:string = queryParams.get("firstName");
+          const lastName:string = queryParams.get("lastName");
+          const xmppId:string = queryParams.get("xmppId");
+          const walletAddressFromLink:string = queryParams.get("walletAddress");
+          if(walletAddress===walletAddressFromLink){
+            navigation.navigate(ROUTES.PROFILE);
+          }else{
+            retrieveOtherUserVcard(
+              initialData.xmppUsername,
+              xmppId,
+              chatStore.xmpp
+            );
+
+            loginStore.setOtherUserDetails({
+              anotherUserFirstname: firstName,
+              anotherUserLastname: lastName,
+              anotherUserLastSeen: {},
+              anotherUserWalletAddress: walletAddressFromLink
+            })
+          }
+        }else{
+          const chatJID = parseChatLink(data.url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
           openChatFromChatLink(
             chatJID,
             initialData.walletAddress,
             navigation,
             chatStore.xmpp,
           );
-        }, 2000);
-      }
-    });
+        }
 
-    //when the app is already open and url is clicked from outside this will be called
-    Linking.addEventListener('url', data => {
-      if (data.url) {
-        const chatJID = parseChatLink(data.url) + apiStore.xmppDomains.CONFERENCEDOMAIN;
-        openChatFromChatLink(
-          chatJID,
-          initialData.walletAddress,
-          navigation,
-          chatStore.xmpp,
-        );
       }
     });
 
     return () => {
-      Linking.removeAllListeners('url')
+      removeListner.remove();
     }
   }, []);
 

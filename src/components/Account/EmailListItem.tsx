@@ -26,7 +26,7 @@ const EmailListItem = (props: EmailListItemProps) => {
         setTooltipVisible,
         deleteEmail
     } = props;
-    console.log(emailList,"emaillistitem")
+
     const {email, verified} = emailList.item;
     const index = emailList.index;
     

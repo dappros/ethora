@@ -20,7 +20,6 @@ http.interceptors.response.use(undefined, async error => {
     request.headers['Authorization'] = token;
 
     return new Promise(resolve => {
-      console.log('resolveddddd');
       resolve(http(request));
     });
   }

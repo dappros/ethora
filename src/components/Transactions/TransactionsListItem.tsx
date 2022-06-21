@@ -9,22 +9,36 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import {TransactionsListitemDate} from './TransactionsListItemDate';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
-export const TransactionsListItem = ({
-  transactionReceiver,
-  transactionSender,
-  receiverBalance,
-  senderbalance,
-  receiverWalletAddress,
-  senderWalletAddress,
-  transactionValue,
-  transactionOwnerWalletAddress,
-  showDate,
-  formattedDate,
-  blockNumber,
-  transactionHash,
-  timestamp,
-  image,
-}: any) => {
+interface TransactionListProps {
+  transactionReceiver:string,
+  transactionSender:string,
+  senderWalletAddress:string,
+  transactionValue:number,
+  transactionOwnerWalletAddress:string,
+  showDate:string,
+  formattedDate:string,
+  blockNumber:string,
+  transactionHash:string,
+  timestamp:string,
+  image:string,
+  balance:number
+}
+
+export const TransactionsListItem = (props: TransactionListProps) => {
+  const {
+    transactionReceiver,
+    transactionSender,
+    senderWalletAddress,
+    transactionValue,
+    transactionOwnerWalletAddress,
+    showDate,
+    formattedDate,
+    blockNumber,
+    transactionHash,
+    timestamp,
+    image,
+    balance
+  }= props
   const isTransactionOwner =
     senderWalletAddress === transactionOwnerWalletAddress;
   const [expanded, setExpanded] = useState(false);
@@ -58,7 +72,7 @@ export const TransactionsListItem = ({
               </Box>
               <Box>
                 <Text fontSize={hp('1.6%')} fontWeight={'light'}>
-                  Balance: {senderbalance}
+                  Balance: {balance}
                 </Text>
               </Box>
             </VStack>

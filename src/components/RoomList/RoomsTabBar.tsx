@@ -14,6 +14,7 @@ const ROOM_KEYS = {
 };
 
 const renderTabBar = (props: any) => {
+  
   return (
     <TabBar
       renderLabel={({route, focused})=>(
@@ -48,7 +49,7 @@ export const RoomsTabBar = observer(() => {
   const privateChats = useMemo(
     () =>
       chatStore.roomList?.filter((item: any) => {
-        const splitedJid = item.jid.split('@')[0];
+        const splitedJid:string = item.jid.split('@')[0];
         if (item.participants < 3 && !defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;

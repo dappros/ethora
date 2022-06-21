@@ -17,7 +17,7 @@ import { showToast } from './Toast/toast';
 
 
 interface QRCodeGeneratorProps {
-    chatKey:string,
+    shareKey:string,
     close:any
 }
 
@@ -25,13 +25,21 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
     const svg = useRef(null);
     const {apiStore} = useStores();
-    const roomName = props.chatKey.replace(
+    const {shareKey} = props
+
+    let link = ""
+
+    if(props.shareKey.includes('profileLink')){
+      link = shareKey
+    }else{
+       link = props.shareKey.replace(
         apiStore.xmppDomains.CONFERENCEDOMAIN,
         '',
-    );
+      );
+    }
     const createShareLink=()=> {
-        const chatLink = `${unv_url}${roomName}`;
-        return chatLink;
+        const shareLink = `${unv_url}${link}`;
+        return shareLink;
     }
 
     const shareQR = () => {
@@ -46,13 +54,14 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
     }
 
     const copyToClipboard = () => {
-        const chatLink = `${unv_url}${roomName}`;
-        Clipboard.setString(chatLink);
+        const shareLink = `${unv_url}${link}`;
+        Clipboard.setString(shareLink);
         showToast('success', 'Info', 'Link copied', 'top')
         // showInfo('Info', 'Link copied.')
     };
 
-    const qrlink = createShareLink();
+  const qrlink = createShareLink();
+
   return (
     <View style={styles.MainContainer}>
     <QRCode

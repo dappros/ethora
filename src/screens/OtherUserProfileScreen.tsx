@@ -634,7 +634,7 @@ const OtherUserProfileScreen = (props: any) => {
                       }}>
                       {anotherUserDescription}
                     </Text>
-                    <Text
+                    {/* <Text
                       style={{
                         fontSize: hp('2.23%'),
                         fontFamily: 'Montserrat-Regular',
@@ -652,7 +652,7 @@ const OtherUserProfileScreen = (props: any) => {
                               loginStore.anotherUserWalletAddress,
                             )
                           ]}
-                    </Text>
+                    </Text> */}
                   </SkeletonContent>
                 </View>
               </View>

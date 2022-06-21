@@ -27,7 +27,6 @@ import { deleteChatRoom } from '../realmModels/chatList';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
-
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [pickedChatJid, setPickedChatJid] = useState<string>('');
   const [newChatName, setNewChatName] = useState<string>('');

@@ -34,17 +34,26 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
     showDate,
     formattedDate,
   } = item;
+  
+
+  let balance = 0
+  if(
+    from === transactionOwnerWalletAddress&&
+    from !== to
+  ){
+    balance = senderBalance
+  }else{
+    balance = receiverBalance
+  }
+
   return (
     <TransactionsListItem
+      balance = {balance}
       transactionValue={value}
-      receiverWalletAddress={to}
       senderWalletAddress={from}
-      receiverBalance={receiverBalance}
-      senderbalance={senderBalance}
       transactionSender={senderFirstName + ' ' + senderLastName}
       transactionReceiver={receiverFirstName + ' ' + receiverLastName}
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
-      item={item}
       blockNumber={blockNumber}
       transactionHash={transactionHash}
       timestamp={timestamp}

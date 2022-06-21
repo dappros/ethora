@@ -259,7 +259,7 @@ export class WalletStore {
             await addTransaction(item);
           }
         }
-        console.log(this.transactions.length)
+
         this.getCachedTransactions();
       }
     } catch (error) {

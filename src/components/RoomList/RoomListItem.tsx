@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {RoomListItemIcon} from './RoomListItemIcon';
 import {ROUTES} from '../../constants/routes';
-import {Box, HStack, Pressable, Spacer, Text, VStack} from 'native-base';
+import {Box, HStack, Text, View, VStack} from 'native-base';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {observer} from 'mobx-react-lite';
@@ -100,6 +100,7 @@ export const RoomListItem = observer(
 
     return (
       <Swipeable
+        enabled={movingActive}
         ref={swipeRef}
         renderLeftActions={() => (
           <LeftActions
@@ -126,10 +127,14 @@ export const RoomListItem = observer(
             <TouchableOpacity
               onLongPress={() => movingActive && drag()}
               onPress={navigateToChat}>
-              <HStack space={3} justifyContent="space-between">
-                <RoomListItemIcon name={name} counter={counter} />
-                <VStack>
+              <HStack  justifyContent="space-between">
+                <View justifyContent={"center"} flex={0.1}>
+                  <RoomListItemIcon name={name} counter={counter} />
+                </View>
+
+                <VStack justifyContent={"center"} flex={0.7} >
                   <Text
+                    fontSize={hp('2%')}
                     fontFamily={textStyles.semiBoldFont}
                     _dark={{
                       color: 'warmGray.50',
@@ -138,54 +143,72 @@ export const RoomListItem = observer(
                     {name}
                   </Text>
                   {name && lastUserName && lastUserText ? (
-                    <HStack space={1}>
-                      <Text
-                      fontFamily={textStyles.regularFont}
+                    <HStack flex={1} alignItems={"center"} space={1}>
+                      <Box>
+                        <Text
+                        fontFamily={textStyles.semiBoldFont}
+                        fontSize={hp('1.7%')}
+                        color="coolGray.500"
+                        _dark={{
+                          color: 'warmGray.100',
+                        }}>
+                          {lastUserName && lastUserName + ':'}
+                        </Text>
+                      </Box>
+
+                      <Box>
+                        <Text
+                        fontFamily={textStyles.regularFont}
+                        fontSize={hp('1.5%')}
                         color="coolGray.600"
                         _dark={{
-                          color: 'warmGray.200',
+                          color: 'warmGray.100',
                         }}>
-                        {lastUserName && lastUserName + ':'}
-                      </Text>
-                      <Text
-                        color="coolGray.600"
-                        _dark={{
-                          color: 'warmGray.200',
-                        }}>
-                        {lastUserText.length > 10 ? lastUserText.slice(0,10) + '...' : lastUserText}
-                      </Text>
+                          {lastUserText.length > 10 ? lastUserText.slice(0,10) + '...' : lastUserText}
+                        </Text>
+                      </Box>
                     </HStack>
                   ) : (
                     <Text
+                    color="coolGray.600"
+                    _dark={{
+                      color: 'warmGray.200',
+                    }}
+                    
                     fontFamily={textStyles.regularFont}
                     >{defaultText}</Text>
                   )}
                 </VStack>
-                <Spacer />
-                <VStack>
-                  <Box>
-                    <HStack justifyContent={'flex-end'} alignItems={'center'}>
-                      <MaterialIcon
-                        name="group"
-                        color={'black'}
-                        size={hp('2%')}
-                        style={{
-                          marginRight: hp('0.9%'),
-                          marginLeft: hp('0.4%'),
-                        }}
-                      />
-                      <Text color={'black'}>{participants}</Text>
-                    </HStack>
-                  </Box>
-                  <Text
-                    fontSize="xs"
+
+                <VStack justifyContent={"center"} flex={0.12}>
+                  <HStack justifyContent={'flex-end'} alignItems={'center'}>
+                    <MaterialIcon
+                      name="group"
+                      color={'black'}
+                      size={hp('2%')}
+                      style={{
+                        marginRight: hp('0.9%'),
+                        marginLeft: hp('0.4%'),
+                      }}
+                    />
+                    <Text
                     _dark={{
-                      color: 'warmGray.50',
+                      color: 'warmGray.200',
                     }}
-                    color="coolGray.800"
-                    alignSelf="flex-start">
-                    {lastMessageTime}
-                  </Text>
+                    fontFamily={textStyles.semiBoldFont} 
+                    color={'black'}>{participants}</Text>
+                  </HStack>
+                  <Box alignItems={"flex-end"}>
+                    <Text
+                      fontSize="xs"
+                      _dark={{
+                        color: 'warmGray.50',
+                      }}
+                      fontFamily={textStyles.mediumFont} 
+                      color="black">
+                      {lastMessageTime}
+                    </Text>
+                  </Box>
                 </VStack>
               </HStack>
             </TouchableOpacity>

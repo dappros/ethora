@@ -380,7 +380,7 @@ const exTransactions = [
   },
 ];
 export class TransactionsStore {
-  transactions = exTransactions;
+  transactions = [];
   defaultUrl = '';
   constructor(stores:any) {
     // this.defaultUrl = stores.apiStore.defaultUrl;
@@ -389,7 +389,7 @@ export class TransactionsStore {
   }
 
   setInitialState(){
-    this.transactions = exTransactions;
+    this.transactions = [];
     this.defaultUrl = '';
   }
 
