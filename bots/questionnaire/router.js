@@ -6,7 +6,7 @@ import messages from "./config/messages.js";
 import {questionHandler} from "./handlers/question.js";
 import {answerHandler} from "./handlers/answer.js";
 
-const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId) => {
+const router = (xmpp, message, sender, receiver, requestType, receiverData, stanzaId, connectData) => {
     if (requestType === 'body') {
         let userStep = userSteps('getStep', receiver, null);
 
@@ -18,6 +18,7 @@ const router = (xmpp, message, sender, receiver, requestType, receiverData, stan
             userStep,
             receiverData,
             stanzaId,
+            connectData
         };
 
         if (userStep === 1) {
