@@ -1,14 +1,25 @@
-import connectData from './config/connect.js'
+import {getConnectData} from './config/connect.js'
 import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
 import {connectRoom} from './actions.js';
 import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 import {router} from "./router.js";
-import {botLogin} from "./api.js";
 import 'dotenv/config';
 import {connectToDb} from "./dataBase.js";
 
+let connectData;
+
+if(!connectData){
+    await getConnectData().then((result) => {
+        connectData = result;
+    }).catch(error => {
+        console.log(error);
+        throw "stop";
+    });
+}
+
+console.log(connectData)
 const xmpp = client({
     service: connectData.botAddress, username: connectData.botName, password: connectData.botPassword,
 });
@@ -47,37 +58,19 @@ xmpp.on("stanza", async stanza => {
                 const sender = stanza.attrs.to;
                 const receiver = stanza.attrs.from;
 
-                router(xmpp, message, sender, receiver, body.name, data, stanzaId);
+                router(xmpp, message, sender, receiver, body.name, data, stanzaId, connectData);
             }
         }
     }
 );
 
 xmpp.on('online', jid => {
-    if(!connectData){
-        xmpp.stop().catch(console.error);
-        return xmpp.on("offline", () => {
-            console.log("offline");
-        });
-    }
-
+    console.log(connectData)
     connectToDb().then(() => {
         console.log('==> Successful database connection');
-    }).catch(error =>{
+    }).catch(error => {
         console.log('==> Error connecting to database: ', error);
         return xmpp.stop().catch(console.error);
-    });
-
-    console.log('CONNECT TO APP: ', connectData.appUsername, connectData.appPassword);
-
-    botLogin(connectData.appUsername, connectData.appPassword).then(() => {
-        console.log('CONNECTED')
-    }).catch(error => {
-        console.log('botLogin Error: ', error);
-        xmpp.stop().catch(console.error);
-        return xmpp.on("offline", () => {
-            console.log("offline");
-        });
     });
 
     console.log('ONLINE:', jid.toString());
@@ -88,7 +81,7 @@ xmpp.on('online', jid => {
     for (let roomData of botOptions.allowedRooms) {
         if (roomData.conferenceAddress === connectData.conferenceAddress && roomData.type === connectData.type) {
             roomAddress = roomData.name + roomData.conferenceAddress;
-            connectRoom(xmpp, jid.toString(), roomAddress);
+            connectRoom(xmpp, jid.toString(), roomAddress, connectData);
         }
     }
 
