@@ -68,6 +68,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         <Image
           alt="App logo Ethora"
           source={logoPath}
+          resizeMode={'cover'}
           w={wp(logoWidth)}
           h={hp(logoHeight)}
         />
@@ -142,12 +143,11 @@ const LoginScreen = observer((props: LoginScreenProps) => {
       {/* <Text onPress={()=>Clipboard.setString(apiStore.defaultToken)}>{apiStore.defaultToken}</Text> */}
       <VStack
         style={{position: 'absolute', bottom: 0}}
-        justifyContent={'center'}>
-        <Text style={styles.appVersion}>Version {appVersion}</Text>
-
-        <HStack>
-          <Text style={styles.appVersion}>Powered by Dappros Platform</Text>
-        </HStack>
+        justifyContent={'center'}
+        alignItems={'center'}>
+        <Text style={styles.appVersion}>
+          Version {appVersion}. Powered by Dappros Platform
+        </Text>
       </VStack>
     </ImageBackground>
   );
