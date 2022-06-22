@@ -10,18 +10,18 @@ import {TransactionsListitemDate} from './TransactionsListItemDate';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
 interface TransactionListProps {
-  transactionReceiver:string,
-  transactionSender:string,
-  senderWalletAddress:string,
-  transactionValue:number,
-  transactionOwnerWalletAddress:string,
-  showDate:string,
-  formattedDate:string,
-  blockNumber:string,
-  transactionHash:string,
-  timestamp:string,
-  image:string,
-  balance:number
+  transactionReceiver: string;
+  transactionSender: string;
+  senderWalletAddress: string;
+  transactionValue: number;
+  transactionOwnerWalletAddress: string;
+  showDate: string;
+  formattedDate: string;
+  blockNumber: string;
+  transactionHash: string;
+  timestamp: string;
+  image: string;
+  balance: number;
 }
 
 export const TransactionsListItem = (props: TransactionListProps) => {
@@ -37,8 +37,8 @@ export const TransactionsListItem = (props: TransactionListProps) => {
     transactionHash,
     timestamp,
     image,
-    balance
-  }= props
+    balance,
+  } = props;
   const isTransactionOwner =
     senderWalletAddress === transactionOwnerWalletAddress;
   const [expanded, setExpanded] = useState(false);
@@ -131,7 +131,9 @@ export const TransactionsListItem = (props: TransactionListProps) => {
             <View style={styles.detailsItem}>
               <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
               <View>
-                <Text style={{textAlign: 'left'}}>{new Date(timestamp).getTime()}</Text>
+                <Text style={{textAlign: 'left'}}>
+                  {new Date(timestamp).getTime()}
+                </Text>
               </View>
             </View>
             <View style={styles.detailsItem}>
