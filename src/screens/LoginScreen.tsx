@@ -70,7 +70,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           source={logoPath}
           resizeMode={'cover'}
           w={wp(logoWidth)}
-          h={hp(logoHeight)}
+          h={logoHeight}
         />
         {isLogoTitle ? (
           <Text

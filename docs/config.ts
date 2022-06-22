@@ -21,7 +21,7 @@ import loginScreenBackgroundImage from '../src/assets/login_background.png';
 
 //Application token
 const APP_TOKEN =
-  'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU'; //done
+'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU'; //done
 
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
@@ -138,7 +138,7 @@ const appEndpoint = endPoints[0];
 const appVersion = DeviceInfo.getVersion();
 
 const logoWidth:string = '70%'; //represents the percentage of the width of device
-const logoHeight:string = '6%';  //represents the percetage of the height of the device
+const logoHeight = 70;  //represents the percetage of the height of the device
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle:boolean = false;
