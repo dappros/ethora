@@ -37,7 +37,6 @@ export const httpGet = async (url: string, token: string | null) => {
 };
 
 export const httpPost = async (url: string, body: any, token: string) => {
-  console.log(body);
   return await http.post(url, body, {
     headers: {
       'Accept-Encoding': 'gzip, deflate, br',
@@ -67,21 +66,16 @@ export const httpUpload = async (url, body, token, onProgress) => {
     },
     onUploadProgress: ev => {
       const progress = (ev.loaded / ev.total) * 100;
-      console.log(ev)
       onProgress(Math.round(progress));
     },
   });
 };
 
-export const httpPut = async(url:string, body:any, token:string) => {
-  return await axios.put(
-    url,
-    body,
-    {
-      headers: {
+export const httpPut = async (url: string, body: any, token: string) => {
+  return await axios.put(url, body, {
+    headers: {
       Authorization: token,
       'Accept-encoding': 'gzip, deflate',
-      }
     },
-  )
-}
+  });
+};

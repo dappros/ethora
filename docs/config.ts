@@ -29,6 +29,8 @@ const navbarLogoShow = false; //done
 
 //universal link url
 const unv_url = 'https://www.eto.li/go?c=';
+const appLinkingUrl = 'https://www.eto.li/go';
+
 
 // COLOUR THEME
 const commonColors = {
@@ -177,5 +179,6 @@ export {
   defaultChats,
   logoWidth,
   logoHeight,
-  isLogoTitle
+  isLogoTitle,
+  appLinkingUrl
 };
