@@ -1,14 +1,35 @@
+import axios from 'axios';
+import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
+import {subscribePushNotification} from '../config/routesConstants';
+import {underscoreManipulation} from './underscoreLogic';
 
-export const getPushToken = async () => {
-  let deviceToken = '';
-  await PushNotification.configure({
+export const subscribeForPushNotifications = async data => {
+  const qs = require('qs');
+
+  return await axios.post(subscribePushNotification, qs.stringify(data), {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+};
+
+export const getPushToken = async (walletAddress, DOMAIN) => {
+  PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
     onRegister: async function (token) {
       console.log('TOKEN:', token);
-      deviceToken = token.token
-      console.log('devv')
-      return deviceToken;
+      const res = await subscribeForPushNotifications({
+        appId: 'Ethora',
+        deviceId: token.token,
+        deviceType: Platform.OS === 'ios' ? '0' : '1',
+        environment: 'Production',
+        externalId: '',
+        isSubscribed: '1',
+        jid: underscoreManipulation(walletAddress) + '@' + DOMAIN,
+        screenName: 'Ethora',
+      });
+      console.log(res.data);
     },
     onNotification: function (notification) {
       console.log('NOTIFICATION:', notification);
@@ -28,5 +49,4 @@ export const getPushToken = async () => {
     popInitialNotification: true,
     requestPermissions: true,
   });
-  
 };
