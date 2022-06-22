@@ -1,10 +1,8 @@
 import {xml} from "@xmpp/client";
-import connectData from "./config/connect.js";
 import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 
 let userStepsList = [];
-
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
 const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
@@ -13,12 +11,12 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
         type: data.receiverData ? 'groupchat' : type,
         id: "sendMessage"
     }, xml('data', {
-        xmlns: "http://" + connectData.botAddress,
+        xmlns: "http://" + data.connectData.botAddress,
         senderFirstName: botOptions.botData.firstName,
         senderLastName: botOptions.botData.lastName,
         photoURL: botOptions.botData.photoURL,
-        senderJID: connectData.botName+'@'+connectData.botAddress,
-        senderWalletAddress: connectData.walletAddress,
+        senderJID: data.connectData.botName+'@'+data.connectData.botAddress,
+        senderWalletAddress: data.connectData.walletAddress,
         isSystemMessage: isSystemMessage,
         tokenAmount: tokenAmount,
         receiverMessageId: data.stanzaId ? data.stanzaId.attrs.id : 0,
@@ -26,7 +24,7 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount) => {
     }), xml('body', {}, data.receiverData ? isSystemMessage ? message : data.receiverData.attrs.senderFirstName + ': ' + message : message)));
 }
 
-const connectRoom = (xmpp, address, receiver) => {
+const connectRoom = (xmpp, address, receiver, connectData) => {
     let myRoomAddress = receiver + '/' + connectData.botName;
 
     console.log('=> Connecting to the room: ', receiver);
@@ -39,7 +37,7 @@ const connectRoom = (xmpp, address, receiver) => {
     console.log('=> Sending a welcome message: ', receiver);
 
     sendMessage(
-        {xmpp, receiver},
+        {xmpp, receiver, connectData},
         messages.general.welcomeMessage,
         'groupchat',
         false,
