@@ -1,23 +1,7 @@
 import axios from "axios";
 import botOptions from "./config/config.js";
-import connectData from "./config/connect.js";
 
 export let loginData = [];
-
-export const getRandomItem = async () => {
-    try {
-        const response = await axios.get(botOptions.apiUrl + 'wallets/balance/' + connectData.walletAddress);
-        const nftItemList = response.data.balance.filter(data => data.tokenType === 'NFT' && data.balance > 0);
-        if (nftItemList.length > 0) {
-            return nftItemList[Math.floor(Math.random() * nftItemList.length)];
-        } else {
-            return false;
-        }
-    } catch (error) {
-        console.log('getRandomItem Error: ', error.data);
-        return false;
-    }
-}
 
 export const botLogin = async (username, password) => {
     try {
@@ -47,24 +31,6 @@ export const transferToken = async (tokenId, tokenName, amount, wallet) => {
         });
     } catch (error) {
         console.log('transferToken Error: ', error.data);
-        return error.data === 'Unauthorized' ? handlerRefreshToken(amount, wallet) : error.data;
-    }
-}
-
-export const transferNft = async (nftId, wallet, amount) => {
-    try {
-        return await axios.post(botOptions.apiUrl + 'tokens/transfer/items', {
-            nftId: nftId,
-            receiverWallet: wallet,
-            amount: amount,
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: loginData.token,
-            },
-        });
-    } catch (error) {
-        console.log('transferNft Error: ', error.data);
         return error.data === 'Unauthorized' ? handlerRefreshToken(amount, wallet) : error.data;
     }
 }
@@ -100,14 +66,4 @@ const handlerRefreshToken = (amount, wallet) => {
     }).catch(() => {
         return false;
     });
-}
-
-export const userPaymentVerify = async (data, amount) => {
-    try {
-        const request = await axios.get(botOptions.apiUrl + 'explorer/transactions/?limit=1&offset=0&walletAddress=' + data.receiverData.attrs.senderWalletAddress);
-        let checkDate = (new Date() - new Date(request.data.items[0].timestamp)) / (60 * 60 * 24 * 1000);
-        return !(checkDate > 1 || request.data.items[0].value !== amount || request.data.items[0].to !== connectData.walletAddress);
-    } catch (error) {
-        return error;
-    }
 }
