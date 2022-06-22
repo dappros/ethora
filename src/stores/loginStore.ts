@@ -9,13 +9,10 @@ import {
   registerUserURL,
 } from '../config/routesConstants';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
-import {constructUrl} from '../helpers/constructUrl';
-import {
-  getAsyncStore,
-  setAsyncStore,
-} from '../helpers/cache/setAndGetAsyncStore';
+
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {rootStore, RootStore} from './context';
+import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 
 export interface InitialDataProps {
   firstName: string;
@@ -150,10 +147,10 @@ export class LoginStore {
   }
 
   setOtherUserVcard(data: any) {
-    runInAction(()=>{
+    runInAction(() => {
       this.anotherUserAvatar = data.anotherUserAvatar;
       this.anotherUserDescription = data.anotherUserDescription;
-    })
+    });
   }
 
   setOtherUserDetails(data: {
@@ -162,12 +159,12 @@ export class LoginStore {
     anotherUserLastSeen?: any;
     anotherUserWalletAddress?: string;
   }) {
-    runInAction(()=>{
+    runInAction(() => {
       this.anotherUserFirstname = data.anotherUserFirstname;
       this.anotherUserLastname = data.anotherUserLastname;
       this.anotherUserLastSeen = data.anotherUserLastSeen;
       this.anotherUserWalletAddress = data.anotherUserWalletAddress;
-    })
+    });
   }
 
   async logOut() {
@@ -206,7 +203,7 @@ export class LoginStore {
       await asyncStorageSetItem('userToken', response.data.token);
       await asyncStorageSetItem('refreshToken', response.data.refreshToken);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -262,25 +259,21 @@ export class LoginStore {
         const xmppUsername = underscoreManipulation(walletAddress);
 
         // save user login details received after login
-        setAsyncStore(
-          {
-            firstName,
-            lastName,
-            walletAddress,
-            photo,
-            username,
-            password,
-            xmppPassword,
-            xmppUsername,
-          },
-          'initialLoginData',
-          (callback: any) => {
-            runInAction(() => {
-              this.initialData = callback;
-              this.isFetching = false;
-            });
-          },
-        );
+        const dataForStorage = {
+          firstName,
+          lastName,
+          walletAddress,
+          photo,
+          username,
+          password,
+          xmppPassword,
+          xmppUsername,
+        };
+        await asyncStorageSetItem('initialLoginData', dataForStorage);
+        runInAction(() => {
+          this.initialData = dataForStorage;
+          this.isFetching = false;
+        });
       } else {
         this.error = true;
         this.errorMessage = response.data.msg;
@@ -291,58 +284,39 @@ export class LoginStore {
     }
   };
 
-  updateInitialData = (data:{
-    firstName:string
-    lastName:string
-    walletAddress:string
-    photo:string
-    username:string
-    password:string
-    xmppPassword:string
-    xmppUsername:string
+  updateInitialData = async (data: {
+    firstName: string;
+    lastName: string;
+    walletAddress: string;
+    photo: string;
+    username: string;
+    password: string;
+    xmppPassword: string;
+    xmppUsername: string;
   }) => {
-    setAsyncStore(
-      {
-        firstName:data.firstName,
-        lastName:data.lastName,
-        walletAddress:data.walletAddress,
-        photo:data.photo,
-        username:data.username,
-        password:data.password,
-        xmppPassword:data.xmppPassword,
-        xmppUsername:data.xmppUsername,
-      },
-      'initialLoginData',
-      (callback: any) => {
-        runInAction(() => {
-          this.initialData = callback;
-          this.isFetching = false;
-        });
-      },
-    );
-  }
+    try {
+      await asyncStorageSetItem('initialLoginData', data);
+      runInAction(() => {
+        this.initialData = data;
+        this.isFetching = false;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   setTokenFromAsyncStorage = async () => {
     runInAction(() => {
       this.loading = true;
     });
-    // await AsyncStorage.getItem('userToken')
-    // .then(action((data:any) => {
-    // 	this.userToken = data;
-    // 	this.loading = false;
-    // }))ni
-    getAsyncStore('userToken', userToken => {
-      runInAction(() => {
-        this.userToken = userToken ? userToken : '';
-        this.loading = false;
-      });
-    });
 
-    getAsyncStore('refreshToken', refreshToken => {
-      runInAction(() => {
-        this.refreshToken = refreshToken ? refreshToken : '';
-        this.loading = false;
-      });
+    const userToken = await asyncStorageGetItem('userToken');
+    const refreshToken = await asyncStorageGetItem('refreshToken');
+
+    runInAction(() => {
+      this.userToken = userToken;
+      this.refreshToken = refreshToken;
+      this.loading = false;
     });
   };
 
@@ -378,6 +352,7 @@ export class LoginStore {
         });
       }
     } catch (error: any) {
+      console.log(error, 'sdjfklsdjfjlsdkfj');
       runInAction(() => {
         this.isFetching = false;
         this.error = true;
@@ -386,23 +361,22 @@ export class LoginStore {
     }
   };
 
-
-
   //this will first hit dapp api to update user's display name
   //will call updateInitialData which will store the updated data in async store and then in mobx store.
-  updateUserDisplayName = async(bodyData:{firstName:string,lastName:string}) => {
+  updateUserDisplayName = async (bodyData: {
+    firstName: string;
+    lastName: string;
+  }) => {
     const url = this.stores.apiStore.defaultUrl + registerUserURL;
-    const response:any = await httpPut(url, bodyData, this.userToken);
+    const response: any = await httpPut(url, bodyData, this.userToken);
 
-    if(response.data.success){
+    if (response.data.success) {
       const updatedData = {
         ...this.initialData,
-        firstName:bodyData.firstName,
-        lastName:bodyData.lastName
-      }
-      this.updateInitialData(updatedData)
+        firstName: bodyData.firstName,
+        lastName: bodyData.lastName,
+      };
+      this.updateInitialData(updatedData);
     }
-  }
+  };
 }
-
-
