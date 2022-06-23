@@ -123,6 +123,9 @@ export const RoomList = observer(({roomsList}: any) => {
             Change room name
           </Text>
           <Input
+            _input={{
+              maxLength:20
+            }}
             margin={10}
             fontFamily={textStyles.regularFont}
             maxLength={128}

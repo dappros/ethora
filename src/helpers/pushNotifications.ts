@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
@@ -15,6 +16,7 @@ export const subscribeForPushNotifications = async data => {
 };
 
 export const getPushToken = async (walletAddress, DOMAIN) => {
+  const navigation = useNavigation()
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
     onRegister: async function (token) {
@@ -33,6 +35,10 @@ export const getPushToken = async (walletAddress, DOMAIN) => {
     },
     onNotification: function (notification) {
       console.log('NOTIFICATION:', notification);
+      const chatJID = notification.data.mucId;
+      setTimeout(()=>{
+        navigation.navigate(ROUTES.CHAT, {chatJid: chatJID})
+      },2000)
     },
 
     onAction: function (notification) {

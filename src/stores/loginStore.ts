@@ -226,19 +226,6 @@ export class LoginStore {
     try {
       const response: any = await httpPost(url, bodyData, token);
       if (response.data.success) {
-        //save token in async storage
-        // setAsyncStore(
-        // 	response.data.token,
-        // 	'userToken',
-        // 	(callback: any) => {
-        // 		console.log(callback,"loginasynccall")
-        // 		runInAction(()=>{
-        // 			this.loading = false;
-        // 			this.userToken = callback;
-        // 		})
-
-        // 	}
-        // )
         await asyncStorageSetItem('userToken', response.data.token);
         await asyncStorageSetItem('refreshToken', response.data.refreshToken);
         runInAction(() => {
@@ -248,6 +235,7 @@ export class LoginStore {
         });
 
         const photo = ssoUserData.photo;
+
         let {firstName, lastName, username, xmppPassword} = response.data.user;
 
         if (!lastName) {

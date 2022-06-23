@@ -171,13 +171,36 @@ export const getPaginatedArchive = (
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 25),
+        xml('max', {}, 10),
         xml('before', {}, firstUserMessageID),
       ),
     ),
   );
   xmpp.send(message);
 };
+
+export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
+  let message = xml(
+    'iq',
+    {
+      type: 'set',
+      to: chat_jid,
+      id: 'GetArchive',
+    },
+    xml(
+      'query',
+      {xmlns: 'urn:xmpp:mam:2'},
+      xml(
+        'set',
+        {xmlns: 'http://jabber.org/protocol/rsm'},
+        xml('max', {}, 1),
+        xml('before'),
+      ),
+    ),
+  );
+  xmpp.send(message);
+}
+
 export const subscribeToRoom = (
   roomJID: string,
   manipulatedWalletAddress: string,

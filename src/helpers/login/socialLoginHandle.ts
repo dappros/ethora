@@ -50,7 +50,7 @@ const loginOrRegisterSocialUser = async(
               loginType,
               authToken: user.authToken,
             };
-        registerSocialUser(dataObject, loginType);
+        registerSocialUser(dataObject, user);
       }
     } catch (error) {
       showToast('error','Error', 'Something went wrong, please try again later', 'top')

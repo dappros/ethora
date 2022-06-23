@@ -28,6 +28,7 @@ import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {createMessageObject} from '../helpers/chat/createMessageObject';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
+  getLastMessageArchive,
   getUserRoomsStanza,
   presenceStanza,
   subscribeStanza,
@@ -358,11 +359,14 @@ export class ChatStore {
             createdAt: new Date(),
             priority: 0,
           };
+
+          getLastMessageArchive(item.attrs.jid, this.xmpp);
+
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
           this.updateRoomInfo(item.attrs.jid, {
             name: item.attrs.name,
             participants: +item.attrs.users_cnt,
-          });
+          });     
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat?.jid) {
               addChatRoom(rosterObject);
@@ -422,6 +426,19 @@ export class ChatStore {
             x => x._id === message._id,
           );
           if (messageAlreadyExist === -1) {
+            let lastText:string|undefined = ""
+            if(message.image || message.waveForm){
+              lastText = `Media file from ${message.user.name}`
+            }else{
+              lastText = message.text;
+            }
+
+            this.updateRoomInfo(message.roomJid, {
+              archiveRequested:false,
+              lastUserName: message.user.name,
+              lastUserText: lastText,
+              lastMessageTime: message.createdAt && format(message.createdAt, 'hh:mm')
+            })
             this.addMessage(message);
             insertMessages(message);
           }

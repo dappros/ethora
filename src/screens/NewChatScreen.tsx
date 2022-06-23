@@ -125,6 +125,9 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             </Button>
           </View>
           <Input
+            _input={{
+              maxLength:20
+            }}
             onChangeText={chatName => setChatName(chatName)}
             placeholder="Chat name"
             placeholderTextColor={commonColors.primaryColor}

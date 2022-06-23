@@ -134,6 +134,7 @@ export const RoomListItem = observer(
 
                 <VStack justifyContent={"center"} flex={0.7} >
                   <Text
+                    numberOfLines={1}
                     fontSize={hp('2%')}
                     fontFamily={textStyles.semiBoldFont}
                     _dark={{
