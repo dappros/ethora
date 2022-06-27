@@ -17,6 +17,14 @@ const UserSchema = {
     avatar: {type: 'string', optional: true},
   },
 };
+const QuickReplySchema = {
+  name: 'QuickReply',
+  embeded: true,
+  properties: {
+    name: 'string',
+    value: 'string',
+  },
+};
 
 const MessageSchema = {
   name: schemaTypes.MESSAGE_SCHEMA,
@@ -42,6 +50,7 @@ const MessageSchema = {
     user: 'User',
     duration: {type: 'string', optional: true},
     waveForm: {type: 'string', optional: true},
+    quickReplies: {type: 'string', optional: true,}
   },
 };
 
@@ -90,7 +99,13 @@ const TransactionSchema = {
 
 export const databaseOptions = {
   // path: 'ethoraTest.realm',
-  schema: [MessageSchema, ChatListSchema, TransactionSchema, UserSchema],
+  schema: [
+    MessageSchema,
+    ChatListSchema,
+    TransactionSchema,
+    UserSchema,
+    QuickReplySchema,
+  ],
   // schemaVersion: 1, //optional
 };
 
