@@ -1,3 +1,7 @@
+interface Reply {
+  title: string;
+  value: string
+}
 interface createMessageObjectProps {
   imageLocationPreview?: any;
   imageLocation?: any;
@@ -5,7 +9,7 @@ interface createMessageObjectProps {
   text?: string;
   createdAt: string | number | Date;
   system: boolean;
-  tokenAmount?: string;
+  tokenAmount?: string | number;
   user: {
     _id: string;
     name: string;
@@ -21,6 +25,7 @@ interface createMessageObjectProps {
   waveForm?: string;
   roomJid: string;
   receiverMessageId: string;
+  quickReplies: Reply[];
 }
 
 export const createMessageObject = (
@@ -49,6 +54,7 @@ export const createMessageObject = (
     receiverMessageId: '',
     imageLocationPreview: undefined,
     imageLocation: undefined,
+    quickReplies: [],
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -76,6 +82,7 @@ export const createMessageObject = (
       message.size = item.attrs.size;
       message.image = item.attrs.location;
       message.receiverMessageId = item.attrs.receiverMessageId.toString();
+      message.quickReplies = item.attrs.quickReplies || '';
       // message.roomJid = item.attrs.roomJid;
     }
   });
