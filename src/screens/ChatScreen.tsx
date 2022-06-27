@@ -237,19 +237,18 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleInputChange = () => {
-    const date = new Date()
-    clearTimeout(inputTimer2)
-    inputTimer2 = setTimeout(()=>{
-    isComposing(
-      manipulatedWalletAddress,
-      chatJid,
-      fullName,
-      chatStore.xmpp,
-    ).then(() => {
+    const date = new Date();
+    clearTimeout(inputTimer2);
+    inputTimer2 = setTimeout(() => {
+      isComposing(
+        manipulatedWalletAddress,
+        chatJid,
+        fullName,
+        chatStore.xmpp,
+      ).then(() => {
         pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
-    });
-    },duration)
-    
+      });
+    }, duration);
   };
 
   const renderMessageImage = (props: any) => {
