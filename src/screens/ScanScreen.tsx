@@ -40,7 +40,6 @@ const options = {
 function createImageData(
   base64ImageData: any,
   imageType: string,
-  callback: any,
 ) {
   let decodedData: any = {};
   const bufferFrom = Buffer.from(base64ImageData, 'base64');
@@ -74,6 +73,11 @@ const ScanScreen = (props: ScanScreenProps) => {
   const navigation = useNavigation();
 
   const onSuccess = (e: any) => {
+    if(!e){
+      showToast('error','Error','Invalid QR','top');
+      setIsLoading(false);
+      return
+    }
     if(e.data.includes('profileLink')){
       const params = e.data.split('https://www.eto.li/go')[1];
       const queryParams = new URLSearchParams(params);
@@ -110,7 +114,7 @@ const ScanScreen = (props: ScanScreenProps) => {
       //   // chatName: 'Loading...',
       // });
 
-      if(e.data){
+      if(e){
         const jid = parseChatLink(e.data);
 
         if (jid) {
@@ -152,7 +156,7 @@ const ScanScreen = (props: ScanScreenProps) => {
           response.assets[0].base64,
           response.assets[0].type,
         );
-
+        console.log(JSON.stringify(res))
         onSuccess(res);
         
       }
