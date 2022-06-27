@@ -21,7 +21,8 @@ import {
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
 import {MessageText, MessageImage, Time, utils} from 'react-native-gifted-chat';
-import { coinImagePath, textStyles } from '../../../docs/config';
+import {coinImagePath, textStyles} from '../../../docs/config';
+import {QuickReplies} from './QuickReplies';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -30,6 +31,7 @@ export default class Bubble extends React.Component {
     super(props);
     this.state = {
       initialAnimationValue: new Animated.Value(0),
+      width: 0
     };
     this.onLongPress = this.onLongPress.bind(this);
   }
@@ -194,6 +196,19 @@ export default class Bubble extends React.Component {
       );
     }
   }
+  renderQuickReplies(width) {
+    if (this.props.currentMessage.quickReplies) {
+      return (
+        <QuickReplies
+          quickReplies={JSON.parse(this.props.currentMessage.quickReplies)}
+          roomJid={this.props.currentMessage.roomJid}
+          roomName={this.props.currentMessage.mucname}
+          width={this.state.width}
+          messageAuthor={this.props.currentMessage.user._id.split('@')[0]}
+        />
+      );
+    }
+  }
 
   renderCustomView() {
     if (this.props.renderCustomView) {
@@ -264,24 +279,6 @@ export default class Bubble extends React.Component {
   //     return null;
   // }
 
-  renderQuickReplies() {
-    // const { currentMessage, onQuickReply, nextMessage, renderQuickReplySend, quickReplyStyle, } = this.props;
-    // if (currentMessage && currentMessage.quickReplies) {
-    //     const { containerStyle, wrapperStyle, ...quickReplyProps } = this.props;
-    //     if (this.props.renderQuickReplies) {
-    //         return this.props.renderQuickReplies(quickReplyProps);
-    //     }
-    //     return (<QuickReplies {...{
-    //         currentMessage,
-    //         onQuickReply,
-    //         nextMessage,
-    //         renderQuickReplySend,
-    //         quickReplyStyle,
-    //     }}/>);
-    // }
-    return null;
-  }
-
   renderBubbleContent() {
     return this.props.isCustomViewBottom ? (
       <View>
@@ -302,7 +299,9 @@ export default class Bubble extends React.Component {
       </View>
     );
   }
-
+setBubbleWidth = (width) => {
+  this.setState({width: width})
+}
   render() {
     const {
       position,
@@ -323,11 +322,14 @@ export default class Bubble extends React.Component {
         ],
       }),
     };
+
     return (
       <View
+        onLayout={(e) => this.setBubbleWidth( e.nativeEvent.layout.width)}
         style={[
           styles[position].container,
           containerStyle && containerStyle[position],
+          {position: 'relative'},
         ]}>
         <Animated.View
           style={[
@@ -336,6 +338,7 @@ export default class Bubble extends React.Component {
             this.styledBubbleToPrevious(),
             wrapperStyle && wrapperStyle[position],
             AnimatedStyle,
+            // {maxWidth: 200}
           ]}>
           {!isSameUser(currentMessage, previousMessage)
             ? this.renderUsername()
@@ -361,6 +364,7 @@ export default class Bubble extends React.Component {
                   {this.renderTicks()}
                 </View>
               </View>
+
               <View
                 style={{
                   position: 'absolute',
@@ -407,7 +411,7 @@ const styles = {
     },
     tokenTextStyle: {
       color: colors.white,
-      fontFamily:textStyles.regularFont,
+      fontFamily: textStyles.regularFont,
       fontSize: 10,
       fontWeight: 'bold',
       backgroundColor: 'transparent',
@@ -450,7 +454,7 @@ const styles = {
     },
     tokenTextStyle: {
       color: colors.white,
-      fontFamily:textStyles.regularFont,
+      fontFamily: textStyles.regularFont,
       fontSize: 10,
       fontWeight: 'bold',
       backgroundColor: 'transparent',
@@ -466,7 +470,7 @@ const styles = {
   }),
   content: StyleSheet.create({
     tick: {
-      fontFamily:textStyles.regularFont,
+      fontFamily: textStyles.regularFont,
       fontSize: 10,
       backgroundColor: colors.backgroundTransparent,
       color: colors.white,
@@ -487,7 +491,7 @@ const styles = {
       marginHorizontal: 10,
     },
     userTextStyleLeft: {
-      fontFamily:textStyles.regularFont,
+      fontFamily: textStyles.regularFont,
       color: '#FFFF',
     },
   }),
