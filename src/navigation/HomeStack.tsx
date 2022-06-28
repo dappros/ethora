@@ -20,7 +20,7 @@ import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
 import {DebugScreen} from '../screens/DebugScreen';
-import {retrieveOtherUserVcard} from '../xmpp/stanzas';
+import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
 
 const HomeStack = createNativeStackNavigator();
@@ -32,11 +32,18 @@ export const HomeStackScreen = observer(() => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    if (chatStore.roomList.length) {
+      chatStore.roomList.forEach(item => {
+        getLastMessageArchive(item.jid, chatStore.xmpp);
+      });
+    }
+  }, [chatStore.roomList]);
+
+  useEffect(() => {
     chatStore.getCachedRoomsInfo();
     chatStore.getRoomsFromCache();
     chatStore.getCachedMessages();
     walletStore.getCachedTransactions();
-
     if (xmppUsername && password) {
       chatStore.xmppConnect(xmppUsername, xmppPassword);
       chatStore.xmppListener();
