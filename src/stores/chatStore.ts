@@ -254,6 +254,35 @@ export class ChatStore {
     });
   };
 
+  updateAllRoomsInfo = async () => {
+    let map = {};
+    this.roomList.forEach(item => {
+      const latestMessage = this.messages
+        .filter(message => item.jid === message.roomJid)
+        .sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+        )[0];
+      if (latestMessage) {
+        map[latestMessage?.roomJid] = {
+          name: item.name,
+          archiveRequested: false,
+          lastUserName: latestMessage?.user.name,
+          lastUserText: latestMessage?.text,
+          lastMessageTime:
+            latestMessage.createdAt && format(latestMessage.createdAt, 'hh:mm'),
+        };
+      }
+    });
+    runInAction(() => {
+      this.roomsInfoMap = map;
+    });
+    await asyncStorageSetItem(
+      asyncStorageConstants.roomsListHashMap,
+      this.roomsInfoMap,
+    );
+  };
+
   subscribeToDefaultChats = () => {
     Object.entries(defaultChats).forEach(([key, value]) => {
       const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
@@ -265,6 +294,7 @@ export class ChatStore {
   };
 
   xmppListener = async () => {
+    let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(
       this.stores.loginStore.initialData.walletAddress,
     );
@@ -291,6 +321,10 @@ export class ChatStore {
         stanza.attrs.id === 'GetArchive' &&
         stanza.children[0].name === 'fin'
       ) {
+        archiveRequestedCounter += 1;
+        if (archiveRequestedCounter === this.roomList.length) {
+          this.updateAllRoomsInfo();
+        }
         this.getCachedMessages();
       }
 
@@ -360,16 +394,25 @@ export class ChatStore {
             priority: 0,
           };
 
-          getLastMessageArchive(item.attrs.jid, this.xmpp);
-
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-          this.updateRoomInfo(item.attrs.jid, {
-            name: item.attrs.name,
-            participants: +item.attrs.users_cnt,
-          });     
+
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat?.jid) {
               addChatRoom(rosterObject);
+              this.updateRoomInfo(item.attrs.jid, {
+                name: item.attrs.name,
+                participants: +item.attrs.users_cnt,
+              });
+            }
+            if (
+              cachedChat?.jid &&
+              (+cachedChat.participants !== +item.attrs.users_cnt ||
+                cachedChat.name !== item.attrs.name)
+            ) {
+              this.updateRoomInfo(item.attrs.jid, {
+                name: item.attrs.name,
+                participants: +item.attrs.users_cnt,
+              });
             }
           });
 
@@ -379,11 +422,15 @@ export class ChatStore {
           // insertRosterList(rosterObject);
         });
         this.setRooms(roomsArray);
+        console.log('rooms called');
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
-        getUserRoomsStanza(xmppUsername, this.xmpp);
+        const room = await getChatRoom(stanza.attrs.from);
+        if (!room) {
+          getUserRoomsStanza(xmppUsername, this.xmpp);
+        }
       }
       if (stanza.is('message')) {
         //capture message composing
@@ -426,19 +473,6 @@ export class ChatStore {
             x => x._id === message._id,
           );
           if (messageAlreadyExist === -1) {
-            let lastText:string|undefined = ""
-            if(message.image || message.waveForm){
-              lastText = `Media file from ${message.user.name}`
-            }else{
-              lastText = message.text;
-            }
-
-            this.updateRoomInfo(message.roomJid, {
-              archiveRequested:false,
-              lastUserName: message.user.name,
-              lastUserText: lastText,
-              lastMessageTime: message.createdAt && format(message.createdAt, 'hh:mm')
-            })
             this.addMessage(message);
             insertMessages(message);
           }
@@ -503,17 +537,7 @@ export class ChatStore {
     this.xmpp.on('online', async address => {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
-      // const nonMembersChatjid =
-      //   'f6b35114579afc1cb5dbdf5f19f8dac8971a90507ea06083932f04c50f26f1c5' +
-      //   CONFERENCEDOMAIN;
 
-      // subscribeToRoom(
-      //   nonMembersChatjid,
-      //   underscoreManipulation(
-      //     this.stores.loginStore.initialData.walletAddress,
-      //   ),
-      //   this.xmpp,
-      // );
       this.subscribeToDefaultChats();
       getUserRoomsStanza(xmppUsername, this.xmpp);
 
