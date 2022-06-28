@@ -35,7 +35,6 @@ export const RoomList = observer(({roomsList}: any) => {
   const manipulatedWalletAddress = underscoreManipulation(
     loginStore.initialData.walletAddress,
   );
-  const roomsInfoMap = chatStore.roomsInfoMap;
 
   const sortedRoomsList = roomsList.sort(
     (a: any, b: any) =>
