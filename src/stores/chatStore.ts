@@ -122,7 +122,9 @@ export class ChatStore {
   }
 
   toggleShouldCount = action((value: boolean) => {
-    this.shouldCount = value;
+    runInAction(() => {
+      this.shouldCount = value;
+    })
   });
 
   setInitialState = () => {
@@ -232,7 +234,7 @@ export class ChatStore {
     }
   };
 
-  updateBadgeCounter = action((roomJid: string, type: string) => {
+  updateBadgeCounter = action((roomJid: string, type: 'CLEAR'|'UPDATE') => {
     this.roomList.map((item: any, index: number) => {
       if (item.jid === roomJid) {
         if (type === 'CLEAR') {
@@ -505,6 +507,7 @@ export class ChatStore {
           insertMessages(message);
         }
 
+        //capture message composing
         if (stanza.attrs.id === XMPP_TYPES.isComposing) {
           const chatJID = stanza.attrs.from.split('/')[0];
 
@@ -519,7 +522,7 @@ export class ChatStore {
           });
         }
 
-        //capture message composing pause
+        //capture message composing paused
         if (stanza.attrs.id === XMPP_TYPES.pausedComposing) {
           const chatJID = stanza.attrs.from.split('/')[0];
           const manipulatedWalletAddress =
@@ -537,11 +540,8 @@ export class ChatStore {
     this.xmpp.on('online', async address => {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
-
       this.subscribeToDefaultChats();
       getUserRoomsStanza(xmppUsername, this.xmpp);
-
-      // commonDiscover(xmppUsername, DOMAIN, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });
   };

@@ -10,27 +10,25 @@ import {TransactionsListitemDate} from './TransactionsListItemDate';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 
 interface TransactionListProps {
-  transactionReceiver: string;
-  transactionSender: string;
-  senderWalletAddress: string;
-  transactionValue: number;
-  transactionOwnerWalletAddress: string;
   showDate: string;
   formattedDate: string;
   blockNumber: string;
-  transactionHash: string;
-  timestamp: string;
-  image: string;
+  name: string;
   balance: number;
+  transactionAmount: number;
+  image: string;
+  timestamp: string;
+  transactionHash: string;
+  transactionSender: string;
+  transactionReceiver: string;
+  transactionOwnerWalletAddress: string;
 }
 
 export const TransactionsListItem = (props: TransactionListProps) => {
   const {
     transactionReceiver,
     transactionSender,
-    senderWalletAddress,
-    transactionValue,
-    transactionOwnerWalletAddress,
+    transactionAmount,
     showDate,
     formattedDate,
     blockNumber,
@@ -38,10 +36,12 @@ export const TransactionsListItem = (props: TransactionListProps) => {
     timestamp,
     image,
     balance,
+    name,
+    transactionOwnerWalletAddress,
   } = props;
-  const isTransactionOwner =
-    senderWalletAddress === transactionOwnerWalletAddress;
   const [expanded, setExpanded] = useState(false);
+  const isTransactionOwner =
+    transactionSender === transactionOwnerWalletAddress;
   return (
     <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
@@ -60,14 +60,14 @@ export const TransactionsListItem = (props: TransactionListProps) => {
                   fontSize={hp('1.46%')}
                   fontWeight={'bold'}
                   color={'white'}>
-                  {transactionReceiver.slice(0, 2)}
+                  {name.slice(0, 2)}
                 </Text>
               </Box>
             </VStack>
             <VStack ml={'2'}>
               <Box>
                 <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
-                  {transactionReceiver}
+                  {name}
                 </Text>
               </Box>
               <Box>
@@ -96,7 +96,7 @@ export const TransactionsListItem = (props: TransactionListProps) => {
               )}
             </Box>
             <Box>
-              <Text fontWeight={'bold'}>{transactionValue}</Text>
+              <Text fontWeight={'bold'}>{transactionAmount}</Text>
             </Box>
             <Box>
               <AntIcon
@@ -139,7 +139,7 @@ export const TransactionsListItem = (props: TransactionListProps) => {
             <View style={styles.detailsItem}>
               <Text style={styles.detailsItemTextBold}>Value:</Text>
               <View>
-                <Text style={{textAlign: 'left'}}>{transactionValue}</Text>
+                <Text style={{textAlign: 'left'}}>{transactionAmount}</Text>
               </View>
             </View>
             <View style={styles.detailsItem}>

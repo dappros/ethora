@@ -35,20 +35,25 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
     formattedDate,
     balance,
   } = item;
+
   return (
     <TransactionsListItem
       balance={balance}
-      transactionValue={value}
-      senderWalletAddress={from}
+      transactionAmount={value}
       transactionSender={senderFirstName + ' ' + senderLastName}
       transactionReceiver={receiverFirstName + ' ' + receiverLastName}
-      transactionOwnerWalletAddress={transactionOwnerWalletAddress}
       blockNumber={blockNumber}
       transactionHash={transactionHash}
       timestamp={timestamp}
       showDate={showDate}
       formattedDate={formattedDate}
       image={item.nftFileUrl || item.nftPreview}
+      name={
+        to === transactionOwnerWalletAddress
+          ? senderFirstName + ' ' + senderLastName
+          : receiverFirstName + ' ' + receiverLastName
+      }
+      transactionOwnerWalletAddress={transactionOwnerWalletAddress}
     />
   );
 };
