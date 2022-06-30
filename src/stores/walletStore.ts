@@ -86,9 +86,6 @@ export class WalletStore {
     token: string,
     isOwn: boolean,
   ) {
-    if (!walletAddress || !token || !isOwn) {
-      showToast('error', 'Error', 'Args miss for Fetch bal', 'top');
-    }
     let url = this.defaultUrl + tokenEtherBalanceURL + walletAddress;
     runInAction(() => {
       this.isFetching = true;
@@ -114,7 +111,7 @@ export class WalletStore {
         });
       } else {
         runInAction(() => {
-          this.anotherUserBalance = response.data;
+          this.anotherUserBalance = response.data.balance;
         });
       }
     } catch (error: any) {

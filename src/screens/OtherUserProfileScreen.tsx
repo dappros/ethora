@@ -14,39 +14,29 @@ import {
   Animated,
   FlatList,
   StyleSheet,
-  TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
 import TransactionListTab from '../components/Transactions/TransactionsList';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
-import Icon from 'react-native-vector-icons/FontAwesome';
-// import {useDispatch, useSelector} from 'react-redux';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-// import CustomHeader from '../components/shared/customHeader';
-// import {CommonButton} from '../components/shared/customButtons';
 import {
   commonColors,
   textStyles,
   coinImagePath,
   itemsTransfersAllowed,
 } from '../../docs/config';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-// import {
-//   clearPaginationData,
-//   fetchTransaction,
-//   setOffset,
-//   setTotal,
-// } from '../actions/wallet';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
 import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import { observer } from 'mobx-react-lite';
+import { ROUTES } from '../constants/routes';
 
 const {primaryColor, primaryDarkColor} = commonColors;
-const {boldFont, lightFont, regularFont} = textStyles;
+const {boldFont} = textStyles;
 
 const handleSlide = (
   type:
@@ -191,29 +181,16 @@ const firstLayout = [
   },
 ];
 
-const OtherUserProfileScreen = (props: any) => {
-  // const allReducers = useSelector(state => state);
-  // const loginReducerData = allReducers.loginReducer;
-  // const walletReducerData = allReducers.walletReducer;
+const OtherUserProfileScreen = observer((props: any) => {
   const {loginStore, walletStore} = useStores();
 
   const {
     setOffset,
     setTotal,
     clearPaginationData,
-    // anotherUserTransaction,
     anotherUserBalance,
   } = walletStore;
 
-  // const {
-  //   anotherUserWalletAddress,
-  //   anotherUserAvatar,
-  //   anotherUserFirstname,
-  //   anotherUserLastname,
-  //   anotherUserDescription
-  // } = loginStore
-
-  // const dispatch = useDispatch();
   const [anotherUserAvatar, setAnotherUserAvatar] = useState('');
   const [anotherUserFirstname, setAnotherUserFirstname] = useState('null');
   const [anotherUserLastname, setAnotherUserLastname] = useState('null');
@@ -261,6 +238,7 @@ const OtherUserProfileScreen = (props: any) => {
   useEffect(() => {
     setOffset(0);
     setTotal(0);
+
     return () => {
       clearPaginationData();
     };
@@ -300,7 +278,6 @@ const OtherUserProfileScreen = (props: any) => {
             return item;
           }
         });
-
       setAnotherUserTransaction(allTransactions);
 
       setTransactionCount(walletStore.anotherUserTransaction.length);
@@ -309,6 +286,7 @@ const OtherUserProfileScreen = (props: any) => {
   }, [walletStore.anotherUserTransaction]);
 
   useEffect(() => {
+
     setTimeout(() => {
       let updatedCoinBalance = 0;
       if (anotherUserBalance?.length > 0) {
@@ -373,6 +351,11 @@ const OtherUserProfileScreen = (props: any) => {
       10,
       0,
     );
+    walletStore.fetchWalletBalance(
+      loginStore.anotherUserWalletAddress,
+      loginStore.userToken,
+      false
+    )
   }, [loginStore.anotherUserWalletAddress]);
 
   useEffect(() => {
@@ -405,6 +388,7 @@ const OtherUserProfileScreen = (props: any) => {
     } = props;
 
     let updatedCoinBalance = 0;
+
 
     coinData
       ? coinData.map(item => {
@@ -472,7 +456,7 @@ const OtherUserProfileScreen = (props: any) => {
                     item={e.item}
                     index={e.index}
                     onClick={() =>
-                      props.navigation.navigate('NftItemHistoryComponent', {
+                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
                         screen: 'NftItemHistory',
                         params: {
                           item: e.item,
@@ -496,7 +480,7 @@ const OtherUserProfileScreen = (props: any) => {
       return (
         <SafeAreaView style={{paddingBottom: '100%'}}>
           <TransactionListTab
-            transactions={walletStore.anotherUserTransaction}
+            transactions={anotherUserTransaction}
             walletAddress={loginStore.anotherUserWalletAddress}
             onEndReached={() => {
               if (anotherUserTransaction.length < walletStore.total) {
@@ -747,7 +731,7 @@ const OtherUserProfileScreen = (props: any) => {
       </View>
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   tokenIconStyle: {

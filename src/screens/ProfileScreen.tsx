@@ -16,7 +16,6 @@ import {
   StyleSheet,
   Linking,
 } from 'react-native';
-import TransactionListTab from '../components/Transactions/TransactionsList';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {

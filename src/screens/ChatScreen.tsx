@@ -112,12 +112,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
   useEffect(() => {
     chatStore.toggleShouldCount(false);
     chatStore.getCachedMessages();
+
+    return () => {
+      chatStore.toggleShouldCount(true);
+    }
   }, []);
 
   useEffect(() => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
       getRoomArchiveStanza(chatJid, chatStore.xmpp);
     }
+    chatStore.updateBadgeCounter(chatJid, 'CLEAR');
   }, [chatJid]);
 
   useEffect(() => {

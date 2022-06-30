@@ -5,7 +5,7 @@ import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
 import {commonColors, defaultChats, textStyles} from '../../../docs/config';
-import { Text } from 'native-base';
+import { Badge, Text } from 'native-base';
 
 const ROOM_KEYS = {
   official: 'official',
@@ -25,6 +25,11 @@ const renderTabBar = (props: any) => {
         </Text>
       )}
       {...props}
+      // renderBadge={({route}) => (
+      //   <Badge variant={"subtle"}>
+      //     <Text>{props.navigationState.notificationsCount[route.key]}</Text>
+      //   </Badge>
+      // )}
       indicatorStyle={{backgroundColor: 'white'}}
       style={{backgroundColor: commonColors.primaryDarkColor}}
     />
@@ -90,7 +95,7 @@ export const RoomsTabBar = observer(() => {
       navigationState={{
         index: routeIndex,
         routes: routes,
-        // notificationsCount,
+        notificationsCount,
       }}
       renderScene={SceneMap({
         official: () => <RoomList roomsList={officialChats} />,
