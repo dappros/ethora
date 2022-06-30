@@ -85,7 +85,7 @@ export const NftListItem = (props: NftListItemProps) => {
         </View>
         <TouchableWithoutFeedback onPress={onClick}>
           <View style={styles.itemCount}>
-            <Text>
+            <Text style={{color: 'black'}}>
               {assetsYouHave}/{totalAssets}
             </Text>
           </View>

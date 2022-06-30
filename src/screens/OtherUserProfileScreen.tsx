@@ -153,7 +153,7 @@ const RenderAssetItem = ({
   selectedItem: string;
 }) => (
   <NftListItem
-    image={item.nftFileUrl}
+    assetUrl={item.nftFileUrl}
     name={item.tokenName}
     assetsYouHave={item.balance}
     totalAssets={item.total}
@@ -357,7 +357,7 @@ const OtherUserProfileScreen = (props: any) => {
 
   useEffect(() => {
     setTimeout(() => {
-      setAnotherUserAvatar(loginStore.anotherUserAvatar);
+      // setAnotherUserAvatar();
       setAnotherUserFirstname(loginStore.anotherUserFirstname);
       setAnotherUserLastname(loginStore.anotherUserLastname);
       setAnotherUserDescription(loginStore.anotherUserDescription);
@@ -390,7 +390,6 @@ const OtherUserProfileScreen = (props: any) => {
       setItemsData([]);
     };
   }, []);
-
   const loadTabContent = (props: any) => {
     const {
       activeTab,
@@ -567,9 +566,9 @@ const OtherUserProfileScreen = (props: any) => {
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
               isLoading={isLoadingVCard}>
-              {anotherUserAvatar ? (
+              {loginStore.anotherUserAvatar ? (
                 <Image
-                  source={{uri: anotherUserAvatar}}
+                  source={{uri: loginStore.anotherUserAvatar}}
                   style={{
                     height: hp('10.46%'),
                     width: hp('10.46%'),

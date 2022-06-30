@@ -221,6 +221,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       anotherUserLastname: lastName,
       anotherUserLastSeen: {},
       anotherUserWalletAddress: walletAddress,
+      anotherUserAvatar: avatar,
     });
 
     //to set the current another user profile

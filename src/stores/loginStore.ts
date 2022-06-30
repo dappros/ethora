@@ -158,12 +158,14 @@ export class LoginStore {
     anotherUserLastname: string;
     anotherUserLastSeen?: any;
     anotherUserWalletAddress?: string;
+    anotherUserAvatar?: string;
   }) {
     runInAction(() => {
       this.anotherUserFirstname = data.anotherUserFirstname;
       this.anotherUserLastname = data.anotherUserLastname;
       this.anotherUserLastSeen = data.anotherUserLastSeen;
       this.anotherUserWalletAddress = data.anotherUserWalletAddress;
+      this.anotherUserAvatar = data.anotherUserAvatar;
     });
   }
 
