@@ -26,6 +26,7 @@ import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {createMessageObject} from '../helpers/chat/createMessageObject';
+import { playCoinSound } from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getLastMessageArchive,
@@ -503,6 +504,7 @@ export class ChatStore {
               message.receiverMessageId,
               message.tokenAmount,
             );
+            playCoinSound(message.tokenAmount)
           }
           insertMessages(message);
         }

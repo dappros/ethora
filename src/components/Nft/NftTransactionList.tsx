@@ -4,11 +4,9 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import { Divider } from 'native-base';
+import { Divider, Text, View } from 'native-base';
 import React, {useState} from 'react';
 import {
-  Text,
-  View,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -158,7 +156,6 @@ const NftTransactionsHistoryComponent = props => {
         </View>
         <View
           style={{
-            // alignSelf: 'center',
             justifySelf: 'center',
             justifyContent: 'flex-start',
             alignItems: 'center',
