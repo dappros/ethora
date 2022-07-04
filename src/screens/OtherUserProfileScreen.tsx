@@ -32,8 +32,9 @@ import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
 import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import { observer } from 'mobx-react-lite';
-import { ROUTES } from '../constants/routes';
+import {observer} from 'mobx-react-lite';
+import {ROUTES} from '../constants/routes';
+import { NftMediaModal } from '../components/NftMediaModal';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -136,11 +137,13 @@ const RenderAssetItem = ({
   index,
   onClick,
   selectedItem,
+  onAssetPress,
 }: {
   item: any;
   index: number;
   onClick: any;
   selectedItem: string;
+  onAssetPress: () => void;
 }) => (
   <NftListItem
     assetUrl={item.nftFileUrl}
@@ -153,6 +156,7 @@ const RenderAssetItem = ({
     mimetype={item.nftMimetype}
     index={index}
     item={undefined}
+    onAssetPress={onAssetPress}
   />
 );
 
@@ -184,12 +188,8 @@ const firstLayout = [
 const OtherUserProfileScreen = observer((props: any) => {
   const {loginStore, walletStore} = useStores();
 
-  const {
-    setOffset,
-    setTotal,
-    clearPaginationData,
-    anotherUserBalance,
-  } = walletStore;
+  const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
+    walletStore;
 
   const [anotherUserAvatar, setAnotherUserAvatar] = useState('');
   const [anotherUserFirstname, setAnotherUserFirstname] = useState('null');
@@ -286,7 +286,6 @@ const OtherUserProfileScreen = observer((props: any) => {
   }, [walletStore.anotherUserTransaction]);
 
   useEffect(() => {
-
     setTimeout(() => {
       let updatedCoinBalance = 0;
       if (anotherUserBalance?.length > 0) {
@@ -354,8 +353,8 @@ const OtherUserProfileScreen = observer((props: any) => {
     walletStore.fetchWalletBalance(
       loginStore.anotherUserWalletAddress,
       loginStore.userToken,
-      false
-    )
+      false,
+    );
   }, [loginStore.anotherUserWalletAddress]);
 
   useEffect(() => {
@@ -387,7 +386,6 @@ const OtherUserProfileScreen = observer((props: any) => {
     } = props;
 
     let updatedCoinBalance = 0;
-
 
     coinData
       ? coinData.map(item => {
@@ -463,7 +461,13 @@ const OtherUserProfileScreen = observer((props: any) => {
                         },
                       })
                     }
-                    selectedItem
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        open: true,
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                    }}
                   />
                 )}
                 nestedScrollEnabled={true}
@@ -499,7 +503,6 @@ const OtherUserProfileScreen = observer((props: any) => {
     if (activeTab === 2) {
       return (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-         
           <Button
             bg={'#114592'}
             padding={5}
@@ -728,6 +731,12 @@ const OtherUserProfileScreen = observer((props: any) => {
             /> */}
         </View>
       </View>
+      <NftMediaModal
+        modalVisible={mediaModalData.open}
+        closeModal={() => setMediaModalData(prev => ({...prev, open: false}))}
+        url={mediaModalData.url}
+        mimetype={mediaModalData.mimetype}
+      />
     </SafeAreaView>
   );
 });
