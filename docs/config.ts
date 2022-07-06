@@ -21,7 +21,7 @@ import loginScreenBackgroundImage from '../src/assets/login_background.png';
 
 //Application token
 const APP_TOKEN =
-'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU'; //done
+'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU';
 
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
@@ -30,7 +30,6 @@ const navbarLogoShow = false; //done
 //universal link url
 const unv_url = 'https://www.eto.li/go?c=';
 const appLinkingUrl = 'https://www.eto.li/go';
-
 
 // COLOUR THEME
 const commonColors = {
@@ -83,37 +82,37 @@ const defaultChatRooms = [
   },
 ];
 
-
 const defaultChats = {
-  '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc':{
+  '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc': {
     name: 'Agora (Start here) 🇬🇧🏛️👋💬',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-  'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22':{
+  d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22: {
     name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-  'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e':{
+  fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e: {
     name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-
 };
-defaultChats['1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc']
+defaultChats[
+  '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc'
+];
 
 /* TOKEN ECONOMY */
 // Coins image path
 import coinImagePath from '../src/assets/coin.png'; //done
 
 // Coins symbol
-const coinsMainSymbol = 'ETO'; //done
-const coinsMainName = 'Ethora Coin'; //done
+const coinsMainSymbol = 'DPT'; //done
+const coinsMainName = 'Dappros Platform Token'; //done
 
 //ITEMS
 //Allow Minting by users
@@ -139,11 +138,11 @@ const appEndpoint = endPoints[0];
 
 const appVersion = DeviceInfo.getVersion();
 
-const logoWidth:string = '70%'; //represents the percentage of the width of device
-const logoHeight = 70;  //represents the percetage of the height of the device
+const logoWidth: string = '70%'; //represents the percentage of the width of device
+const logoHeight = 70; //represents the percetage of the height of the device
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
-const isLogoTitle:boolean = false;
+const isLogoTitle: boolean = false;
 
 export {
   appTitle,
@@ -180,5 +179,5 @@ export {
   logoWidth,
   logoHeight,
   isLogoTitle,
-  appLinkingUrl
+  appLinkingUrl,
 };
