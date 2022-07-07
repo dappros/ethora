@@ -1,6 +1,10 @@
 # ethora: open-source tokenized community engine (iOS/Android, ERC-20/NFT, chat/messaging)
 Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
 
+===
+UPD: Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!
+===
+
 Proudly built in Ukraine 🇺🇦 (8 team members), India 🇮🇳 (4 team members) & U.K. 🇬🇧 (1 team member) (and inviting further collaborators)
 
 <img src="https://ethora.com/images/thumb/3/39/Ethora_social_sign-in.jpg/450px-Ethora_social_sign-in.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/5/56/Ethora_chat_room.jpg/450px-Ethora_chat_room.jpg" width="200" alt="Demo: chat tokenized gamification" /> <img src="https://ethora.com/images/thumb/f/fd/Ethora_User_Profile.jpg/450px-Ethora_User_Profile.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/c/ce/RN_app_NFT_mint_14.jpg/450px-RN_app_NFT_mint_14.jpg" width="200" alt="Demo: sign in page" /> 
