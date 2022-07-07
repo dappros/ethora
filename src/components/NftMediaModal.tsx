@@ -43,7 +43,6 @@ export const NftMediaModal = ({
   return (
     <Modal
       onBackdropPress={closeModal}
-      onRequestClose={closeModal}
       isVisible={modalVisible}>
       <View style={classes.modal}>
         {audioMimetypes[mimetype] && (

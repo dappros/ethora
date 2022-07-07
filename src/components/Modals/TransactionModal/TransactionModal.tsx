@@ -10,7 +10,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Modal,
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
@@ -48,6 +47,7 @@ import ReportAndBlockButton from './ReportAndBlockButton';
 import QRCodeGenerator from '../../QRCodeGenerator';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {NftListItem} from '../../Transactions/NftListItem';
+import Modal from 'react-native-modal';
 
 interface TransactionModalProps {
   type: string | undefined;
@@ -59,7 +59,6 @@ interface TransactionModalProps {
 const TransactionModal = (props: TransactionModalProps) => {
   const {type, extraData, closeModal, isVisible} = props;
 
-  const [modalVisible, setModalVisible] = useState(false);
   const [tokenAmount, setTokenAmount] = useState(null);
   const [tokenState, setTokenState] = useState({type: null, amnt: null});
   const [itemsData, setItemsData] = useState([]);
@@ -331,43 +330,29 @@ const TransactionModal = (props: TransactionModalProps) => {
     }
 
     if (displayItems) {
-      const modalPosition =
-        tokenState.type === 'receive' ? 'center' : 'flex-end';
-      const modalBackgroundColor =
-        tokenState.type === 'receive' ? '#ffff' : 'rgba(0,0,0,0.5)';
-      const modalViewHeight =
-        tokenState.type === 'receive' ? hp('30%') : hp('20%');
-      const modalViewBackgroundColor =
-        tokenState.type === 'receive' ? commonColors.primaryColor : 'white';
+
       return (
         <View>
           <Modal
-            animationType="slide"
-            transparent={true}
-            visible={displayItems}>
+          onBackdropPress={()=>setDisplayItems(false)}
+          animationIn={"slideInUp"}
+          animationOut={"slideOutDown"}  
+          isVisible={displayItems}>
             <View
               style={[
                 styles.centeredView,
-                {backgroundColor: modalBackgroundColor},
               ]}>
-              <TouchableOpacity
-                onPress={() => closeModal()}
-                style={{
-                  position: 'absolute',
-                  height: hp('100%'),
-                  width: wp('100%'),
-                }}
-              />
               <View
                 style={[
-                  styles.modalView,
                   {
-                    backgroundColor: modalViewBackgroundColor,
+                    backgroundColor:"white",
                     height: hp('50%'),
                     width: wp('100%'),
                     padding: 0,
                     margin: 0,
                     paddingTop: 7,
+                    justifyContent:"center",
+                    alignItems:"center"
                   },
                 ]}>
                 <View style={styles.tokenTransferContainer}>
@@ -393,33 +378,21 @@ const TransactionModal = (props: TransactionModalProps) => {
         tokenState.type === 'receive' ? commonColors.primaryColor : 'white';
       return (
         <View>
-          <Modal animationType="slide" transparent={true} visible={isVisible}>
+          <Modal
+          onBackdropPress={closeModal}
+          animationIn={"slideInUp"}
+          animationOut={"slideOutDown"}  
+          isVisible={isVisible}>
             <View
               style={[
                 styles.centeredView,
-                {backgroundColor: modalBackgroundColor},
               ]}>
-              <TouchableOpacity
-                onPress={() => closeModal()}
-                style={{
-                  position: 'absolute',
-                  height: hp('100%'),
-                  width: wp('100%'),
-                }}
-              />
               <View
                 style={[
                   styles.modalView,
-                  {backgroundColor: modalViewBackgroundColor},
                 ]}>
                 <View style={styles.tokenTransferContainer}>
                   <TokenTransfer
-                    // state={this.state.tokenState}
-                    // tokenAmount={this.state.tokenAmount}
-                    // setTokenAmount={amt => this.setTokenAmount(amt)}
-                    // closeModal={() => this.closeModal()}
-                    // tokenTransferFunc={this.tokenTransferFunc}
-                    // name={extraData.name}
                     name={extraData.name}
                     tokenAmount={tokenAmount}
                     tokenTransferFunc={tokenTransferFunc}
@@ -497,7 +470,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // marginTop: 22,
-    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   privacyPolicyMainContainer: {
     backgroundColor: '#fff',

@@ -32,8 +32,8 @@ import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
 import {Button} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import {observer} from 'mobx-react-lite';
-import {ROUTES} from '../constants/routes';
+import { observer } from 'mobx-react-lite';
+import { ROUTES } from '../constants/routes';
 import { NftMediaModal } from '../components/NftMediaModal';
 
 const {primaryColor, primaryDarkColor} = commonColors;
@@ -131,33 +131,6 @@ const Item = ({
       </View>
     </View>
   </View>
-);
-const RenderAssetItem = ({
-  item,
-  index,
-  onClick,
-  selectedItem,
-  onAssetPress,
-}: {
-  item: any;
-  index: number;
-  onClick: any;
-  selectedItem: string;
-  onAssetPress: () => void;
-}) => (
-  <NftListItem
-    assetUrl={item.nftFileUrl}
-    name={item.tokenName}
-    assetsYouHave={item.balance}
-    totalAssets={item.total}
-    onClick={onClick}
-    itemSelected={selectedItem}
-    nftId={item.nftId}
-    mimetype={item.nftMimetype}
-    index={index}
-    item={undefined}
-    onAssetPress={onAssetPress}
-  />
 );
 
 const firstLayout = [
@@ -449,25 +422,31 @@ const OtherUserProfileScreen = observer((props: any) => {
               <FlatList
                 data={itemsData}
                 renderItem={e => (
-                  <RenderAssetItem
-                    item={e.item}
-                    index={e.index}
-                    onClick={() =>
-                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
-                        screen: 'NftItemHistory',
-                        params: {
-                          item: e.item,
-                          userWalletAddress: anotherUserWalletAddress,
-                        },
-                      })
-                    }
-                    onAssetPress={() => {
-                      setMediaModalData({
-                        open: true,
-                        url: e.item.nftFileUrl,
-                        mimetype: e.item.nftMimetype,
-                      });
-                    }}
+                  <NftListItem
+                  assetUrl={e.item.imagePreview || e.item.nftFileUrl}
+                  name={e.item.tokenName}
+                  assetsYouHave={e.item.balance}
+                  totalAssets={e.item.total}
+                  onClick={()=>
+                    props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                      screen: 'NftItemHistory',
+                      params: {
+                        item: e.item,
+                        userWalletAddress: anotherUserWalletAddress,
+                      },
+                    })
+                  }
+                  nftId={e.item.nftId}
+                  mimetype={e.item.nftMimetype}
+                  onAssetPress={() => {
+                    setMediaModalData({
+                      open: true,
+                      url: e.item.nftFileUrl,
+                      mimetype: e.item.nftMimetype,
+                    });
+                  }}
+                  item={e.item}
+                  index={e.index}
                   />
                 )}
                 nestedScrollEnabled={true}
@@ -723,12 +702,6 @@ const OtherUserProfileScreen = observer((props: any) => {
               </SkeletonContent>
             </View>
           </View>
-          {/* <ModalList
-              type={this.state.modalType}
-              show={this.state.showModal}
-              extraData={this.state.extraData}
-              closeModal={this.closeModal}
-            /> */}
         </View>
       </View>
       <NftMediaModal
