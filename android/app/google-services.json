@@ -14,6 +14,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "972933470054-11k8h6l87ffbmbl7045325et8a0b15il.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "1656ba101d65b11be93b72b4fa52a413cb35b89c"
+          }
+        },
+        {
+          "client_id": "972933470054-i5o0uqe3u7nueficqfs2e70db8lkg587.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "972933470054-tdbm78k1ch6p5ap22ttbjicinbiun4js.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "4fc7e8d484a28109369ad96e62d80b719b6e6e16"
+          }
+        },
+        {
           "client_id": "972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com",
           "client_type": 3
         }

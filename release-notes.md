@@ -1,4 +1,35 @@
-## v21.11 - GOING PUBLIC!
+## v22.07 - MAJOR RELEASE "CHERVONA KALYNA" 
+
+There has been a significant number of changes, updates and improvements during our monthly releases since the initial GitHub launch in November 2021 (and since the kick off of the development much earlier than that). We aren't doing the best job documenting all changes in this file as they are done, however most of the code is self explanatory and we have documentation wiki available publicly here: https://ethora.com/ that covers the features of the engine.
+
+### Changes/improvements of v22.07
+Note: the main improvement of this major release is the code architecture.
+It has come time to refactor our code and improve the performance.
+In addition, we have improved the project code structure and readability to make it easier for outside developers to build their own projects on top of Ethora engine.
+We are happy to say the goal has been achieved and there is a drastic improvement in the performance of the application.
+
+Some of the changes rolled out in this release:
+* Switched to Typescript across the code
+* Switched to MobX and functional components
+* Multiple code architecture improvements, better organized Helpers, async logic etc
+* Lots of improvements around media and Items. You can now play audio and video Items directly from user profiles.
+* Introduced some Chat Bots - "Hut, Hut" Bot that allows to store and release NFT items in Rooms/Spaces, "Questionnaire Bot" that allows to collect information from users, "Notary Bot" allowing to keep an immutable ledger audit trail of conversations and agreements, as well as helper bots "Mint Bot" and "Merchant Bot" that allow to mint and purchase/get NFT/NFMT Items. 
+* Fixed numerous bugs and issues (caching, XMPP, Push Notifications subscriptions etc)
+* More intuitive menu
+* NFMT smart contract format for Items (our own variation and extension of ERC-1155 NFT smart contract)
+* Audio & Video calls - beta implementation
+* Server and blockchain architecture improvements allowing to better connect Users and assets across Applications, removed obstacles for L1/L2 bridging
+* Lots of other improvements
+* Starting from this release, we are going to assign a unique name to each major release.
+* This one is called "Chervona Kalyna" (Red Viburnum) 🩸 and we devote it to the fearless defenders of Ukraine 💛💙 who are now fighting to protect its independence and freedom.
+
+Read more about Chervona Kalyna here: https://en.wikipedia.org/wiki/Oi_u_luzi_chervona_kalyna
+
+Stay tuned for future updates, some really exciting features are still coming soon in follow-up updates to this major release.
+These things are already being tested in beta version:
+
+
+## v21.11 - MAJOR RELEASE - GOING PUBLIC!
 
 PUBLIC GITHUB LAUNCH - MESSAGE FROM THE TEAM
 
@@ -38,7 +69,10 @@ Messages from the Ethora development team:
 * Process erc20Transfer with Transactions Queue
 * Added Redis queue and limiter for B/C transactions. Limiter is set via BC_STACK_SIZE at .env file. This is done to avoid overloading B/C node with too many concurrent transaction. 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1d3b9db1fa789645879b0dd997b143432f59feaa
 ## v21.10
 
 ### Backend
