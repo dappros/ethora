@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-// replaces any caps in a string with "_" followed with respective small case
+// This code replaces any caps in a string with "_" followed with respective small case - this is needed for cross-compatibility between Ethereum addresses and XMPP JIDs 
 
 export const underscoreManipulation = (str:string) => {
   if(str){
