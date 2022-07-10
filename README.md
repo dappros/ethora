@@ -18,7 +18,8 @@ The Launchpad https://ethora.com/wiki/Launchpad section lists some sample projec
 *Note: Some information below might be outdated as we update the above website most often.* 
 
 ## How to BUIDL 🛠️
-Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 32 minutes: https://ethora.com/wiki/Step_By_Step_Guide
+Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 30 minutes: https://ethora.com/wiki/Step_By_Step_Guide
+You will need environment set up for iOS or Android development.
 
 ## Core features 💡
 * iOS & Android
