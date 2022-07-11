@@ -1,12 +1,10 @@
 import {
   Box,
-  HStack,
   Icon,
   Image,
   Spinner,
   Stack,
   Text,
-  View,
   VStack,
 } from 'native-base';
 import React, {useEffect} from 'react';
@@ -31,7 +29,6 @@ import {useStores} from '../stores/context';
 import {observer} from 'mobx-react-lite';
 import {socialLoginHandle} from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
-import {httpGet} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 interface LoginScreenProps {}

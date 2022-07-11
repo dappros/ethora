@@ -66,6 +66,7 @@
     "react-native-share": "^7.4.0",
     "react-native-skeleton-content-nonexpo": "^1.0.13",
     "react-native-slider": "^0.11.0",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^12.3.0",
     "react-native-tab-view": "^3.1.1",
     "react-native-toast-message": "^2.1.5",

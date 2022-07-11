@@ -6,7 +6,7 @@ import { NativeBaseProvider } from "native-base";
 import Toast from 'react-native-toast-message';
 import NetInfo from "@react-native-community/netinfo";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
+import SplashScreen from  "react-native-splash-screen";
 const App = () => {
 
   React.useEffect(()=>{
@@ -14,6 +14,7 @@ const App = () => {
       console.log("Connection type", state.type);
       console.log("Is connected?", state.isConnected);
     });
+    SplashScreen.hide();
     return function cleanup(){
       unsubscribe();
     }

@@ -60,6 +60,7 @@ const loginOrRegisterSocialUser = async(
         registerSocialUser(dataObject, user);
       }
     } catch (error) {
+      console.log(error,"asdasdasd")
       showToast('error','Error', 'Something went wrong, please try again later', 'top')
     }
   }

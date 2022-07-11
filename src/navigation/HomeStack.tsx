@@ -4,24 +4,24 @@ import React, {useEffect} from 'react';
 import {appLinkingUrl, coinsMainName} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
 import {ROUTES} from '../constants/routes';
-import ChatScreen from '../screens/ChatScreen';
-import OtherUserPorfileScreen from '../screens/OtherUserProfileScreen';
-import {ProfileScreen} from '../screens/ProfileScreen';
-import RoomListScreen from '../screens/RoomListScreen';
-import TransactionsScreen from '../screens/TransactionsScreen';
-import NewChatScreen from '../screens/NewChatScreen';
+import {ProfileScreen} from '../Screens/ProfileScreen';
 import {useStores} from '../stores/context';
-import ScanScreen from '../screens/ScanScreen';
-import AccountScreen from '../screens/AccountScreen';
-import MintScreen from '../screens/MintScreen';
-import NftItemHistoryScreen from '../screens/NftItemHistoryScreen';
+import NftItemHistoryScreen from '../Screens/NftItemHistoryScreen';
 import {Linking, Platform} from 'react-native';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
-import {DebugScreen} from '../screens/DebugScreen';
+import {DebugScreen} from '../Screens/DebugScreen';
 import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
+import ChatScreen from '../Screens/ChatScreen';
+import OtherUserProfileScreen from '../Screens/OtherUserProfileScreen';
+import RoomListScreen from '../Screens/RoomListScreen';
+import TransactionsScreen from '../Screens/TransactionsScreen';
+import NewChatScreen from '../Screens/NewChatScreen';
+import ScanScreen from '../Screens/ScanScreen';
+import AccountScreen from '../Screens/AccountScreen';
+import MintScreen from '../Screens/MintScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -183,7 +183,7 @@ export const HomeStackScreen = observer(() => {
       />
       <HomeStack.Screen
         name={ROUTES.OTHERUSERPROFILESCREEN}
-        component={OtherUserPorfileScreen}
+        component={OtherUserProfileScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}
