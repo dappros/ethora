@@ -26,7 +26,7 @@ import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {createMessageObject} from '../helpers/chat/createMessageObject';
-import { playCoinSound } from '../helpers/chat/playCoinSound';
+import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getLastMessageArchive,
@@ -110,6 +110,7 @@ export class ChatStore {
   };
   shouldCount: boolean = true;
   roomRoles = [];
+  isOnline = false;
   isComposing: isComposingProps = {
     state: false,
     username: '',
@@ -125,7 +126,7 @@ export class ChatStore {
   toggleShouldCount = action((value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
-    })
+    });
   });
 
   setInitialState = () => {
@@ -235,7 +236,7 @@ export class ChatStore {
     }
   };
 
-  updateBadgeCounter = action((roomJid: string, type: 'CLEAR'|'UPDATE') => {
+  updateBadgeCounter = action((roomJid: string, type: 'CLEAR' | 'UPDATE') => {
     this.roomList.map((item: any, index: number) => {
       if (item.jid === roomJid) {
         if (type === 'CLEAR') {
@@ -504,7 +505,7 @@ export class ChatStore {
               message.receiverMessageId,
               message.tokenAmount,
             );
-            playCoinSound(message.tokenAmount)
+            playCoinSound(message.tokenAmount);
           }
           insertMessages(message);
         }
@@ -543,6 +544,9 @@ export class ChatStore {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
+      runInAction(() => {
+        this.isOnline = true;
+      });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });

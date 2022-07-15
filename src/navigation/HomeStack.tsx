@@ -32,12 +32,12 @@ export const HomeStackScreen = observer(() => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (chatStore.roomList.length) {
+    if (chatStore.roomList.length && chatStore.isOnline) {
       chatStore.roomList.forEach(item => {
         getLastMessageArchive(item.jid, chatStore.xmpp);
       });
     }
-  }, [chatStore.roomList]);
+  }, [chatStore.roomList, chatStore.isOnline]);
 
   useEffect(() => {
     chatStore.getCachedRoomsInfo();
