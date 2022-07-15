@@ -7,7 +7,7 @@ Note: linked open-source libraries and components may be subject to their own li
 
 interface Reply {
   title: string;
-  value: string
+  value: string;
 }
 interface createMessageObjectProps {
   imageLocationPreview?: any;
@@ -32,7 +32,9 @@ interface createMessageObjectProps {
   waveForm?: string;
   roomJid: string;
   receiverMessageId: string;
-  quickReplies: Reply[];
+  quickReplies: string;
+  attachmentId?: string;
+  wrappable: boolean;
 }
 
 export const createMessageObject = (
@@ -61,7 +63,8 @@ export const createMessageObject = (
     receiverMessageId: '',
     imageLocationPreview: undefined,
     imageLocation: undefined,
-    quickReplies: [],
+    quickReplies: '',
+    wrappable: true
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -73,6 +76,7 @@ export const createMessageObject = (
       message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13)));
     }
     if (item.name === 'data') {
+      console.log(item.attrs.attachmentId, 'fjklsdjfkl')
       message.user.name =
         item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
       message.user._id = item.attrs.senderJID;
@@ -90,6 +94,9 @@ export const createMessageObject = (
       message.image = item.attrs.location;
       message.receiverMessageId = item.attrs.receiverMessageId.toString();
       message.quickReplies = item.attrs.quickReplies || '';
+      message.attachmentId = item.attrs.attachmentId || '';
+      message.wrappable = true;
+
       // message.roomJid = item.attrs.roomJid;
     }
   });

@@ -111,8 +111,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   useEffect(() => {
     chatStore.toggleShouldCount(false);
-    chatStore.getCachedMessages();
-
     return () => {
       chatStore.toggleShouldCount(true);
     }
@@ -441,7 +439,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
-
+console.log(item._id)
       const data = {
         firstName,
         lastName,
@@ -462,6 +460,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
         updatedAt: item.updatedAt,
         userId: item.userId,
         waveForm: waveForm,
+        attachmentId: item._id,
+        wrappable: true
       };
 
       sendMediaMessageStanza(

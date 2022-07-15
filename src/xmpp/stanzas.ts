@@ -129,6 +129,8 @@ export const sendMediaMessageStanza = async (
       updatedAt: data.updatedAt,
       userId: data.userId,
       waveForm: JSON.stringify(data.waveForm),
+      attachmentId: data?.attachmentId,
+      wrappable: data?.wrappable
     }),
   );
 

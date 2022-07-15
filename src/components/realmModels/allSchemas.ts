@@ -51,7 +51,9 @@ const MessageSchema = {
     user: 'User',
     duration: {type: 'string', optional: true},
     waveForm: {type: 'string', optional: true},
-    quickReplies: {type: 'string', optional: true,}
+    quickReplies: {type: 'string', optional: true},
+    atattachmentId: {type: 'string', optional: true},
+    wrappable: {type: 'bool', optional: true},
   },
 };
 
