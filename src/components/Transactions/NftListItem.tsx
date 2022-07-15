@@ -33,7 +33,7 @@ interface NftListItemProps {
   item: any;
   mimetype: string;
   itemSelected: boolean;
-  onAssetPress: () => void;
+  onAssetPress?: () => void;
 }
 
 export const NftListItem = (props: NftListItemProps) => {
