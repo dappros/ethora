@@ -130,7 +130,8 @@ export const sendMediaMessageStanza = async (
       userId: data.userId,
       waveForm: JSON.stringify(data.waveForm),
       attachmentId: data?.attachmentId,
-      wrappable: data?.wrappable
+      wrappable: data?.wrappable,
+      nftId: data?.nftId,
     }),
   );
 
@@ -201,7 +202,7 @@ export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
     ),
   );
   xmpp.send(message);
-}
+};
 
 export const subscribeToRoom = (
   roomJID: string,

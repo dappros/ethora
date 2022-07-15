@@ -35,6 +35,7 @@ interface createMessageObjectProps {
   quickReplies: string;
   attachmentId?: string;
   wrappable: boolean;
+  nftId?: string;
 }
 
 export const createMessageObject = (
@@ -64,7 +65,8 @@ export const createMessageObject = (
     imageLocationPreview: undefined,
     imageLocation: undefined,
     quickReplies: '',
-    wrappable: true
+    wrappable: true,
+    nftId: '',
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -76,7 +78,6 @@ export const createMessageObject = (
       message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13)));
     }
     if (item.name === 'data') {
-      console.log(item.attrs.attachmentId, 'fjklsdjfkl')
       message.user.name =
         item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
       message.user._id = item.attrs.senderJID;
@@ -96,6 +97,7 @@ export const createMessageObject = (
       message.quickReplies = item.attrs.quickReplies || '';
       message.attachmentId = item.attrs.attachmentId || '';
       message.wrappable = true;
+      message.nftId = item.attrs.nftId || '';
 
       // message.roomJid = item.attrs.roomJid;
     }

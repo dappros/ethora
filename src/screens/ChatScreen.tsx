@@ -66,6 +66,9 @@ import {formatBytes} from '../helpers/chat/formatBytes';
 import {AudioMessage} from '../components/Chat/AudioMessage';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import RenderChatFooter from '../components/Chat/RenderChatFooter';
+import {SendButton} from '../components/Chat/SendButton';
+import {AudioSendButton} from '../components/Chat/AudioSendButton';
+import {NftItemGalleryModal} from '../../NftItemGalleryModal';
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
@@ -83,14 +86,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  const [modalType, setModalType] = useState<string | undefined>(undefined);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [extraData, setExtraData] = useState<{}>({});
-  const [recording, setRecording] = useState<boolean>(false);
-  const [fileUploadProgress, setFileUploadProgress] = useState<number>(0);
-  const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [composingUsername, setComposingUsername] = useState<string>('');
-
+  const [modalType, setModalType] = useState(undefined);
+  const [showModal, setShowModal] = useState(false);
+  const [extraData, setExtraData] = useState({});
+  const [recording, setRecording] = useState(false);
+  const [fileUploadProgress, setFileUploadProgress] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const [composingUsername, setComposingUsername] = useState('');
+  const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false);
   let inputTimer2: any = 0;
 
   const path = Platform.select({
@@ -113,7 +116,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     chatStore.toggleShouldCount(false);
     return () => {
       chatStore.toggleShouldCount(true);
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -265,8 +268,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
       waveForm,
       id,
       imageLocation,
+      nftId,
     } = props.currentMessage;
-
     let formatedSize = {size: 0, unit: 'KB'};
     formatedSize = formatBytes(parseFloat(size), 2);
     let parsedWaveform = [];
@@ -281,6 +284,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
       return (
         <ImageMessage
+          nftId={nftId}
           url={image}
           size={size}
           onPress={() => onMediaMessagePress(mimetype, image)}
@@ -439,7 +443,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
-console.log(item._id)
+      console.log(item._id);
       const data = {
         firstName,
         lastName,
@@ -461,7 +465,7 @@ console.log(item._id)
         userId: item.userId,
         waveForm: waveForm,
         attachmentId: item._id,
-        wrappable: true
+        wrappable: true,
       };
 
       sendMediaMessageStanza(
@@ -512,7 +516,98 @@ console.log(item._id)
     }
   };
 
+  const sendAttachment = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+        copyTo: 'cachesDirectory',
+      });
+
+      const filesApiURL = apiStore.defaultUrl + fileUpload;
+      const FormData = require('form-data');
+      let data = new FormData();
+      data.append('files', {
+        uri: res[0].uri,
+        type: res[0].type,
+        name: res[0].name,
+      });
+      const absolutePath = res[0].fileCopyUri;
+      const response = await httpUpload(
+        filesApiURL,
+        data,
+        loginStore.userToken,
+        setFileUploadProgress,
+      );
+      setFileUploadProgress(0);
+      if (response.data.results?.length) {
+        debugStore.addLogsApi(response.data.results);
+        if (response.data.results[0].mimetype === 'audio/mpeg') {
+          let wave = await getAudioData(absolutePath);
+          submitMediaMessage(response.data.results, wave);
+        } else {
+          submitMediaMessage(response.data.results);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        showToast(
+          'error',
+          'Error',
+          'Cannot upload file, try again later',
+          'top',
+        );
+        throw err;
+      }
+    }
+  };
+
+  const displayNftItems = async () => {
+    setIsNftItemGalleryVisible(true);
+  };
+  const sendNftItemsFromGallery = item => {
+    const data = {
+      firstName,
+      lastName,
+      walletAddress,
+      chatName,
+      userAvatar: loginStore.userAvatar,
+      createdAt: item.createdAt,
+      location: item.nftFileUrl,
+      locationPreview: item.nftFileUrl,
+      mimetype: item.nftMimetype,
+      originalname: item.nftOriginalname,
+      // attachmentId: item.nftId,
+      nftId: item.nftId,
+      wrappable: true,
+    };
+
+    sendMediaMessageStanza(
+      manipulatedWalletAddress,
+      chatJid,
+      data,
+      chatStore.xmpp,
+    );
+    setIsNftItemGalleryVisible(false);
+  };
+
   const renderAttachment = () => {
+    const options = walletStore.nftItems.length
+      ? {
+          'Upload File': async () => await sendAttachment(),
+          'Display an Item': async () => await displayNftItems(),
+          Cancel: () => {
+            console.log('Cancel');
+          },
+        }
+      : {
+          'Upload File': async () => await sendAttachment(),
+          Cancel: () => {
+            console.log('Cancel');
+          },
+        };
     return (
       <View style={{position: 'relative'}}>
         <View
@@ -530,60 +625,7 @@ console.log(item._id)
             icon={() => (
               <Entypo name="attachment" color={'black'} size={hp('3%')} />
             )}
-            options={{
-              'Upload File': async () => {
-                try {
-                  const res = await DocumentPicker.pick({
-                    type: [DocumentPicker.types.allFiles],
-                    copyTo: 'cachesDirectory',
-                  });
-
-                  const filesApiURL = apiStore.defaultUrl + fileUpload;
-                  const FormData = require('form-data');
-                  let data = new FormData();
-                  // correctpath = str2.replace(str1, '');
-                  // alert(JSON.stringify(res))
-                  data.append('files', {
-                    uri: res[0].uri,
-                    type: res[0].type,
-                    name: res[0].name,
-                  });
-                  const absolutePath = res[0].fileCopyUri;
-                  const response = await httpUpload(
-                    filesApiURL,
-                    data,
-                    loginStore.userToken,
-                    setFileUploadProgress,
-                  );
-                  setFileUploadProgress(0);
-                  if (response.data.results?.length) {
-                    debugStore.addLogsApi(response.data.results);
-                    if (response.data.results[0].mimetype === 'audio/mpeg') {
-                      let wave = await getAudioData(absolutePath);
-                      submitMediaMessage(response.data.results, wave);
-                    } else {
-                      submitMediaMessage(response.data.results);
-                    }
-                  }
-                } catch (err) {
-                  console.log(err);
-                  if (DocumentPicker.isCancel(err)) {
-                    // User cancelled the picker, exit any dialogs or menus and move on
-                  } else {
-                    showToast(
-                      'error',
-                      'Error',
-                      'Cannot upload file, try again later',
-                      'top',
-                    );
-                    throw err;
-                  }
-                }
-              },
-              Cancel: () => {
-                console.log('Cancel');
-              },
-            }}
+            options={options}
             optionTintColor="#000000"
           />
         </View>
@@ -597,54 +639,16 @@ console.log(item._id)
     };
     if (!props.text) {
       return (
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            paddingHorizontal: 5,
-            flexDirection: 'row',
-            position: 'relative',
-          }}>
-          <TouchableWithoutFeedback
-            // onPress={this.start}
-
-            onPressIn={onStartRecord}
-            onPressOut={onStopRecord}>
-            <Animated.View
-              style={[
-                {
-                  backgroundColor: commonColors.primaryDarkColor,
-                  borderRadius: 50,
-                  padding: 5,
-                },
-                animateMediaButtonStyle,
-              ]}>
-              <Entypo name="mic" color={'white'} size={hp('3%')} />
-            </Animated.View>
-          </TouchableWithoutFeedback>
-          {/* )} */}
-          {recording && (
-            <View style={{position: 'absolute', right: hp('10%')}}>
-              <RecordingSecondsCounter />
-            </View>
-          )}
-        </View>
+        <AudioSendButton
+          recording={recording}
+          onPressIn={onStartRecord}
+          onPressOut={onStopRecord}
+        />
       );
     }
     return (
       <Send {...props}>
-        <View
-          style={[
-            {
-              backgroundColor: commonColors.primaryDarkColor,
-              borderRadius: 100,
-              padding: 5,
-              marginRight: 5,
-              paddingLeft: 7,
-              marginBottom: 5,
-            },
-          ]}>
+        <View style={[styles.sendButton]}>
           <IonIcons name="ios-send" color={'white'} size={hp('3%')} />
         </View>
       </Send>
@@ -729,6 +733,12 @@ console.log(item._id)
         extraData={extraData}
         isVisible={showModal}
       />
+      <NftItemGalleryModal
+        onItemPress={sendNftItemsFromGallery}
+        isModalVisible={isNftItemGalleryVisible}
+        nftItems={walletStore.nftItems}
+        closeModal={() => setIsNftItemGalleryVisible(false)}
+      />
     </>
   );
 });
@@ -738,6 +748,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFF',
     fontSize: heightPercentageToDP('1.47%'),
+  },
+  sendButton: {
+    backgroundColor: commonColors.primaryDarkColor,
+    borderRadius: 100,
+    padding: 5,
+    marginRight: 5,
+    paddingLeft: 7,
+    marginBottom: 5,
   },
 });
 
