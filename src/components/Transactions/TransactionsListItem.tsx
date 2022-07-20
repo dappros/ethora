@@ -29,6 +29,7 @@ interface TransactionListProps {
   transactionSender: string;
   transactionReceiver: string;
   transactionOwnerWalletAddress: string;
+  from:string
 }
 
 export const TransactionsListItem = (props: TransactionListProps) => {
@@ -45,10 +46,11 @@ export const TransactionsListItem = (props: TransactionListProps) => {
     balance,
     name,
     transactionOwnerWalletAddress,
+    from
   } = props;
   const [expanded, setExpanded] = useState(false);
   const isTransactionOwner =
-    transactionSender === transactionOwnerWalletAddress;
+    from === transactionOwnerWalletAddress;
   return (
     <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}

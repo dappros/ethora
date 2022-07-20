@@ -45,6 +45,7 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
 
   return (
     <TransactionsListItem
+      from={from}
       balance={balance}
       transactionAmount={value}
       transactionSender={senderFirstName + ' ' + senderLastName}
