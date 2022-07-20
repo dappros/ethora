@@ -396,7 +396,24 @@ export const isComposing = async (
   xmpp.send(message);
   // }, 100);
 };
-
+export const botStanza = (from: string, to: string, data: any, xmpp: any) => {
+  const message = xml(
+    'message',
+    {
+      id: XMPP_TYPES.botStanza,
+      type: 'groupchat',
+      from: from + '@' + DOMAIN,
+      to: to,
+    },
+    xml('body', {}, ''),
+    xml('data', {
+      xmlns: 'http://' + DOMAIN,
+      senderJID: from + '@' + DOMAIN,
+      ...data,
+    }),
+  );
+  xmpp.send(message);
+};
 export const pausedComposing = async (
   walletAddress: string,
   chat_jid: string,

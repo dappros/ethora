@@ -106,6 +106,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     open: false,
     url: '',
     type: '',
+    message: {}
   });
 
   const messages = chatStore.messages
@@ -235,8 +236,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
     navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
   };
-  const onMediaMessagePress = (type: any, url: any) => {
-    setMediaModal({open: true, type, url});
+  const onMediaMessagePress = (type: any, url: any, message) => {
+    setMediaModal({open: true, type, url, message});
   };
 
   const closeMediaModal = () => {
@@ -287,7 +288,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           nftId={nftId}
           url={image}
           size={size}
-          onPress={() => onMediaMessagePress(mimetype, image)}
+          onPress={() => onMediaMessagePress(mimetype, image, props.currentMessage)}
         />
       );
     } else if (audioMimetypes[mimetype]) {
@@ -726,6 +727,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         type={mediaModal.type}
         onClose={closeMediaModal}
         open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+        messageData={mediaModal.message}
       />
       <TransactionModal
         type={modalType}

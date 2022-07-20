@@ -52,7 +52,7 @@ const MessageSchema = {
     duration: {type: 'string', optional: true},
     waveForm: {type: 'string', optional: true},
     quickReplies: {type: 'string', optional: true},
-    atattachmentId: {type: 'string', optional: true},
+    attachmentId: {type: 'string', optional: true},
     wrappable: {type: 'bool', optional: true},
     nftId: {type: 'string', optional: true},
 

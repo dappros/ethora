@@ -28,5 +28,6 @@ export const XMPP_TYPES = {
   pausedComposing: 'pausedComposing',
   commonDiscover: 'commonDiscover',
   setOwner:'setOwner',
-  roomConfig: 'roomConfig'
+  roomConfig: 'roomConfig',
+  botStanza: 'botStanza'
 };
