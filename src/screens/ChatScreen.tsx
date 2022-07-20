@@ -340,7 +340,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setModalType(modalTypes.TOKENTRANSFER);
     setExtraData(extraData);
   };
-
   const closeModal = () => {
     setShowModal(false);
   };

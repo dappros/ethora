@@ -5,8 +5,8 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, HStack, Image, Modal} from 'native-base';
-import React, {useState} from 'react';
+import {Box, HStack, Image, Modal, VStack} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
 import VideoPlayer from 'react-native-video-player';
@@ -28,27 +28,45 @@ import {coinImagePath, textStyles} from '../../../docs/config';
 import {observer} from 'mobx-react-lite';
 import {useStores} from '../../stores/context';
 import {botTypes} from '../../constants/botTypes';
-import {botStanza} from '../../xmpp/stanzas';
+import {botStanza, sendMessageStanza} from '../../xmpp/stanzas';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {wrapMessage} from '../../helpers/wrapMessage';
+import {httpGet} from '../../config/apiService';
 const {width, height: windowHeight} = Dimensions.get('window');
 
-const ModalActionButton = ({text, action}) => {
+const ModalActionButton = ({actionTypeText, cost, action}) => {
   return (
     <TouchableOpacity activeOpacity={0.9} onPress={action}>
-      <HStack
-        justifyContent={'center'}
-        alignItems={'center'}
+      <VStack
         bgColor={'white'}
         borderRadius={'md'}
-        padding={'1'}
+        alignItems={'center'}
         width={'full'}>
-        <Image
-          alt="coin"
-          source={coinImagePath}
-          style={{width: 30, height: 30}}
-        />
-        <Text style={{color: 'black', fontFamily: textStyles.mediumFont, fontSize: 20}}>{text}</Text>
-      </HStack>
+        <Text
+          style={{
+            color: 'black',
+            fontFamily: textStyles.mediumFont,
+            fontSize: 18,
+          }}>
+          {actionTypeText}
+        </Text>
+        <HStack justifyContent={'center'} alignItems={'center'}>
+          <Image
+            alt="coin"
+            resizeMode="contain"
+            source={coinImagePath}
+            style={{width: 25, height: 25, marginRight: 3}}
+          />
+          <Text
+            style={{
+              color: 'black',
+              fontFamily: textStyles.mediumFont,
+              fontSize: 20,
+            }}>
+            {cost}
+          </Text>
+        </HStack>
+      </VStack>
     </TouchableOpacity>
   );
 };
@@ -56,7 +74,43 @@ const ModalActionButton = ({text, action}) => {
 export const ChatMediaModal = observer(
   ({open, url, type, onClose, messageData}) => {
     const [height, setHeight] = useState(0);
-    const {chatStore, loginStore} = useStores();
+    const {chatStore, loginStore, apiStore} = useStores();
+    const [buttonState, setButtonState] = useState({title: 'Wrap', cost: 100});
+
+    const getCosts = async () => {
+      try {
+        const res = await httpGet(
+          apiStore.defaultUrl + '/tokens/get/' + messageData?.contractAddress,
+          apiStore.defaultToken,
+        );
+        return res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const getButtonState = async () => {
+      if (messageData?.attachmentId && !messageData?.nftId) {
+        setButtonState({title: 'Wrap', cost: 100});
+
+        return 'Wrap';
+      }
+      if (messageData?.nftId && messageData?.contractAddress) {
+        const res = await getCosts();
+        const costs = res.results.costs;
+        setButtonState({
+          title: 'Get',
+          cost: `${Math.min(...costs)} - ${Math.max(...costs)}`,
+        });
+      } else {
+        return '';
+      }
+    };
+    useEffect(() => {
+      if (messageData) {
+        getButtonState();
+      }
+    }, [messageData]);
+
     const renderModalContent = () => {
       if (imageMimetypes[type]) {
         const modalButtonAction = () => {
@@ -65,7 +119,10 @@ export const ChatMediaModal = observer(
           );
           const data = {
             attachmentId: messageData.attachmentId,
-            botType: botTypes.deployBot,
+            botType: messageData?.contractAddress
+              ? botTypes.mintBot
+              : botTypes.deployBot,
+            contractAddress: messageData?.contractAddress,
           };
           botStanza(
             manipulatedWalletAddress,
@@ -73,7 +130,9 @@ export const ChatMediaModal = observer(
             data,
             chatStore.xmpp,
           );
+          onClose();
         };
+
         return (
           <View>
             <FastImage
@@ -96,7 +155,8 @@ export const ChatMediaModal = observer(
             {!!messageData.attachmentId && (
               <ModalActionButton
                 action={modalButtonAction}
-                text={messageData.attachmentId ? 'Wrap' : ''}
+                actionTypeText={buttonState.title}
+                cost={buttonState.cost}
               />
             )}
           </View>

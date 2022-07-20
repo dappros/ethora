@@ -80,9 +80,24 @@ export const updateTokenAmount = async (messageId, tokenAmount) => {
     );
 
     realm.write(() => {
-      message.tokenAmount =  message.tokenAmount + tokenAmount;
+      message.tokenAmount = message.tokenAmount + tokenAmount;
     });
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const updateMessageToWrapped = async (messageId, {nftId, contractAddress}) => {
+  try {
+    const realm = await Realm.open(databaseOptions);
+    let message = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId,
+    );
 
+    realm.write(() => {
+      message.nftId = nftId;
+      message.contractAddress = contractAddress
+    });
   } catch (error) {
     console.log(error);
   }

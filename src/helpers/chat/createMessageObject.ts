@@ -36,6 +36,9 @@ interface createMessageObjectProps {
   attachmentId?: string;
   wrappable: boolean;
   nftId?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+
 }
 
 export const createMessageObject = (
@@ -67,6 +70,8 @@ export const createMessageObject = (
     quickReplies: '',
     wrappable: true,
     nftId: '',
+    nftActionType: '',
+    contractAddress: ''
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -98,6 +103,8 @@ export const createMessageObject = (
       message.attachmentId = item.attrs.attachmentId || '';
       message.wrappable = true;
       message.nftId = item.attrs.nftId || '';
+      message.nftActionType = item.attrs?.nftActionType;
+      message.contractAddress = item.attrs?.contractAddress;
 
       // message.roomJid = item.attrs.roomJid;
     }

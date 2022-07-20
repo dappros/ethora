@@ -1,3 +1,4 @@
 export const botTypes = {
-    deployBot: 'deployBot'
+    deployBot: 'deployBot',
+    mintBot: 'mintBot'
 }

@@ -19,6 +19,7 @@ import {
   getAllMessages,
   insertMessages,
   queryRoomAllMessages,
+  updateMessageToWrapped,
   updateTokenAmount,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
@@ -221,14 +222,17 @@ export class ChatStore {
       this.roomList = roomsArray;
     });
   };
-  updateMessageTokenAmount = (messageId, tokenAmount) => {
+  updateMessageProperty = (messageId, property, value) => {
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
 
     if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
-        tokenAmount: messages[index].tokenAmount + tokenAmount,
+        [property]:
+          property === 'tokenAmount'
+            ? messages[index][property] + value
+            : value,
       };
       runInAction(() => {
         this.messages[index] = message;
@@ -468,6 +472,12 @@ export class ChatStore {
           const message = createMessageObject(singleMessageDetailArray);
 
           if (message.system) {
+            if (message?.contractAddress) {
+              await updateMessageToWrapped(message.receiverMessageId, {
+                nftId: message.nftId,
+                contractAddress: message.contractAddress,
+              });
+            }
             await updateTokenAmount(
               message.receiverMessageId,
               message.tokenAmount,
@@ -497,8 +507,20 @@ export class ChatStore {
               message?.createdAt && format(message?.createdAt, 'hh:mm'),
           });
           if (message.system) {
-            this.updateMessageTokenAmount(
+            if (message?.contractAddress) {
+              await updateMessageToWrapped(message.receiverMessageId, {
+                nftId: message.nftId,
+                contractAddress: message.contractAddress,
+              });
+              this.updateMessageProperty(
+                message.receiverMessageId,
+                'nftId',
+                message.nftId,
+              );
+            }
+            this.updateMessageProperty(
               message.receiverMessageId,
+              'tokenAmount',
               message.tokenAmount,
             );
             await updateTokenAmount(
