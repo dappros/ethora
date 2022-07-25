@@ -30,11 +30,20 @@ import {
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
-import {Button} from 'native-base';
+import {Button, HStack} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import { observer } from 'mobx-react-lite';
-import { ROUTES } from '../constants/routes';
-import { NftMediaModal } from '../components/NftMediaModal';
+import {observer} from 'mobx-react-lite';
+import {ROUTES} from '../constants/routes';
+import {NftMediaModal} from '../components/NftMediaModal';
+import {
+  createNewRoom,
+  roomConfig,
+  sendInvite,
+  setOwner,
+  subscribeToRoom,
+} from '../xmpp/stanzas';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -159,7 +168,7 @@ const firstLayout = [
 ];
 
 const OtherUserProfileScreen = observer((props: any) => {
-  const {loginStore, walletStore} = useStores();
+  const {loginStore, walletStore, apiStore, chatStore} = useStores();
 
   const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
     walletStore;
@@ -174,7 +183,6 @@ const OtherUserProfileScreen = observer((props: any) => {
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
-  const [allTransactions, setAllTransactions] = useState(null);
   const [transactionCount, setTransactionCount] = useState(0);
 
   const [activeTab, setActiveTab] = useState(0);
@@ -183,8 +191,6 @@ const OtherUserProfileScreen = observer((props: any) => {
   const [xTabOne, setXTabOne] = useState(0);
   const [xTabTwo, setXTabTwo] = useState(0);
   const [xTabThree, setXTabThree] = useState(0);
-  const [xCoinTabOne, setXCoinTabOne] = useState(0);
-  const [xCoinTabTwo, setXCoinTabTwo] = useState(0);
 
   const [translateX, setTranslateX] = useState(new Animated.Value(0));
   const [textColorAnim, setTextColorAnim] = useState(new Animated.Value(0));
@@ -216,6 +222,58 @@ const OtherUserProfileScreen = observer((props: any) => {
       clearPaginationData();
     };
   }, []);
+
+  const onDirectChatPress = () => {
+    const otherUserWalletAddress = loginStore.anotherUserWalletAddress
+    const myWalletAddress = loginStore.initialData.walletAddress;
+    const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
+      .sort()
+      .join('_');
+
+    const roomJid =
+      combinedWalletAddress.toLowerCase() +
+      apiStore.xmppDomains.CONFERENCEDOMAIN;
+    const combinedUsersName = [
+      loginStore.initialData.firstName,
+      anotherUserFirstname,
+    ]
+      .sort()
+      .join(' and ');
+
+    const myXmppUserName = underscoreManipulation(myWalletAddress);
+    createNewRoom(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      chatStore.xmpp,
+    );
+    setOwner(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      chatStore.xmpp,
+    );
+    roomConfig(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      {roomName: combinedUsersName},
+      chatStore.xmpp,
+    );
+    subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
+
+    navigation.navigate(ROUTES.CHAT, {
+      chatJid: roomJid,
+      chatName: combinedUsersName,
+    });
+    chatStore.toggleShouldCount(false);
+
+    setTimeout(() => {
+      sendInvite(
+        underscoreManipulation(myWalletAddress),
+        roomJid.toLowerCase(),
+        underscoreManipulation(otherUserWalletAddress),
+        chatStore.xmpp,
+      );
+    }, 3000);
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -423,30 +481,30 @@ const OtherUserProfileScreen = observer((props: any) => {
                 data={itemsData}
                 renderItem={e => (
                   <NftListItem
-                  assetUrl={e.item.imagePreview || e.item.nftFileUrl}
-                  name={e.item.tokenName}
-                  assetsYouHave={e.item.balance}
-                  totalAssets={e.item.total}
-                  onClick={()=>
-                    props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
-                      screen: 'NftItemHistory',
-                      params: {
-                        item: e.item,
-                        userWalletAddress: anotherUserWalletAddress,
-                      },
-                    })
-                  }
-                  nftId={e.item.nftId}
-                  mimetype={e.item.nftMimetype}
-                  onAssetPress={() => {
-                    setMediaModalData({
-                      open: true,
-                      url: e.item.nftFileUrl,
-                      mimetype: e.item.nftMimetype,
-                    });
-                  }}
-                  item={e.item}
-                  index={e.index}
+                    assetUrl={e.item.imagePreview || e.item.nftFileUrl}
+                    name={e.item.tokenName}
+                    assetsYouHave={e.item.balance}
+                    totalAssets={e.item.total}
+                    onClick={() =>
+                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                        screen: 'NftItemHistory',
+                        params: {
+                          item: e.item,
+                          userWalletAddress: anotherUserWalletAddress,
+                        },
+                      })
+                    }
+                    nftId={e.item.nftId}
+                    mimetype={e.item.nftMimetype}
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        open: true,
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                    }}
+                    item={e.item}
+                    index={e.index}
                   />
                 )}
                 nestedScrollEnabled={true}
@@ -599,25 +657,24 @@ const OtherUserProfileScreen = observer((props: any) => {
                       }}>
                       {anotherUserDescription}
                     </Text>
-                    {/* <Text
+                    <TouchableOpacity
+                    onPress={onDirectChatPress}
                       style={{
-                        fontSize: hp('2.23%'),
-                        fontFamily: 'Montserrat-Regular',
-                        textAlign: 'center',
-                        color: '0000004D',
+                        backgroundColor: primaryDarkColor,
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5,
                       }}>
-                      {loginStore.anotherUserLastSeen[
-                        underscoreManipulation(
-                          loginStore.anotherUserWalletAddress,
-                        )
-                      ] &&
-                        'Seen: ' +
-                          loginStore.anotherUserLastSeen[
-                            underscoreManipulation(
-                              loginStore.anotherUserWalletAddress,
-                            )
-                          ]}
-                    </Text> */}
+                      <HStack alignItems={'center'}>
+                        <Ionicons
+                          name="chatbubble-ellipses"
+                          size={hp('1.7%')}
+                          color={'white'}
+                        />
+
+                        <Text style={{color: 'white', marginLeft: 5}}>Chat</Text>
+                      </HStack>
+                    </TouchableOpacity>
                   </SkeletonContent>
                 </View>
               </View>
