@@ -72,6 +72,7 @@ const handleSlide = (
   }).start();
 };
 
+
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
     tokenSymbol={item.tokenSymbol}
