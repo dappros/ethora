@@ -1,4 +1,4 @@
-# ethora: open-source tokenized community engine (iOS/Android, ERC-20/NFT, chat/messaging)
+# ethora: open-source social commerce & crypto wallet app engine (iOS/Android, ERC-20/NFT, chat/messaging)
 Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
 
 ===
