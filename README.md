@@ -1,9 +1,9 @@
 # ethora: open-source social commerce & crypto wallet app engine (iOS/Android, ERC-20/NFT, chat/messaging)
 Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
 
-===
+=
 UPD: Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!
-===
+=
 
 Proudly built in Ukraine 🇺🇦 (8 team members), India 🇮🇳 (4 team members) & U.K. 🇬🇧 (1 team member) (and inviting further collaborators)
 
