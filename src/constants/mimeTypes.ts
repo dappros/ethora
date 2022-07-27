@@ -16,3 +16,7 @@ export const audioMimetypes = {
   'application/octet-stream': 'application/octet-stream',
   'audio/x-m4a': 'audio/x-m4a',
 };
+
+export const pdfMimemtype = {
+  'application/pdf': 'application/pdf'
+}

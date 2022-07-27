@@ -59,6 +59,7 @@ import DocumentPicker from 'react-native-document-picker';
 import {
   audioMimetypes,
   imageMimetypes,
+  pdfMimemtype,
   videoMimetypes,
 } from '../constants/mimeTypes';
 import {normalizeData} from '../helpers/normalizeData';
@@ -69,6 +70,9 @@ import RenderChatFooter from '../components/Chat/RenderChatFooter';
 import {SendButton} from '../components/Chat/SendButton';
 import {AudioSendButton} from '../components/Chat/AudioSendButton';
 import {NftItemGalleryModal} from '../../NftItemGalleryModal';
+import {PdfMessage} from '../stores/PdfMessage';
+import {FileMessage} from '../components/Chat/FileMessage';
+import {downloadFile} from '../helpers/downloadFile';
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
@@ -106,7 +110,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     open: false,
     url: '',
     type: '',
-    message: {}
+    message: {},
   });
 
   const messages = chatStore.messages
@@ -267,12 +271,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
       size,
       duration,
       waveForm,
+      originalName,
       id,
       imageLocation,
+      fileName,
       nftId,
     } = props.currentMessage;
-    let formatedSize = {size: 0, unit: 'KB'};
-    formatedSize = formatBytes(parseFloat(size), 2);
+    let formatedSize = formatBytes(parseFloat(size), 2);
     let parsedWaveform = [];
     if (waveForm) {
       try {
@@ -281,14 +286,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
         console.log('cant parse wave');
       }
     }
-
     if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
       return (
         <ImageMessage
           nftId={nftId}
           url={image}
           size={size}
-          onPress={() => onMediaMessagePress(mimetype, image, props.currentMessage)}
+          onPress={() =>
+            onMediaMessagePress(mimetype, image, props.currentMessage)
+          }
         />
       );
     } else if (audioMimetypes[mimetype]) {
@@ -300,8 +306,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onLongPress={handleOnLongPress}
         />
       );
-    } else {
-      return;
+    } else if (pdfMimemtype[mimetype]) {
+      return (
+        <PdfMessage
+          url={image}
+          size={size}
+          onPress={() => downloadFile(image, originalName)}
+        />
+      );
+    } else if (mimetype) {
+      return (
+        <FileMessage
+          url={image}
+          size={size}
+          onPress={() => downloadFile(image, originalName)}
+        />
+      );
     }
   };
 
@@ -442,8 +462,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
+      console.log(item);
       // console.log(item.duration, 'masdedia messsdfsdfage');
-      console.log(item._id);
       const data = {
         firstName,
         lastName,
@@ -452,18 +472,18 @@ const ChatScreen = observer(({route, navigation}: any) => {
         userAvatar: loginStore.userAvatar,
         createdAt: item.createdAt,
         expiresAt: item.expiresAt,
-        filename: item.filename,
+        fileName: item.filename,
         isVisible: item.isVisible,
         location: item.location,
         locationPreview: item.locationPreview,
         mimetype: item.mimetype,
-        originalname: item.originalname,
+        originalName: item.originalname,
         ownerKey: item.ownerKey,
         size: item.size,
         duration: item?.duration,
         updatedAt: item.updatedAt,
         userId: item.userId,
-        waveForm: waveForm,
+        waveForm: JSON.stringify(waveForm),
         attachmentId: item._id,
         wrappable: true,
       };
