@@ -21,7 +21,7 @@ import loginScreenBackgroundImage from '../src/assets/login_background.png';
 
 //Application token
 const APP_TOKEN =
-'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYyZDAwNTQyMGY5NTFhNjA0MjJhNTRhNCIsImFwcE5hbWUiOiJFdGhvcmEgUHJvZCIsImFwcERlc2NyaXB0aW9uIjoidW5kZWZpbmVkIiwiYXBwVXJsIjoidW5kZWZpbmVkIiwiYXBwR29vZ2xlSWQiOiI5NzI5MzM0NzAwNTQtdjY0dWE5NDc5MWczMmZhMHNoZG0zbGZvZjkzMGhvbjAuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJjcmVhdG9ySWQiOiI2MmQwMDM5NzBmOTUxYTYwNDIyYTUzNTAiLCJjcmVhdGVkQXQiOiIyMDIyLTA3LTE0VDEyOjAwOjAyLjM4OFoiLCJfX3YiOjB9LCJpYXQiOjE2NTc4MDAwMTR9.qCOeOhL6fFMzmHr3rI6CF28KUS4c9mMNaWN0rxnSniY';
+'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU';
 
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
@@ -134,7 +134,7 @@ const allowIsTyping = true;
 
 const endPoints = ['DEV', 'QA', 'PROD'];
 
-const appEndpoint = endPoints[2];
+const appEndpoint = endPoints[0];
 
 const appVersion = DeviceInfo.getVersion();
 
