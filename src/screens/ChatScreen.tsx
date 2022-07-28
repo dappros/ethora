@@ -15,6 +15,7 @@ import {
 import MessageBody from '../components/Chat/MessageBody';
 import {
   Animated,
+  Linking,
   NativeModules,
   Platform,
   StyleSheet,
@@ -737,6 +738,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
             pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
             style: linkStyle,
             onPress: handleChatLinks,
+          },
+          {
+            pattern:
+              /(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/gi,
+            style: linkStyle,
+            onPress: async link => {
+              await Linking.openURL(link);
+            },
           },
         ]}
       />

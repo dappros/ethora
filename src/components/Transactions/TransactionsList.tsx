@@ -45,6 +45,8 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
 
   return (
     <TransactionsListItem
+      from={from}
+      to={to}
       balance={balance}
       transactionAmount={value}
       transactionSender={senderFirstName + ' ' + senderLastName}
@@ -80,14 +82,14 @@ const TransactionsList = observer(
       }
       if (activeFilter === FILTERS.sent) {
         const filteredTransactions = transactions.filter(
-          (item: any) => item.from === walletAddress,
+          (item: any) => item.from === walletAddress ,
         );
         return filteredTransactions;
       }
 
       if (activeFilter === FILTERS.received) {
         const filteredTransactions = transactions.filter(
-          (item: any) => item.to === walletAddress,
+          (item: any) => (item.to === walletAddress && item.to !== item.from),
         );
         return filteredTransactions;
       }
