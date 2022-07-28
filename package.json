@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@flyerhq/react-native-link-preview": "^1.6.0",
     "@invertase/react-native-apple-authentication": "^2.1.5",
     "@react-native-async-storage/async-storage": "^1.17.3",
     "@react-native-clipboard/clipboard": "^1.10.0",
@@ -66,6 +67,7 @@
     "react-native-share": "^7.4.0",
     "react-native-skeleton-content-nonexpo": "^1.0.13",
     "react-native-slider": "^0.11.0",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^12.3.0",
     "react-native-tab-view": "^3.1.1",
     "react-native-toast-message": "^2.1.5",

@@ -15,6 +15,7 @@ import {
 import MessageBody from '../components/Chat/MessageBody';
 import {
   Animated,
+  Linking,
   NativeModules,
   Platform,
   StyleSheet,
@@ -654,7 +655,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   return (
     <>
       <SecondaryHeader
-        title={chatStore.roomsInfoMap[chatJid]?.name}
+        title={chatName}
         isQR={true}
         onQRPressed={QRPressed}
       />
@@ -714,6 +715,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
             style: linkStyle,
             onPress: handleChatLinks,
           },
+          {
+            pattern: /(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig,
+            style: linkStyle,
+            onPress: async(link)=>{await Linking.openURL(link)}
+          }
         ]}
       />
 
