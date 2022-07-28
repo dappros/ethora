@@ -8346,10 +8346,10 @@ react-native-sha256@^1.4.7:
   resolved "https://registry.yarnpkg.com/react-native-sha256/-/react-native-sha256-1.4.7.tgz#cef05260a3a3a17cd70727170d0c187ef7cefb8c"
   integrity sha512-VcIjOBGvHG6V2OCgbGnEKOymcatYC7byf1aM6mmCoUDqOUFQrGIjnU9fUMWGoMERAljVqisvsG/M1GdfhilkFg==
 
-react-native-share@^7.4.0:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.6.2.tgz#7a1edf2226109b0a0aeaeefef3f8f7b119508a96"
-  integrity sha512-8Dv0ZqqW3rSzQxi9MoxXreRU65xizGVhrS2xoXfKJrgx9cI0jCAUao7B6CSZdB1exr6ZLFpi56pJ7t1Fp++d1A==
+react-native-share@^7.6.6:
+  version "7.6.6"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.6.6.tgz#85137c994cde6a286da1eb84530de2d0751e2408"
+  integrity sha512-nhNjiNvTxg3PKmOg3/tQnWJjw2NpjcimxorEIV3JFEPcU6vE/bO2vWTf0OGOLMHMqyV2B6M0/7KwqET8yWk1rA==
 
 react-native-skeleton-content-nonexpo@^1.0.13:
   version "1.0.13"
