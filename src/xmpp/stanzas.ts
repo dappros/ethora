@@ -128,7 +128,7 @@ export const sendMediaMessageStanza = async (
       duration: data?.duration,
       updatedAt: data.updatedAt,
       userId: data.userId,
-      waveForm: JSON.stringify(data.waveForm),
+      waveForm: data.waveForm,
       attachmentId: data?.attachmentId,
       wrappable: data?.wrappable,
       nftId: data?.nftId,

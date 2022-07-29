@@ -74,6 +74,7 @@ import {NftItemGalleryModal} from '../../NftItemGalleryModal';
 import {PdfMessage} from '../stores/PdfMessage';
 import {FileMessage} from '../components/Chat/FileMessage';
 import {downloadFile} from '../helpers/downloadFile';
+import {VideoMessage} from '../components/Chat/VideoMessage';
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
@@ -278,7 +279,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
       fileName,
       nftId,
     } = props.currentMessage;
-    let formatedSize = formatBytes(parseFloat(size), 2);
     let parsedWaveform = [];
     if (waveForm) {
       try {
@@ -287,10 +287,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
         console.log('cant parse wave');
       }
     }
-    if (imageMimetypes[mimetype] || videoMimetypes[mimetype]) {
+    if (imageMimetypes[mimetype]) {
       return (
         <ImageMessage
           nftId={nftId}
+          url={image}
+          size={size}
+          onPress={() =>
+            onMediaMessagePress(mimetype, image, props.currentMessage)
+          }
+        />
+      );
+    } else if (videoMimetypes[mimetype]) {
+      return (
+        <VideoMessage
           url={image}
           size={size}
           onPress={() =>
@@ -463,7 +473,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
-      console.log(item);
       // console.log(item.duration, 'masdedia messsdfsdfage');
       const data = {
         firstName,
