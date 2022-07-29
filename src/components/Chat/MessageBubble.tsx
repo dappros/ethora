@@ -21,9 +21,10 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
-import {MessageText, MessageImage, Time, utils} from 'react-native-gifted-chat';
+import { MessageImage, Time, utils} from 'react-native-gifted-chat';
 import {coinImagePath, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
+import MessageText from './MessageText';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
