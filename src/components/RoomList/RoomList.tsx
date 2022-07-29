@@ -85,9 +85,7 @@ export const RoomList = observer(({roomsList}: any) => {
 
   const unsubscribeFromRoom = async (jid: string) => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, jid, chatStore.xmpp);
-    await deleteChatRoom(jid);
-    chatStore.getRoomsFromCache()
-    chatStore.updateRoomInfo(jid, {archiveRequested: false})
+    chatStore.updateRoomInfo(jid, {muted: true})
   };
 
   const toggleMovingChats = () => {

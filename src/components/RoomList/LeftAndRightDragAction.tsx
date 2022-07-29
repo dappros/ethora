@@ -27,18 +27,17 @@ interface LeftActionsProps {
 
 export const LeftActions = (props: LeftActionsProps) => {
   const {unsubscribeFromRoom, swipeRef, name, jid, renameChat} = props;
-
   const {chatStore} = useStores();
-
   return (
     <>
       <TouchableOpacity
         onPress={() => {
           unsubscribeFromRoom(jid);
           swipeRef.current.close();
+
         }}>
         <View style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
-          <IonIcon name="notifications" size={hp('3%')} color={'white'} />
+          <IonIcon name={chatStore.roomsInfoMap[jid]?.muted ? 'notifications-off' :  "notifications"} size={hp('3%')} color={'white'} />
         </View>
       </TouchableOpacity>
       {chatStore.roomRoles[jid] !== 'participant' && (

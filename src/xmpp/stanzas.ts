@@ -36,6 +36,7 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
     {
       from: from + '@' + DOMAIN,
       to: to + '/' + from,
+      id: XMPP_TYPES.roomPresence
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );

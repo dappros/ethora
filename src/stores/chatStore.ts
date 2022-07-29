@@ -110,7 +110,7 @@ export class ChatStore {
     shouldUpdateChatScreen: false,
   };
   shouldCount: boolean = true;
-  roomRoles = [];
+  roomRoles = {};
   isOnline = false;
   isComposing: isComposingProps = {
     state: false,
@@ -147,7 +147,7 @@ export class ChatStore {
         shouldUpdateChatScreen: false,
       };
       this.shouldCount = true;
-      this.roomRoles = [];
+      this.roomRoles = {};
       this.isComposing = {
         state: false,
         username: '',
@@ -157,9 +157,9 @@ export class ChatStore {
     });
   };
 
-  setRoomRoles = action((data: any) => {
-    this.roomRoles = data;
-  });
+  setRoomRoles = (jid: string, role: string) => {
+    this.roomRoles[jid] = role;
+  };
 
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
@@ -271,12 +271,15 @@ export class ChatStore {
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         )[0];
+
       if (latestMessage) {
         map[latestMessage?.roomJid] = {
           name: item.name,
           archiveRequested: false,
           lastUserName: latestMessage?.user.name,
           lastUserText: latestMessage?.text,
+          muted: this.roomsInfoMap[item.jid]?.muted,
+
           lastMessageTime:
             latestMessage.createdAt && format(latestMessage.createdAt, 'hh:mm'),
         };
@@ -362,13 +365,8 @@ export class ChatStore {
         let userJID = stanza.attrs.from.split('/')[1];
 
         let role = stanza.children[0].children[0].attrs.role;
-        let rolesMap = [];
-        rolesMap[roomJID] = role;
-        // usersLastSeen[userJID] = moment().format('DD hh:mm');
-        // setOtherUserDetails({
-        //   anotherUserLastSeen: usersLastSeen,
-        // });
-        this.setRoomRoles(rolesMap);
+
+        this.setRoomRoles(roomJID, role);
       }
 
       if (stanza.attrs.id === XMPP_TYPES.updateVCard) {
