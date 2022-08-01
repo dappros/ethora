@@ -33,12 +33,14 @@ import {socialLoginHandle} from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
 import {httpGet} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { useWalletConnect } from '@walletconnect/react-native-dapp';
 
 interface LoginScreenProps {}
 
 const LoginScreen = observer((props: LoginScreenProps) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
+  const connector = useWalletConnect()
 
   const socialLoginProps = {
     defaultUrl: apiStore.defaultUrl,
@@ -46,7 +48,6 @@ const LoginScreen = observer((props: LoginScreenProps) => {
     loginUser: loginStore.loginUser,
     registerSocialUser: loginStore.registerUser,
   };
-
   useEffect(() => {
     GoogleSignin.configure({
       forceCodeForRefreshToken: true,
@@ -54,7 +55,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
     });
   }, []);
-
+console.log(connector.accounts)
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -98,7 +99,8 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           }
           bg="#4D6DA4"
           onPress={() => {
-            socialLoginHandle(socialLoginProps, socialLoginType.FACEBOOK);
+            // socialLoginHandle(socialLoginProps, socialLoginType.FACEBOOK);
+            connector.connect()
           }}
         />
         <SocialButton
