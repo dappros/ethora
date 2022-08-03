@@ -1,23 +1,22 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { Linking, StyleSheet, View, } from 'react-native';
-// @ts-ignore
-import ParsedText from 'react-native-parsed-text';
-import Communications from 'react-native-communications';
-// import { StylePropType } from './utils';
-import { Thumbnail } from 'react-native-thumbnail-video';
-import { StylePropType } from 'react-native-gifted-chat/lib/utils';
+import { Image, Text, View } from "native-base";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
   } from 'react-native-responsive-screen';
+import { useState } from "react";
+import { textStyles } from "../../../docs/config";
+import ParsedText from 'react-native-parsed-text';
+import { Linking, StyleSheet, TouchableOpacity } from "react-native";
+import Communications from 'react-native-communications';
+import { getYoutubeMetadata } from '../../helpers/getYoutubeMetadata';
+import { colors } from '../../constants/messageColors';
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { textStyles } from '../../../docs/config';
-import { Text } from 'native-base';
-
+const DEFAULT_OPTION_TITLES = ['Call', 'Text', 'Cancel'];
+const ytubeLinkRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
 const WWW_URL_PATTERN = /^www\./i;
+
 const textStyle = {
     fontSize: 16,
     lineHeight: 20,
@@ -28,7 +27,6 @@ const textStyle = {
 };
 const styles = {
     left: StyleSheet.create({
-        container: {},
         text: {
             color: 'black',
             ...textStyle,
@@ -50,175 +48,137 @@ const styles = {
         },
     }),
 };
-const DEFAULT_OPTION_TITLES = ['Call', 'Text', 'Cancel'];
-const ytubeLinkRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
 
-export default class MessageText extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.onUrlPress = (url) => {
-            // When someone sends a message that includes a website address beginning with "www." (omitting the scheme),
-            // react-native-parsed-text recognizes it as a valid url, but Linking fails to open due to the missing scheme.
-            if (WWW_URL_PATTERN.test(url)) {
-                this.onUrlPress(`http://${url}`);
-            }
-            else {
-                Linking.canOpenURL(url).then(supported => {
-                    if (!supported) {
-                        console.error('No handler for URL:', url);
-                    }
-                    else {
-                        Linking.openURL(url);
-                    }
-                });
-            }
-        };
-        this.onPhonePress = (phone) => {
-            const { optionTitles } = this.props;
-            const options = optionTitles && optionTitles.length > 0
-                ? optionTitles.slice(0, 3)
-                : DEFAULT_OPTION_TITLES;
-            const cancelButtonIndex = options.length - 1;
-            this.context.actionSheet().showActionSheetWithOptions({
-                options,
-                cancelButtonIndex,
-            }, (buttonIndex) => {
-                switch (buttonIndex) {
-                    case 0:
-                        Communications.phonecall(phone, true);
-                        break;
-                    case 1:
-                        Communications.text(phone);
-                        break;
-                    default:
-                        break;
+export const MessageText = React.memo((props:any) => {
+
+    const [youtubeMetaData, setYoutubeMetaData] = useState({});
+
+    const linkStyle = [
+        styles[props.position].link,
+        props.linkStyle && props.linkStyle[props.position],
+    ];
+
+    const onUrlPress = (url:string) => {
+        // When someone sends a message that includes a website address beginning with "www." (omitting the scheme),
+        // react-native-parsed-text recognizes it as a valid url, but Linking fails to open due to the missing scheme.
+        if (WWW_URL_PATTERN.test(url)) {
+            onUrlPress(`http://${url}`);
+        }
+        else {
+            Linking.canOpenURL(url).then(supported => {
+                if (!supported) {
+                    console.error('No handler for URL:', url);
+                }
+                else {
+                    Linking.openURL(url);
                 }
             });
-        };
-        this.onEmailPress = (email) => Communications.email([email], null, null, null, null);
+        }
+    };
+    const onPhonePress = (phone) => {
+        const { optionTitles } = props;
+        const options = optionTitles && optionTitles.length > 0
+            ? optionTitles.slice(0, 3)
+            : DEFAULT_OPTION_TITLES;
+        const cancelButtonIndex = options.length - 1;
+        // this.context.actionSheet().showActionSheetWithOptions({
+        //     options,
+        //     cancelButtonIndex,
+        // }, (buttonIndex) => {
+        //     switch (buttonIndex) {
+        //         case 0:
+        //             Communications.phonecall(phone, true);
+        //             break;
+        //         case 1:
+        //             Communications.text(phone);
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // });
+    };
+    const onEmailPress = (email:string) => Communications.email([email], null, null, null, null);
+    if(props.currentMessage.text.match(ytubeLinkRegEx)){
 
+        getYoutubeMetadata(props.currentMessage.text).then(resp => {
+            setYoutubeMetaData(resp.data);
+        });
     }
-
-    
-    shouldComponentUpdate(nextProps) {
-        return (!!this.props.currentMessage &&
-            !!nextProps.currentMessage &&
-            this.props.currentMessage.text !== nextProps.currentMessage.text);
-    }
-    render() {
-        const linkStyle = [
-            styles[this.props.position].link,
-            this.props.linkStyle && this.props.linkStyle[this.props.position],
-        ];
-
-        const channelName = this.props.currentMessage.text.split('ab_channel=')[1];
-        return (<View style={[
-            styles[this.props.position].container,
-            this.props.containerStyle &&
-                this.props.containerStyle[this.props.position],
-        ]}>
+    return(
+        <View style={{
+            backgroundColor:props.position==='left'?colors.leftBubbleBackground:colors.defaultBlue,
+        }}>
         {
-            this.props.currentMessage.text.match(ytubeLinkRegEx)?
-            <View style={{
-                margin:5,
-                backgroundColor:"white",
+        props.currentMessage.text.match(ytubeLinkRegEx)?
+            <TouchableOpacity 
+            onPress={()=>onUrlPress(props.currentMessage.text)}
+            style={{
+                backgroundColor:props.position==='left'?colors.leftBubbleBackground:colors.defaultBlue,
                 borderRadius:5,
-                padding:5
+                margin:10
             }}>
-
-                <View style={{
-                    flexDirection:"row",
-                    alignItems:"center"
-                }}>
-                    <FontAwesome
-                    size={hp("3%")}
-                    color="#c4302b"
-                    name='youtube-play'
-                    style={{marginRight:3}}
-                    />
                     <Text
-                    fontSize={hp('2%')}
+                    textDecorationLine={"underline"}
+                    color={'#0000EE'}
+                    textDecorationColor={'#0000EE'}
+                    fontSize={hp('1.5%')}
                     fontFamily={textStyles.boldFont}
+                    >
+                        {props.currentMessage.text}
+                    </Text>
+
+                    <Text
+                    color={"white"}
+                    fontSize={hp('1.3%')}
+                    fontFamily={textStyles.regularFont}
                     >
                         YouTube
                     </Text>
                     <Text
-                    fontSize={hp('1.5%')}
-                    color={"gray.400"}
-                    marginLeft={3}>
-                        {this.props.currentMessage.text.split('ab_channel=')[1]}
+                    fontFamily={textStyles.boldFont}
+                    fontSize={hp('1.7%')}
+                    color={"white"}>
+                        {youtubeMetaData.title}
                     </Text>
-                </View>
 
-                <Thumbnail
-                showPlayIcon={false}
-                type="standard"
-                imageWidth={wp('60%')}
-                url={this.props.currentMessage.text} >
+
+                <View
+                justifyContent={"center"}>
+                    <Image
+                    borderRadius={5}
+                    alt={youtubeMetaData.author_name}
+                    source={{uri:youtubeMetaData.thumbnail_url}}
+                    width={hp('40%')}
+                    height={hp('20%')}
+                    maxWidth={200}
+                    />
                     <View style={{
-                        backgroundColor: 'rgba(255, 255, 255, .2)',
+                        backgroundColor: 'rgba(0, 0, 0, .1)',
                         padding:5,
-                        justifyContent:'center',
-                        alignItems:"center"
+                        left:65,
+                        position:"absolute"
                     }}>
                         <Ionicons
                         name='open-outline'
                         size={hp('7%')}
-                        color="#2D2D2D"
+                        color="#FFFF"
                         />
                     </View>
-                </Thumbnail>
-            </View>:
+                </View>
+            </TouchableOpacity>:
             <ParsedText style={[
-                styles[this.props.position].text,
-                this.props.textStyle && this.props.textStyle[this.props.position],
-                this.props.customTextStyle,
+                styles[props.position].text,
+                props.textStyle && props.textStyle[props.position],
+                props.customTextStyle,
             ]} parse={[
-                ...this.props.parsePatterns(linkStyle),
-                { type: 'url', style: linkStyle, onPress: this.onUrlPress },
-                { type: 'phone', style: linkStyle, onPress: this.onPhonePress },
-                { type: 'email', style: linkStyle, onPress: this.onEmailPress },
-            ]} childrenProps={{ ...this.props.textProps }}>
-            {this.props.currentMessage.text}
+                ...props.parsePatterns(linkStyle),
+                { type: 'url', style: linkStyle, onPress: onUrlPress },
+                { type: 'phone', style: linkStyle, onPress: onPhonePress },
+                { type: 'email', style: linkStyle, onPress: onEmailPress },
+            ]} childrenProps={{ ...props.textProps }}>
+            {props.currentMessage.text}
             </ParsedText>
         }
-      </View>);
-    }
-}
-MessageText.contextTypes = {
-    actionSheet: PropTypes.func,
-};
-MessageText.defaultProps = {
-    position: 'left',
-    optionTitles: DEFAULT_OPTION_TITLES,
-    currentMessage: {
-        text: '',
-    },
-    containerStyle: {},
-    textStyle: {},
-    linkStyle: {},
-    customTextStyle: {},
-    textProps: {},
-    parsePatterns: () => [],
-};
-MessageText.propTypes = {
-    position: PropTypes.oneOf(['left', 'right']),
-    optionTitles: PropTypes.arrayOf(PropTypes.string),
-    currentMessage: PropTypes.object,
-    containerStyle: PropTypes.shape({
-        left: StylePropType,
-        right: StylePropType,
-    }),
-    textStyle: PropTypes.shape({
-        left: StylePropType,
-        right: StylePropType,
-    }),
-    linkStyle: PropTypes.shape({
-        left: StylePropType,
-        right: StylePropType,
-    }),
-    parsePatterns: PropTypes.func,
-    textProps: PropTypes.object,
-    customTextStyle: StylePropType,
-};
-//# sourceMappingURL=MessageText.js.map
+      </View>
+    )
+})

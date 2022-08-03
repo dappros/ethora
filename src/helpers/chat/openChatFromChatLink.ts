@@ -22,6 +22,6 @@ const openChatFromChatLink = (
   // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
   getUserRoomsStanza(manipulatedWalletAddress, xmpp);
 
-  navigation.navigate(ROUTES.CHAT, {chatJid: chatJID, chatName: 'Loading...'});
+  navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
 };
 export default openChatFromChatLink;

@@ -655,7 +655,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   return (
     <>
       <SecondaryHeader
-        title={chatName}
+        title={chatStore.roomsInfoMap[chatJid]?.name}
         isQR={true}
         onQRPressed={QRPressed}
       />
@@ -714,11 +714,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
             pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
             style: linkStyle,
             onPress: handleChatLinks,
-          },
-          {
-            pattern: /(?:(?:https?|ftp):\/\/|\b(?:[a-z\d]+\.))(?:(?:[^\s()<>]+|\((?:[^\s()<>]+|(?:\([^\s()<>]+\)))?\))+(?:\((?:[^\s()<>]+|(?:\(?:[^\s()<>]+\)))?\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))?/ig,
-            style: linkStyle,
-            onPress: async(link)=>{await Linking.openURL(link)}
           }
         ]}
       />

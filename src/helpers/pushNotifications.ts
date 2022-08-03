@@ -5,7 +5,6 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
@@ -23,10 +22,10 @@ export const subscribeForPushNotifications = async data => {
   });
 };
 
-export const getPushToken = async (walletAddress, DOMAIN, navigation) => {
+export const getPushToken = async (walletAddress:string, DOMAIN:string, navigation:any) => {
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
-    onRegister: async function (token) {
+    onRegister: async function (token:any) {
       console.log('TOKEN:', token);
       const res = await subscribeForPushNotifications({
         appId: 'Ethora',
@@ -38,9 +37,8 @@ export const getPushToken = async (walletAddress, DOMAIN, navigation) => {
         jid: underscoreManipulation(walletAddress) + '@' + DOMAIN,
         screenName: 'Ethora',
       });
-      console.log(res.data);
     },
-    onNotification: function (notification) {
+    onNotification: function (notification:any) {
       console.log('NOTIFICATION:', notification);
       const chatJID = notification.data.mucId;
       setTimeout(()=>{
@@ -48,7 +46,7 @@ export const getPushToken = async (walletAddress, DOMAIN, navigation) => {
       },2000)
     },
 
-    onAction: function (notification) {
+    onAction: function (notification:any) {
       console.log('ACTION:', notification.action);
     },
     onRegistrationError: function (err) {
