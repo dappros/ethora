@@ -9,7 +9,7 @@ import {
   View,
   VStack,
 } from 'native-base';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import SocialButton from '../components/Buttons/SocialButton';
 import {
   widthPercentageToDP as wp,
@@ -33,15 +33,15 @@ import {socialLoginHandle} from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
 import {httpGet} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import { useWalletConnect } from '@walletconnect/react-native-dapp';
+import {useWalletConnect} from '@walletconnect/react-native-dapp';
 
 interface LoginScreenProps {}
 
 const LoginScreen = observer((props: LoginScreenProps) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
-  const connector = useWalletConnect()
-
+  const [messageSigned, setMessageSigned] = useState(false);
+  const connector = useWalletConnect();
   const socialLoginProps = {
     defaultUrl: apiStore.defaultUrl,
     defaultToken: apiStore.defaultToken,
@@ -55,7 +55,20 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
     });
   }, []);
-console.log(connector.accounts)
+  const sendWalletMessage = async () => {
+    if (connector.accounts && !messageSigned && connector.session) {
+      const message = await connector.signPersonalMessage([
+        'hello',
+        connector.accounts[0],
+      ]);
+      setMessageSigned(true);
+      connector.killSession()
+      console.log(message);
+    }
+  };
+  useEffect(() => {
+    sendWalletMessage();
+  }, [connector.accounts, connector.session]);
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -85,6 +98,24 @@ console.log(connector.accounts)
 
       <Stack margin={3} space={3}>
         <SocialButton
+          label="Sign in with MetaMask"
+          color="white"
+          fontFamily={textStyles.boldFont}
+          fontSize={hp('1.47%')}
+          leftIcon={
+            <Icon
+              color={'white'}
+              size={hp('2.25%')}
+              as={AntIcon}
+              name={'antdesign'}
+            />
+          }
+          bg="black"
+          onPress={() => {
+            connector.connect();
+          }}
+        />
+        <SocialButton
           label="Sign in with Facebook"
           color="white"
           fontFamily={textStyles.boldFont}
@@ -99,8 +130,7 @@ console.log(connector.accounts)
           }
           bg="#4D6DA4"
           onPress={() => {
-            // socialLoginHandle(socialLoginProps, socialLoginType.FACEBOOK);
-            connector.connect()
+            socialLoginHandle(socialLoginProps, socialLoginType.FACEBOOK);
           }}
         />
         <SocialButton
