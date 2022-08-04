@@ -1,6 +1,11 @@
 import {observer} from 'mobx-react-lite';
 import React, {useEffect, useState} from 'react';
-import {GiftedChat, Send, Actions} from 'react-native-gifted-chat';
+import {
+  GiftedChat,
+  Send,
+  Actions,
+  InputToolbar,
+} from 'react-native-gifted-chat';
 import {useStores} from '../stores/context';
 import {
   getPaginatedArchive,
@@ -9,6 +14,7 @@ import {
   isComposing,
   pausedComposing,
   retrieveOtherUserVcard,
+  sendInvite,
   sendMediaMessageStanza,
   sendMessageStanza,
 } from '../xmpp/stanzas';
@@ -18,7 +24,9 @@ import {
   Linking,
   NativeModules,
   Platform,
+  Pressable,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
 } from 'react-native';
 import {DOMAIN, XMPP_TYPES} from '../xmpp/xmppConstants';
@@ -45,7 +53,12 @@ import AudioRecorderPlayer, {
   AVEncodingOption,
 } from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'rn-fetch-blob';
-import {allowIsTyping, commonColors} from '../../docs/config';
+import {
+  allowIsTyping,
+  commonColors,
+  defaultBotsList,
+  textStyles,
+} from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {RecordingSecondsCounter} from '../components/Recorder/RecordingSecondsCounter';
@@ -75,6 +88,14 @@ import {PdfMessage} from '../stores/PdfMessage';
 import {FileMessage} from '../components/Chat/FileMessage';
 import {downloadFile} from '../helpers/downloadFile';
 import {VideoMessage} from '../components/Chat/VideoMessage';
+import {ChatComposer} from '../components/Chat/Composer';
+import {
+  generateValueFromPartsAndChangedText,
+  mentionRegEx,
+  parseValue,
+} from '../helpers/chat/inputUtils';
+import matchAll from 'string.prototype.matchall';
+
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
 const ChatScreen = observer(({route, navigation}: any) => {
@@ -100,6 +121,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isTyping, setIsTyping] = useState(false);
   const [composingUsername, setComposingUsername] = useState('');
   const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false);
+  const [text, setText] = useState('');
+  const [selection, setSelection] = useState({start: 0, end: 0});
+
   let inputTimer2: any = 0;
 
   const path = Platform.select({
@@ -177,6 +201,51 @@ const ChatScreen = observer(({route, navigation}: any) => {
     // const lastMessage = 0;
     getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
   };
+  const renderSuggestions: FC<MentionSuggestionsProps> = ({
+    keyword,
+    onSuggestionPress,
+  }) => {
+    if (keyword == null) {
+      return null;
+    }
+
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 43,
+          backgroundColor: 'white',
+          left: 0,
+          padding: 10,
+          borderRadius: 10,
+          width: 200,
+        }}>
+        {defaultBotsList
+          .filter(one =>
+            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
+          )
+          .map(one => (
+            <Pressable
+              key={one.id}
+              onPress={() => onSuggestionPress(one)}
+              style={{
+                paddingBottom: 5,
+              }}>
+              <Text style={{fontFamily: textStyles.semiBoldFont}}>
+                {one.name}
+              </Text>
+            </Pressable>
+          ))}
+      </View>
+    );
+  };
+  const partTypes = [
+    {
+      trigger: '@', // Should be a single character like '@' or '#'
+      renderSuggestions,
+      textStyle: {fontWeight: 'bold', color: 'blue'}, // The mention style in the input
+    },
+  ];
 
   const sendMessage = (messageString: any, isSystemMessage: boolean) => {
     const messageText = messageString[0].text;
@@ -197,10 +266,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
     };
+    const text = parseValue(messageText, partTypes).plainText;
+    const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
+    matches.forEach(match =>
+      sendInvite(manipulatedWalletAddress, chatJid, match[4], chatStore.xmpp),
+    );
     sendMessageStanza(
       manipulatedWalletAddress,
       chatJid,
-      messageText,
+      text,
       data,
       chatStore.xmpp,
     );
@@ -685,6 +759,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
+  const renderComposer = props => {
+    return (
+      <ChatComposer
+        onTextChanged={setText}
+        partTypes={partTypes}
+        selection={selection}
+        {...props}
+      />
+    );
+  };
+
   return (
     <>
       <SecondaryHeader
@@ -699,10 +784,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderSend={renderSend}
         renderActions={renderAttachment}
         renderLoading={() => <Spinner />}
+        text={text}
         renderUsernameOnMessage
-        onInputTextChanged={handleInputChange}
+        onInputTextChanged={setText}
         renderMessage={renderMessage}
         renderMessageImage={props => renderMessageImage(props)}
+        renderComposer={renderComposer}
         messages={messages}
         renderAvatarOnTop
         onPressAvatar={onUserAvatarPress}
@@ -720,9 +807,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onEndReached: onLoadEarlier,
           onEndReachedThreshold: 0.05,
         }}
-        textInputProps={{
-          color: 'black',
-        }}
+        // textInputProps={{onSelectionChange: e => console.log(e)}}
         keyboardShouldPersistTaps={'handled'}
         onSend={messageString => sendMessage(messageString, false)}
         user={{
@@ -732,6 +817,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         inverted={true}
         alwaysShowSend
         showUserAvatar
+        textInputProps={{
+          color: 'black',
+          onSelectionChange: e => setSelection(e.nativeEvent.selection),
+        }}
         onLongPress={(context: any, message: any) =>
           handleOnLongPress(context, message)
         }

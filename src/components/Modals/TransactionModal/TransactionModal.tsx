@@ -124,7 +124,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     });
     if (walletBalance) {
       if (amt <= walletBalance) {
-        console.log(apiStore.defaultToken);
         await walletStore.transferTokens(
           bodyData,
           loginStore.userToken,
