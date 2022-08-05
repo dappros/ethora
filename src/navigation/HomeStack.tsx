@@ -44,7 +44,7 @@ export const HomeStackScreen = observer(() => {
     chatStore.getRoomsFromCache();
     chatStore.getCachedMessages();
     walletStore.getCachedTransactions();
-    if (xmppUsername && password) {
+    if (xmppUsername && xmppPassword) {
       chatStore.xmppConnect(xmppUsername, xmppPassword);
       chatStore.xmppListener();
     }

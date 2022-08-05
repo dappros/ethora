@@ -48,8 +48,8 @@ import axios from 'axios';
 import {registerUserURL} from '../config/routesConstants';
 import {showToast} from '../components/Toast/toast';
 import QrModal from '../components/Modals/TransactionModal/TransactionModal';
-import { modalTypes } from '../constants/modalTypes';
-import { DOMAIN } from '../xmpp/xmppConstants';
+import {modalTypes} from '../constants/modalTypes';
+import {DOMAIN} from '../xmpp/xmppConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -246,7 +246,7 @@ export const ProfileScreen = observer((props: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
-  const [extraQrData, setExtraQrData] = useState<string>("");
+  const [extraQrData, setExtraQrData] = useState<string>('');
 
   const [isDescriptionEditable, setIsDescriptionEditable] =
     useState<boolean>(false);
@@ -509,7 +509,7 @@ export const ProfileScreen = observer((props: any) => {
   };
 
   const QRPressed = () => {
-    const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN
+    const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN;
     const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
     setExtraQrData(profileLink);
     setQrModalVisible(true);
@@ -518,10 +518,10 @@ export const ProfileScreen = observer((props: any) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        <SecondaryHeader 
-        title={"User's profile"} 
-        isQR
-        onQRPressed = {QRPressed}
+        <SecondaryHeader
+          title={"User's profile"}
+          isQR
+          onQRPressed={QRPressed}
         />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
@@ -532,32 +532,33 @@ export const ProfileScreen = observer((props: any) => {
               position: 'absolute',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: isLoadingVCard ? 'white' : primaryColor,
+              backgroundColor: primaryColor,
               borderRadius: hp('10.46%') / 2,
             }}>
-            <SkeletonContent
+            {/* <SkeletonContent
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
-              isLoading={!userAvatarLocal}>
-              {userAvatarLocal ? (
-                <Image
-                  source={{uri: userAvatarLocal}}
-                  style={{
-                    height: hp('10.46%'),
-                    width: hp('10.46%'),
-                    borderRadius: hp('10.46%') / 2,
-                  }}
-                />
-              ) : (
-                <Text
-                  style={{
-                    fontSize: 40,
-                    color: 'white',
-                  }}>
-                  {firstNameLocal[0] + lastNameLocal[0]}
-                </Text>
-              )}
-            </SkeletonContent>
+              isLoading={!loginStore.initialData.photo}
+              > */}
+            {loginStore.initialData.photo ? (
+              <Image
+                source={{uri: loginStore.initialData.photo}}
+                style={{
+                  height: hp('10.46%'),
+                  width: hp('10.46%'),
+                  borderRadius: hp('10.46%') / 2,
+                }}
+              />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 40,
+                  color: 'white',
+                }}>
+                {firstNameLocal[0] + lastNameLocal[0]}
+              </Text>
+            )}
+            {/* </SkeletonContent> */}
           </View>
         </View>
         <View style={{flex: 1, marginTop: hp('5.5%')}}>
@@ -734,10 +735,10 @@ export const ProfileScreen = observer((props: any) => {
         mimetype={mediaModalData.mimetype}
       />
       <QrModal
-      type={modalTypes.GENERATEQR}
-      closeModal={() => setQrModalVisible(false)}
-      extraData={extraQrData}
-      isVisible={qrModalVisible}
+        type={modalTypes.GENERATEQR}
+        closeModal={() => setQrModalVisible(false)}
+        extraData={extraQrData}
+        isVisible={qrModalVisible}
       />
     </SafeAreaView>
   );

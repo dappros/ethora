@@ -7,38 +7,34 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import {LoginManager, AccessToken} from 'react-native-fbsdk-next';
 import auth from '@react-native-firebase/auth';
-import { sha256 } from 'react-native-sha256';
-import { socialLoginType } from '../../constants/socialLoginConstants';
-import { checkEmailExist } from '../../config/routesConstants';
-import { httpGet } from '../../config/apiService';
-import { showToast } from '../../components/Toast/toast';
-import NetInfo from "@react-native-community/netinfo";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Alert, Platform } from 'react-native';
-import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import {sha256} from 'react-native-sha256';
+import {socialLoginType} from '../../constants/socialLoginConstants';
+import {checkEmailExist, checkWalletExist} from '../../config/routesConstants';
+import {httpGet} from '../../config/apiService';
+import {showToast} from '../../components/Toast/toast';
+import NetInfo from '@react-native-community/netinfo';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {Alert, Platform} from 'react-native';
+import appleAuth, {
+  appleAuthAndroid,
+} from '@invertase/react-native-apple-authentication';
 import {v4 as uuid} from 'uuid';
 
-const loginOrRegisterSocialUser = async(
-    user:any,
-    defaultUrl:string,
-    defaultToken:string,
-    loginUser:any,
-    registerSocialUser:any,
-    loginType:string
-    ) => {
-    const url = defaultUrl + checkEmailExist + user.email;
-    try {
-
-      const response = await httpGet(url, defaultToken)
-      if (!response.data.success) {
-        loginUser(
-          loginType,
-          user.authToken,
-          user.uid,
-          user
-        )
-      } else {
-        const dataObject =
+const loginOrRegisterSocialUser = async (
+  user: any,
+  defaultUrl: string,
+  defaultToken: string,
+  loginUser: any,
+  registerSocialUser: any,
+  loginType: string,
+) => {
+  const url = defaultUrl + checkEmailExist + user.email;
+  try {
+    const response = await httpGet(url, defaultToken);
+    if (!response.data.success) {
+      loginUser(loginType, user.authToken, user.uid, user);
+    } else {
+      const dataObject =
         loginType === 'apple'
           ? {
               loginType: loginType,
@@ -57,67 +53,78 @@ const loginOrRegisterSocialUser = async(
               loginType,
               authToken: user.authToken,
             };
-        registerSocialUser(dataObject, user);
-      }
-    } catch (error) {
-      showToast('error','Error', 'Something went wrong, please try again later', 'top')
+      registerSocialUser(dataObject, user);
     }
+  } catch (error) {
+    showToast(
+      'error',
+      'Error',
+      'Something went wrong, please try again later',
+      'top',
+    );
+  }
+};
+
+const handleFaceBookLogin = async (
+  defaultUrl: string,
+  defaultToken: string,
+  loginUser: any,
+  registerSocialUser: any,
+  type: string,
+) => {
+  LoginManager.logOut();
+
+  // Attempt login with permissions
+  const result = await LoginManager.logInWithPermissions([
+    'public_profile',
+    'email',
+  ]);
+
+  if (result.isCancelled) {
+    throw 'User cancelled the login process';
   }
 
-const handleFaceBookLogin = async(
-    defaultUrl:string,
-    defaultToken:string,
-    loginUser:any,
-    registerSocialUser:any,
-    type:string) => {
-    LoginManager.logOut();
+  // Once signed in, get the users AccesToken
+  const data = await AccessToken.getCurrentAccessToken();
 
-    // Attempt login with permissions
-    const result = await LoginManager.logInWithPermissions([
-      'public_profile',
-      'email',
-    ]);
+  if (!data) {
+    throw 'Something went wrong obtaining access token';
+  }
 
-    if (result.isCancelled) {
-      throw 'User cancelled the login process';
-    }
+  // Create a Firebase credential with the AccessToken
+  const facebookCredential = auth.FacebookAuthProvider.credential(
+    data.accessToken,
+  );
+  const subscriber = auth().onAuthStateChanged(e => console.log('e', e));
 
-    // Once signed in, get the users AccesToken
-    const data = await AccessToken.getCurrentAccessToken();
+  let facebookUser = await auth().signInWithCredential(facebookCredential);
 
-    if (!data) {
-      throw 'Something went wrong obtaining access token';
-    }
+  let hashUID = '';
 
-    // Create a Firebase credential with the AccessToken
-    const facebookCredential = auth.FacebookAuthProvider.credential(
-      data.accessToken,
-    );
-    const subscriber = auth().onAuthStateChanged(e => console.log('e', e));
+  await sha256(facebookUser.user.uid).then(hash => {
+    hashUID = hash;
+  });
 
-    let facebookUser = await auth().signInWithCredential(facebookCredential);
+  let user = {
+    firstName: facebookUser.additionalUserInfo.profile.first_name,
+    lastName: facebookUser.additionalUserInfo.profile.last_name,
+    email: facebookUser.additionalUserInfo.profile.email,
+    photo: facebookUser.additionalUserInfo.profile.picture.data.url,
+    authToken: facebookCredential.token,
+    uid: hashUID,
+  };
 
-    let hashUID = '';
+  loginOrRegisterSocialUser(
+    user,
+    defaultUrl,
+    defaultToken,
+    loginUser,
+    registerSocialUser,
+    type,
+  );
+};
 
-    await sha256(facebookUser.user.uid).then(
-      hash =>{
-        hashUID = hash;
-      }
-    )
-
-    let user = {
-      firstName: facebookUser.additionalUserInfo.profile.first_name,
-      lastName: facebookUser.additionalUserInfo.profile.last_name,
-      email: facebookUser.additionalUserInfo.profile.email,
-      photo: facebookUser.additionalUserInfo.profile.picture.data.url,
-      authToken: facebookCredential.token,
-      uid: hashUID,
-    };
-
-    loginOrRegisterSocialUser(user, defaultUrl, defaultToken, loginUser, registerSocialUser, type);
-}
-
-const signInGoogle = (googleCredential:any, callback:any) => {
+const signInGoogle = (googleCredential: any, callback: any) => {
   auth()
     .signInWithCredential(googleCredential)
     .then(data => callback(data))
@@ -144,57 +151,57 @@ const signInGoogle = (googleCredential:any, callback:any) => {
     });
 };
 
-const handleGoogleLogin = async(
-  defaultUrl:string,
-  defaultToken:string,
-  loginUser:any,
-  registerSocialUser:any,
-  type:string
+const handleGoogleLogin = async (
+  defaultUrl: string,
+  defaultToken: string,
+  loginUser: any,
+  registerSocialUser: any,
+  type: string,
 ) => {
   LoginManager.logOut();
-    
-    // Get the users ID token
-    const {idToken} = await GoogleSignin.signIn();
 
-    // Create a Google credential with the token
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  // Get the users ID token
+  const {idToken} = await GoogleSignin.signIn();
 
-    // Sign-in the user with the credential
-    // AsyncStorage.setItem('GToken', googleCredential.token);
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-    const googleUser = await auth().signInWithCredential(googleCredential)
+  // Sign-in the user with the credential
+  // AsyncStorage.setItem('GToken', googleCredential.token);
 
-    let hashUID = '';
+  const googleUser = await auth().signInWithCredential(googleCredential);
 
-    await sha256(googleUser.user.uid).then(hash => {
-      hashUID = hash;
-    });
+  let hashUID = '';
 
-    let user = {
-      firstName: googleUser.additionalUserInfo.profile.given_name,
-      lastName: googleUser.additionalUserInfo.profile.family_name,
-      email: googleUser.additionalUserInfo.profile.email,
-      photo: googleUser.additionalUserInfo.profile.picture,
-      authToken: idToken,
-      uid: hashUID,
-    };
+  await sha256(googleUser.user.uid).then(hash => {
+    hashUID = hash;
+  });
 
-    await loginOrRegisterSocialUser(
-      user,
-      defaultUrl,
-      defaultToken,
-      loginUser,
-      registerSocialUser,
-      type
-    );
-}
+  let user = {
+    firstName: googleUser.additionalUserInfo.profile.given_name,
+    lastName: googleUser.additionalUserInfo.profile.family_name,
+    email: googleUser.additionalUserInfo.profile.email,
+    photo: googleUser.additionalUserInfo.profile.picture,
+    authToken: idToken,
+    uid: hashUID,
+  };
+
+  await loginOrRegisterSocialUser(
+    user,
+    defaultUrl,
+    defaultToken,
+    loginUser,
+    registerSocialUser,
+    type,
+  );
+};
 
 const handleAppleLogin = async (
-  defaultUrl:string,
-  defaultToken:string,
-  loginUser:any,
-  registerSocialUser:any,
-  type:string
+  defaultUrl: string,
+  defaultToken: string,
+  loginUser: any,
+  registerSocialUser: any,
+  type: string,
 ) => {
   LoginManager.logOut();
   // performs login request
@@ -236,7 +243,7 @@ const handleAppleLogin = async (
     );
     auth()
       .signInWithCredential(appleCredentialAndroid)
-      .then(async (data:any) => {
+      .then(async (data: any) => {
         let hashUID = await sha256(data.user.uid);
         let user = {
           loginType: 'apple',
@@ -252,7 +259,7 @@ const handleAppleLogin = async (
           defaultToken,
           loginUser,
           registerSocialUser,
-          type
+          type,
         );
       });
     // Send the authorization code to your backend for verification
@@ -276,7 +283,7 @@ const handleAppleLogin = async (
 
     auth()
       .signInWithCredential(appleCredential)
-      .then(async (data:any) => {
+      .then(async (data: any) => {
         let hashUID = await sha256(data.user.uid);
         let user = {
           loginType: 'apple',
@@ -292,25 +299,49 @@ const handleAppleLogin = async (
           defaultToken,
           loginUser,
           registerSocialUser,
-          type
+          type,
         );
       });
   }
 };
 
 export const socialLoginHandle = (
-    props:{
-        defaultUrl: any; defaultToken: any; loginUser: any; registerSocialUser: any;
-    },
-    type:string) => {
-    const {defaultUrl, defaultToken, loginUser, registerSocialUser} = props
-    if(type === socialLoginType.FACEBOOK){
-      handleFaceBookLogin(defaultUrl, defaultToken, loginUser, registerSocialUser, type)
-    }
-    if(type === socialLoginType.GOOGLE){
-      handleGoogleLogin(defaultUrl, defaultToken, loginUser, registerSocialUser, type)
-    }
-    if(type === socialLoginType.APPLE){
-      handleAppleLogin(defaultUrl, defaultToken, loginUser, registerSocialUser, type)
-    }
-}
+  props: {
+    defaultUrl: any;
+    defaultToken: any;
+    loginUser: any;
+    registerSocialUser: any;
+  },
+  type: string,
+) => {
+  const {defaultUrl, defaultToken, loginUser, registerSocialUser} = props;
+  if (type === socialLoginType.FACEBOOK) {
+    handleFaceBookLogin(
+      defaultUrl,
+      defaultToken,
+      loginUser,
+      registerSocialUser,
+      type,
+    );
+  }
+  if (type === socialLoginType.GOOGLE) {
+    handleGoogleLogin(
+      defaultUrl,
+      defaultToken,
+      loginUser,
+      registerSocialUser,
+      type,
+    );
+  }
+  if (type === socialLoginType.APPLE) {
+    handleAppleLogin(
+      defaultUrl,
+      defaultToken,
+      loginUser,
+      registerSocialUser,
+      type,
+    );
+  }
+};
+
+

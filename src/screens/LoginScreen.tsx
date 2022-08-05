@@ -31,17 +31,24 @@ import {useStores} from '../stores/context';
 import {observer} from 'mobx-react-lite';
 import {socialLoginHandle} from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
-import {httpGet} from '../config/apiService';
+import {httpGet, httpPost} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useWalletConnect} from '@walletconnect/react-native-dapp';
+import {RegisterExternalWalletModal} from '../components/Login/RegisterExternalWalletModal';
+import {checkWalletExist} from '../config/routesConstants';
 
 interface LoginScreenProps {}
 
 const LoginScreen = observer((props: LoginScreenProps) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
-  const [messageSigned, setMessageSigned] = useState(false);
   const connector = useWalletConnect();
+  const [externalWalletModalData, setExternalWalletModalData] = useState({
+    open: false,
+    walletAddress: '',
+    message: '',
+  });
+  const [signedMessage, setSignedMessage] = useState('');
   const socialLoginProps = {
     defaultUrl: apiStore.defaultUrl,
     defaultToken: apiStore.defaultToken,
@@ -55,20 +62,54 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
     });
   }, []);
+
+  const checkExternalWalletExist = async () => {
+    try {
+      const res = await httpPost(
+        apiStore.defaultUrl + checkWalletExist,
+        {
+          walletAddress: connector.accounts[0],
+        },
+        apiStore.defaultToken,
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
   const sendWalletMessage = async () => {
-    if (connector.accounts && !messageSigned && connector.session) {
+    if (connector.accounts && !signedMessage && connector.session) {
+      const walletExist = await checkExternalWalletExist();
       const message = await connector.signPersonalMessage([
-        'hello',
+        walletExist ? 'Login' : 'Registration',
         connector.accounts[0],
       ]);
-      setMessageSigned(true);
-      connector.killSession()
-      console.log(message);
+      setSignedMessage(message);
+      !walletExist
+        ? setExternalWalletModalData({
+            message,
+            open: true,
+            walletAddress: connector.accounts[0],
+          })
+        : loginStore.loginExternalWallet({
+            walletAddress: connector.accounts[0],
+            signature: message,
+            loginType: 'signature',
+            msg: 'Login',
+          });
+      connector.killSession();
     }
   };
   useEffect(() => {
-    sendWalletMessage();
-  }, [connector.accounts, connector.session]);
+    if (connector.accounts) {
+      sendWalletMessage();
+    }
+  }, [connector.accounts, connector.session, connector.connected]);
+
+  // 1 go to metamask get address
+  // 2 check wallet
+  // if exists - login if not -register
+
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -181,6 +222,12 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           Version {appVersion}. Powered by Dappros Platform
         </Text>
       </VStack>
+      <RegisterExternalWalletModal
+        modalVisible={externalWalletModalData.open}
+        closeModal={() => setExternalWalletModalData({open: false})}
+        walletAddress={externalWalletModalData.walletAddress}
+        message={externalWalletModalData.message}
+      />
     </ImageBackground>
   );
 });
