@@ -8,10 +8,8 @@ Note: linked open-source libraries and components may be subject to their own li
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
-  Text,
   Clipboard,
   StyleSheet,
-  View,
   Image,
   Animated,
   TouchableWithoutFeedback,
@@ -25,6 +23,7 @@ import { MessageImage, Time, utils} from 'react-native-gifted-chat';
 import {coinImagePath, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
+import { View, Text } from 'native-base';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -76,10 +75,6 @@ export default class Bubble extends React.Component {
       return (
         <MessageText
           {...messageTextProps}
-          textStyle={{
-            left: [styles.content.userTextStyleLeft, messageTextStyle],
-            right: [styles.content.userTextStyleLeft],
-          }}
         />
       );
     }
@@ -279,7 +274,7 @@ export default class Bubble extends React.Component {
         {this.renderMessageImage()}
         {/* {this.renderMessageVideo()}
     {this.renderMessageAudio()} */}
-        {!this.props.currentMessage.image && this.renderMessageText()}
+        {this.renderMessageText()}
 
         {this.renderCustomView()}
       </View>
@@ -289,7 +284,7 @@ export default class Bubble extends React.Component {
         {this.renderMessageImage()}
         {/* {this.renderMessageVideo()}
       {this.renderMessageAudio()} */}
-        {!this.props.currentMessage.image && this.renderMessageText()}
+        {this.renderMessageText()}
       </View>
     );
   }

@@ -27,6 +27,7 @@ const textStyle = {
 };
 const styles = {
     left: StyleSheet.create({
+        container: {},
         text: {
             color: 'black',
             ...textStyle,
@@ -98,6 +99,7 @@ export const MessageText = React.memo((props:any) => {
         // });
     };
     const onEmailPress = (email:string) => Communications.email([email], null, null, null, null);
+
     if(props.currentMessage.text.match(ytubeLinkRegEx)){
 
         getYoutubeMetadata(props.currentMessage.text).then(resp => {
@@ -105,16 +107,12 @@ export const MessageText = React.memo((props:any) => {
         });
     }
     return(
-        <View style={{
-            backgroundColor:props.position==='left'?colors.leftBubbleBackground:colors.defaultBlue,
-        }}>
+        <View>
         {
         props.currentMessage.text.match(ytubeLinkRegEx)?
             <TouchableOpacity 
             onPress={()=>onUrlPress(props.currentMessage.text)}
             style={{
-                backgroundColor:props.position==='left'?colors.leftBubbleBackground:colors.defaultBlue,
-                borderRadius:5,
                 margin:10
             }}>
                     <Text

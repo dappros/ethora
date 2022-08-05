@@ -347,7 +347,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const QRPressed = () => {
     setShowModal(true);
     setModalType(modalTypes.GENERATEQR);
-    setExtraData(chatJid);
+    setExtraData({link:chatJid,mode:'chat'});
   };
 
   const handleChatLinks = (chatLink: string) => {
@@ -696,7 +696,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           _id: loginStore.initialData.xmppUsername + '@' + DOMAIN,
           name: loginStore.initialData.username,
         }}
-        inverted={true}
+        // inverted={true}
         alwaysShowSend
         showUserAvatar
         onLongPress={(context: any, message: any) =>

@@ -33,6 +33,12 @@
 		EF9355139CA24D24B91C7CA6 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */; };
 		F201A05578354A74BCFC49DA /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C04E2F9CF3764A11B67A7264 /* Poppins-ExtraLightItalic.ttf */; };
 		FE493C4F3D9242A08728CDC4 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4854E36F48F4770BE4A42F5 /* Poppins-Black.ttf */; };
+		43BFDF7455794237B047F589 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */; };
+		F95A5B337F134A758DC95C53 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */; };
+		7716047D36CC47CB893BC0E9 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */; };
+		AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */; };
+		FC76954AC23F40A28D5C15A7 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */; };
+		047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +68,7 @@
 		393A898785E14C36AA3417C5 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../src/assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-ethora.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.debug.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.debug.xcconfig"; sourceTree = "<group>"; };
 		49DF4CB117C74D2981F08B4D /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../src/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
+		4E7B0E91289B95F30013098F /* ethora.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ethora.entitlements; path = ethora/ethora.entitlements; sourceTree = "<group>"; };
 		4E9915B82892AB9D00D9AD8A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "ethora/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ethora.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.release.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-ethora-ethoraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.debug.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -82,6 +89,12 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		F5F00330032C4262B13D97D5 /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
+		3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; name = "Montserrat-Bold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; name = "Montserrat-Light.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; name = "Montserrat-Medium.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; name = "Montserrat-SemiBold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +137,7 @@
 		13B07FAE1A68108700A75B9A /* ethora */ = {
 			isa = PBXGroup;
 			children = (
+				4E7B0E91289B95F30013098F /* ethora.entitlements */,
 				4E9915B82892AB9D00D9AD8A /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -166,6 +180,12 @@
 				EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */,
 				C6DD75FEF380400E878D53DF /* Poppins-Thin.ttf */,
 				D19E800CE8104C14AA2EA403 /* Poppins-ThinItalic.ttf */,
+				3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */,
+				E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */,
+				44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */,
+				09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */,
+				6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */,
+				BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -329,6 +349,12 @@
 				EB307FF813C3497DBB27A92F /* Poppins-Thin.ttf in Resources */,
 				A3623F0154DA49A1A8B17CDC /* Poppins-ThinItalic.ttf in Resources */,
 				4E9915B92892AB9D00D9AD8A /* GoogleService-Info.plist in Resources */,
+				43BFDF7455794237B047F589 /* Montserrat-Bold.ttf in Resources */,
+				F95A5B337F134A758DC95C53 /* Montserrat-Light.ttf in Resources */,
+				7716047D36CC47CB893BC0E9 /* Montserrat-Medium.ttf in Resources */,
+				AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */,
+				FC76954AC23F40A28D5C15A7 /* Montserrat-SemiBold.ttf in Resources */,
+				047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,7 +608,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = ethora/ethora.entitlements;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 822G3N7CA5;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ethora/Info.plist;
@@ -590,6 +617,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 22.07;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -610,13 +638,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = ethora/ethora.entitlements;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 822G3N7CA5;
 				INFOPLIST_FILE = ethora/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 22.07;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
