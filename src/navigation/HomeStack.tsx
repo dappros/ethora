@@ -4,22 +4,22 @@ import React, {useEffect} from 'react';
 import {appLinkingUrl, coinsMainName} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
 import {ROUTES} from '../constants/routes';
-import ChatScreen from '../screens/ChatScreen';
-import OtherUserPorfileScreen from '../screens/OtherUserProfileScreen';
-import {ProfileScreen} from '../screens/ProfileScreen';
-import RoomListScreen from '../screens/RoomListScreen';
-import TransactionsScreen from '../screens/TransactionsScreen';
-import NewChatScreen from '../screens/NewChatScreen';
+import ChatScreen from '../Screens/ChatScreen';
+import OtherUserPorfileScreen from '../Screens/OtherUserProfileScreen';
+import {ProfileScreen} from '../Screens/ProfileScreen';
+import RoomListScreen from '../Screens/RoomListScreen';
+import TransactionsScreen from '../Screens/TransactionsScreen';
+import NewChatScreen from '../Screens/NewChatScreen';
 import {useStores} from '../stores/context';
-import ScanScreen from '../screens/ScanScreen';
-import AccountScreen from '../screens/AccountScreen';
-import MintScreen from '../screens/MintScreen';
-import NftItemHistoryScreen from '../screens/NftItemHistoryScreen';
+import ScanScreen from '../Screens/ScanScreen';
+import AccountScreen from '../Screens/AccountScreen';
+import MintScreen from '../Screens/MintScreen';
+import NftItemHistoryScreen from '../Screens/NftItemHistoryScreen';
 import {Linking, Platform} from 'react-native';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
-import {DebugScreen} from '../screens/DebugScreen';
+import {DebugScreen} from '../Screens/DebugScreen';
 import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
 
@@ -32,12 +32,12 @@ export const HomeStackScreen = observer(() => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (chatStore.roomList.length) {
+    if (chatStore.roomList.length && chatStore.isOnline) {
       chatStore.roomList.forEach(item => {
         getLastMessageArchive(item.jid, chatStore.xmpp);
       });
     }
-  }, [chatStore.roomList]);
+  }, [chatStore.roomList, chatStore.isOnline]);
 
   useEffect(() => {
     chatStore.getCachedRoomsInfo();

@@ -19,6 +19,7 @@ import {
   getAllMessages,
   insertMessages,
   queryRoomAllMessages,
+  updateMessageToWrapped,
   updateTokenAmount,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
@@ -26,7 +27,7 @@ import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {createMessageObject} from '../helpers/chat/createMessageObject';
-import { playCoinSound } from '../helpers/chat/playCoinSound';
+import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getLastMessageArchive,
@@ -109,7 +110,8 @@ export class ChatStore {
     shouldUpdateChatScreen: false,
   };
   shouldCount: boolean = true;
-  roomRoles = [];
+  roomRoles = {};
+  isOnline = false;
   isComposing: isComposingProps = {
     state: false,
     username: '',
@@ -125,7 +127,7 @@ export class ChatStore {
   toggleShouldCount = action((value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
-    })
+    });
   });
 
   setInitialState = () => {
@@ -145,7 +147,7 @@ export class ChatStore {
         shouldUpdateChatScreen: false,
       };
       this.shouldCount = true;
-      this.roomRoles = [];
+      this.roomRoles = {};
       this.isComposing = {
         state: false,
         username: '',
@@ -155,9 +157,9 @@ export class ChatStore {
     });
   };
 
-  setRoomRoles = action((data: any) => {
-    this.roomRoles = data;
-  });
+  setRoomRoles = (jid: string, role: string) => {
+    this.roomRoles[jid] = role;
+  };
 
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
@@ -220,14 +222,17 @@ export class ChatStore {
       this.roomList = roomsArray;
     });
   };
-  updateMessageTokenAmount = (messageId, tokenAmount) => {
+  updateMessageProperty = (messageId, property, value) => {
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
 
     if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
-        tokenAmount: messages[index].tokenAmount + tokenAmount,
+        [property]:
+          property === 'tokenAmount'
+            ? messages[index][property] + value
+            : value,
       };
       runInAction(() => {
         this.messages[index] = message;
@@ -235,7 +240,7 @@ export class ChatStore {
     }
   };
 
-  updateBadgeCounter = action((roomJid: string, type: 'CLEAR'|'UPDATE') => {
+  updateBadgeCounter = action((roomJid: string, type: 'CLEAR' | 'UPDATE') => {
     this.roomList.map((item: any, index: number) => {
       if (item.jid === roomJid) {
         if (type === 'CLEAR') {
@@ -244,7 +249,6 @@ export class ChatStore {
           });
         }
         if (type === 'UPDATE') {
-          console.log(item);
           item.counter = item.counter + 1;
         }
       }
@@ -266,12 +270,15 @@ export class ChatStore {
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         )[0];
+
       if (latestMessage) {
         map[latestMessage?.roomJid] = {
           name: item.name,
           archiveRequested: false,
           lastUserName: latestMessage?.user.name,
           lastUserText: latestMessage?.text,
+          muted: this.roomsInfoMap[item.jid]?.muted,
+
           lastMessageTime:
             latestMessage.createdAt && format(latestMessage.createdAt, 'hh:mm'),
         };
@@ -357,13 +364,8 @@ export class ChatStore {
         let userJID = stanza.attrs.from.split('/')[1];
 
         let role = stanza.children[0].children[0].attrs.role;
-        let rolesMap = [];
-        rolesMap[roomJID] = role;
-        // usersLastSeen[userJID] = moment().format('DD hh:mm');
-        // setOtherUserDetails({
-        //   anotherUserLastSeen: usersLastSeen,
-        // });
-        this.setRoomRoles(rolesMap);
+
+        this.setRoomRoles(roomJID, role);
       }
 
       if (stanza.attrs.id === XMPP_TYPES.updateVCard) {
@@ -425,7 +427,6 @@ export class ChatStore {
           // insertRosterList(rosterObject);
         });
         this.setRooms(roomsArray);
-        console.log('rooms called');
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
@@ -467,6 +468,12 @@ export class ChatStore {
           const message = createMessageObject(singleMessageDetailArray);
 
           if (message.system) {
+            if (message?.contractAddress) {
+              await updateMessageToWrapped(message.receiverMessageId, {
+                nftId: message.nftId,
+                contractAddress: message.contractAddress,
+              });
+            }
             await updateTokenAmount(
               message.receiverMessageId,
               message.tokenAmount,
@@ -496,15 +503,27 @@ export class ChatStore {
               message?.createdAt && format(message?.createdAt, 'hh:mm'),
           });
           if (message.system) {
-            this.updateMessageTokenAmount(
+            if (message?.contractAddress) {
+              await updateMessageToWrapped(message.receiverMessageId, {
+                nftId: message.nftId,
+                contractAddress: message.contractAddress,
+              });
+              this.updateMessageProperty(
+                message.receiverMessageId,
+                'nftId',
+                message.nftId,
+              );
+            }
+            this.updateMessageProperty(
               message.receiverMessageId,
+              'tokenAmount',
               message.tokenAmount,
             );
             await updateTokenAmount(
               message.receiverMessageId,
               message.tokenAmount,
             );
-            playCoinSound(message.tokenAmount)
+            playCoinSound(message.tokenAmount);
           }
           insertMessages(message);
         }
@@ -543,6 +562,9 @@ export class ChatStore {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
+      runInAction(() => {
+        this.isOnline = true;
+      });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });

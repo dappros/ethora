@@ -14,9 +14,10 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {observer} from 'mobx-react-lite';
 import {Animated, Easing, TouchableOpacity} from 'react-native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {Swipeable} from 'react-native-gesture-handler';
+
 import {LeftActions, RightActions} from './LeftAndRightDragAction';
-import { textStyles } from '../../../docs/config';
+import {textStyles} from '../../../docs/config';
 
 interface RoomListProps {
   isActive: boolean;
@@ -104,10 +105,8 @@ export const RoomListItem = observer(
         stopAnimation();
       }
     }, [movingActive]);
-
     return (
       <Swipeable
-        enabled={movingActive}
         ref={swipeRef}
         renderLeftActions={() => (
           <LeftActions
@@ -121,7 +120,11 @@ export const RoomListItem = observer(
         renderRightActions={() => (
           <RightActions jid={jid} leaveChat={leaveChat} swipeRef={swipeRef} />
         )}>
-        <Animated.View style={{transform: [{translateX: animation}]}}>
+        <Animated.View
+          style={[
+            {transform: [{translateX: animation}]},
+            {backgroundColor: 'white'},
+          ]}>
           <Box
             borderBottomWidth="1"
             _dark={{
@@ -134,12 +137,12 @@ export const RoomListItem = observer(
             <TouchableOpacity
               onLongPress={() => movingActive && drag()}
               onPress={navigateToChat}>
-              <HStack  justifyContent="space-between">
-                <View justifyContent={"center"} flex={0.1}>
+              <HStack justifyContent="space-between">
+                <View justifyContent={'center'} flex={0.1}>
                   <RoomListItemIcon name={name} counter={counter} />
                 </View>
 
-                <VStack justifyContent={"center"} flex={0.7} >
+                <VStack justifyContent={'center'} flex={0.7}>
                   <Text
                     numberOfLines={1}
                     fontSize={hp('2%')}
@@ -151,44 +154,46 @@ export const RoomListItem = observer(
                     {name}
                   </Text>
                   {name && lastUserName && lastUserText ? (
-                    <HStack flex={1} alignItems={"center"} space={1}>
+                    <HStack flex={1} alignItems={'center'} space={1}>
                       <Box>
                         <Text
-                        fontFamily={textStyles.semiBoldFont}
-                        fontSize={hp('1.7%')}
-                        color="coolGray.500"
-                        _dark={{
-                          color: 'warmGray.100',
-                        }}>
+                          fontFamily={textStyles.semiBoldFont}
+                          fontSize={hp('1.7%')}
+                          color="coolGray.500"
+                          _dark={{
+                            color: 'warmGray.100',
+                          }}>
                           {lastUserName && lastUserName + ':'}
                         </Text>
                       </Box>
 
                       <Box>
                         <Text
-                        fontFamily={textStyles.regularFont}
-                        fontSize={hp('1.5%')}
-                        color="coolGray.600"
-                        _dark={{
-                          color: 'warmGray.100',
-                        }}>
-                          {lastUserText.length > 10 ? lastUserText.slice(0,10) + '...' : lastUserText}
+                          fontFamily={textStyles.regularFont}
+                          fontSize={hp('1.5%')}
+                          color="coolGray.600"
+                          _dark={{
+                            color: 'warmGray.100',
+                          }}>
+                          {lastUserText.length > 10
+                            ? lastUserText.slice(0, 10) + '...'
+                            : lastUserText}
                         </Text>
                       </Box>
                     </HStack>
                   ) : (
                     <Text
-                    color="coolGray.600"
-                    _dark={{
-                      color: 'warmGray.200',
-                    }}
-                    
-                    fontFamily={textStyles.regularFont}
-                    >{defaultText}</Text>
+                      color="coolGray.600"
+                      _dark={{
+                        color: 'warmGray.200',
+                      }}
+                      fontFamily={textStyles.regularFont}>
+                      {defaultText}
+                    </Text>
                   )}
                 </VStack>
 
-                <VStack justifyContent={"center"} flex={0.12}>
+                <VStack justifyContent={'center'} flex={0.12}>
                   <HStack justifyContent={'flex-end'} alignItems={'center'}>
                     <MaterialIcon
                       name="group"
@@ -200,19 +205,21 @@ export const RoomListItem = observer(
                       }}
                     />
                     <Text
-                    _dark={{
-                      color: 'warmGray.200',
-                    }}
-                    fontFamily={textStyles.semiBoldFont} 
-                    color={'black'}>{participants}</Text>
+                      _dark={{
+                        color: 'warmGray.200',
+                      }}
+                      fontFamily={textStyles.semiBoldFont}
+                      color={'black'}>
+                      {participants}
+                    </Text>
                   </HStack>
-                  <Box alignItems={"flex-end"}>
+                  <Box alignItems={'flex-end'}>
                     <Text
                       fontSize="xs"
                       _dark={{
                         color: 'warmGray.50',
                       }}
-                      fontFamily={textStyles.mediumFont} 
+                      fontFamily={textStyles.mediumFont}
                       color="black">
                       {lastMessageTime}
                     </Text>

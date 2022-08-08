@@ -18,10 +18,10 @@ export const transactionURL = '/explorer/transactions?';
 export const registerUserURL = '/users';
 
 export const checkPushSubscribe =
-  'https://dxmpp.com/' + 'subscriptions/deviceId/';
+  'https://dev.dxmpp.com/' + 'subscriptions/deviceId/';
 
 export const subscribePushNotification =
-  'https://dxmpp.com:7777/api/v1/subscriptions/deviceId/';
+  'https://dev.dxmpp.com:7777/api/v1/subscriptions/deviceId/';
 
 export const getListOfEmails = '/users/emails';
 

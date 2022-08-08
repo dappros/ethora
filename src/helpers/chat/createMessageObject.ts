@@ -7,7 +7,7 @@ Note: linked open-source libraries and components may be subject to their own li
 
 interface Reply {
   title: string;
-  value: string
+  value: string;
 }
 interface createMessageObjectProps {
   imageLocationPreview?: any;
@@ -32,7 +32,15 @@ interface createMessageObjectProps {
   waveForm?: string;
   roomJid: string;
   receiverMessageId: string;
-  quickReplies: Reply[];
+  quickReplies: string;
+  attachmentId?: string;
+  wrappable: boolean;
+  nftId?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  fileName?: string;
+  originalName?: string
+
 }
 
 export const createMessageObject = (
@@ -61,7 +69,14 @@ export const createMessageObject = (
     receiverMessageId: '',
     imageLocationPreview: undefined,
     imageLocation: undefined,
-    quickReplies: [],
+    quickReplies: '',
+    wrappable: true,
+    nftId: '',
+    nftActionType: '',
+    contractAddress: '',
+    fileName: '',
+    originalName: ''
+
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -90,6 +105,15 @@ export const createMessageObject = (
       message.image = item.attrs.location;
       message.receiverMessageId = item.attrs.receiverMessageId.toString();
       message.quickReplies = item.attrs.quickReplies || '';
+      message.attachmentId = item.attrs.attachmentId || '';
+      message.wrappable = true;
+      message.nftId = item.attrs.nftId || '';
+      message.nftActionType = item.attrs?.nftActionType;
+      message.contractAddress = item.attrs?.contractAddress;
+      message.fileName = item.attrs.fileName || '';
+      message.originalName = item.attrs.originalName || '';
+
+
       // message.roomJid = item.attrs.roomJid;
     }
   });

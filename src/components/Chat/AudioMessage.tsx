@@ -37,9 +37,9 @@ export const AudioMessage = ({onLongPress, onPress, waveform, message}) => {
             marginLeft: 10,
           }}
         />
-        {!!waveform && (
+        {!!waveform && typeof waveform === 'object' && (
           <Svg stroke={commonColors.primaryDarkColor} width={100} height={55}>
-            {waveform.map((item, i) => (
+            {waveform?.map((item, i) => (
               <Rect
                 fill={'rgba(255,255,255,0.9)'}
                 key={i}

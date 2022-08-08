@@ -36,6 +36,7 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
     {
       from: from + '@' + DOMAIN,
       to: to + '/' + from,
+      id: XMPP_TYPES.roomPresence
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );
@@ -117,18 +118,21 @@ export const sendMediaMessageStanza = async (
       isMediafile: true,
       createdAt: data.createdAt,
       expiresAt: data.expiresAt,
-      filename: data.filename,
+      fileName: data.fileName,
       isVisible: data.isVisible,
       location: data.location,
       locationPreview: data.locationPreview,
       mimetype: data.mimetype,
-      originalname: data.originalname,
+      originalName: data.originalName,
       ownerKey: data.ownerKey,
       size: data.size,
       duration: data?.duration,
       updatedAt: data.updatedAt,
       userId: data.userId,
-      waveForm: JSON.stringify(data.waveForm),
+      waveForm: data.waveForm,
+      attachmentId: data?.attachmentId,
+      wrappable: data?.wrappable,
+      nftId: data?.nftId,
     }),
   );
 
@@ -199,7 +203,7 @@ export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
     ),
   );
   xmpp.send(message);
-}
+};
 
 export const subscribeToRoom = (
   roomJID: string,
@@ -393,7 +397,24 @@ export const isComposing = async (
   xmpp.send(message);
   // }, 100);
 };
-
+export const botStanza = (from: string, to: string, data: any, xmpp: any) => {
+  const message = xml(
+    'message',
+    {
+      id: XMPP_TYPES.botStanza,
+      type: 'groupchat',
+      from: from + '@' + DOMAIN,
+      to: to,
+    },
+    xml('body', {}, ''),
+    xml('data', {
+      xmlns: 'http://' + DOMAIN,
+      senderJID: from + '@' + DOMAIN,
+      ...data,
+    }),
+  );
+  xmpp.send(message);
+};
 export const pausedComposing = async (
   walletAddress: string,
   chat_jid: string,

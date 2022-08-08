@@ -11,7 +11,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {StyleSheet} from 'react-native';
-export const MessageSize = ({size, unit, duration}:any) => {
+export const MessageSize = ({size, duration}:any) => {
   return (
     <Box>
       <Box
@@ -23,7 +23,7 @@ export const MessageSize = ({size, unit, duration}:any) => {
         style={styles.container}>
         <Ionicons name="arrow-down-outline" size={hp('1.7%')} color={'white'} />
         <Text color={'white'} fontSize={hp('1.6%')}>
-          {size + ' ' + unit}
+          {size}
         </Text>
       </Box>
 

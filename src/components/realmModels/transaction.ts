@@ -27,10 +27,8 @@ export const getTransaction = async hash => {
   try {
     const realm = await Realm.open(databaseOptions);
     const transaction = realm.objectForPrimaryKey(schemaTypes.TRANSACTION_SCHEMA, hash);
-
     return transaction;
   } catch (error) {
-    console.log(error);
     return false;
   }
 };

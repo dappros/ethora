@@ -14,14 +14,21 @@ import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 
-interface ImageMessageProps{
-  url:any,
-  size:any,
-  onLongPress?:any,
-  onPress:any
+interface ImageMessageProps {
+  url: any;
+  size: any;
+  onLongPress?: any;
+  onPress: any;
+  nftId?: string;
 }
 
-export const ImageMessage = ({url, size, onLongPress, onPress}:ImageMessageProps) => {
+export const ImageMessage = ({
+  url,
+  size,
+  onLongPress,
+  onPress,
+  nftId,
+}: ImageMessageProps) => {
   const formatedSize = formatBytes(parseFloat(size), 2);
   return (
     <TouchableOpacity
@@ -33,11 +40,19 @@ export const ImageMessage = ({url, size, onLongPress, onPress}:ImageMessageProps
         justifyContent: 'center',
         position: 'relative',
       }}>
-      <MessageSize unit={formatedSize.unit} size={formatedSize.size} />
-
+      {size && (
+        <MessageSize size={formatedSize.size + ' ' + formatedSize.unit} />
+      )}
+      {!!nftId && <MessageSize size={'NFT'} />}
       <Box p={'1.5'}>
         <FastImage
-          style={{width: heightPercentageToDP('22%'), height: heightPercentageToDP('22%'), borderRadius: 10}}
+          style={{
+            width: heightPercentageToDP('22%'),
+            height: heightPercentageToDP('22%'),
+            borderRadius: 10,
+            borderColor: 'white',
+            borderWidth: nftId ? 2 : 0,
+          }}
           source={{uri: url}}
           alt={'Image message'}
         />

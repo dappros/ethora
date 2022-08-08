@@ -51,7 +51,14 @@ const MessageSchema = {
     user: 'User',
     duration: {type: 'string', optional: true},
     waveForm: {type: 'string', optional: true},
-    quickReplies: {type: 'string', optional: true,}
+    quickReplies: {type: 'string', optional: true},
+    attachmentId: {type: 'string', optional: true},
+    wrappable: {type: 'bool', optional: true},
+    nftId: {type: 'string', optional: true},
+    contractAddress: {type: 'string', optional: true},
+    fileName: {type: 'string', optional: true},
+    originalName: {type: 'string', optional: true},
+
   },
 };
 
