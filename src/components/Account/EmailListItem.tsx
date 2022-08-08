@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     emailDisplayTextStyle: {
         fontSize: hp('1.47%'),
-        fontFamily: 'Montserrat-Light',
+        fontFamily: textStyles.lightFont,
         color: '#000000',
     },
     tooltipTextStyle: {

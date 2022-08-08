@@ -7,7 +7,7 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
-import { coinImagePath } from '../../../docs/config';
+import { coinImagePath, textStyles } from '../../../docs/config';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
@@ -49,7 +49,7 @@ const RenderCoin = (props: RenderCoinProps) => {
 
                     <Text
                     style={{
-                        fontFamily: 'Montserrat-Regular',
+                        fontFamily: textStyles.regularFont,
                         fontSize: hp('1.97%'),
                         color: '#000000',
                     }}>
@@ -59,7 +59,7 @@ const RenderCoin = (props: RenderCoinProps) => {
                 <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
                     <Text
                     style={{
-                        fontFamily: 'Montserrat-Regular',
+                        fontFamily: textStyles.regularFont,
                         fontSize: hp('1.97%'),
                         color: '#000000',
                     }}>
@@ -69,7 +69,7 @@ const RenderCoin = (props: RenderCoinProps) => {
                 <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
                     <Text
                     style={{
-                        fontFamily: 'Montserrat-Medium',
+                        fontFamily: textStyles.regularFont,
                         fontSize: hp('1.97%'),
                         color: '#000000',
                     }}>

@@ -8,10 +8,8 @@ Note: linked open-source libraries and components may be subject to their own li
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
-  Text,
   Clipboard,
   StyleSheet,
-  View,
   Image,
   Animated,
   TouchableWithoutFeedback,
@@ -21,9 +19,11 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
-import {MessageText, MessageImage, Time, utils} from 'react-native-gifted-chat';
+import { MessageImage, Time, utils} from 'react-native-gifted-chat';
 import {coinImagePath, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
+import {MessageText} from './MessageText';
+import { View, Text } from 'native-base';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -75,10 +75,6 @@ export default class Bubble extends React.Component {
       return (
         <MessageText
           {...messageTextProps}
-          textStyle={{
-            left: [styles.content.userTextStyleLeft, messageTextStyle],
-            right: [styles.content.userTextStyleLeft],
-          }}
         />
       );
     }
@@ -167,14 +163,6 @@ export default class Bubble extends React.Component {
         <Time
           {...timeProps}
           containerStyle={{left: [styles.timeContainer]}}
-          textStyle={{
-            left: [
-              styles.standardFont,
-              styles.headerItem,
-              styles.time,
-              timeProps.textStyle,
-            ],
-          }}
         />
       );
     }
@@ -286,7 +274,7 @@ export default class Bubble extends React.Component {
         {this.renderMessageImage()}
         {/* {this.renderMessageVideo()}
     {this.renderMessageAudio()} */}
-        {!this.props.currentMessage.image && this.renderMessageText()}
+        {this.renderMessageText()}
 
         {this.renderCustomView()}
       </View>
@@ -296,7 +284,7 @@ export default class Bubble extends React.Component {
         {this.renderMessageImage()}
         {/* {this.renderMessageVideo()}
       {this.renderMessageAudio()} */}
-        {!this.props.currentMessage.image && this.renderMessageText()}
+        {this.renderMessageText()}
       </View>
     );
   }
@@ -304,85 +292,33 @@ setBubbleWidth = (width) => {
   this.setState({width: width})
 }
   render() {
-    const {
-      position,
-      containerStyle,
-      wrapperStyle,
-      bottomContainerStyle,
-      currentMessage,
-      previousMessage,
-    } = this.props;
-    const AnimatedStyle = {
-      backgroundColor: this.state.initialAnimationValue.interpolate({
-        inputRange: [0, 100],
-        outputRange: [
-          position === 'left'
-            ? colors.leftBubbleBackground
-            : colors.defaultBlue,
-          '#F0B310',
-        ],
-      }),
-    };
-
-    return (
-      <View
-        onLayout={(e) => this.setBubbleWidth( e.nativeEvent.layout.width)}
-        style={[
-          styles[position].container,
-          containerStyle && containerStyle[position],
-          {position: 'relative'},
+    const { position, containerStyle, wrapperStyle, bottomContainerStyle, } = this.props;
+        return (<View style={[
+            styles[position].container,
+            containerStyle && containerStyle[position],
         ]}>
-        <Animated.View
-          style={[
+        <View style={[
             styles[position].wrapper,
             this.styledBubbleToNext(),
             this.styledBubbleToPrevious(),
             wrapperStyle && wrapperStyle[position],
-            AnimatedStyle,
-            // {maxWidth: 200}
-          ]}>
-          {!isSameUser(currentMessage, previousMessage)
-            ? this.renderUsername()
-            : null}
-          <TouchableWithoutFeedback
-            onLongPress={this.onLongPress}
-            accessibilityTraits="text"
-            {...this.props.touchableProps}>
+        ]}>
+          <TouchableWithoutFeedback onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
             <View>
               {this.renderBubbleContent()}
-              <View
-                style={[
-                  styles[position].bottom,
-                  bottomContainerStyle && bottomContainerStyle[position],
-                ]}>
-                <View
-                  style={{
-                    flexDirection: position === 'left' ? 'row-reverse' : 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  {this.renderTime()}
-                  {this.renderTicks()}
-                </View>
-              </View>
-
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: position === 'left' ? 0 : null,
-                  left: position === 'right' ? 0 : null,
-
-                  // [position]: 0
-                }}>
-                {this.renderTokenCount()}
+              <View style={[
+            styles[position].bottom,
+            bottomContainerStyle && bottomContainerStyle[position],
+        ]}>
+                {/* {this.renderUsername()} */}
+                {this.renderTime()}
+                {this.renderTicks()}
               </View>
             </View>
           </TouchableWithoutFeedback>
-        </Animated.View>
+        </View>
         {this.renderQuickReplies()}
-      </View>
-    );
+      </View>)
   }
 }
 
@@ -390,111 +326,72 @@ setBubbleWidth = (width) => {
 // The "right" position is only used in the default Bubble.
 const styles = {
   left: StyleSheet.create({
-    container: {},
-    wrapper: {
-      borderRadius: 15,
-      backgroundColor: colors.leftBubbleBackground,
-      marginRight: 60,
-      minHeight: 20,
-      justifyContent: 'flex-end',
-      minWidth: 100,
-    },
-    tokenContainerStyle: {
-      flexDirection: 'row',
-      marginRight: 10,
-      marginBottom: 5,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    tokenIconStyle: {
-      height: hp('2%'),
-      width: hp('2%'),
-    },
-    tokenTextStyle: {
-      color: colors.white,
-      fontFamily: textStyles.regularFont,
-      fontSize: 10,
-      fontWeight: 'bold',
-      backgroundColor: 'transparent',
-      textAlign: 'right',
-    },
-    containerToNext: {
-      borderBottomLeftRadius: 3,
-    },
-    containerToPrevious: {
-      borderTopLeftRadius: 3,
-    },
-    bottom: {
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-    },
+      container: {
+          flex: 1,
+          alignItems: 'flex-start',
+      },
+      wrapper: {
+          borderRadius: 15,
+          backgroundColor: colors.leftBubbleBackground,
+          marginRight: 60,
+          minHeight: 20,
+          justifyContent: 'flex-end',
+      },
+      containerToNext: {
+          borderBottomLeftRadius: 3,
+      },
+      containerToPrevious: {
+          borderTopLeftRadius: 3,
+      },
+      bottom: {
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+      },
   }),
   right: StyleSheet.create({
-    container: {},
-    wrapper: {
-      borderRadius: 15,
-      backgroundColor: colors.defaultBlue,
-      marginLeft: 60,
-      minHeight: 20,
-      justifyContent: 'flex-end',
-      minWidth: 100,
-    },
-    containerToNext: {
-      borderBottomRightRadius: 3,
-    },
-    tokenContainerStyle: {
-      flexDirection: 'row',
-      marginLeft: 10,
-      marginBottom: 5,
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-    },
-    tokenIconStyle: {
-      height: hp('2%'),
-      width: hp('2%'),
-    },
-    tokenTextStyle: {
-      color: colors.white,
-      fontFamily: textStyles.regularFont,
-      fontSize: 10,
-      fontWeight: 'bold',
-      backgroundColor: 'transparent',
-      textAlign: 'right',
-    },
-    containerToPrevious: {
-      borderTopRightRadius: 3,
-    },
-    bottom: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-    },
+      container: {
+          flex: 1,
+          alignItems: 'flex-end',
+      },
+      wrapper: {
+          borderRadius: 15,
+          backgroundColor: colors.defaultBlue,
+          marginLeft: 60,
+          minHeight: 20,
+          justifyContent: 'flex-end',
+      },
+      containerToNext: {
+          borderBottomRightRadius: 3,
+      },
+      containerToPrevious: {
+          borderTopRightRadius: 3,
+      },
+      bottom: {
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+      },
   }),
   content: StyleSheet.create({
-    tick: {
-      fontFamily: textStyles.regularFont,
-      fontSize: 10,
-      backgroundColor: colors.backgroundTransparent,
-      color: colors.white,
-    },
-    tickView: {
-      flexDirection: 'row',
-      marginRight: 10,
-    },
-    username: {
-      top: -3,
-      left: 0,
-      fontSize: 12,
-      backgroundColor: 'transparent',
-      color: '#aaa',
-    },
-    usernameView: {
-      flexDirection: 'row',
-      marginHorizontal: 10,
-    },
-    userTextStyleLeft: {
-      fontFamily: textStyles.regularFont,
-      color: '#FFFF',
-    },
+      tick: {
+          fontSize: 10,
+          backgroundColor: colors.backgroundTransparent,
+          color: colors.white,
+      },
+      tickView: {
+          flexDirection: 'row',
+          marginRight: 10,
+      },
+      username: {
+          top: -3,
+          left: 0,
+          fontSize: 12,
+          backgroundColor: 'transparent',
+          color: '#aaa',
+      },
+      usernameView: {
+          flexDirection: 'row',
+          marginHorizontal: 10,
+      },
   }),
 };
 

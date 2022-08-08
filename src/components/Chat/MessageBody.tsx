@@ -11,8 +11,6 @@ import {
   View,
   ViewPropTypes,
   StyleSheet,
-  Text,
-  ImageBackground,
 } from 'react-native';
 
 import {Avatar, Day, utils, SystemMessage} from 'react-native-gifted-chat';
@@ -22,6 +20,29 @@ import Bubble from './MessageBubble';
 const {isSameUser, isSameDay} = utils;
 
 export default class Message extends React.Component {
+
+  shouldComponentUpdate(nextProps) {
+    const next = nextProps.currentMessage;
+    const current = this.props.currentMessage;
+    const { previousMessage, nextMessage } = this.props;
+    const nextPropsMessage = nextProps.nextMessage;
+    const nextPropsPreviousMessage = nextProps.previousMessage;
+    const shouldUpdate = (this.props.shouldUpdateMessage &&
+        this.props.shouldUpdateMessage(this.props, nextProps)) ||
+        false;
+    return (next.sent !== current.sent ||
+        next.received !== current.received ||
+        next.pending !== current.pending ||
+        next.createdAt !== current.createdAt ||
+        next.text !== current.text ||
+        next.image !== current.image ||
+        next.video !== current.video ||
+        next.audio !== current.audio ||
+        previousMessage !== nextPropsPreviousMessage ||
+        nextMessage !== nextPropsMessage ||
+        shouldUpdate);
+  }
+
   getInnerComponentProps() {
     const {containerStyle, ...props} = this.props;
     return {
@@ -49,7 +70,25 @@ export default class Message extends React.Component {
       return this.props.renderBubble(props);
     }
     // @ts-ignore
-    return <Bubble  usernameStyle={{fontFamily:textStyles.regularFont}} {...props} />;
+    return <Bubble
+    // containerToNextStyle={{
+    //  left: {
+    //   borderBottomLeftRadius:3
+    //  },
+    //  right:{
+    //   borderBottomRightRadius:3
+    //  }
+    // }}
+    // containerToPrevious={{
+    //   left: {
+    //     borderTopLeftRadius:3,
+    //     borderTopRightRadius:15
+    //    },
+    //   //  right:{
+    //   //   borderTopRightRadius:3
+    //   //  }
+    // }}
+    usernameStyle={{fontFamily:textStyles.regularFont}} {...props} />;
   }
 
   renderAvatar() {
