@@ -113,7 +113,7 @@ const Item = ({
 
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -123,7 +123,7 @@ const Item = ({
       <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -133,7 +133,7 @@ const Item = ({
       <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Medium',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -632,7 +632,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                 <Text
                   style={{
                     fontSize: hp('2.216%'),
-                    fontFamily: 'Montserrat-Medium',
+                    fontFamily: textStyles.mediumFont,
                     color: '#000000',
                   }}>
                   {anotherUserFirstname} {anotherUserLastname}
@@ -653,7 +653,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                     <Text
                       style={{
                         fontSize: hp('2.23%'),
-                        fontFamily: 'Montserrat-Regular',
+                        fontFamily: textStyles.regularFont,
                         textAlign: 'center',
                         color: primaryColor,
                       }}>
@@ -662,10 +662,10 @@ const OtherUserProfileScreen = observer((props: any) => {
                     <TouchableOpacity
                       onPress={onDirectChatPress}
                       style={{
-                        backgroundColor: primaryDarkColor,
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
+                        fontSize: hp('2.23%'),
+                        fontFamily: textStyles.regularFont,
+                        textAlign: 'center',
+                        color: '0000004D',
                       }}>
                       <HStack alignItems={'center'}>
                         <Ionicons
@@ -702,7 +702,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 0 ? '#000000' : '#0000004D',
                         }}>
                         Assets ({assetCount})
@@ -716,7 +716,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 1 ? '#000000' : '#0000004D',
                         }}>
                         Transactions ({transactionCount})
@@ -842,7 +842,7 @@ const styles = StyleSheet.create({
   },
   profileNameTextStyle: {
     fontSize: hp('2.216%'),
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: textStyles.mediumFont,
     color: '#000000',
   },
   nameAndDescriptionContainerStyle: {
@@ -860,7 +860,7 @@ const styles = StyleSheet.create({
   },
   descriptionTextStyle: {
     fontSize: hp('2.23%'),
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: textStyles.regularFont,
     textAlign: 'center',
     color: primaryDarkColor,
   },

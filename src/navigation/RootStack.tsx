@@ -6,6 +6,7 @@ import {ROUTES} from '../constants/routes';
 import AuthStack from './AuthStack';
 import {observer} from 'mobx-react-lite';
 import {Center, Spinner, View} from 'native-base';
+import { SafeAreaView } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,7 @@ const RootStack = observer(() => {
           </Center>
         </View>
       ) : (
+        <SafeAreaView style={{flex:1}}>
         <Stack.Navigator>
           {userToken ? (
             <Stack.Screen
@@ -51,6 +53,7 @@ const RootStack = observer(() => {
             />
           )}
         </Stack.Navigator>
+        </SafeAreaView>
       )}
     </>
   );
