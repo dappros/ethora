@@ -113,6 +113,8 @@ import coinImagePath from '../src/assets/coin.png'; //done
 // Coins symbol
 const coinsMainSymbol = 'DPT'; //done
 const coinsMainName = 'Dappros Platform Token'; //done
+const coinReplacedSymbol = 'ETO'; //done
+const coinReplacedName = 'Ethora Coin'; //done
 
 //ITEMS
 //Allow Minting by users
@@ -191,6 +193,8 @@ export {
   appVersion,
   defaultChats,
   logoWidth,
+  coinReplacedName,
+  coinReplacedSymbol,
   logoHeight,
   isLogoTitle,
   appLinkingUrl,

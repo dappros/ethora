@@ -27,6 +27,8 @@ import {
   textStyles,
   coinImagePath,
   itemsTransfersAllowed,
+  coinsMainName,
+  coinReplacedName,
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
@@ -71,7 +73,6 @@ const handleSlide = (
     useNativeDriver: false,
   }).start();
 };
-
 
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
@@ -126,7 +127,7 @@ const Item = ({
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
-          {tokenName}
+          {tokenName === coinsMainName ? coinReplacedName : tokenName}
         </Text>
       </View>
       <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
@@ -225,7 +226,7 @@ const OtherUserProfileScreen = observer((props: any) => {
   }, []);
 
   const onDirectChatPress = () => {
-    const otherUserWalletAddress = loginStore.anotherUserWalletAddress
+    const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
     const myWalletAddress = loginStore.initialData.walletAddress;
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
       .sort()
@@ -659,7 +660,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                       {anotherUserDescription}
                     </Text>
                     <TouchableOpacity
-                    onPress={onDirectChatPress}
+                      onPress={onDirectChatPress}
                       style={{
                         backgroundColor: primaryDarkColor,
                         borderRadius: 10,
@@ -673,7 +674,9 @@ const OtherUserProfileScreen = observer((props: any) => {
                           color={'white'}
                         />
 
-                        <Text style={{color: 'white', marginLeft: 5}}>Chat</Text>
+                        <Text style={{color: 'white', marginLeft: 5}}>
+                          Chat
+                        </Text>
                       </HStack>
                     </TouchableOpacity>
                   </SkeletonContent>
