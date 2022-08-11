@@ -27,6 +27,8 @@ import {
   textStyles,
   coinImagePath,
   itemsTransfersAllowed,
+  coinsMainName,
+  coinReplacedName,
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
@@ -72,7 +74,6 @@ const handleSlide = (
   }).start();
 };
 
-
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
     tokenSymbol={item.tokenSymbol}
@@ -112,7 +113,7 @@ const Item = ({
 
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -122,17 +123,17 @@ const Item = ({
       <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
-          {tokenName}
+          {tokenName === coinsMainName ? coinReplacedName : tokenName}
         </Text>
       </View>
       <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Medium',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -225,7 +226,7 @@ const OtherUserProfileScreen = observer((props: any) => {
   }, []);
 
   const onDirectChatPress = () => {
-    const otherUserWalletAddress = loginStore.anotherUserWalletAddress
+    const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
     const myWalletAddress = loginStore.initialData.walletAddress;
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
       .sort()
@@ -631,7 +632,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                 <Text
                   style={{
                     fontSize: hp('2.216%'),
-                    fontFamily: 'Montserrat-Medium',
+                    fontFamily: textStyles.mediumFont,
                     color: '#000000',
                   }}>
                   {anotherUserFirstname} {anotherUserLastname}
@@ -652,19 +653,19 @@ const OtherUserProfileScreen = observer((props: any) => {
                     <Text
                       style={{
                         fontSize: hp('2.23%'),
-                        fontFamily: 'Montserrat-Regular',
+                        fontFamily: textStyles.regularFont,
                         textAlign: 'center',
                         color: primaryColor,
                       }}>
                       {anotherUserDescription}
                     </Text>
                     <TouchableOpacity
-                    onPress={onDirectChatPress}
+                      onPress={onDirectChatPress}
                       style={{
-                        backgroundColor: primaryDarkColor,
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
+                        fontSize: hp('2.23%'),
+                        fontFamily: textStyles.regularFont,
+                        textAlign: 'center',
+                        color: '0000004D',
                       }}>
                       <HStack alignItems={'center'}>
                         <Ionicons
@@ -673,7 +674,9 @@ const OtherUserProfileScreen = observer((props: any) => {
                           color={'white'}
                         />
 
-                        <Text style={{color: 'white', marginLeft: 5}}>Chat</Text>
+                        <Text style={{color: 'white', marginLeft: 5}}>
+                          Chat
+                        </Text>
                       </HStack>
                     </TouchableOpacity>
                   </SkeletonContent>
@@ -699,7 +702,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 0 ? '#000000' : '#0000004D',
                         }}>
                         Assets ({assetCount})
@@ -713,7 +716,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 1 ? '#000000' : '#0000004D',
                         }}>
                         Transactions ({transactionCount})
@@ -839,7 +842,7 @@ const styles = StyleSheet.create({
   },
   profileNameTextStyle: {
     fontSize: hp('2.216%'),
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: textStyles.mediumFont,
     color: '#000000',
   },
   nameAndDescriptionContainerStyle: {
@@ -857,7 +860,7 @@ const styles = StyleSheet.create({
   },
   descriptionTextStyle: {
     fontSize: hp('2.23%'),
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: textStyles.regularFont,
     textAlign: 'center',
     color: primaryDarkColor,
   },

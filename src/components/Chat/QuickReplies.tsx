@@ -28,7 +28,6 @@ export const QuickReplies = ({
     messageAuthor ===
     underscoreManipulation(loginStore.initialData.walletAddress);
   const onQuickReplyPress = text => {
-    console.log(text);
     const data = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,

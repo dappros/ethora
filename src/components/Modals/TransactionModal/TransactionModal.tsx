@@ -7,8 +7,6 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import React, {useEffect, useState} from 'react';
 import {
-  Text,
-  View,
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
@@ -27,7 +25,7 @@ import {
 } from '../../../../docs/config';
 import SendItem from './SendItem';
 import {useStores} from '../../../stores/context';
-import {FlatList} from 'native-base';
+import {FlatList, HStack, Pressable, Text, View} from 'native-base';
 import AssetItem from './AssetItem';
 import TokenTransfer from './TokenTransfer';
 import {useNavigation} from '@react-navigation/native';
@@ -124,7 +122,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     });
     if (walletBalance) {
       if (amt <= walletBalance) {
-        console.log(apiStore.defaultToken);
         await walletStore.transferTokens(
           bodyData,
           loginStore.userToken,
@@ -284,7 +281,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   const setModalType = () => {
     if (type === modalTypes.PRIVACYPOLICY) {
       return (
-        <Modal transparent animationType="fade" visible={isVisible}>
+        <Modal isVisible={isVisible}>
           <View style={styles.centeredView}>
             <View style={styles.privacyPolicyMainContainer}>
               <View style={styles.privacyPolicyBodySection}>
@@ -430,28 +427,45 @@ const TransactionModal = (props: TransactionModalProps) => {
 
     if (type === modalTypes.GENERATEQR) {
       return (
-        <Modal animationType="fade" transparent={true} visible={isVisible}>
-          <View style={styles.centeredView}>
+        <Modal
+        onBackdropPress={()=>closeModal(false)}
+        animationIn={"slideInUp"}
+        animationOut={"slideOutDown"} 
+        isVisible={isVisible}>
+          <View
+          w={wp('90%')}
+          h={wp('100%')}
+          bg={"#ffff"}
+          shadow='2'
+          borderRadius={10}
+          padding={2}
+          >
+            <HStack> 
             <View
-              style={[
-                styles.modalView,
-                {borderRadius: 5, height: wp('80%'), width: wp('80%')},
-              ]}>
-              <TouchableOpacity
-                style={{
-                  alignSelf: 'flex-end',
-                  height: hp('3.5%'),
-                  width: hp('3.5%'),
-                }}
-                onPress={() => closeModal()}>
-                <MaterialIcons name="close" color={"black"} size={hp('3.5%')} />
-              </TouchableOpacity>
-              <View style={{flex: 1}}>
-                <QRCodeGenerator
-                  close={() => closeModal()}
-                  shareKey={extraData}
-                />
+            padding={2}
+            flex={0.5}>
+              <Text
+              fontFamily={textStyles.boldFont}
+              fontSize={hp('2.2%')}
+              color={"#000"}
+              >
+                Share {extraData.mode==='chat'?'Chatroom':'Profile'}
+              </Text>
               </View>
+              <Pressable
+              padding={2}
+              flex={0.5}
+              alignItems= {'flex-end'}
+              onPress={() => closeModal()}
+              >
+                <MaterialIcons name="close" color={"black"} size={hp('3.5%')} />
+              </Pressable>
+            </HStack>
+            <View style={{flex: 1}}>
+              <QRCodeGenerator
+              close={() => closeModal()}
+              shareKey={extraData.link}
+              />
             </View>
           </View>
         </Modal>

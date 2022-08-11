@@ -17,7 +17,7 @@ const App = () => {
       console.log('Is connected?', state.isConnected);
     });
     SplashScreen.hide();
-    return function cleanup() {
+    return function cleanup(){
       unsubscribe();
     };
   }, []);

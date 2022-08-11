@@ -249,7 +249,6 @@ export class ChatStore {
           });
         }
         if (type === 'UPDATE') {
-          console.log(item);
           item.counter = item.counter + 1;
         }
       }
@@ -428,7 +427,6 @@ export class ChatStore {
           // insertRosterList(rosterObject);
         });
         this.setRooms(roomsArray);
-        console.log('rooms called');
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {

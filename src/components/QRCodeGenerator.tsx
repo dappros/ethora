@@ -5,8 +5,8 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {Component, useRef} from 'react';
-import {StyleSheet, View, TouchableOpacity, Text} from 'react-native';
+import React, {useRef} from 'react';
+import {StyleSheet} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import Share from 'react-native-share';
 import {
@@ -17,10 +17,8 @@ import {commonColors, textStyles, unv_url} from '../../docs/config';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useStores } from '../stores/context';
 import { showToast } from './Toast/toast';
-// import Toast from 'react-native-simple-toast';
-// import {unv_url} from '../../docs/config';
-// import {connect} from 'react-redux';
-// import { showInfo } from '../config/toastAction';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Pressable, Text, View } from 'native-base';
 
 
 interface QRCodeGeneratorProps {
@@ -32,14 +30,14 @@ interface QRCodeGeneratorProps {
 const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
     const svg = useRef(null);
     const {apiStore} = useStores();
-    const {shareKey} = props
+    const {shareKey, close} = props
 
     let link = ""
 
-    if(props.shareKey.includes('profileLink')){
+    if(shareKey.includes('profileLink')){
       link = shareKey
     }else{
-       link = props.shareKey.replace(
+       link = shareKey.replace(
         apiStore.xmppDomains.CONFERENCEDOMAIN,
         '',
       );
@@ -56,7 +54,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
     const callback = (dataURL:string) => {
         let imgURL = `data:image/png;base64,${dataURL}`;
         Share.open({url: imgURL}).then(() => {
-          props.close();
+        close();
         });
     }
 
@@ -92,18 +90,71 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
       //Center Logo background (Optional)
       logoBackgroundColor="white"
     />
-    <TouchableOpacity
-      onPress={shareQR}
-      activeOpacity={0.7}
-      style={styles.button}>
-      <Text style={styles.TextStyle}> Share </Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-      onPress={copyToClipboard}
-      activeOpacity={0.7}
-      style={styles.button}>
-      <Text style={styles.TextStyle}> Copy Link </Text>
-    </TouchableOpacity>
+
+    <Pressable
+    shadow={3}
+    style={({pressed})=>[
+      {backgroundColor:pressed?'#1667e2':commonColors.primaryDarkColor}
+    ]}
+    height={wp('10%')}
+    justifyContent="center"
+    alignItems="center"
+    bg={commonColors.primaryDarkColor}
+    flexDirection="row"
+    margin={5}
+    marginBottom={2}
+    borderRadius={5}
+    onPress={shareQR}
+    w={'80%'}>
+      <Text 
+      style={styles.TextStyle}> Share QR </Text>
+      <Ionicons
+      size={hp('2%')}
+      color={"#fff"}
+      name="share-social" />
+    </Pressable>
+
+    <Text> Or copy link</Text>
+    <Pressable
+    shadow={2}
+    height={wp('10%')}
+    justifyContent="center"
+    alignItems="center"
+    bg={'#fff'}
+    flexDirection="row"
+    margin={5}
+    marginTop={2}
+    w={'80%'}
+    borderRadius={5}
+    onPress={copyToClipboard}
+    >
+
+      <View flex={0.8}>
+        <Text
+        color={"#000"}
+        overflow={'hidden'}
+        fontFamily={textStyles.mediumFont}
+        numberOfLines={1}> {unv_url}{link} </Text>
+      </View>
+
+      <View
+      flex={0.2}
+      bg={commonColors.primaryDarkColor}
+      w={wp('18%')}
+      h={wp('9%')}
+      borderRadius={5}
+      justifyContent={"center"}
+      alignItems={"center"}
+      shadow={1}
+      margin={1}
+      >
+        <Text
+        color={"#fff"}
+        fontFamily={textStyles.mediumFont}
+        >Copy</Text>
+      </View>
+
+    </Pressable>
   </View>
   );
 };
@@ -117,13 +168,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     button: {
-        width: '100%',
+        width: '70%',
         paddingTop: 8,
         marginTop: 10,
         paddingBottom: 8,
-        backgroundColor: commonColors.primaryColor,
+        backgroundColor: commonColors.primaryDarkColor,
         marginBottom: 20,
         alignItems: 'center',
+        borderRadius:5
     },
     TextStyle: {
         color: '#fff',

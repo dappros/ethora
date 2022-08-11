@@ -27,6 +27,7 @@ import {
   textStyles,
   coinImagePath,
   itemsTransfersAllowed,
+  coinReplacedName,
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
@@ -117,7 +118,7 @@ const Item = ({
 
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -127,17 +128,17 @@ const Item = ({
       <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Regular',
+            fontFamily: textStyles.regularFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
-          {tokenName}
+          {coinReplacedName}
         </Text>
       </View>
       <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
         <Text
           style={{
-            fontFamily: 'Montserrat-Medium',
+            fontFamily: textStyles.mediumFont,
             fontSize: hp('1.97%'),
             color: '#000000',
           }}>
@@ -511,7 +512,7 @@ export const ProfileScreen = observer((props: any) => {
   const QRPressed = () => {
     const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN;
     const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
-    setExtraQrData(profileLink);
+    setExtraQrData({link:profileLink,mode:'profile'});
     setQrModalVisible(true);
   };
 
@@ -581,7 +582,7 @@ export const ProfileScreen = observer((props: any) => {
                   <Text
                     style={{
                       fontSize: hp('2.216%'),
-                      fontFamily: 'Montserrat-Medium',
+                      fontFamily: textStyles.mediumFont,
                       color: '#000000',
                     }}>
                     {firstNameLocal} {lastNameLocal}
@@ -606,7 +607,7 @@ export const ProfileScreen = observer((props: any) => {
                     <Text
                       style={{
                         fontSize: hp('2.23%'),
-                        fontFamily: 'Montserrat-Regular',
+                        fontFamily: textStyles.regularFont,
                         textAlign: 'center',
                         color: primaryColor,
                       }}>
@@ -646,7 +647,7 @@ export const ProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 0 ? '#000000' : '#0000004D',
                         }}>
                         Assets ({assetCount})
@@ -660,7 +661,7 @@ export const ProfileScreen = observer((props: any) => {
                       <Animated.Text
                         style={{
                           fontSize: hp('1.97%'),
-                          fontFamily: 'Montserrat-Bold',
+                          fontFamily: textStyles.boldFont,
                           color: activeTab === 1 ? '#000000' : '#0000004D',
                         }}>
                         Transactions ({walletStore.transactions.length})
@@ -811,7 +812,7 @@ const styles = StyleSheet.create({
   },
   profileNameTextStyle: {
     fontSize: hp('2.216%'),
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: textStyles.mediumFont,
     color: '#000000',
   },
   nameAndDescriptionContainerStyle: {
@@ -829,7 +830,7 @@ const styles = StyleSheet.create({
   },
   descriptionTextStyle: {
     fontSize: hp('2.23%'),
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: textStyles.regularFont,
     textAlign: 'center',
     color: primaryDarkColor,
   },
