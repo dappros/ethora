@@ -78,37 +78,37 @@ const LoginScreen = observer((props: LoginScreenProps) => {
     }
   };
   const sendWalletMessage = async () => {
-    if (connector.accounts && !signedMessage && connector.session) {
-      const walletExist = await checkExternalWalletExist();
-      const message = await connector.signPersonalMessage([
-        walletExist ? 'Login' : 'Registration',
-        connector.accounts[0],
-      ]);
-      setSignedMessage(message);
-      !walletExist
-        ? setExternalWalletModalData({
-            message,
-            open: true,
-            walletAddress: connector.accounts[0],
-          })
-        : loginStore.loginExternalWallet({
-            walletAddress: connector.accounts[0],
-            signature: message,
-            loginType: 'signature',
-            msg: 'Login',
-          });
-      connector.killSession();
-    }
+    const walletExist = await checkExternalWalletExist();
+    const messageToSend = walletExist ? 'Login' : 'Registration';
+    const message = await connector.signPersonalMessage([
+      messageToSend,
+      connector.accounts[0],
+    ]);
+    setSignedMessage(message);
+    !walletExist
+      ? setExternalWalletModalData({
+          message,
+          open: true,
+          walletAddress: connector.accounts[0],
+        })
+      : loginStore.loginExternalWallet({
+          walletAddress: connector.accounts[0],
+          signature: message,
+          loginType: 'signature',
+          msg: 'Login',
+        });
+    connector.killSession();
   };
   useEffect(() => {
-    if (connector.accounts) {
+    if (!!connector.accounts && !signedMessage && connector.connected) {
       sendWalletMessage();
     }
-  }, [connector.accounts, connector.session, connector.connected]);
-
-  // 1 go to metamask get address
-  // 2 check wallet
-  // if exists - login if not -register
+  }, [
+    connector.accounts,
+    connector.session,
+    connector.connected,
+    signedMessage,
+  ]);
 
   return (
     <ImageBackground
@@ -153,7 +153,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           }
           bg="black"
           onPress={() => {
-            connector.connect();
+            connector.connect()
           }}
         />
         <SocialButton

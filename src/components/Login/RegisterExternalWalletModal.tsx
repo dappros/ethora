@@ -39,7 +39,9 @@ export const RegisterExternalWalletModal = ({
   const {loginStore} = useStores();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [loading, setLoading] = useState(false);
   const onSubmit = async () => {
+    setLoading(true);
     await loginStore.registerExternalWalletUser({
       walletAddress,
       msg: 'Registration',
@@ -48,6 +50,7 @@ export const RegisterExternalWalletModal = ({
       firstName,
       lastName,
     });
+    setLoading(false);
   };
   return (
     <Modal onBackdropPress={closeModal} isVisible={modalVisible}>
@@ -73,8 +76,12 @@ export const RegisterExternalWalletModal = ({
           placeholder="Enter your lastname"
           placeholderTextColor={commonColors.primaryColor}
         />
-        <TouchableOpacity style={styles.submitButton} onPress={onSubmit}>
-          <Text style={{color: 'white'}}>Register</Text>
+        <TouchableOpacity disabled={loading} style={styles.submitButton} onPress={onSubmit}>
+          {loading ? (
+            <ActivityIndicator size={20} color={commonColors.primaryColor} />
+          ) : (
+            <Text style={{color: 'white'}}>Register</Text>
+          )}
         </TouchableOpacity>
       </View>
     </Modal>
