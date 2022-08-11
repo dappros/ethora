@@ -666,6 +666,10 @@ const OtherUserProfileScreen = observer((props: any) => {
                         fontFamily: textStyles.regularFont,
                         textAlign: 'center',
                         color: '0000004D',
+                        backgroundColor: commonColors.primaryDarkColor,
+                        borderRadius: 5,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5
                       }}>
                       <HStack alignItems={'center'}>
                         <Ionicons
