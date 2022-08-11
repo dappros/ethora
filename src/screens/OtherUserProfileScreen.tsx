@@ -170,7 +170,7 @@ const firstLayout = [
 ];
 
 const OtherUserProfileScreen = observer((props: any) => {
-  const {loginStore, walletStore, apiStore, chatStore} = useStores();
+  const {loginStore, walletStore, apiStore, chatStore, otherUserStore} = useStores();
 
   const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
     walletStore;
@@ -370,7 +370,7 @@ const OtherUserProfileScreen = observer((props: any) => {
       // setAnotherUserAvatar();
       setAnotherUserFirstname(loginStore.anotherUserFirstname);
       setAnotherUserLastname(loginStore.anotherUserLastname);
-      setAnotherUserDescription(loginStore.anotherUserDescription);
+      setAnotherUserDescription(otherUserStore.description);
       setIsLoadingVCard(false);
     }, 2000);
   }, [loginStore.anotherUserAvatar]);
@@ -660,8 +660,12 @@ const OtherUserProfileScreen = observer((props: any) => {
                       {anotherUserDescription}
                     </Text>
                     <TouchableOpacity
-                      onPress={onDirectChatPress}
+                    onPress={onDirectChatPress}
                       style={{
+                        backgroundColor: primaryDarkColor,
+                        borderRadius: 10,
+                        paddingHorizontal: 10,
+                        paddingVertical: 5,
                         fontSize: hp('2.23%'),
                         fontFamily: textStyles.regularFont,
                         textAlign: 'center',
@@ -674,9 +678,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                           color={'white'}
                         />
 
-                        <Text style={{color: 'white', marginLeft: 5}}>
-                          Chat
-                        </Text>
+                        <Text style={{color: 'white', marginLeft: 5}}>Chat</Text>
                       </HStack>
                     </TouchableOpacity>
                   </SkeletonContent>

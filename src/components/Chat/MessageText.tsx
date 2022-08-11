@@ -1,17 +1,22 @@
 import React from 'react';
-import { Image, Text, View } from "native-base";
+import { Button, Image, Text, View } from "native-base";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp,
   } from 'react-native-responsive-screen';
 import { useState } from "react";
-import { textStyles } from "../../../docs/config";
+import { commonColors, textStyles, unv_url } from "../../../docs/config";
 import ParsedText from 'react-native-parsed-text';
 import { Linking, StyleSheet, TouchableOpacity } from "react-native";
 import Communications from 'react-native-communications';
 import { getYoutubeMetadata } from '../../helpers/getYoutubeMetadata';
-import { colors } from '../../constants/messageColors';
+import { getRoomInfo } from '../../xmpp/stanzas';
+import { useStores } from '../../stores/context';
+import { underscoreManipulation } from '../../helpers/underscoreLogic';
+import { observer } from 'mobx-react-lite';
+import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
+import { useNavigation } from '@react-navigation/native';
 
 const DEFAULT_OPTION_TITLES = ['Call', 'Text', 'Cancel'];
 const ytubeLinkRegEx = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
@@ -50,9 +55,15 @@ const styles = {
     }),
 };
 
-export const MessageText = React.memo((props:any) => {
+export const MessageText = observer((props:any) => {
 
     const [youtubeMetaData, setYoutubeMetaData] = useState({});
+
+    const {loginStore, apiStore, chatStore} = useStores();
+
+    const manipulatedWalletAddress = underscoreManipulation(loginStore.initialData.walletAddress);
+
+    const navigation = useNavigation();
 
     const linkStyle = [
         styles[props.position].link,
@@ -100,16 +111,12 @@ export const MessageText = React.memo((props:any) => {
     };
     const onEmailPress = (email:string) => Communications.email([email], null, null, null, null);
 
-    if(props.currentMessage.text.match(ytubeLinkRegEx)){
 
+    if(props.currentMessage.text.match(ytubeLinkRegEx)){
         getYoutubeMetadata(props.currentMessage.text).then(resp => {
             setYoutubeMetaData(resp.data);
         });
-    }
-    return(
-        <View>
-        {
-        props.currentMessage.text.match(ytubeLinkRegEx)?
+        return(
             <TouchableOpacity 
             onPress={()=>onUrlPress(props.currentMessage.text)}
             style={{
@@ -163,7 +170,44 @@ export const MessageText = React.memo((props:any) => {
                         />
                     </View>
                 </View>
-            </TouchableOpacity>:
+            </TouchableOpacity>
+        )
+    }
+    else if(props.currentMessage.text.includes(unv_url)){
+        
+        const chatLink = props.currentMessage.text.match(/\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm)[0]
+        const chatJid = chatLink?.split('=')[1]+apiStore.xmppDomains.CONFERENCEDOMAIN;
+
+        getRoomInfo(
+            manipulatedWalletAddress,
+            chatJid,
+            chatStore.xmpp
+        )
+
+        const handleChatLink = () => {
+            openChatFromChatLink(
+                chatJid,
+                manipulatedWalletAddress,
+                navigation,
+                chatStore.xmpp
+            )
+        }
+
+
+        return (
+            <Button
+            onPress={handleChatLink}
+            shadow={2}
+            margin={3}
+            backgroundColor={commonColors.primaryColor}
+            >
+                🛖🏃 {chatStore.chatLinkInfo[chatJid]}
+            </Button>
+        )
+
+    }
+    else{
+        return(
             <ParsedText style={[
                 styles[props.position].text,
                 props.textStyle && props.textStyle[props.position],
@@ -176,7 +220,6 @@ export const MessageText = React.memo((props:any) => {
             ]} childrenProps={{ ...props.textProps }}>
             {props.currentMessage.text}
             </ParsedText>
-        }
-      </View>
-    )
+        )
+    }
 })

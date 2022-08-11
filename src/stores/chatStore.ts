@@ -2,27 +2,22 @@ import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
 import {
   action,
-  isObservableObject,
   makeAutoObservable,
   runInAction,
   toJS,
 } from 'mobx';
-import {Toast} from 'native-base';
 import {defaultChats} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
   getRoomList,
-  insertRosterList,
 } from '../components/realmModels/chatList';
 import {
   getAllMessages,
   insertMessages,
-  queryRoomAllMessages,
   updateMessageToWrapped,
   updateTokenAmount,
 } from '../components/realmModels/messages';
-import {showToast} from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -30,7 +25,6 @@ import {createMessageObject} from '../helpers/chat/createMessageObject';
 import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
-  getLastMessageArchive,
   getUserRoomsStanza,
   presenceStanza,
   subscribeStanza,
@@ -39,7 +33,6 @@ import {
   vcardRetrievalRequest,
 } from '../xmpp/stanzas';
 import {
-  CONFERENCEDOMAIN,
   DOMAIN,
   SERVICE,
   XMPP_TYPES,
@@ -100,6 +93,7 @@ export class ChatStore {
   roomList: roomListProps | [] = [];
   stores: RootStore | {} = {};
   roomsInfoMap: any = {};
+  chatLinkInfo:any = {};
   allMessagesArrived: boolean = false;
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
@@ -310,6 +304,14 @@ export class ChatStore {
     );
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
+      //capture room info
+      if(stanza.attrs.id === 'roomInfo'){
+        console.log(stanza.attrs,"roominfoooooo")
+      runInAction(()=>{
+        this.chatLinkInfo[stanza.attrs.from] = stanza.children[0].children[0].attrs.name;
+      })
+        
+      }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
@@ -555,6 +557,8 @@ export class ChatStore {
             username: '',
           });
         }
+
+
       }
     });
 
