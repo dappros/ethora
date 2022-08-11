@@ -10,7 +10,7 @@ import React from 'react';
 import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { MessageSize } from '../components/Chat/MessageSize';
 import { formatBytes } from '../helpers/chat/formatBytes';
 
@@ -44,8 +44,8 @@ export const PdfMessage = ({
       <Box p={'1.5'}>
         <FastImage
           style={{
-            width: heightPercentageToDP('22%'),
-            height: heightPercentageToDP('22%'),
+            width: hp('22%'),
+            height: hp('22%'),
             borderRadius: 10,
             borderColor: 'white',
           }}

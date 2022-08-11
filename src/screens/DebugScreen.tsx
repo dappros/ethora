@@ -12,8 +12,8 @@ import Highlighter from 'react-native-highlight-words';
 import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {
-  heightPercentageToDP,
-  widthPercentageToDP,
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -143,7 +143,7 @@ const DebugScreenApi = ({navigation}) => {
                 // onPress={() => props.navigation.navigate('LoginComponent')}
                 color={commonColors.primaryColor}
                 name="caretdown"
-                size={heightPercentageToDP('2%')}
+                size={hp('2%')}
                 style={{marginRight: 5, marginBottom: 2}}
               />
             </TouchableOpacity>
@@ -224,7 +224,7 @@ export function DebugScreen({navigation}) {
           second: DebugScreenApi,
         })}
         onIndexChange={setIndex}
-        initialLayout={{width: widthPercentageToDP('100%')}}
+        initialLayout={{width: wp('100%')}}
       />
     </>
   );
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    width: widthPercentageToDP('35%'),
+    width: wp('35%'),
     height: 30,
   },
 
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
 
   modalItem: {
-    fontSize: heightPercentageToDP('2.23%'),
+    fontSize: hp('2.23%'),
     fontFamily: textStyles.regularFont,
     textAlign: 'left',
     paddingLeft: 5,

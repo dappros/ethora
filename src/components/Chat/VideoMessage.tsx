@@ -10,13 +10,10 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { alpha } from '../../helpers/aplha';
-import { commonColors } from '../../../docs/config';
-
 interface VideoMessageProps {
   url: any;
   size: any;
@@ -53,8 +50,8 @@ export const VideoMessage: React.FC<VideoMessageProps> = ({
 
 const styles = StyleSheet.create({
   preview: {
-    width: heightPercentageToDP('22%'),
-    height: heightPercentageToDP('22%'),
+    width: hp('22%'),
+    height: hp('22%'),
     borderRadius: 10,
     borderColor: 'white',
   },

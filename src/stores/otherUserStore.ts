@@ -23,7 +23,6 @@ export class OtherUserStore {
   }
 
   setDataFromVCard(description:string, avatar:string) {
-    console.log(avatar)
     runInAction(() => {
       this.userAvatar = avatar;
       this.description = description;
