@@ -30,6 +30,20 @@ You will need environment set up for iOS or Android development.
 * Chat & Social profiles
 * Push notifications
 
+## B2B2C 🤔
+
+Ethora is distributed as "B2B2C" product which means you can build your own custom branded web3 social apps, for your community, using this engine.
+
+You may also use our demo Ethora app directly from Apple and Google appstores 'as is', create your own chats there and proceed that way. 
+
+Running your own version, however, allows you to:
+* Have your own app in the iOS and Android appstores
+* Have your own name and branding
+* Your own token / coin 
+* (Optional) dedicated infrastructure - your own chain either private or L1/L2 connected (or you can simply use our chain which is the default option) 
+* (Optional) custom login and wallet options, for example, enable/disable social sign in, choose between custodial and non-custodial wallets for your users, integrate with your existing CRM / users database etc
+* Lots of other Application-level Config options such as defining default chats, short links domain, enabling/disabling features etc
+
 ## Disclaimer 📜
 
 Our platform provides technology for ecosystems built on the principles of openness, transparency and decentralization. By design, certain information such as user profiles, rankings, and the transactions of digital assets will be available to the whole ecosystem or to the public. You should not use the standard version of this product for secure or commercially sensitive communications. You should not use any versions of this product for emergency communications. You should not share information or content through our platform in cases where you may not be comfortable or authorized to share it with the public.
@@ -42,7 +56,7 @@ LICENSE. The project codebase of Ethora developed by the project contributors is
 This is a commercial friendly license allowing you to build your own projects using this codebase without a requirement for you to make your modifications open source.
 We have applied what we believe is the most open and flexible license option in order to support developers, startups and businesses globally in creating their own tokenized ecosystems. 
 
-CONTRIBUTORS AND GOVERNANCE. Currently (2018-2021) project is being developed and funded by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. In case this project grows popular and more individuals and organizations start supporting it, we intend to set up an independent foundation or DAO to govern further project development for the public good and promotion of decentralized economy globally.
+CONTRIBUTORS AND GOVERNANCE. Currently (2018-2022) project is being developed and funded by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. In case this project grows popular and more individuals and organizations start supporting it, we intend to set up an independent foundation or DAO to govern further project development for the public good and promotion of decentralized economy globally.
 
 BACKEND. The server-side functionality of Ethora is provided by Dappros Platform API and DeepX RTC infrastructure. Under the bonnet, it consists of Ethereum blockchain network, an API wrapper and caching layer interacting with Ethereum nodes and S3/IPFS storage (built with Node.js, Apache Kafka and MongoDB), as well as XMPP-based Ejabberd messaging server with our own custom-built services (such as Push Notifications, blockchain identities integration etc) built with Erlang, Mnesia, MySQL and Cassandra. 
 
@@ -65,7 +79,7 @@ Currently (2022) Dappros is a privately owned company that offers an open-source
 ### Key principles (short term):
 
 * A platform allowing businesses and creators to easily set up and for users to join and explore a tokenized p2p ecosystem.
-*  Partially centralized. 
+* Partially centralized. 
 * Assets and transactions ledger is decentralized.
 * Leveraging state of the art DLT, mobile and communication technologies.
 * Mobile-first (no ads, no gimmicks)
@@ -77,7 +91,6 @@ Currently (2022) Dappros is a privately owned company that offers an open-source
 * Open-source server - anybody can download and run a Validator or Host node (closed-source enterprise version possible for private chain projects)
 * Validator / Hoster incentives - self-supporting network
 * Easy sidechain / mainchain assets transfer
-
 
 ### Key principles (long term):
 
