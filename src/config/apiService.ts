@@ -11,7 +11,7 @@ import {refreshTokenURL} from './routesConstants';
 
 const http = axios.create();
 
-http.interceptors.response.use(undefined, async error => {
+http.interceptors.response.use(undefined, async (error) => {
   if (error?.response?.status === 401) {
     await rootStore.loginStore.getRefreshToken();
 
@@ -22,13 +22,15 @@ http.interceptors.response.use(undefined, async error => {
       rootStore.loginStore.logOut();
       return Promise.reject(error);
     }
-    let request = error.config;
-    const token = rootStore.loginStore.userToken;
-    request.headers['Authorization'] = token;
+    if (rootStore.loginStore.userToken) {
+      let request = error.config;
+      const token = rootStore.loginStore.userToken;
+      request.headers["Authorization"] = token;
 
-    return new Promise(resolve => {
-      resolve(http(request));
-    });
+      return new Promise((resolve) => {
+        resolve(http(request));
+      });
+    }
   }
   return Promise.reject(error);
 });
