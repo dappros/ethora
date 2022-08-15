@@ -32,7 +32,7 @@ You will need environment set up for iOS or Android development.
 
 ## Should I build my own version? 🤔
 
-Ethora is distributed as "B2B2C" product which means you can build your own custom branded web3 social apps, for your community, using this engine.
+Ethora is distributed as B2B2C product (in other words, open-source and 'white label' friendly) which means you can build your own custom branded web3 social apps, for your community, using this engine.
 
 You may also use our demo Ethora app directly from Apple and Google appstores 'as is', create your own chats there and proceed that way. 
 
