@@ -19,6 +19,7 @@ import {ImageBackground, StyleSheet} from 'react-native';
 import {
   appTitle,
   appVersion,
+  commonColors,
   isLogoTitle,
   loginScreenBackgroundImage,
   logoHeight,
@@ -112,29 +113,30 @@ const LoginScreen = observer((props: LoginScreenProps) => {
 
   return (
     <ImageBackground
-      source={loginScreenBackgroundImage}
+      // source={loginScreenBackgroundImage}
       style={{
+        backgroundColor: 'rgba(0,0,255, 0.05)',
         width: '100%',
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
       }}>
       <Box margin={3} justifyContent={'center'} alignItems={'center'}>
-        <Image
+        {/* <Image
           alt="App logo Ethora"
           source={logoPath}
           resizeMode={'cover'}
           w={wp(logoWidth)}
           h={logoHeight}
-        />
-        {isLogoTitle ? (
+        /> */}
+        {isLogoTitle && (
           <Text
-            color={'#000'}
-            fontFamily={textStyles.mediumFont}
-            fontSize={hp('3.44%')}>
+            color={commonColors.primaryColor}
+            fontFamily={textStyles.semiBoldFont}
+            fontSize={hp('6.44%')}>
             {appTitle}
           </Text>
-        ) : null}
+        ) }
       </Box>
 
       <Stack margin={3} space={3}>
@@ -151,7 +153,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
               name={'antdesign'}
             />
           }
-          bg="black"
+          bg="#cc6228"
           onPress={() => {
             connector.connect()
           }}

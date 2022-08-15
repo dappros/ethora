@@ -78,7 +78,7 @@ export const RegisterExternalWalletModal = ({
         />
         <TouchableOpacity disabled={loading} style={styles.submitButton} onPress={onSubmit}>
           {loading ? (
-            <ActivityIndicator size={20} color={commonColors.primaryColor} />
+            <ActivityIndicator size={20} color={'white'} />
           ) : (
             <Text style={{color: 'white'}}>Register</Text>
           )}

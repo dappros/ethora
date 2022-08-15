@@ -6,11 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -70,7 +66,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   const renderNftItems = () => {
     return (
       <FlatList
-        data={walletStore.nftItems}
+        data={walletStore.nftItems.filter(item => !item.external)}
         renderItem={(e, index) => (
           <NftListItem
             assetUrl={e.item.imagePreview || e.item.nftFileUrl}
@@ -327,29 +323,25 @@ const TransactionModal = (props: TransactionModalProps) => {
     }
 
     if (displayItems) {
-
       return (
         <View>
           <Modal
-          onBackdropPress={()=>setDisplayItems(false)}
-          animationIn={"slideInUp"}
-          animationOut={"slideOutDown"}  
-          isVisible={displayItems}>
-            <View
-              style={[
-                styles.centeredView,
-              ]}>
+            onBackdropPress={() => setDisplayItems(false)}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            isVisible={displayItems}>
+            <View style={[styles.centeredView]}>
               <View
                 style={[
                   {
-                    backgroundColor:"white",
+                    backgroundColor: 'white',
                     height: hp('50%'),
                     width: wp('100%'),
                     padding: 0,
                     margin: 0,
                     paddingTop: 7,
-                    justifyContent:"center",
-                    alignItems:"center"
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   },
                 ]}>
                 <View style={styles.tokenTransferContainer}>
@@ -376,18 +368,12 @@ const TransactionModal = (props: TransactionModalProps) => {
       return (
         <View>
           <Modal
-          onBackdropPress={closeModal}
-          animationIn={"slideInUp"}
-          animationOut={"slideOutDown"}  
-          isVisible={isVisible}>
-            <View
-              style={[
-                styles.centeredView,
-              ]}>
-              <View
-                style={[
-                  styles.modalView,
-                ]}>
+            onBackdropPress={closeModal}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            isVisible={isVisible}>
+            <View style={[styles.centeredView]}>
+              <View style={[styles.modalView]}>
                 <View style={styles.tokenTransferContainer}>
                   <TokenTransfer
                     name={extraData.name}
@@ -396,18 +382,20 @@ const TransactionModal = (props: TransactionModalProps) => {
                   />
                 </View>
 
-                {walletStore.nftItems.length > 0 && itemsTransfersAllowed && (
-                  <>
-                    <Seperator />
+                {walletStore.nftItems.filter(item => !item.external).length >
+                  0 &&
+                  itemsTransfersAllowed && (
+                    <>
+                      <Seperator />
 
-                    <SendItem
-                      onPress={() => {
-                        console.log('clickd');
-                        setDisplayItems(true);
-                      }}
-                    />
-                  </>
-                )}
+                      <SendItem
+                        onPress={() => {
+                          console.log('clickd');
+                          setDisplayItems(true);
+                        }}
+                      />
+                    </>
+                  )}
 
                 <Seperator />
                 <DirectMessage onPress={onDirectMessagePress} />
@@ -428,43 +416,38 @@ const TransactionModal = (props: TransactionModalProps) => {
     if (type === modalTypes.GENERATEQR) {
       return (
         <Modal
-        onBackdropPress={()=>closeModal(false)}
-        animationIn={"slideInUp"}
-        animationOut={"slideOutDown"} 
-        isVisible={isVisible}>
+          onBackdropPress={() => closeModal(false)}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          isVisible={isVisible}>
           <View
-          w={wp('90%')}
-          h={wp('100%')}
-          bg={"#ffff"}
-          shadow='2'
-          borderRadius={10}
-          padding={2}
-          >
-            <HStack> 
-            <View
-            padding={2}
-            flex={0.5}>
-              <Text
-              fontFamily={textStyles.boldFont}
-              fontSize={hp('2.2%')}
-              color={"#000"}
-              >
-                Share {extraData.mode==='chat'?'Chatroom':'Profile'}
-              </Text>
+            w={wp('90%')}
+            h={wp('100%')}
+            bg={'#ffff'}
+            shadow="2"
+            borderRadius={10}
+            padding={2}>
+            <HStack>
+              <View padding={2} flex={0.5}>
+                <Text
+                  fontFamily={textStyles.boldFont}
+                  fontSize={hp('2.2%')}
+                  color={'#000'}>
+                  Share {extraData.mode === 'chat' ? 'Chatroom' : 'Profile'}
+                </Text>
               </View>
               <Pressable
-              padding={2}
-              flex={0.5}
-              alignItems= {'flex-end'}
-              onPress={() => closeModal()}
-              >
-                <MaterialIcons name="close" color={"black"} size={hp('3.5%')} />
+                padding={2}
+                flex={0.5}
+                alignItems={'flex-end'}
+                onPress={() => closeModal()}>
+                <MaterialIcons name="close" color={'black'} size={hp('3.5%')} />
               </Pressable>
             </HStack>
             <View style={{flex: 1}}>
               <QRCodeGenerator
-              close={() => closeModal()}
-              shareKey={extraData.link}
+                close={() => closeModal()}
+                shareKey={extraData.link}
               />
             </View>
           </View>
