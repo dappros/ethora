@@ -1,5 +1,5 @@
-# ethora: open-source social commerce & crypto wallet app engine (iOS/Android, ERC-20/NFT, chat/messaging)
-Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
+# ethora: open-source web3 social app engine (iOS/Android, ERC-20/NFT, social features)
+Mobile 📱 app engine and web3 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
 
 **UPD: Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
 
@@ -30,7 +30,7 @@ You will need environment set up for iOS or Android development.
 * Chat & Social profiles
 * Push notifications
 
-## B2B2C 🤔
+## Should I build my own version? 🤔
 
 Ethora is distributed as "B2B2C" product which means you can build your own custom branded web3 social apps, for your community, using this engine.
 
