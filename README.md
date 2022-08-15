@@ -74,30 +74,29 @@ Platform R&D and the free tier infrastructure are supported through our paid ent
 
 ### DAO governance vision
 
-Currently (2022) Dappros is a privately owned company that offers an open-source mobile app, open-source private blockchain and closed-source backend. Our founders promote decentralized economy and free p2p communication technologies for many years. We are developing a roadmap where the platform will become fully open and its governance can be transferred to a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. Our only limiting factor here is funding and time constraints. 
+Ethora project is governed and implemented by Dappros Ltd with parts of roadmap fulfilled by DeepX. Our founders promote decentralized economy and free p2p communication technologies for many years. We work according to our roadmap with a goal that the platform governance will be fulfilled by a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. 
 
 ### Key principles (short term):
 
-* A platform allowing businesses and creators to easily set up and for users to join and explore a tokenized p2p ecosystem.
+* A platform allowing businesses and creators to easily set up and for users to join and explore a web3 social ecosystem, powered by tokenized p2p commerce
 * Partially centralized. 
 * Assets and transactions ledger is decentralized.
-* Leveraging state of the art DLT, mobile and communication technologies.
-* Mobile-first (no ads, no gimmicks)
+* Leveraging state of the art DLT (Ethereum), mobile (iOS & Android) and communication (messaging, push notifications, WebRTC) technologies.
+* Mobile-first ("no ads, no gimmicks" 😉)
 * Open-source client
 
 ### Key principles (mid term):
 
 * Self-Sovereign Identity - users own their identity, content and assets
-* Open-source server - anybody can download and run a Validator or Host node (closed-source enterprise version possible for private chain projects)
+* Open-source server - anybody can download and run a Validator or a Host node (closed-source enterprise version possible for private chain projects)
 * Validator / Hoster incentives - self-supporting network
-* Easy sidechain / mainchain assets transfer
+* Easy sidechain (L2) / mainchain (L1) assets transfer
 
 ### Key principles (long term):
 
-* Decentralized maintenance allowing both (a) incentivized hosting of the public infrastructure and (b) private networks. À la Ethereum;
+* Decentralized maintenance allowing both (a) incentivized hosting of the public infrastructure and (b) private networks
 * R&D grants available for teams and individual developers contributors globally
-* Decentralized governance - platform stakeholders make important decisions for the public network 
-* Meritocracy - governance stakes are earned through supporting platform infrastructure (running nodes), R&D work and platform promotion
+* Decentralized governance - platform stakeholders make important decisions for the main public network infrastructure and R&D priorities
 
 ## Contact 💬
 
