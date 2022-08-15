@@ -199,6 +199,7 @@ export class WalletStore {
         });
       }
     } catch (error: any) {
+      console.log(error.response)
       runInAction(() => {
         this.isFetching = false;
         this.error = true;

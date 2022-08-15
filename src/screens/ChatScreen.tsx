@@ -10,7 +10,6 @@ import {useStores} from '../stores/context';
 import {
   getPaginatedArchive,
   getRoomArchiveStanza,
-  getUserRoomsStanza,
   isComposing,
   pausedComposing,
   retrieveOtherUserVcard,
@@ -21,16 +20,13 @@ import {
 import MessageBody from '../components/Chat/MessageBody';
 import {
   Animated,
-  Linking,
   NativeModules,
   Platform,
   Pressable,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
 } from 'react-native';
-import {DOMAIN, XMPP_TYPES} from '../xmpp/xmppConstants';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
+import {DOMAIN} from '../xmpp/xmppConstants';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {format} from 'date-fns';
 import {
@@ -81,7 +77,6 @@ import {formatBytes} from '../helpers/chat/formatBytes';
 import {AudioMessage} from '../components/Chat/AudioMessage';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import RenderChatFooter from '../components/Chat/RenderChatFooter';
-import {SendButton} from '../components/Chat/SendButton';
 import {AudioSendButton} from '../components/Chat/AudioSendButton';
 import {NftItemGalleryModal} from '../../NftItemGalleryModal';
 import {PdfMessage} from '../stores/PdfMessage';
@@ -231,7 +226,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
               style={{
                 paddingBottom: 5,
               }}>
-              <Text style={{fontFamily: textStyles.semiBoldFont}}>
+              <Text style={{
+                fontFamily: textStyles.semiBoldFont,
+                color:"#000"
+                }}>
                 {one.name}
               </Text>
             </Pressable>
@@ -867,7 +865,7 @@ const styles = StyleSheet.create({
   usernameStyle: {
     fontWeight: 'bold',
     color: '#FFFF',
-    fontSize: heightPercentageToDP('1.47%'),
+    fontSize: hp('1.47%'),
   },
   sendButton: {
     backgroundColor: commonColors.primaryDarkColor,

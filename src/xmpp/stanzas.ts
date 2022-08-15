@@ -353,7 +353,7 @@ export const getRoomInfo = (
     'iq',
     {
       from: walletAddress + '@' + DOMAIN,
-      id: 'roomInfo',
+      id: XMPP_TYPES.roomInfo,
       to: chat_jid,
       type: 'get',
     },

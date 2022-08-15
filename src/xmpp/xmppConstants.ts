@@ -29,5 +29,6 @@ export const XMPP_TYPES = {
   commonDiscover: 'commonDiscover',
   setOwner:'setOwner',
   roomConfig: 'roomConfig',
-  botStanza: 'botStanza'
+  botStanza: 'botStanza',
+  roomInfo:'roomInfo'
 };
