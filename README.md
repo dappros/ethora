@@ -21,14 +21,16 @@ You will need environment set up for iOS or Android development.
 
 ## Core features 💡
 * iOS & Android
-* Social sign-in & Crypto wallets
-* Coins (ERC-20 tokens)
+* SSO (Social Sign On) via Gmail, Facebook, Apple 
+* Each user gets a digital assets wallet + cryptographic keypair 
+* Coins (ERC-20 tokens) for internal p2p social economy, gamification etc (either secluded or L1/mainnet connected network)
 * NFT Items (ERC-721 tokens)
 * "Crypto likes" (sending tokens to messages)
-* Ethereum blockchain powered immutable transactions ledger
+* Ethereum blockchain powered immutable transactions ledger - great for transactions tracking and reputation mechanism
 * Crowd-sourced rooms and spaces, p2p QR-code / public key - based invites system
 * Chat & Social profiles
 * Push notifications
+* Audio, Video messages and calls
 
 ## Should I build my own version? 🤔
 
