@@ -10,7 +10,6 @@ import React from 'react';
 import {
   Clipboard,
   StyleSheet,
-  Image,
   Animated,
   TouchableWithoutFeedback,
 } from 'react-native';
@@ -20,10 +19,10 @@ import {
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
 import { MessageImage, Time, utils} from 'react-native-gifted-chat';
-import {coinImagePath, textStyles} from '../../../docs/config';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import { View, Text } from 'native-base';
+import { View, Text, Image } from 'native-base';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -170,12 +169,12 @@ export default class Bubble extends React.Component {
   }
 
   renderTokenCount() {
-    if (+this.props.currentMessage.tokenAmount) {
-      const {containerStyle, position, wrapperStyle} = this.props;
+    if (this.props.currentMessage.tokenAmount) {
+      const {position, currentMessage} = this.props;
       return (
         <View style={[styles[position].tokenContainerStyle]}>
           <Text style={[styles[position].tokenTextStyle]}>
-            {this.props.currentMessage.tokenAmount}
+            {currentMessage.tokenAmount}
           </Text>
           <Image
             source={coinImagePath}
@@ -185,6 +184,7 @@ export default class Bubble extends React.Component {
       );
     }
   }
+  
   renderQuickReplies(width) {
     if (this.props.currentMessage.quickReplies && this.state.width) {
       return (
@@ -292,33 +292,63 @@ setBubbleWidth = (width) => {
   this.setState({width: width})
 }
   render() {
-    const { position, containerStyle, wrapperStyle, bottomContainerStyle, } = this.props;
-        return (<View style={[
-            styles[position].container,
-            containerStyle && containerStyle[position],
-        ]}>
-        <View style={[
-            styles[position].wrapper,
-            this.styledBubbleToNext(),
-            this.styledBubbleToPrevious(),
-            wrapperStyle && wrapperStyle[position],
-        ]}>
-          <TouchableWithoutFeedback onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
-            <View>
-              {this.renderBubbleContent()}
-              <View style={[
-            styles[position].bottom,
-            bottomContainerStyle && bottomContainerStyle[position],
-        ]}>
-                {/* {this.renderUsername()} */}
-                {this.renderTime()}
-                {this.renderTicks()}
-              </View>
+    const { position, containerStyle, wrapperStyle, bottomContainerStyle, currentMessage, previousMessage } = this.props;
+    const AnimatedStyle = {
+      backgroundColor: this.state.initialAnimationValue.interpolate({
+        inputRange:[0, 100],
+        outputRange: [position==="left"?colors.leftBubbleBackground:colors.defaultBlue,commonColors.primaryColor]
+      })
+    }
+    return (
+    <View style={[
+        styles[position].container,
+        containerStyle && containerStyle[position],
+    ]}>
+      <Animated.View style={[
+        styles[position].wrapper,
+        this.styledBubbleToNext(),
+        this.styledBubbleToPrevious(),
+        wrapperStyle && wrapperStyle[position],
+        AnimatedStyle
+      ]}>
+        {   !isSameUser(currentMessage,previousMessage)?
+            this.renderUsername():null
+        }
+        <TouchableWithoutFeedback onLongPress={this.onLongPress} accessibilityTraits='text' {...this.props.touchableProps}>
+        <View>
+          {this.renderBubbleContent()}
+          <View
+            style={[
+              styles[position].bottom,
+              bottomContainerStyle && bottomContainerStyle[position],
+            ]}>
+            <View
+              style={{
+                flexDirection: position === 'left' ? 'row-reverse' : 'row',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+              {this.renderTime()}
+              {this.renderTicks()}
             </View>
-          </TouchableWithoutFeedback>
+          </View>
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: position === 'left'? 0 : null,
+              left: position === 'right' ? 0 : null
+
+              // [position]: 0
+            }}>
+            {this.renderTokenCount()}
+          </View>
         </View>
-        {this.renderQuickReplies()}
-      </View>)
+
+        </TouchableWithoutFeedback>
+      </Animated.View>
+    {this.renderQuickReplies()}
+  </View>);
   }
 }
 
@@ -346,6 +376,24 @@ const styles = {
       bottom: {
           flexDirection: 'row',
           justifyContent: 'flex-start',
+      },
+      tokenContainerStyle:{
+        flexDirection:"row",
+        marginRight:10,
+        marginBottom: 5,
+        justifyContent:"center",
+        alignItems:"center",
+      },
+      tokenIconStyle:{
+        height: hp("2%"),
+        width: hp("2%")
+      },
+      tokenTextStyle:{
+        color:colors.white,
+        fontSize:  10,
+        fontWeight:"bold",
+        backgroundColor: 'transparent',
+        textAlign: 'right',
       },
   }),
   right: StyleSheet.create({
@@ -391,6 +439,24 @@ const styles = {
       usernameView: {
           flexDirection: 'row',
           marginHorizontal: 10,
+      },
+      tokenContainerStyle:{
+        flexDirection:"row",
+        marginLeft: 10,
+        marginBottom: 5,
+        justifyContent:"center",
+        alignItems:"center",
+      },
+      tokenIconStyle:{
+        height: hp("2%"),
+        width: hp("2%")
+      },
+      tokenTextStyle:{
+        color:colors.white,
+        fontSize: 10,
+        fontWeight:"bold",
+        backgroundColor: 'transparent',
+        textAlign: 'right',
       },
   }),
 };
