@@ -188,12 +188,12 @@ export default class Bubble extends React.Component {
   }
 
   renderTokenCount() {
-    if (+this.props.currentMessage.tokenAmount) {
-      const {containerStyle, position, wrapperStyle} = this.props;
+    if (this.props.currentMessage.tokenAmount) {
+      const {position, currentMessage} = this.props;
       return (
         <View style={[styles[position].tokenContainerStyle]}>
           <Text style={[styles[position].tokenTextStyle]}>
-            {this.props.currentMessage.tokenAmount}
+            {currentMessage.tokenAmount}
           </Text>
           <Image
             source={coinImagePath}

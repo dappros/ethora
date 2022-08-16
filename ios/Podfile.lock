@@ -546,7 +546,7 @@ PODS:
     - React-RCTImage
   - RNSha256 (1.4.7):
     - React
-  - RNShare (7.6.6):
+  - RNShare (7.8.0):
     - React-Core
   - RNSVG (12.4.3):
     - React-Core
@@ -915,7 +915,7 @@ SPEC CHECKSUMS:
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSha256: bf2c90a9e0cec6dcbcc4100e4e19715ae7feaa34
-  RNShare: d56424e3926cbc239db1cc1c168adcb051aad50b
+  RNShare: 31b418e3ff2084712f0f39618bafa5f97a322c0e
   RNSVG: f3b60aeeaa81960e2e0536c3a9eef50b667ef3a9
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
@@ -925,6 +925,5 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 006eeb55cb2035c2570aebb639bb7cb670109133
-
 
 COCOAPODS: 1.11.3

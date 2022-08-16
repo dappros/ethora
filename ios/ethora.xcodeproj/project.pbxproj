@@ -8,18 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ethoraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ethoraTests.m */; };
-		064D88FBA22E439FAD10BD42 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7A66C71A2B264264BD49C93B /* Entypo.ttf */; };
+		047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-ethora.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-ethora.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1B4EAD48A34A40768BD10B57 /* Poppins-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2092757D77B4348942E807A /* Poppins-BoldItalic.ttf */; };
 		365261CB6CD7446888F6D075 /* Poppins-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0F7E1C0355BB4BDCAFC06485 /* Poppins-MediumItalic.ttf */; };
+		43BFDF7455794237B047F589 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */; };
 		4C3E3F128E694D3282DEAA66 /* Poppins-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F5F00330032C4262B13D97D5 /* Poppins-Light.ttf */; };
+		4E1BA5F628AA476B0058948D /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1BA5F528AA476B0058948D /* File.swift */; };
+		4E1BA5FA28AA49B70058948D /* RNWaveformManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E1BA5F928AA49B70058948D /* RNWaveformManager.m */; };
+		4E1BA5FC28AA4A1D0058948D /* RNWaweform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1BA5FB28AA4A1D0058948D /* RNWaweform.swift */; };
 		4E9915B92892AB9D00D9AD8A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E9915B82892AB9D00D9AD8A /* GoogleService-Info.plist */; };
 		4ED4F8D3DC1F45C59A2D8464 /* Poppins-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4029F97A7674152B230129A /* Poppins-ExtraLight.ttf */; };
 		5D05FA05C0CA45D99BC9E631 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 191E218D46F7477DB9C13C0E /* Poppins-Regular.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-ethora-ethoraTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-ethora-ethoraTests.a */; };
+		7716047D36CC47CB893BC0E9 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */; };
 		778C41483F4D437294668A18 /* Poppins-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2FD7E10BB4DD4EA3B443A095 /* Poppins-ExtraBoldItalic.ttf */; };
 		7A169BEAFDB1479EBBD40D34 /* Poppins-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49DF4CB117C74D2981F08B4D /* Poppins-Italic.ttf */; };
 		7E1A6A009ED94573A03F61D6 /* Poppins-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 93FB58F9890546A09ECE9970 /* Poppins-BlackItalic.ttf */; };
@@ -29,17 +34,14 @@
 		852AB1DF06D14D1DA54FB294 /* Poppins-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B329832A12BF460FB386EC9D /* Poppins-SemiBold.ttf */; };
 		8BC30566CE8B4526BDB871AD /* Poppins-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A07C361DDFEA4872ACB5C6D3 /* Poppins-ExtraBold.ttf */; };
 		A3623F0154DA49A1A8B17CDC /* Poppins-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D19E800CE8104C14AA2EA403 /* Poppins-ThinItalic.ttf */; };
+		AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */; };
 		B00BB6115507414EA411F9B3 /* Poppins-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9DA1E801B9784F21873A9896 /* Poppins-Medium.ttf */; };
 		EB307FF813C3497DBB27A92F /* Poppins-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C6DD75FEF380400E878D53DF /* Poppins-Thin.ttf */; };
 		EF9355139CA24D24B91C7CA6 /* Poppins-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */; };
 		F201A05578354A74BCFC49DA /* Poppins-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C04E2F9CF3764A11B67A7264 /* Poppins-ExtraLightItalic.ttf */; };
-		FE493C4F3D9242A08728CDC4 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4854E36F48F4770BE4A42F5 /* Poppins-Black.ttf */; };
-		43BFDF7455794237B047F589 /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */; };
 		F95A5B337F134A758DC95C53 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */; };
-		7716047D36CC47CB893BC0E9 /* Montserrat-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */; };
-		AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */; };
 		FC76954AC23F40A28D5C15A7 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */; };
-		047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */; };
+		FE493C4F3D9242A08728CDC4 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4854E36F48F4770BE4A42F5 /* Poppins-Black.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +58,7 @@
 		00E356EE1AD99517003FC87E /* ethoraTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ethoraTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ethoraTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethoraTests.m; sourceTree = "<group>"; };
+		09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		0F7E1C0355BB4BDCAFC06485 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../src/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ethora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ethora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ethora/AppDelegate.h; sourceTree = "<group>"; };
@@ -66,18 +69,22 @@
 		191E218D46F7477DB9C13C0E /* Poppins-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Regular.ttf"; path = "../src/assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-ethora-ethoraTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ethora-ethoraTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FD7E10BB4DD4EA3B443A095 /* Poppins-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Bold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		393A898785E14C36AA3417C5 /* Poppins-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-LightItalic.ttf"; path = "../src/assets/fonts/Poppins-LightItalic.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-ethora.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.debug.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.debug.xcconfig"; sourceTree = "<group>"; };
+		44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Medium.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Medium.ttf"; sourceTree = "<group>"; };
 		49DF4CB117C74D2981F08B4D /* Poppins-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Italic.ttf"; path = "../src/assets/fonts/Poppins-Italic.ttf"; sourceTree = "<group>"; };
+		4E1BA5F428AA476A0058948D /* ethora-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ethora-Bridging-Header.h"; sourceTree = "<group>"; };
+		4E1BA5F528AA476B0058948D /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		4E1BA5F828AA49030058948D /* RTCWaveformModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RTCWaveformModule.h; sourceTree = "<group>"; };
+		4E1BA5F928AA49B70058948D /* RNWaveformManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNWaveformManager.m; sourceTree = "<group>"; };
+		4E1BA5FB28AA4A1D0058948D /* RNWaweform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RNWaweform.swift; sourceTree = "<group>"; };
 		4E7B0E91289B95F30013098F /* ethora.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ethora.entitlements; path = ethora/ethora.entitlements; sourceTree = "<group>"; };
 		4E9915B82892AB9D00D9AD8A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "ethora/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-ethora.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora.release.xcconfig"; path = "Target Support Files/Pods-ethora/Pods-ethora.release.xcconfig"; sourceTree = "<group>"; };
-		5B45BA0DBD5D4C23BB183F8B /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-ethora-ethoraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.debug.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-ethora.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ethora.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6206E1C5475245E09DF353A7 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		7A66C71A2B264264BD49C93B /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		7AF489524FC643B7A54C7911 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-SemiBold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-SemiBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ethora/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-ethora-ethoraTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ethora-ethoraTests.release.xcconfig"; path = "Target Support Files/Pods-ethora-ethoraTests/Pods-ethora-ethoraTests.release.xcconfig"; sourceTree = "<group>"; };
 		93FB58F9890546A09ECE9970 /* Poppins-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BlackItalic.ttf"; path = "../src/assets/fonts/Poppins-BlackItalic.ttf"; sourceTree = "<group>"; };
@@ -87,19 +94,15 @@
 		A2092757D77B4348942E807A /* Poppins-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-BoldItalic.ttf"; path = "../src/assets/fonts/Poppins-BoldItalic.ttf"; sourceTree = "<group>"; };
 		A4854E36F48F4770BE4A42F5 /* Poppins-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Black.ttf"; path = "../src/assets/fonts/Poppins-Black.ttf"; sourceTree = "<group>"; };
 		B329832A12BF460FB386EC9D /* Poppins-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBold.ttf"; path = "../src/assets/fonts/Poppins-SemiBold.ttf"; sourceTree = "<group>"; };
+		BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Thin.ttf"; sourceTree = "<group>"; };
 		C04E2F9CF3764A11B67A7264 /* Poppins-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLightItalic.ttf"; path = "../src/assets/fonts/Poppins-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		C6DD75FEF380400E878D53DF /* Poppins-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Thin.ttf"; path = "../src/assets/fonts/Poppins-Thin.ttf"; sourceTree = "<group>"; };
 		D19E800CE8104C14AA2EA403 /* Poppins-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ThinItalic.ttf"; path = "../src/assets/fonts/Poppins-ThinItalic.ttf"; sourceTree = "<group>"; };
 		D4029F97A7674152B230129A /* Poppins-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-ExtraLight.ttf"; path = "../src/assets/fonts/Poppins-ExtraLight.ttf"; sourceTree = "<group>"; };
+		E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Light.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Light.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		F5F00330032C4262B13D97D5 /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
-		3216D1D6D53A4D1A9944B2E6 /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; name = "Montserrat-Bold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */ = {isa = PBXFileReference; name = "Montserrat-Light.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		44B4A8A76D354DEAAF4C793E /* Montserrat-Medium.ttf */ = {isa = PBXFileReference; name = "Montserrat-Medium.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */ = {isa = PBXFileReference; name = "Montserrat-SemiBold.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */ = {isa = PBXFileReference; name = "Montserrat-Thin.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +208,10 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				4E1BA5FB28AA4A1D0058948D /* RNWaweform.swift */,
+				4E1BA5F928AA49B70058948D /* RNWaveformManager.m */,
+				4E1BA5F828AA49030058948D /* RTCWaveformModule.h */,
+				4E1BA5F528AA476B0058948D /* File.swift */,
 				13B07FAE1A68108700A75B9A /* ethora */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ethoraTests */,
@@ -212,6 +219,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				4366ADE360C5436A9F594BAE /* Resources */,
+				4E1BA5F428AA476A0058948D /* ethora-Bridging-Header.h */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -298,7 +306,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1340;
 					};
 				};
 			};
@@ -539,7 +547,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E1BA5FC28AA4A1D0058948D /* RNWaweform.swift in Sources */,
+				4E1BA5FA28AA49B70058948D /* RNWaveformManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+				4E1BA5F628AA476B0058948D /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -559,6 +570,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-ethora-ethoraTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -586,6 +598,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-ethora-ethoraTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ethoraTests/Info.plist;
@@ -630,6 +643,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ethora;
 				PRODUCT_NAME = ethora;
+				SWIFT_OBJC_BRIDGING_HEADER = "ethora-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -659,6 +673,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ethora;
 				PRODUCT_NAME = ethora;
+				SWIFT_OBJC_BRIDGING_HEADER = "ethora-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
