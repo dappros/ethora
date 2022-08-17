@@ -206,9 +206,15 @@ export default class Bubble extends React.Component {
   }
   renderQuickReplies() {
     if (this.props.currentMessage.quickReplies && this.state.width) {
+      let quickReplies = [];
+      try {
+        quickReplies = JSON.parse(this.props.currentMessage.quickReplies)
+      } catch (error) {
+        console.log(error)
+      }
       return (
         <QuickReplies
-          quickReplies={JSON.parse(this.props.currentMessage.quickReplies)}
+          quickReplies={quickReplies}
           roomJid={this.props.currentMessage.roomJid}
           roomName={this.props.currentMessage.mucname}
           width={this.state.width}
