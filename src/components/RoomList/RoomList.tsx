@@ -77,10 +77,12 @@ export const RoomList = observer(({roomsList}: any) => {
     leaveRoomXmpp(
       manipulatedWalletAddress,
       jid,
-      loginStore.initialData.username,
+      loginStore.initialData.walletAddress,
       chatStore.xmpp,
     );
     unsubscribeFromRoom(jid);
+    await deleteChatRoom(jid);
+    chatStore.getRoomsFromCache()
   };
 
   const unsubscribeFromRoom = async (jid: string) => {
