@@ -6,50 +6,52 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import * as React from 'react';
-import {StyleSheet, TouchableOpacity } from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { commonColors } from '../../../../docs/config';
-import { Text, View } from 'native-base';
+import {commonColors} from '../../../../docs/config';
+import {Text, View} from 'native-base';
 
-interface DirectMessageProps {
-    onPress:any
+interface TransferModalButtonProps {
+  onPress: any;
+  title: string;
 }
 
-const DirectMessage = (props: DirectMessageProps) => {
+export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
+  onPress,
+  title,
+}) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        props.onPress();
+        onPress();
       }}>
       <View style={styles.sendItemAndDMContainer}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontAwesome name="send" size={15} color="black" />
         </View>
-        <Text>Direct Message</Text>
+        <Text>{title}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default DirectMessage;
-
 const styles = StyleSheet.create({
-    sendItemAndDMContainer: {
-        width: wp('50%'),
-        height: hp('5%'),
-        borderRadius: hp('1%'),
-        borderWidth: 1,
-        borderColor: commonColors.primaryColor,
-        margin: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    sendItemAndDMIconContainer: {
-        position: 'absolute',
-        left: 10,
-    },
+  sendItemAndDMContainer: {
+    width: wp('50%'),
+    height: hp('5%'),
+    borderRadius: hp('1%'),
+    borderWidth: 1,
+    borderColor: commonColors.primaryColor,
+    margin: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendItemAndDMIconContainer: {
+    position: 'absolute',
+    left: 10,
+  },
 });

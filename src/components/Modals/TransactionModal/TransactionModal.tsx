@@ -6,11 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -25,7 +21,15 @@ import {
 } from '../../../../docs/config';
 import SendItem from './SendItem';
 import {useStores} from '../../../stores/context';
-import {FlatList, HStack, Pressable, Text, View} from 'native-base';
+import {
+  FlatList,
+  HStack,
+  Input,
+  Pressable,
+  Text,
+  View,
+  VStack,
+} from 'native-base';
 import AssetItem from './AssetItem';
 import TokenTransfer from './TokenTransfer';
 import {useNavigation} from '@react-navigation/native';
@@ -40,12 +44,13 @@ import {
 } from '../../../xmpp/stanzas';
 import {underscoreManipulation} from '../../../helpers/underscoreLogic';
 import {ROUTES} from '../../../constants/routes';
-import DirectMessage from './DirectMessage';
+import {TransferModalButton} from './TransferModalButton';
 import ReportAndBlockButton from './ReportAndBlockButton';
 import QRCodeGenerator from '../../QRCodeGenerator';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {NftListItem} from '../../Transactions/NftListItem';
 import Modal from 'react-native-modal';
+import {alpha} from '../../../helpers/aplha';
 
 interface TransactionModalProps {
   type: string | undefined;
@@ -59,14 +64,20 @@ const TransactionModal = (props: TransactionModalProps) => {
 
   const [tokenAmount, setTokenAmount] = useState(null);
   const [tokenState, setTokenState] = useState({type: null, amnt: null});
-  const [itemsData, setItemsData] = useState([]);
   const [selectedItem, setSelectedItem] = useState({});
   const [displayItems, setDisplayItems] = useState(false);
-
+  const [allowedEnterCustomAmount, setAllowedEnterCustomAmount] =
+    useState(false);
+  const [customTransferAmount, setCustomTransferAmount] = useState('');
   const {walletStore, loginStore, apiStore, chatStore} = useStores();
   const {userToken, initialData} = loginStore;
 
   const navigation = useNavigation();
+  const clearState = () => {
+    closeModal();
+    setCustomTransferAmount('');
+    // setAllowedEnterCustomAmount(false);
+  };
   const renderNftItems = () => {
     return (
       <FlatList
@@ -92,9 +103,13 @@ const TransactionModal = (props: TransactionModalProps) => {
       />
     );
   };
-
+useEffect(() => {
+  if(isVisible) {
+    setAllowedEnterCustomAmount(false)
+  }
+}, [isVisible])
   const tokenTransferFunc = async amt => {
-    closeModal();
+    clearState();
     const receiverName = extraData.name;
     const receiverMessageId = extraData.message_id;
     const senderName = extraData.senderName;
@@ -142,7 +157,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   };
 
   const itemTransferFunc = async () => {
-    closeModal();
+    clearState();
     const receiverName = extraData.name;
     // const receiverMessageId = extraData.message_id;
     const senderName = extraData.senderName;
@@ -162,7 +177,6 @@ const TransactionModal = (props: TransactionModalProps) => {
       tokenName: selectedItem.tokenName,
     };
 
-    console.log(selectedItem.balance);
     if (selectedItem.balance) {
       //   this.setState({tokenState: {type: 'sent', amnt: amt}});
       setTokenState({type: 'sent', amnt: amountToSend});
@@ -191,7 +205,6 @@ const TransactionModal = (props: TransactionModalProps) => {
 
       setTokenState({type: 'sent', amnt: amountToSend});
       setDisplayItems(false);
-      setItemsData(tokenList.reverse());
       setSelectedItem({});
     } else {
       alert(
@@ -257,7 +270,7 @@ const TransactionModal = (props: TransactionModalProps) => {
       );
     }, 3000);
 
-    closeModal();
+    clearState();
   };
 
   const handleBanUser = () => {
@@ -275,7 +288,7 @@ const TransactionModal = (props: TransactionModalProps) => {
       chatStore.xmpp,
     );
     // console.log(roomJID, senderWalletAddres, bannedUserWalletAddres,'roomJidddddd')
-    closeModal();
+    clearState();
   };
 
   const setModalType = () => {
@@ -293,13 +306,13 @@ const TransactionModal = (props: TransactionModalProps) => {
                   style={styles.privacyAgree}
                   onPress={() => {
                     extraData.register();
-                    closeModal();
+                    clearState();
                   }}>
                   <Text style={styles.privacyAgreeTextStyle}>Agree</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.privacyCancel}
-                  onPress={() => closeModal()}>
+                  onPress={() => clearState()}>
                   <Text style={styles.privacyCancelTextStyle}>Cancel</Text>
                 </TouchableOpacity>
               </View>
@@ -327,29 +340,25 @@ const TransactionModal = (props: TransactionModalProps) => {
     }
 
     if (displayItems) {
-
       return (
         <View>
           <Modal
-          onBackdropPress={()=>setDisplayItems(false)}
-          animationIn={"slideInUp"}
-          animationOut={"slideOutDown"}  
-          isVisible={displayItems}>
-            <View
-              style={[
-                styles.centeredView,
-              ]}>
+            onBackdropPress={() => setDisplayItems(false)}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            isVisible={displayItems}>
+            <View style={[styles.centeredView]}>
               <View
                 style={[
                   {
-                    backgroundColor:"white",
+                    backgroundColor: 'white',
                     height: hp('50%'),
                     width: wp('100%'),
                     padding: 0,
                     margin: 0,
                     paddingTop: 7,
-                    justifyContent:"center",
-                    alignItems:"center"
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   },
                 ]}>
                 <View style={styles.tokenTransferContainer}>
@@ -376,48 +385,88 @@ const TransactionModal = (props: TransactionModalProps) => {
       return (
         <View>
           <Modal
-          onBackdropPress={closeModal}
-          animationIn={"slideInUp"}
-          animationOut={"slideOutDown"}  
-          isVisible={isVisible}>
-            <View
-              style={[
-                styles.centeredView,
-              ]}>
-              <View
-                style={[
-                  styles.modalView,
-                ]}>
-                <View style={styles.tokenTransferContainer}>
-                  <TokenTransfer
-                    name={extraData.name}
-                    tokenAmount={tokenAmount}
-                    tokenTransferFunc={tokenTransferFunc}
-                  />
-                </View>
-
-                {walletStore.nftItems.length > 0 && itemsTransfersAllowed && (
-                  <>
-                    <Seperator />
-
-                    <SendItem
-                      onPress={() => {
-                        console.log('clickd');
-                        setDisplayItems(true);
-                      }}
+            onBackdropPress={clearState}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            isVisible={isVisible}>
+            <View style={[styles.centeredView]}>
+              <View style={[styles.modalView]}>
+                {allowedEnterCustomAmount  ? (
+                  <VStack>
+                    <Text
+                      style={{
+                        color: commonColors.primaryColor,
+                        fontFamily: textStyles.semiBoldFont,
+                        textAlign: 'center',
+                      }}>
+                      Enter Your Amount
+                    </Text>
+                    <View style={{paddingHorizontal: 5, marginVertical: 10}}>
+                      <Input
+                        maxLength={15}
+                        keyboardType="numeric"
+                        fontFamily={textStyles.lightFont}
+                        fontSize={hp('1.6%')}
+                        color={'black'}
+                        value={customTransferAmount}
+                        onChangeText={setCustomTransferAmount}
+                        placeholder="Enter transfer amount"
+                        placeholderTextColor={commonColors.primaryDarkColor}
+                        borderColor={commonColors.primaryDarkColor}
+                        backgroundColor={alpha(
+                          commonColors.primaryDarkColor,
+                          0.1,
+                        )}
+                      />
+                    </View>
+                    <TransferModalButton
+                      title={'Send'}
+                      onPress={() => tokenTransferFunc(customTransferAmount)}
                     />
-                  </>
-                )}
-
-                <Seperator />
-                <DirectMessage onPress={onDirectMessagePress} />
-                {chatStore.roomRoles[extraData.roomJID] !== 'participant' && (
+                  </VStack>
+                ) : (
                   <>
+                    <View style={styles.tokenTransferContainer}>
+                      <TokenTransfer
+                        name={extraData.name}
+                        tokenAmount={tokenAmount}
+                        tokenTransferFunc={tokenTransferFunc}
+                        onCustomAmountPress={() =>
+                          setAllowedEnterCustomAmount(true)
+                        }
+                      />
+                    </View>
+
+                    {walletStore.nftItems.length > 0 && itemsTransfersAllowed && (
+                      <>
+                        <Seperator />
+
+                        <SendItem
+                          onPress={() => {
+                            console.log('clickd');
+                            setDisplayItems(true);
+                          }}
+                        />
+                      </>
+                    )}
+
                     <Seperator />
-                    <ReportAndBlockButton onPress={handleBanUser} type="1" />
+                    <TransferModalButton
+                      title={'Direct Message'}
+                      onPress={onDirectMessagePress}
+                    />
+                    {chatStore.roomRoles[extraData.roomJID] !==
+                      'participant' && (
+                      <>
+                        <Seperator />
+                        <ReportAndBlockButton
+                          onPress={handleBanUser}
+                          type="1"
+                        />
+                      </>
+                    )}
                   </>
                 )}
-                {/* <ReportAndBlockButton type="0" />  */}
               </View>
             </View>
           </Modal>
@@ -428,43 +477,38 @@ const TransactionModal = (props: TransactionModalProps) => {
     if (type === modalTypes.GENERATEQR) {
       return (
         <Modal
-        onBackdropPress={()=>closeModal(false)}
-        animationIn={"slideInUp"}
-        animationOut={"slideOutDown"} 
-        isVisible={isVisible}>
+          onBackdropPress={() => clearState(false)}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          isVisible={isVisible}>
           <View
-          w={wp('90%')}
-          h={wp('100%')}
-          bg={"#ffff"}
-          shadow='2'
-          borderRadius={10}
-          padding={2}
-          >
-            <HStack> 
-            <View
-            padding={2}
-            flex={0.5}>
-              <Text
-              fontFamily={textStyles.boldFont}
-              fontSize={hp('2.2%')}
-              color={"#000"}
-              >
-                Share {extraData.mode==='chat'?'Chatroom':'Profile'}
-              </Text>
+            w={wp('90%')}
+            h={wp('100%')}
+            bg={'#ffff'}
+            shadow="2"
+            borderRadius={10}
+            padding={2}>
+            <HStack>
+              <View padding={2} flex={0.5}>
+                <Text
+                  fontFamily={textStyles.boldFont}
+                  fontSize={hp('2.2%')}
+                  color={'#000'}>
+                  Share {extraData.mode === 'chat' ? 'Chatroom' : 'Profile'}
+                </Text>
               </View>
               <Pressable
-              padding={2}
-              flex={0.5}
-              alignItems= {'flex-end'}
-              onPress={() => closeModal()}
-              >
-                <MaterialIcons name="close" color={"black"} size={hp('3.5%')} />
+                padding={2}
+                flex={0.5}
+                alignItems={'flex-end'}
+                onPress={() => clearState()}>
+                <MaterialIcons name="close" color={'black'} size={hp('3.5%')} />
               </Pressable>
             </HStack>
             <View style={{flex: 1}}>
               <QRCodeGenerator
-              close={() => closeModal()}
-              shareKey={extraData.link}
+                close={() => clearState()}
+                shareKey={extraData.link}
               />
             </View>
           </View>

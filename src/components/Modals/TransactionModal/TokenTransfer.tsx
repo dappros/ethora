@@ -17,6 +17,7 @@ import {HStack, Image, Pressable, Text, View} from 'native-base';
 interface TokenTransferProps {
   name: string;
   tokenTransferFunc: (amount: number) => void;
+  onCustomAmountPress: () => void;
   tokenAmount: number;
 }
 
@@ -49,8 +50,9 @@ const TokenTransfer = ({
   name,
   tokenAmount,
   tokenTransferFunc,
+  onCustomAmountPress
 }: TokenTransferProps) => {
-  const coinsList = [1, 3, 5, 7];
+  const coinsList = [1, 3, 5];
   return (
     <Fragment>
       <Text
@@ -75,6 +77,11 @@ const TokenTransfer = ({
             />
           );
         })}
+        <CoinComponent
+          amt={'X'}
+          tokenAmount={tokenAmount}
+          tokenTransferFunc={onCustomAmountPress}
+        />
       </HStack>
 
       {/* <View style={{flexDirection:'row', justifyContent:'center', width:'100%'}}>
