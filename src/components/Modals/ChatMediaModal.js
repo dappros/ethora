@@ -16,6 +16,7 @@ import {
   Dimensions,
   Text,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -32,6 +33,7 @@ import {botStanza, sendMessageStanza} from '../../xmpp/stanzas';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {wrapMessage} from '../../helpers/wrapMessage';
 import {httpGet} from '../../config/apiService';
+import {downloadFile} from '../../helpers/downloadFile';
 const {width, height: windowHeight} = Dimensions.get('window');
 
 const ModalActionButton = ({actionTypeText, cost, action}) => {
@@ -76,6 +78,7 @@ export const ChatMediaModal = observer(
     const [height, setHeight] = useState(0);
     const {chatStore, loginStore, apiStore} = useStores();
     const [buttonState, setButtonState] = useState({title: 'Wrap', cost: 100});
+    const [loading, setLoading] = useState(false);
 
     const getCosts = async () => {
       try {
@@ -111,6 +114,12 @@ export const ChatMediaModal = observer(
         getButtonState();
       }
     }, [messageData]);
+
+    const downloadMedia = async () => {
+      setLoading(true);
+      await downloadFile(messageData?.image, messageData?.originalName);
+      setLoading(false);
+    };
 
     const renderModalContent = () => {
       if (imageMimetypes[type]) {
@@ -200,6 +209,15 @@ export const ChatMediaModal = observer(
             style={{position: 'absolute', right: 0, top: -30, zIndex: 9999}}
             onPress={onClose}>
             <AntDesignIcons name="close" size={30} color={'white'} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{position: 'absolute', left: 0, top: -30, zIndex: 9999}}
+            onPress={downloadMedia}>
+            {loading ? (
+              <ActivityIndicator color={'white'} size={30}/>
+            ) : (
+              <AntDesignIcons name="download" size={30} color={'white'} />
+            )}
           </TouchableOpacity>
           {renderModalContent()}
         </Box>
