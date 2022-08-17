@@ -90,6 +90,7 @@ import {
   parseValue,
 } from '../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
+import {useDebounce} from '../hooks/useDebounce';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -118,6 +119,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false);
   const [text, setText] = useState('');
   const [selection, setSelection] = useState({start: 0, end: 0});
+  const debouncedChatText = useDebounce(text, 500);
 
   let inputTimer2: any = 0;
 
@@ -175,6 +177,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [!!messages]);
 
   useEffect(() => {
+    pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
+  }, [debouncedChatText]);
+
+  useEffect(() => {
     if (
       chatStore.isComposing.chatJID === chatJid &&
       chatStore.isComposing.manipulatedWalletAddress !==
@@ -226,9 +232,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
               style={{
                 paddingBottom: 5,
               }}>
-              <Text style={{
-                fontFamily: textStyles.semiBoldFont,
-                color:"#000"
+              <Text
+                style={{
+                  fontFamily: textStyles.semiBoldFont,
+                  color: '#000',
                 }}>
                 {one.name}
               </Text>
@@ -322,19 +329,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setMediaModal({type: '', open: false, url: ''});
   };
 
-  const handleInputChange = () => {
-    const date = new Date();
-    clearTimeout(inputTimer2);
-    inputTimer2 = setTimeout(() => {
-      isComposing(
-        manipulatedWalletAddress,
-        chatJid,
-        fullName,
-        chatStore.xmpp,
-      ).then(() => {
-        pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
-      });
-    }, duration);
+  const handleInputChange = t => {
+    setText(t);
+    isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
   };
 
   const renderMessageImage = (props: any) => {
@@ -451,7 +448,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const QRPressed = () => {
     setShowModal(true);
     setModalType(modalTypes.GENERATEQR);
-    setExtraData({link:chatJid,mode:'chat'});
+    setExtraData({link: chatJid, mode: 'chat'});
   };
 
   const handleChatLinks = (chatLink: string) => {
@@ -784,7 +781,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderLoading={() => <Spinner />}
         text={text}
         renderUsernameOnMessage
-        onInputTextChanged={setText}
+        onInputTextChanged={handleInputChange}
         renderMessage={renderMessage}
         renderMessageImage={props => renderMessageImage(props)}
         renderComposer={renderComposer}
@@ -834,7 +831,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
             pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
             style: linkStyle,
             onPress: handleChatLinks,
-          }
+          },
         ]}
       />
 
