@@ -6,8 +6,13 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {HStack, Text, View} from 'native-base';
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -24,6 +29,7 @@ interface RenderChatFooterProps {
 }
 
 const RenderChatFooter = (props: RenderChatFooterProps) => {
+  const boxHeight = useSharedValue(0);
   const {
     fileUploadProgress,
     setFileUploadProgress,
@@ -31,39 +37,56 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     isTyping,
     composingUsername,
   } = props;
+  const boxAnimation = useAnimatedStyle(() => {
+    return {
+      height: withTiming(boxHeight.value, {duration: 350}),
+    };
+  });
+  useEffect(() => {
+    if (!!isTyping || !!fileUploadProgress) {
+      boxHeight.value = hp('5.5%');
+    } else {
+      boxHeight.value = 0;
+    }
+
+    return () => {};
+  }, [isTyping, fileUploadProgress]);
+
   setTimeout(() => {
     if (fileUploadProgress === 100) {
       setFileUploadProgress(0);
     }
   }, 5000);
   return (
-    <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
-      <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
-        {allowIsTyping && isTyping ? (
-          <HStack bg={'transparent'}>
-            <View bg={'transparent'} marginRight={30}>
-              <TypingAnimation dotColor="grey" />
-            </View>
+    <Animated.View style={[boxAnimation]}>
+      <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
+        <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
+          {allowIsTyping && isTyping ? (
+            <HStack bg={'transparent'}>
+              <View bg={'transparent'} marginRight={30}>
+                <TypingAnimation dotColor="grey" />
+              </View>
+              <Text
+                color={'black'}
+                fontFamily={textStyles.regularFont}
+                fontSize={hp('1.4%')}>
+                {composingUsername}
+              </Text>
+            </HStack>
+          ) : null}
+        </View>
+        <View alignItems={'flex-start'} justifyContent={'center'} flex={0.4}>
+          {fileUploadProgress ? (
             <Text
-              color={'black'}
+              color={'grey'}
               fontFamily={textStyles.regularFont}
               fontSize={hp('1.4%')}>
-              {composingUsername}
+              Uploading: {fileUploadProgress}%
             </Text>
-          </HStack>
-        ) : null}
-      </View>
-      <View alignItems={'flex-start'} justifyContent={'center'} flex={0.4}>
-        {fileUploadProgress ? (
-          <Text
-            color={'grey'}
-            fontFamily={textStyles.regularFont}
-            fontSize={hp('1.4%')}>
-            Uploading: {fileUploadProgress}%
-          </Text>
-        ) : null}
-      </View>
-    </HStack>
+          ) : null}
+        </View>
+      </HStack>
+    </Animated.View>
   );
 };
 
