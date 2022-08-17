@@ -86,6 +86,7 @@ export const ChatMediaModal = observer(
         return res.data;
       } catch (error) {
         console.log(error);
+        return [];
       }
     };
     const getButtonState = async () => {
@@ -96,7 +97,7 @@ export const ChatMediaModal = observer(
       }
       if (messageData?.nftId && messageData?.contractAddress) {
         const res = await getCosts();
-        const costs = res.results.costs;
+        const costs = res?.results?.costs;
         setButtonState({
           title: 'Get',
           cost: `${Math.min(...costs)} - ${Math.max(...costs)}`,
@@ -123,6 +124,8 @@ export const ChatMediaModal = observer(
               ? botTypes.mintBot
               : botTypes.deployBot,
             contractAddress: messageData?.contractAddress,
+            senderFirstName: loginStore.initialData.firstName,
+            senderLastName: loginStore.initialData.lastName,
           };
           botStanza(
             manipulatedWalletAddress,
