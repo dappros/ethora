@@ -9,7 +9,7 @@ import {
   View,
   VStack,
 } from 'native-base';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import SocialButton from '../components/Buttons/SocialButton';
 import {
   widthPercentageToDP as wp,
@@ -29,10 +29,18 @@ import {
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {useStores} from '../stores/context';
 import {observer} from 'mobx-react-lite';
-import {socialLoginHandle} from '../helpers/login/socialLoginHandle';
+import {
+  handleAppleLogin,
+  handleFaceBookLogin,
+  handleGoogleLogin,
+  socialLoginHandle,
+} from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
 import {httpGet} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useRegisterModal} from '../hooks/useRegisterModal';
+import {UserNameModal} from '../components/Modals/Login/UserNameModal';
+import {checkEmailExist} from '../config/routesConstants';
 
 interface LoginScreenProps {}
 
@@ -40,12 +48,15 @@ const LoginScreen = observer((props: LoginScreenProps) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
 
-  const socialLoginProps = {
-    defaultUrl: apiStore.defaultUrl,
-    defaultToken: apiStore.defaultToken,
-    loginUser: loginStore.loginUser,
-    registerSocialUser: loginStore.registerUser,
-  };
+  const {
+    firstName,
+    lastName,
+    setFirstName,
+    setLastName,
+    modalOpen,
+    setModalOpen,
+  } = useRegisterModal();
+  const [appleUser, setAppleUser] = useState({});
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -54,7 +65,52 @@ const LoginScreen = observer((props: LoginScreenProps) => {
         '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com',
     });
   }, []);
+  const onAppleButtonPress = async () => {
+    const user = await handleAppleLogin(
+      apiStore.defaultUrl,
+      apiStore.defaultToken,
+      loginStore.loginUser,
+      loginStore.registerUser,
+      socialLoginType.APPLE,
+    );
+    const url = apiStore.defaultUrl + checkEmailExist + user.email;
+    try {
+      const response = await httpGet(url, apiStore.defaultToken);
+      if (!response.data.success) {
+        console.log(user);
+        loginStore.loginUser(
+          socialLoginType.APPLE,
+          user.authToken,
+          user.uid,
+          user,
+        );
+      } else {
+        setModalOpen(true);
+        setAppleUser(user);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onAppleLogin = async () => {
+    const user = {...appleUser, firstName, lastName};
 
+    const dataObject = {
+      loginType: socialLoginType.APPLE,
+      authToken: user.authToken,
+      displayName: user.displayName,
+      password: user.uid,
+      username: user.email,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+    await loginStore.registerUser(dataObject, user);
+    setModalOpen(false);
+  };
+  const onModalSubmit = async () => {
+    await onAppleLogin();
+  };
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -98,7 +154,13 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           }
           bg="#4D6DA4"
           onPress={() => {
-            socialLoginHandle(socialLoginProps, socialLoginType.FACEBOOK);
+            handleFaceBookLogin(
+              apiStore.defaultUrl,
+              apiStore.defaultToken,
+              loginStore.loginUser,
+              loginStore.registerUser,
+              socialLoginType.FACEBOOK,
+            );
           }}
         />
         <SocialButton
@@ -116,7 +178,13 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           }
           bg="#FFFF"
           onPress={() =>
-            socialLoginHandle(socialLoginProps, socialLoginType.GOOGLE)
+            handleGoogleLogin(
+              apiStore.defaultUrl,
+              apiStore.defaultToken,
+              loginStore.loginUser,
+              loginStore.registerUser,
+              socialLoginType.FACEBOOK,
+            )
           }
         />
         <SocialButton
@@ -133,9 +201,7 @@ const LoginScreen = observer((props: LoginScreenProps) => {
             />
           }
           bg="#000000"
-          onPress={() =>
-            socialLoginHandle(socialLoginProps, socialLoginType.APPLE)
-          }
+          onPress={onAppleButtonPress}
         />
       </Stack>
       {isFetching && <Spinner />}
@@ -149,6 +215,15 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           Version {appVersion}. Powered by Dappros Platform
         </Text>
       </VStack>
+      <UserNameModal
+        modalVisible={modalOpen}
+        closeModal={() => setModalOpen(false)}
+        firstName={firstName}
+        lastName={lastName}
+        setFirstName={setFirstName}
+        setLastName={setLastName}
+        onSubmit={onModalSubmit}
+      />
     </ImageBackground>
   );
 });
