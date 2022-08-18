@@ -27,10 +27,10 @@ const router = (xmpp, message, roomJID, userJID, receiverData, receiverMessageId
     if (messageCheck(message, 'close') || messageCheck(message, 'leave')) {
         return leaveHandler(handlerData);
     }
-
-    if (messageCheck(message, 'help')) {
-        return helpHandler(handlerData);
-    }
+    //
+    // if (messageCheck(message, 'help')) {
+    //     return helpHandler(handlerData);
+    // }
 
 
 console.log(receiverData.attrs)
