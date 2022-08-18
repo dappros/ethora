@@ -101,11 +101,16 @@ export const RegularLoginScreen = ({navigation}) => {
                 paddingY={10}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate(ROUTES.REGISTER)}>
-                  <Text style={{fontSize: 18}}>Create new account</Text>
+                  <Text
+                    style={{fontSize: 18, color: commonColors.primaryColor}}>
+                    Create new account
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => navigation.navigate(ROUTES.LOGIN)}>
-                  <Text style={{fontSize: 13}}>Back to login</Text>
+                  <Text style={{fontSize: 13, color: 'black', marginTop: 5}}>
+                    Back to login
+                  </Text>
                 </TouchableOpacity>
               </VStack>
             </VStack>

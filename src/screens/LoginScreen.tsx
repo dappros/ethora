@@ -17,13 +17,18 @@ import {
 } from 'react-native-responsive-screen';
 import {ImageBackground, StyleSheet, TouchableOpacity} from 'react-native';
 import {
+  appleSignIn,
   appTitle,
   appVersion,
+  commonColors,
+  facebookSignIn,
+  googleSignIn,
   isLogoTitle,
   loginScreenBackgroundImage,
   logoHeight,
   logoPath,
   logoWidth,
+  regularLogin,
   textStyles,
 } from '../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -140,75 +145,90 @@ const LoginScreen = observer(({navigation}) => {
       </Box>
 
       <Stack margin={3} space={3}>
-        <SocialButton
-          label="Sign in with Facebook"
-          color="white"
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('1.47%')}
-          leftIcon={
-            <Icon
-              color={'white'}
-              size={hp('2.25%')}
-              as={AntIcon}
-              name={'facebook-square'}
-            />
-          }
-          bg="#4D6DA4"
-          onPress={() => {
-            handleFaceBookLogin(
-              apiStore.defaultUrl,
-              apiStore.defaultToken,
-              loginStore.loginUser,
-              loginStore.registerUser,
-              socialLoginType.FACEBOOK,
-            );
-          }}
-        />
-        <SocialButton
-          label="Sign in with Google"
-          color="black"
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('1.47%')}
-          leftIcon={
-            <Icon
-              color={'#696969'}
-              size={hp('2.25%')}
-              as={AntIcon}
-              name={'google'}
-            />
-          }
-          bg="#FFFF"
-          onPress={() =>
-            handleGoogleLogin(
-              apiStore.defaultUrl,
-              apiStore.defaultToken,
-              loginStore.loginUser,
-              loginStore.registerUser,
-              socialLoginType.FACEBOOK,
-            )
-          }
-        />
-        <SocialButton
-          label="Sign in with Apple"
-          color="white"
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('1.47%')}
-          leftIcon={
-            <Icon
-              color={'white'}
-              size={hp('2.25%')}
-              as={AntIcon}
-              name={'apple1'}
-            />
-          }
-          bg="#000000"
-          onPress={onAppleButtonPress}
-        />
+        {facebookSignIn && (
+          <SocialButton
+            label="Sign in with Facebook"
+            color="white"
+            fontFamily={textStyles.boldFont}
+            fontSize={hp('1.47%')}
+            leftIcon={
+              <Icon
+                color={'white'}
+                size={hp('2.25%')}
+                as={AntIcon}
+                name={'facebook-square'}
+              />
+            }
+            bg="#4D6DA4"
+            onPress={() => {
+              handleFaceBookLogin(
+                apiStore.defaultUrl,
+                apiStore.defaultToken,
+                loginStore.loginUser,
+                loginStore.registerUser,
+                socialLoginType.FACEBOOK,
+              );
+            }}
+          />
+        )}
+        {googleSignIn && (
+          <SocialButton
+            label="Sign in with Google"
+            color="black"
+            fontFamily={textStyles.boldFont}
+            fontSize={hp('1.47%')}
+            leftIcon={
+              <Icon
+                color={'#696969'}
+                size={hp('2.25%')}
+                as={AntIcon}
+                name={'google'}
+              />
+            }
+            bg="#FFFF"
+            onPress={() =>
+              handleGoogleLogin(
+                apiStore.defaultUrl,
+                apiStore.defaultToken,
+                loginStore.loginUser,
+                loginStore.registerUser,
+                socialLoginType.FACEBOOK,
+              )
+            }
+          />
+        )}
+        {appleSignIn && (
+          <SocialButton
+            label="Sign in with Apple"
+            color="white"
+            fontFamily={textStyles.boldFont}
+            fontSize={hp('1.47%')}
+            leftIcon={
+              <Icon
+                color={'white'}
+                size={hp('2.25%')}
+                as={AntIcon}
+                name={'apple1'}
+              />
+            }
+            bg="#000000"
+            onPress={onAppleButtonPress}
+          />
+        )}
         <HStack justifyContent={'center'}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
-          <Text style={{fontSize: 14}}>Login with credentials</Text>
-        </TouchableOpacity>
+          {regularLogin && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: commonColors.primaryColor,
+                  fontFamily: textStyles.semiBoldFont,
+                }}>
+                Login with credentials
+              </Text>
+            </TouchableOpacity>
+          )}
         </HStack>
       </Stack>
       {isFetching && <Spinner />}

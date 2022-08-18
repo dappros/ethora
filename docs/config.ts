@@ -159,6 +159,12 @@ const defaultBotsList = [
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle: boolean = false;
 
+// Login screen
+const googleSignIn = true;
+const appleSignIn = true;
+const facebookSignIn = true;
+const regularLogin = true;
+
 export {
   appTitle,
   logoPath,
@@ -198,4 +204,8 @@ export {
   logoHeight,
   isLogoTitle,
   appLinkingUrl,
+  googleSignIn,
+  appleSignIn,
+  facebookSignIn,
+  regularLogin
 };
