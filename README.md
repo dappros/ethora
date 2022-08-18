@@ -9,6 +9,7 @@ Mobile-first 📱 web3 🔗🌐 social 💬 platform for your community 👥👥
 ---
 
 ### Check out our Youtube demo (1.5 minutes):
+(note: enable subtitles to see explanations)
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
 
