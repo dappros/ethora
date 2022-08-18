@@ -46,6 +46,11 @@ import {
 } from '../xmpp/stanzas';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {
+  filterNftBalances,
+  mapNfmtBalances,
+  mapTransactions,
+} from '../stores/walletStore';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -170,17 +175,14 @@ const firstLayout = [
 ];
 
 const OtherUserProfileScreen = observer((props: any) => {
-  const {loginStore, walletStore, apiStore, chatStore, otherUserStore} = useStores();
+  const {loginStore, walletStore, apiStore, chatStore, otherUserStore} =
+    useStores();
 
   const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
     walletStore;
 
-  const [anotherUserAvatar, setAnotherUserAvatar] = useState('');
-  const [anotherUserFirstname, setAnotherUserFirstname] = useState('null');
-  const [anotherUserLastname, setAnotherUserLastname] = useState('null');
-  const [anotherUserDescription, setAnotherUserDescription] = useState('');
-  const [anotherUserWalletAddress, setAnotherUserWalletAddress] =
-    useState(null);
+  const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
+
   const [anotherUserTransaction, setAnotherUserTransaction] = useState(null);
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
@@ -278,71 +280,36 @@ const OtherUserProfileScreen = observer((props: any) => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      let balance = 0;
-      let allTransactions: any = walletStore.anotherUserTransaction
-        // .reverse()
-        .map((item: any) => {
-          if (item.tokenId === 'NFT') {
-            if (
-              item.from === anotherUserWalletAddress &&
-              item.from !== item.to
-            ) {
-              balance = balance;
-              item.balance = item.senderBalance + '/' + item.nftTotal;
-            } else {
-              item.balance = item.receiverBalance + '/' + item.nftTotal;
-            }
+    let allTransactions: any = walletStore.anotherUserTransaction;
+    setAnotherUserTransaction(allTransactions);
 
-            return item;
-          } else if (
-            item.from === anotherUserWalletAddress &&
-            item.from !== item.to
-          ) {
-            item.balance = item.senderBalance;
-            balance = balance - item.value;
-            return item;
-          } else if (item.from === item.to) {
-            item.balance = item.receiverBalance;
-            return item;
-          } else {
-            item.balance = item.receiverBalance;
-            balance = balance + item.value;
-            return item;
-          }
-        });
-      setAnotherUserTransaction(allTransactions);
-
-      setTransactionCount(walletStore.anotherUserTransaction.length);
-      setIsLoading(false);
-    }, 2500);
+    setTransactionCount(walletStore.anotherUserTransaction.length);
+    setIsLoading(false);
   }, [walletStore.anotherUserTransaction]);
 
   useEffect(() => {
-    setTimeout(() => {
-      let updatedCoinBalance = 0;
-      if (anotherUserBalance?.length > 0) {
-        setCoinData(
-          anotherUserBalance.filter(
-            (item: any) =>
-              item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
-          ),
-        );
-        setItemsData(
-          anotherUserBalance
-            .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
-            .reverse(),
-        );
-        coinData
-          ? coinData.map((item: any) => {
-              updatedCoinBalance =
-                updatedCoinBalance + parseFloat(item.balance);
-            })
-          : null;
+    let updatedCoinBalance = 0;
+    if (anotherUserBalance?.length > 0) {
+      setCoinData(
+        anotherUserBalance.filter(
+          (item: any) => item.tokenName === coinsMainName,
+        ),
+      );
+      setItemsData(
+        anotherUserBalance
+          .filter(filterNftBalances)
+          .map(mapNfmtBalances)
+          .reverse(),
+      );
 
-        setAssetCount(itemsBalance + updatedCoinBalance);
-      }
-    }, 2500);
+      coinData
+        ? coinData.map((item: any) => {
+            updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
+          })
+        : null;
+
+      setAssetCount(itemsBalance + updatedCoinBalance);
+    }
   }, [anotherUserBalance]);
 
   useEffect(() => {
@@ -364,39 +331,31 @@ const OtherUserProfileScreen = observer((props: any) => {
 
     return () => {};
   }, [itemsData, coinData]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      // setAnotherUserAvatar();
-      setAnotherUserFirstname(loginStore.anotherUserFirstname);
-      setAnotherUserLastname(loginStore.anotherUserLastname);
-      setAnotherUserDescription(otherUserStore.description);
-      setIsLoadingVCard(false);
-    }, 2000);
-  }, [loginStore.anotherUserAvatar]);
-
-  useEffect(() => {
-    walletStore.fetchTransaction(
+  const getBalances = async () => {
+    await walletStore.fetchTransaction(
       loginStore.anotherUserWalletAddress,
-      loginStore.userToken,
-      false,
       10,
       0,
     );
-    walletStore.fetchWalletBalance(
+    await walletStore.fetchWalletBalance(
       loginStore.anotherUserWalletAddress,
       loginStore.userToken,
       false,
     );
+    setIsLoading(false);
+    setIsLoadingVCard(false);
+  };
+  useEffect(() => {
+    getBalances();
   }, [loginStore.anotherUserWalletAddress]);
 
   useEffect(() => {
     return function cleanup() {
-      setAnotherUserAvatar('');
-      setAnotherUserFirstname('null');
-      setAnotherUserLastname('null');
-      setAnotherUserDescription('');
-      setAnotherUserWalletAddress(null);
+      // setAnotherUserAvatar('');
+      // setAnotherUserFirstname('null');
+      // setAnotherUserLastname('null');
+      // setAnotherUserDescription('');
+
       setCoinData([]);
       setAnotherUserTransaction(null);
       setTransactionCount(0);
@@ -528,8 +487,6 @@ const OtherUserProfileScreen = observer((props: any) => {
               if (anotherUserTransaction.length < walletStore.total) {
                 walletStore.fetchTransaction(
                   anotherUserWalletAddress,
-                  loginStore.userToken,
-                  false,
                   walletStore.limit,
                   walletStore.offset,
                 );
@@ -537,28 +494,6 @@ const OtherUserProfileScreen = observer((props: any) => {
             }}
           />
         </SafeAreaView>
-      );
-    }
-    if (activeTab === 2) {
-      return (
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <Button
-            bg={'#114592'}
-            padding={5}
-            w={wp('51%')}
-            h={hp('6.7%')}
-            borderRadius={5}
-            fontFamily={textStyles.boldFont}
-            fontSize={hp('2.21%')}
-            color={'#FFFF'}
-            onPress={() => {
-              Linking.openURL(
-                'https://getcybercars.page.link/?link=https%3A%2F%2Fgetcybercars.page.link%2F%3Frequest%3Dgarage%26userId%3D0x7540c37B389cBd95f6d7b89c6f01f4131cFF2088&apn=com.getcybercars.cybercars&amv=0&ibi=com.getcybercars.cybercars&imv=0&isi=1546094906',
-              );
-            }}>
-            3D Garage
-          </Button>
-        </View>
       );
     }
   };
@@ -607,7 +542,8 @@ const OtherUserProfileScreen = observer((props: any) => {
                     fontSize: 40,
                     color: 'white',
                   }}>
-                  {anotherUserFirstname[0] + anotherUserLastname[0]}
+                  {loginStore.anotherUserFirstname[0] +
+                    loginStore.anotherUserLastname[0]}
                 </Text>
               )}
             </SkeletonContent>
@@ -635,7 +571,8 @@ const OtherUserProfileScreen = observer((props: any) => {
                     fontFamily: textStyles.mediumFont,
                     color: '#000000',
                   }}>
-                  {anotherUserFirstname} {anotherUserLastname}
+                  {loginStore.anotherUserFirstname}{' '}
+                  {loginStore.anotherUserLastname}
                 </Text>
               </SkeletonContent>
               <View
@@ -657,10 +594,10 @@ const OtherUserProfileScreen = observer((props: any) => {
                         textAlign: 'center',
                         color: primaryColor,
                       }}>
-                      {anotherUserDescription}
+                      {otherUserStore.description}
                     </Text>
                     <TouchableOpacity
-                    onPress={onDirectChatPress}
+                      onPress={onDirectChatPress}
                       style={{
                         backgroundColor: primaryDarkColor,
                         borderRadius: 10,
@@ -673,7 +610,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                         backgroundColor: commonColors.primaryDarkColor,
                         borderRadius: 5,
                         paddingHorizontal: 10,
-                        paddingVertical: 5
+                        paddingVertical: 5,
                       }}>
                       <HStack alignItems={'center'}>
                         <Ionicons
@@ -682,7 +619,9 @@ const OtherUserProfileScreen = observer((props: any) => {
                           color={'white'}
                         />
 
-                        <Text style={{color: 'white', marginLeft: 5}}>Chat</Text>
+                        <Text style={{color: 'white', marginLeft: 5}}>
+                          Chat
+                        </Text>
                       </HStack>
                     </TouchableOpacity>
                   </SkeletonContent>

@@ -18,6 +18,39 @@ import {RootStore} from './context';
 import {coinsMainName} from '../../docs/config';
 import {showToast} from '../components/Toast/toast';
 
+export const mapTransactions = (item, walletAddress) => {
+  if (item.tokenId === 'NFT') {
+    if (item.from === walletAddress && item.from !== item.to) {
+      item.balance = item.senderBalance + '/' + item.nftTotal;
+    } else {
+      item.balance = item.receiverBalance + '/' + item.nftTotal;
+    }
+
+    return item;
+  } else if (item.from === walletAddress && item.from !== item.to) {
+    item.balance = item.senderBalance;
+    return item;
+  } else if (item.from === item.to) {
+    item.balance = item.receiverBalance;
+    return item;
+  } else {
+    item.balance = item.receiverBalance;
+    return item;
+  }
+};
+export const filterNftBalances = item => {
+  return (
+    (item.tokenType === 'NFT' || item.tokenType === 'NFMT') &&
+    (item.balance > 0 || item.balances.length > 0)
+  );
+};
+export const mapNfmtBalances = item => {
+  if (item.tokenType === 'NFMT') {
+    item.balance = item.balances.reduce((acc, el) => (acc += +el), 0);
+    item.total = item.balance;
+  }
+  return item;
+};
 export class WalletStore {
   isFetching = false;
   error = false;
@@ -101,7 +134,8 @@ export class WalletStore {
         runInAction(() => {
           this.balance = response.data.balance;
           this.nftItems = response.data.balance
-            .filter((item: any) => item.tokenType === 'NFT' && item.balance > 0)
+            .filter(filterNftBalances)
+            .map(mapNfmtBalances)
             .reverse();
           this.coinBalance = response.data.balance.map((item: any) => {
             if (item.tokenName === coinsMainName) {
@@ -199,7 +233,7 @@ export class WalletStore {
         });
       }
     } catch (error: any) {
-      console.log(error.response)
+      console.log(error.response);
       runInAction(() => {
         this.isFetching = false;
         this.error = true;
@@ -231,26 +265,9 @@ export class WalletStore {
         this.stores.debugStore.addLogsApi(response.data);
         this.offset = this.offset + response.data.limit;
         this.total = response.data.total;
-        const modifiedTransactions = response.data.items.map((item: any) => {
-          if (item.tokenId === 'NFT') {
-            if (item.from === walletAddress && item.from !== item.to) {
-              item.balance = item.senderBalance + '/' + item.nftTotal;
-            } else {
-              item.balance = item.receiverBalance + '/' + item.nftTotal;
-            }
-
-            return item;
-          } else if (item.from === walletAddress && item.from !== item.to) {
-            item.balance = item.senderBalance;
-            return item;
-          } else if (item.from === item.to) {
-            item.balance = item.receiverBalance;
-            return item;
-          } else {
-            item.balance = item.receiverBalance;
-            return item;
-          }
-        });
+        const modifiedTransactions = response.data.items.map(item =>
+          mapTransactions(item, walletAddress),
+        );
         for (const item of modifiedTransactions) {
           const transaction = await getTransaction(item.transactionHash);
           if (!transaction?.transactionHash) {
@@ -281,8 +298,7 @@ export class WalletStore {
 
   async fetchTransaction(
     walletAddress: string,
-    token: string,
-    isOwn: boolean,
+
     limit: number,
     offset: number,
   ) {
@@ -300,19 +316,13 @@ export class WalletStore {
         this.stores.debugStore.addLogsApi(response.data);
         this.offset = this.offset + response.data.limit;
         this.total = response.data.total;
-        if (isOwn) {
-          runInAction(() => {
-            this.transactions = [...this.transactions, ...response.data.items];
-          });
-          // insertTransaction(response.data.items);
-        } else {
-          runInAction(() => {
-            this.anotherUserTransaction = [
-              ...this.anotherUserTransaction,
-              ...response.data.items,
-            ];
-          });
-        }
+
+        runInAction(() => {
+          this.anotherUserTransaction = [
+            ...this.anotherUserTransaction,
+            ...response.data.items,
+          ].map(item => mapTransactions(item, walletAddress));
+        });
       }
     } catch (error) {
       runInAction(() => {
