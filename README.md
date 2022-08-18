@@ -3,8 +3,7 @@ Mobile 📱 app engine and web3 🔗🌐 platform for social 💬 tokenized ₿�
 
 **UPD (August'22): Numerous updates, UX improvements, better NFT & digital assets support, bots, MetaMast/WalletConnect integration etc.
 
-[![Ethora video demo](https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png)](https://www.youtube.com/watch?v=pKEMcxJb5HM)
-
+Check out our Youtube demo (1.5 minutes):
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
 
 **UPD (July'22): Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
