@@ -6,7 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
@@ -30,7 +30,7 @@ import Modal from 'react-native-modal';
 import {Input, Text, View} from 'native-base';
 import {commonColors, textStyles} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import { deleteChatRoom } from '../realmModels/chatList';
+import {deleteChatRoom} from '../realmModels/chatList';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
@@ -82,12 +82,12 @@ export const RoomList = observer(({roomsList}: any) => {
     );
     unsubscribeFromRoom(jid);
     await deleteChatRoom(jid);
-    chatStore.getRoomsFromCache()
+    chatStore.getRoomsFromCache();
   };
 
   const unsubscribeFromRoom = async (jid: string) => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, jid, chatStore.xmpp);
-    chatStore.updateRoomInfo(jid, {muted: true})
+    chatStore.updateRoomInfo(jid, {muted: true});
   };
 
   const toggleMovingChats = () => {
@@ -125,12 +125,10 @@ export const RoomList = observer(({roomsList}: any) => {
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
-          <Text fontFamily={textStyles.regularFont}>
-            Change room name
-          </Text>
+          <Text fontFamily={textStyles.regularFont}>Change room name</Text>
           <Input
             _input={{
-              maxLength:20
+              maxLength: 20,
             }}
             margin={10}
             fontFamily={textStyles.regularFont}
@@ -151,8 +149,10 @@ export const RoomList = observer(({roomsList}: any) => {
                 flex: 1,
               }}>
               <Text
-              fontFamily={textStyles.semiBoldFont}
-              style={{color: 'white'}}>Done editing</Text>
+                fontFamily={textStyles.semiBoldFont}
+                style={{color: 'white'}}>
+                Done editing
+              </Text>
             </View>
           </TouchableOpacity>
         </View>

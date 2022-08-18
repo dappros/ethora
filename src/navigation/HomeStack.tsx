@@ -44,7 +44,12 @@ export const HomeStackScreen = observer(() => {
     chatStore.getRoomsFromCache();
     chatStore.getCachedMessages();
     walletStore.getCachedTransactions();
-    if (xmppUsername && password) {
+    if (xmppUsername && xmppPassword) {
+      getPushToken(
+        loginStore.initialData.walletAddress,
+        apiStore.xmppDomains.DOMAIN,
+        navigation,
+      );
       chatStore.xmppConnect(xmppUsername, xmppPassword);
       chatStore.xmppListener();
     }
@@ -54,11 +59,7 @@ export const HomeStackScreen = observer(() => {
   }, [initialData.xmppPassword]);
 
   useEffect(() => {
-    getPushToken(
-      loginStore.initialData.walletAddress,
-      apiStore.xmppDomains.DOMAIN,
-      navigation
-    );
+ 
 
     //when the app opens for the first time, when clicked url from outside, this will be called
     Linking.getInitialURL().then(url => {
