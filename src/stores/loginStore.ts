@@ -208,6 +208,53 @@ export class LoginStore {
       console.log(error);
     }
   };
+  loginHandler = async response => {
+    await asyncStorageSetItem('userToken', response.data.token);
+    await asyncStorageSetItem('refreshToken', response.data.refreshToken);
+    runInAction(() => {
+      this.loading = false;
+      this.userToken = response.data.token;
+      this.refreshToken = response.data.refreshToken;
+    });
+
+    let {firstName, lastName, username, password, xmppPassword} =
+      response.data.user;
+
+    if (!lastName) {
+      lastName = firstName.split(' ')[1];
+      firstName = firstName.split(' ')[0];
+    }
+    const {walletAddress} = response.data.user.defaultWallet;
+    const xmppUsername = underscoreManipulation(walletAddress);
+
+    // save user login details received after login
+    const dataForStorage = {
+      firstName,
+      lastName,
+      walletAddress,
+      photo: '',
+      username,
+      password,
+      xmppPassword,
+      xmppUsername,
+    };
+    await asyncStorageSetItem('initialLoginData', dataForStorage);
+    runInAction(() => {
+      this.initialData = dataForStorage;
+      this.isFetching = false;
+    });
+  };
+  regularLogin = async ({username, password}) => {
+    const body = {username, password};
+    const response = await httpPost(
+      this.stores.apiStore.defaultUrl + loginURL,
+      body,
+      this.stores.apiStore.defaultToken,
+    );
+    if (response.data.success) {
+      this.loginHandler(response);
+    }
+  };
 
   loginUser = async (
     loginType: any,
@@ -228,42 +275,7 @@ export class LoginStore {
     try {
       const response: any = await httpPost(url, bodyData, token);
       if (response.data.success) {
-        await asyncStorageSetItem('userToken', response.data.token);
-        await asyncStorageSetItem('refreshToken', response.data.refreshToken);
-        runInAction(() => {
-          this.loading = false;
-          this.userToken = response.data.token;
-          this.refreshToken = response.data.refreshToken;
-        });
-
-        const photo = ssoUserData.photo;
-
-        let {firstName, lastName, username, xmppPassword} = response.data.user;
-
-        if (!lastName) {
-          lastName = firstName.split(' ')[1];
-          firstName = firstName.split(' ')[0];
-        }
-
-        const {walletAddress} = response.data.user.defaultWallet;
-        const xmppUsername = underscoreManipulation(walletAddress);
-
-        // save user login details received after login
-        const dataForStorage = {
-          firstName,
-          lastName,
-          walletAddress,
-          photo,
-          username,
-          password,
-          xmppPassword,
-          xmppUsername,
-        };
-        await asyncStorageSetItem('initialLoginData', dataForStorage);
-        runInAction(() => {
-          this.initialData = dataForStorage;
-          this.isFetching = false;
-        });
+        this.loginHandler(response);
       } else {
         this.error = true;
         this.errorMessage = response.data.msg;

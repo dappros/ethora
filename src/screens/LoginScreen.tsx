@@ -15,7 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {ImageBackground, StyleSheet} from 'react-native';
+import {ImageBackground, StyleSheet, TouchableOpacity} from 'react-native';
 import {
   appTitle,
   appVersion,
@@ -41,10 +41,11 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useRegisterModal} from '../hooks/useRegisterModal';
 import {UserNameModal} from '../components/Modals/Login/UserNameModal';
 import {checkEmailExist} from '../config/routesConstants';
+import {ROUTES} from '../constants/routes';
 
 interface LoginScreenProps {}
 
-const LoginScreen = observer((props: LoginScreenProps) => {
+const LoginScreen = observer(({navigation}) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
 
@@ -203,6 +204,12 @@ const LoginScreen = observer((props: LoginScreenProps) => {
           bg="#000000"
           onPress={onAppleButtonPress}
         />
+        <HStack justifyContent={'center'}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
+          <Text style={{fontSize: 14}}>Login with credentials</Text>
+        </TouchableOpacity>
+        </HStack>
       </Stack>
       {isFetching && <Spinner />}
 
