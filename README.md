@@ -1,19 +1,21 @@
 # ethora: open-source web3 social app engine (iOS/Android, ERC-20/NFT, social features)
 Mobile 📱 app engine and web3 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
 
-**UPD (August'22): Numerous updates, UX improvements, better NFT & digital assets support, bots, MetaMast/WalletConnect integration etc.**
+**UPD (August'22)**: 
+**Numerous updates, UX improvements, better NFT & digital assets support, bots, MetaMast/WalletConnect integration etc.**
 
 Check out our Youtube demo (1.5 minutes):
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
 
-**UPD (July'22): Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
+**UPD (July'22)**:
+**Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
+
+---
 
 Proudly built in Ukraine 🇺🇦 (8 team members), India 🇮🇳 (4 team members) & U.K. 🇬🇧 (1 team member) (and inviting further collaborators)
 
 <img src="https://ethora.com/images/thumb/3/39/Ethora_social_sign-in.jpg/450px-Ethora_social_sign-in.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/5/56/Ethora_chat_room.jpg/450px-Ethora_chat_room.jpg" width="200" alt="Demo: chat tokenized gamification" /> <img src="https://ethora.com/images/thumb/f/fd/Ethora_User_Profile.jpg/450px-Ethora_User_Profile.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/c/ce/RN_app_NFT_mint_14.jpg/450px-RN_app_NFT_mint_14.jpg" width="200" alt="Demo: sign in page" /> 
-
-Video demo: https://www.youtube.com/watch?v=FvOTFyLVbKM
 
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
