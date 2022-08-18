@@ -4,15 +4,15 @@ import messages from "../config/messages.js";
 export const leaveHandler = (data) => {
     console.log('=> leaveHandler | Message received from ', data.receiver, data.message);
     userSteps('setStep', data.receiverData.attrs.senderJID, 1);
-    userData('setData', data.userJID, null, 'buttonType');
-    userData('setData', data.userJID, 0, 'itemsCounter');
+    userData('setData', data.userJID, [], 'itemData');
+    userData('setData', data.userJID, 0, 'sendCoins');
+    userData('setData', data.userJID, 0, 'itemDataIndex');
 
     return sendMessage(
         data,
-        messages.general.toTheBeginning,
+        'You exited the merchant process',
         'message',
         false,
         0,
-        messages.bot.helloMessageButtons
     );
 }
