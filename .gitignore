@@ -67,3 +67,6 @@ buck-out/
 /bots/huthut/.env.development
 /bots/questionnaire/.env.production
 /bots/questionnaire/.env.development
+/bots/merchantBot/.env.development
+/bots/merchantBot/.env.production
+/bots/merchantBot/test.js
