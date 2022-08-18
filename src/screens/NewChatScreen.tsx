@@ -5,7 +5,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
+import {commonColors, defaultBotsList, textStyles} from '../../docs/config';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {sha256} from 'react-native-sha256';
@@ -15,6 +15,7 @@ import {
   createNewRoom,
   getUserRoomsStanza,
   roomConfig,
+  sendInvite,
   setOwner,
   subscribeStanza,
   subscribeToRoom,
@@ -86,6 +87,14 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           manipulatedWalletAddress,
           chatStore.xmpp,
         );
+        defaultBotsList.forEach(bot => {
+          sendInvite(
+            manipulatedWalletAddress,
+            roomHash + CONFERENCEDOMAIN,
+            bot.jid,
+            chatStore.xmpp,
+          );
+        });
 
         navigation.navigate(ROUTES.ROOMSLIST);
       }
@@ -126,7 +135,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           </View>
           <Input
             _input={{
-              maxLength:20
+              maxLength: 20,
             }}
             onChangeText={chatName => setChatName(chatName)}
             placeholder="Chat name"
