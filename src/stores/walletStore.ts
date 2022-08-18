@@ -44,6 +44,13 @@ export const filterNftBalances = item => {
     (item.balance > 0 || item.balances.length > 0)
   );
 };
+export const filterNfts = item => {
+  return (
+    item.tokenSymbol !== 'ETHD' &&
+    item.tokenType !== 'NFT' &&
+    item.tokenType !== 'NFMT'
+  );
+};
 export const mapNfmtBalances = item => {
   if (item.tokenType === 'NFMT') {
     item.balance = item.balances.reduce((acc, el) => (acc += +el), 0);
@@ -132,16 +139,18 @@ export class WalletStore {
       this.stores.debugStore.addLogsApi(response.data);
       if (isOwn) {
         runInAction(() => {
-          this.balance = response.data.balance;
+          this.balance = response.data.balance.filter(filterNfts);
           this.nftItems = response.data.balance
             .filter(filterNftBalances)
             .map(mapNfmtBalances)
             .reverse();
-          this.coinBalance = response.data.balance.map((item: any) => {
-            if (item.tokenName === coinsMainName) {
-              return item.balance;
-            }
-          });
+          this.coinBalance = response.data.balance
+            .filter(filterNfts)
+            .map((item: any) => {
+              if (item.tokenName === coinsMainName) {
+                return item.balance;
+              }
+            });
         });
       } else {
         runInAction(() => {

@@ -220,7 +220,7 @@ export const ProfileScreen = observer((props: any) => {
 
   const {firstName, lastName, walletAddress} = initialData;
 
-  const [coinData, setCoinData] = useState([]);
+  const coinData = walletStore.balance;
 
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
@@ -247,7 +247,7 @@ export const ProfileScreen = observer((props: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
-  const [extraQrData, setExtraQrData] = useState<string>("");
+  const [extraQrData, setExtraQrData] = useState<string>('');
 
   const [isDescriptionEditable, setIsDescriptionEditable] =
     useState<boolean>(false);
@@ -278,13 +278,6 @@ export const ProfileScreen = observer((props: any) => {
 
   useEffect(() => {
     if (balance?.length > 0) {
-      setCoinData(
-        balance.filter(
-          (item: any) =>
-            item.tokenSymbol !== 'ETHD' && item.tokenType !== 'NFT',
-        ),
-      );
-
       setAssetCount(itemsBalance + coinData.length);
     }
   }, [balance]);
@@ -355,7 +348,7 @@ export const ProfileScreen = observer((props: any) => {
                     color: activeAssetTab === 0 ? '#000000' : '#0000004D',
                     fontFamily: boldFont,
                   }}>
-                  ({parseFloat(updatedCoinBalance).toFixed(0)})
+                  ({parseFloat(walletStore.coinBalance).toFixed(0)})
                 </Text>
               </Animated.Text>
             </TouchableOpacity>
@@ -514,7 +507,7 @@ export const ProfileScreen = observer((props: any) => {
   const QRPressed = () => {
     const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN;
     const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
-    setExtraQrData({link:profileLink,mode:'profile'});
+    setExtraQrData({link: profileLink, mode: 'profile'});
     setQrModalVisible(true);
   };
 
