@@ -1,5 +1,5 @@
-# ethora: open-source web3 social app engine (iOS/Android, ERC-20/NFT, social features)
-Mobile 📱 app engine and web3 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
+# ethora: open-source web3 social app engine (iOS/Android, ERC-20/NFT, messaging/push/calls)
+Mobile-first 📱 web3 🔗🌐 social 💬 platform for your community 👥👥. 
 
 ---
 
