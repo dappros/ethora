@@ -5,8 +5,7 @@ Mobile 📱 app engine and web3 🔗🌐 platform for social 💬 tokenized ₿�
 
 [![Ethora video demo](https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png)](https://www.youtube.com/watch?v=pKEMcxJb5HM)
 
-[![Ethora video demo](<img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png">)](https://www.youtube.com/watch?v=pKEMcxJb5HM)
-
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
 
 **UPD (July'22): Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
 
