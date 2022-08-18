@@ -10,6 +10,7 @@ import {mintItem} from "./handlers/mintItem.js";
 
 const router = (xmpp, message, roomJID, userJID, receiverData, receiverMessageId, connectData) => {
     let userStep = userSteps('getStep', receiverData.attrs.senderJID, null);
+    let currentButtonType = userData('getData', userJID, null);
 
     let handlerData = {
         xmpp,
@@ -21,6 +22,7 @@ const router = (xmpp, message, roomJID, userJID, receiverData, receiverMessageId
         receiverMessageId,
         connectData
     };
+
 
     if (messageCheck(message, 'close') || messageCheck(message, 'leave')) {
         return leaveHandler(handlerData);
@@ -37,9 +39,11 @@ console.log(receiverData.attrs)
     }
 
     if(userStep === 2){
+        console.log('USER 2 STEP =============>    == = = == = ')
         let itemData = userData('getData', handlerData.userJID, null, 'itemData');
 
         if(receiverData.attrs.notDisplayedValue){
+            console.log('=========================================',itemData.costs[receiverData.attrs.notDisplayedValue])
             userData('setData', handlerData.userJID, receiverData.attrs.notDisplayedValue, 'itemDataIndex');
 
             if(Number(itemData.costs[receiverData.attrs.notDisplayedValue]) === 0){
@@ -99,19 +103,26 @@ console.log(receiverData.attrs)
             }
 
         }
+
+
+
+
     }
 
-    if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0) {
-        if (messageCheck(message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
-            return sendMessage(
-                handlerData,
-                messages.bot.tnxForTransaction,
-                'message',
-                false,
-                0,
-            );
-        }
-    }
+
+
+    // if (receiverData.attrs.isSystemMessage && receiverData.attrs.tokenAmount > 0) {
+    //     if (messageCheck(message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
+    //         return sendMessage(
+    //             handlerData,
+    //             messages.bot.tnxForTransaction,
+    //             'message',
+    //             false,
+    //             0,
+    //         );
+    //     }
+    // }
+    // receiverData.attrs.notDisplayedValue
 
 }
 export {router};
