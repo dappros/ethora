@@ -269,6 +269,8 @@ export const ProfileScreen = observer((props: any) => {
     setOffset(0);
     setTotal(0);
     walletStore.fetchOwnTransactions(walletAddress, walletStore.limit, 0);
+    walletStore.fetchWalletBalance(walletAddress, loginStore.userToken, true);
+
     return () => {
       clearPaginationData();
     };
