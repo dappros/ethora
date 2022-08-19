@@ -22,7 +22,6 @@ import {
 } from '../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
-import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
 
 interface NewChatScreenProps {}
 
@@ -38,7 +37,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const [chatAvatar, setChatAvatar] = useState('');
   const [chatName, setChatName] = useState('');
 
-  const {loginStore, chatStore} = useStores();
+  const {loginStore, chatStore, apiStore} = useStores();
 
   const {walletAddress} = loginStore.initialData;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -83,7 +82,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         );
 
         subscribeToRoom(
-          roomHash + CONFERENCEDOMAIN,
+          roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
           manipulatedWalletAddress,
           chatStore.xmpp,
         );

@@ -1,7 +1,7 @@
-export const SERVICE = 'wss://dev.dxmpp.com:5443/ws'; // dx
-export const DOMAIN = 'dev.dxmpp.com'; //dx
-export const CONFERENCEDOMAIN_WITHOUT = 'conference.dev.dxmpp.com'; //dev
-export const CONFERENCEDOMAIN = '@conference.dev.dxmpp.com'; //dev
+export const SERVICE = 'wss://dxmpp.com:5443/ws'; // dx
+export const DOMAIN = 'dxmpp.com'; //dx
+export const CONFERENCEDOMAIN_WITHOUT = 'conference.dxmpp.com'; //dev
+export const CONFERENCEDOMAIN = '@conference.dxmpp.com'; //dev
 
 export const archivedXmlns = 'urn:xmpp:mam:2';
 export const realtimeXmlns = 'urn:xmpp:mam:tmp';

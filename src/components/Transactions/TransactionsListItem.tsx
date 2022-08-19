@@ -64,8 +64,8 @@ export const TransactionsListItem = (props: TransactionListProps) => {
           <HStack>
             <VStack justifyContent={'center'} alignItems={'center'}>
               <Box
-                w={hp('3%')}
-                h={hp('3%')}
+                w={hp('2.89%')}
+                h={hp('2.89%')}
                 rounded={'full'}
                 bg={commonColors.primaryColor}
                 justifyContent={'center'}
@@ -96,15 +96,15 @@ export const TransactionsListItem = (props: TransactionListProps) => {
               {image ? (
                 <Image
                   alt="logo"
-                  height={hp('5%')}
-                  width={hp('7%')}
+                  height={hp('3%')}
+                  width={hp('3%')}
                   source={{uri: image}}
                 />
               ) : (
                 <Image
                   alt="logo"
-                  height={hp('3%')}
-                  width={hp('3%')}
+                  height={hp('2.8%')}
+                  width={hp('2.8%')}
                   source={coinImagePath}
                 />
               )}

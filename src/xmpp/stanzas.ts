@@ -1,12 +1,11 @@
 import {xml} from '@xmpp/client';
-import {autorun, reaction} from 'mobx';
-import {showToast} from '../components/Toast/toast';
 import {ApiStore} from '../stores/apiStore';
-import {CONFERENCEDOMAIN, XMPP_TYPES} from './xmppConstants';
+import { XMPP_TYPES} from './xmppConstants';
 const store = new ApiStore();
 
 let DOMAIN = store.xmppDomains.DOMAIN;
 let CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT;
+let CONFERENCEDOMAIN = store.xmppDomains.CONFERENCEDOMAIN;
 
 export const subscribeStanza = (from: string, to: string, xmpp: any) => {
   const subscribe = xml(
@@ -103,7 +102,8 @@ export const sendMediaMessageStanza = async (
       from: from + '@' + DOMAIN,
       to: to,
     },
-    xml('body', {}, 'media file'),
+    xml('body', {}, ''),
+    xml('store', {xmlns:"urn:xmpp:hints"}),
     xml('data', {
       xmlns: 'http://' + DOMAIN,
       senderJID: from + '@' + DOMAIN,

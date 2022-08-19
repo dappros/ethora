@@ -33,8 +33,6 @@ import {
   vcardRetrievalRequest,
 } from '../xmpp/stanzas';
 import {
-  DOMAIN,
-  SERVICE,
   XMPP_TYPES,
 } from '../xmpp/xmppConstants';
 import {RootStore} from './context';
@@ -112,6 +110,7 @@ export class ChatStore {
     manipulatedWalletAddress: '',
     chatJID: '',
   };
+  
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -158,8 +157,8 @@ export class ChatStore {
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
       this.xmpp = client({
-        service: SERVICE,
-        domain: DOMAIN,
+        service: this.stores.apiStore.xmppDomains.SERVICE,
+        domain: this.stores.apiStore.xmppDomains.DOMAIN,
         username,
         password,
       });

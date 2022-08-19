@@ -50,7 +50,6 @@ import {registerUserURL} from '../config/routesConstants';
 import {showToast} from '../components/Toast/toast';
 import QrModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
-import {DOMAIN} from '../xmpp/xmppConstants';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -501,7 +500,7 @@ export const ProfileScreen = observer((props: any) => {
   };
 
   const QRPressed = () => {
-    const xmppId = loginStore.initialData.xmppUsername + '@' + DOMAIN;
+    const xmppId = loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN;
     const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
     setExtraQrData({link: profileLink, mode: 'profile'});
     setQrModalVisible(true);

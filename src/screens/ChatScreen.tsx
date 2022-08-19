@@ -26,7 +26,6 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import {DOMAIN} from '../xmpp/xmppConstants';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {format} from 'date-fns';
 import {
@@ -806,7 +805,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         keyboardShouldPersistTaps={'handled'}
         onSend={messageString => sendMessage(messageString, false)}
         user={{
-          _id: loginStore.initialData.xmppUsername + '@' + DOMAIN,
+          _id: loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
           name: loginStore.initialData.username,
         }}
         // inverted={true}
