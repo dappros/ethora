@@ -32,4 +32,5 @@ export const checkEmailExist = '/users/checkEmail/';
 export const fileUpload = '/files/';
 export const nftTransferURL = '/tokens/items';
 export const itemTransferURL = '/tokens/transfer/items';
+export const nfmtTransferURL = '/tokens/items/nfmt/transfer';
 export const refreshTokenURL = '/users/login/refresh';

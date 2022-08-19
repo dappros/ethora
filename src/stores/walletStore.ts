@@ -4,6 +4,7 @@ import {httpGet, httpPost} from '../config/apiService';
 import {
   etherTransferURL,
   itemTransferURL,
+  nfmtTransferURL,
   tokenEtherBalanceURL,
   tokenTransferURL,
   transactionURL,
@@ -194,6 +195,8 @@ export class WalletStore {
       url = this.defaultUrl + tokenTransferURL;
     } else if (itemUrl) {
       url = this.defaultUrl + itemTransferURL;
+    } else if (bodyData.isNfmt) {
+      url = this.defaultUrl + nfmtTransferURL;
     } else {
       url = this.defaultUrl + etherTransferURL;
     }
