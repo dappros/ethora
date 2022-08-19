@@ -44,6 +44,7 @@ import {ROUTES} from '../constants/routes';
 import {registerUserURL} from '../config/routesConstants';
 import {Button} from '../components/Button';
 import {showError, showSuccess} from '../components/Toast/toast';
+import {HStack, Input} from 'native-base';
 
 const {mediumFont, lightFont, boldFont} = textStyles;
 
@@ -105,33 +106,20 @@ export const RegisterScreen = ({navigation, route}) => {
 
   return (
     <View style={{backgroundColor: 'white', flex: 1}}>
-       
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          width: 30,
-          height: 30,
-          backgroundColor: commonColors.primaryDarkColor,
-          left: 0,
-          zIndex: 1,
-        }}
-      />
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'center',
           position: 'absolute',
-          // top: 10,
-          // left: "50%",
-          backgroundColor: commonColors.primaryDarkColor,
+          backgroundColor: commonColors.primaryColor,
           zIndex: +1,
           width: '100%',
           height: 50,
-          borderTopLeftRadius: 30,
-          // borderTopLeftColor: "black",
+          borderBottomEndRadius: 4,
+          borderBottomStartRadius: 4,
+          // borderTopLeftRadius: 30,
         }}>
-        <View style={{position: 'absolute', top: 15}}>
+        <View style={{position: 'absolute', top: 7}}>
           <Text style={loginStyles.headerText}>Create account</Text>
         </View>
 
@@ -141,96 +129,122 @@ export const RegisterScreen = ({navigation, route}) => {
       </View>
 
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ImageBackground
-      source={loginScreenBackgroundImage}
-      style={{
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <View
+        <ImageBackground
+          source={loginScreenBackgroundImage}
           style={{
-            flex: 1,
+            width: '100%',
+            height: '100%',
             justifyContent: 'center',
-            marginTop: 200,
+            alignItems: 'center',
           }}>
           <View
-            style={[
-              {
-                justifyContent: 'center',
-                alignItems: 'center',
-                flex: 1,
-              },
-            ]}>
-            <View style={loginStyles.form}>
-             
-              <TextInput
-                style={loginStyles.input}
-                onChangeText={setUsername}
-                value={username}
-                placeholder="Username"
-              />
-
-              <TextInput
-                style={loginStyles.input}
-                onChangeText={setFirstname}
-                value={firstname}
-                placeholder="Firstname"
-              />
-              <TextInput
-                style={loginStyles.input}
-                onChangeText={setLastname}
-                value={lastname}
-                placeholder="Lastname"
-              />
-              <TextInput
-                style={loginStyles.input}
-                onChangeText={setPassword}
-                value={password}
-                secureTextEntry={true}
-                placeholder="Password"
-              />
-              <TextInput
-                style={loginStyles.input}
-                onChangeText={setPasswordCheck}
-                value={passwordCheck}
-                secureTextEntry={true}
-                placeholder="Repeat password"
-              />
-
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <CheckBox
-                  onCheckColor={commonColors.primaryDarkColor}
-                  onTintColor={commonColors.primaryDarkColor}
-                  value={isSelected}
-                  onValueChange={setSelection}
-                  style={{
-                    marginRight: 5,
-                    color: commonColors.primaryDarkColor,
-                  }}
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              marginTop: 200,
+            }}>
+            <View
+              style={[
+                {
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                },
+              ]}>
+              <View style={loginStyles.form}>
+                <Input
+                  maxLength={15}
+                  marginBottom={2}
+                  fontFamily={textStyles.lightFont}
+                  fontSize={hp('1.6%')}
+                  color={'black'}
+                  onChangeText={setUsername}
+                  value={username}
+                  placeholder="Username"
+                  placeholderTextColor={commonColors.primaryColor}
                 />
-                <Text>I agree to </Text>
-                <TouchableOpacity>
-                  <Text
+
+                <Input
+                  maxLength={15}
+                  marginBottom={2}
+                  fontFamily={textStyles.lightFont}
+                  fontSize={hp('1.6%')}
+                  color={'black'}
+                  onChangeText={setFirstname}
+                  value={firstname}
+                  placeholder="Firstname"
+                  placeholderTextColor={commonColors.primaryColor}
+                />
+
+                <Input
+                  maxLength={15}
+                  marginBottom={2}
+                  fontFamily={textStyles.lightFont}
+                  fontSize={hp('1.6%')}
+                  color={'black'}
+                  onChangeText={setLastname}
+                  value={lastname}
+                  placeholder="Lastname"
+                  placeholderTextColor={commonColors.primaryColor}
+                />
+
+                <Input
+                  maxLength={15}
+                  marginBottom={2}
+                  fontFamily={textStyles.lightFont}
+                  fontSize={hp('1.6%')}
+                  color={'black'}
+                  onChangeText={setPassword}
+                  value={password}
+                  secureTextEntry={true}
+                  placeholder="Password"
+                  placeholderTextColor={commonColors.primaryColor}
+                />
+
+                <Input
+                  maxLength={15}
+                  marginBottom={2}
+                  fontFamily={textStyles.lightFont}
+                  fontSize={hp('1.6%')}
+                  color={'black'}
+                  onChangeText={setPasswordCheck}
+                  value={passwordCheck}
+                  secureTextEntry={true}
+                  placeholder="Repeat password"
+                  placeholderTextColor={commonColors.primaryColor}
+                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <CheckBox
+                    onCheckColor={commonColors.primaryDarkColor}
+                    onTintColor={commonColors.primaryDarkColor}
+                    value={isSelected}
+                    onValueChange={setSelection}
                     style={{
-                      textDecorationLine: 'underline',
-                    }}>
-                    Terms and conditions
-                  </Text>
-                </TouchableOpacity>
+                      marginRight: 5,
+                      color: commonColors.primaryDarkColor,
+                    }}
+                  />
+                  <Text>I agree to </Text>
+                  <TouchableOpacity>
+                    <Text
+                      style={{
+                        textDecorationLine: 'underline',
+                      }}>
+                      Terms and conditions
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Button
+                  title={'Create'}
+                  onPress={registerUser}
+                  loading={loading}
+                  style={loginStyles.submitButton}
+                />
               </View>
-              <Button
-                title={'Create'}
-                onPress={registerUser}
-                loading={loading}
-                style={loginStyles.submitButton}
-              />
             </View>
+            {/* </ImageBackground> */}
           </View>
-          {/* </ImageBackground> */}
-        </View>
-      </ImageBackground>
+        </ImageBackground>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -243,14 +257,14 @@ const loginStyles = StyleSheet.create({
     padding: Platform.OS === 'ios' ? 15 : 7,
 
     paddingLeft: 20,
-    borderRadius: 30,
+    borderRadius: 10,
     width: wp('83%'),
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: 'grey',
     color: 'black',
   },
   submitButton: {
-    backgroundColor: commonColors.primaryDarkColor,
+    backgroundColor: commonColors.primaryColor,
     padding: 5,
     width: wp('50%'),
     height: hp('5.7%'),
@@ -267,6 +281,7 @@ const loginStyles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: -hp('12%'),
     fontFamily: lightFont,
+    width: wp('80%'),
   },
   headerText: {
     color: 'white',
@@ -276,7 +291,7 @@ const loginStyles = StyleSheet.create({
   goBackButton: {
     position: 'absolute',
     right: 10,
-    top: 16,
+    top: 7,
     zIndex: 99999,
   },
 });

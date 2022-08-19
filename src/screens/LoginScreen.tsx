@@ -192,7 +192,7 @@ const LoginScreen = observer(({navigation}) => {
                 apiStore.defaultToken,
                 loginStore.loginUser,
                 loginStore.registerUser,
-                socialLoginType.FACEBOOK,
+                socialLoginType.GOOGLE,
               )
             }
           />

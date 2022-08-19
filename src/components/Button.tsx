@@ -44,7 +44,7 @@ export const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   submitButton: {
-    backgroundColor: commonColors.primaryDarkColor,
+    backgroundColor: commonColors.primaryColor,
     paddingVertical: 7,
     paddingHorizontal: 15,
 
