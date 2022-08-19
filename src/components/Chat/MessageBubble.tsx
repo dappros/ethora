@@ -8,10 +8,8 @@ Note: linked open-source libraries and components may be subject to their own li
 import PropTypes from 'prop-types';
 import React, {createRef} from 'react';
 import {
-  Text,
   Clipboard,
   StyleSheet,
-  View,
   Image,
   Animated,
   TouchableWithoutFeedback,
@@ -27,9 +25,10 @@ import {
   utils,
   MessageProps,
 } from 'react-native-gifted-chat';
-import {coinImagePath, textStyles} from '../../../docs/config';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
+import { Text, View } from 'native-base';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -147,14 +146,13 @@ export default class Bubble extends React.Component {
         return this.props.renderUsername(usernameProps);
       }
       return (
-        <View style={styles.content.usernameView}>
+        <View
+        style={styles.content.usernameView}>
           <Text
-            style={[
-              styles.standardFont,
-              styles.headerItem,
-              styles.username,
-              this.props.usernameStyle,
-            ]}>
+          color={"white"}
+          fontSize={hp('2%')}
+          fontFamily={textStyles.lightFont}
+          >
             {username}
           </Text>
         </View>

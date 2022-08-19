@@ -186,11 +186,23 @@ export const MessageText = observer((props: any) => {
 
     return (
       <Button
+        alignItems={"center"}
         onPress={handleChatLink}
         shadow={2}
         margin={3}
         backgroundColor={commonColors.primaryColor}>
-        🛖🏃 {chatStore.chatLinkInfo[chatJid]}
+        <Text
+        textAlign={"center"}
+        // textDecorationLine={"underline"}
+        color={"white"}
+        fontSize={hp('2%')}
+        fontFamily={textStyles.boldFont}
+        >🚪➡️"{chatStore.chatLinkInfo[chatJid]}"</Text>
+        <Text
+        textAlign={"center"}
+        color={"white"}
+        fontSize={hp('1.3%')}
+        fontFamily={textStyles.lightFont}>(tap to go to this room)</Text>
       </Button>
     );
   } else {
