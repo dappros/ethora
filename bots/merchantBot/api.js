@@ -28,7 +28,7 @@ export const botLogin = async (username, password) => {
 
 const refresh = () => {
     return new Promise((resolve, reject) => {
-        http.post('/users/login/refresh', {}, {headers: {'Authorization': store.refreshToken}})
+        http.post('/users/login/refresh', {}, {headers: {'Authorization': loginData.refreshToken}})
             .then(response => {
                 loginData.token = response.data.token;
                 loginData.refreshToken = response.data.refreshToken;
