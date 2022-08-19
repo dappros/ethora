@@ -282,7 +282,7 @@ export const ProfileScreen = observer((props: any) => {
     }
   }, [balance]);
 
-  useEffect(() => {
+  const calculateAssetsCount = () => {
     let updatedCoinBalance = 0;
     let updatedItemsBalance = 0;
 
@@ -298,6 +298,10 @@ export const ProfileScreen = observer((props: any) => {
     setAssetCount(
       (itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance,
     );
+  };
+
+  useEffect(() => {
+    calculateAssetsCount();
 
     return () => {};
   }, [walletStore.nftItem, coinData]);
@@ -313,14 +317,6 @@ export const ProfileScreen = observer((props: any) => {
       setActiveAssetTab,
       itemsBalance,
     } = props;
-
-    let updatedCoinBalance = 0;
-
-    coinData
-      ? coinData.map(item => {
-          updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-        })
-      : null;
 
     if (activeTab === 0) {
       return (
@@ -528,16 +524,16 @@ export const ProfileScreen = observer((props: any) => {
               position: 'absolute',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: isLoadingVCard ? 'white' : primaryColor,
+              backgroundColor: primaryColor,
               borderRadius: hp('10.46%') / 2,
             }}>
             <SkeletonContent
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
-              isLoading={!userAvatarLocal}>
-              {userAvatarLocal ? (
+              isLoading={false}>
+              {loginStore.userAvatar ? (
                 <Image
-                  source={{uri: userAvatarLocal}}
+                  source={{uri: loginStore.userAvatar}}
                   style={{
                     height: hp('10.46%'),
                     width: hp('10.46%'),
