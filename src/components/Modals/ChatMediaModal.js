@@ -34,6 +34,7 @@ import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {wrapMessage} from '../../helpers/wrapMessage';
 import {httpGet} from '../../config/apiService';
 import {downloadFile} from '../../helpers/downloadFile';
+import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
 const {width, height: windowHeight} = Dimensions.get('window');
 
 const ModalActionButton = ({actionTypeText, cost, action}) => {
@@ -43,6 +44,7 @@ const ModalActionButton = ({actionTypeText, cost, action}) => {
         bgColor={'white'}
         borderRadius={'md'}
         alignItems={'center'}
+        justifyContent={'center'}
         width={'full'}>
         <Text
           style={{
@@ -53,20 +55,21 @@ const ModalActionButton = ({actionTypeText, cost, action}) => {
           {actionTypeText}
         </Text>
         <HStack justifyContent={'center'} alignItems={'center'}>
+          <Text
+            style={{
+              color: 'black',
+              fontFamily: textStyles.mediumFont,
+              fontSize: 20,
+              marginBottom: -3,
+            }}>
+            {cost}
+          </Text>
           <Image
             alt="coin"
             resizeMode="contain"
             source={coinImagePath}
             style={{width: 25, height: 25, marginRight: 3}}
           />
-          <Text
-            style={{
-              color: 'black',
-              fontFamily: textStyles.mediumFont,
-              fontSize: 20,
-            }}>
-            {cost}
-          </Text>
         </HStack>
       </VStack>
     </TouchableOpacity>
@@ -103,7 +106,9 @@ export const ChatMediaModal = observer(
         const costs = res?.results?.costs;
         setButtonState({
           title: 'Get',
-          cost: `${Math.min(...costs)} - ${Math.max(...costs)}`,
+          cost: `${Math.min(...costs)} - ${weiToNormalUnits(
+            Math.max(...costs),
+          )}`,
         });
       } else {
         return '';
@@ -214,7 +219,7 @@ export const ChatMediaModal = observer(
             style={{position: 'absolute', left: 0, top: -30, zIndex: 9999}}
             onPress={downloadMedia}>
             {loading ? (
-              <ActivityIndicator color={'white'} size={30}/>
+              <ActivityIndicator color={'white'} size={30} />
             ) : (
               <AntDesignIcons name="download" size={30} color={'white'} />
             )}
