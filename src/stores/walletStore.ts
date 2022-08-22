@@ -140,7 +140,6 @@ export class WalletStore {
       });
       this.stores.debugStore.addLogsApi(response.data);
       if (isOwn) {
-        console.log(response.data.balance);
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
           this.nftItems = response.data.balance

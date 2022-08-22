@@ -92,24 +92,24 @@ export default class Message extends React.Component {
   }
 
   renderAvatar() {
-    const {user, currentMessage, showUserAvatar} = this.props;
-    if (
-      user &&
-      user._id &&
-      currentMessage &&
-      currentMessage.user &&
-      user._id === currentMessage.user._id &&
-      !showUserAvatar
-    ) {
-      return null;
-    }
-    if (
-      currentMessage &&
-      currentMessage.user &&
-      currentMessage.user.avatar === null
-    ) {
-      return null;
-    }
+    // const {user, currentMessage, showUserAvatar} = this.props;
+    // if (
+    //   user &&
+    //   user._id &&
+    //   currentMessage &&
+    //   currentMessage.user &&
+    //   user._id === currentMessage.user._id &&
+    //   !showUserAvatar
+    // ) {
+    //   return null;
+    // }
+    // if (
+    //   currentMessage &&
+    //   currentMessage.user &&
+    //   currentMessage.user.avatar === null
+    // ) {
+    //   return null;
+    // }
     const {containerStyle, ...props} = this.props;
     return <Avatar {...props} />;
   }
