@@ -286,6 +286,62 @@ export class LoginStore {
     }
   };
 
+  loginHandler = async response => {
+    await asyncStorageSetItem('userToken', response.data.token);
+    await asyncStorageSetItem('refreshToken', response.data.refreshToken);
+    runInAction(() => {
+      this.loading = false;
+      this.userToken = response.data.token;
+      this.refreshToken = response.data.refreshToken;
+    });
+
+    let {firstName, lastName, username, password, xmppPassword} =
+      response.data.user;
+
+    if (!lastName) {
+      lastName = firstName.split(' ')[1];
+      firstName = firstName.split(' ')[0];
+    }
+    const {walletAddress} = response.data.user.defaultWallet;
+    const xmppUsername = underscoreManipulation(walletAddress);
+
+    // save user login details received after login
+    const dataForStorage = {
+      firstName,
+      lastName,
+      walletAddress,
+      photo: '',
+      username,
+      password,
+      xmppPassword,
+      xmppUsername,
+    };
+    await asyncStorageSetItem('initialLoginData', dataForStorage);
+    runInAction(() => {
+      this.initialData = dataForStorage;
+      this.isFetching = false;
+    });
+  };
+
+  loginExternalWallet = async (body: {
+    walletAddress;
+    signature;
+    msg;
+    loginType;
+  }) => {
+    const url = this.stores.apiStore.defaultUrl + loginURL;
+
+    try {
+      const response = await httpPost(
+        url,
+        body,
+        this.stores.apiStore.defaultToken,
+      );
+      await this.loginHandler(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   updateInitialData = async (data: {
     firstName: string;
     lastName: string;
@@ -363,6 +419,32 @@ export class LoginStore {
     }
   };
 
+  registerExternalWalletUser = async (body: {
+    walletAddress;
+    firstName;
+    lastName;
+    loginType;
+    msg;
+    signature;
+  }) => {
+    const token = this.stores.apiStore.defaultToken;
+    try {
+      const url = this.stores.apiStore.defaultUrl + registerUserURL;
+      const response: any = await httpPost(url, body, token);
+      if (response.data.success) {
+        this.loginHandler(response);
+      }
+    } catch (error: any) {
+      console.log(error.response, 'sdjfklsdjfjlsdkfj');
+
+      console.log(error.response.data.errors, 'sdjfklsdjfjlsdkfj');
+      runInAction(() => {
+        this.isFetching = false;
+        this.error = true;
+        this.errorMessage = error;
+      });
+    }
+  };
   //this will first hit dapp api to update user's display name
   //will call updateInitialData which will store the updated data in async store and then in mobx store.
   updateUserDisplayName = async (bodyData: {

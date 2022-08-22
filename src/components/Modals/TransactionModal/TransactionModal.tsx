@@ -81,7 +81,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   const renderNftItems = () => {
     return (
       <FlatList
-        data={walletStore.nftItems}
+        data={walletStore.nftItems.filter(item => !item.external)}
         renderItem={(e, index) => (
           <NftListItem
             assetUrl={e.item.imagePreview || e.item.nftFileUrl}
@@ -184,7 +184,6 @@ const TransactionModal = (props: TransactionModalProps) => {
       contractAddress: selectedItem?.contractAddress,
       isNfmt: true,
       tokenName: selectedItem.tokenName,
-
     };
 
     if (selectedItem.balance) {
@@ -447,18 +446,20 @@ const TransactionModal = (props: TransactionModalProps) => {
                       />
                     </View>
 
-                    {walletStore.nftItems.length > 0 && itemsTransfersAllowed && (
-                      <>
-                        <Seperator />
+                    {walletStore.nftItems.filter(item => !item.external)
+                      .length > 0 &&
+                      itemsTransfersAllowed && (
+                        <>
+                          <Seperator />
 
-                        <SendItem
-                          onPress={() => {
-                            console.log('clickd');
-                            setDisplayItems(true);
-                          }}
-                        />
-                      </>
-                    )}
+                          <SendItem
+                            onPress={() => {
+                              console.log('clickd');
+                              setDisplayItems(true);
+                            }}
+                          />
+                        </>
+                      )}
 
                     <Seperator />
                     <TransferModalButton

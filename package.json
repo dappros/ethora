@@ -8,7 +8,8 @@
     "start": "react-native start",
     "startReset": "react-native start --reset-cache",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "postinstall": "node_modules/.bin/rn-nodeify --install crypto,assert,url,stream,events --hack"
   },
   "dependencies": {
     "@flyerhq/react-native-link-preview": "^1.6.0",
@@ -25,11 +26,15 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@realm/react": "^0.2.1",
+    "@walletconnect/client": "^1.7.8",
+    "@walletconnect/react-native-dapp": "^1.7.8",
     "@xmpp/client": "^0.13.1",
     "@xmpp/debug": "^0.13.0",
+    "assert": "^1.5.0",
     "axios": "^0.27.2",
     "date-fns": "^2.28.0",
     "diff": "^5.1.0",
+    "events": "^1.1.1",
     "jpeg-js": "^0.4.3",
     "jsqr": "^1.4.0",
     "mobx": "^6.5.0",
@@ -42,6 +47,7 @@
     "react-native": "0.68.1",
     "react-native-audio-recorder-player": "^3.5.1",
     "react-native-camera": "^4.2.1",
+    "react-native-crypto": "^2.2.0",
     "react-native-device-info": "^8.7.1",
     "react-native-document-picker": "^8.1.0",
     "react-native-draggable-flatlist": "^3.1.1",
@@ -61,6 +67,7 @@
     "react-native-push-notification": "^8.1.1",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-qrcode-svg": "^6.1.2",
+    "react-native-randombytes": "^3.6.1",
     "react-native-reanimated": "^2.2.0",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^4.2.5",
@@ -79,9 +86,13 @@
     "react-native-video": "^5.2.0",
     "react-native-video-player": "^0.12.0",
     "react-native-walkthrough-tooltip": "^1.3.1",
+    "react-native-walletconnect": "^0.0.1-alpha.2",
+    "react-native-webview": "^11.23.0",
+    "readable-stream": "^1.0.33",
     "realm": "^10.20.0-beta.5",
     "rn-fetch-blob": "^0.12.0",
-    "utils": "^0.3.1"
+    "stream-browserify": "^1.0.0",
+    "url": "^0.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
@@ -99,6 +110,7 @@
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.67.0",
     "react-test-renderer": "17.0.2",
+    "rn-nodeify": "^10.3.0",
     "typescript": "^4.4.4"
   },
   "resolutions": {
@@ -128,5 +140,23 @@
       ],
       "react-native-reanimated/plugin"
     ]
+  },
+  "react-native": {
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  },
+  "browser": {
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
   }
 }

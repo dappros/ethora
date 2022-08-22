@@ -41,19 +41,25 @@ import {
   socialLoginHandle,
 } from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
-import {httpGet} from '../config/apiService';
+import {httpGet, httpPost} from '../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useRegisterModal} from '../hooks/useRegisterModal';
 import {UserNameModal} from '../components/Modals/Login/UserNameModal';
-import {checkEmailExist} from '../config/routesConstants';
+import {checkEmailExist, checkWalletExist} from '../config/routesConstants';
 import {ROUTES} from '../constants/routes';
+import {useWalletConnect} from '@walletconnect/react-native-dapp';
 
 interface LoginScreenProps {}
 
 const LoginScreen = observer(({navigation}) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
-
+  const connector = useWalletConnect();
+  const [externalWalletModalData, setExternalWalletModalData] = useState({
+    walletAddress: '',
+    message: '',
+  });
+  const [signedMessage, setSignedMessage] = useState('');
   const {
     firstName,
     lastName,
@@ -63,7 +69,6 @@ const LoginScreen = observer(({navigation}) => {
     setModalOpen,
   } = useRegisterModal();
   const [appleUser, setAppleUser] = useState({});
-
   useEffect(() => {
     GoogleSignin.configure({
       forceCodeForRefreshToken: true,
@@ -98,6 +103,46 @@ const LoginScreen = observer(({navigation}) => {
       console.log(error);
     }
   };
+  const openModalForWallet = message => {
+    setExternalWalletModalData({
+      message,
+      walletAddress: connector.accounts[0],
+    });
+    setModalOpen(true);
+  };
+
+  const sendWalletMessage = async () => {
+    const walletExist = await checkExternalWalletExist();
+    const messageToSend = walletExist ? 'Login' : 'Registration';
+    const message = await connector.signPersonalMessage([
+      messageToSend,
+      connector.accounts[0],
+    ]);
+    setSignedMessage(message);
+    !walletExist
+      ? openModalForWallet(message)
+      : loginStore.loginExternalWallet({
+          walletAddress: connector.accounts[0],
+          signature: message,
+          loginType: 'signature',
+          msg: 'Login',
+        });
+    connector.killSession();
+  };
+  const checkExternalWalletExist = async () => {
+    try {
+      const res = await httpPost(
+        apiStore.defaultUrl + checkWalletExist,
+        {
+          walletAddress: connector.accounts[0],
+        },
+        apiStore.defaultToken,
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
   const onAppleLogin = async () => {
     const user = {...appleUser, firstName, lastName};
 
@@ -115,33 +160,55 @@ const LoginScreen = observer(({navigation}) => {
     setModalOpen(false);
   };
   const onModalSubmit = async () => {
-    await onAppleLogin();
+    if (!externalWalletModalData.message) {
+      await onAppleLogin();
+    } else {
+      await loginStore.registerExternalWalletUser({
+        walletAddress: externalWalletModalData.walletAddress,
+        msg: 'Registration',
+        signature: externalWalletModalData.message,
+        loginType: 'signature',
+        firstName,
+        lastName,
+      });
+    }
   };
+  useEffect(() => {
+    if (!!connector.accounts && !signedMessage && connector.connected) {
+      sendWalletMessage();
+    }
+  }, [
+    connector.accounts,
+    connector.session,
+    connector.connected,
+    signedMessage,
+  ]);
   return (
     <ImageBackground
-      source={loginScreenBackgroundImage}
+      // source={loginScreenBackgroundImage}
       style={{
+        backgroundColor: 'rgba(0,0,255, 0.05)',
         width: '100%',
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
       }}>
       <Box margin={3} justifyContent={'center'} alignItems={'center'}>
-        <Image
+        {/* <Image
           alt="App logo Ethora"
           source={logoPath}
           resizeMode={'cover'}
           w={wp(logoWidth)}
           h={logoHeight}
-        />
-        {isLogoTitle ? (
+        /> */}
+        {isLogoTitle && (
           <Text
-            color={'#000'}
-            fontFamily={textStyles.mediumFont}
-            fontSize={hp('3.44%')}>
+            color={commonColors.primaryColor}
+            fontFamily={textStyles.semiBoldFont}
+            fontSize={hp('6.44%')}>
             {appTitle}
           </Text>
-        ) : null}
+        )}
       </Box>
 
       <Stack margin={3} space={3}>
@@ -215,6 +282,24 @@ const LoginScreen = observer(({navigation}) => {
             onPress={onAppleButtonPress}
           />
         )}
+        <SocialButton
+          label="Sign in with MetaMask"
+          color="white"
+          fontFamily={textStyles.boldFont}
+          fontSize={hp('1.47%')}
+          leftIcon={
+            <Icon
+              color={'white'}
+              size={hp('2.25%')}
+              as={AntIcon}
+              name={'antdesign'}
+            />
+          }
+          bg="#cc6228"
+          onPress={() => {
+            connector.connect();
+          }}
+        />
         <HStack justifyContent={'center'}>
           {regularLogin && (
             <TouchableOpacity

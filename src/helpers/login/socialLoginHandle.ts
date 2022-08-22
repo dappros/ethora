@@ -123,7 +123,7 @@ export const handleFaceBookLogin = async (
   );
 };
 
-const signInGoogle = (googleCredential: any, callback: any) => {
+const signInGoogle = (googleCredential:  any, callback:  any) => {
   auth()
     .signInWithCredential(googleCredential)
     .then(data => callback(data))

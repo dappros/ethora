@@ -28,6 +28,8 @@ export const getListOfEmails = '/users/emails';
 export const addOrDeleteEmail = '/users/emails';
 
 export const checkEmailExist = '/users/checkEmail/';
+export const checkWalletExist = '/users/checkExtWallet/';
+
 
 export const fileUpload = '/files/';
 export const nftTransferURL = '/tokens/items';

@@ -123,6 +123,36 @@ export class WalletStore {
     });
   }
 
+  getExternalBalanceMetadata = async items => {
+    const externalBalanceNft = [];
+    try {
+      for (const item of items) {
+        const metadata = await httpGet(
+          item.tokenUri?.raw.replace('http://', 'https://'),
+          '',
+        );
+        const prefix = 'ipfs://';
+        const gateway = 'https://dapprossplatform.mypinata.cloud/ipfs/';
+        externalBalanceNft.push({
+          balance: item.balance,
+          tokenName: item.title || metadata.data?.name || 'Title not found',
+          nftFileUrl:
+            metadata.data?.image
+              .replace('http://', 'https://')
+              .replace(prefix, gateway) || '',
+          total: item.balance,
+          nftId: item.id.tokenId,
+          nftMimetype: 'image/png',
+          external: true,
+        });
+      }
+      return externalBalanceNft;
+    } catch (error) {
+      console.log(error?.response, 'dskfljdsfdkslfjlsd');
+      return [];
+    }
+  };
+
   async fetchWalletBalance(
     walletAddress: string,
     token: string,
@@ -139,12 +169,17 @@ export class WalletStore {
         this.isFetching = false;
       });
       this.stores.debugStore.addLogsApi(response.data);
+      const extBalance = response.data?.extBalance || [];
+      const externalBalanceNft = await this.getExternalBalanceMetadata(
+        extBalance,
+      );
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
           this.nftItems = response.data.balance
             .filter(filterNftBalances)
             .map(mapNfmtBalances)
+            .concat(extBalance)
             .reverse();
           this.coinBalance = response.data.balance
             .filter(filterNfts)
