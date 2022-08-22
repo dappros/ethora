@@ -89,7 +89,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             assetsYouHave={e.item.balance}
             totalAssets={e.item.total}
             onClick={() => setSelectedItem(e.item)}
-            itemSelected={selectedItem.nftId === e.item.nftId}
+            itemSelected={selectedItem.nftFileUrl === e.item.nftFileUrl}
             nftId={e.item.nftId}
             mimetype={e.item.nftMimetype}
             // onAssetPress={onAssetPress}
@@ -103,11 +103,11 @@ const TransactionModal = (props: TransactionModalProps) => {
       />
     );
   };
-useEffect(() => {
-  if(isVisible) {
-    setAllowedEnterCustomAmount(false)
-  }
-}, [isVisible])
+  useEffect(() => {
+    if (isVisible) {
+      setAllowedEnterCustomAmount(false);
+    }
+  }, [isVisible]);
   const tokenTransferFunc = async amt => {
     clearState();
     const receiverName = extraData.name;
@@ -162,6 +162,7 @@ useEffect(() => {
     // const receiverMessageId = extraData.message_id;
     const senderName = extraData.senderName;
     const amountToSend = 1;
+    console.log(selectedItem);
 
     // console.log(item, 'flatitemsss');
 
@@ -175,6 +176,15 @@ useEffect(() => {
       receiverWallet: walletAddress,
       amount: 1,
       tokenName: selectedItem.tokenName,
+    };
+    const nfmtBodyData = {
+      to: walletAddress,
+      id: selectedItem.contractTokenIds[0],
+      amount: 1,
+      contractAddress: selectedItem?.contractAddress,
+      isNfmt: true,
+      tokenName: selectedItem.tokenName,
+
     };
 
     if (selectedItem.balance) {
@@ -191,7 +201,7 @@ useEffect(() => {
       //   true,
       // );
       await walletStore.transferTokens(
-        bodyData,
+        selectedItem?.balances?.length ? nfmtBodyData : bodyData,
         userToken,
         fromWalletAddress,
         senderName,
@@ -391,7 +401,7 @@ useEffect(() => {
             isVisible={isVisible}>
             <View style={[styles.centeredView]}>
               <View style={[styles.modalView]}>
-                {allowedEnterCustomAmount  ? (
+                {allowedEnterCustomAmount ? (
                   <VStack>
                     <Text
                       style={{

@@ -209,7 +209,6 @@ const OtherUserProfileScreen = observer((props: any) => {
     url: '',
     mimetype: '',
   });
-
   useEffect(() => {
     handleSlide(
       activeTab === 0 ? xTabOne : activeTab === 1 ? xTabTwo : xTabThree,
@@ -217,7 +216,6 @@ const OtherUserProfileScreen = observer((props: any) => {
       textColorAnim,
     );
   }, [activeTab]);
-
   useEffect(() => {
     setOffset(0);
     setTotal(0);
@@ -239,7 +237,7 @@ const OtherUserProfileScreen = observer((props: any) => {
       apiStore.xmppDomains.CONFERENCEDOMAIN;
     const combinedUsersName = [
       loginStore.initialData.firstName,
-      anotherUserFirstname,
+      loginStore.anotherUserFirstname,
     ]
       .sort()
       .join(' and ');

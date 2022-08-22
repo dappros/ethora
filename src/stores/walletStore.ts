@@ -42,7 +42,8 @@ export const mapTransactions = (item, walletAddress) => {
 export const filterNftBalances = item => {
   return (
     (item.tokenType === 'NFT' || item.tokenType === 'NFMT') &&
-    (item.balance > 0 || item.balances.length > 0)
+    (item.balance > 0 ||
+      (item?.balances?.length > 0 && item?.balances?.[0] !== '0'))
   );
 };
 export const filterNfts = item => {
@@ -139,6 +140,7 @@ export class WalletStore {
       });
       this.stores.debugStore.addLogsApi(response.data);
       if (isOwn) {
+        console.log(response.data.balance);
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
           this.nftItems = response.data.balance
@@ -191,12 +193,12 @@ export class WalletStore {
     itemUrl: string,
   ) {
     let url = '';
-    if (bodyData.tokenName && !itemUrl) {
+    if (bodyData.isNfmt) {
+      url = this.defaultUrl + nfmtTransferURL;
+    } else if (bodyData.tokenName && !itemUrl) {
       url = this.defaultUrl + tokenTransferURL;
     } else if (itemUrl) {
       url = this.defaultUrl + itemTransferURL;
-    } else if (bodyData.isNfmt) {
-      url = this.defaultUrl + nfmtTransferURL;
     } else {
       url = this.defaultUrl + etherTransferURL;
     }
