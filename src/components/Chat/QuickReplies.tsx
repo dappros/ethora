@@ -54,7 +54,7 @@ export const QuickReplies = ({
       style={{marginVertical: 4}}
       width={width}>
       {!!quickReplies &&
-        quickReplies.map(item => {
+        quickReplies.map((item, i) => {
           return (
             <TouchableOpacity
               activeOpacity={0.6}
@@ -68,7 +68,7 @@ export const QuickReplies = ({
                     : alpha(colors.leftBubbleBackground, 0.4),
                 },
               ]}
-              key={item.value}>
+              key={i}>
               <Text color={'white'}>{item.name}</Text>
             </TouchableOpacity>
           );

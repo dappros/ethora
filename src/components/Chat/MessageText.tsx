@@ -148,7 +148,7 @@ export const MessageText = observer((props: any) => {
         <View justifyContent={'center'}>
           <Image
             borderRadius={5}
-            alt={youtubeMetaData.author_name}
+            alt={'youtube'}
             source={{uri: youtubeMetaData.thumbnail_url}}
             width={hp('40%')}
             height={hp('20%')}

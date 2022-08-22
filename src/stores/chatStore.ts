@@ -1,11 +1,6 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
-import {
-  action,
-  makeAutoObservable,
-  runInAction,
-  toJS,
-} from 'mobx';
+import {action, makeAutoObservable, runInAction, toJS} from 'mobx';
 import {defaultChats} from '../../docs/config';
 import {
   addChatRoom,
@@ -32,9 +27,7 @@ import {
   updateVCard,
   vcardRetrievalRequest,
 } from '../xmpp/stanzas';
-import {
-  XMPP_TYPES,
-} from '../xmpp/xmppConstants';
+import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
 
 interface recentRealtimeChatProps {
@@ -91,7 +84,7 @@ export class ChatStore {
   roomList: roomListProps | [] = [];
   stores: RootStore | {} = {};
   roomsInfoMap: any = {};
-  chatLinkInfo:any = {};
+  chatLinkInfo: any = {};
   allMessagesArrived: boolean = false;
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
@@ -104,13 +97,13 @@ export class ChatStore {
   shouldCount: boolean = true;
   roomRoles = {};
   isOnline = false;
+  isLoadingEarlierMessages = false;
   isComposing: isComposingProps = {
     state: false,
     username: '',
     manipulatedWalletAddress: '',
     chatJID: '',
   };
-  
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -285,7 +278,11 @@ export class ChatStore {
       this.roomsInfoMap,
     );
   };
-
+setChatMessagesLoading = (value) => {
+  runInAction(() => {
+    this.isLoadingEarlierMessages = value;
+  });
+}
   subscribeToDefaultChats = () => {
     Object.entries(defaultChats).forEach(([key, value]) => {
       const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
@@ -304,12 +301,12 @@ export class ChatStore {
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
       //capture room info
-      if(stanza.attrs.id === 'roomInfo'){
-        console.log(stanza.attrs,"roominfoooooo")
-      runInAction(()=>{
-        this.chatLinkInfo[stanza.attrs.from] = stanza.children[0].children[0].attrs.name;
-      })
-        
+      if (stanza.attrs.id === 'roomInfo') {
+        console.log(stanza.attrs, 'roominfoooooo');
+        runInAction(() => {
+          this.chatLinkInfo[stanza.attrs.from] =
+            stanza.children[0].children[0].attrs.name;
+        });
       }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
@@ -329,6 +326,16 @@ export class ChatStore {
         );
       }
       if (
+        stanza.attrs.id === XMPP_TYPES.paginatedArchive &&
+        stanza.children[0].name === 'fin'
+      ) {
+        console.log('responseres');
+        runInAction(() => {
+          this.isLoadingEarlierMessages = false;
+        });
+      }
+     
+      if (
         stanza.attrs.id === 'GetArchive' &&
         stanza.children[0].name === 'fin'
       ) {
@@ -336,6 +343,7 @@ export class ChatStore {
         if (archiveRequestedCounter === this.roomList.length) {
           this.updateAllRoomsInfo();
         }
+
         this.getCachedMessages();
       }
 
@@ -430,6 +438,7 @@ export class ChatStore {
         this.setRooms(roomsArray);
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
+
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
         const room = await getChatRoom(stanza.attrs.from);
@@ -556,8 +565,6 @@ export class ChatStore {
             username: '',
           });
         }
-
-
       }
     });
 

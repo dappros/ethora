@@ -19,6 +19,7 @@ import {
 } from '../xmpp/stanzas';
 import MessageBody from '../components/Chat/MessageBody';
 import {
+  ActivityIndicator,
   Animated,
   NativeModules,
   Platform,
@@ -200,6 +201,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const lastMessage = messages.length - 1;
     // const lastMessage = 0;
     getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
+    chatStore.setChatMessagesLoading(true)
   };
   const renderSuggestions: FC<MentionSuggestionsProps> = ({
     keyword,
@@ -774,10 +776,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
       {audioMimetypes[mediaModal.type] && (
         <AudioPlayer audioUrl={mediaModal.url} />
       )}
+     {chatStore.isLoadingEarlierMessages && <View style={{backgroundColor: 'transparent'}}><ActivityIndicator size={30} color={commonColors.primaryColor} /></View>}
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
-        renderLoading={() => <Spinner />}
+        renderLoading={() => (
+          <ActivityIndicator size={30} color={commonColors.primaryColor} />
+        )}
         text={text}
         renderUsernameOnMessage
         onInputTextChanged={handleInputChange}
@@ -805,7 +810,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         keyboardShouldPersistTaps={'handled'}
         onSend={messageString => sendMessage(messageString, false)}
         user={{
-          _id: loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
+          _id:
+            loginStore.initialData.xmppUsername +
+            '@' +
+            apiStore.xmppDomains.DOMAIN,
           name: loginStore.initialData.username,
         }}
         // inverted={true}

@@ -30,5 +30,6 @@ export const XMPP_TYPES = {
   setOwner:'setOwner',
   roomConfig: 'roomConfig',
   botStanza: 'botStanza',
-  roomInfo:'roomInfo'
+  roomInfo:'roomInfo',
+  paginatedArchive: 'paginatedArchive',
 };

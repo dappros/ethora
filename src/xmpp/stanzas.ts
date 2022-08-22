@@ -1,6 +1,6 @@
 import {xml} from '@xmpp/client';
 import {ApiStore} from '../stores/apiStore';
-import { XMPP_TYPES} from './xmppConstants';
+import {XMPP_TYPES} from './xmppConstants';
 const store = new ApiStore();
 
 let DOMAIN = store.xmppDomains.DOMAIN;
@@ -35,7 +35,7 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
     {
       from: from + '@' + DOMAIN,
       to: to + '/' + from,
-      id: XMPP_TYPES.roomPresence
+      id: XMPP_TYPES.roomPresence,
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );
@@ -103,7 +103,7 @@ export const sendMediaMessageStanza = async (
       to: to,
     },
     xml('body', {}, ''),
-    xml('store', {xmlns:"urn:xmpp:hints"}),
+    xml('store', {xmlns: 'urn:xmpp:hints'}),
     xml('data', {
       xmlns: 'http://' + DOMAIN,
       senderJID: from + '@' + DOMAIN,
@@ -167,7 +167,7 @@ export const getPaginatedArchive = (
     {
       type: 'set',
       to: chat_jid,
-      id: 'GetArchive',
+      id: XMPP_TYPES.paginatedArchive,
     },
     xml(
       'query',
@@ -175,7 +175,7 @@ export const getPaginatedArchive = (
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 10),
+        xml('max', {}, 25),
         xml('before', {}, firstUserMessageID),
       ),
     ),
