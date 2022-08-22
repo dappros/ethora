@@ -22,6 +22,7 @@ import {
 } from '../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
+import { CONFERENCEDOMAIN } from '../xmpp/xmppConstants';
 
 interface NewChatScreenProps {}
 
