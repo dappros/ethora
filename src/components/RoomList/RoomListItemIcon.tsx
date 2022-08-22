@@ -7,7 +7,6 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import React from 'react';
 import {ImageBackground, StyleSheet} from 'react-native';
-import {heightPercentageToDP} from 'react-native-responsive-screen';
 import { commonColors, textStyles } from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
   fullName: {
     color: 'white',
     marginRight: 3,
-      fontFamily: textStyles.boldFont,
+    fontFamily: textStyles.boldFont,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
