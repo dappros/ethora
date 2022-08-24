@@ -23,5 +23,6 @@ export const ROUTES = {
   SPLASHSCREEN: 'SplashScreen',
   NFTITEMHISTORY: 'NftItemHistory',
   REGULARLOGIN: 'RegularLogin',
-  REGISTER: 'Register'
+  REGISTER: 'Register',
+  INVITEFRIENDS: 'InviteFriendsScreen'
 };

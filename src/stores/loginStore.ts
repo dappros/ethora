@@ -24,6 +24,8 @@ export interface InitialDataProps {
   desc: string;
   xmppPassword: string;
   xmppUsername: string;
+  _id: string;
+  referrerId: string;
 }
 export class LoginStore {
   isFetching: boolean = false;
@@ -40,6 +42,8 @@ export class LoginStore {
     desc: '',
     xmppPassword: '',
     xmppUsername: '',
+    _id: '',
+    referrerId: '',
   };
   userDescription: string = '';
   userAvatar: string = '';
@@ -217,7 +221,7 @@ export class LoginStore {
       this.refreshToken = response.data.refreshToken;
     });
 
-    let {firstName, lastName, username, password, xmppPassword} =
+    let {firstName, lastName, username, password, xmppPassword, _id} =
       response.data.user;
 
     if (!lastName) {
@@ -237,6 +241,8 @@ export class LoginStore {
       password,
       xmppPassword,
       xmppUsername,
+      _id,
+      referrerId: response.data.user.referrerId || '',
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
@@ -295,7 +301,7 @@ export class LoginStore {
       this.refreshToken = response.data.refreshToken;
     });
 
-    let {firstName, lastName, username, password, xmppPassword} =
+    let {firstName, lastName, username, password, xmppPassword, _id} =
       response.data.user;
 
     if (!lastName) {
@@ -315,6 +321,8 @@ export class LoginStore {
       password,
       xmppPassword,
       xmppUsername,
+      _id,
+      referrerId: response.data.referrerId || ''
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
@@ -351,6 +359,7 @@ export class LoginStore {
     password: string;
     xmppPassword: string;
     xmppUsername: string;
+    referrerId?: string;
   }) => {
     try {
       await asyncStorageSetItem('initialLoginData', data);

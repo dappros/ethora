@@ -22,6 +22,7 @@ import {useNavigation} from '@react-navigation/native';
 import {DebugScreen} from '../Screens/DebugScreen';
 import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
+import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -59,8 +60,6 @@ export const HomeStackScreen = observer(() => {
   }, [initialData.xmppPassword]);
 
   useEffect(() => {
- 
-
     //when the app opens for the first time, when clicked url from outside, this will be called
     Linking.getInitialURL().then(url => {
       if (url) {
@@ -227,6 +226,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.NFTITEMHISTORY}
         component={NftItemHistoryScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.INVITEFRIENDS}
+        component={InviteFriendsScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

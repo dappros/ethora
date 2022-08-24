@@ -29,6 +29,7 @@ export const addOrDeleteEmail = '/users/emails';
 
 export const checkEmailExist = '/users/checkEmail/';
 export const checkWalletExist = '/users/checkExtWallet/';
+export const referralRoute = '/users/referral';
 
 
 export const fileUpload = '/files/';
