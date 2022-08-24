@@ -27,7 +27,7 @@
     "@react-navigation/native-stack": "^6.6.2",
     "@realm/react": "^0.2.1",
     "@walletconnect/client": "^1.7.8",
-    "@walletconnect/react-native-dapp": "^1.7.8",
+    "@walletconnect/react-native-dapp": "^1.8.0",
     "@xmpp/client": "^0.13.1",
     "@xmpp/debug": "^0.13.0",
     "assert": "^1.5.0",
