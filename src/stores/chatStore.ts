@@ -254,7 +254,7 @@ export class ChatStore {
         .filter(message => item.jid === message.roomJid)
         .sort(
           (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
 
       if (latestMessage) {

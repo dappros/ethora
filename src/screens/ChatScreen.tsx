@@ -200,8 +200,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
     const lastMessage = messages.length - 1;
     // const lastMessage = 0;
-    getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
-    chatStore.setChatMessagesLoading(true)
+    if(messages.length > 10) {
+      getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
+      chatStore.setChatMessagesLoading(true)
+    }
+   
   };
   const renderSuggestions: FC<MentionSuggestionsProps> = ({
     keyword,

@@ -102,7 +102,7 @@ export const sendMediaMessageStanza = async (
       from: from + '@' + DOMAIN,
       to: to,
     },
-    xml('body', {}, ''),
+    xml('body', {}, 'media'),
     xml('store', {xmlns: 'urn:xmpp:hints'}),
     xml('data', {
       xmlns: 'http://' + DOMAIN,

@@ -42,6 +42,7 @@ export const insertMessages = (messageObject: any) =>
       message_id: messageObject._id,
       room_name: messageObject.roomJid,
       tokenAmount: +messageObject.tokenAmount,
+      text: messageObject.text || ' '
     };
     getMessage(messageObject._id).then(message => {
       if (!message) {
