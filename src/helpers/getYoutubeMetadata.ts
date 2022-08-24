@@ -7,5 +7,5 @@ export const getYoutubeMetadata = async(url:string) => {
         url: metaUrl,
         headers: { }
     };
-    return await axios(config)
+    return await axios(config).catch(err => console.log(JSON.stringify(err)))
 }

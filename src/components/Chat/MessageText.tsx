@@ -20,7 +20,7 @@ import {useNavigation} from '@react-navigation/native';
 
 const DEFAULT_OPTION_TITLES = ['Call', 'Text', 'Cancel'];
 const ytubeLinkRegEx =
-  /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+/\b(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gi;
 const WWW_URL_PATTERN = /^www\./i;
 
 const textStyle = {
@@ -114,7 +114,8 @@ export const MessageText = observer((props: any) => {
     Communications.email([email], null, null, null, null);
 
   if (props.currentMessage.text.match(ytubeLinkRegEx)) {
-    getYoutubeMetadata(props.currentMessage.text).then(resp => {
+    
+    getYoutubeMetadata(props.currentMessage.text.match(ytubeLinkRegEx)[0]).then(resp => {
       setYoutubeMetaData(resp.data);
     });
     return (
@@ -123,14 +124,21 @@ export const MessageText = observer((props: any) => {
         style={{
           margin: 10,
         }}>
-        <Text
-          textDecorationLine={'underline'}
-          color={'#0000EE'}
-          textDecorationColor={'#0000EE'}
-          fontSize={hp('1.5%')}
-          fontFamily={textStyles.boldFont}>
-          {props.currentMessage.text}
-        </Text>
+      <ParsedText
+        style={[
+          styles[props.position].text,
+          props.textStyle && props.textStyle[props.position],
+          props.customTextStyle,
+        ]}
+        parse={[
+          ...props.parsePatterns(linkStyle),
+          {type: 'url', style: linkStyle, onPress: onUrlPress},
+          {type: 'phone', style: linkStyle, onPress: onPhonePress},
+          {type: 'email', style: linkStyle, onPress: onEmailPress},
+        ]}
+        childrenProps={{...props.textProps}}>
+        {props.currentMessage.text}
+      </ParsedText>
 
         <Text
           color={'white'}
