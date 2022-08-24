@@ -185,7 +185,7 @@ const LoginScreen = observer(({navigation}) => {
   ]);
   return (
     <ImageBackground
-      // source={loginScreenBackgroundImage}
+      source={loginScreenBackgroundImage}
       style={{
         backgroundColor: 'rgba(0,0,255, 0.05)',
         width: '100%',
@@ -194,13 +194,13 @@ const LoginScreen = observer(({navigation}) => {
         alignItems: 'center',
       }}>
       <Box margin={3} justifyContent={'center'} alignItems={'center'}>
-        {/* <Image
+        <Image
           alt="App logo Ethora"
           source={logoPath}
           resizeMode={'cover'}
           w={wp(logoWidth)}
           h={logoHeight}
-        /> */}
+        />
         {isLogoTitle && (
           <Text
             color={commonColors.primaryColor}
