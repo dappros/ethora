@@ -11,13 +11,10 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Animated,
   FlatList,
   StyleSheet,
   Linking,
 } from 'react-native';
-import SkeletonContent from 'react-native-skeleton-content-nonexpo';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -31,7 +28,7 @@ import {
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
-import {Button} from 'native-base';
+import {Button, HStack, VStack} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {ROUTES} from '../constants/routes';
 import TransactionsList from '../components/Transactions/TransactionsList';
@@ -45,38 +42,18 @@ import {useNavigation} from '@react-navigation/native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import ProfileModal from '../components/Modals/Profile/ProfileModal';
 import {updateVCard} from '../xmpp/stanzas';
-import axios from 'axios';
-import {registerUserURL} from '../config/routesConstants';
 import {showToast} from '../components/Toast/toast';
 import QrModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
-
-const handleSlide = (
-  type:
-    | number
-    | Animated.Value
-    | Animated.ValueXY
-    | {
-        x: number;
-        y: number;
-      },
-  translateX: Animated.Value | Animated.ValueXY,
-  textColorAnim: Animated.Value | Animated.ValueXY,
-) => {
-  textColorAnim.setValue(0);
-  Animated.spring(translateX, {
-    toValue: type,
-    useNativeDriver: false,
-  }).start();
-  Animated.timing(textColorAnim, {
-    toValue: 1,
-    duration: 700,
-    useNativeDriver: false,
-  }).start();
-};
 
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
@@ -98,54 +75,25 @@ const Item = ({
   balance: string | number;
   index: number;
 }) => (
-  <View
-    style={{
-      height: hp('4.9%'),
-      backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
-      justifyContent: 'center',
-      padding: null,
-    }}>
-    <View style={{flexDirection: 'row', justifyContent: 'center', padding: 10}}>
-      <View
-        style={{
-          flex: 0.2,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Image source={coinImagePath} style={styles.tokenIconStyle} />
+  <HStack
+    paddingX={10}
+    justifyContent={'space-between'}
+    alignItems={'center'}
+    width={'full'}>
+    <HStack justifyContent={'center'} alignItems={'center'}>
+      <Image source={coinImagePath} style={styles.tokenIconStyle} />
 
-        <Text
-          style={{
-            fontFamily: textStyles.regularFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {/* {tokenSymbol} */}
-        </Text>
-      </View>
-      <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
-        <Text
-          style={{
-            fontFamily: textStyles.regularFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {coinReplacedName}
-        </Text>
-      </View>
-      <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
-        <Text
-          style={{
-            fontFamily: textStyles.mediumFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {parseFloat(balance).toFixed(0)}
-        </Text>
-      </View>
-    </View>
-  </View>
+      <Text style={styles.coinsItemText}>{/* {tokenSymbol} */}</Text>
+    </HStack>
+    <VStack justifyContent={'center'} alignItems={'center'}>
+      <Text style={styles.coinsItemText}>{coinReplacedName}</Text>
+    </VStack>
+    <VStack justifyContent={'center'} alignItems={'center'}>
+      <Text style={[styles.coinsItemText]}>
+        {parseFloat(balance).toFixed(0)}
+      </Text>
+    </VStack>
+  </HStack>
 );
 const RenderAssetItem = ({
   item,
@@ -166,7 +114,7 @@ const RenderAssetItem = ({
     assetsYouHave={item.balance}
     totalAssets={item.total}
     onClick={onClick}
-    itemSelected={selectedItem}
+    itemSelected={!!selectedItem}
     nftId={item.nftId}
     mimetype={item.nftMimetype}
     onAssetPress={onAssetPress}
@@ -175,31 +123,6 @@ const RenderAssetItem = ({
     index={index}
   />
 );
-
-const firstLayout = [
-  {
-    width: hp('10.46%'),
-    height: hp('10.46%'),
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: hp('10.46%') / 2,
-  },
-  {
-    flex: 1,
-    marginTop: hp('5.5%'),
-    children: [
-      {
-        paddingTop: hp('2.4%'),
-        backgroundColor: '#FBFB7',
-        borderTopRightRadius: 30,
-        borderTopLeftRadius: 30,
-        height: hp('75%'),
-      },
-    ],
-  },
-];
 
 export const ProfileScreen = observer((props: any) => {
   const {loginStore, walletStore, chatStore, apiStore} = useStores();
@@ -224,17 +147,7 @@ export const ProfileScreen = observer((props: any) => {
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
 
-  const [xTabOne, setXTabOne] = useState(0);
-  const [xTabTwo, setXTabTwo] = useState(0);
-  const [xTabThree, setXTabThree] = useState(0);
-
-  const [translateX, setTranslateX] = useState(new Animated.Value(0));
-  const [textColorAnim, setTextColorAnim] = useState(new Animated.Value(0));
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingVCard, setIsLoadingVCard] = useState(true);
-
-  const [assetCount, setAssetCount] = useState(1);
+  const [assetCount, setAssetCount] = useState(0);
   const [itemsBalance, setItemsBalance] = useState(0);
   const [mediaModalData, setMediaModalData] = useState({
     open: false,
@@ -246,7 +159,7 @@ export const ProfileScreen = observer((props: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
-  const [extraQrData, setExtraQrData] = useState<string>('');
+  const [extraQrData, setExtraQrData] = useState({link: '', mode: ''});
 
   const [isDescriptionEditable, setIsDescriptionEditable] =
     useState<boolean>(false);
@@ -254,15 +167,21 @@ export const ProfileScreen = observer((props: any) => {
     useState<string>(userDescription);
   const [firstNameLocal, setFirstNameLocal] = useState<string>(firstName);
   const [lastNameLocal, setLastNameLocal] = useState<string>(lastName);
-  const [userAvatarLocal, setUserAvatarLocal] = useState<string>(userAvatar);
+  const userAvatarLocal = userAvatar;
+  const underlineOffset = useSharedValue(0);
 
-  useEffect(() => {
-    handleSlide(
-      activeTab === 0 ? xTabOne : activeTab === 1 ? xTabTwo : xTabThree,
-      translateX,
-      textColorAnim,
-    );
-  }, [activeTab]);
+  const animatedTranslate = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: withTiming(underlineOffset.value, {
+            duration: 300,
+            easing: Easing.ease,
+          }),
+        },
+      ],
+    };
+  }, [underlineOffset]);
 
   useEffect(() => {
     setOffset(0);
@@ -282,85 +201,134 @@ export const ProfileScreen = observer((props: any) => {
   }, [balance]);
 
   const calculateAssetsCount = () => {
-    let updatedCoinBalance = 0;
-    let updatedItemsBalance = 0;
-
-    coinData
-      ? coinData.map((item: any) => {
-          updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-        })
-      : null;
-    walletStore.nftItems.map((item: any) => {
-      updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
-    });
-    setItemsBalance(updatedItemsBalance);
+    setItemsBalance(
+      walletStore.nftItems.reduce(
+        (acc, item) => (acc += parseFloat(item.balance)),
+        0,
+      ),
+    );
     setAssetCount(
-      (itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance,
+      coinData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
     );
   };
 
   useEffect(() => {
     calculateAssetsCount();
-
     return () => {};
   }, [walletStore.nftItem, coinData]);
 
-  const loadTabContent = (props: any) => {
-    const {
-      activeTab,
-      coinData,
-      transactions,
-      walletAddress,
-      activeAssetTab,
-      itemsData,
-      setActiveAssetTab,
-      itemsBalance,
-    } = props;
+  const onNamePressed = () => {
+    setModalType('name');
+    setModalVisible(true);
+  };
 
+  const onDescriptionPressed = () => {
+    setIsDescriptionEditable(true);
+    setModalType('description');
+    setModalVisible(true);
+  };
+
+  //changes the user description locally
+  const onDescriptionChange = (text: string) => {
+    setDescriptionLocal(text);
+  };
+
+  //when user clicks on the backdrop of the modal
+  const onBackdropPress = () => {
+    setFirstNameLocal(firstName);
+    setLastNameLocal(lastName);
+    setDescriptionLocal(userDescription);
+    setIsDescriptionEditable(!isDescriptionEditable);
+    setModalVisible(false);
+  };
+
+  //changes the user's profile name locally
+  const onNameChange = (type: 'firstName' | 'lastName', text: string) => {
+    type === 'firstName' ? setFirstNameLocal(text) : setLastNameLocal(text);
+  };
+
+  const setDescription = () => {
+    if (userAvatarLocal && descriptionLocal) {
+      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp);
+    }
+
+    if (!descriptionLocal) {
+      updateVCard(userAvatarLocal, 'No description', chatStore.xmpp);
+    }
+    setIsDescriptionEditable(false);
+    setModalVisible(false);
+  };
+
+  const setNewName = () => {
+    //call api to dapp server to change username
+    //save in async storage
+    //and then change in mobx store
+    if (firstNameLocal) {
+      const bodyData = {
+        firstName: firstNameLocal,
+        lastName: lastNameLocal,
+      };
+      updateUserDisplayName(bodyData);
+    } else {
+      setFirstNameLocal(firstName);
+      showToast('error', 'Error', 'First name is required', 'top');
+    }
+    setModalVisible(false);
+  };
+
+  const handleChatLinks = (url: string) => {
+    const chatJid = parseChatLink(url);
+
+    //argument url can be a chatlink or simple link
+    //first check if url is a chat link if yes then open chatlink else open the link via browser
+    if (pattern1.test(url) || pattern2.test(url)) {
+      openChatFromChatLink(chatJid, walletAddress, navigation, chatStore.xmpp);
+    } else {
+      Linking.openURL(url);
+    }
+  };
+
+  const QRPressed = () => {
+    const xmppId =
+      loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN;
+    const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
+    setExtraQrData({link: profileLink, mode: 'profile'});
+    setQrModalVisible(true);
+  };
+
+  const loadTabContent = () => {
     if (activeTab === 0) {
       return (
         <View style={{marginTop: hp('3%')}}>
-          <View
-            style={{
-              padding: wp('4%'),
-              flexDirection: 'row',
-              paddingBottom: 0,
-              paddingTop: 0,
-            }}>
+          <HStack paddingX={wp('4%')}>
             <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
               style={{marginRight: 20}}>
               <Animated.Text
-                style={{
-                  fontSize: hp('1.97%'),
-                  fontFamily: boldFont,
-                  color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-                }}>
-                Coins{' '}
-                <Text
-                  style={{
-                    fontSize: hp('1.97%'),
+                style={[
+                  styles.tabText,
+                  {
                     color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-                    fontFamily: boldFont,
-                  }}>
-                  ({parseFloat(walletStore.coinBalance).toFixed(0)})
-                </Text>
+                  },
+                ]}>
+                Coins ({parseFloat(walletStore.coinBalance).toFixed(0)})
               </Animated.Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
               <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
                 <Animated.Text
-                  style={{
-                    fontSize: hp('1.97%'),
-                    fontFamily: boldFont,
-                    color: activeAssetTab === 1 ? '#000000' : '#0000004D',
-                  }}>
+                  style={[
+                    styles.tabText,
+                    {
+                      color: activeAssetTab === 1 ? '#000000' : '#0000004D',
+                    },
+                  ]}>
                   Items ({itemsBalance})
                 </Animated.Text>
               </TouchableOpacity>
             )}
-            {/* </View> */}
-          </View>
+          </HStack>
+
           <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
             {activeAssetTab === 0 ? (
               <FlatList
@@ -371,7 +339,7 @@ export const ProfileScreen = observer((props: any) => {
               />
             ) : (
               <FlatList
-                data={itemsData}
+                data={walletStore.nftItems}
                 renderItem={e => (
                   <RenderAssetItem
                     item={e.item}
@@ -423,89 +391,6 @@ export const ProfileScreen = observer((props: any) => {
       );
     }
   };
-
-  const onNamePressed = () => {
-    setModalType('name');
-    setModalVisible(true);
-  };
-
-  const onDescriptionPressed = () => {
-    setIsDescriptionEditable(true);
-    setModalType('description');
-    setModalVisible(true);
-  };
-
-  //changes the user description locally
-  const onDescriptionChange = (text: string) => {
-    setDescriptionLocal(text);
-  };
-
-  //when user clicks on the backdrop of the modal
-  const onBackdropPress = () => {
-    setFirstNameLocal(firstName);
-    setLastNameLocal(lastName);
-    setDescriptionLocal(userDescription);
-    setIsDescriptionEditable(!isDescriptionEditable);
-    setModalVisible(false);
-  };
-
-  //changes the user's profile name locally
-  const onNameChange = (type: 'firstName' | 'lastName', text: string) => {
-    if (type === 'firstName') {
-      setFirstNameLocal(text);
-    } else {
-      setLastNameLocal(text);
-    }
-  };
-
-  const setDescription = () => {
-    if (userAvatarLocal && descriptionLocal) {
-      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp);
-    }
-
-    if (!descriptionLocal) {
-      updateVCard(userAvatarLocal, 'No description', chatStore.xmpp);
-    }
-    setIsDescriptionEditable(false);
-    setModalVisible(false);
-  };
-
-  const setNewName = () => {
-    //call api to dapp server to change username
-    //save in async storage
-    //and then change in mobx store
-    if (firstNameLocal) {
-      const bodyData = {
-        firstName: firstNameLocal,
-        lastName: lastNameLocal,
-      };
-      updateUserDisplayName(bodyData);
-    } else {
-      setFirstNameLocal(firstName);
-      showToast('error', 'Error', 'First name is required', 'top');
-    }
-    setModalVisible(false);
-  };
-
-  const handleChatLinks = (url: string) => {
-    const chatJid = parseChatLink(url);
-
-    //argument url can be a chatlink or simple link
-    //first check if url is a chat link if yes then open chatlink else open the link via browser
-    if (pattern1.test(url) || pattern2.test(url)) {
-      openChatFromChatLink(chatJid, walletAddress, navigation, chatStore.xmpp);
-    } else {
-      Linking.openURL(url);
-    }
-  };
-
-  const QRPressed = () => {
-    const xmppId = loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN;
-    const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
-    setExtraQrData({link: profileLink, mode: 'profile'});
-    setQrModalVisible(true);
-  };
-
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
@@ -516,194 +401,135 @@ export const ProfileScreen = observer((props: any) => {
         />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
-          <View
-            style={{
-              width: hp('10.46%'),
-              height: hp('10.46%'),
-              position: 'absolute',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: primaryColor,
-              borderRadius: hp('10.46%') / 2,
-            }}>
-            <SkeletonContent
-              containerStyle={{alignItems: 'center'}}
-              layout={firstLayout}
-              isLoading={false}>
-              {loginStore.userAvatar ? (
-                <Image
-                  source={{uri: loginStore.userAvatar}}
-                  style={{
-                    height: hp('10.46%'),
-                    width: hp('10.46%'),
-                    borderRadius: hp('10.46%') / 2,
-                  }}
-                />
-              ) : (
+          <HStack
+            width={hp('10.46%')}
+            height={hp('10.46%')}
+            position={'absolute'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            bgColor={primaryColor}
+            borderRadius={hp('10.46%') / 2}>
+            {loginStore.userAvatar ? (
+              <Image
+                source={{uri: loginStore.userAvatar}}
+                style={{
+                  height: hp('10.46%'),
+                  width: hp('10.46%'),
+                  borderRadius: hp('10.46%') / 2,
+                }}
+              />
+            ) : (
+              <Text
+                style={{
+                  fontSize: 40,
+                  color: 'white',
+                }}>
+                {firstNameLocal[0] + lastNameLocal[0]}
+              </Text>
+            )}
+          </HStack>
+        </View>
+        <VStack
+          paddingTop={hp('2.4%')}
+          marginTop={hp('5.5%')}
+          bgColor={'#FBFBFB'}
+          borderTopLeftRadius={30}
+          borderTopRightRadius={30}
+          height={hp('75%')}>
+          <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
+            <TouchableOpacity onPress={onNamePressed}>
+              <Text
+                style={{
+                  fontSize: hp('2.216%'),
+                  fontFamily: textStyles.mediumFont,
+                  color: '#000000',
+                }}>
+                {firstNameLocal} {lastNameLocal}
+              </Text>
+            </TouchableOpacity>
+
+            <HStack paddingX={wp('4%')}>
+              <Hyperlink
+                onPress={url => handleChatLinks(url)}
+                linkStyle={{
+                  color: '#2980b9',
+                  fontSize: hp('1.8%'),
+                  textDecorationLine: 'underline',
+                }}>
                 <Text
                   style={{
-                    fontSize: 40,
-                    color: 'white',
+                    fontSize: hp('2.23%'),
+                    fontFamily: textStyles.regularFont,
+                    textAlign: 'center',
+                    color: primaryColor,
                   }}>
-                  {firstNameLocal[0] + lastNameLocal[0]}
+                  {descriptionLocal && !isDescriptionEditable
+                    ? descriptionLocal
+                    : 'Add your description'}
                 </Text>
-              )}
-            </SkeletonContent>
-          </View>
-        </View>
-        <View style={{flex: 1, marginTop: hp('5.5%')}}>
-          <View
-            style={{
-              paddingTop: hp('2.4%'),
-              backgroundColor: '#FBFBFB',
-              borderTopRightRadius: 30,
-              borderTopLeftRadius: 30,
-              height: hp('75%'),
-            }}>
-            <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
-              <SkeletonContent
-                containerStyle={{width: wp('100%'), alignItems: 'center'}}
-                layout={[
-                  {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
-                ]}
-                isLoading={!firstNameLocal}>
-                <TouchableOpacity onPress={onNamePressed}>
-                  <Text
-                    style={{
-                      fontSize: hp('2.216%'),
-                      fontFamily: textStyles.mediumFont,
-                      color: '#000000',
-                    }}>
-                    {firstNameLocal} {lastNameLocal}
-                  </Text>
-                </TouchableOpacity>
-              </SkeletonContent>
-              <View
-                style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
-                <View
-                  style={{
-                    padding: hp('4%'),
-                    paddingBottom: 0,
-                    paddingTop: 0,
-                  }}>
-                  <Hyperlink
-                    onPress={url => handleChatLinks(url)}
-                    linkStyle={{
-                      color: '#2980b9',
-                      fontSize: hp('1.8%'),
-                      textDecorationLine: 'underline',
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: hp('2.23%'),
-                        fontFamily: textStyles.regularFont,
-                        textAlign: 'center',
-                        color: primaryColor,
-                      }}>
-                      {descriptionLocal && !isDescriptionEditable
-                        ? descriptionLocal
-                        : 'Add your description'}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={onDescriptionPressed}
-                      style={{alignItems: 'center', margin: 10}}>
-                      <AntIcon
-                        name="edit"
-                        color={commonColors.primaryColor}
-                        size={hp('2%')}
-                      />
-                    </TouchableOpacity>
-                  </Hyperlink>
-                </View>
-              </View>
-            </View>
-
-            <View>
-              <View style={{padding: wp('4%')}}>
-                <SkeletonContent
-                  isLoading={!assetCount}
-                  containerStyle={{
-                    width: '100%',
-                    alignItems: !assetCount ? 'center' : null,
-                  }}
-                  layout={[
-                    {width: wp('90%'), height: hp('2.216%'), marginBottom: 6},
-                  ]}>
-                  <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity
-                      onLayout={event => setXTabOne(event.nativeEvent.layout.x)}
-                      onPress={() => setActiveTab(0)}>
-                      <Animated.Text
-                        style={{
-                          fontSize: hp('1.97%'),
-                          fontFamily: textStyles.boldFont,
-                          color: activeTab === 0 ? '#000000' : '#0000004D',
-                        }}>
-                        Assets ({assetCount})
-                      </Animated.Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={{marginLeft: 20}}
-                      onLayout={event => setXTabTwo(event.nativeEvent.layout.x)}
-                      onPress={() => setActiveTab(1)}>
-                      <Animated.Text
-                        style={{
-                          fontSize: hp('1.97%'),
-                          fontFamily: textStyles.boldFont,
-                          color: activeTab === 1 ? '#000000' : '#0000004D',
-                        }}>
-                        Transactions ({walletStore.transactions.length})
-                      </Animated.Text>
-                    </TouchableOpacity>
-                  </View>
-                </SkeletonContent>
-
-                {isLoading ? null : (
-                  <Animated.View
-                    style={{
-                      width: wp('10%'),
-                      borderWidth: 1,
-                      transform: [
-                        {
-                          translateX,
-                        },
-                      ],
-                    }}
+                <TouchableOpacity
+                  onPress={onDescriptionPressed}
+                  style={{alignItems: 'center', margin: 10}}>
+                  <AntIcon
+                    name="edit"
+                    color={commonColors.primaryColor}
+                    size={hp('2%')}
                   />
-                )}
-              </View>
-              <SkeletonContent
-                isLoading={!transactions}
-                containerStyle={{
-                  width: '100%',
-                  padding: !transactions ? hp('3%') : null,
-                  alignItems: !transactions ? 'center' : null,
-                }}
-                layout={[
-                  {width: wp('90%'), height: hp('30%'), marginBottom: 6},
-                ]}>
-                {loadTabContent({
-                  activeTab,
-                  coinData,
-                  transactions,
-                  walletAddress,
-                  activeAssetTab,
-                  setActiveAssetTab,
-                  itemsData: walletStore.nftItems,
-                  itemsBalance,
-                  navigation: props.navigation,
-                })}
-              </SkeletonContent>
-            </View>
+                </TouchableOpacity>
+              </Hyperlink>
+            </HStack>
           </View>
-          {/* <ModalList
-              type={this.state.modalType}
-              show={this.state.showModal}
-              extraData={this.state.extraData}
-              closeModal={this.closeModal}
-            /> */}
-        </View>
+
+          <View>
+            <View style={{padding: wp('4%')}}>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setActiveTab(0);
+                    underlineOffset.value = 0;
+                  }}>
+                  <Animated.Text
+                    style={[
+                      styles.tabText,
+                      {
+                        color: activeTab === 0 ? '#000000' : '#0000004D',
+                      },
+                    ]}>
+                    Assets ({assetCount})
+                  </Animated.Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{marginLeft: 20}}
+                  onPress={() => {
+                    setActiveTab(1);
+                    underlineOffset.value = 120;
+                  }}>
+                  <Animated.Text
+                    style={[
+                      styles.tabText,
+                      {
+                        color: activeTab === 1 ? '#000000' : '#0000004D',
+                      },
+                    ]}>
+                    Transactions ({walletStore.transactions.length})
+                  </Animated.Text>
+                </TouchableOpacity>
+              </View>
+
+              <Animated.View
+                style={[
+                  animatedTranslate,
+                  {
+                    width: wp('10%'),
+                    borderWidth: 1,
+                  },
+                ]}
+              />
+            </View>
+
+            {loadTabContent()}
+          </View>
+        </VStack>
       </View>
       <ProfileModal
         description={descriptionLocal}
@@ -739,92 +565,18 @@ const styles = StyleSheet.create({
     height: hp('3%'),
     width: hp('3%'),
   },
-  tabZeroContainerStyle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 10,
-    height: hp('4.9%'),
-  },
-  tokenTextAndSymbolContainer: {
-    flex: 0.2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tokenNameContainer: {
-    flex: 0.6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  safeAreaViewStyle: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
+
   mainContainerStyle: {
     backgroundColor: primaryDarkColor,
     flex: 1,
   },
-  profileMainContainerStyle: {
-    zIndex: +1,
-    alignItems: 'center',
+  tabText: {
+    fontSize: hp('1.97%'),
+    fontFamily: boldFont,
   },
-  profileInnerContainerStyle: {
-    width: hp('10.46%'),
-    height: hp('10.46%'),
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: hp('10.46%') / 2,
-  },
-  profileImageStyle: {
-    height: hp('10.46%'),
-    width: hp('10.46%'),
-    borderRadius: hp('10.46%') / 2,
-  },
-  profileImageInitialsTextStyle: {
-    fontSize: 40,
-    color: 'white',
-  },
-  bodyMainContainerStyle: {
-    flex: 1,
-    marginTop: hp('5.5%'),
-  },
-  bodyInnerContainerStyle: {
-    paddingTop: hp('2.4%'),
-    backgroundColor: '#FBFBFB',
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
-    height: hp('75%'),
-  },
-  profileNameSkeletonContainerStyle: {
-    width: wp('100%'),
-    alignItems: 'center',
-  },
-  profileNameTextStyle: {
-    fontSize: hp('2.216%'),
+  coinsItemText: {
     fontFamily: textStyles.mediumFont,
+    fontSize: hp('1.97%'),
     color: '#000000',
   },
-  nameAndDescriptionContainerStyle: {
-    alignItems: 'center',
-    marginTop: hp('5.54%'),
-  },
-  descriptionContainerStyle: {
-    padding: hp('4%'),
-    paddingBottom: 0,
-    paddingTop: 0,
-  },
-  descriptionSkeletonContainerStyle: {
-    width: wp('100%'),
-    alignItems: 'center',
-  },
-  descriptionTextStyle: {
-    fontSize: hp('2.23%'),
-    fontFamily: textStyles.regularFont,
-    textAlign: 'center',
-    color: primaryDarkColor,
-  },
-  contentContainerStyle: {
-    padding: wp('4%'),
-  },
-  contentSkeletonContainerStyle: {},
 });

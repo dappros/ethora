@@ -212,7 +212,7 @@ const MintScreen = (props: MintScreenProps) => {
           <View style={classes.section1}>
             <TextInput
               value={itemName}
-              onChangeText={itemName => setItemName(itemName)}
+              onChangeText={setItemName}
               placeholder="Item Name"
               placeholderTextColor={commonColors.primaryColor}
               style={classes.itemNameInput}

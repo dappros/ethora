@@ -89,7 +89,7 @@ export class WalletStore {
   };
   stores: RootStore | {} = {};
   defaultUrl = '';
-  coinBalance: [] = [];
+  coinBalance = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -119,7 +119,7 @@ export class WalletStore {
         tokenName: '',
       };
       this.defaultUrl = this.stores.apiStore.defaultUrl;
-      this.coinBalance = [];
+      this.coinBalance = 0;
     });
   }
 

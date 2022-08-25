@@ -7,17 +7,18 @@ import Toast from 'react-native-toast-message';
 import NetInfo from '@react-native-community/netinfo';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
-import WalletConnectProvider, { useWalletConnect } from '@walletconnect/react-native-dapp';
+import WalletConnectProvider, {
+  useWalletConnect,
+} from '@walletconnect/react-native-dapp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const App = () => {
-
   React.useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       console.log('Connection type', state.type);
       console.log('Is connected?', state.isConnected);
     });
     SplashScreen.hide();
-    return function cleanup(){
+    return function cleanup() {
       unsubscribe();
     };
   }, []);
@@ -28,13 +29,13 @@ const App = () => {
         storageOptions={{
           asyncStorage: AsyncStorage,
         }}>
-        <GestureHandlerRootView style={{flex: 1}}>
-          <NativeBaseProvider>
-            <NavigationContainer>
+        <NativeBaseProvider>
+          <NavigationContainer>
+            <GestureHandlerRootView style={{flex: 1}}>
               <RootStack />
-            </NavigationContainer>
-          </NativeBaseProvider>
-        </GestureHandlerRootView>
+            </GestureHandlerRootView>
+          </NavigationContainer>
+        </NativeBaseProvider>
       </WalletConnectProvider>
       <Toast />
     </StoreProvider>

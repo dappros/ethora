@@ -74,7 +74,7 @@ export const EnterInviteCode = observer(() => {
         paddingHorizontal: 10
       }}>
       <Input
-        maxLength={15}
+        maxLength={30}
         marginBottom={2}
         fontFamily={textStyles.lightFont}
         fontSize={hp('1.6%')}
