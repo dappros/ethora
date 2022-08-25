@@ -11,7 +11,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Animated,
   FlatList,
   StyleSheet,
   Linking,
@@ -32,7 +31,7 @@ import {
 } from '../../docs/config';
 import {NftListItem} from '../components/Transactions/NftListItem';
 import {useStores} from '../stores/context';
-import {Button, HStack} from 'native-base';
+import {Button, HStack, VStack} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {observer} from 'mobx-react-lite';
 import {ROUTES} from '../constants/routes';
@@ -51,33 +50,15 @@ import {
   mapNfmtBalances,
   mapTransactions,
 } from '../stores/walletStore';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
-
-const handleSlide = (
-  type:
-    | number
-    | Animated.Value
-    | Animated.ValueXY
-    | {
-        x: number;
-        y: number;
-      },
-  translateX: Animated.Value | Animated.ValueXY,
-  textColorAnim: Animated.Value | Animated.ValueXY,
-) => {
-  textColorAnim.setValue(0);
-  Animated.spring(translateX, {
-    toValue: type,
-    useNativeDriver: false,
-  }).start();
-  Animated.timing(textColorAnim, {
-    toValue: 1,
-    duration: 700,
-    useNativeDriver: false,
-  }).start();
-};
 
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
@@ -99,54 +80,25 @@ const Item = ({
   balance: string | number;
   index: number;
 }) => (
-  <View
-    style={{
-      height: hp('4.9%'),
-      backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
-      justifyContent: 'center',
-      padding: null,
-    }}>
-    <View style={{flexDirection: 'row', justifyContent: 'center', padding: 10}}>
-      <View
-        style={{
-          flex: 0.2,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Image source={coinImagePath} style={styles.tokenIconStyle} />
+  <HStack
+    paddingX={10}
+    justifyContent={'space-between'}
+    alignItems={'center'}
+    width={'full'}>
+    <HStack justifyContent={'center'} alignItems={'center'}>
+      <Image source={coinImagePath} style={styles.tokenIconStyle} />
 
-        <Text
-          style={{
-            fontFamily: textStyles.regularFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {/* {tokenSymbol} */}
-        </Text>
-      </View>
-      <View style={{flex: 0.6, alignItems: 'center', justifyContent: 'center'}}>
-        <Text
-          style={{
-            fontFamily: textStyles.regularFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {tokenName === coinsMainName ? coinReplacedName : tokenName}
-        </Text>
-      </View>
-      <View style={{flex: 0.2, alignItems: 'center', justifyContent: 'center'}}>
-        <Text
-          style={{
-            fontFamily: textStyles.regularFont,
-            fontSize: hp('1.97%'),
-            color: '#000000',
-          }}>
-          {parseFloat(balance).toFixed(0)}
-        </Text>
-      </View>
-    </View>
-  </View>
+      <Text style={styles.coinsItemText}>{/* {tokenSymbol} */}</Text>
+    </HStack>
+    <VStack justifyContent={'center'} alignItems={'center'}>
+      <Text style={styles.coinsItemText}>{coinReplacedName}</Text>
+    </VStack>
+    <VStack justifyContent={'center'} alignItems={'center'}>
+      <Text style={[styles.coinsItemText]}>
+        {tokenName === coinsMainName ? coinReplacedName : tokenName}
+      </Text>
+    </VStack>
+  </HStack>
 );
 
 const firstLayout = [
@@ -181,23 +133,11 @@ const OtherUserProfileScreen = observer((props: any) => {
   const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
     walletStore;
 
-  const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
-
-  const [anotherUserTransaction, setAnotherUserTransaction] = useState(null);
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
-  const [transactionCount, setTransactionCount] = useState(0);
-
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
-
-  const [xTabOne, setXTabOne] = useState(0);
-  const [xTabTwo, setXTabTwo] = useState(0);
-  const [xTabThree, setXTabThree] = useState(0);
-
-  const [translateX, setTranslateX] = useState(new Animated.Value(0));
-  const [textColorAnim, setTextColorAnim] = useState(new Animated.Value(0));
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingVCard, setIsLoadingVCard] = useState(true);
@@ -209,19 +149,33 @@ const OtherUserProfileScreen = observer((props: any) => {
     url: '',
     mimetype: '',
   });
-  useEffect(() => {
-    handleSlide(
-      activeTab === 0 ? xTabOne : activeTab === 1 ? xTabTwo : xTabThree,
-      translateX,
-      textColorAnim,
-    );
-  }, [activeTab]);
+  const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
+
+  const anotherUserTransaction = walletStore.anotherUserTransaction;
+  const transactionCount = anotherUserTransaction.length;
+
+  const underlineOffset = useSharedValue(0);
+
+  const animatedTranslate = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: withTiming(underlineOffset.value, {duration: 350, easing: Easing.ease}),
+        },
+      ],
+    };
+  }, [underlineOffset]);
+
   useEffect(() => {
     setOffset(0);
     setTotal(0);
 
     return () => {
       clearPaginationData();
+      setCoinData([]);
+      setIsLoading(true);
+      setIsLoadingVCard(true);
+      setItemsData([]);
     };
   }, []);
 
@@ -276,17 +230,18 @@ const OtherUserProfileScreen = observer((props: any) => {
       );
     }, 3000);
   };
-
+  const calculateBalances = () => {
+    setItemsBalance(
+      itemsData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
+    );
+    setAssetCount(
+      coinData.reduce(
+        (acc, item) => (acc += parseFloat(item.balance)) + itemsBalance,
+        0,
+      ),
+    );
+  };
   useEffect(() => {
-    let allTransactions: any = walletStore.anotherUserTransaction;
-    setAnotherUserTransaction(allTransactions);
-
-    setTransactionCount(walletStore.anotherUserTransaction.length);
-    setIsLoading(false);
-  }, [walletStore.anotherUserTransaction]);
-
-  useEffect(() => {
-    let updatedCoinBalance = 0;
     if (anotherUserBalance?.length > 0) {
       setCoinData(
         anotherUserBalance.filter(
@@ -300,32 +255,12 @@ const OtherUserProfileScreen = observer((props: any) => {
           .reverse(),
       );
 
-      coinData
-        ? coinData.map((item: any) => {
-            updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-          })
-        : null;
-
-      setAssetCount(itemsBalance + updatedCoinBalance);
+      calculateBalances();
     }
   }, [anotherUserBalance]);
 
   useEffect(() => {
-    let updatedCoinBalance = 0;
-    let updatedItemsBalance = 0;
-
-    coinData
-      ? coinData.map((item: any) => {
-          updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-        })
-      : null;
-    itemsData.map((item: any) => {
-      updatedItemsBalance = updatedItemsBalance + parseFloat(item.balance);
-    });
-    setItemsBalance(updatedItemsBalance);
-    setAssetCount(
-      (itemsTransfersAllowed ? updatedItemsBalance : 0) + updatedCoinBalance,
-    );
+    calculateBalances();
 
     return () => {};
   }, [itemsData, coinData]);
@@ -347,86 +282,38 @@ const OtherUserProfileScreen = observer((props: any) => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
 
-  useEffect(() => {
-    return function cleanup() {
-      // setAnotherUserAvatar('');
-      // setAnotherUserFirstname('null');
-      // setAnotherUserLastname('null');
-      // setAnotherUserDescription('');
-
-      setCoinData([]);
-      setAnotherUserTransaction(null);
-      setTransactionCount(0);
-      setIsLoading(true);
-      setIsLoadingVCard(true);
-      setItemsData([]);
-    };
-  }, []);
-  const loadTabContent = (props: any) => {
-    const {
-      activeTab,
-      coinData,
-      anotherUserTransaction,
-      anotherUserWalletAddress,
-      activeAssetTab,
-      itemsData,
-      setActiveAssetTab,
-      itemsBalance,
-      navigation,
-    } = props;
-
-    let updatedCoinBalance = 0;
-
-    coinData
-      ? coinData.map(item => {
-          updatedCoinBalance = updatedCoinBalance + parseFloat(item.balance);
-        })
-      : null;
-
+  const loadTabContent = () => {
     if (activeTab === 0) {
       return (
         <View style={{marginTop: hp('3%')}}>
-          <View
-            style={{
-              padding: wp('4%'),
-              flexDirection: 'row',
-              paddingBottom: 0,
-              paddingTop: 0,
-            }}>
+          <HStack paddingX={wp('4%')}>
             <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
               style={{marginRight: 20}}>
-              <Animated.Text
-                style={{
-                  fontSize: hp('1.97%'),
-                  fontFamily: boldFont,
-                  color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-                }}>
-                Coins{' '}
-                <Text
-                  style={{
-                    fontSize: hp('1.97%'),
+              <Text
+                style={[
+                  styles.tabText,
+                  {
                     color: activeAssetTab === 0 ? '#000000' : '#0000004D',
-                    fontFamily: boldFont,
-                  }}>
-                  ({parseFloat(updatedCoinBalance).toFixed(0)})
-                </Text>
-              </Animated.Text>
+                  },
+                ]}>
+                Coins ({parseFloat(assetCount - itemsBalance).toFixed(0)})
+              </Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
               <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
-                <Animated.Text
-                  style={{
-                    fontSize: hp('1.97%'),
-                    fontFamily: boldFont,
-                    color: activeAssetTab === 1 ? '#000000' : '#0000004D',
-                  }}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color: activeAssetTab === 1 ? '#000000' : '#0000004D',
+                    },
+                  ]}>
                   Items ({itemsBalance})
-                </Animated.Text>
+                </Text>
               </TouchableOpacity>
             )}
-            {/* </View> */}
-          </View>
+          </HStack>
           <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
             {activeAssetTab === 0 ? (
               <FlatList
@@ -501,26 +388,17 @@ const OtherUserProfileScreen = observer((props: any) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        {/* <CustomHeader
-          // isQR={true}
-          title="User's profile"
-          onQRPressed={() => this.QRPressed()}
-          navigation={navigation}
-        /> */}
-
         <SecondaryHeader title={"User's profile"} />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
-          <View
-            style={{
-              width: hp('10.46%'),
-              height: hp('10.46%'),
-              position: 'absolute',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: isLoadingVCard ? 'white' : primaryColor,
-              borderRadius: hp('10.46%') / 2,
-            }}>
+          <HStack
+            width={hp('10.46%')}
+            height={hp('10.46%')}
+            position={'absolute'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            bgColor={primaryColor}
+            borderRadius={hp('10.46%') / 2}>
             <SkeletonContent
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
@@ -545,17 +423,15 @@ const OtherUserProfileScreen = observer((props: any) => {
                 </Text>
               )}
             </SkeletonContent>
-          </View>
+          </HStack>
         </View>
         <View style={{flex: 1, marginTop: hp('5.5%')}}>
-          <View
-            style={{
-              paddingTop: hp('2.4%'),
-              backgroundColor: '#FBFBFB',
-              borderTopRightRadius: 30,
-              borderTopLeftRadius: 30,
-              height: hp('75%'),
-            }}>
+          <VStack
+            paddingTop={hp('2.4%')}
+            bgColor={'#FBFBFB'}
+            borderTopLeftRadius={30}
+            borderTopRightRadius={30}
+            height={hp('75%')}>
             <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
               <SkeletonContent
                 containerStyle={{width: wp('100%'), alignItems: 'center'}}
@@ -585,31 +461,12 @@ const OtherUserProfileScreen = observer((props: any) => {
                     containerStyle={{width: wp('100%'), alignItems: 'center'}}
                     layout={[{width: wp('60%'), height: 70, marginBottom: 6}]}
                     isLoading={isLoadingVCard}>
-                    <Text
-                      style={{
-                        fontSize: hp('2.23%'),
-                        fontFamily: textStyles.regularFont,
-                        textAlign: 'center',
-                        color: primaryColor,
-                      }}>
+                    <Text style={styles.descriptionText}>
                       {otherUserStore.description}
                     </Text>
                     <TouchableOpacity
                       onPress={onDirectChatPress}
-                      style={{
-                        backgroundColor: primaryDarkColor,
-                        borderRadius: 10,
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                        fontSize: hp('2.23%'),
-                        fontFamily: textStyles.regularFont,
-                        textAlign: 'center',
-                        color: '0000004D',
-                        backgroundColor: commonColors.primaryDarkColor,
-                        borderRadius: 5,
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                      }}>
+                      style={styles.chatButton}>
                       <HStack alignItems={'center'}>
                         <Ionicons
                           name="chatbubble-ellipses"
@@ -640,45 +497,49 @@ const OtherUserProfileScreen = observer((props: any) => {
                   ]}>
                   <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity
-                      onLayout={event => setXTabOne(event.nativeEvent.layout.x)}
-                      onPress={() => setActiveTab(0)}>
-                      <Animated.Text
-                        style={{
-                          fontSize: hp('1.97%'),
-                          fontFamily: textStyles.boldFont,
-                          color: activeTab === 0 ? '#000000' : '#0000004D',
-                        }}>
+                      onPress={() => {
+                        setActiveTab(0);
+                        underlineOffset.value = 0;
+                      }}>
+                      <Text
+                        style={[
+                          styles.tabText,
+                          {
+                            color: activeTab === 0 ? '#000000' : '#0000004D',
+                          },
+                        ]}>
                         Assets ({assetCount})
-                      </Animated.Text>
+                      </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={{marginLeft: 20}}
-                      onLayout={event => setXTabTwo(event.nativeEvent.layout.x)}
-                      onPress={() => setActiveTab(1)}>
-                      <Animated.Text
-                        style={{
-                          fontSize: hp('1.97%'),
-                          fontFamily: textStyles.boldFont,
-                          color: activeTab === 1 ? '#000000' : '#0000004D',
-                        }}>
+                      onPress={() => {
+                        setActiveTab(1);
+                        underlineOffset.value = 110;
+                      }}>
+                      <Text
+                        style={[
+                          styles.tabText,
+                          {
+                            color: activeTab === 1 ? '#000000' : '#0000004D',
+                          },
+                        ]}>
                         Transactions ({transactionCount})
-                      </Animated.Text>
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </SkeletonContent>
 
                 {isLoading ? null : (
                   <Animated.View
-                    style={{
-                      width: wp('10%'),
-                      borderWidth: 1,
-                      transform: [
-                        {
-                          translateX,
-                        },
-                      ],
-                    }}
+                    style={[
+                      {
+                        width: wp('10%'),
+                        borderWidth: 1,
+                      },
+                      animatedTranslate,
+                    ]}
                   />
                 )}
               </View>
@@ -692,20 +553,10 @@ const OtherUserProfileScreen = observer((props: any) => {
                 layout={[
                   {width: wp('90%'), height: hp('30%'), marginBottom: 6},
                 ]}>
-                {loadTabContent({
-                  activeTab,
-                  coinData,
-                  anotherUserTransaction,
-                  anotherUserWalletAddress,
-                  activeAssetTab,
-                  setActiveAssetTab,
-                  itemsData,
-                  itemsBalance,
-                  navigation: props.navigation,
-                })}
+                {loadTabContent()}
               </SkeletonContent>
             </View>
-          </View>
+          </VStack>
         </View>
       </View>
       <NftMediaModal
@@ -723,94 +574,36 @@ const styles = StyleSheet.create({
     height: hp('3%'),
     width: hp('3%'),
   },
-  tabZeroContainerStyle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: 10,
-    height: hp('4.9%'),
-  },
-  tokenTextAndSymbolContainer: {
-    flex: 0.2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tokenNameContainer: {
-    flex: 0.6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  safeAreaViewStyle: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
+
   mainContainerStyle: {
     backgroundColor: primaryDarkColor,
     flex: 1,
   },
-  profileMainContainerStyle: {
-    zIndex: +1,
-    alignItems: 'center',
+  tabText: {
+    fontSize: hp('1.97%'),
+    fontFamily: boldFont,
   },
-  profileInnerContainerStyle: {
-    width: hp('10.46%'),
-    height: hp('10.46%'),
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: hp('10.46%') / 2,
-  },
-  profileImageStyle: {
-    height: hp('10.46%'),
-    width: hp('10.46%'),
-    borderRadius: hp('10.46%') / 2,
-  },
-  profileImageInitialsTextStyle: {
-    fontSize: 40,
-    color: 'white',
-  },
-  bodyMainContainerStyle: {
-    flex: 1,
-    marginTop: hp('5.5%'),
-  },
-  bodyInnerContainerStyle: {
-    paddingTop: hp('2.4%'),
-    backgroundColor: '#FBFBFB',
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
-    height: hp('75%'),
-  },
-  profileNameSkeletonContainerStyle: {
-    width: wp('100%'),
-    alignItems: 'center',
-  },
-  profileNameTextStyle: {
-    fontSize: hp('2.216%'),
+  coinsItemText: {
     fontFamily: textStyles.mediumFont,
+    fontSize: hp('1.97%'),
     color: '#000000',
   },
-  nameAndDescriptionContainerStyle: {
-    alignItems: 'center',
-    marginTop: hp('5.54%'),
-  },
-  descriptionContainerStyle: {
-    padding: hp('4%'),
-    paddingBottom: 0,
-    paddingTop: 0,
-  },
-  descriptionSkeletonContainerStyle: {
-    width: wp('100%'),
-    alignItems: 'center',
-  },
-  descriptionTextStyle: {
+  chatButton: {
     fontSize: hp('2.23%'),
     fontFamily: textStyles.regularFont,
     textAlign: 'center',
-    color: primaryDarkColor,
+    color: '0000004D',
+    backgroundColor: commonColors.primaryDarkColor,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
-  contentContainerStyle: {
-    padding: wp('4%'),
+  descriptionText: {
+    fontSize: hp('2.23%'),
+    fontFamily: textStyles.regularFont,
+    textAlign: 'center',
+    color: primaryColor,
   },
-  contentSkeletonContainerStyle: {},
 });
 
 export default OtherUserProfileScreen;

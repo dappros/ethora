@@ -208,7 +208,7 @@ export const ProfileScreen = observer((props: any) => {
       ),
     );
     setAssetCount(
-      coinData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
+      coinData.reduce((acc, item) => (acc += parseFloat(item.balance)) + itemsBalance, 0),
     );
   };
 
