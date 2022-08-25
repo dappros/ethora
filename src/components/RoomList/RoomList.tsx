@@ -32,8 +32,8 @@ import {commonColors, textStyles} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
-import { ROUTES } from '../../constants/routes';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from '../../constants/routes';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
@@ -41,7 +41,8 @@ export const RoomList = observer(({roomsList}: any) => {
   const [pickedChatJid, setPickedChatJid] = useState<string>('');
   const [newChatName, setNewChatName] = useState<string>('');
   const [movingActive, setMovingActive] = useState<boolean>(false);
-  const [createChatButtonPressed, setCreateChatButtonPressed] = useState<boolean>(false);
+  const [createChatButtonPressed, setCreateChatButtonPressed] =
+    useState<boolean>(false);
 
   const navigation = useNavigation();
 
@@ -178,7 +179,6 @@ export const RoomList = observer(({roomsList}: any) => {
         onDragEnd={({data}) => onDragEnd(data)}
         keyExtractor={(item: any) => `draggable-item-${item.jid}`}
         renderItem={({item, drag, isActive}) => {
-          const room = chatStore.roomsInfoMap[item.jid];
           return (
             <RoomListItem
               counter={item.counter}
@@ -186,9 +186,6 @@ export const RoomList = observer(({roomsList}: any) => {
               isActive={isActive}
               jid={item.jid}
               name={item.name}
-              lastMessageTime={room?.lastMessageTime}
-              lastUserText={room?.lastUserText}
-              lastUserName={room?.lastUserName}
               participants={item.participants}
               key={item.jid}
               renameChat={renameChat}
@@ -200,50 +197,43 @@ export const RoomList = observer(({roomsList}: any) => {
         }}
       />
       <Pressable
-      onPress={()=>navigation.navigate(ROUTES.NEWCHAT)}
-      bg={createChatButtonPressed?"coolGray.200":"transparent"}
-      padding={"5"}
-      paddingLeft={"4"}
-      onPressIn={()=>setCreateChatButtonPressed(true)}
-      onPressOut={()=>setCreateChatButtonPressed(false)}
-      // justifyContent={"center"}
-      // alignItems="flex-start"
-      >
-        <HStack 
-        alignItems={"center"}
-        >
-        <Box
-        w={hp('5.5%')}
-        h={hp('5.5%')} 
-        bg={"#64BF7C"} 
-        rounded="full" 
-        justifyContent={"center"} 
-        alignItems="center"
-        marginRight={2}
-        >
-          <AntDesign 
-          name='plus' 
-          color={"#FFF"} 
-          size={hp('4.3%')}
-          />
-        </Box>
-        <View>
-          <Text
-          fontSize={hp('2%')}
-          fontFamily={textStyles.boldFont}
-          _dark={{
-            color: 'warmGray.50',
-          }}
-          color="coolGray.800">Create a new room</Text>
-          <Text
-          fontFamily={textStyles.regularFont}
-          fontSize={hp('1.5%')}
-          color="coolGray.600"
-          _dark={{
-            color: 'warmGray.100',
-          }}
-          >Your own room, share with anyone you like</Text>
-        </View>
+        onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
+        bg={createChatButtonPressed ? 'coolGray.200' : 'transparent'}
+        padding={'5'}
+        paddingLeft={'4'}
+        onPressIn={() => setCreateChatButtonPressed(true)}
+        onPressOut={() => setCreateChatButtonPressed(false)}>
+        <HStack alignItems={'center'}>
+          <Box
+            w={hp('5.5%')}
+            h={hp('5.5%')}
+            bg={'#64BF7C'}
+            rounded="full"
+            justifyContent={'center'}
+            alignItems="center"
+            marginRight={2}>
+            <AntDesign name="plus" color={'#FFF'} size={hp('4.3%')} />
+          </Box>
+          <View>
+            <Text
+              fontSize={hp('2%')}
+              fontFamily={textStyles.boldFont}
+              _dark={{
+                color: 'warmGray.50',
+              }}
+              color="coolGray.800">
+              Create a new room
+            </Text>
+            <Text
+              fontFamily={textStyles.regularFont}
+              fontSize={hp('1.5%')}
+              color="coolGray.600"
+              _dark={{
+                color: 'warmGray.100',
+              }}>
+              Your own room, share with anyone you like
+            </Text>
+          </View>
         </HStack>
       </Pressable>
     </>

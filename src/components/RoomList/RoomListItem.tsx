@@ -18,15 +18,13 @@ import {Swipeable} from 'react-native-gesture-handler';
 
 import {LeftActions, RightActions} from './LeftAndRightDragAction';
 import {textStyles} from '../../../docs/config';
+import { useStores } from '../../stores/context';
 
 interface RoomListProps {
   isActive: boolean;
   jid: string;
   name: string;
   counter: number;
-  lastMessageTime: any;
-  lastUserText: string;
-  lastUserName: string;
   participants: string;
   drag: any;
   renameChat: any;
@@ -40,9 +38,6 @@ export const RoomListItem = observer(
     jid,
     name,
     counter,
-    lastMessageTime,
-    lastUserText,
-    lastUserName,
     participants,
     drag,
     renameChat,
@@ -51,7 +46,8 @@ export const RoomListItem = observer(
     movingActive,
   }: RoomListProps) => {
     const [animation, setAnimation] = useState(new Animated.Value(0));
-
+    const {chatStore} = useStores()
+    const room = chatStore.roomsInfoMap[jid]
     const navigation = useNavigation();
 
     const defaultText = 'Tap to view and join the conversation.';
@@ -153,7 +149,7 @@ export const RoomListItem = observer(
                     color="coolGray.800">
                     {name}
                   </Text>
-                  {name && lastUserName && lastUserText ? (
+                  {name && room?.lastUserName && room?.lastUserText ? (
                     <HStack flex={1} alignItems={'center'} space={1}>
                       <Box>
                         <Text
@@ -163,7 +159,7 @@ export const RoomListItem = observer(
                           _dark={{
                             color: 'warmGray.100',
                           }}>
-                          {lastUserName && lastUserName + ':'}
+                          {room?.lastUserName && room?.lastUserName + ':'}
                         </Text>
                       </Box>
 
@@ -175,9 +171,9 @@ export const RoomListItem = observer(
                           _dark={{
                             color: 'warmGray.100',
                           }}>
-                          {lastUserText.length > 10
-                            ? lastUserText.slice(0, 10) + '...'
-                            : lastUserText}
+                          {room?.lastUserText.length > 10
+                            ? room?.lastUserText.slice(0, 10) + '...'
+                            : room?.lastUserText}
                         </Text>
                       </Box>
                     </HStack>
@@ -221,7 +217,7 @@ export const RoomListItem = observer(
                       }}
                       fontFamily={textStyles.mediumFont}
                       color="black">
-                      {lastMessageTime}
+                      {room?.lastMessageTime}
                     </Text>
                   </Box>
                 </VStack>
