@@ -212,44 +212,7 @@ export class LoginStore {
       console.log(error);
     }
   };
-  loginHandler = async response => {
-    await asyncStorageSetItem('userToken', response.data.token);
-    await asyncStorageSetItem('refreshToken', response.data.refreshToken);
-    runInAction(() => {
-      this.loading = false;
-      this.userToken = response.data.token;
-      this.refreshToken = response.data.refreshToken;
-    });
 
-    let {firstName, lastName, username, password, xmppPassword, _id} =
-      response.data.user;
-
-    if (!lastName) {
-      lastName = firstName.split(' ')[1];
-      firstName = firstName.split(' ')[0];
-    }
-    const {walletAddress} = response.data.user.defaultWallet;
-    const xmppUsername = underscoreManipulation(walletAddress);
-
-    // save user login details received after login
-    const dataForStorage = {
-      firstName,
-      lastName,
-      walletAddress,
-      photo: '',
-      username,
-      password,
-      xmppPassword,
-      xmppUsername,
-      _id,
-      referrerId: response.data.user.referrerId || '',
-    };
-    await asyncStorageSetItem('initialLoginData', dataForStorage);
-    runInAction(() => {
-      this.initialData = dataForStorage;
-      this.isFetching = false;
-    });
-  };
   regularLogin = async ({username, password}) => {
     const body = {username, password};
     const response = await httpPost(
@@ -322,7 +285,7 @@ export class LoginStore {
       xmppPassword,
       xmppUsername,
       _id,
-      referrerId: response.data.referrerId || ''
+      referrerId: response.data.referrerId || '',
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
