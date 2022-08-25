@@ -156,17 +156,15 @@ export const ProfileScreen = observer((props: any) => {
   });
 
   const [modalType, setModalType] = useState<'name' | 'description' | ''>('');
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const [qrModalVisible, setQrModalVisible] = useState<boolean>(false);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
   const [extraQrData, setExtraQrData] = useState({link: '', mode: ''});
 
-  const [isDescriptionEditable, setIsDescriptionEditable] =
-    useState<boolean>(false);
-  const [descriptionLocal, setDescriptionLocal] =
-    useState<string>(userDescription);
-  const [firstNameLocal, setFirstNameLocal] = useState<string>(firstName);
-  const [lastNameLocal, setLastNameLocal] = useState<string>(lastName);
+  const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
+  const [descriptionLocal, setDescriptionLocal] = useState(userDescription);
+  const [firstNameLocal, setFirstNameLocal] = useState(firstName);
+  const [lastNameLocal, setLastNameLocal] = useState(lastName);
   const userAvatarLocal = userAvatar;
   const underlineOffset = useSharedValue(0);
 
@@ -208,7 +206,10 @@ export const ProfileScreen = observer((props: any) => {
       ),
     );
     setAssetCount(
-      coinData.reduce((acc, item) => (acc += parseFloat(item.balance)) + itemsBalance, 0),
+      coinData.reduce(
+        (acc, item) => (acc += parseFloat(item.balance)) + itemsBalance,
+        0,
+      ),
     );
   };
 
