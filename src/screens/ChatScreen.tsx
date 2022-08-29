@@ -200,11 +200,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
     const lastMessage = messages.length - 1;
     // const lastMessage = 0;
-    if(messages.length > 10) {
+    if (messages.length > 5) {
       getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
-      chatStore.setChatMessagesLoading(true)
+      chatStore.setChatMessagesLoading(true);
     }
-   
   };
   const renderSuggestions: FC<MentionSuggestionsProps> = ({
     keyword,
@@ -779,7 +778,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
       {audioMimetypes[mediaModal.type] && (
         <AudioPlayer audioUrl={mediaModal.url} />
       )}
-     {chatStore.isLoadingEarlierMessages && <View style={{backgroundColor: 'transparent'}}><ActivityIndicator size={30} color={commonColors.primaryColor} /></View>}
+      {chatStore.isLoadingEarlierMessages && (
+        <View style={{backgroundColor: 'transparent'}}>
+          <ActivityIndicator size={30} color={commonColors.primaryColor} />
+        </View>
+      )}
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
