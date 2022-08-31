@@ -6,7 +6,7 @@ Mobile-first 📱 web3 🔗🌐 social 💬 platform for your community 👥👥
 ### In a nutshell
 <img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
 
-Your community can create NFTs, send Coins, chat & video message each other.
+Your community can create NFTs, send Coins, chat & video message each other. Sign in with social or Metamask, get your wallet & QR code, sign documents etc.
 
 It's like your own web3 social network, where everything isn't centered around crypto assets and buzzwords, but rather around people, their social profiles and conversations. 
 
