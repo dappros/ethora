@@ -14,9 +14,9 @@ We believe this a more organic and social, human friendly way to explore web3 an
 
 Use our platform to create your own text-based metaverse, 2nd screen or simply a gamified community app. 
 
-Many projects come to use Ethora engine so they can deliver their MVP quickly (within weeks). Most ofent they stay and keep using it, focusing on more important and unique things they deliver.
+Many projects come to use Ethora engine so they can deliver their MVP quickly (within weeks). Most often they stay and keep using it, focusing on more important things they build for their community, such as their unique branding, token economy, smart contracts and integrations with vertical-specific systems, bridging the real world with the benefits of web3. 
 
-We have built this engine so you can focus on your community and your web3 social economy mechanics, instead of spending months/years on building the foundation tech such as tokenization, messaging, API and web3 infrastructure. Enjoy and let us know if there is anything else you'd like added!
+We have built this engine so you can focus on your community and build your own web3 mechanics for it, instead of spending months/years on building the foundation tech such as tokenization, messaging & push notifications, API and web3 infrastructure. Enjoy and let us know if there is anything else you'd like added!
 
 ---
 
