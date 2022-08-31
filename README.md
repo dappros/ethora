@@ -8,10 +8,15 @@ Mobile-first 📱 web3 🔗🌐 social 💬 platform for your community 👥👥
 
 Your community can create NFTs, send Coins, chat & video message each other.
 
-It's like your own web3 social network, where everything is centered not around tokens and trading, but rather around people, their social profiles and conversations. 
+It's like your own web3 social network, where everything isn't centered around crypto assets and buzzwords, but rather around people, their social profiles and conversations. 
+
 We believe this a more organic and social, human friendly way to explore web3 and build communities together.
 
 Use our platform to create your own text-based metaverse, 2nd screen or simply a gamified community app. 
+
+Many projects come to use Ethora engine so they can deliver their MVP quickly (within weeks). Most ofent they stay and keep using it, focusing on more important and unique things they deliver.
+
+We have built this engine so you can focus on your community and your web3 social economy mechanics, instead of spending months/years on building the foundation tech such as tokenization, messaging, API and web3 infrastructure. Enjoy and let us know if there is anything else you'd like added!
 
 ---
 
