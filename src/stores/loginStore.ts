@@ -13,6 +13,7 @@ import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {rootStore, RootStore} from './context';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import {regularLoginEmail} from '../../docs/config';
 
 export interface InitialDataProps {
   firstName: string;
@@ -214,7 +215,9 @@ export class LoginStore {
   };
 
   regularLogin = async ({username, password}) => {
-    const body = {username, password};
+    const body = regularLoginEmail
+      ? {email: username, password}
+      : {username, password};
     const response = await httpPost(
       this.stores.apiStore.defaultUrl + loginURL,
       body,

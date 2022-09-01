@@ -13,6 +13,7 @@ import {
   logoHeight,
   logoPath,
   logoWidth,
+  regularLoginEmail,
   textStyles,
 } from '../../docs/config';
 import {
@@ -36,7 +37,11 @@ export const RegularLoginScreen = ({navigation}) => {
       return;
     }
     setisLoading(true);
-    await loginStore.regularLogin({username: userName, password});
+    try {
+      await loginStore.regularLogin({username: userName, password});
+    } catch (error) {
+      console.log(error.response);
+    }
     setisLoading(false);
   };
 
@@ -64,14 +69,18 @@ export const RegularLoginScreen = ({navigation}) => {
               </HStack>
               <View>
                 <Input
-                  maxLength={15}
+                  maxLength={30}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
                   fontSize={hp('1.6%')}
                   color={'black'}
                   value={userName}
                   onChangeText={setUserName}
-                  placeholder="Enter your username"
+                  placeholder={
+                    regularLoginEmail
+                      ? 'Enter your email'
+                      : 'Enter your username'
+                  }
                   placeholderTextColor={commonColors.primaryColor}
                 />
                 <Input
