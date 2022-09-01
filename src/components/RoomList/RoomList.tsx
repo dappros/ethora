@@ -115,7 +115,6 @@ export const RoomList = observer(({roomsList}: any) => {
   };
 
   const setNewChatNameHandle = () => {
-    // updateVCard(this.state.userAvatar, data);
     if (newChatName) {
       renameTheRoom(pickedChatJid, newChatName);
       setNewChatName('');

@@ -69,7 +69,6 @@ const NftItemHistoryScreen = (props: any) => {
     walletAddress: string,
     nftId: string,
   ) => {
-    // let axios = require('axios');
     const url =
       apiStore.defaultUrl +
       transactionURL +
