@@ -16,8 +16,14 @@ import {
   insertTransaction,
 } from '../components/realmModels/transaction';
 import {RootStore} from './context';
-import {coinsMainName} from '../../docs/config';
+import {coinsMainName, commonColors} from '../../docs/config';
 import {showToast} from '../components/Toast/toast';
+
+export const NFMT_TYPES = {
+  '1': {type: 'free', color: commonColors.primaryDarkColor},
+  '2': {type: 'bronze', color: 'brown'},
+  '3': {type: 'gold', color: 'orange'},
+};
 
 export const mapTransactions = (item, walletAddress) => {
   if (item.tokenId === 'NFT') {
@@ -41,9 +47,7 @@ export const mapTransactions = (item, walletAddress) => {
 };
 export const filterNftBalances = item => {
   return (
-    (item.tokenType === 'NFT' || item.tokenType === 'NFMT') &&
-    (item.balance > 0 ||
-      (item?.balances?.length > 0 && item?.balances?.[0] !== '0'))
+    (item.tokenType === 'NFT' || item.tokenType === 'NFMT') && item.balance > 0
   );
 };
 export const filterNfts = item => {
@@ -60,6 +64,31 @@ export const mapNfmtBalances = item => {
   }
   return item;
 };
+
+export const produceNfmtItemsAndCollections = (array = []) => {
+  const result = [];
+  const collections = [];
+  const collectionsFilterMap = {};
+  for (const item of array) {
+    if (item.tokenType === 'NFMT') {
+      for (let i = 0; i < item.balances.length; i++) {
+        const tokenBalance = item.balances[i];
+        const tokenType = item.contractTokenIds[i];
+        const resItem = {
+          ...item,
+          balance: tokenBalance,
+          nfmtType: tokenType,
+          total: tokenBalance,
+        };
+        +tokenBalance > 0 && result.push(resItem);
+        !collectionsFilterMap[resItem.contractAddress] &&
+          collections.push({...resItem, isCollection: true});
+        collectionsFilterMap[resItem.contractAddress] = true;
+      }
+    }
+  }
+  return [result, collections];
+};
 export class WalletStore {
   isFetching = false;
   error = false;
@@ -72,6 +101,7 @@ export class WalletStore {
   limit = 10;
   total = 0;
   nftItems = [];
+  collections = [];
   tokenTransferSuccess: {
     success: boolean;
     senderName: string;
@@ -104,6 +134,8 @@ export class WalletStore {
       this.errorMessage = '';
       this.transactions = [];
       this.anotherUserTransaction = [];
+      this.collections = [];
+
       this.anotherUserBalance = [];
       this.balance = [];
       this.offset = 0;
@@ -176,11 +208,16 @@ export class WalletStore {
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
+          const [nfmtItems, collections] = produceNfmtItemsAndCollections(
+            response.data.balance,
+          );
           this.nftItems = response.data.balance
             .filter(filterNftBalances)
-            .map(mapNfmtBalances)
+            .concat(nfmtItems)
             .concat(extBalance)
+
             .reverse();
+          this.collections = collections;
           this.coinBalance = response.data.balance
             .filter(filterNfts)
             .map((item: any) => {

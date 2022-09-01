@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { Divider, Text, View } from 'native-base';
+import {Divider, Text, View} from 'native-base';
 import React, {useState} from 'react';
 import {
   TouchableOpacity,
@@ -20,9 +20,7 @@ import {
 } from 'react-native-responsive-screen';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { commonColors, textStyles } from '../../../docs/config';
-
-
+import {commonColors, textStyles} from '../../../docs/config';
 
 const {primaryColor} = commonColors;
 const {lightFont, semiBoldFont, boldFont} = textStyles;
@@ -235,7 +233,11 @@ const NftTransactionsHistoryComponent = props => {
 
               <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
                 Balance:{' '}
-                {props.item.receiverBalance + '/' + props.item.nftTotal}
+                {(props.item.type === 'Token Creation'
+                  ? props.item.nftTotal
+                  : props.item.receiverBalance) +
+                  '/' +
+                  props.item.nftTotal}
               </Text>
             </View>
           </View>
@@ -303,7 +305,7 @@ const NftTransactionsHistoryComponent = props => {
 
 const TransactionList = (params, tabIndex) => {
   let {transactions, walletAddress} = params;
-  let currentHeaderDate:any = null;
+  let currentHeaderDate: any = null;
   //   console.log(transactions, 'mytraaa');
   if (transactions.length > 0) {
     if (tabIndex === 0) {
@@ -314,7 +316,7 @@ const TransactionList = (params, tabIndex) => {
               .sort(
                 (a, b) =>
                   new Date(b.timestamp).getTime() -
-                  (new Date(a.timestamp).getTime()),
+                  new Date(a.timestamp).getTime(),
               )
               .map(item => {
                 // console.log(item, 'traaasss')

@@ -316,7 +316,9 @@ export const ProfileScreen = observer((props: any) => {
               </Animated.Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
-              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
+              <TouchableOpacity
+                onPress={() => setActiveAssetTab(1)}
+                style={{marginRight: 20}}>
                 <Animated.Text
                   style={[
                     styles.tabText,
@@ -328,17 +330,31 @@ export const ProfileScreen = observer((props: any) => {
                 </Animated.Text>
               </TouchableOpacity>
             )}
+            {walletStore.collections.length > 0 && (
+              <TouchableOpacity onPress={() => setActiveAssetTab(2)}>
+                <Animated.Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color: activeAssetTab === 2 ? '#000000' : '#0000004D',
+                    },
+                  ]}>
+                  Collections ({walletStore.collections.length})
+                </Animated.Text>
+              </TouchableOpacity>
+            )}
           </HStack>
 
           <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
-            {activeAssetTab === 0 ? (
+            {activeAssetTab === 0 && (
               <FlatList
                 data={coinData}
                 nestedScrollEnabled={true}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
               />
-            ) : (
+            )}
+            {activeAssetTab === 1 && (
               <FlatList
                 data={walletStore.nftItems}
                 renderItem={e => (
@@ -354,6 +370,26 @@ export const ProfileScreen = observer((props: any) => {
                         },
                       })
                     }
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        open: true,
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                    }}
+                  />
+                )}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            )}
+            {activeAssetTab === 2 && (
+              <FlatList
+                data={walletStore.collections}
+                renderItem={e => (
+                  <RenderAssetItem
+                    item={e.item}
+                    index={e.index}
                     onAssetPress={() => {
                       setMediaModalData({
                         open: true,

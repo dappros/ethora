@@ -49,6 +49,7 @@ import {
   filterNftBalances,
   mapNfmtBalances,
   mapTransactions,
+  produceNfmtItemsAndCollections,
 } from '../stores/walletStore';
 import Animated, {
   Easing,
@@ -135,6 +136,7 @@ const OtherUserProfileScreen = observer((props: any) => {
 
   const [coinData, setCoinData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
+  const [collections, setCollections] = useState([]);
 
   const [activeTab, setActiveTab] = useState(0);
   const [activeAssetTab, setActiveAssetTab] = useState(0);
@@ -160,7 +162,10 @@ const OtherUserProfileScreen = observer((props: any) => {
     return {
       transform: [
         {
-          translateX: withTiming(underlineOffset.value, {duration: 350, easing: Easing.ease}),
+          translateX: withTiming(underlineOffset.value, {
+            duration: 350,
+            easing: Easing.ease,
+          }),
         },
       ],
     };
@@ -243,6 +248,8 @@ const OtherUserProfileScreen = observer((props: any) => {
   };
   useEffect(() => {
     if (anotherUserBalance?.length > 0) {
+      const [nfmtItems, collections] =
+        produceNfmtItemsAndCollections(anotherUserBalance);
       setCoinData(
         anotherUserBalance.filter(
           (item: any) => item.tokenName === coinsMainName,
@@ -250,10 +257,13 @@ const OtherUserProfileScreen = observer((props: any) => {
       );
       setItemsData(
         anotherUserBalance
+
           .filter(filterNftBalances)
-          .map(mapNfmtBalances)
+          .concat(nfmtItems)
+
           .reverse(),
       );
+      setCollections(collections);
 
       calculateBalances();
     }
@@ -301,7 +311,9 @@ const OtherUserProfileScreen = observer((props: any) => {
               </Text>
             </TouchableOpacity>
             {itemsTransfersAllowed && (
-              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
+              <TouchableOpacity
+                onPress={() => setActiveAssetTab(1)}
+                style={{marginRight: 20}}>
                 <Text
                   style={[
                     styles.tabText,
@@ -313,16 +325,30 @@ const OtherUserProfileScreen = observer((props: any) => {
                 </Text>
               </TouchableOpacity>
             )}
+            {collections.length > 0 && (
+              <TouchableOpacity onPress={() => setActiveAssetTab(2)}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color: activeAssetTab === 2 ? '#000000' : '#0000004D',
+                    },
+                  ]}>
+                  Collections ({collections.length})
+                </Text>
+              </TouchableOpacity>
+            )}
           </HStack>
           <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
-            {activeAssetTab === 0 ? (
+            {activeAssetTab === 0 && (
               <FlatList
                 data={coinData}
                 nestedScrollEnabled={true}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
               />
-            ) : (
+            )}
+            {activeAssetTab === 1 && (
               <FlatList
                 data={itemsData}
                 renderItem={e => (
@@ -340,6 +366,32 @@ const OtherUserProfileScreen = observer((props: any) => {
                         },
                       })
                     }
+                    nftId={e.item.nftId}
+                    mimetype={e.item.nftMimetype}
+                    onAssetPress={() => {
+                      setMediaModalData({
+                        open: true,
+                        url: e.item.nftFileUrl,
+                        mimetype: e.item.nftMimetype,
+                      });
+                    }}
+                    item={e.item}
+                    index={e.index}
+                  />
+                )}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            )}
+            {activeAssetTab === 2 && (
+              <FlatList
+                data={collections}
+                renderItem={e => (
+                  <NftListItem
+                    assetUrl={e.item.imagePreview || e.item.nftFileUrl}
+                    name={e.item.tokenName}
+                    assetsYouHave={e.item.balance}
+                    totalAssets={e.item.total}
                     nftId={e.item.nftId}
                     mimetype={e.item.nftMimetype}
                     onAssetPress={() => {

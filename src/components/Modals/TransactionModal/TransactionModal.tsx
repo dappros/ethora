@@ -79,6 +79,15 @@ const TransactionModal = (props: TransactionModalProps) => {
     // setAllowedEnterCustomAmount(false);
   };
   const renderNftItems = () => {
+    const getItemSelected = (selectedItem, item) => {
+      if (item.tokenType === 'NFMT') {
+        return (
+          selectedItem.nfmtType + selectedItem.contractAddress ===
+          item.nfmtType + item.contractAddress
+        );
+      }
+      return selectedItem.contractAddress === item.contractAddress;
+    };
     return (
       <FlatList
         data={walletStore.nftItems.filter(item => !item.external)}
@@ -89,7 +98,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             assetsYouHave={e.item.balance}
             totalAssets={e.item.total}
             onClick={() => setSelectedItem(e.item)}
-            itemSelected={selectedItem.nftFileUrl === e.item.nftFileUrl}
+            itemSelected={getItemSelected(selectedItem, e.item)}
             nftId={e.item.nftId}
             mimetype={e.item.nftMimetype}
             // onAssetPress={onAssetPress}
@@ -136,7 +145,7 @@ const TransactionModal = (props: TransactionModalProps) => {
       }
     });
     if (walletBalance) {
-      if (amt <= walletBalance) {
+      if (+amt <= walletBalance) {
         await walletStore.transferTokens(
           bodyData,
           loginStore.userToken,
@@ -162,7 +171,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     // const receiverMessageId = extraData.message_id;
     const senderName = extraData.senderName;
     const amountToSend = 1;
-    console.log(selectedItem);
 
     // console.log(item, 'flatitemsss');
 
@@ -177,9 +185,11 @@ const TransactionModal = (props: TransactionModalProps) => {
       amount: 1,
       tokenName: selectedItem.tokenName,
     };
+
+
     const nfmtBodyData = {
       to: walletAddress,
-      id: selectedItem.contractTokenIds[0],
+      id: selectedItem.nfmtType,
       amount: 1,
       contractAddress: selectedItem?.contractAddress,
       isNfmt: true,

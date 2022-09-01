@@ -21,6 +21,7 @@ import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {commonColors, textStyles} from '../../../docs/config';
 import FastImage from 'react-native-fast-image';
+import {NFMT_TYPES} from '../../stores/walletStore';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -56,6 +57,10 @@ export const NftListItem = (props: NftListItemProps) => {
       style={[
         styles.container,
         {backgroundColor: itemSelected ? 'rgba(0,0,0,0.15)' : '#F4F5F8'},
+        item.tokenType === 'NFMT' && {
+          borderWidth: 1,
+          borderColor: NFMT_TYPES[item?.nfmtType]?.color,
+        },
       ]}>
       <View style={styles.justifyAround}>
         <View style={styles.itemContainer}>
@@ -90,13 +95,15 @@ export const NftListItem = (props: NftListItemProps) => {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <TouchableWithoutFeedback onPress={onClick}>
-          <View style={styles.itemCount}>
-            <Text style={{color: 'black'}}>
-              {assetsYouHave}/{totalAssets}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+        {!item?.isCollection  && (
+          <TouchableWithoutFeedback onPress={onClick}>
+            <View style={styles.itemCount}>
+              <Text style={{color: 'black'}}>
+                {assetsYouHave}/{totalAssets}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        )}
       </View>
     </View>
   );
@@ -107,7 +114,7 @@ const styles = StyleSheet.create({
     width: '100%',
     // backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
     backgroundColor: '#F4F5F8',
-
+    borderRadius: 5,
     justifyContent: 'center',
     marginBottom: 10,
   },
@@ -148,5 +155,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingRight: 20,
+  },
+  nfmtStyle: {
+    borderWidth: 1,
   },
 });
