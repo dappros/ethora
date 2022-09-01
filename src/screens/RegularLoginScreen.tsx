@@ -26,6 +26,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Button} from '../components/Button';
 import {useStores} from '../stores/context';
 import {ROUTES} from '../constants/routes';
+import {showError} from '../components/Toast/toast';
 export const RegularLoginScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -40,7 +41,11 @@ export const RegularLoginScreen = ({navigation}) => {
     try {
       await loginStore.regularLogin({username: userName, password});
     } catch (error) {
-      console.log(error.response);
+      if (error?.response?.status === 409) {
+        showError('Error', 'This email is not verified');
+      } else {
+        showError('Error', 'Something went wrong');
+      }
     }
     setisLoading(false);
   };
