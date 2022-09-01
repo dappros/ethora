@@ -29,6 +29,7 @@ import {
   logoPath,
   logoWidth,
   regularLoginEmail,
+  regularLogin,
   textStyles,
 } from '../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -301,7 +302,7 @@ const LoginScreen = observer(({navigation}) => {
           }}
         />
         <HStack justifyContent={'center'}>
-          {regularLoginEmail && (
+          {regularLogin && (
             <TouchableOpacity
               onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
               <Text

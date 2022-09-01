@@ -170,7 +170,8 @@ const isLogoTitle: boolean = false;
 const googleSignIn = true;
 const appleSignIn = true;
 const facebookSignIn = true;
-const regularLoginEmail = true;
+const regularLogin = true;
+const regularLoginEmail = false;
 const regularLoginUsername = false;
 export {
   appTitle,
@@ -214,5 +215,6 @@ export {
   googleSignIn,
   appleSignIn,
   facebookSignIn,
-  regularLoginEmail
+  regularLoginEmail,
+  regularLogin
 };
