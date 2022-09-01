@@ -64,18 +64,18 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
         </HStack>
 
         <View style={{marginLeft: 'auto'}}>
-          {isQR ? (
+          {isQR && (
             <TouchableOpacity onPress={onQRPressed} style={{marginRight: 10}}>
               <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />
             </TouchableOpacity>
-          ) : null}
-          {type === 'transaction' ? (
+          )}
+          {type === 'transaction' && (
             <TouchableOpacity
               onPress={() => console.log('')}
               style={{flex: 0.2, alignItems: 'flex-end', marginRight: 10}}>
               <AntIcon name="filter" color="#FFFF" size={hp('3%')} />
             </TouchableOpacity>
-          ) : null}
+          )}
           {showVersion && (
             <Text style={{color: 'white', position: 'absolute', right: 30}}>
               Version: {appVersion}
