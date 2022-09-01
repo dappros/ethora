@@ -21,6 +21,7 @@ import {transactionURL} from '../config/routesConstants';
 import {httpGet} from '../config/apiService';
 import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 import VideoPlayer from 'react-native-video-player';
+import { mapTransactions } from '../stores/walletStore';
 
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
@@ -40,17 +41,9 @@ const NftItemHistoryScreen = (props: any) => {
   useEffect(() => {
     setAvatarSource({uri: item.nftFileUrl});
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
-      const allTransactions = res.data.items.map(item => {
-        if (item.from === userWalletAddress && item.from !== item.to) {
-          // balance = balance;
-          item.balance = item.senderBalance + '/' + item.nftTotal;
-        } else if (item.from === item.to) {
-          item.balance = item.receiverBalance + '/' + item.nftTotal;
-        } else {
-          item.balance = item.receiverBalance + '/' + item.nftTotal;
-        }
-        return item;
-      });
+      const allTransactions = res.data.items.map(item =>{
+
+        return mapTransactions(item, userWalletAddress)});
 
       setItemTransactions(
         allTransactions.sort((a: any, b: any) => {
