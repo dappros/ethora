@@ -33,6 +33,7 @@ import {
   logoHeight,
   logoPath,
   logoWidth,
+  regularLoginEmail,
   textStyles,
 } from '../../docs/config';
 import {httpPost} from '../config/apiService';
@@ -58,12 +59,19 @@ export const RegisterScreen = ({navigation, route}) => {
   const {apiStore} = useStores();
   const [lastname, setLastname] = useState('');
   const registerUser = async () => {
-    const body = {
-      firstName: firstname,
-      lastName: lastname,
-      password,
-      username,
-    };
+    const body = regularLoginEmail
+      ? {
+          firstName: firstname,
+          lastName: lastname,
+          password,
+          email: username,
+        }
+      : {
+          firstName: firstname,
+          lastName: lastname,
+          password,
+          username,
+        };
     if (
       !firstname ||
       !lastname ||
@@ -153,14 +161,14 @@ export const RegisterScreen = ({navigation, route}) => {
               ]}>
               <View style={loginStyles.form}>
                 <Input
-                  maxLength={15}
+                  maxLength={30}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
                   fontSize={hp('1.6%')}
                   color={'black'}
                   onChangeText={setUsername}
                   value={username}
-                  placeholder="Username"
+                  placeholder={regularLoginEmail ? 'Email' : 'Username'}
                   placeholderTextColor={commonColors.primaryColor}
                 />
 
