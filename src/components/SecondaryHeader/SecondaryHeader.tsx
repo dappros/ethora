@@ -7,12 +7,13 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {Box, HStack, Text} from 'native-base';
+import {Box, HStack, Text, View} from 'native-base';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {appVersion, commonColors, textStyles} from '../../../docs/config';
+import { ROUTES } from '../../constants/routes';
 
 interface SecondaryHeaderProps {
   title: string;
@@ -20,6 +21,7 @@ interface SecondaryHeaderProps {
   type?: string;
   showVersion?: boolean;
   onQRPressed?: any;
+  isChatRoomDetail?:boolean;
 }
 
 const SecondaryHeader = (props: SecondaryHeaderProps) => {
@@ -28,24 +30,33 @@ const SecondaryHeader = (props: SecondaryHeaderProps) => {
     navigation.goBack();
   };
   return (
+
     <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
-      <HStack justifyContent={'space-between'} alignItems={'center'}>
-        <TouchableOpacity onPress={onArrowClick}>
-          <Box flexDirection={'row'} alignItems={'center'}>
+      <HStack>
+
+        <View flex={0.1}>
+          <TouchableOpacity onPress={onArrowClick} disabled={!props.isChatRoomDetail}>
             <AntIcon
               name={'arrowleft'}
               style={{marginRight: 5, marginLeft: 5}}
               size={hp('3%')}
               color={'white'}
             />
+          </TouchableOpacity>
+        </View>
+
+        <View flex={0.8}>
+          <TouchableOpacity onPress={()=>navigation.navigate(ROUTES.CHATDETAILS, {roomName:props.title})}>
             <Text
               fontFamily={textStyles.semiBoldFont}
               fontSize={hp('2.2%')}
               color={'white'}>
               {props.title}
             </Text>
-          </Box>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+        
+        <View flex={0.1}>
         {props.isQR ? (
           <TouchableOpacity
             onPress={props.onQRPressed}
@@ -65,6 +76,8 @@ const SecondaryHeader = (props: SecondaryHeaderProps) => {
             Version: {appVersion}
           </Text>
         )}
+        </View>
+
       </HStack>
     </Box>
   );

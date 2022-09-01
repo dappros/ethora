@@ -61,6 +61,7 @@ interface roomListProps {
   createdAt: string;
   priority?: number;
   muted?: boolean;
+  isFavourite?:boolean;
 }
 
 interface isComposingProps {
@@ -302,7 +303,6 @@ setChatMessagesLoading = (value) => {
     this.xmpp.on('stanza', async (stanza: any) => {
       //capture room info
       if (stanza.attrs.id === 'roomInfo') {
-        console.log(stanza.attrs, 'roominfoooooo');
         runInAction(() => {
           this.chatLinkInfo[stanza.attrs.from] =
             stanza.children[0].children[0].attrs.name;

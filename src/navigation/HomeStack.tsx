@@ -23,6 +23,7 @@ import {DebugScreen} from '../Screens/DebugScreen';
 import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
 import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
+import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -236,6 +237,15 @@ export const HomeStackScreen = observer(() => {
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}
+      />
+          
+      <HomeStack.Screen
+      name={ROUTES.CHATDETAILS}
+      component={ChatDetailsScreen}
+      options={() => ({
+        // header: ({navigation}) => <MainHeader />,
+        headerShown:false
+      })}
       />
     </HomeStack.Navigator>
   );
