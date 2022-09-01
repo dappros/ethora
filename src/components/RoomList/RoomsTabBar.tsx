@@ -78,6 +78,9 @@ export const RoomsTabBar = observer(() => {
           notificationsCount[ROOM_KEYS.official] += item.counter;
           return item;
         }
+        if(chatStore.roomsInfoMap[item.jid]?.isFavourite){
+          return item;
+        }
       }),
     [chatStore.roomList],
   );

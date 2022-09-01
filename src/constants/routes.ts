@@ -24,5 +24,6 @@ export const ROUTES = {
   NFTITEMHISTORY: 'NftItemHistory',
   REGULARLOGIN: 'RegularLogin',
   REGISTER: 'Register',
-  INVITEFRIENDS: 'InviteFriendsScreen'
+  INVITEFRIENDS: 'InviteFriendsScreen',
+  CHATDETAILS:'ChatDetailsScreen'
 };

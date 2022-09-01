@@ -36,7 +36,7 @@ import {
 import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
-import {Spinner, View} from 'native-base';
+import {View} from 'native-base';
 import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
@@ -774,6 +774,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         title={chatStore.roomsInfoMap[chatJid]?.name}
         isQR={true}
         onQRPressed={QRPressed}
+        isChatRoomDetail={true}
       />
       {audioMimetypes[mediaModal.type] && (
         <AudioPlayer audioUrl={mediaModal.url} />
