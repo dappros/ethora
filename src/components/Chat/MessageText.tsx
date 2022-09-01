@@ -174,7 +174,7 @@ export const MessageText = observer((props: any) => {
         </View>
       </TouchableOpacity>
     );
-  } else if (props.currentMessage.text.includes(unv_url)) {
+  } else if (props.currentMessage.text.includes(unv_url) && !props.currentMessage.text.includes('profileLink')) {
     const chatLink = props.currentMessage.text.match(
       /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
     )[0];

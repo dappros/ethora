@@ -7,42 +7,24 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  View,
-  ViewPropTypes,
-  StyleSheet,
-} from 'react-native';
+import {View, ViewPropTypes, StyleSheet} from 'react-native';
 
 import {Avatar, Day, utils, SystemMessage} from 'react-native-gifted-chat';
-import { textStyles } from '../../../docs/config';
+import {textStyles} from '../../../docs/config';
 import Bubble from './MessageBubble';
 
 const {isSameUser, isSameDay} = utils;
-
+let count = 0;
 export default class Message extends React.Component {
-
   shouldComponentUpdate(nextProps) {
     const next = nextProps.currentMessage;
     const current = this.props.currentMessage;
-    const { previousMessage, nextMessage } = this.props;
-    const nextPropsMessage = nextProps.nextMessage;
-    const nextPropsPreviousMessage = nextProps.previousMessage;
-    const shouldUpdate = (this.props.shouldUpdateMessage &&
-        this.props.shouldUpdateMessage(this.props, nextProps)) ||
-        false;
-    return (next.sent !== current.sent ||
-        next.received !== current.received ||
-        next.pending !== current.pending ||
-        next.createdAt !== current.createdAt ||
-        next.text !== current.text ||
-        next.image !== current.image ||
-        next.video !== current.video ||
-        next.audio !== current.audio ||
-        previousMessage !== nextPropsPreviousMessage ||
-        nextMessage !== nextPropsMessage ||
-        shouldUpdate);
-  }
 
+    const nextPropsPreviousMessage = nextProps.previousMessage;
+    if(next.tokenAmount !== current.tokenAmount) return true
+    
+    return false;
+  }
   getInnerComponentProps() {
     const {containerStyle, ...props} = this.props;
     return {
@@ -70,46 +52,12 @@ export default class Message extends React.Component {
       return this.props.renderBubble(props);
     }
     // @ts-ignore
-    return <Bubble
-    // containerToNextStyle={{
-    //  left: {
-    //   borderBottomLeftRadius:3
-    //  },
-    //  right:{
-    //   borderBottomRightRadius:3
-    //  }
-    // }}
-    // containerToPrevious={{
-    //   left: {
-    //     borderTopLeftRadius:3,
-    //     borderTopRightRadius:15
-    //    },
-    //   //  right:{
-    //   //   borderTopRightRadius:3
-    //   //  }
-    // }}
-    usernameStyle={{fontFamily:textStyles.regularFont}} {...props} />;
+    return (
+      <Bubble usernameStyle={{fontFamily: textStyles.regularFont}} {...props} />
+    );
   }
 
   renderAvatar() {
-    // const {user, currentMessage, showUserAvatar} = this.props;
-    // if (
-    //   user &&
-    //   user._id &&
-    //   currentMessage &&
-    //   currentMessage.user &&
-    //   user._id === currentMessage.user._id &&
-    //   !showUserAvatar
-    // ) {
-    //   return null;
-    // }
-    // if (
-    //   currentMessage &&
-    //   currentMessage.user &&
-    //   currentMessage.user.avatar === null
-    // ) {
-    //   return null;
-    // }
     const {containerStyle, ...props} = this.props;
     return <Avatar {...props} />;
   }
@@ -123,6 +71,7 @@ export default class Message extends React.Component {
   }
 
   render() {
+
     const {currentMessage, nextMessage, position, containerStyle} = this.props;
     if (currentMessage) {
       const sameUser = isSameUser(currentMessage, nextMessage);
@@ -159,7 +108,7 @@ const styles = {
       justifyContent: 'flex-start',
       marginLeft: 8,
       marginRight: 0,
-      fontFamily:textStyles.regularFont
+      fontFamily: textStyles.regularFont,
     },
   }),
   right: StyleSheet.create({
@@ -169,7 +118,7 @@ const styles = {
       justifyContent: 'flex-end',
       marginLeft: 0,
       marginRight: 8,
-      fontFamily:textStyles.regularFont
+      fontFamily: textStyles.regularFont,
     },
   }),
 };
