@@ -54,7 +54,7 @@ export const UserNameModal = ({
           color={'black'}
           value={firstName}
           onChangeText={setFirstName}
-          placeholder="Enter your firtname"
+          placeholder="Enter your first name"
           placeholderTextColor={commonColors.primaryColor}
         />
         <Input
@@ -64,7 +64,7 @@ export const UserNameModal = ({
           color={'black'}
           value={lastName}
           onChangeText={setLastName}
-          placeholder="Enter your lastname"
+          placeholder="Enter your last name"
           placeholderTextColor={commonColors.primaryColor}
         />
         <TouchableOpacity

@@ -21,6 +21,13 @@ import {
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {commonColors, textStyles} from '../../../docs/config';
+import {observer} from 'mobx-react-lite';
+
+// import {FlatList} from 'react-native-gesture-handler';
+
+import {NftTransactionItem} from '../Transactions/NftTransactionItem';
+import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
+import {Box, FlatList} from 'native-base';
 
 const {primaryColor} = commonColors;
 const {lightFont, semiBoldFont, boldFont} = textStyles;
@@ -41,12 +48,16 @@ const NftTransactionsHistoryComponent = props => {
   month[11] = 'Dec';
   const today = new Date();
   let Header = null;
-
   let senderFullName = '';
   let receiverFullName = '';
   senderFullName = props.item.senderFirstName + ' ' + props.item.senderLastName;
   receiverFullName =
     props.item.receiverFirstName + ' ' + props.item.receiverLastName;
+  const nftTotal = props.item.contractId && props.item.nftTotal
+    ? props.item.nftTotal
+        .split(',')
+        .find((item, i) => +props.item.contractId === i + 1)
+    : props.item.nftTotal ;
 
   if (props.showHeader) {
     if (props.currentHeaderDate.getTime() === today.getTime()) {
@@ -146,8 +157,7 @@ const NftTransactionsHistoryComponent = props => {
 
               {props.item.type !== 'Token Creation' && (
                 <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-                  Balance:{' '}
-                  {props.item.senderBalance + '/' + props.item.nftTotal}
+                  Balance: {props.item.senderBalance + '/' + nftTotal}
                 </Text>
               )}
             </View>
@@ -178,7 +188,7 @@ const NftTransactionsHistoryComponent = props => {
                 textAlign: 'center',
                 color: 'grey',
               }}>
-              Was minted by
+              Was created by
             </Text>
 
             // </View>
@@ -232,12 +242,15 @@ const NftTransactionsHistoryComponent = props => {
               </Text>
 
               <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-                Balance:{' '}
-                {(props.item.type === 'Token Creation'
+                {props.historyItem?.nfmtType && props.item.type === 'Token Creation' ? 'Max Supply' : 'Balance'}:{' '}
+                {props.historyItem?.nfmtType  &&
+                props.item.type === 'Token Creation'
                   ? props.item.nftTotal
-                  : props.item.receiverBalance) +
-                  '/' +
-                  props.item.nftTotal}
+                  : (props.item.type === 'Token Creation'
+                      ? nftTotal
+                      : props.item.receiverBalance) +
+                    '/' +
+                    nftTotal}
               </Text>
             </View>
           </View>
@@ -276,7 +289,7 @@ const NftTransactionsHistoryComponent = props => {
               // justifySelf: 'center',
               alignSelf: 'center',
             }}>
-            {props.item.value}
+            {props.item.value !== 0 && props.item.value}
           </Text>
           {/* <AntIcon
             name={
@@ -304,7 +317,7 @@ const NftTransactionsHistoryComponent = props => {
 };
 
 const TransactionList = (params, tabIndex) => {
-  let {transactions, walletAddress} = params;
+  let {transactions, walletAddress, historyItem} = params;
   let currentHeaderDate: any = null;
   //   console.log(transactions, 'mytraaa');
   if (transactions.length > 0) {
@@ -348,6 +361,7 @@ const TransactionList = (params, tabIndex) => {
                   currentHeaderDate,
                   item,
                   walletAddress,
+                  historyItem,
                 });
               })}
           </ScrollView>
@@ -367,35 +381,100 @@ const NftTransactionListTab = params => {
           justifyContent: 'space-evenly',
           borderWidth: 0.5,
           borderColor: '#00000029',
-        }}>
-        {/* <TouchableOpacity
-          onPress={() => settabIndex(0)}
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flex: 1,
-            height: hp('8.12%'),
-            backgroundColor: tabIndex === 0 ? '#F3F3F3' : '#FFFFFF',
-            shadowColor: tabIndex === 0 ? '#00000029' : null,
-            shadowOffset:
-              tabIndex === 0 ? {width: 0, height: hp('0.36')} : null,
-            shadowOpacity: tabIndex === 0 ? 0.12 : null,
-            shadowRadius: tabIndex === 0 ? 60 : null,
-          }}>
-          <Text
-            style={{
-              color: primaryColor,
-              fontSize: hp('2.216%'),
-              fontFamily: boldFont,
-            }}>
-            All
-          </Text>
-        </TouchableOpacity> */}
-      </View>
+        }}></View>
       {TransactionList(params, tabIndex)}
     </View>
   );
 };
+
+const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
+  const {
+    tokenId,
+    from,
+    to,
+    tokenName,
+    value,
+    type,
+    timestamp,
+    senderFirstName,
+    senderLastName,
+    receiverFirstName,
+    receiverLastName,
+    senderBalance,
+    receiverBalance,
+    createdAt,
+    updatedAt,
+    blockNumber,
+    transactionHash,
+    fromFirstName,
+    fromLastName,
+    toFirstName,
+    toLastName,
+    showDate,
+    formattedDate,
+    balance,
+    nftName,
+    nftTotal,
+  } = item;
+
+  return (
+    <NftTransactionItem
+      from={from}
+      to={to}
+      balance={balance}
+      senderBalance={senderBalance}
+      receiverBalance={receiverBalance}
+      transactionAmount={value}
+      transactionSender={senderFirstName + ' ' + senderLastName}
+      transactionReceiver={receiverFirstName + ' ' + receiverLastName}
+      blockNumber={blockNumber}
+      transactionHash={transactionHash}
+      timestamp={timestamp}
+      showDate={showDate}
+      formattedDate={formattedDate}
+      senderName={senderFirstName + ' ' + senderLastName}
+      receiverName={receiverFirstName + ' ' + receiverLastName}
+      tokenName={nftName}
+      transactionOwnerWalletAddress={transactionOwnerWalletAddress}
+      type={type}
+      nftTotal={nftTotal}
+    />
+  );
+};
+
+interface TransactionListProps {
+  transactions: any;
+  walletAddress: string;
+  onEndReached: any;
+}
+
+const TransactionsList = observer(
+  ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
+    const getFilteredTransactions = () => {
+      transactions;
+    };
+
+    return (
+      <Box>
+        ]
+        <FlatList
+          height={'100%'}
+          scrollEnabled
+          style={{paddingBottom: 50}}
+          renderItem={({item}) => (
+            <RenderTransactionItem
+              item={item}
+              transactionOwnerWalletAddress={walletAddress}
+            />
+          )}
+          onEndReached={onEndReached}
+          data={compareTransactionsDate(transactions)}
+          keyExtractor={item => item.transactionHash}
+        />
+      </Box>
+    );
+  },
+);
 const styles = StyleSheet.create({
   tokenIconStyle: {
     height: hp('3%'),

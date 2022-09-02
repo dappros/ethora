@@ -20,9 +20,14 @@ interface TransactionListProps {
   showDate: string;
   formattedDate: string;
   blockNumber: string;
-  name: string;
+  senderName: string;
+  receiverName: string;
+
   balance: number;
   transactionAmount: number;
+  senderBalance: number;
+  receiverBalance: number;
+
   image: string;
   timestamp: string;
   transactionHash: string;
@@ -31,7 +36,45 @@ interface TransactionListProps {
   transactionOwnerWalletAddress: string;
   from: string;
   to: string;
+  type: string;
+  nftTotal: number;
+  tokenName: string;
 }
+
+const UserBlock = ({name, balance, total}) => {
+  return (
+    <HStack w={'40%'}>
+      <VStack justifyContent={'center'} alignItems={'center'}>
+        <Box
+          w={hp('2.89%')}
+          h={hp('2.89%')}
+          rounded={'full'}
+          bg={commonColors.primaryColor}
+          justifyContent={'center'}
+          alignItems={'center'}>
+          <Text fontSize={hp('1.46%')} fontWeight={'bold'} color={'white'}>
+            {name.slice(0, 2)}
+          </Text>
+        </Box>
+      </VStack>
+      <VStack ml={'2'}>
+        <Box>
+          <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
+            {name}
+          </Text>
+        </Box>
+        <Box>
+          <Text fontSize={hp('1.6%')} fontWeight={'light'}>
+            Balance: 
+          </Text>
+          <Text fontSize={hp('1.6%')} fontWeight={'light'}>
+          {balance}/{total}
+          </Text>
+        </Box>
+      </VStack>
+    </HStack>
+  );
+};
 
 export const NftTransactionItem = (props: TransactionListProps) => {
   const {
@@ -40,132 +83,57 @@ export const NftTransactionItem = (props: TransactionListProps) => {
     transactionAmount,
     showDate,
     formattedDate,
-    blockNumber,
-    transactionHash,
-    timestamp,
-    image,
-    balance,
-    name,
-    transactionOwnerWalletAddress,
-    from,
-    to,
+
+    senderName,
+    receiverName,
+
+    type,
+    tokenName,
+    senderBalance,
+    receiverBalance,
+    nftTotal,
   } = props;
   const [expanded, setExpanded] = useState(false);
-
+і
   return (
-    <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
+    <Box>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
       <Box borderColor="coolGray.200" borderWidth="1" p={'3'}>
         <HStack justifyContent={'space-between'}>
-          <HStack>
-            <VStack justifyContent={'center'} alignItems={'center'}>
-              <Box
-                w={hp('2.89%')}
-                h={hp('2.89%')}
-                rounded={'full'}
-                bg={commonColors.primaryColor}
-                justifyContent={'center'}
-                alignItems={'center'}>
-                <Text
-                  fontSize={hp('1.46%')}
-                  fontWeight={'bold'}
-                  color={'white'}>
-                  {name.slice(0, 2)}
-                </Text>
-              </Box>
-            </VStack>
-            <VStack ml={'2'}>
-              <Box>
-                <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
-                  {name}
-                </Text>
-              </Box>
-              <Box>
-                <Text fontSize={hp('1.6%')} fontWeight={'light'}>
-                  Balance: {balance}
-                </Text>
-              </Box>
-            </VStack>
-          </HStack>
           <HStack justifyContent={'center'} space={1} alignItems={'center'}>
-            <Box>
-              {image ? (
-                <Image
-                  alt="logo"
-                  height={hp('3%')}
-                  width={hp('3%')}
-                  source={{uri: image}}
+            {type === 'Token Creation' ? (
+              <HStack w={'40%'}>
+                <Text>{tokenName}</Text>
+                <Text    style={{marginRight: 'auto'}}>{'Was minted by'}</Text>
+              </HStack>
+            ) : (
+              <>
+                <UserBlock
+                  name={senderName}
+                  balance={senderBalance}
+                  total={nftTotal}
                 />
-              ) : (
-                <Image
-                  alt="logo"
-                  height={hp('2.8%')}
-                  width={hp('2.8%')}
-                  source={coinImagePath}
+                <AntIcon
+                  name={'arrowright'}
+                  color={'#69CB41'}
+                  size={hp('1.7%')}
+                  style={{marginRight: 'auto'}}
                 />
-              )}
-            </Box>
+              </>
+            )}
+            <UserBlock
+              name={receiverName}
+              balance={receiverBalance}
+              total={nftTotal}
+            />
+
             <Box>
               <Text fontWeight={'bold'}>{transactionAmount}</Text>
             </Box>
-            <Box>
-              <AntIcon
-                name={isTransactionOwner ? 'arrowup' : 'arrowdown'}
-                color={isTransactionOwner ? '#CB4141' : '#69CB41'}
-                size={hp('1.7%')}
-              />
-            </Box>
           </HStack>
         </HStack>
-        {expanded && (
-          <View style={{paddingHorizontal: 20}}>
-            {/* <Text style={styles.detailsItemTextBold}>Details:</Text> */}
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>TX hash: </Text>
-              <Text style={{textAlign: 'left', color: 'black'}}>
-                {transactionHash}
-              </Text>
-            </View>
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>From:</Text>
-              <View>
-                <Text style={{textAlign: 'left'}}>{transactionSender}</Text>
-              </View>
-            </View>
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>To:</Text>
-              <View>
-                <Text style={{textAlign: 'left'}}>{transactionReceiver}</Text>
-              </View>
-            </View>
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
-              <View>
-                <Text style={{textAlign: 'left'}}>
-                  {new Date(timestamp).getTime()}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>Value:</Text>
-              <View>
-                <Text style={{textAlign: 'left'}}>{transactionAmount}</Text>
-              </View>
-            </View>
-            <View style={styles.detailsItem}>
-              <Text style={styles.detailsItemTextBold}>Block:</Text>
-              <View>
-                <Text style={{textAlign: 'left'}}>
-                  {String(blockNumber).replace(/(.)(?=(\d{3})+$)/g, '$1,')}
-                </Text>
-              </View>
-            </View>
-
-            {/* <Text>To: {JSON.stringify(item)}</Text> */}
-          </View>
-        )}
       </Box>
-    </TouchableOpacity>
+    </Box>
   );
 };
 const styles = StyleSheet.create({

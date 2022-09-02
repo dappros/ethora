@@ -195,6 +195,7 @@ const NftItemHistoryScreen = (props: any) => {
           <View style={{height: hp('50%')}}>
             {itemTransactions.length ? (
               <NftTransactionListTab
+                historyItem={item}
                 transactions={itemTransactions}
                 walletAddress={userWalletAddress}
               />

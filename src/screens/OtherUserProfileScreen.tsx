@@ -47,7 +47,6 @@ import {underscoreManipulation} from '../helpers/underscoreLogic';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   filterNftBalances,
-  mapNfmtBalances,
   mapTransactions,
   produceNfmtItemsAndCollections,
 } from '../stores/walletStore';
