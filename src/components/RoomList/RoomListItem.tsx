@@ -53,6 +53,7 @@ export const RoomListItem = observer(
     const defaultText = 'Tap to view and join the conversation.';
 
     const navigateToChat = () => {
+      chatStore.updateBadgeCounter(jid, 'CLEAR');
       navigation.navigate(ROUTES.CHAT, {chatJid: jid, chatName: name});
     };
 
@@ -135,7 +136,7 @@ export const RoomListItem = observer(
               onPress={navigateToChat}>
               <HStack justifyContent="space-between">
                 <View justifyContent={'center'} flex={0.1}>
-                  <RoomListItemIcon name={name} counter={counter} />
+                  <RoomListItemIcon name={name} counter={chatStore.roomsInfoMap[jid]?.counter} />
                 </View>
 
                 <VStack justifyContent={'center'} flex={0.7}>

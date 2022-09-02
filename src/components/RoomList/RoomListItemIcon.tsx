@@ -6,32 +6,64 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React from 'react';
-import {ImageBackground, StyleSheet} from 'react-native';
+import { StyleSheet} from 'react-native';
 import { commonColors, textStyles } from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { Text, View } from 'native-base';
+import { Box, Text, View } from 'native-base';
+import { observer } from 'mobx-react-lite';
 
-export const RoomListItemIcon = ({name,counter}:{name:string,counter:number}) => {
+export const RoomListItemIcon = observer(({name,counter}:{name:string,counter:number}) => {
   return (
-    <ImageBackground imageStyle={{borderRadius: 5}} style={styles.imageBg}>
-      <View style={styles.chatHomeItemIcon}>
+      <Box 
+        shadow={"2"}
+        borderWidth={ 1}
+        borderColor={ commonColors.primaryDarkColor}
+        backgroundColor={ commonColors.primaryDarkColor}
+        height={ hp('5.54%')}
+        width={ hp('5.54%')}
+        flexDirection={ 'row'}
+        justifyContent={ 'center'}
+        alignItems={ 'center'}
+        textAlign={ 'center'}
+        position={ 'relative'}
+        borderRadius={ hp('0.7%')}>
         <Text style={styles.fullName}>
           {name&&name[0] + (name[1] ? name[1] : '')}
         </Text>
         {counter ? (
-            <View style={styles.counterContainer}>
-              <View style={styles.counterInnerContainer}>
-                <Text style={styles.counterText}>{counter}</Text>
-              </View>
-            </View>
-          ) : null}
-      </View>
-    </ImageBackground>
+          <Box 
+          alignItems={ 'flex-end'}
+          justifyContent={ 'flex-end'}
+          flex={ 1}
+          zIndex={ 1}
+          alignSelf={ 'flex-end'}
+          height={ hp('5.5%')}
+          width={ hp('5.5%')}
+          marginTop={ hp('1%')}
+          marginRight={ hp('0.5')}
+          position={'absolute'}>
+            <Box
+            shadow={"2"}
+            rounded={"full"}
+            marginTop={ hp('1%')}
+            height={ hp('2.3%')}
+            width={ hp('2.3%')}
+            backgroundColor={ '#FF0000'}
+            alignItems={ 'center'}
+            justifyContent={ 'center'}
+            >
+              <Text style={styles.counterText}>{counter}</Text>
+            </Box>
+        </Box>
+          ) : 
+          null
+          }
+      </Box>
   );
-};
+});
 
 const styles = StyleSheet.create({
   chatHomeItemIcon: {
@@ -57,7 +89,7 @@ const styles = StyleSheet.create({
   fullName: {
     color: 'white',
     marginRight: 3,
-    fontFamily: textStyles.boldFont,
+      fontFamily: textStyles.boldFont,
     textTransform: 'uppercase',
     textAlign: 'center',
   },
@@ -71,7 +103,7 @@ const styles = StyleSheet.create({
     width: hp('5.5%'),
     marginTop: hp('1%'),
     marginRight: hp('0.5'),
-    position:'absolute'
+    position:'absolute',
   },
   counterInnerContainer: {
     height: hp('2.1%'),
@@ -83,7 +115,7 @@ const styles = StyleSheet.create({
   },
   counterText: {
     fontFamily: textStyles.regularFont,
-    fontSize: hp('1%'),
+    fontSize: hp('1.2%'),
     color: '#FFFFFF',
   },
 });

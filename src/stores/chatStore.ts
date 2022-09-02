@@ -111,11 +111,11 @@ export class ChatStore {
     this.stores = stores;
   }
 
-  toggleShouldCount = action((value: boolean) => {
+  toggleShouldCount = (value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
     });
-  });
+  };
 
   setInitialState = () => {
     runInAction(() => {
@@ -227,20 +227,24 @@ export class ChatStore {
     }
   };
 
-  updateBadgeCounter = action((roomJid: string, type: 'CLEAR' | 'UPDATE') => {
-    this.roomList.map((item: any, index: number) => {
-      if (item.jid === roomJid) {
-        if (type === 'CLEAR') {
-          runInAction(() => {
-            return (item.counter = 0);
-          });
+  updateBadgeCounter = (roomJid: string, type: 'CLEAR' | 'UPDATE') => {
+      this.roomList.map((item: any, index: number) => {
+        if (item.jid === roomJid) {
+          if (type === 'CLEAR') {
+            runInAction(()=>{
+              item.counter = 0;
+              this.roomsInfoMap[roomJid].counter = 0
+            })
+          }
+          if (type === 'UPDATE') {
+            runInAction(() => {
+              item.counter++;
+              this.roomsInfoMap[roomJid].counter = item.counter;
+            })
+          }
         }
-        if (type === 'UPDATE') {
-          item.counter = item.counter + 1;
-        }
-      }
-    });
-  });
+      });
+  };
 
   updateMessageComposingState = (props: isComposingProps) => {
     runInAction(() => {
