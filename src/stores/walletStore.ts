@@ -57,13 +57,6 @@ export const filterNfts = item => {
     item.tokenType !== 'NFMT'
   );
 };
-export const mapNfmtBalances = item => {
-  if (item.tokenType === 'NFMT') {
-    item.balance = item.balances.reduce((acc, el) => (acc += +el), 0);
-    item.total = item.balance;
-  }
-  return item;
-};
 
 export const produceNfmtItemsAndCollections = (array = []) => {
   const result = [];
@@ -74,11 +67,15 @@ export const produceNfmtItemsAndCollections = (array = []) => {
       for (let i = 0; i < item.balances.length; i++) {
         const tokenBalance = item.balances[i];
         const tokenType = item.contractTokenIds[i];
+        const total = item.maxSupplies.find(
+          (supply, i) => +tokenType === i + 1,
+        );
+
         const resItem = {
           ...item,
           balance: tokenBalance,
           nfmtType: tokenType,
-          total: tokenBalance,
+          total: total,
         };
         +tokenBalance > 0 && result.push(resItem);
         !collectionsFilterMap[resItem.contractAddress] &&
