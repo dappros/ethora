@@ -52,6 +52,7 @@ interface NftListItemProps {
   mimetype: string;
   itemSelected: boolean;
   onAssetPress?: () => void;
+  traitsEnabled?: boolean;
 }
 
 const NfmtTag = ({tag}: {tag: string}) => {
@@ -81,6 +82,7 @@ export const NftListItem = (props: NftListItemProps) => {
     mimetype,
     itemSelected,
     onAssetPress,
+    traitsEnabled,
   } = props;
   const {loginStore, apiStore, chatStore} = useStores();
   const navigation = useNavigation();
@@ -171,6 +173,7 @@ export const NftListItem = (props: NftListItemProps) => {
             ]}>
             <VStack>
               {item?.traits &&
+                traitsEnabled &&
                 !item.isCollection &&
                 item.traits.map((trait, i) => {
                   return <NfmtTag tag={trait} key={item} />;

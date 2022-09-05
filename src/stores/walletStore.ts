@@ -4,6 +4,7 @@ import {httpGet, httpPost} from '../config/apiService';
 import {
   etherTransferURL,
   itemTransferURL,
+  nfmtCollectionTransferURL,
   nfmtTransferURL,
   tokenEtherBalanceURL,
   tokenTransferURL,
@@ -280,7 +281,37 @@ export class WalletStore {
       };
     });
   };
+  async transferCollection(
+    body,
+    senderName,
+    receiverName,
+    tokenName,
+  ) {
+    const response = await httpPost(
+      this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,
+      body,
+      this.stores.loginStore.userToken,
+    );
 
+    if (response.data.success) {
+      runInAction(() => {
+        this.tokenTransferSuccess = {
+          success: true,
+          senderName,
+          receiverName,
+          amount: 1,
+          receiverMessageId: null,
+          tokenName: tokenName,
+        };
+      });
+
+      this.fetchWalletBalance(
+        this.stores.loginStore.initialData.walletAddress,
+        this.stores.loginStore.userToken,
+        true,
+      );
+    }
+  }
   async transferTokens(
     bodyData: any,
     token: string,

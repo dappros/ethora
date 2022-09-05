@@ -34,6 +34,9 @@ export const referralRoute = '/users/referral';
 
 export const fileUpload = '/files/';
 export const nftTransferURL = '/tokens/items';
+
 export const itemTransferURL = '/tokens/transfer/items';
 export const nfmtTransferURL = '/tokens/items/nfmt/transfer';
+export const nfmtCollectionTransferURL = '/tokens/items/nfmt/transferOwnership';
+
 export const refreshTokenURL = '/users/login/refresh';
