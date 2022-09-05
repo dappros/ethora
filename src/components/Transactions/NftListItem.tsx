@@ -30,6 +30,15 @@ import {NFMT_TRAITS, NFMT_TYPES} from '../../stores/walletStore';
 import {HStack, VStack} from 'native-base';
 import {createPrivateChat} from '../../helpers/chat/createPrivateChat';
 import {useStores} from '../../stores/context';
+import {Button} from '../Button';
+import {
+  reverseUnderScoreManipulation,
+  underscoreManipulation,
+} from '../../helpers/underscoreLogic';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {ROUTES} from '../../constants/routes';
+import {botTypes} from '../../constants/botTypes';
+import {botStanza} from '../../xmpp/stanzas';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -74,18 +83,37 @@ export const NftListItem = (props: NftListItemProps) => {
     onAssetPress,
   } = props;
   const {loginStore, apiStore, chatStore} = useStores();
-  const onGetCollectionPress = () => {
-    const bot = defaultBotsList.find(item => item.name === 'Merchant Bot');
-    const {} = createPrivateChat(
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  const onGetCollectionPress = async () => {
+    const bot = defaultBotsList.find(
+      defaultBot => defaultBot.name === 'Merchant Bot',
+    );
+    const {roomJid, roomName} = await createPrivateChat(
       loginStore.initialData.walletAddress,
-      bot.name,
+      bot.jid,
       loginStore.initialData.firstName,
       bot.name,
       apiStore.xmppDomains.CONFERENCEDOMAIN,
       chatStore.xmpp,
     );
+    const data = {
+      botType: botTypes.mintBot,
+      contractAddress: item?.contractAddress,
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+    };
+    setTimeout(() => {
+      botStanza(
+        underscoreManipulation(loginStore.initialData.walletAddress),
+        roomJid,
+        data,
+        chatStore.xmpp,
+      );
+      navigation.navigate(ROUTES.CHAT, {chatJid: roomJid});
+    }, 3000);
   };
-
   return (
     <View
       onPress={onClick}
@@ -130,7 +158,17 @@ export const NftListItem = (props: NftListItemProps) => {
         </View>
 
         <TouchableWithoutFeedback onPress={onClick}>
-          <View style={styles.itemCount}>
+          <View
+            style={[
+              styles.itemCount,
+              {
+                width:
+                  item.isCollection &&
+                  route.name === ROUTES.OTHERUSERPROFILESCREEN
+                    ? '40%'
+                    : '30%',
+              },
+            ]}>
             <VStack>
               {item?.traits &&
                 !item.isCollection &&
@@ -138,6 +176,15 @@ export const NftListItem = (props: NftListItemProps) => {
                   return <NfmtTag tag={trait} key={item} />;
                 })}
             </VStack>
+            {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+              <HStack justifyContent={'flex-end'} marginRight={2}>
+                <Button
+                  loading={false}
+                  onPress={onGetCollectionPress}
+                  title={'Get'}
+                />
+              </HStack>
+            )}
             <View>
               <Text style={{color: 'black'}}>
                 <Text
@@ -153,9 +200,17 @@ export const NftListItem = (props: NftListItemProps) => {
               </Text>
               {item.isCollection && (
                 <Text style={{color: 'black'}}>
-                  <Image source={coinImagePath} style={styles.tokenIconStyle} />
+                  <Image
+                    source={coinImagePath}
+                    resizeMode={'contain'}
+                    style={styles.tokenIconStyle}
+                  />
                   {Math.min(...item.costs)} -{' '}
-                  <Image source={coinImagePath} style={styles.tokenIconStyle} />
+                  <Image
+                    source={coinImagePath}
+                    resizeMode={'contain'}
+                    style={styles.tokenIconStyle}
+                  />
                   {Math.max(...item.costs)}
                 </Text>
               )}
