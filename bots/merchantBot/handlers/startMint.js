@@ -7,6 +7,7 @@ import {ethers} from "ethers";
 export const startMint = (data) => {
     console.log('=> startMint | Message received from ', data.userJID, data.message);
     getMintItemData(data.receiverData.attrs.contractAddress).then(itemsData => {
+        console.log('GET MINT ITEM DATA => ', itemsData)
 
         let buttons = [];
         for(let i = 0; i <= itemsData.maxSupplies.length && itemsData.maxSupplies[i]; i++){
@@ -29,22 +30,23 @@ export const startMint = (data) => {
         //     );
         //     console.log(message)
         // }
+        console.log('USER RECEIVER DATA => ', data.receiverData.attrs)
         userSteps('setStep', data.receiverData.attrs.senderJID, 2);
         userData('setData', data.userJID, itemsData, 'itemData');
 
-        sendMessage(
-            data,
-            messages.merchantBot.startMessages,
-            'message',
-            false,
-            0,
-        );
+        // sendMessage(
+        //     data,
+        //     messages.merchantBot.startMessages,
+        //     'message',
+        //     false,
+        //     0,
+        // );
 
         console.log(messages.merchantBot.chooseDetails)
 
         return sendMessage(
             data,
-            'Now, the Collection is called '+itemsData.tokenName+' and these are the details:',
+            messages.merchantBot.startMessages+'\n\nNow, the Collection is called '+itemsData.tokenName+' and these are the details:',
             'message',
             false,
             0,
