@@ -146,7 +146,7 @@ const ProfileModal = (props: ProfileModalProps) => {
       animationOut={'slideOutDown'}
       isVisible={isVisible}
       onBackdropPress={onBackdropPress}>
-      {modalContent()}
+      <View>{modalContent()}</View>
     </Modal>
   );
 };
