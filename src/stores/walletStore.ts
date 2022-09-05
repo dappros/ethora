@@ -18,11 +18,21 @@ import {
 import {RootStore} from './context';
 import {coinsMainName, commonColors} from '../../docs/config';
 import {showToast} from '../components/Toast/toast';
+import {weiToNormalUnits} from '../helpers/weiToNormalUnits';
 
 export const NFMT_TYPES = {
-  '1': {type: 'free', color: commonColors.primaryDarkColor},
-  '2': {type: 'bronze', color: 'brown'},
+  '1': {type: 'free', color: 'chocolate'},
+  '2': {type: 'silver', color: 'grey'},
   '3': {type: 'gold', color: 'orange'},
+};
+
+export const NFMT_TRAITS = {
+  Free: {color: commonColors.primaryDarkColor},
+  Silver: {color: 'grey'},
+  Gold: {color: 'orange'},
+  Bronze: {color: 'chocolate'},
+  Rare: {color: 'lightgreen'},
+  'Unique!': {color: 'black'},
 };
 
 export const mapTransactions = (item, walletAddress) => {
@@ -58,33 +68,48 @@ export const filterNfts = item => {
   );
 };
 
-export const produceNfmtItemsAndCollections = (array = []) => {
+export const produceNfmtItems = (array = []) => {
   const result = [];
-  const collections = [];
-  const collectionsFilterMap = {};
+  const rareTotal = 20;
+  const uniqueTotal = 1;
+
   for (const item of array) {
     if (item.tokenType === 'NFMT') {
       for (let i = 0; i < item.balances.length; i++) {
         const tokenBalance = item.balances[i];
-        const tokenType = item.contractTokenIds[i];
-        const total = item.maxSupplies.find(
-          (supply, i) => +tokenType === i + 1,
+        const tokenType = +item.contractTokenIds[i];
+        const total = item.maxSupplies.find((supply, i) => tokenType === i + 1);
+        const traits = item.traits.map(trait =>
+          trait.find((el, i) => tokenType === i + 1),
         );
-
+        total < rareTotal && traits.push('Rare');
+        total === uniqueTotal && traits.push('Unique!');
         const resItem = {
           ...item,
           balance: tokenBalance,
           nfmtType: tokenType,
           total: total,
+          traits,
         };
         +tokenBalance > 0 && result.push(resItem);
-        !collectionsFilterMap[resItem.contractAddress] &&
-          collections.push({...resItem, isCollection: true});
-        collectionsFilterMap[resItem.contractAddress] = true;
       }
     }
   }
-  return [result, collections];
+  return result;
+};
+
+export const generateCollections = item => {
+  const total = item.maxSupplies.reduce((acc, item) => (acc += item));
+  const minted = item.minted.reduce((acc, item) => (acc += item));
+  const costs = item.costs.map(cost => weiToNormalUnits(+cost));
+  return {
+    ...item,
+    isCollection: true,
+    total,
+    balance: total - minted,
+    costs,
+    nftId: item._id,
+  };
 };
 export class WalletStore {
   isFetching = false;
@@ -93,6 +118,7 @@ export class WalletStore {
   transactions: any = [];
   anotherUserTransaction: [] = [];
   anotherUserBalance: [] = [];
+  anotherUserNfmtCollections: [] = [];
   balance = [];
   offset = 0;
   limit = 10;
@@ -134,6 +160,7 @@ export class WalletStore {
       this.collections = [];
 
       this.anotherUserBalance = [];
+      this.anotherUserNfmtCollections = [];
       this.balance = [];
       this.offset = 0;
       this.limit = 10;
@@ -205,16 +232,16 @@ export class WalletStore {
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
-          const [nfmtItems, collections] = produceNfmtItemsAndCollections(
-            response.data.balance,
-          );
+          const nfmtItems = produceNfmtItems(response.data.balance);
           this.nftItems = response.data.balance
             .filter(filterNftBalances)
             .concat(nfmtItems)
             .concat(extBalance)
 
             .reverse();
-          this.collections = collections;
+          this.collections = response.data.nfmtContracts.map(item =>
+            generateCollections(item),
+          );
           this.coinBalance = response.data.balance
             .filter(filterNfts)
             .map((item: any) => {
@@ -226,6 +253,9 @@ export class WalletStore {
       } else {
         runInAction(() => {
           this.anotherUserBalance = response.data.balance;
+          this.anotherUserNfmtCollections = response.data.nfmtContracts.map(
+            item => generateCollections(item),
+          );
         });
       }
     } catch (error: any) {
