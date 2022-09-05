@@ -22,11 +22,11 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {PNG} from 'pngjs/browser';
 import JpegDecoder from 'jpeg-js';
 import jsQR from 'jsqr';
-import { retrieveOtherUserVcard, subscribeToRoom} from '../xmpp/stanzas';
+import {retrieveOtherUserVcard, subscribeToRoom} from '../xmpp/stanzas';
 import {ROUTES} from '../constants/routes';
 import {commonColors, textStyles} from '../../docs/config';
 import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
-import { showToast } from '../components/Toast/toast';
+import {showToast} from '../components/Toast/toast';
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
 
@@ -37,10 +37,7 @@ const options = {
   maxWidth: 200,
 };
 
-function createImageData(
-  base64ImageData: any,
-  imageType: string,
-) {
+function createImageData(base64ImageData: any, imageType: string) {
   let decodedData: any = {};
   const bufferFrom = Buffer.from(base64ImageData, 'base64');
   if (imageType === 'image/jpeg') {
@@ -63,7 +60,7 @@ const ScanScreen = (props: ScanScreenProps) => {
   const [scanResult, setScanResult] = useState(false);
   const [result, setResult] = useState(null);
 
-  const {loginStore, chatStore} = useStores();
+  const {loginStore, chatStore, apiStore} = useStores();
 
   const manipulatedWalletAddress = underscoreManipulation(
     loginStore.initialData.walletAddress,
@@ -73,37 +70,37 @@ const ScanScreen = (props: ScanScreenProps) => {
   const navigation = useNavigation();
 
   const onSuccess = (e: any) => {
-    if(!e){
-      showToast('error','Error','Invalid QR','top');
+    if (!e) {
+      showToast('error', 'Error', 'Invalid QR', 'top');
       setIsLoading(false);
-      return
+      return;
     }
-    if(e.data.includes('profileLink')){
+    if (e.data.includes('profileLink')) {
       const params = e.data.split('https://www.eto.li/go')[1];
       const queryParams = new URLSearchParams(params);
-      const firstName:string = queryParams.get("firstName");
-      const lastName:string = queryParams.get("lastName");
-      const xmppId:string = queryParams.get("xmppId");
-      const walletAddressFromLink:string = queryParams.get("walletAddress");
+      const firstName: string = queryParams.get('firstName');
+      const lastName: string = queryParams.get('lastName');
+      const xmppId: string = queryParams.get('xmppId');
+      const walletAddressFromLink: string = queryParams.get('walletAddress');
 
-      if(loginStore.initialData.walletAddress===walletAddressFromLink){
+      if (loginStore.initialData.walletAddress === walletAddressFromLink) {
         navigation.navigate(ROUTES.PROFILE);
-      }else{
-          retrieveOtherUserVcard(
-            loginStore.initialData.xmppUsername,
-            xmppId,
-            chatStore.xmpp
-          );
-          
-          loginStore.setOtherUserDetails({
-            anotherUserFirstname: firstName,
-            anotherUserLastname: lastName,
-            anotherUserLastSeen: {},
-            anotherUserWalletAddress: walletAddressFromLink
-          })
+      } else {
+        retrieveOtherUserVcard(
+          loginStore.initialData.xmppUsername,
+          xmppId,
+          chatStore.xmpp,
+        );
+
+        loginStore.setOtherUserDetails({
+          anotherUserFirstname: firstName,
+          anotherUserLastname: lastName,
+          anotherUserLastSeen: {},
+          anotherUserWalletAddress: walletAddressFromLink,
+        });
         navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
       }
-    }else{
+    } else {
       // const jid = parseChatLink(e.data) + CONFERENCEDOMAIN;
       // setResult(jid);
       // setScan(false);
@@ -114,26 +111,26 @@ const ScanScreen = (props: ScanScreenProps) => {
       //   // chatName: 'Loading...',
       // });
 
-      if(e){
+      if (e) {
         const jid = parseChatLink(e.data);
 
         if (jid) {
           subscribeToRoom(
-            jid + CONFERENCEDOMAIN,
+            jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
             manipulatedWalletAddress,
             chatStore.xmpp,
           );
           setIsLoading(false);
           navigation.navigate(ROUTES.CHAT, {
-            chatJid: jid + CONFERENCEDOMAIN,
+            chatJid: jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
             // chatName: 'Loading...',
           });
         } else {
-          showToast('error','Error','Invalid QR','top');
+          showToast('error', 'Error', 'Invalid QR', 'top');
           setIsLoading(false);
         }
-      }else {
-        showToast('error','Error','Invalid QR','top');
+      } else {
+        showToast('error', 'Error', 'Invalid QR', 'top');
         setIsLoading(false);
       }
     }
@@ -156,9 +153,8 @@ const ScanScreen = (props: ScanScreenProps) => {
           response.assets[0].base64,
           response.assets[0].type,
         );
-        console.log(JSON.stringify(res))
+        console.log(JSON.stringify(res));
         onSuccess(res);
-        
       }
     });
   };
