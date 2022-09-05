@@ -329,7 +329,6 @@ setChatMessagesLoading = (value) => {
         stanza.attrs.id === XMPP_TYPES.paginatedArchive &&
         stanza.children[0].name === 'fin'
       ) {
-        console.log('responseres');
         runInAction(() => {
           this.isLoadingEarlierMessages = false;
         });
