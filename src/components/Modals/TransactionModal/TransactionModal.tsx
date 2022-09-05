@@ -119,6 +119,9 @@ const TransactionModal = (props: TransactionModalProps) => {
   }, [isVisible]);
   const tokenTransferFunc = async amt => {
     clearState();
+    if (amt < 0) {
+      alert('Amount must be greater than 0');
+    }
     const receiverName = extraData.name;
     const receiverMessageId = extraData.message_id;
     const senderName = extraData.senderName;
@@ -185,7 +188,6 @@ const TransactionModal = (props: TransactionModalProps) => {
       amount: 1,
       tokenName: selectedItem.tokenName,
     };
-
 
     const nfmtBodyData = {
       to: walletAddress,
