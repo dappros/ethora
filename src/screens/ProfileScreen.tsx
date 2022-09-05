@@ -390,6 +390,15 @@ export const ProfileScreen = observer((props: any) => {
                   <RenderAssetItem
                     item={e.item}
                     index={e.index}
+                    onClick={() =>
+                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                        screen: 'NftItemHistory',
+                        params: {
+                          item: e.item,
+                          userWalletAddress: walletAddress,
+                        },
+                      })
+                    }
                     onAssetPress={() => {
                       setMediaModalData({
                         open: true,

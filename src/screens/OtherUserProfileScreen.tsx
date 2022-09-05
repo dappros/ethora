@@ -48,7 +48,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   filterNftBalances,
   mapTransactions,
-  produceNfmtItemsAndCollections,
+  produceNfmtItems,
 } from '../stores/walletStore';
 import Animated, {
   Easing,
@@ -247,8 +247,7 @@ const OtherUserProfileScreen = observer((props: any) => {
   };
   useEffect(() => {
     if (anotherUserBalance?.length > 0) {
-      const [nfmtItems, collections] =
-        produceNfmtItemsAndCollections(anotherUserBalance);
+      const nfmtItems = produceNfmtItems(anotherUserBalance);
       setCoinData(
         anotherUserBalance.filter(
           (item: any) => item.tokenName === coinsMainName,
@@ -262,7 +261,7 @@ const OtherUserProfileScreen = observer((props: any) => {
 
           .reverse(),
       );
-      setCollections(collections);
+      setCollections(walletStore.anotherUserNfmtCollections);
 
       calculateBalances();
     }
