@@ -55,6 +55,13 @@ interface NftListItemProps {
   traitsEnabled?: boolean;
 }
 
+function truncateString(str, num) {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + '...';
+}
+
 const NfmtTag = ({tag}: {tag: string}) => {
   return (
     <HStack
@@ -154,41 +161,38 @@ export const NftListItem = (props: NftListItemProps) => {
           </View>
           <TouchableWithoutFeedback onPress={onClick} style={{height: '100%'}}>
             <View>
-              <Text style={styles.itemName}>{name}</Text>
+              <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
-
+        <VStack
+          justifyContent={'center'}
+          alignItems={'flex-end'}
+          marginLeft={'auto'}>
+          {item?.traits &&
+            traitsEnabled &&
+            !item.isCollection &&
+            item.traits.map((trait, i) => {
+              return <NfmtTag tag={trait} key={item} />;
+            })}
+        </VStack>
+        {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+          <HStack justifyContent={'flex-end'} alignItems={'center'} marginRight={2}>
+            <Button
+              loading={false}
+              onPress={onGetCollectionPress}
+              title={'Get'}
+              style={{height: 50}}
+            />
+          </HStack>
+        )}
         <TouchableWithoutFeedback onPress={onClick}>
           <View
             style={[
               styles.itemCount,
-              {
-                width:
-                  item.isCollection &&
-                  route.name === ROUTES.OTHERUSERPROFILESCREEN
-                    ? '40%'
-                    : '30%',
-              },
+              {minWidth: item.isCollection ? '32%' : '20%'},
             ]}>
-            <VStack>
-              {item?.traits &&
-                traitsEnabled &&
-                !item.isCollection &&
-                item.traits.map((trait, i) => {
-                  return <NfmtTag tag={trait} key={item} />;
-                })}
-            </VStack>
-            {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
-              <HStack justifyContent={'flex-end'} marginRight={2}>
-                <Button
-                  loading={false}
-                  onPress={onGetCollectionPress}
-                  title={'Get'}
-                />
-              </HStack>
-            )}
-            <View>
+            <View style={{alignItems: 'flex-start'}}>
               <Text style={{color: 'black'}}>
                 <Text
                   style={{

@@ -40,6 +40,6 @@ export const createPrivateChat = async (
       underscoreManipulation(otherUserWalletAddress),
       xmpp,
     );
-  }, 3000);
+  }, 1000);
   return {roomJid, roomName: combinedUsersName};
 };
