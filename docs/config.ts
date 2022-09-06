@@ -152,9 +152,9 @@ const logoHeight = 70; //represents the percetage of the height of the device
 const defaultBotsList = [
   {
     name: 'Atom Bot',
-    id: '0x_d6005_ca397a6_d_f3963_a5802873c31_f243152_a6_c9',
-    jid: '0x_d6005_ca397a6_d_f3963_a5802873c31_f243152_a6_c9',
-    walletAddress: '0xD6005Ca397a6DF3963A5802873c31F243152A6C9',
+    id: '0x5_a_f0660e5c_eff1_ce8599d_e06_c40270e36_a_b68bc4',
+    jid: '0x5_a_f0660e5c_eff1_ce8599d_e06_c40270e36_a_b68bc4',
+    walletAddress: '0x5AF0660e5cEff1Ce8599dE06C40270e36AB68bc4',
   },
   {
     name: 'Atom Bot Dev',
@@ -164,9 +164,9 @@ const defaultBotsList = [
   },
   {
     name: 'Merchant Bot',
-    id: '0x_d6005_ca397a6_d_f3963_a5802873c31_f243152_a6_c9',
-    jid: '0x_d6005_ca397a6_d_f3963_a5802873c31_f243152_a6_c9',
-    walletAddress: '0xD6005Ca397a6DF3963A5802873c31F243152A6C9',
+    id: '0x9_b8_d0cd_c_dba8ef_e145de2_e5986d1b455_c07_b78c0',
+    jid: '0x9_b8_d0cd_c_dba8ef_e145de2_e5986d1b455_c07_b78c0',
+    walletAddress: '0x9B8D0cdCDba8efE145de2E5986d1b455C07B78c0',
   },
 ];
 
