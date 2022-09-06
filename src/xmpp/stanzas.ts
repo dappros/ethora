@@ -730,3 +730,24 @@ export const banUser = (
   );
   xmpp.send(message);
 };
+
+export const lastOnline = (from, to, xmpp) => {
+  // <iq from="olek@localhost" type="get" id="your_id"><query xmlns="ns:room:last" room="room_jid" /></iq>
+  // alert(to);
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'get',
+      id:'activity'
+    },
+    xml(
+      'query',
+      {
+        'xmlns':'ns:room:last',
+        'room':to 
+      }
+    )
+  )
+  xmpp.send(message)
+}
