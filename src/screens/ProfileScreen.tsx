@@ -118,6 +118,7 @@ const RenderAssetItem = ({
     nftId={item.nftId}
     mimetype={item.nftMimetype}
     onAssetPress={onAssetPress}
+    traitsEnabled
     // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
     item={item}
     index={index}

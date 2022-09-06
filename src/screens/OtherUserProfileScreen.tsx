@@ -95,7 +95,7 @@ const Item = ({
     </VStack>
     <VStack justifyContent={'center'} alignItems={'center'}>
       <Text style={[styles.coinsItemText]}>
-        {tokenName === coinsMainName ? coinReplacedName : tokenName}
+        {parseFloat(balance).toFixed(0)}
       </Text>
     </VStack>
   </HStack>
@@ -364,6 +364,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                         },
                       })
                     }
+                    traitsEnabled
                     nftId={e.item.nftId}
                     mimetype={e.item.nftMimetype}
                     onAssetPress={() => {

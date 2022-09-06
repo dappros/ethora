@@ -232,14 +232,14 @@ export class ChatStore {
         if (item.jid === roomJid) {
           if (type === 'CLEAR') {
             runInAction(()=>{
-              item.counter = 0;
-              this.roomsInfoMap[roomJid].counter = 0
+              // item.counter = 0;
+              // this.roomsInfoMap[roomJid].counter = 0
             })
           }
           if (type === 'UPDATE') {
             runInAction(() => {
-              item.counter++;
-              this.roomsInfoMap[roomJid].counter = item.counter;
+              // item.counter++;
+              // this.roomsInfoMap[roomJid].counter = item.counter;
             })
           }
         }
