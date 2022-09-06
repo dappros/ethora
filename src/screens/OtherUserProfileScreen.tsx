@@ -393,6 +393,15 @@ const OtherUserProfileScreen = observer((props: any) => {
                     totalAssets={e.item.total}
                     nftId={e.item.nftId}
                     mimetype={e.item.nftMimetype}
+                    onClick={() =>
+                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                        screen: 'NftItemHistory',
+                        params: {
+                          item: e.item,
+                          userWalletAddress: anotherUserWalletAddress,
+                        },
+                      })
+                    }
                     onAssetPress={() => {
                       setMediaModalData({
                         open: true,
