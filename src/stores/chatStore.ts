@@ -395,6 +395,10 @@ setChatMessagesLoading = (value) => {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
 
+      if(stanza.attrs.id === 'activity'){
+        console.log(stanza.children[0].children,"activityyyy")
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
