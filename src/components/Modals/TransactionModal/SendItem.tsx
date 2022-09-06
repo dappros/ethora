@@ -18,16 +18,17 @@ import { Pressable } from 'native-base';
 
 interface SendItemProps {
   onPress: () => void;
+  title: string;
 }
 
-const SendItem = ({onPress}: SendItemProps) => {
+const SendItem = ({onPress, title}: SendItemProps) => {
   return (
     <Pressable onPress={onPress}>
       <View style={styles.sendItemAndDMContainer}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontistoIcon name="arrow-swap" size={15} color="black" />
         </View>
-        <Text style={{color: 'black'}}>Send Items</Text>
+        <Text style={{color: 'black'}}>{title}</Text>
       </View>
     </Pressable>
   );

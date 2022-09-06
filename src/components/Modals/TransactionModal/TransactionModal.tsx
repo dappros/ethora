@@ -6,7 +6,12 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -51,6 +56,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {NftListItem} from '../../Transactions/NftListItem';
 import Modal from 'react-native-modal';
 import {alpha} from '../../../helpers/aplha';
+import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 
 interface TransactionModalProps {
   type: string | undefined;
@@ -59,6 +65,12 @@ interface TransactionModalProps {
   isVisible?: boolean;
 }
 
+export const InviteFriendsScreen = ({navigation}) => {
+  const {loginStore} = useStores();
+
+  return <></>;
+};
+
 const TransactionModal = (props: TransactionModalProps) => {
   const {type, extraData, closeModal, isVisible} = props;
 
@@ -66,6 +78,9 @@ const TransactionModal = (props: TransactionModalProps) => {
   const [tokenState, setTokenState] = useState({type: null, amnt: null});
   const [selectedItem, setSelectedItem] = useState({});
   const [displayItems, setDisplayItems] = useState(false);
+  const [displayCollections, setDisplayCollections] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [allowedEnterCustomAmount, setAllowedEnterCustomAmount] =
     useState(false);
   const [customTransferAmount, setCustomTransferAmount] = useState('');
@@ -76,6 +91,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   const clearState = () => {
     closeModal();
     setCustomTransferAmount('');
+    setLoading(false)
     // setAllowedEnterCustomAmount(false);
   };
   const renderNftItems = () => {
@@ -101,8 +117,41 @@ const TransactionModal = (props: TransactionModalProps) => {
             itemSelected={getItemSelected(selectedItem, e.item)}
             nftId={e.item.nftId}
             mimetype={e.item.nftMimetype}
-            // onAssetPress={onAssetPress}
-            // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
+            traitsEnabled={false}
+            item={e.item}
+            index={index}
+          />
+        )}
+        nestedScrollEnabled={true}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    );
+  };
+  const renderNftCollection = () => {
+    const getItemSelected = (selectedItem, item) => {
+      if (item.tokenType === 'NFMT') {
+        return (
+          selectedItem.nfmtType + selectedItem.contractAddress ===
+          item.nfmtType + item.contractAddress
+        );
+      }
+      return selectedItem.contractAddress === item.contractAddress;
+    };
+    return (
+      <FlatList
+        data={walletStore.collections}
+        style={{paddingRight: 50}}
+        renderItem={(e, index) => (
+          <NftListItem
+            assetUrl={e.item.imagePreview || e.item.nftFileUrl}
+            name={e.item.tokenName}
+            assetsYouHave={e.item.balance}
+            totalAssets={e.item.total}
+            onClick={() => setSelectedItem(e.item)}
+            itemSelected={getItemSelected(selectedItem, e.item)}
+            nftId={e.item.nftId}
+            mimetype={e.item.nftMimetype}
+            traitsEnabled={false}
             item={e.item}
             index={index}
           />
@@ -117,6 +166,7 @@ const TransactionModal = (props: TransactionModalProps) => {
       setAllowedEnterCustomAmount(false);
     }
   }, [isVisible]);
+
   const tokenTransferFunc = async amt => {
     clearState();
     if (amt < 0) {
@@ -166,6 +216,35 @@ const TransactionModal = (props: TransactionModalProps) => {
     } else {
       alert('You do not have enough ' + coinsMainName);
     }
+  };
+  const transferCollection = async () => {
+    clearState();
+    setLoading(true);
+    const receiverName = extraData.name;
+    // const receiverMessageId = extraData.message_id;
+    const senderName = extraData.senderName;
+
+    // console.log(item, 'flatitemsss');
+
+    // const amt = this.state.tokenAmount;
+    const receiverWalletAddress = extraData.walletFromJid;
+
+    const bodyData = {
+      toAddress: receiverWalletAddress,
+      contractAddress: selectedItem?.contractAddress,
+    };
+    await walletStore.transferCollection(
+      bodyData,
+      senderName,
+      receiverName,
+      selectedItem.tokenName + ' (Collection)',
+    );
+    setLoading(false);
+
+    setDisplayItems(false);
+    setDisplayCollections(false);
+    setSelectedItem({});
+    closeModal();
   };
 
   const itemTransferFunc = async () => {
@@ -359,7 +438,47 @@ const TransactionModal = (props: TransactionModalProps) => {
         </View>
       );
     }
+    if (displayCollections) {
+      return (
+        <View>
+          <Modal
+            onBackdropPress={() => setDisplayCollections(false)}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            onBackButtonPress={closeModal}
+            isVisible={displayCollections}>
+            <View style={[styles.centeredView]}>
+              <View
+                style={[
+                  {
+                    backgroundColor: 'white',
+                    height: hp('50%'),
+                    width: wp('100%'),
+                    padding: 0,
+                    margin: 0,
+                    paddingTop: 7,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  },
+                ]}>
+                <View style={styles.tokenTransferContainer}>
+                  {renderNftCollection()}
 
+                  {!loading ? (
+                    <SendItem
+                      title={'Send Collections'}
+                      onPress={transferCollection}
+                    />
+                  ) : (
+                    <ActivityIndicator size={30} />
+                  )}
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      );
+    }
     if (displayItems) {
       return (
         <View>
@@ -367,6 +486,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             onBackdropPress={() => setDisplayItems(false)}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
+            onBackButtonPress={closeModal}
             isVisible={displayItems}>
             <View style={[styles.centeredView]}>
               <View
@@ -385,7 +505,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                 <View style={styles.tokenTransferContainer}>
                   {renderNftItems()}
 
-                  {<SendItem onPress={itemTransferFunc} />}
+                  {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
                 </View>
               </View>
             </View>
@@ -409,6 +529,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             onBackdropPress={clearState}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
+            onDismiss={closeModal}
             isVisible={isVisible}>
             <View style={[styles.centeredView]}>
               <View style={[styles.modalView]}>
@@ -465,6 +586,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                           <Seperator />
 
                           <SendItem
+                            title={'Send Items'}
                             onPress={() => {
                               console.log('clickd');
                               setDisplayItems(true);
@@ -472,7 +594,16 @@ const TransactionModal = (props: TransactionModalProps) => {
                           />
                         </>
                       )}
+                   {!!walletStore.collections.length && <>
+                      <Seperator />
 
+                      <SendItem
+                        title={'Send Collections'}
+                        onPress={() => {
+                          setDisplayCollections(true);
+                        }}
+                      />
+                    </>}
                     <Seperator />
                     <TransferModalButton
                       title={'Direct Message'}
