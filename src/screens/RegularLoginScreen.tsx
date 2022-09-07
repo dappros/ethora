@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   ImageBackground,
   Keyboard,
+  StyleSheet,
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -20,6 +21,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import Modal from 'react-native-modal';
 
 import {HStack, Image, Input, VStack} from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -27,11 +29,13 @@ import {Button} from '../components/Button';
 import {useStores} from '../stores/context';
 import {ROUTES} from '../constants/routes';
 import {showError} from '../components/Toast/toast';
+
 export const RegularLoginScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setisLoading] = useState(false);
   const {loginStore} = useStores();
+  const [resetModalOpen, setResetModalOpen] = useState(false);
 
   const onSubmit = async () => {
     if (!userName || !password) {
@@ -121,8 +125,18 @@ export const RegularLoginScreen = ({navigation}) => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate(ROUTES.LOGIN)}>
+                  onPress={() =>
+                    !regularLoginEmail
+                      ? setResetModalOpen(true)
+                      : navigation.navigate(ROUTES.RESETPASSWORD)
+                  }>
                   <Text style={{fontSize: 13, color: 'black', marginTop: 5}}>
+                    Forgot password?
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate(ROUTES.LOGIN)}>
+                  <Text style={{fontSize: 13, color: 'black', marginTop: 15}}>
                     Back to login
                   </Text>
                 </TouchableOpacity>
@@ -133,6 +147,43 @@ export const RegularLoginScreen = ({navigation}) => {
           </VStack>
         </TouchableWithoutFeedback>
       </ImageBackground>
+      {!regularLoginEmail && (
+        <Modal
+          onBackdropPress={() => setResetModalOpen(false)}
+          isVisible={resetModalOpen}>
+          <View style={styles.modal}>
+            <Text style={{color: 'black'}}>
+              For some privacy reasons, Ethora does not store any user
+              credential information. Please, create a new account if you forget
+              your password.
+            </Text>
+            <Button
+              title="Close"
+              onPress={() => setResetModalOpen(false)}
+              loading={false}
+              style={{marginTop: 10}}
+            />
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
+const styles = StyleSheet.create({
+  modal: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  submitButton: {
+    backgroundColor: commonColors.primaryDarkColor,
+    width: 150,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+});

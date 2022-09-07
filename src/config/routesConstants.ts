@@ -31,7 +31,6 @@ export const checkEmailExist = '/users/checkEmail/';
 export const checkWalletExist = '/users/checkExtWallet/';
 export const referralRoute = '/users/referral';
 
-
 export const fileUpload = '/files/';
 export const nftTransferURL = '/tokens/items';
 
@@ -40,3 +39,4 @@ export const nfmtTransferURL = '/tokens/items/nfmt/transfer';
 export const nfmtCollectionTransferURL = '/tokens/items/nfmt/transferOwnership';
 
 export const refreshTokenURL = '/users/login/refresh';
+export const resetPasswordURL = '/users/forgot';
