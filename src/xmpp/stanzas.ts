@@ -56,6 +56,65 @@ export const getUserRoomsStanza = (
   );
   xmpp.send(message);
 };
+
+export const blacklistUser = (
+  manipulatedWalletAddress: string,
+  userAddressToBlacklist: string,
+  xmpp: any,
+) => {
+  const stanza = xml(
+    'iq',
+    {
+      from: manipulatedWalletAddress + '@' + DOMAIN,
+
+      type: 'set',
+      id: XMPP_TYPES.addToBlackList,
+    },
+    xml('query', {
+      xmlns: 'ns:deepx:muc:user:block',
+      user: userAddressToBlacklist + '@' + DOMAIN,
+    }),
+  );
+
+  xmpp.send(stanza);
+};
+
+export const removeUserFromBlackList = (
+  manipulatedWalletAddress: string,
+  userAddressToRemoveFromBlacklist: string,
+  xmpp: any,
+) => {
+  const stanza = xml(
+    'iq',
+    {
+      from: manipulatedWalletAddress + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.removeFromBlackList,
+    },
+    xml('query', {
+      xmlns: 'ns:deepx:muc:user:unblock',
+      user: userAddressToRemoveFromBlacklist + '@' + DOMAIN,
+    }),
+  );
+
+  xmpp.send(stanza);
+};
+
+export const getBlackList = (manipulatedWalletAddress: string, xmpp: any) => {
+  const stanza = xml(
+    'iq',
+    {
+      from: manipulatedWalletAddress + '@' + DOMAIN,
+      type: 'get',
+      id: XMPP_TYPES.getBlackList,
+    },
+    xml('query', {
+      xmlns: 'ns:deepx:muc:user:blocklist',
+    }),
+  );
+
+  xmpp.send(stanza);
+};
 /*
 Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
 You may not use this file except in compliance with the License.
@@ -739,15 +798,12 @@ export const lastOnline = (from, to, xmpp) => {
     {
       from: from + '@' + DOMAIN,
       type: 'get',
-      id:'activity'
+      id: 'activity',
     },
-    xml(
-      'query',
-      {
-        'xmlns':'ns:room:last',
-        'room':to 
-      }
-    )
-  )
-  xmpp.send(message)
-}
+    xml('query', {
+      xmlns: 'ns:room:last',
+      room: to,
+    }),
+  );
+  xmpp.send(message);
+};
