@@ -67,3 +67,9 @@ buck-out/
 /bots/huthut/.env.development
 /bots/questionnaire/.env.production
 /bots/questionnaire/.env.development
+/bots/autoResponderBot/.env.development
+/bots/autoResponderBot/.env.production
+/bots/autoResponderBot/test.js
+/bots/botTemplate/.env.development
+/bots/botTemplate/.env.production
+/bots/botTemplate/test.js
