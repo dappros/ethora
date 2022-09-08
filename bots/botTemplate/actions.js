@@ -6,10 +6,12 @@ let userStepsList = [];
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
 const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons) => {
+    //Send Typing if it's not a system message
     if (isSystemMessage) {
         xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons)
     } else {
         sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing')
+        //Set a timeout depending on the number of characters in the message.
         setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message))
     }
 }
@@ -35,6 +37,10 @@ const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) 
     sendTyping(data.xmpp, data.connectData, data.roomJID, 'pausedComposing')
 }
 
+//Show or hide the notification that the bot is currently typing a message.
+// * types:
+// - isComposing : Bot is typing a message
+// - pausedComposing : Bot stopped typing a message
 export const sendTyping = (xmpp, connectData, chat_jid, type) => {
     xmpp.send(xml('message', {
         to: chat_jid,
@@ -49,6 +55,7 @@ export const sendTyping = (xmpp, connectData, chat_jid, type) => {
     })));
 }
 
+//If it's not a system message, append the username to it
 const generateMessage = (data, message, isSystemMessage) => {
     let userName;
     let finalMessage;
@@ -76,6 +83,7 @@ const generateMessage = (data, message, isSystemMessage) => {
     return finalMessage;
 }
 
+//Get the number of seconds to write a message depending on the number of characters in the text
 const getWritingTime = (message) => {
     if (message.length <= 120) {
         return 2000
@@ -102,7 +110,7 @@ const connectRoom = (xmpp, address, roomJID, connectData, welcomeMessage) => {
     }, xml('x', 'http://jabber.org/protocol/muc', xml('history', {maxstanzas: 0})))).catch(console.error);
 
     if (welcomeMessage) {
-        console.log('=> Sending a welcome message: ', roomJID, '    ', myRoomAddress);
+        console.log('=> Sending a welcome message: ', roomJID);
         let receiverMessageId = '';
         sendMessage(
             {xmpp, roomJID, connectData, receiverMessageId},
@@ -112,7 +120,6 @@ const connectRoom = (xmpp, address, roomJID, connectData, welcomeMessage) => {
             0,
         );
     }
-
 }
 
 const buildRegEx = (str, keywords) => {
