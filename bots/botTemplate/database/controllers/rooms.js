@@ -1,5 +1,4 @@
-import {User} from "../models/users.js";
-import botOptions from "../config/config.js";
+import botOptions from "../../config/config.js";
 import {Room} from "../models/rooms.js";
 
 export const saveRoomData = async (address) => {

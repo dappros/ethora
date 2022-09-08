@@ -3,7 +3,7 @@ import {client} from "@xmpp/client"
 import debug from "@xmpp/debug"
 import {router} from "./router.js";
 import 'dotenv/config';
-import {connectToDb} from "./dataBase.js";
+import {connectToDb} from "./database/dataBase.js";
 import {welcomePresence} from "./presence.js";
 
 let connectData;

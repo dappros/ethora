@@ -1,5 +1,5 @@
 import {botLogin, loginData} from "../api.js";
-import {getListRooms, getOneRoom, saveRoomData} from "../controllers/rooms.js";
+import {getListRooms, getOneRoom, saveRoomData} from "../database/controllers/rooms.js";
 import {connectRoom} from "../actions.js";
 import messages from "./messages.js";
 
