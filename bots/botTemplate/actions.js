@@ -152,14 +152,14 @@ const userSteps = (type, jid, step, newData) => {
         return newUserData;
     }
 
-    //When receiving the getStepData type, return all the data
+    //When receiving the getStep type, return all the data
     if (type === 'getStep') {
         return userStepsList[userIndex];
     }
 
     //Upon receipt of the setStepData type, update the data that is specified
     if (type === 'setStep') {
-        console.log('=>=> Set new step for user ' + newData + ' ' + jid);
+        // console.log('=>=> Set new step for user ' + newData + ' ' + jid);
         if(newData){
             userStepsList[userIndex].data = newData;
         }
@@ -168,7 +168,7 @@ const userSteps = (type, jid, step, newData) => {
         }
         return true;
     }
-    console.log('=>=> userSteps Error: ', type, jid, step, newData)
+    console.log('=>=> userSteps Error: ', type, jid, step, newData, userStepsList[userIndex])
     return false;
 }
 
