@@ -5,25 +5,29 @@ import messages from "./messages.js";
 
 export const getConnectData = async () => {
     console.log('=> Running a bot on a ' + process.env.TYPE + ' server');
-
+    let dataBaseStatus = false;
     if (
         !process.env.TYPE ||
         !process.env.BOT_ADDRESS ||
         !process.env.CONFERENCE_ADDRESS ||
         !process.env.APP_USERNAME ||
-        !process.env.APP_PASSWORD
+        !process.env.APP_PASSWORD ||
+        !process.env.API_URL ||
+        !process.env.DEFAULT_ROOM ||
+        !process.env.PRESENCE ||
+        !process.env.INVATION
     ) {
         return Error('Not all data for launching the bot is specified')
     }
 
     if (
-        !process.env.MONGO_USERNAME &&
-        !process.env.MONGO_PASSWORD &&
-        !process.env.MONGO_HOSTNAME &&
-        !process.env.MONGO_PORT &&
-        !process.env.MONGO_DB
+        process.env.MONGO_USERNAME &&
+        process.env.MONGO_PASSWORD &&
+        process.env.MONGO_HOSTNAME &&
+        process.env.MONGO_PORT &&
+        process.env.MONGO_DB
     ) {
-        return Error('Not all data for connecting to the database are specified');
+        dataBaseStatus = true;
     }
 
     if (!loginData.success) {
@@ -44,7 +48,8 @@ export const getConnectData = async () => {
         appUsername: process.env.APP_USERNAME,
         appPassword: process.env.APP_PASSWORD,
         walletAddress: loginData.user.defaultWallet.walletAddress,
-        type: process.env.TYPE
+        type: process.env.TYPE,
+        dataBaseStatus
     };
 }
 
@@ -94,12 +99,15 @@ export const connectToRooms = (xmpp, jid, connectData) => {
         console.log('=> Default room not found');
     }
 
-    // I get a list of rooms from the database and connect
-    getListRooms().then(rooms => {
-        for (let room of rooms) {
-            connectRoom(xmpp, jid.toString(), room.address, connectData, false);
-        }
-    }).catch(error => {
-        console.log('getListRooms Error: ', error)
-    })
+    // Get a list of rooms from the database and connect
+    if(connectData.dataBaseStatus){
+        console.log('=> Connecting to other chat rooms');
+        getListRooms().then(rooms => {
+            for (let room of rooms) {
+                connectRoom(xmpp, jid.toString(), room.address, connectData, false);
+            }
+        }).catch(error => {
+            console.log('getListRooms Error: ', error);
+        })
+    }
 }
