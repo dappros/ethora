@@ -15,7 +15,7 @@ export const getConnectData = async () => {
         !process.env.API_URL ||
         !process.env.DEFAULT_ROOM ||
         !process.env.PRESENCE ||
-        !process.env.INVATION
+        !process.env.INVITATION
     ) {
         return Error('Not all data for launching the bot is specified')
     }

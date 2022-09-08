@@ -42,7 +42,7 @@ xmpp.on("stanza", async stanza => {
             let handlerData = groupDataForHandler(xmpp, stanza, connectData);
 
             // Processing an incoming chat room invitation
-            if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVATION === 'true' && connectData.dataBaseStatus) {
+            if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVITATION === 'true' && connectData.dataBaseStatus) {
                 return connectingToNewRoom(xmpp, body.parent.attrs.from, connectData);
             }
 
