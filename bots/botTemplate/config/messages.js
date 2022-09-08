@@ -7,7 +7,8 @@ const messages = () => {
             toTheBeginning: 'You have exited to the main menu.'
         },
         exampleBotMessage:{
-          helloPresence: 'Hello! \n\nThis is a message of presence'
+            helloPresence: 'Hello! \n\nThis is a message of presence',
+            leaveMessage: 'You have exited to the main menu, all steps have been updated.'
         },
         testMessage: 'test answer',
         help: {
