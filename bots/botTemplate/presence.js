@@ -1,27 +1,33 @@
 import botOptions from "./config/config.js";
-import {userData, userSteps} from "./actions.js";
-import {helloMessageHandler} from "./handlers/helloMessage.js";
+import {userSteps} from "./actions.js";
+import {presenceMessageHandler} from "./handlers/helloMessage.js";
 
 export const welcomePresence = (handlerData) => {
-    //Get latest presence date (true on first run)
-    const userDateStatus = userData('getData', handlerData.userJID);
-    //Get difference between current date and last presence date
-    const dateDifference = Math.abs(new Date(userDateStatus) - new Date()) / (1000 * 60);
+    let dateDifference = 0;
+    //Get latest presence date
+    const allUserStepData = userSteps('getStep', handlerData.userJID);
+    let dateLastPresenceUser = allUserStepData.data.date;
+    if(dateLastPresenceUser){
+        //Get difference between current date and last presence date
+        dateDifference = Math.abs(new Date(dateLastPresenceUser) - new Date()) / (1000 * 60);
+    }else{
+        dateLastPresenceUser = false;
+    }
 
     //Send a message if the difference between the dates is greater than stated
-    if (userDateStatus === true || dateDifference >= botOptions.botData.waitingAfterPresence) {
+    if (!dateLastPresenceUser || dateDifference >= botOptions.botData.waitingAfterPresence) {
         console.log('=> Presence launched', dateDifference, botOptions.botData.waitingAfterPresence);
 
-        //Reset presence date
-        userData('setData', handlerData.userJID, new Date());
-        //Reset user step
-        userSteps('setStep', handlerData.userJID, 1);
+        //Reset step and presence date
+        allUserStepData.data.date = new Date();
+        userSteps('setStep', handlerData.userJID, 1, allUserStepData.data);
 
-        return helloMessageHandler(handlerData);
+        return presenceMessageHandler(handlerData);
     }
 
     //Reset presence date if date difference is less than required
     if (dateDifference < botOptions.botData.waitingAfterPresence) {
-        return userData('setData', handlerData.userJID, new Date());
+        allUserStepData.data.date = new Date();
+        return userSteps('setStep', handlerData.userJID, null, allUserStepData.data);
     }
 }
