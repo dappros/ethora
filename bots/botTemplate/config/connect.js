@@ -101,10 +101,12 @@ export const connectToRooms = (xmpp, jid, connectData) => {
 
     // Get a list of rooms from the database and connect
     if(connectData.dataBaseStatus){
-        console.log('=> Connecting to other chat rooms');
         getListRooms().then(rooms => {
-            for (let room of rooms) {
-                connectRoom(xmpp, jid.toString(), room.address, connectData, false);
+            if(rooms.length > 0){
+                console.log('=> Connecting to other chat rooms');
+                for (let room of rooms) {
+                    connectRoom(xmpp, jid.toString(), room.address, connectData, false);
+                }
             }
         }).catch(error => {
             console.log('getListRooms Error: ', error);
