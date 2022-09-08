@@ -42,7 +42,7 @@ xmpp.on("stanza", async stanza => {
             let handlerData = groupDataForHandler(xmpp, stanza, connectData);
 
             // Processing an incoming chat room invitation
-            if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVATION === 'true') {
+            if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVATION === 'true' && connectData.dataBaseStatus) {
                 return connectingToNewRoom(xmpp, body.parent.attrs.from, connectData);
             }
 
@@ -61,14 +61,20 @@ xmpp.on("stanza", async stanza => {
 
 xmpp.on('online', jid => {
     //Connecting to databases and after that chat rooms.
-    connectToDb().then(() => {
-        console.log('==> Successful database connection');
-        //Connect to the default chat room and saved chat rooms.
+    if (connectData.dataBaseStatus) {
+        connectToDb().then(() => {
+            console.log('==> Successful database connection');
+            //Connect to the default chat room and saved chat rooms.
+            connectToRooms(xmpp, jid.toString(), connectData);
+        }).catch(error => {
+            console.log('==> Error connecting to database: ', error);
+            return xmpp.stop().catch(console.error);
+        });
+    } else {
+        console.log('=> WARNING: Can\'t connect to database (connection data is empty) | invitations won\'t work.');
+        //Connect to the default chat room
         connectToRooms(xmpp, jid.toString(), connectData);
-    }).catch(error => {
-        console.log('==> Error connecting to database: ', error);
-        return xmpp.stop().catch(console.error);
-    });
+    }
 });
 
 xmpp.start().catch(console.error);
