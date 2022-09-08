@@ -3,7 +3,6 @@ import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 
 let userStepsList = [];
-let userDatalist = [];
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
 const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons) => {
@@ -30,7 +29,7 @@ const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) 
         isSystemMessage: isSystemMessage,
         tokenAmount: tokenAmount,
         receiverMessageId: data.receiverMessageId,
-        roomJid: data.receiverData ? data.receiverData.attrs.roomJid : '',
+        roomJid: data.receiverData ? data.receiverData.roomJid : '',
         quickReplies: buttons ? JSON.stringify(buttons) : [],
     }), xml('body', {}, generateMessage(data, message, isSystemMessage))));
     sendTyping(data.xmpp, data.connectData, data.roomJID, 'pausedComposing')
@@ -56,10 +55,10 @@ const generateMessage = (data, message, isSystemMessage) => {
 
     //Getting username
     if (data.receiverData) {
-        if (data.receiverData.attrs.senderFirstName) {
-            userName = data.receiverData.attrs.senderFirstName;
+        if (data.receiverData.senderFirstName) {
+            userName = data.receiverData.senderFirstName;
         } else {
-            userName = data.receiverData.attrs.fullName;
+            userName = data.receiverData.fullName;
         }
     }
 
@@ -130,111 +129,40 @@ const messageCheck = (str, keywords) => {
     return buildRegEx(str, keywords).test(str) === true
 }
 
-export const getBotRoomsStanza = (xmpp, connectData) => {
-    xmpp.send(xml('iq', {
-            type: 'get',
-            from: connectData.botName + '@' + connectData.botAddress,
-            id: 'getUserRooms',
-        },
-        xml('query', {xmlns: 'ns:getrooms'}),
-    ));
+//Save the current step of the user and the data necessary for work
+// * types:
+// - getStep : Get step and all user data
+// - setStep : Save a step or some user data
+const userSteps = (type, jid, step, newData) => {
+    //Get the index of the user in the array by his jid
+    const userIndex = userStepsList.findIndex(user => user.name === jid);
 
-    console.log('GETBOTROOMS RESULT ==> ', test)
-}
-
-const userSteps = (type, jid, newStep) => {
-    console.log('=>=> Run user steps, find user. Type: ', type, ' user jid: ', jid, newStep);
-    let userIndex = userStepsList.findIndex(user => user.name === jid);
-
+    //If the user with the specified jid is not found, create a new data object for him.
     if (userIndex < 0) {
-        console.log('=>=> Create user step ' + newStep + ' ' + jid);
-        userStepsList.push({name: jid, step: 1});
-        return 1;
+        console.log('=>=> Create new user step ' + 1 + ' ' + jid);
+        const newUserData = {name: jid, step: 1, data: {}};
+        userStepsList.push(newUserData);
+        return newUserData;
     }
 
+    //When receiving the getStepData type, return all the data
     if (type === 'getStep') {
-        return userStepsList[userIndex].step;
+        return userStepsList[userIndex];
     }
 
+    //Upon receipt of the setStepData type, update the data that is specified
     if (type === 'setStep') {
-        console.log('=>=> Set new step for user ' + newStep + ' ' + jid)
-        userStepsList[userIndex].step = newStep;
+        console.log('=>=> Set new step for user ' + newData + ' ' + jid);
+        if(newData){
+            userStepsList[userIndex].data = newData;
+        }
+        if(step){
+            userStepsList[userIndex].step = step;
+        }
         return true;
     }
-
-    console.log('=>=> Something wrong ', type, jid, newStep)
+    console.log('=>=> userSteps Error: ', type, jid, step, newData)
     return false;
 }
-
-export const userData = (type, jid, data, dataGroup) => {
-    let userIndex = userDatalist.findIndex(user => user.name === jid);
-
-    if (userIndex < 0) {
-        console.log('=>=> Create user data', jid);
-        userDatalist.push({name: jid, itemsCounter: 0});
-        return true;
-    }
-
-    if (type === 'getData') {
-        if (dataGroup === 'data') {
-            return userDatalist[userIndex].data;
-        }
-        if (dataGroup === 'buttonType') {
-            return userDatalist[userIndex].buttonType;
-        }
-        if (dataGroup === 'itemsCounter') {
-            return userDatalist[userIndex].itemsCounter;
-        }
-        if (dataGroup === 'deleteItem') {
-            return userDatalist[userIndex].deleteItem;
-        }
-        if (dataGroup === 'currentItemGroup') {
-            return userDatalist[userIndex].currentItemGroup;
-        }
-        if (dataGroup === 'otherData') {
-            return userDatalist[userIndex].otherData;
-        }
-        if (dataGroup === 'itemData') {
-            return userDatalist[userIndex].itemData;
-        }
-        if (dataGroup === 'itemDataIndex') {
-            return userDatalist[userIndex].itemDataIndex;
-        }
-        if (dataGroup === 'sendCoins') {
-            return userDatalist[userIndex].sendCoins;
-        }
-        return userDatalist[userIndex].data;
-    }
-
-    if (type === 'setData') {
-        console.log('=>=> Set new data for user ', jid)
-        if (dataGroup === 'data') {
-            userDatalist[userIndex].data = data;
-        } else if (dataGroup === 'buttonType') {
-            userDatalist[userIndex].buttonType = data;
-        } else if (dataGroup === 'itemsCounter') {
-            userDatalist[userIndex].itemsCounter = data;
-        } else if (dataGroup === 'deleteItem') {
-            userDatalist[userIndex].deleteItem = data;
-        } else if (dataGroup === 'currentItemGroup') {
-            userDatalist[userIndex].currentItemGroup = data;
-        } else if (dataGroup === 'otherData') {
-            userDatalist[userIndex].otherData = data;
-        } else if (dataGroup === 'itemData') {
-            userDatalist[userIndex].itemData = data;
-        } else if (dataGroup === 'itemDataIndex') {
-            userDatalist[userIndex].itemDataIndex = data;
-        } else if (dataGroup === 'sendCoins') {
-            userDatalist[userIndex].sendCoins = data;
-        } else {
-            userDatalist[userIndex].data = data;
-        }
-        return data;
-    }
-
-    console.log('=>=> Something wrong ', type, jid, data)
-    return false;
-}
-
 
 export {sendMessage, connectRoom, messageCheck, userSteps};
