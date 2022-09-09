@@ -40,6 +40,7 @@ export default class Bubble extends React.Component {
       width: 0,
     };
     this.onLongPress = this.onLongPress.bind(this);
+    this.onPress = this.onPress.bind(this);
   }
 
   onLongPress() {
@@ -64,6 +65,10 @@ export default class Bubble extends React.Component {
         );
       }
     }
+  }
+
+  onPress() {
+    this.props.onTap(this.context, this.props.currentMessage);
   }
 
   renderMessageText() {
@@ -325,6 +330,7 @@ export default class Bubble extends React.Component {
       currentMessage,
       previousMessage,
     } = this.props;
+    
     const AnimatedStyle = {
       backgroundColor: this.state.initialAnimationValue.interpolate({
         inputRange: [0, 100],
@@ -358,7 +364,8 @@ export default class Bubble extends React.Component {
             ? this.renderUsername()
             : null}
           <TouchableWithoutFeedback
-            onLongPress={this.onLongPress}
+            onPress={()=>this.onPress()}
+            onLongPress={()=>this.onLongPress()}
             accessibilityTraits="text"
             {...this.props.touchableProps}>
             <View>

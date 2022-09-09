@@ -36,7 +36,7 @@ import {
 import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
-import {View} from 'native-base';
+import {Actionsheet, useDisclose, View} from 'native-base';
 import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
@@ -91,6 +91,7 @@ import {
 } from '../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
 import {useDebounce} from '../hooks/useDebounce';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -120,8 +121,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [text, setText] = useState('');
   const [selection, setSelection] = useState({start: 0, end: 0});
   const debouncedChatText = useDebounce(text, 500);
+  const [longPressMessageObject, setLongPressMessageObject] = useState('');
+  const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
 
-  let inputTimer2: any = 0;
+  const {isOpen, onOpen, onClose} = useDisclose();
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -191,6 +194,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [chatStore.isComposing.state]);
 
   const renderMessage = props => {
+
     return <MessageBody {...props} />;
   };
 
@@ -442,6 +446,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setModalType(modalTypes.TOKENTRANSFER);
     setExtraData(extraData);
   };
+
+  const handleOnPress = (context:any, message:any) => {
+    console.log(message.user._id.includes(manipulatedWalletAddress), "gfdnbhgn")
+    if(!message.user._id.includes(manipulatedWalletAddress)){
+      setIsShowDeleteOption(false)
+    }
+    setLongPressMessageObject(message);
+    return onOpen()
+  }
+
+  const handleCopyText = () => {
+    Clipboard.setString(longPressMessageObject.text);
+    showToast('success', 'Info', 'Message copied', 'top');
+    return onClose();
+  }
   const closeModal = () => {
     setShowModal(false);
   };
@@ -832,6 +851,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
         onLongPress={(context: any, message: any) =>
           handleOnLongPress(context, message)
         }
+        onTap={(context:any, message:any)=>
+          handleOnPress(context, message)
+        }
         // onInputTextChanged={()=>{alert('hhh')}}
         parsePatterns={linkStyle => [
           {
@@ -867,6 +889,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
         nftItems={walletStore.nftItems}
         closeModal={() => setIsNftItemGalleryVisible(false)}
       />
+      <Actionsheet isOpen={isOpen} onClose={()=>{onClose(), setIsShowDeleteOption(true)}}>
+        <Actionsheet.Content>
+          <Actionsheet.Item>Reply</Actionsheet.Item>
+          <Actionsheet.Item 
+          onPress={handleCopyText}
+          >Copy</Actionsheet.Item>
+          {
+            isShowDeleteOption?
+          <Actionsheet.Item onPress={onClose} color="red.500">Delete</Actionsheet.Item>
+          :null
+          }
+        </Actionsheet.Content>
+      </Actionsheet>
     </>
   );
 });

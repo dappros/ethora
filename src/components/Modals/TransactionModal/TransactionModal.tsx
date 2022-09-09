@@ -524,15 +524,25 @@ const TransactionModal = (props: TransactionModalProps) => {
       const modalViewBackgroundColor =
         tokenState.type === 'receive' ? commonColors.primaryColor : 'white';
       return (
-        <View>
           <Modal
             onBackdropPress={clearState}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
+            style={{
+              justifyContent:"center",
+              alignItems:"center"
+            }}
             onDismiss={closeModal}
             isVisible={isVisible}>
-            <View style={[styles.centeredView]}>
-              <View style={[styles.modalView]}>
+              <View
+                w={wp('70%')}
+                h={wp('100%')}
+                bg={'#ffff'}
+                shadow="2"
+                justifyContent={"center"}
+                alignItems={"center"}
+                borderRadius={10}
+                padding={2}>
                 {allowedEnterCustomAmount ? (
                   <VStack>
                     <Text
@@ -622,9 +632,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                   </>
                 )}
               </View>
-            </View>
           </Modal>
-        </View>
       );
     }
 
