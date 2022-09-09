@@ -800,10 +800,28 @@ export const lastOnline = (from, to, xmpp) => {
       type: 'get',
       id: 'activity',
     },
-    xml('query', {
-      xmlns: 'ns:room:last',
-      room: to,
-    }),
-  );
-  xmpp.send(message);
-};
+    xml(
+      'query',
+      {
+        'xmlns':'ns:room:last',
+        'room':to 
+      }
+    )
+  )
+  xmpp.send(message)
+}
+
+export const reply = (to) => {
+  // <message to='anna@example.com' id='message-id2' type='chat'>
+  // <body>Great idea!</body>
+  // <reply to='anna@example.com/tablet' id='message-id1' xmlns='urn:xmpp:reply:0' />
+  // </message>
+
+  const message = xml(
+    'message',
+    {
+      to:to,
+      id:'reply'
+    }
+  )
+}
