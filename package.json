@@ -20,6 +20,7 @@
     "@react-native-community/checkbox": "^0.5.12",
     "@react-native-community/netinfo": "^8.3.0",
     "@react-native-community/push-notification-ios": "^1.10.1",
+    "@react-native-firebase/analytics": "^14.9.1",
     "@react-native-firebase/app": "^14.9.1",
     "@react-native-firebase/auth": "^14.9.1",
     "@react-native-google-signin/google-signin": "^7.2.2",
