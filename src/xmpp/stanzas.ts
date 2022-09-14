@@ -633,7 +633,7 @@ export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   xmpp.send(message);
 };
 
-export const updateVCard = (photoURL: string, desc: string, xmpp: any) => {
+export const updateVCard = (photoURL: string|null, desc: string|null, fullName:string|null, xmpp: any) => {
   const message = xml(
     'iq',
     {
@@ -645,8 +645,9 @@ export const updateVCard = (photoURL: string, desc: string, xmpp: any) => {
       {
         xmlns: 'vcard-temp',
       },
-      xml('DESC', {}, desc),
-      xml('PHOTO', {}, xml('EXTVAL', {}, photoURL)),
+      desc?xml('DESC', {}, desc):null,
+      desc?xml('URL', {}, photoURL):null,
+      desc?xml('FN', {}, fullName):null
     ),
   );
   xmpp.send(message);
@@ -671,7 +672,7 @@ export const retrieveOtherUserVcard = (
   xmpp.send(message);
 };
 
-export const createNewRoom = (from, to, xmpp) => {
+export const createNewRoom = (from:string, to:string, xmpp:any) => {
   let message = xml(
     'presence',
     {
@@ -790,20 +791,42 @@ export const banUser = (
   xmpp.send(message);
 };
 
-export const lastOnline = (from, to, xmpp) => {
-  // <iq from="olek@localhost" type="get" id="your_id"><query xmlns="ns:room:last" room="room_jid" /></iq>
-  // alert(to);
+export const reply = (to) => {
+  // <message to='anna@example.com' id='message-id2' type='chat'>
+  // <body>Great idea!</body>
+  // <reply to='anna@example.com/tablet' id='message-id1' xmlns='urn:xmpp:reply:0' />
+  // </message>
+
   const message = xml(
-    'iq',
+    'message',
     {
-      from: from + '@' + DOMAIN,
-      type: 'get',
-      id: 'activity',
-    },
-    xml('query', {
-      xmlns: 'ns:room:last',
-      room: to,
-    }),
-  );
-  xmpp.send(message);
-};
+      to:to,
+      id:'reply'
+    }
+  )
+}
+
+export const getRoomMemberInfo = (from:string, to:string, xmpp:any) => {
+//   <iq 
+// from="oleksiika@localhost" type="get" 
+// id="test2@conference.localhost"><query xmlns="ns:room:last" 
+// room="test2@conference.localhost"/></iq>
+
+const message = xml(
+  'iq',
+  {
+    from: from + '@' + DOMAIN,
+    type: 'get',
+    id:XMPP_TYPES.roomMemberInfo
+  },
+  xml(
+    'query',
+    {
+      xmlns:"ns:room:last",
+      room: to
+    }
+  )
+)
+
+xmpp.send(message);
+}

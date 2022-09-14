@@ -35,4 +35,5 @@ export const XMPP_TYPES = {
   getBlackList: 'blackList',
   addToBlackList: 'addToBlackList',
   removeFromBlackList: 'removeFromBlackList',
+  roomMemberInfo: 'roomMemberInfo'
 };

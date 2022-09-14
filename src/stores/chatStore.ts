@@ -79,6 +79,21 @@ interface defaultChatProps {
   removable: boolean;
 }
 
+interface replyProps{
+  messageID:string;
+  message:string;
+  isReply:boolean;
+}
+
+interface roomMemberInfoProps{
+  ban_status:string;
+  jid:string;
+  last_active:string;
+  name:string;
+  profile:string;
+  role:string
+}
+
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -107,6 +122,13 @@ export class ChatStore {
     manipulatedWalletAddress: '',
     chatJID: '',
   };
+  replyData: replyProps = {
+    messageID:"",
+    message:"",
+    isReply:false
+  }
+
+  roomMemberInfo= []
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -356,10 +378,11 @@ export class ChatStore {
       }
 
       if (stanza.attrs.id === XMPP_TYPES.vCardRequest) {
-        let profilePhoto = this.stores.loginStore.initialData.photo;
+        const {photo, firstName, lastName} = this.stores.loginStore.initialData;
+        let fullName = firstName + " " + lastName;
         let profileDescription = 'No description';
         if (!stanza.children[0].children.length) {
-          updateVCard(profilePhoto, profileDescription, this.xmpp);
+          updateVCard(photo, profileDescription,fullName,this.xmpp);
         } else {
           stanza.children[0].children.map((item: any) => {
             if (item.name === 'DESC') {
@@ -370,9 +393,15 @@ export class ChatStore {
             // }
           });
           this.stores.loginStore.updateUserPhotoAndDescription(
-            profilePhoto,
+            photo,
             profileDescription,
           );
+        }
+      }
+
+      if(stanza.attrs.id === XMPP_TYPES.roomMemberInfo){
+        if(stanza.children[0].children.length){
+          this.roomMemberInfo = stanza.children[0].children.map(item => (item.attrs));
         }
       }
 
@@ -611,6 +640,7 @@ export class ChatStore {
     });
 
     this.xmpp.on('online', async address => {
+      const {firstName, lastName, photo} = this.stores.loginStore.initialData
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
@@ -619,6 +649,7 @@ export class ChatStore {
       });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       getBlackList(xmppUsername, this.xmpp);
+      updateVCard(photo, null, firstName + " " + lastName, this.xmpp)
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });
   };
