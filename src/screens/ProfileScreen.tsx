@@ -251,11 +251,11 @@ export const ProfileScreen = observer((props: any) => {
 
   const setDescription = () => {
     if (userAvatarLocal && descriptionLocal) {
-      updateVCard(userAvatarLocal, descriptionLocal, chatStore.xmpp);
+      updateVCard(userAvatarLocal, descriptionLocal, null, chatStore.xmpp);
     }
 
     if (!descriptionLocal) {
-      updateVCard(userAvatarLocal, 'No description', chatStore.xmpp);
+      updateVCard(userAvatarLocal, 'No description', null, chatStore.xmpp);
     }
     setIsDescriptionEditable(false);
     setModalVisible(false);
@@ -270,6 +270,7 @@ export const ProfileScreen = observer((props: any) => {
         firstName: firstNameLocal,
         lastName: lastNameLocal,
       };
+      updateVCard(null, null, firstName + " " + lastName, chatStore.xmpp);
       updateUserDisplayName(bodyData);
     } else {
       setFirstNameLocal(firstName);

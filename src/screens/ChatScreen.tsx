@@ -123,6 +123,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const debouncedChatText = useDebounce(text, 500);
   const [longPressMessageObject, setLongPressMessageObject] = useState('');
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
+  const [isReply, setIsReply] = useState(false);
 
   const {isOpen, onOpen, onClose} = useDisclose();
 
@@ -461,6 +462,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
     showToast('success', 'Info', 'Message copied', 'top');
     return onClose();
   }
+
+  const handleReply = () => {
+    setIsReply(true);
+    onClose();
+  }
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -819,6 +826,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         onPressAvatar={onUserAvatarPress}
         renderChatFooter={() => (
           <RenderChatFooter
+            isReply={isReply}
+            closeReply={setIsReply}
+            replyMessage={longPressMessageObject?.text}
+            replyUserName={longPressMessageObject?.user?.name}
             allowIsTyping={allowIsTyping}
             composingUsername={composingUsername}
             fileUploadProgress={fileUploadProgress}
@@ -891,7 +902,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
       />
       <Actionsheet isOpen={isOpen} onClose={()=>{onClose(), setIsShowDeleteOption(true)}}>
         <Actionsheet.Content>
-          <Actionsheet.Item>Reply</Actionsheet.Item>
+          <Actionsheet.Item
+          onPress={handleReply}
+          >Reply</Actionsheet.Item>
           <Actionsheet.Item 
           onPress={handleCopyText}
           >Copy</Actionsheet.Item>

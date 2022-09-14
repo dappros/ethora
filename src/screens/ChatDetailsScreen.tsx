@@ -28,6 +28,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
 import {
+  getRoomMemberInfo,
   leaveRoomXmpp,
   subscribeToRoom,
   unsubscribeFromChatXmpp,
@@ -62,6 +63,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
 
+  const roomMemberInfo = chatStore.roomMemberInfo
+
   const [open, setOpen] = React.useState<boolean>(false);
   const [index, setIndex] = React.useState<number>(0);
   // const [isNotification, setIsNotification] = React.useState<boolean>(roomInfo.muted)
@@ -78,6 +81,10 @@ const ChatDetailsScreen = observer(({route}: any) => {
     subscribeToRoom(roomJID, manipulatedWalletAddress, chatStore.xmpp);
     chatStore.updateRoomInfo(roomJID, {muted: false});
   };
+
+  React.useEffect(()=>{
+    getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
+  },[])
 
   const toggleNotification = value => {
     if (!value) {
@@ -256,7 +263,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const FirstRoute = () => (
     <Box bg={'#E5EBF5'}>
       <FlatList
-        data={data}
+        data={roomMemberInfo}
         renderItem={({item}) => (
           <Box h={hp('10%')} flexDirection={'row'} alignItems="center" flex={1}>
             <Box
@@ -274,7 +281,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontSize={hp('2.2%')}
                 shadow="10"
                 color={'white'}>
-                {item.fullName[0]}
+                {item.name[0]}
               </Text>
             </Box>
             <Box flex={0.7}>
@@ -283,7 +290,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontWeight="bold"
                 shadow="2"
                 fontSize={hp('1.8%')}>
-                {item.fullName}
+                {item.name}
               </Text>
             </Box>
 
@@ -351,7 +358,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
               p="3">
               <Pressable
                 onPress={() => {
-                  console.log(i);
                   setIndex(i);
                 }}>
                 <Animated.Text

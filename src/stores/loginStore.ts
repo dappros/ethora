@@ -224,7 +224,7 @@ export class LoginStore {
       this.stores.apiStore.defaultToken,
     );
     if (response.data.success) {
-      this.loginHandler(response);
+      this.loginHandler(response, null);
     }
   };
 
@@ -247,7 +247,7 @@ export class LoginStore {
     try {
       const response: any = await httpPost(url, bodyData, token);
       if (response.data.success) {
-        this.loginHandler(response);
+        this.loginHandler(response, ssoUserData);
       } else {
         this.error = true;
         this.errorMessage = response.data.msg;
@@ -258,7 +258,7 @@ export class LoginStore {
     }
   };
 
-  loginHandler = async response => {
+  loginHandler = async (response, ssoUserData) => {
     await asyncStorageSetItem('userToken', response.data.token);
     await asyncStorageSetItem('refreshToken', response.data.refreshToken);
     runInAction(() => {
@@ -282,7 +282,7 @@ export class LoginStore {
       firstName,
       lastName,
       walletAddress,
-      photo: '',
+      photo: ssoUserData.photo,
       username,
       password,
       xmppPassword,
@@ -311,7 +311,7 @@ export class LoginStore {
         body,
         this.stores.apiStore.defaultToken,
       );
-      await this.loginHandler(response);
+      await this.loginHandler(response, null);
     } catch (error) {
       console.log(error);
     }
@@ -407,7 +407,7 @@ export class LoginStore {
       const url = this.stores.apiStore.defaultUrl + registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
-        this.loginHandler(response);
+        this.loginHandler(response, null);
       }
     } catch (error: any) {
       console.log(error.response, 'sdjfklsdjfjlsdkfj');
