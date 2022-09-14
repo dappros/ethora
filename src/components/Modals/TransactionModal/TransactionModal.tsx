@@ -40,6 +40,7 @@ import TokenTransfer from './TokenTransfer';
 import {useNavigation} from '@react-navigation/native';
 import {
   banUser,
+  blacklistUser,
   createNewRoom,
   getUserRoomsStanza,
   roomConfig,
@@ -91,7 +92,7 @@ const TransactionModal = (props: TransactionModalProps) => {
   const clearState = () => {
     closeModal();
     setCustomTransferAmount('');
-    setLoading(false)
+    setLoading(false);
     // setAllowedEnterCustomAmount(false);
   };
   const renderNftItems = () => {
@@ -381,16 +382,30 @@ const TransactionModal = (props: TransactionModalProps) => {
       initialData.walletAddress,
     );
     const roomJID = extraData.roomJID;
+
     banUser(
       roomJID,
       senderWalletAddres,
       bannedUserWalletAddres,
       chatStore.xmpp,
     );
-    // console.log(roomJID, senderWalletAddres, bannedUserWalletAddres,'roomJidddddd')
-    clearState();
-  };
 
+    clearState();
+    closeModal();
+  };
+  const onBlackListPress = () => {
+    const bannedUserWalletAddres = underscoreManipulation(
+      extraData?.walletFromJid,
+    );
+    const senderWalletAddres = underscoreManipulation(
+      initialData.walletAddress,
+    );
+
+    blacklistUser(senderWalletAddres, bannedUserWalletAddres, chatStore.xmpp);
+
+    clearState();
+    closeModal();
+  };
   const setModalType = () => {
     if (type === modalTypes.PRIVACYPOLICY) {
       return (
@@ -594,16 +609,18 @@ const TransactionModal = (props: TransactionModalProps) => {
                           />
                         </>
                       )}
-                   {!!walletStore.collections.length && <>
-                      <Seperator />
+                    {!!walletStore.collections.length && (
+                      <>
+                        <Seperator />
 
-                      <SendItem
-                        title={'Send Collections'}
-                        onPress={() => {
-                          setDisplayCollections(true);
-                        }}
-                      />
-                    </>}
+                        <SendItem
+                          title={'Send Collections'}
+                          onPress={() => {
+                            setDisplayCollections(true);
+                          }}
+                        />
+                      </>
+                    )}
                     <Seperator />
                     <TransferModalButton
                       title={'Direct Message'}
@@ -615,12 +632,19 @@ const TransactionModal = (props: TransactionModalProps) => {
                         <Seperator />
                         <ReportAndBlockButton
                           onPress={handleBanUser}
-                          type="1"
+                          text={'Ban this user'}
                         />
                       </>
                     )}
                   </>
                 )}
+                <>
+                  <Seperator />
+                  <ReportAndBlockButton
+                    onPress={onBlackListPress}
+                    text={'Blocklist this user'}
+                  />
+                </>
               </View>
             </View>
           </Modal>

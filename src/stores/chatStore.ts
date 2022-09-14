@@ -460,6 +460,12 @@ export class ChatStore {
           this.blackList = blackList;
         });
       }
+      if (
+        stanza.attrs.id === XMPP_TYPES.addToBlackList ||
+        stanza.attrs.id === XMPP_TYPES.removeFromBlackList
+      ) {
+        getBlackList(xmppUsername, this.xmpp);
+      }
 
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
