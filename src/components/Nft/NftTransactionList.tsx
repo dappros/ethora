@@ -53,11 +53,12 @@ const NftTransactionsHistoryComponent = props => {
   senderFullName = props.item.senderFirstName + ' ' + props.item.senderLastName;
   receiverFullName =
     props.item.receiverFirstName + ' ' + props.item.receiverLastName;
-  const nftTotal = props.item.contractId && props.item.nftTotal
-    ? props.item.nftTotal
-        .split(',')
-        .find((item, i) => +props.item.contractId === i + 1)
-    : props.item.nftTotal ;
+  const nftTotal =
+    props.item.contractId && props.item.nftTotal
+      ? props.item.nftTotal
+          .split(',')
+          .find((item, i) => +props.item.contractId === i + 1)
+      : props.item.nftTotal;
 
   if (props.showHeader) {
     if (props.currentHeaderDate.getTime() === today.getTime()) {
@@ -100,6 +101,26 @@ const NftTransactionsHistoryComponent = props => {
       );
     }
   }
+  const getOtherBalance = () => {
+    let firstPart = '';
+    let secondPart = '';
+    if (props.item.type === 'Transfer Ownership') {
+      return;
+    }
+    if (props.historyItem?.nfmtType && props.item.type === 'Token Creation') {
+      firstPart = 'Max Supply';
+    } else {
+      firstPart = 'Balance';
+    }
+    if (props.historyItem?.nfmtType && props.item.type === 'Token Creation') {
+      secondPart = props.item.nftTotal;
+    } else if (props.item.type === 'Token Creation') {
+      secondPart = nftTotal;
+    } else {
+      props.item.receiverBalance;
+    }
+    return firstPart + ':' + secondPart + '/' + nftTotal;
+  };
   return (
     <View
       key={props.item.transactionHash}
@@ -155,11 +176,12 @@ const NftTransactionsHistoryComponent = props => {
                   : props.item.nftName}
               </Text>
 
-              {props.item.type !== 'Token Creation' && (
-                <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-                  Balance: {props.item.senderBalance + '/' + nftTotal}
-                </Text>
-              )}
+              {props.item.type !== 'Token Creation' &&
+                props.item.type !== 'Transfer Ownership' && (
+                  <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
+                    Balance: {props.item.senderBalance + '/' + nftTotal}
+                  </Text>
+                )}
             </View>
           </View>
         </View>
@@ -176,7 +198,7 @@ const NftTransactionsHistoryComponent = props => {
           {props.item.type !== 'Token Creation' ? (
             <AntIcon
               name={'arrowright'}
-              color={'#69CB41'}
+              color={props.item.type !== 'Transfer Ownership'  ? '#69CB41' : 'red'}
               size={hp('1.7%')}
               // style={{marginRight: 40}}
             />
@@ -241,17 +263,23 @@ const NftTransactionsHistoryComponent = props => {
                 {receiverFullName}
               </Text>
 
-              <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
-                {props.historyItem?.nfmtType && props.item.type === 'Token Creation' ? 'Max Supply' : 'Balance'}:{' '}
-                {props.historyItem?.nfmtType  &&
-                props.item.type === 'Token Creation'
-                  ? props.item.nftTotal
-                  : (props.item.type === 'Token Creation'
-                      ? nftTotal
-                      : props.item.receiverBalance) +
-                    '/' +
-                    nftTotal}
-              </Text>
+              {props.item.type !== 'Transfer Ownership' && (
+                <Text style={{fontFamily: lightFont, fontSize: hp('1.6%')}}>
+                  {props.historyItem?.nfmtType &&
+                  props.item.type === 'Token Creation'
+                    ? 'Max Supply'
+                    : 'Balance'}
+                  :{' '}
+                  {props.historyItem?.nfmtType &&
+                  props.item.type === 'Token Creation'
+                    ? props.item.nftTotal
+                    : (props.item.type === 'Token Creation'
+                        ? nftTotal
+                        : props.item.receiverBalance) +
+                      '/' +
+                      nftTotal}
+                </Text>
+              )}
             </View>
           </View>
         </View>
