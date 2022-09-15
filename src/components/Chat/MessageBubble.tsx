@@ -390,7 +390,7 @@ export default class Bubble extends React.Component {
             ? this.renderUsername()
             : null}
           <TouchableWithoutFeedback
-            onPress={()=>this.onPress()}
+            // onPress={()=>this.onPress()}
             onLongPress={()=>this.onLongPress()}
             accessibilityTraits="text"
             {...this.props.touchableProps}>
