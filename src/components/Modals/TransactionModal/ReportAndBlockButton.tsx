@@ -17,13 +17,14 @@ import {
 interface ReportAndBlockButtonProps {
   onPress: any;
   text: string;
+  style?: any;
 }
 
 const ReportAndBlockButton = (props: ReportAndBlockButtonProps) => {
   const iconName = 'block';
   return (
     <TouchableOpacity onPress={props.onPress}>
-      <View style={styles.reportAndBlockContainer}>
+      <View style={[styles.reportAndBlockContainer, props.style]}>
         <View style={styles.blockIcon}>
           <MaterialIcons name={iconName} size={15} color="#fff" />
         </View>

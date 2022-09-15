@@ -141,7 +141,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     return (
       <FlatList
         data={walletStore.collections}
-        style={{paddingRight: 50}}
         renderItem={(e, index) => (
           <NftListItem
             assetUrl={e.item.imagePreview || e.item.nftFileUrl}
@@ -517,7 +516,10 @@ const TransactionModal = (props: TransactionModalProps) => {
                     alignItems: 'center',
                   },
                 ]}>
-                <View style={styles.tokenTransferContainer}>
+                <View
+                  style={[
+                    styles.tokenTransferContainer,
+                  ]}>
                   {renderNftItems()}
 
                   {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
@@ -539,124 +541,121 @@ const TransactionModal = (props: TransactionModalProps) => {
       const modalViewBackgroundColor =
         tokenState.type === 'receive' ? commonColors.primaryColor : 'white';
       return (
-          <Modal
-            onBackdropPress={clearState}
-            animationIn={'slideInUp'}
-            animationOut={'slideOutDown'}
-            style={{
-              justifyContent:"center",
-              alignItems:"center"
-            }}
-            onDismiss={closeModal}
-            isVisible={isVisible}>
-              <View
-                w={wp('70%')}
-                h={wp('100%')}
-                bg={'#ffff'}
-                shadow="2"
-                justifyContent={"center"}
-                alignItems={"center"}
-                borderRadius={10}
-                padding={2}>
-                {allowedEnterCustomAmount ? (
-                  <VStack>
-                    <Text
-                      style={{
-                        color: commonColors.primaryColor,
-                        fontFamily: textStyles.semiBoldFont,
-                        textAlign: 'center',
-                      }}>
-                      Enter Your Amount
-                    </Text>
-                    <View style={{paddingHorizontal: 5, marginVertical: 10}}>
-                      <Input
-                        maxLength={15}
-                        keyboardType="numeric"
-                        fontFamily={textStyles.lightFont}
-                        fontSize={hp('1.6%')}
-                        color={'black'}
-                        value={customTransferAmount}
-                        onChangeText={setCustomTransferAmount}
-                        placeholder="Enter transfer amount"
-                        placeholderTextColor={commonColors.primaryDarkColor}
-                        borderColor={commonColors.primaryDarkColor}
-                        backgroundColor={alpha(
-                          commonColors.primaryDarkColor,
-                          0.1,
-                        )}
+        <Modal
+          onBackdropPress={clearState}
+          animationIn={'slideInUp'}
+          animationOut={'slideOutDown'}
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onDismiss={closeModal}
+          isVisible={isVisible}>
+          <View
+            w={wp('70%')}
+            // h={hp('100%')}
+            bg={'#ffff'}
+            shadow="2"
+            justifyContent={'center'}
+            alignItems={'center'}
+            borderRadius={10}
+            padding={2}>
+            {allowedEnterCustomAmount ? (
+              <VStack>
+                <Text
+                  style={{
+                    color: commonColors.primaryColor,
+                    fontFamily: textStyles.semiBoldFont,
+                    textAlign: 'center',
+                  }}>
+                  Enter Your Amount
+                </Text>
+                <View style={{paddingHorizontal: 5, marginVertical: 10}}>
+                  <Input
+                    maxLength={15}
+                    keyboardType="numeric"
+                    fontFamily={textStyles.lightFont}
+                    fontSize={hp('1.6%')}
+                    color={'black'}
+                    value={customTransferAmount}
+                    onChangeText={setCustomTransferAmount}
+                    placeholder="Enter transfer amount"
+                    placeholderTextColor={commonColors.primaryDarkColor}
+                    borderColor={commonColors.primaryDarkColor}
+                    backgroundColor={alpha(commonColors.primaryDarkColor, 0.1)}
+                  />
+                </View>
+                <TransferModalButton
+                  title={'Send'}
+                  onPress={() => tokenTransferFunc(customTransferAmount)}
+                />
+              </VStack>
+            ) : (
+              <>
+                <View style={styles.tokenTransferContainer}>
+                  <TokenTransfer
+                    name={extraData.name}
+                    tokenAmount={tokenAmount}
+                    tokenTransferFunc={tokenTransferFunc}
+                    onCustomAmountPress={() =>
+                      setAllowedEnterCustomAmount(true)
+                    }
+                  />
+                </View>
+
+                {walletStore.nftItems.filter(item => !item.external).length >
+                  0 &&
+                  itemsTransfersAllowed && (
+                    <>
+                      <Seperator />
+
+                      <SendItem
+                        title={'Send Items'}
+                        onPress={() => {
+                          console.log('clickd');
+                          setDisplayItems(true);
+                        }}
                       />
-                    </View>
-                    <TransferModalButton
-                      title={'Send'}
-                      onPress={() => tokenTransferFunc(customTransferAmount)}
-                    />
-                  </VStack>
-                ) : (
+                    </>
+                  )}
+                {!!walletStore.collections.length && (
                   <>
-                    <View style={styles.tokenTransferContainer}>
-                      <TokenTransfer
-                        name={extraData.name}
-                        tokenAmount={tokenAmount}
-                        tokenTransferFunc={tokenTransferFunc}
-                        onCustomAmountPress={() =>
-                          setAllowedEnterCustomAmount(true)
-                        }
-                      />
-                    </View>
-
-                    {walletStore.nftItems.filter(item => !item.external)
-                      .length > 0 &&
-                      itemsTransfersAllowed && (
-                        <>
-                          <Seperator />
-
-                          <SendItem
-                            title={'Send Items'}
-                            onPress={() => {
-                              console.log('clickd');
-                              setDisplayItems(true);
-                            }}
-                          />
-                        </>
-                      )}
-                    {!!walletStore.collections.length && (
-                      <>
-                        <Seperator />
-
-                        <SendItem
-                          title={'Send Collections'}
-                          onPress={() => {
-                            setDisplayCollections(true);
-                          }}
-                        />
-                      </>
-                    )}
                     <Seperator />
-                    <TransferModalButton
-                      title={'Direct Message'}
-                      onPress={onDirectMessagePress}
+
+                    <SendItem
+                      title={'Send Collections'}
+                      onPress={() => {
+                        setDisplayCollections(true);
+                      }}
                     />
-                    {chatStore.roomRoles[extraData.roomJID] !==
-                      'participant' && (
-                      <>
-                        <Seperator />
-                        <ReportAndBlockButton
-                          onPress={handleBanUser}
-                          text={'Ban this user'}
-                        />
-                      </>
-                    )}
                   </>
                 )}
-                <>
-                  <Seperator />
-                  <ReportAndBlockButton
-                    onPress={onBlackListPress}
-                    text={'Blocklist this user'}
-                  />
-                </>
-              </View>
-          </Modal>
+                <Seperator />
+                <TransferModalButton
+                  title={'Direct Message'}
+                  onPress={onDirectMessagePress}
+                />
+                {chatStore.roomRoles[extraData.roomJID] !== 'participant' && (
+                  <>
+                    <Seperator />
+                    <ReportAndBlockButton
+                      onPress={handleBanUser}
+                      text={'Ban this user'}
+                    />
+                  </>
+                )}
+              </>
+            )}
+            <>
+              <Seperator />
+              <ReportAndBlockButton
+                onPress={onBlackListPress}
+                text={'Blocklist this user'}
+                style={{backgroundColor: commonColors.primaryColor}}
+              />
+            </>
+          </View>
+        </Modal>
       );
     }
 
