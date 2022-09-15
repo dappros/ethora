@@ -61,7 +61,8 @@ export const RoomsTabBar = observer(() => {
   const privateChats = useMemo(
     () =>
       chatStore.roomList?.filter((item: any) => {
-        const splitedJid:string = item.jid.split('@')[0];
+        const splitedJid = item?.jid?.split('@')[0];
+
         if (item.participants < 3 && !defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;
@@ -73,7 +74,8 @@ export const RoomsTabBar = observer(() => {
   const officialChats = useMemo(
     () =>
       chatStore.roomList.filter(item => {
-        const splitedJid = item.jid.split('@')[0];
+        const splitedJid = item?.jid?.split('@')[0];
+
         if (defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.official] += item.counter;
           return item;
@@ -88,7 +90,7 @@ export const RoomsTabBar = observer(() => {
   const groupsChats = useMemo(
     () =>
       chatStore.roomList.filter((item: any) => {
-        const splitedJid = item.jid.split('@')[0];
+        const splitedJid = item?.jid?.split('@')[0];
 
         if (item.participants > 2 && !defaultChats[splitedJid]) {
           notificationsCount[ROOM_KEYS.groups] += item.counter;
