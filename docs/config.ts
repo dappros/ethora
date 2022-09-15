@@ -98,9 +98,6 @@ const defaultChats = {
     removable: false,
   },
 };
-defaultChats[
-  '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc'
-];
 
 /* TOKEN ECONOMY */
 // Coins image path
