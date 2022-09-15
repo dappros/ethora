@@ -190,7 +190,7 @@ export const NftListItem = (props: NftListItemProps) => {
           <View
             style={[
               styles.itemCount,
-              {minWidth: item.isCollection ? '32%' : '20%'},
+              {minWidth: item.isCollection ? '25%' : '12%'},
             ]}>
             <View style={{alignItems: 'flex-start'}}>
               <Text style={{color: 'black'}}>
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingRight: 30,
+    // paddingRight: 30,
   },
   nfmtStyle: {
     borderWidth: 1,
