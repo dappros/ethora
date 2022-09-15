@@ -28,7 +28,7 @@ import {
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import { Text, View } from 'native-base';
+import { HStack, Text, View } from 'native-base';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -343,6 +343,31 @@ export default class Bubble extends React.Component {
       }),
     };
 
+    const replyComponent = () => {
+
+      return (
+      currentMessage.isReply?
+      <HStack
+      style={styles[position].replyWrapper}
+      borderLeftColor={"green.100"}
+      h={hp('6%')} w="100%" bg={"white"}>
+        {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
+
+        </Box> */}
+        <View marginLeft={4}>
+          <Text
+          
+          fontSize={hp('1.5%')}
+          fontFamily={textStyles.boldFont}
+          >{currentMessage.mainMessageUserName?currentMessage.mainMessageUserName:'N/A'}</Text>
+          <Text
+          fontFamily={textStyles.regularFont}
+          >{currentMessage.mainMessageText}</Text>
+        </View>
+      </HStack>:null
+        )
+    }
+
     return (
       <View
         onLayout={e => this.setBubbleWidth(e.nativeEvent.layout.width)}
@@ -360,6 +385,7 @@ export default class Bubble extends React.Component {
             AnimatedStyle,
             // {maxWidth: 200}
           ]}>
+          {/* {replyComponent()} */}
           {!isSameUser(currentMessage, previousMessage)
             ? this.renderUsername()
             : null}
@@ -410,7 +436,12 @@ export default class Bubble extends React.Component {
 // The "right" position is only used in the default Bubble.
 const styles = {
   left: StyleSheet.create({
-    container: {},
+    container: {
+      marginTop:2
+    },
+    replyWrapper:{
+      borderTopRightRadius: 15,
+    },
     wrapper: {
       borderRadius: 15,
       backgroundColor: colors.leftBubbleBackground,
@@ -450,7 +481,18 @@ const styles = {
     },
   }),
   right: StyleSheet.create({
-    container: {},
+    container: {
+      marginTop:2
+    },
+    replyWrapper:{
+      borderTopLeftRadius: 15,
+      padding:2,
+      borderLeftWidth:2,
+      borderLeftColor:"green",
+      borderWidth:2,
+      borderColor:"green",
+      borderBottomWidth:0
+    },
     wrapper: {
       borderRadius: 15,
       backgroundColor: colors.defaultBlue,

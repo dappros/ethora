@@ -39,8 +39,11 @@ interface createMessageObjectProps {
   nftActionType?: string;
   contractAddress?: string;
   fileName?: string;
-  originalName?: string
-
+  originalName?: string;
+  isReply?:boolean;
+  mainMessageText?:string;
+  mainMessageId?:string;
+  mainMessageUserName?:string;
 }
 
 export const createMessageObject = (
@@ -75,8 +78,11 @@ export const createMessageObject = (
     nftActionType: '',
     contractAddress: '',
     fileName: '',
-    originalName: ''
-
+    originalName: '',
+    isReply:false,
+    mainMessageText:'',
+    mainMessageId:'',
+    mainMessageUserName:''
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -112,8 +118,10 @@ export const createMessageObject = (
       message.contractAddress = item.attrs?.contractAddress;
       message.fileName = item.attrs.fileName || '';
       message.originalName = item.attrs.originalName || '';
-
-
+      message.mainMessageId = item.attrs.mainMessageId || '';
+      message.mainMessageText = item.attrs.mainMessageText || '';
+      message.isReply = item.attrs.isReply === 'true' || false;
+      message.mainMessageUserName = item.attrs.mainMessageUserName || '';
       // message.roomJid = item.attrs.roomJid;
     }
   });

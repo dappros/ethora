@@ -422,7 +422,11 @@ export class ChatStore {
 
       //to catch error
       if (stanza.attrs.type === 'error') {
-        console.log(stanza.children, 'stanzaerror-------');
+        stanza.children.filter(item => {
+          if(item.name === 'error'){
+            console.log(item.children, 'stanza error==============')
+          }
+        })
       }
 
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {

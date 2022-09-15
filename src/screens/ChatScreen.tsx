@@ -121,7 +121,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [text, setText] = useState('');
   const [selection, setSelection] = useState({start: 0, end: 0});
   const debouncedChatText = useDebounce(text, 500);
-  const [longPressMessageObject, setLongPressMessageObject] = useState('');
+  const [onTapMessageObject, setOnTapMessageObject] = useState('');
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [isReply, setIsReply] = useState(false);
 
@@ -260,9 +260,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
   ];
 
   const sendMessage = (messageString: any, isSystemMessage: boolean) => {
+    //this will close the reply component and empty the state onTapMessageObject
+    handleReply('close');
     const messageText = messageString[0].text;
     const tokenAmount = messageString[0].tokenAmount || 0;
-
     const receiverMessageId = messageString[0].receiverMessageId || 0;
     const manipulatedWalletAddress = underscoreManipulation(
       loginStore.initialData.walletAddress,
@@ -277,6 +278,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mucname: chatName,
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
+      isReply: isReply,
+      mainMessageText: onTapMessageObject?.text,
+      mainMessageId: onTapMessageObject?.message_id,
+      mainMessageUserName: onTapMessageObject?.user.name
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -449,23 +454,30 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleOnPress = (context:any, message:any) => {
-    console.log(message.user._id.includes(manipulatedWalletAddress), "gfdnbhgn")
     if(!message.user._id.includes(manipulatedWalletAddress)){
       setIsShowDeleteOption(false)
     }
-    setLongPressMessageObject(message);
+    console.log(message, "Sdafvdfvgfdb")
+    setOnTapMessageObject(message);
     return onOpen()
   }
 
   const handleCopyText = () => {
-    Clipboard.setString(longPressMessageObject.text);
+    Clipboard.setString(onTapMessageObject.text);
     showToast('success', 'Info', 'Message copied', 'top');
     return onClose();
   }
 
-  const handleReply = () => {
-    setIsReply(true);
-    onClose();
+  const handleReply = (type:'open'|'close') => {
+    if(type==='open'){
+      setIsReply(true);
+      onClose();
+    }
+
+    if(type==='close'){
+      setIsReply(false);
+      setOnTapMessageObject('');
+    }
   }
 
   const closeModal = () => {
@@ -827,9 +839,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderChatFooter={() => (
           <RenderChatFooter
             isReply={isReply}
-            closeReply={setIsReply}
-            replyMessage={longPressMessageObject?.text}
-            replyUserName={longPressMessageObject?.user?.name}
+            closeReply={()=>handleReply('close')}
+            replyMessage={onTapMessageObject?.text}
+            replyUserName={onTapMessageObject?.user?.name}
             allowIsTyping={allowIsTyping}
             composingUsername={composingUsername}
             fileUploadProgress={fileUploadProgress}
@@ -903,7 +915,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       <Actionsheet isOpen={isOpen} onClose={()=>{onClose(), setIsShowDeleteOption(true)}}>
         <Actionsheet.Content>
           <Actionsheet.Item
-          onPress={handleReply}
+          onPress={()=> handleReply("open")}
           >Reply</Actionsheet.Item>
           <Actionsheet.Item 
           onPress={handleCopyText}
