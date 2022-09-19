@@ -5,7 +5,7 @@ import {appLinkingUrl, coinsMainName} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
 import {ROUTES} from '../constants/routes';
 import ChatScreen from '../Screens/ChatScreen';
-import OtherUserPorfileScreen from '../Screens/OtherUserProfileScreen';
+import OtherUserProfileScreen from '../Screens/OtherUserProfileScreen';
 import {ProfileScreen} from '../Screens/ProfileScreen';
 import RoomListScreen from '../Screens/RoomListScreen';
 import TransactionsScreen from '../Screens/TransactionsScreen';
@@ -184,7 +184,7 @@ export const HomeStackScreen = observer(() => {
       />
       <HomeStack.Screen
         name={ROUTES.OTHERUSERPROFILESCREEN}
-        component={OtherUserPorfileScreen}
+        component={OtherUserProfileScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

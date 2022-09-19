@@ -26,7 +26,6 @@ Some of the changes rolled out in this release:
 Read more about Chervona Kalyna here: https://en.wikipedia.org/wiki/Oi_u_luzi_chervona_kalyna
 
 Stay tuned for future updates, some really exciting features are still coming soon in follow-up updates to this major release.
-These things are already being tested in beta version:
 
 Additional details regarding updates merged into this release (information from commits, pardon the brevity):
 

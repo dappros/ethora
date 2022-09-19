@@ -281,7 +281,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontSize={hp('2.2%')}
                 shadow="10"
                 color={'white'}>
-                {item.name[0]}
+                {item.name?item.name[0]:null}
               </Text>
             </Box>
             <Box flex={0.7}>
@@ -290,7 +290,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontWeight="bold"
                 shadow="2"
                 fontSize={hp('1.8%')}>
-                {item.name}
+                {item.name?item.name:null}
               </Text>
             </Box>
 

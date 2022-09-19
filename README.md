@@ -1,11 +1,49 @@
-# ethora: open-source tokenized community engine (iOS/Android, ERC-20/NFT, chat/messaging)
-Mobile 📱 app engine and blockchain 🔗🌐 platform for social 💬 tokenized ₿Ξ💰 communities 👥👥. 
+# ethora: open-source low-code web3 social app engine (iOS/Android, ERC-20/NFT, messaging/push/calls)
+Mobile-first 📱 web3 🔗🌐 social 💬 platform for your community 👥👥. 
+
+---
+
+### In a nutshell
+<img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
+
+Your community can create NFTs, send Coins, chat & video message each other. Sign in with social or Metamask, get your wallet & QR code, sign documents etc.
+
+It's like your own web3 social network, where everything isn't centered around crypto assets and buzzwords, but rather around people, their social profiles and conversations. 
+
+We believe this a more organic and social, human friendly way to explore web3 and build communities together.
+
+Use our platform to create your own text-based metaverse, 2nd screen or simply a gamified community app. 
+
+Many projects come to use Ethora engine so they can deliver their MVP quickly (within weeks). Most often they stay and keep using it, focusing on more important things they build for their community, such as their unique branding, token economy, smart contracts and integrations with vertical-specific systems, bridging the real world with the benefits of web3. 
+
+We have built this engine so you can focus on your community and build your own web3 mechanics for it, instead of spending months/years on building the foundation tech such as tokenization, messaging & push notifications, API and web3 infrastructure. Enjoy and let us know if there is anything else you'd like added!
+
+---
+
+**UPD (August'22)**: 
+**Numerous updates, UX improvements, better NFT & digital assets support, bots, MetaMast/WalletConnect integration etc.**
+
+---
+
+### Check out our Youtube demo (1.5 minutes):
+(note: enable subtitles to see explanations)
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
+
+---
+
+**UPD (July'22)**:
+**Major release v22.07 is out (July 2022 version) - lots of improvements, faster and easier to work with. Try it out!**
+
+---
 
 Proudly built in Ukraine 🇺🇦 (8 team members), India 🇮🇳 (4 team members) & U.K. 🇬🇧 (1 team member) (and inviting further collaborators)
 
+---
+
 <img src="https://ethora.com/images/thumb/3/39/Ethora_social_sign-in.jpg/450px-Ethora_social_sign-in.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/5/56/Ethora_chat_room.jpg/450px-Ethora_chat_room.jpg" width="200" alt="Demo: chat tokenized gamification" /> <img src="https://ethora.com/images/thumb/f/fd/Ethora_User_Profile.jpg/450px-Ethora_User_Profile.jpg" width="200" alt="Demo: sign in page" /> <img src="https://ethora.com/images/thumb/c/ce/RN_app_NFT_mint_14.jpg/450px-RN_app_NFT_mint_14.jpg" width="200" alt="Demo: sign in page" /> 
 
-Video demo: https://www.youtube.com/watch?v=FvOTFyLVbKM
+---
 
 ## Learn more (our wiki website)
 Visit https://ethora.com/ for latest information regarding the project. 
@@ -19,14 +57,30 @@ You will need environment set up for iOS or Android development.
 
 ## Core features 💡
 * iOS & Android
-* Social sign-in & Crypto wallets
-* Coins (ERC-20 tokens)
+* SSO (Social Sign On) via Gmail, Facebook, Apple 
+* Each user gets a digital assets wallet + cryptographic keypair 
+* Coins (ERC-20 tokens) for internal p2p social economy, gamification etc (either secluded or L1/mainnet connected network)
 * NFT Items (ERC-721 tokens)
 * "Crypto likes" (sending tokens to messages)
-* Ethereum blockchain powered immutable transactions ledger
+* Ethereum blockchain powered immutable transactions ledger - great for transactions tracking and reputation mechanism
 * Crowd-sourced rooms and spaces, p2p QR-code / public key - based invites system
 * Chat & Social profiles
 * Push notifications
+* Audio, Video messages and calls
+
+## Should I build my own version? 🤔
+
+Ethora is distributed as B2B2C product (in other words, open-source and 'white label' friendly) which means you can build your own custom branded web3 social apps, for your community, using this engine.
+
+You may also use our demo Ethora app directly from Apple and Google appstores 'as is', create your own chats there and proceed that way. 
+
+Running your own version, however, allows you to:
+* Have your own app in the iOS and Android appstores
+* Have your own name and branding
+* Your own token / coin 
+* (Optional) dedicated infrastructure - your own chain either private or L1/L2 connected (or you can simply use our chain which is the default option) 
+* (Optional) custom login and wallet options, for example, enable/disable social sign in, choose between custodial and non-custodial wallets for your users, integrate with your existing CRM / users database etc
+* Lots of other Application-level Config options such as defining default chats, short links domain, enabling/disabling features etc
 
 ## Disclaimer 📜
 
@@ -40,7 +94,7 @@ LICENSE. The project codebase of Ethora developed by the project contributors is
 This is a commercial friendly license allowing you to build your own projects using this codebase without a requirement for you to make your modifications open source.
 We have applied what we believe is the most open and flexible license option in order to support developers, startups and businesses globally in creating their own tokenized ecosystems. 
 
-CONTRIBUTORS AND GOVERNANCE. Currently (2018-2021) project is being developed and funded by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. In case this project grows popular and more individuals and organizations start supporting it, we intend to set up an independent foundation or DAO to govern further project development for the public good and promotion of decentralized economy globally.
+CONTRIBUTORS AND GOVERNANCE. Currently (2018-2022) project is being developed and funded by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. In case this project grows popular and more individuals and organizations start supporting it, we intend to set up an independent foundation or DAO to govern further project development for the public good and promotion of decentralized economy globally.
 
 BACKEND. The server-side functionality of Ethora is provided by Dappros Platform API and DeepX RTC infrastructure. Under the bonnet, it consists of Ethereum blockchain network, an API wrapper and caching layer interacting with Ethereum nodes and S3/IPFS storage (built with Node.js, Apache Kafka and MongoDB), as well as XMPP-based Ejabberd messaging server with our own custom-built services (such as Push Notifications, blockchain identities integration etc) built with Erlang, Mnesia, MySQL and Cassandra. 
 
@@ -58,31 +112,29 @@ Platform R&D and the free tier infrastructure are supported through our paid ent
 
 ### DAO governance vision
 
-Currently (2022) Dappros is a privately owned company that offers an open-source mobile app, open-source private blockchain and closed-source backend. Our founders promote decentralized economy and free p2p communication technologies for many years. We are developing a roadmap where the platform will become fully open and its governance can be transferred to a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. Our only limiting factor here is funding and time constraints. 
+Ethora project is governed and implemented by Dappros Ltd with parts of roadmap fulfilled by DeepX. Our founders promote decentralized economy and free p2p communication technologies for many years. We work according to our roadmap with a goal that the platform governance will be fulfilled by a decentralized organization. In such scenario, we will remain a private organisation offering implementation and SLA services, but the development of the new versions of the platform engine and maintenance of the publicly available infrastructure will become globally distributed and decentralized. 
 
 ### Key principles (short term):
 
-* A platform allowing businesses and creators to easily set up and for users to join and explore a tokenized p2p ecosystem.
-*  Partially centralized. 
+* A platform allowing businesses and creators to easily set up and for users to join and explore a web3 social ecosystem, powered by tokenized p2p commerce
+* Partially centralized. 
 * Assets and transactions ledger is decentralized.
-* Leveraging state of the art DLT, mobile and communication technologies.
-* Mobile-first (no ads, no gimmicks)
+* Leveraging state of the art DLT (Ethereum), mobile (iOS & Android) and communication (messaging, push notifications, WebRTC) technologies.
+* Mobile-first ("no ads, no gimmicks" 😉)
 * Open-source client
 
 ### Key principles (mid term):
 
 * Self-Sovereign Identity - users own their identity, content and assets
-* Open-source server - anybody can download and run a Validator or Host node (closed-source enterprise version possible for private chain projects)
+* Open-source server - anybody can download and run a Validator or a Host node (closed-source enterprise version possible for private chain projects)
 * Validator / Hoster incentives - self-supporting network
-* Easy sidechain / mainchain assets transfer
-
+* Easy sidechain (L2) / mainchain (L1) assets transfer
 
 ### Key principles (long term):
 
-* Decentralized maintenance allowing both (a) incentivized hosting of the public infrastructure and (b) private networks. À la Ethereum;
+* Decentralized maintenance allowing both (a) incentivized hosting of the public infrastructure and (b) private networks
 * R&D grants available for teams and individual developers contributors globally
-* Decentralized governance - platform stakeholders make important decisions for the public network 
-* Meritocracy - governance stakes are earned through supporting platform infrastructure (running nodes), R&D work and platform promotion
+* Decentralized governance - platform stakeholders make important decisions for the main public network infrastructure and R&D priorities
 
 ## Contact 💬
 

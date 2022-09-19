@@ -281,7 +281,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       isReply: isReply,
       mainMessageText: onTapMessageObject?.text,
       mainMessageId: onTapMessageObject?.message_id,
-      mainMessageUserName: onTapMessageObject?.user.name
+      mainMessageUserName: onTapMessageObject?.user?.name
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
