@@ -37,7 +37,6 @@ export const RoomListItem = observer(
   ({
     jid,
     name,
-    counter,
     participants,
     drag,
     renameChat,
@@ -104,6 +103,7 @@ export const RoomListItem = observer(
     }, [movingActive]);
     return (
       <Swipeable
+        enabled={movingActive}
         ref={swipeRef}
         renderLeftActions={() => (
           <LeftActions

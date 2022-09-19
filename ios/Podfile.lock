@@ -32,11 +32,34 @@ PODS:
     - FBSDKCoreKit (= 14.1.0)
   - FBSDKShareKit (14.1.0):
     - FBSDKCoreKit (= 14.1.0)
+  - Firebase/Analytics (8.15.0):
+    - Firebase/Core
   - Firebase/Auth (8.15.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.15.0)
+  - Firebase/Core (8.15.0):
+    - Firebase/CoreOnly
+    - FirebaseAnalytics (~> 8.15.0)
   - Firebase/CoreOnly (8.15.0):
     - FirebaseCore (= 8.15.0)
+  - FirebaseAnalytics (8.15.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.15.0)
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - FirebaseAnalytics/AdIdSupport (8.15.0):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleAppMeasurement (= 8.15.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
   - FirebaseAuth (8.15.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
@@ -51,6 +74,11 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
     - nanopb (~> 2.30908.0)
+  - FirebaseInstallations (8.15.0):
+    - FirebaseCore (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.7)
+    - GoogleUtilities/UserDefaults (~> 7.7)
+    - PromisesObjC (< 3.0, >= 1.2)
   - Flipper (0.125.0):
     - Flipper-Folly (~> 2.6)
     - Flipper-RSocket (~> 1.4)
@@ -113,10 +141,27 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
-  - GCDWebServer (3.5.4):
-    - GCDWebServer/Core (= 3.5.4)
-  - GCDWebServer/Core (3.5.4)
   - glog (0.3.5)
+  - GoogleAppMeasurement (8.15.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.15.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/AdIdSupport (8.15.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.15.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (8.15.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.7)
+    - GoogleUtilities/MethodSwizzler (~> 7.7)
+    - GoogleUtilities/Network (~> 7.7)
+    - "GoogleUtilities/NSData+zlib (~> 7.7)"
+    - nanopb (~> 2.30908.0)
   - GoogleDataTransport (9.1.4):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
@@ -133,12 +178,16 @@ PODS:
     - PromisesObjC (< 3.0, >= 1.2)
   - GoogleUtilities/Logger (7.7.0):
     - GoogleUtilities/Environment
+  - GoogleUtilities/MethodSwizzler (7.7.0):
+    - GoogleUtilities/Logger
   - GoogleUtilities/Network (7.7.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
   - "GoogleUtilities/NSData+zlib (7.7.0)"
   - GoogleUtilities/Reachability (7.7.0):
+    - GoogleUtilities/Logger
+  - GoogleUtilities/UserDefaults (7.7.0):
     - GoogleUtilities/Logger
   - GTMAppAuth (1.3.0):
     - AppAuth/Core (~> 1.4)
@@ -409,12 +458,12 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-video (5.2.0):
+  - react-native-video (5.2.1):
     - React-Core
-    - react-native-video/Video (= 5.2.0)
-  - react-native-video/Video (5.2.0):
+    - react-native-video/Video (= 5.2.1)
+  - react-native-video/Video (5.2.1):
     - React-Core
-  - react-native-webview (11.23.0):
+  - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.68.1)
   - React-RCTActionSheet (0.68.1):
@@ -483,8 +532,7 @@ PODS:
     - React-perflogger (= 0.68.1)
   - ReactNativeAudioToolkit (2.0.3):
     - React
-  - RealmJS (10.20.0):
-    - GCDWebServer
+  - RealmJS (11.0.0-rc.0):
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
@@ -502,10 +550,14 @@ PODS:
     - React-Core
   - RNDeviceInfo (8.7.1):
     - React-Core
-  - RNFastImage (8.6.0):
+  - RNFastImage (8.6.1):
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
+  - RNFBAnalytics (14.11.1):
+    - Firebase/Analytics (= 8.15.0)
+    - React-Core
+    - RNFBApp
   - RNFBApp (14.11.1):
     - Firebase/CoreOnly (= 8.15.0)
     - React-Core
@@ -552,8 +604,8 @@ PODS:
   - RNScreens (3.17.0):
     - React-Core
     - React-RCTImage
-  - RNSha256 (1.4.7):
-    - React
+  - RNSha256 (1.4.8):
+    - React-Core
   - RNShare (7.9.0):
     - React-Core
   - RNSVG (12.4.4):
@@ -649,6 +701,7 @@ DEPENDENCIES:
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - RNFS (from `../node_modules/react-native-fs`)
@@ -674,9 +727,11 @@ SPEC REPOS:
     - FBSDKLoginKit
     - FBSDKShareKit
     - Firebase
+    - FirebaseAnalytics
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseInstallations
     - Flipper
     - Flipper-Boost-iOSX
     - Flipper-DoubleConversion
@@ -687,7 +742,7 @@ SPEC REPOS:
     - Flipper-RSocket
     - FlipperKit
     - fmt
-    - GCDWebServer
+    - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleSignIn
     - GoogleUtilities
@@ -810,6 +865,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-device-info"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
+  RNFBAnalytics:
+    :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -852,9 +909,11 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: 787de205d524c3a4b17d527916f1d066e4361660
   FBSDKShareKit: b9c1cd1fa6a320a50f0f353cf30d589049c8db77
   Firebase: 5f8193dff4b5b7c5d5ef72ae54bb76c08e2b841d
+  FirebaseAnalytics: 7761cbadb00a717d8d0939363eb46041526474fa
   FirebaseAuth: 3e73bf8abf4fbb40f8b421f361f4cc48ee57388c
   FirebaseCore: 5743c5785c074a794d35f2fff7ecc254a91e08b1
   FirebaseCoreDiagnostics: 92e07a649aeb66352b319d43bdd2ee3942af84cb
+  FirebaseInstallations: 40bd9054049b2eae9a2c38ef1c3dd213df3605cd
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 3d3d04a078d4f3a1b6c6916587f159dc11f232c4
@@ -865,8 +924,8 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  GoogleAppMeasurement: 4c19f031220c72464d460c9daa1fb5d1acce958e
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleSignIn: c90b5bec45e780f54c6a8e1e3c182a86e3dda69d
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
@@ -899,8 +958,8 @@ SPEC CHECKSUMS:
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: b456e1c40ec86f5593d58b275bd0e9603169daca
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-video: a4c2635d0802f983594b7057e1bce8f442f0ad28
-  react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
+  react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
+  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
   React-RCTActionSheet: 4b45da334a175b24dabe75f856b98fed3dfd6201
   React-RCTAnimation: d6237386cb04500889877845b3e9e9291146bc2e
@@ -914,7 +973,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 7285b499d0339104b2813a1f58ad1ada4adbd6c0
   ReactCommon: bf2888a826ceedf54b99ad1b6182d1bc4a8a3984
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
-  RealmJS: 50ed14de48cf542be1ebad3bc75587ce59bc8571
+  RealmJS: 6ee99e016e85a71233f92c64b8255007810b7478
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
   RNAudioRecorderPlayer: 308940de4f9d1448a064874fd9d83479ae47c7a7
@@ -923,7 +982,8 @@ SPEC CHECKSUMS:
   RNCClipboard: 4b8bec7c195e27bcec746f52dff7601161683249
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
   RNDeviceInfo: aad3c663b25752a52bf8fce93f2354001dd185aa
-  RNFastImage: 72a2d5802adef70f8e42fce486f78878f8b47dae
+  RNFastImage: 3207b9eb17c2425d574ca40db35185db6e324f4e
+  RNFBAnalytics: e332a2d0b4c28884dbeacbe21fe68688abdf34b9
   RNFBApp: 9646e09d041ea159b84584865212e4cf33acd179
   RNFBAuth: af943e3ba071b5f4d18896c31e6cba3a77b1fa08
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
@@ -932,7 +992,7 @@ SPEC CHECKSUMS:
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNReanimated: 5bdcbcc3a72aedeee7bb099604262403aa75a1e5
   RNScreens: 0df01424e9e0ed7827200d6ed1087ddd06c493f9
-  RNSha256: bf2c90a9e0cec6dcbcc4100e4e19715ae7feaa34
+  RNSha256: 80bea5b2e7005f813f6438cb41e573b3d531146c
   RNShare: be91a5c149585affb02c25b351bd07ba927c7006
   RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
