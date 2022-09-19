@@ -33,6 +33,8 @@ const {primaryColor} = commonColors;
 const {lightFont, semiBoldFont, boldFont} = textStyles;
 
 const NftTransactionsHistoryComponent = props => {
+  const [expanded, setExpanded] = useState(false);
+  const {item} = props;
   const month = new Array();
   month[0] = 'Jan';
   month[1] = 'Feb';
@@ -126,7 +128,8 @@ const NftTransactionsHistoryComponent = props => {
       key={props.item.transactionHash}
       style={{flex: 1, paddingBottom: Platform.OS === 'android' ? 5 : null}}>
       {Header}
-      <View
+      <TouchableOpacity
+    onPress={() => setExpanded(prev => !prev)}
         style={{
           flexDirection: 'row',
           // justifyContent: 'space-between',
@@ -198,7 +201,9 @@ const NftTransactionsHistoryComponent = props => {
           {props.item.type !== 'Token Creation' ? (
             <AntIcon
               name={'arrowright'}
-              color={props.item.type !== 'Transfer Ownership'  ? '#69CB41' : 'red'}
+              color={
+                props.item.type !== 'Transfer Ownership' ? '#69CB41' : 'red'
+              }
               size={hp('1.7%')}
               // style={{marginRight: 40}}
             />
@@ -338,8 +343,58 @@ const NftTransactionsHistoryComponent = props => {
             />
           )} */}
         </View>
-      </View>
+      </TouchableOpacity>
+      {expanded && (
+        <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
+          {/* <Text style={styles.detailsItemTextBold}>Details:</Text> */}
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>TX hash: </Text>
+            <Text style={{textAlign: 'left', color: 'black'}}>
+              {item.transactionHash}
+            </Text>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>From:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>{item.from}</Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>To:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>
+                {item.to}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>
+                {new Date(item.timestamp).getTime()}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Value:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>{item.value}</Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Block:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>
+                {String(item.blockNumber).replace(/(.)(?=(\d{3})+$)/g, '$1,')}
+              </Text>
+            </View>
+          </View>
+
+          {/* <Text>To: {JSON.stringify(item)}</Text> */}
+        </View>
+      )}
       <Divider />
+     
     </View>
   );
 };
@@ -511,6 +566,17 @@ const styles = StyleSheet.create({
   imagePreviewStyle: {
     height: hp('5%'),
     width: hp('7%'),
+  },
+  detailsItem: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 5,
+    paddingRight: wp('20%'),
+    maxWidth: '100%',
+  },
+  detailsItemTextBold: {
+    width: wp('23%'),
+    fontWeight: '700',
   },
 });
 
