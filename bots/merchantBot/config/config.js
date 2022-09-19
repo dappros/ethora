@@ -9,7 +9,7 @@ let botOptions = {
         userReward: 1,
         waitingAfterPresence: 10 /* minutes */
     },
-    apiUrl: 'https://app-dev.dappros.com/v1/'
+    apiUrl: process.env.API_URL
 }
 
 export default botOptions;

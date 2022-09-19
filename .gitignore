@@ -70,3 +70,4 @@ buck-out/
 /bots/merchantBot/.env.development
 /bots/merchantBot/.env.production
 /bots/merchantBot/test.js
+/bots/merchantBot/.env.local
