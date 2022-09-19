@@ -10,7 +10,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
-  useWindowDimensions,
 } from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
