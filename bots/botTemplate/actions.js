@@ -10,31 +10,33 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons)
     if (isSystemMessage) {
         xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons)
     } else {
-        sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing')
+        sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing');
         //Set a timeout depending on the number of characters in the message.
-        setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message))
+        setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message));
+
     }
 }
 
 const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) => {
-    data.xmpp.send(xml('message', {
-        to: data.roomJID,
-        type: data.receiverData ? 'groupchat' : type,
-        id: "sendMessage"
-    }, xml('data', {
-        xmlns: "http://" + data.connectData.botAddress,
-        senderFirstName: botOptions.botData.firstName,
-        senderLastName: botOptions.botData.lastName,
-        photoURL: botOptions.botData.photoURL,
-        senderJID: data.connectData.botName + '@' + data.connectData.botAddress,
-        senderWalletAddress: data.connectData.walletAddress,
-        isSystemMessage: isSystemMessage,
-        tokenAmount: tokenAmount,
-        receiverMessageId: data.receiverMessageId,
-        roomJid: data.receiverData ? data.receiverData.roomJid : '',
-        quickReplies: buttons ? JSON.stringify(buttons) : [],
-    }), xml('body', {}, generateMessage(data, message, isSystemMessage))));
-    sendTyping(data.xmpp, data.connectData, data.roomJID, 'pausedComposing')
+    sendTyping(data.xmpp, data.connectData, data.roomJID, 'pausedComposing').then(() => {
+        data.xmpp.send(xml('message', {
+            to: data.roomJID,
+            type: data.receiverData ? 'groupchat' : type,
+            id: "sendMessage"
+        }, xml('data', {
+            xmlns: "http://" + data.connectData.botAddress,
+            senderFirstName: botOptions.botData.firstName,
+            senderLastName: botOptions.botData.lastName,
+            photoURL: botOptions.botData.photoURL,
+            senderJID: data.connectData.botName + '@' + data.connectData.botAddress,
+            senderWalletAddress: data.connectData.walletAddress,
+            isSystemMessage: isSystemMessage,
+            tokenAmount: tokenAmount,
+            receiverMessageId: data.receiverMessageId,
+            roomJid: data.receiverData ? data.receiverData.roomJid : '',
+            quickReplies: buttons ? JSON.stringify(buttons) : [],
+        }), xml('body', {}, generateMessage(data, message, isSystemMessage))));
+    })
 }
 
 //Show or hide the notification that the bot is currently typing a message.
@@ -42,7 +44,7 @@ const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) 
 // - isComposing : Bot is typing a message
 // - pausedComposing : Bot stopped typing a message
 export const sendTyping = (xmpp, connectData, chat_jid, type) => {
-    xmpp.send(xml('message', {
+    return xmpp.send(xml('message', {
         to: chat_jid,
         type: 'groupchat',
         id: type
@@ -160,10 +162,10 @@ const userSteps = (type, jid, step, newData) => {
     //Upon receipt of the setStepData type, update the data that is specified
     if (type === 'setStep') {
         // console.log('=>=> Set new step for user ' + newData + ' ' + jid);
-        if(newData){
+        if (newData) {
             userStepsList[userIndex].data = newData;
         }
-        if(step){
+        if (step) {
             userStepsList[userIndex].step = step;
         }
         return true;
