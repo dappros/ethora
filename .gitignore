@@ -71,3 +71,10 @@ buck-out/
 /bots/merchantBot/.env.production
 /bots/merchantBot/test.js
 /bots/merchantBot/.env.local
+
+/bots/autoResponderBot/.env.development
+/bots/autoResponderBot/.env.production
+/bots/autoResponderBot/test.js
+/bots/botTemplate/.env.development
+/bots/botTemplate/.env.production
+/bots/botTemplate/test.js
