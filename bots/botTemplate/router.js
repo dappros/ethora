@@ -23,7 +23,7 @@ const router = (handlerData) => {
         if (messageCheck(handlerData.message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
             return sendMessage(
                 handlerData,
-                messages.bot.tnxForTransaction,
+                messages.exampleBotMessage.tnxForTransaction,
                 'message',
                 false,
                 0,
