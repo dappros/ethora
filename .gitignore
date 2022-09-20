@@ -78,3 +78,6 @@ buck-out/
 /bots/botTemplate/.env.development
 /bots/botTemplate/.env.production
 /bots/botTemplate/test.js
+/bots/autoResponder/.env.development
+/bots/autoResponder/.env.production
+/bots/autoResponder/test.js
