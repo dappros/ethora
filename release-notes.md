@@ -11,7 +11,7 @@ This version highlights:
 * Improved handling of PDF and other non-image non-video attachments
 * Numerous bugfixes, UX and performance improvements
 
-## v22.08 - nummerous improvements around UI/UX, Items/NFT and Bots framework introduced
+## v22.08 - numerous improvements around UI/UX, Items/NFT and Bots framework introduced
 This version highlights:
 * Improved password reset and e-mail validation 
 * Improved login options in Config file
