@@ -1,4 +1,5 @@
-v22.09 highlights:
+## v22.09 - multiple improvements around UX, Bots and Items
+This version highlights:
 * Bots suite (BETA) finalized: Hut-Hut, Prisoner Dilemma game, Questionnaire bot, Jester, Create & Export bots
 * Room/Chat Details screen added
 * Blocklists: Users can block other users in chats
@@ -11,6 +12,7 @@ v22.09 highlights:
 * Numerous bugfixes, UX and performance improvements
 
 ## v22.08 - nummerous improvements around UI/UX, Items/NFT and Bots framework introduced
+This version highlights:
 * Improved password reset and e-mail validation 
 * Improved login options in Config file
 * Invite Friends finalized
