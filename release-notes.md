@@ -1,3 +1,37 @@
+v22.09 highlights:
+* Bots suite (BETA) finalized: Hut-Hut, Prisoner Dilemma game, Questionnaire bot, Jester, Create & Export bots
+* Room/Chat Details screen added
+* Blocklists: Users can block other users in chats
+* NFT/Items display improvements: provenance, tags/traits, mint, purchase and export scenarios
+* Users can now send Collections (transfer smart contracts ownership) 
+* Improved non-SSO (login and password) experience
+* Finalized support for Youtube links
+* Send X Coins - users can now send arbitrary number of Coins via message menu
+* Improved handling of PDF and other non-image non-video attachments
+* Numerous bugfixes, UX and performance improvements
+
+## v22.08 - nummerous improvements around UI/UX, Items/NFT and Bots framework introduced
+* Improved password reset and e-mail validation 
+* Improved login options in Config file
+* Invite Friends finalized
+* Create bot - allows to create new Items (NFT / NFMT) collections via  
+* “Wrap” functionality - Users can wrap image and video attachments into NFT Items directly via chat interface
+* Improved Items Collections display and “Get” function
+* QA - full regression test / checklist produced
+* Improved Profile sharing
+* WalletConnect integration finalized - Users can sign in with Metamask or other crypto wallets available on their device (tested with Coinbase, Trustwallet, Argent etc)
+* Bots framework improvements - reaction to presence, “is typing”, invite & auto-join etc
+* Items API - specific Collection API backend improvement
+* Jester bot created 
+* Youtube links rendering
+* Web profiles - backend route
+* Items in-room display enhancement 
+* Add image ID and "wrappable" params into file attachment data payload 
+* "NFMT light" Items Collection contract template introduced
+* Mint functionality for NFMT Items
+* Audio & Video calls added (disabled by default, in Beta for selected customers)
+* Other UX improvements
+
 ## v22.07 - MAJOR RELEASE "CHERVONA KALYNA" 
 
 There has been a significant number of changes, updates and improvements during our monthly releases since the initial GitHub launch in November 2021 (and since the kick off of the development much earlier than that). We aren't doing the best job documenting all changes in this file as they are done, however most of the code is self explanatory and we have documentation wiki available publicly here: https://ethora.com/ that covers the features of the engine.
