@@ -16,7 +16,7 @@ This version highlights:
 * Improved password reset and e-mail validation 
 * Improved login options in Config file
 * Invite Friends finalized
-* Create bot - allows to create new Items (NFT / NFMT) collections via  
+* Create bot - allows to create new Items (NFT / NFMT) collections via chat interface 
 * “Wrap” functionality - Users can wrap image and video attachments into NFT Items directly via chat interface
 * Improved Items Collections display and “Get” function
 * QA - full regression test / checklist produced
