@@ -15,7 +15,8 @@ export const getConnectData = async () => {
         !process.env.API_URL ||
         !process.env.DEFAULT_ROOM ||
         !process.env.PRESENCE ||
-        !process.env.INVITATION
+        !process.env.INVITATION ||
+        !process.env.USER_LIMIT_PER_ROOM
     ) {
         return Error('Not all data for launching the bot is specified')
     }
@@ -49,7 +50,8 @@ export const getConnectData = async () => {
         appPassword: process.env.APP_PASSWORD,
         walletAddress: loginData.user.defaultWallet.walletAddress,
         type: process.env.TYPE,
-        dataBaseStatus
+        dataBaseStatus,
+        userLimitPerRoom: process.env.USER_LIMIT_PER_ROOM
     };
 }
 
