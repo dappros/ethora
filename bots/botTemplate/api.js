@@ -45,24 +45,24 @@ http.interceptors.response.use(undefined, error => {
         return Promise.reject(error)
     }
 
-  if (error.request.path ===  '/v1/users/login/refresh') {
-      return Promise.reject(error)
-  }
+    if (error.request.path === '/v1/users/login/refresh') {
+        return Promise.reject(error)
+    }
 
-  const request = error.config
+    const request = error.config
 
-  return refresh()
-      .then(() => {
-          return new Promise((resolve) => {
-              'sendig request after refresh'
-              request.headers['Authorization'] = loginData.token
-              resolve(http(request))
-          })
-      })
-      .catch((error) => {
-          console.log('Refresh reject')
-          return Promise.reject(error)
-      })
+    return refresh()
+        .then(() => {
+            return new Promise((resolve) => {
+                'sendig request after refresh'
+                request.headers['Authorization'] = loginData.token
+                resolve(http(request))
+            })
+        })
+        .catch((error) => {
+            console.log('Refresh reject')
+            return Promise.reject(error)
+        })
 })
 
 export const transferToken = async (tokenId, tokenName, amount, wallet) => {
@@ -80,8 +80,7 @@ export const transferToken = async (tokenId, tokenName, amount, wallet) => {
         });
         console.log('requestTransferToken Success: ', test.data)
         return true;
-    }
-    catch (error){
+    } catch (error) {
         JSON.stringify(error)
         throw error;
     }
@@ -102,7 +101,7 @@ export const mintNft = async (contractAddress, slot, amount, walletAddress) => {
         });
         console.log('mintNft Success: ', test.data)
         return true;
-    } catch (error){
+    } catch (error) {
         JSON.stringify(error)
         throw error;
     }
@@ -110,9 +109,70 @@ export const mintNft = async (contractAddress, slot, amount, walletAddress) => {
 
 export const getMintItemData = async (walletAddress) => {
     try {
-        let itemData = await http.get('tokens/get/'+walletAddress);
+        let itemData = await http.get('tokens/get/' + walletAddress);
         return itemData.data.results;
-    }catch (error){
+    } catch (error) {
         console.log('Error getMintItemData: ', error)
+    }
+}
+
+export const saveApiData = async (data) => {
+    try {
+        let result = await http.post('data', data, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        console.log('saveData Success: ', result.data)
+        return result;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
+export const getFilteredApiData = async (params) => {
+    try {
+        let result = await http.get('data', {params}, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        return result.data;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
+export const deleteApiData = async (id) => {
+    try {
+        let result = await http.delete('data/' + id, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        return result.data;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
+export const updateApiData = async (id, data) => {
+    try {
+        let result = await http.patch('data/' + id, data, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        return result.data;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
     }
 }
