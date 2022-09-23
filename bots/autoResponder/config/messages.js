@@ -13,6 +13,9 @@ const messages = () => {
         errors: {
             requestError: 'An error occurred during the request, please try again later.',
         },
+        didYouWantToLearnMore: 'Hi, I\'m assisting here.\n\nDid you want to learn more about our products and services or just wanted to chat?',
+        informationAboutCompany: 'Information about the products and services of the company.',
+        youHaveAChat: 'Thank you for looking through the information!\n\nEnjoy using Ethora!'
     }
 }
 
