@@ -5,8 +5,9 @@ import {router} from "./router.js";
 import 'dotenv/config';
 import {connectToDb} from "./database/dataBase.js";
 import {welcomePresence} from "./presence.js";
+import {userLimitHandler} from "./handlers/userLimit.js";
 
-let connectData;
+let connectData, handlerData;
 //Check if all the data is filled in .env, connect to the API, get the connection data and save this data.
 await getConnectData().then((result) => {
     connectData = result;
@@ -34,12 +35,21 @@ xmpp.on("stanza", async stanza => {
         //The address of the user in the room who wrote the message.
         const senderAddressInTheRoom = stanza.attrs.from;
 
+        //Get a list of bot rooms and then check the number of users in the current room
+        //This function will only work if the getUserRooms function is run
+        if(stanza.attrs.id === 'get_user_rooms'){
+            const currentRoomData = stanza.children[0].children.find(x => x.attrs.jid === handlerData.roomJID);
+            //if they are less than 3 or equal to 3 then I send a message.
+            if(currentRoomData.attrs.users_cnt <= connectData.userLimitPerRoom){
+                userLimitHandler(handlerData);
+            }
+        }
         //I start further actions if I received a "message" and the sender of this message is not a bot.
         if (stanza.is("message") && senderAddressInTheRoom !== botAddressInTheRoom) {
 
             const body = stanza.getChild('body');
             //Form an object with data from the stanza, which is necessary for working with handlers
-            let handlerData = groupDataForHandler(xmpp, stanza, connectData);
+            handlerData = groupDataForHandler(xmpp, stanza, connectData);
 
             // Processing an incoming chat room invitation
             if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVITATION === 'true' && connectData.dataBaseStatus) {
