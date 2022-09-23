@@ -174,4 +174,14 @@ const userSteps = (type, jid, step, newData) => {
     return false;
 }
 
+export const getUserRooms = (xmpp, botJID) => {
+    xmpp.send(xml('iq', {
+            type: 'get',
+            from: botJID,
+            id: "get_user_rooms"
+        },
+        xml('query', {xmlns: "ns:getrooms"}),
+    ));
+}
+
 export {sendMessage, connectRoom, messageCheck, userSteps};
