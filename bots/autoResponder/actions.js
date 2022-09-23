@@ -109,7 +109,7 @@ const connectRoom = (xmpp, address, roomJID, connectData, welcomeMessage) => {
     xmpp.send(xml('presence', {
         from: address,
         to: myRoomAddress,
-    }, xml('x', 'http://jabber.org/protocol/muc', xml('history', {maxstanzas: 0})))).catch(console.error);
+    }, xml('x', 'http://jabber.org/protocol/muc'))).catch(console.error);
 
     if (welcomeMessage) {
         console.log('=> Sending a welcome message: ', roomJID);
@@ -172,6 +172,19 @@ const userSteps = (type, jid, step, newData) => {
     }
     console.log('=>=> userSteps Error: ', type, jid, step, newData, userStepsList[userIndex])
     return false;
+}
+
+export const getUserRooms = (data) => {
+    console.log('============================== ||| ==========================================')
+    data.xmpp.send(xml('iq', {
+            type: 'get',
+            from: data.botJID,
+            id: "get_user_rooms"
+        },
+        xml('query', {xmlns: "ns:getrooms"}),
+    ));
+    console.log('============================== /// ==========================================')
+
 }
 
 export {sendMessage, connectRoom, messageCheck, userSteps};
