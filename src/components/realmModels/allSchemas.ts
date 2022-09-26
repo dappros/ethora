@@ -58,10 +58,11 @@ const MessageSchema = {
     contractAddress: {type: 'string', optional: true},
     fileName: {type: 'string', optional: true},
     originalName: {type: 'string', optional: true},
-    isReply: {type: 'bool', optional:true},
-    mainMessageUserName: {type: 'string', optional:true},
-    mainMessageText: {type: 'string', optional:true},
-    mainMessageId: {type: 'string', optional:true}
+    isReply: {type: 'bool', optional: true},
+    mainMessageUserName: {type: 'string', optional: true},
+    mainMessageText: {type: 'string', optional: true},
+    mainMessageId: {type: 'string', optional: true},
+    preview: {type: 'string', optional: true},
   },
 };
 

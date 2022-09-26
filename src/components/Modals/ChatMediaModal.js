@@ -8,7 +8,11 @@ Note: linked open-source libraries and components may be subject to their own li
 import {Box, HStack, Image, Modal, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
-import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
+import {
+  imageMimetypes,
+  pdfMimemtype,
+  videoMimetypes,
+} from '../../constants/mimeTypes';
 import VideoPlayer from 'react-native-video-player';
 import {
   TouchableOpacity,
@@ -35,6 +39,7 @@ import {wrapMessage} from '../../helpers/wrapMessage';
 import {httpGet} from '../../config/apiService';
 import {downloadFile} from '../../helpers/downloadFile';
 import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
+import {PdfViewer} from '../PdfViewer';
 const {width, height: windowHeight} = Dimensions.get('window');
 
 const ModalActionButton = ({actionTypeText, cost, action}) => {
@@ -121,8 +126,9 @@ export const ChatMediaModal = observer(
     }, [messageData]);
 
     const downloadMedia = async () => {
+      console.log(messageData)
       setLoading(true);
-      await downloadFile(messageData?.image, messageData?.originalName);
+      await downloadFile(messageData?.image , messageData?.originalName);
       setLoading(false);
     };
 
@@ -200,8 +206,12 @@ export const ChatMediaModal = observer(
           </TouchableOpacity>
         );
       }
+      if (pdfMimemtype[type]) {
+        return <PdfViewer uri={url} />;
+      }
       return null;
     };
+
     return (
       <Modal
         isOpen={open}
@@ -209,7 +219,7 @@ export const ChatMediaModal = observer(
         _backdrop={{
           bg: 'black',
         }}>
-        <Box w={widthPercentageToDP('90%')}>
+        <Box w={widthPercentageToDP('80%')}>
           <TouchableOpacity
             style={{position: 'absolute', right: 0, top: -30, zIndex: 9999}}
             onPress={onClose}>

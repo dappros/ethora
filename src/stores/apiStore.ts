@@ -2,30 +2,30 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import {APP_TOKEN, appEndpoint} from '../../docs/config';
 
 const xmppEndpoints = {
-  'DEV': {
-    DOMAIN:'dev.dxmpp.com',
+  DEV: {
+    DOMAIN: 'dev.dxmpp.com',
     SERVICE: 'wss://dev.dxmpp.com:5443/ws',
     CONFERENCEDOMAIN: '@conference.dev.dxmpp.com',
     CONFERENCEDOMAIN_WITHOUT: 'conference.dev.dxmpp.com',
   },
-  'QA':{
-    DOMAIN:'dev.dxmpp.com',
+  QA: {
+    DOMAIN: 'dev.dxmpp.com',
     SERVICE: 'wss://dev.dxmpp.com:5443/ws',
     CONFERENCEDOMAIN: '@conference.dev.dxmpp.com',
     CONFERENCEDOMAIN_WITHOUT: 'conference.dev.dxmpp.com',
   },
-  'PROD':{
+  PROD: {
     DOMAIN: 'dxmpp.com',
     SERVICE: 'wss://dxmpp.com:5443/ws',
     CONFERENCEDOMAIN: '@conference.dxmpp.com',
     CONFERENCEDOMAIN_WITHOUT: 'conference.dxmpp.com',
-  }
-}
+  },
+};
 export class ApiStore {
   modes = {
-    'DEV': 'https://app-dev.dappros.com/v1',
-    'PROD': 'https://app.dappros.com/v1',
-    'QA': 'https://app-dev.dappros.com/v1'
+    DEV: 'https://app-dev.dappros.com/v1',
+    PROD: 'https://app.dappros.com/v1',
+    QA: 'https://app-dev.dappros.com/v1',
   };
   tokens = {
     dev: APP_TOKEN,
@@ -35,8 +35,9 @@ export class ApiStore {
     DOMAIN: xmppEndpoints[appEndpoint].DOMAIN,
     SERVICE: xmppEndpoints[appEndpoint].SERVICE,
     CONFERENCEDOMAIN: xmppEndpoints[appEndpoint].CONFERENCEDOMAIN,
-    CONFERENCEDOMAIN_WITHOUT:xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT
-  }
+    CONFERENCEDOMAIN_WITHOUT:
+      xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT,
+  };
   defaultUrl = this.modes[appEndpoint];
   defaultToken = APP_TOKEN;
 
@@ -47,10 +48,9 @@ export class ApiStore {
   setInitialState() {
     runInAction(() => {
       this.modes = {
-        'DEV': 'https://app-dev.dappros.com/v1',
-        'PROD': 'https://app.dappros.com/v1',
-        'QA': 'https://app-dev.dappros.com/v1'
-        
+        DEV: 'https://app-dev.dappros.com/v1',
+        PROD: 'https://app.dappros.com/v1',
+        QA: 'https://app-dev.dappros.com/v1',
       };
       this.tokens = {
         dev: APP_TOKEN,
@@ -60,8 +60,9 @@ export class ApiStore {
         DOMAIN: xmppEndpoints[appEndpoint].DOMAIN,
         SERVICE: xmppEndpoints[appEndpoint].SERVICE,
         CONFERENCEDOMAIN: xmppEndpoints[appEndpoint].CONFERENCEDOMAIN,
-        CONFERENCEDOMAIN_WITHOUT:xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT
-      }
+        CONFERENCEDOMAIN_WITHOUT:
+          xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT,
+      };
       this.defaultUrl = this.modes[appEndpoint];
       this.defaultToken = APP_TOKEN;
     });

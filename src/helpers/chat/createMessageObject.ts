@@ -40,10 +40,12 @@ interface createMessageObjectProps {
   contractAddress?: string;
   fileName?: string;
   originalName?: string;
-  isReply?:boolean;
-  mainMessageText?:string;
-  mainMessageId?:string;
-  mainMessageUserName?:string;
+  isReply?: boolean;
+  mainMessageText?: string;
+  mainMessageId?: string;
+  mainMessageUserName?: string;
+  preview?: string;
+
 }
 
 export const createMessageObject = (
@@ -79,10 +81,11 @@ export const createMessageObject = (
     contractAddress: '',
     fileName: '',
     originalName: '',
-    isReply:false,
-    mainMessageText:'',
-    mainMessageId:'',
-    mainMessageUserName:''
+    isReply: false,
+    mainMessageText: '',
+    mainMessageId: '',
+    mainMessageUserName: '',
+    preview: ''
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -122,6 +125,7 @@ export const createMessageObject = (
       message.mainMessageText = item.attrs.mainMessageText || '';
       message.isReply = item.attrs.isReply === 'true' || false;
       message.mainMessageUserName = item.attrs.mainMessageUserName || '';
+      message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
     }
   });

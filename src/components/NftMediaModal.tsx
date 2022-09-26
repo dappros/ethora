@@ -24,11 +24,13 @@ import Modal from 'react-native-modal';
 import {
   audioMimetypes,
   imageMimetypes,
+  pdfMimemtype,
   videoMimetypes,
 } from '../constants/mimeTypes';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import VideoPlayer from 'react-native-video-player';
 import {commonColors, textStyles} from '../../docs/config';
+import {PdfViewer} from './PdfViewer';
 export const NftMediaModal = ({
   closeModal,
   mimetype,
@@ -41,10 +43,11 @@ export const NftMediaModal = ({
   modalVisible: boolean;
 }) => {
   return (
-    <Modal
-      onBackdropPress={closeModal}
-      isVisible={modalVisible}>
+    <Modal onBackdropPress={closeModal} isVisible={modalVisible}>
       <View style={classes.modal}>
+        <View style={{position: 'absolute', height: hp('80%')}}>
+          {pdfMimemtype[mimetype] && <PdfViewer uri={url} />}
+        </View>
         {audioMimetypes[mimetype] && (
           <View style={{position: 'absolute', top: '50%'}}>
             <AudioPlayer audioUrl={url} />

@@ -42,7 +42,9 @@ export const insertMessages = (messageObject: any) =>
       message_id: messageObject._id,
       room_name: messageObject.roomJid,
       tokenAmount: +messageObject.tokenAmount,
-      text: messageObject.text || ' '
+      text: messageObject.text || ' ',
+      preview: messageObject.imageLocationPreview,
+
     };
     getMessage(messageObject._id).then(message => {
       if (!message) {

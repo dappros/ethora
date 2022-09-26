@@ -48,7 +48,8 @@ import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
 } from 'react-native-audio-recorder-player';
-import RNFetchBlob from 'rn-fetch-blob';
+import RNFetchBlob from 'react-native-blob-util';
+
 import {
   allowIsTyping,
   commonColors,
@@ -195,7 +196,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [chatStore.isComposing.state]);
 
   const renderMessage = props => {
-
     return <MessageBody {...props} />;
   };
 
@@ -281,7 +281,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       isReply: isReply,
       mainMessageText: onTapMessageObject?.text,
       mainMessageId: onTapMessageObject?.message_id,
-      mainMessageUserName: onTapMessageObject?.user?.name
+      mainMessageUserName: onTapMessageObject?.user?.name,
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -359,6 +359,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       imageLocation,
       fileName,
       nftId,
+      preview,
     } = props.currentMessage;
     let parsedWaveform = [];
     if (waveForm) {
@@ -394,16 +395,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
         <AudioMessage
           waveform={parsedWaveform}
           message={props}
-          onPress={() => onMediaMessagePress(mimetype, image)}
+          onPress={() =>
+            onMediaMessagePress(mimetype, image, props.currentMessage)
+          }
           onLongPress={handleOnLongPress}
         />
       );
     } else if (pdfMimemtype[mimetype]) {
+      const pdfImage =
+        'https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw';
       return (
         <PdfMessage
-          url={image}
+          url={preview || pdfImage}
           size={size}
-          onPress={() => downloadFile(image, originalName)}
+          onPress={() =>
+            onMediaMessagePress(mimetype, image, props.currentMessage)
+          }
         />
       );
     } else if (mimetype) {
@@ -453,32 +460,32 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = (context:any, message:any) => {
-    if(!message.user._id.includes(manipulatedWalletAddress)){
-      setIsShowDeleteOption(false)
+  const handleOnPress = (context: any, message: any) => {
+    if (!message.user._id.includes(manipulatedWalletAddress)) {
+      setIsShowDeleteOption(false);
     }
-    console.log(message, "Sdafvdfvgfdb")
+    console.log(message, 'Sdafvdfvgfdb');
     setOnTapMessageObject(message);
-    return onOpen()
-  }
+    return onOpen();
+  };
 
   const handleCopyText = () => {
     Clipboard.setString(onTapMessageObject.text);
     showToast('success', 'Info', 'Message copied', 'top');
     return onClose();
-  }
+  };
 
-  const handleReply = (type:'open'|'close') => {
-    if(type==='open'){
+  const handleReply = (type: 'open' | 'close') => {
+    if (type === 'open') {
       setIsReply(true);
       onClose();
     }
 
-    if(type==='close'){
+    if (type === 'close') {
       setIsReply(false);
       setOnTapMessageObject('');
     }
-  }
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -821,6 +828,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           <ActivityIndicator size={30} color={commonColors.primaryColor} />
         </View>
       )}
+
       <GiftedChat
         renderSend={renderSend}
         renderActions={renderAttachment}
@@ -839,7 +847,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         renderChatFooter={() => (
           <RenderChatFooter
             isReply={isReply}
-            closeReply={()=>handleReply('close')}
+            closeReply={() => handleReply('close')}
             replyMessage={onTapMessageObject?.text}
             replyUserName={onTapMessageObject?.user?.name}
             allowIsTyping={allowIsTyping}
@@ -874,9 +882,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         onLongPress={(context: any, message: any) =>
           handleOnLongPress(context, message)
         }
-        onTap={(context:any, message:any)=>
-          handleOnPress(context, message)
-        }
+        onTap={(context: any, message: any) => handleOnPress(context, message)}
         // onInputTextChanged={()=>{alert('hhh')}}
         parsePatterns={linkStyle => [
           {
@@ -893,13 +899,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
         ]}
       />
 
-      <ChatMediaModal
-        url={mediaModal.url}
-        type={mediaModal.type}
-        onClose={closeMediaModal}
-        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
-        messageData={mediaModal.message}
-      />
       <TransactionModal
         type={modalType}
         closeModal={closeModal}
@@ -912,21 +911,30 @@ const ChatScreen = observer(({route, navigation}: any) => {
         nftItems={walletStore.nftItems}
         closeModal={() => setIsNftItemGalleryVisible(false)}
       />
-      <Actionsheet isOpen={isOpen} onClose={()=>{onClose(), setIsShowDeleteOption(true)}}>
+      <Actionsheet
+        isOpen={isOpen}
+        onClose={() => {
+          onClose(), setIsShowDeleteOption(true);
+        }}>
         <Actionsheet.Content>
-          <Actionsheet.Item
-          onPress={()=> handleReply("open")}
-          >Reply</Actionsheet.Item>
-          <Actionsheet.Item 
-          onPress={handleCopyText}
-          >Copy</Actionsheet.Item>
-          {
-            isShowDeleteOption?
-          <Actionsheet.Item onPress={onClose} color="red.500">Delete</Actionsheet.Item>
-          :null
-          }
+          <Actionsheet.Item onPress={() => handleReply('open')}>
+            Reply
+          </Actionsheet.Item>
+          <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
+          {isShowDeleteOption ? (
+            <Actionsheet.Item onPress={onClose} color="red.500">
+              Delete
+            </Actionsheet.Item>
+          ) : null}
         </Actionsheet.Content>
       </Actionsheet>
+      <ChatMediaModal
+        url={mediaModal.url}
+        type={mediaModal.type}
+        onClose={closeMediaModal}
+        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+        messageData={mediaModal.message}
+      />
     </>
   );
 });
