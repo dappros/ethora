@@ -29,7 +29,7 @@ interface RoomListProps {
   drag: any;
   renameChat: any;
   leaveChat: any;
-  unsubscribeFromRoom: any;
+  toggleNotification: any;
   movingActive: boolean;
 }
 
@@ -40,7 +40,7 @@ export const RoomListItem = observer(
     participants,
     drag,
     renameChat,
-    unsubscribeFromRoom,
+    toggleNotification,
     leaveChat,
     movingActive,
   }: RoomListProps) => {
@@ -111,7 +111,7 @@ export const RoomListItem = observer(
             name={name}
             renameChat={renameChat}
             swipeRef={swipeRef}
-            unsubscribeFromRoom={unsubscribeFromRoom}
+            toggleNotification={toggleNotification}
           />
         )}
         renderRightActions={() => (

@@ -424,7 +424,7 @@ const OtherUserProfileScreen = observer((props: any) => {
 
     if (activeTab === 1) {
       return (
-        <SafeAreaView style={{paddingBottom: '100%'}}>
+        <View style={{paddingBottom: hp('63%')}}>
           <TransactionListTab
             transactions={anotherUserTransaction}
             walletAddress={loginStore.anotherUserWalletAddress}
@@ -438,7 +438,7 @@ const OtherUserProfileScreen = observer((props: any) => {
               }
             }}
           />
-        </SafeAreaView>
+        </View>
       );
     }
   };

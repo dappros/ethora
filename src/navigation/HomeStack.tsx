@@ -50,6 +50,7 @@ export const HomeStackScreen = observer(() => {
       getPushToken(
         loginStore.initialData.walletAddress,
         apiStore.xmppDomains.DOMAIN,
+        apiStore.pushURL,
         navigation,
       );
       chatStore.xmppConnect(xmppUsername, xmppPassword);

@@ -479,17 +479,17 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   return (
-    <View justifyContent={'center'} flex={1}>
-      <View justifyContent={'flex-start'} flex={0.2}>
+    <View flex={1}>
+      <View justifyContent={'flex-start'}>
         {chatDetailsNavBar()}
       </View>
-      <View justifyContent={'center'} flex={0.3}>
+      <View justifyContent={'center'}>
         {roomDetails()}
       </View>
-      <View justifyContent={'center'} flex={0.3}>
+      <View justifyContent={'center'} flex={0.8}>
         {slider()}
       </View>
-      <View justifyContent={'center'} flex={0.2}>
+      <View justifyContent={'center'} flex={0.3}>
         {footerControls()}
       </View>
     </View>

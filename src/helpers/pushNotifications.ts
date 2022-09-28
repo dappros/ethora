@@ -12,17 +12,16 @@ import {subscribePushNotification} from '../config/routesConstants';
 import { ROUTES } from '../constants/routes';
 import {underscoreManipulation} from './underscoreLogic';
 
-export const subscribeForPushNotifications = async data => {
+export const subscribeForPushNotifications = async (data:any, defaultUrl:string) => {
   const qs = require('qs');
-
-  return await axios.post(subscribePushNotification, qs.stringify(data), {
+  return await axios.post("https://"+defaultUrl+":7777/api/v1"+subscribePushNotification, qs.stringify(data), {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
   });
 };
 
-export const getPushToken = async (walletAddress:string, DOMAIN:string, navigation:any) => {
+export const getPushToken = async (walletAddress:string, DOMAIN:string, defaultUrl:string, navigation:any) => {
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
     onRegister: async function (token:any) {
@@ -36,7 +35,8 @@ export const getPushToken = async (walletAddress:string, DOMAIN:string, navigati
         isSubscribed: '1',
         jid: underscoreManipulation(walletAddress) + '@' + DOMAIN,
         screenName: 'Ethora',
-      });
+      }, defaultUrl);
+
     },
     onNotification: function (notification:any) {
       console.log('NOTIFICATION:', notification);

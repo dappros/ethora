@@ -5,6 +5,9 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.JSIModulePackage; //required by reanimated
 import com.swmansion.reanimated.ReanimatedJSIModulePackage; //required by reanimated
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import org.devio.rn.splashscreen.SplashScreen;
 
@@ -44,7 +47,11 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-      SplashScreen.show(this);
-      super.onCreate(null);
+    SplashScreen.show(this);
+    super.onCreate(null);
+    // ATTENTION: This was auto-generated to handle app links.
+    Intent appLinkIntent = getIntent();
+    String appLinkAction = appLinkIntent.getAction();
+    Uri appLinkData = appLinkIntent.getData();
   }
 }

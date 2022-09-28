@@ -16,6 +16,7 @@ import {
   getUserRoomsStanza,
   leaveRoomXmpp,
   roomConfigurationForm,
+  subscribeToRoom,
   unsubscribeFromChatXmpp,
 } from '../../xmpp/stanzas';
 import {FloatingActionButton} from './FloatingActionButton';
@@ -95,6 +96,21 @@ export const RoomList = observer(({roomsList}: any) => {
   const unsubscribeFromRoom = async (jid: string) => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, jid, chatStore.xmpp);
     chatStore.updateRoomInfo(jid, {muted: true});
+  };
+  
+  const subscribeRoom = (jid: string) => {
+    subscribeToRoom(jid, manipulatedWalletAddress, chatStore.xmpp);
+    chatStore.updateRoomInfo(jid, {muted: false});
+  };
+
+  const toggleNotification = (value:boolean, jid:string) => {
+    if (!value) {
+      // unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp);
+      // chatStore.updateRoomInfo(roomJID, {muted: true});
+      unsubscribeFromRoom(jid);
+    } else {
+      subscribeRoom(jid);
+    }
   };
 
   const toggleMovingChats = () => {
@@ -189,7 +205,7 @@ export const RoomList = observer(({roomsList}: any) => {
               key={item.jid}
               renameChat={renameChat}
               leaveChat={leaveTheRoom}
-              unsubscribeFromRoom={unsubscribeFromRoom}
+              toggleNotification={toggleNotification}
               movingActive={movingActive}
             />
           );

@@ -38,9 +38,10 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   };
   return (
     <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
-      <HStack>
         <HStack>
-          <TouchableOpacity onPress={onArrowClick}>
+          <TouchableOpacity
+          style={{flex:0.12, justifyContent:"center", alignItems:"center"}}
+          onPress={onArrowClick}>
             <AntIcon
               name={'arrowleft'}
               style={{marginRight: 5, marginLeft: 5}}
@@ -49,6 +50,9 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
             />
           </TouchableOpacity>
           <TouchableOpacity
+          style={{
+            flex:0.7
+          }}
             activeOpacity={1}
             onPress={() =>
               isChatRoomDetail &&
@@ -56,14 +60,13 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
             }>
             <Text
               fontFamily={textStyles.semiBoldFont}
-              fontSize={hp('2.2%')}
+              fontSize={hp('2.5%')}
               color={'white'}>
               {title}
             </Text>
           </TouchableOpacity>
-        </HStack>
 
-        <View style={{marginLeft: 'auto'}}>
+        <View style={{marginLeft: 'auto', flex:0.1}}>
           {isQR && (
             <TouchableOpacity onPress={onQRPressed} style={{marginRight: 10}}>
               <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />

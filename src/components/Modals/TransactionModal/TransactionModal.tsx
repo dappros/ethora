@@ -168,8 +168,9 @@ const TransactionModal = (props: TransactionModalProps) => {
 
   const tokenTransferFunc = async amt => {
     clearState();
-    if (amt < 0) {
+    if (amt <= 0) {
       alert('Amount must be greater than 0');
+      return;
     }
     const receiverName = extraData.name;
     const receiverMessageId = extraData.message_id;

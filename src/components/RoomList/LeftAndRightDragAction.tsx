@@ -18,7 +18,7 @@ import {
 } from 'react-native-responsive-screen';
 
 interface LeftActionsProps {
-  unsubscribeFromRoom: any;
+  toggleNotification: any;
   swipeRef: any;
   jid: string;
   name: string;
@@ -26,15 +26,14 @@ interface LeftActionsProps {
 }
 
 export const LeftActions = (props: LeftActionsProps) => {
-  const {unsubscribeFromRoom, swipeRef, name, jid, renameChat} = props;
+  const {toggleNotification, swipeRef, name, jid, renameChat} = props;
   const {chatStore} = useStores();
   return (
     <>
       <TouchableOpacity
         onPress={() => {
-          unsubscribeFromRoom(jid);
+          toggleNotification(chatStore.roomsInfoMap[jid].muted, jid);
           swipeRef.current.close();
-
         }}>
         <View style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
           <IonIcon name={chatStore.roomsInfoMap[jid]?.muted ? 'notifications-off' :  "notifications"} size={hp('3%')} color={'white'} />

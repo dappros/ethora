@@ -222,7 +222,7 @@ const LoginScreen = observer(({navigation}) => {
             leftIcon={
               <Icon
                 color={'white'}
-                size={hp('2.25%')}
+                size={hp('2.2%')}
                 as={AntIcon}
                 name={'facebook-square'}
               />
@@ -248,7 +248,7 @@ const LoginScreen = observer(({navigation}) => {
             leftIcon={
               <Icon
                 color={'#696969'}
-                size={hp('2.25%')}
+                size={hp('2.2%')}
                 as={AntIcon}
                 name={'google'}
               />
@@ -274,7 +274,7 @@ const LoginScreen = observer(({navigation}) => {
             leftIcon={
               <Icon
                 color={'white'}
-                size={hp('2.25%')}
+                size={hp('2.2%')}
                 as={AntIcon}
                 name={'apple1'}
               />
@@ -291,7 +291,7 @@ const LoginScreen = observer(({navigation}) => {
           leftIcon={
             <Icon
               color={'white'}
-              size={hp('2.25%')}
+              size={hp('2.2%')}
               as={AntIcon}
               name={'antdesign'}
             />

@@ -35,9 +35,9 @@ export class ApiStore {
     DOMAIN: xmppEndpoints[appEndpoint].DOMAIN,
     SERVICE: xmppEndpoints[appEndpoint].SERVICE,
     CONFERENCEDOMAIN: xmppEndpoints[appEndpoint].CONFERENCEDOMAIN,
-    CONFERENCEDOMAIN_WITHOUT:
-      xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT,
-  };
+    CONFERENCEDOMAIN_WITHOUT:xmppEndpoints[appEndpoint].CONFERENCEDOMAIN_WITHOUT
+  }
+  pushURL = xmppEndpoints[appEndpoint].DOMAIN;
   defaultUrl = this.modes[appEndpoint];
   defaultToken = APP_TOKEN;
 
