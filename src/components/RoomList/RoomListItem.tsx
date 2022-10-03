@@ -136,7 +136,7 @@ export const RoomListItem = observer(
               onPress={navigateToChat}>
               <HStack justifyContent="space-between">
                 <View justifyContent={'center'} flex={0.1}>
-                  <RoomListItemIcon name={name} counter={chatStore.roomsInfoMap[jid]?.counter} />
+                  <RoomListItemIcon name={name} jid={jid} counter={chatStore.roomsInfoMap[jid]?.counter} />
                 </View>
 
                 <VStack justifyContent={'center'} flex={0.7}>

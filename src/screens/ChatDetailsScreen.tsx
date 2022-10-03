@@ -12,7 +12,7 @@ import {
   useColorModeValue,
   View,
 } from 'native-base';
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {commonColors, defaultChats, textStyles} from '../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
@@ -30,10 +30,15 @@ import {observer} from 'mobx-react-lite';
 import {
   getRoomMemberInfo,
   leaveRoomXmpp,
+  setRoomImage,
   subscribeToRoom,
   unsubscribeFromChatXmpp,
 } from '../xmpp/stanzas';
 import {deleteChatRoom} from '../components/realmModels/chatList';
+import {uploadFiles} from '../helpers/uploadFiles';
+import {fileUpload} from '../config/routesConstants';
+import FastImage from 'react-native-fast-image';
+import DocumentPicker from 'react-native-document-picker';
 
 interface ChatDetailsScreenProps {}
 
@@ -52,22 +57,137 @@ const data = [
   },
 ];
 
+const RoomDetails = ({
+  room,
+}: {
+  room: {jid: string; name: string; roomThumbnail: string};
+}) => {
+  const roomName = room.name;
+  const [uploadedImage, setUploadedImage] = useState({
+    _id: '',
+    createdAt: '',
+    expiresAt: 0,
+    filename: '',
+    isVisible: true,
+    location: '',
+    locationPreview: '',
+    mimetype: '',
+    originalname: '',
+    ownerKey: '',
+    size: 0,
+    updatedAt: '',
+    userId: '',
+  });
+  const {chatStore, loginStore, apiStore} = useStores();
+  const sendFiles = async (data: any) => {
+    const userJid =
+      underscoreManipulation(loginStore.initialData.walletAddress) +
+      '@' +
+      apiStore.xmppDomains.DOMAIN;
+    const roomJid = room.jid;
+    try {
+      const url = apiStore.defaultUrl + fileUpload;
+      const response = await uploadFiles(data, loginStore.userToken, url);
+      const file = response.results[0];
+      setUploadedImage(response.results[0]);
+      setRoomImage(userJid, roomJid, file.location, 'none', chatStore.xmpp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onImagePress = async () => {
+    if (
+      chatStore.roomRoles[room.jid] === 'moderator' ||
+      chatStore.roomRoles[room.jid] === 'admin'
+    ) {
+      try {
+        const res = await DocumentPicker.pickSingle({
+          type: [DocumentPicker.types.images],
+        });
+        const formData = new FormData();
+        formData.append('files', {
+          name: res.name,
+          type: res.type,
+          uri: res.uri,
+        });
+        sendFiles(formData);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+  return (
+    <View margin={10} justifyContent="center" alignItems="center">
+      <TouchableOpacity
+        onPress={onImagePress}
+        activeOpacity={
+          chatStore.roomRoles[room.jid] === 'moderator' ||
+          chatStore.roomRoles[room.jid] === 'admin'
+            ? 0.8
+            : 1
+        }>
+        <Box
+          justifyContent={'center'}
+          alignItems={'center'}
+          rounded="md"
+          shadow={'5'}
+          bg={commonColors.primaryDarkColor}
+          h={hp('18%')}
+          w={hp('18%')}
+          marginBottom={4}>
+          {uploadedImage.location || room.roomThumbnail ? (
+            <FastImage
+              source={{
+                uri: uploadedImage.location || room.roomThumbnail,
+                priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+              style={{
+                width: wp('45%'),
+                height: wp('45%'),
+                borderRadius: 10,
+              }}
+            />
+          ) : (
+            <Text
+              shadow={'8'}
+              fontSize={hp('8%')}
+              fontFamily={textStyles.semiBoldFont}
+              color={'white'}>
+              {roomName[0]}
+            </Text>
+          )}
+        </Box>
+      </TouchableOpacity>
+      <Text fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
+        {roomName}
+      </Text>
+      <Text
+        textAlign={'center'}
+        fontSize={hp('1.5%')}
+        fontFamily={textStyles.regularFont}>
+        Description entered during chat creation will be displayed here
+      </Text>
+    </View>
+  );
+};
+
 const ChatDetailsScreen = observer(({route}: any) => {
   const {chatStore, loginStore} = useStores();
-  const currentRoomDetail = chatStore.roomList?.filter((item: any) => {
+  const currentRoomDetail = chatStore.roomList?.find((item: any) => {
     if (item.name === route.params.roomName) {
       return item;
     }
   });
-  const roomJID = currentRoomDetail[0].jid;
+  const roomJID = currentRoomDetail.jid;
 
   const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
 
-  const roomMemberInfo = chatStore.roomMemberInfo
+  const roomMemberInfo = chatStore.roomMemberInfo;
 
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [index, setIndex] = React.useState<number>(0);
-  // const [isNotification, setIsNotification] = React.useState<boolean>(roomInfo.muted)
+  const [open, setOpen] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
+  // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
   const walletAddress = loginStore.initialData.walletAddress;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -82,9 +202,9 @@ const ChatDetailsScreen = observer(({route}: any) => {
     chatStore.updateRoomInfo(roomJID, {muted: false});
   };
 
-  React.useEffect(()=>{
+  useEffect(() => {
     getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-  },[])
+  }, []);
 
   const toggleNotification = value => {
     if (!value) {
@@ -125,7 +245,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const routes = [
     {
       key: 'first',
-      title: `Members (${currentRoomDetail[0].participants})`,
+      title: `Members (${currentRoomDetail.participants})`,
     },
     {
       key: 'second',
@@ -144,7 +264,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const toggleMenu = () => {
-    setOpen(prev => !prev)
+    setOpen(prev => !prev);
   };
 
   const navigation = useNavigation();
@@ -281,7 +401,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontSize={hp('2.2%')}
                 shadow="10"
                 color={'white'}>
-                {item.name?item.name[0]:null}
+                {item.name ? item.name[0] : null}
               </Text>
             </Box>
             <Box flex={0.7}>
@@ -290,7 +410,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontWeight="bold"
                 shadow="2"
                 fontSize={hp('1.8%')}>
-                {item.name?item.name:null}
+                {item.name ? item.name : null}
               </Text>
             </Box>
 
@@ -375,42 +495,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
     );
   };
 
-  const roomDetails = () => {
-    const roomName = route.params.roomName;
-
-    return (
-      <View margin={10} justifyContent="center" alignItems="center">
-        <Box
-          justifyContent={'center'}
-          alignItems={'center'}
-          rounded="md"
-          shadow={'5'}
-          bg={commonColors.primaryDarkColor}
-          h={hp('18%')}
-          w={hp('18%')}
-          marginBottom={4}>
-          <Text
-            shadow={'8'}
-            fontSize={hp('8%')}
-            fontFamily={textStyles.semiBoldFont}
-            color={'white'}>
-            {roomName[0]}
-          </Text>
-        </Box>
-
-        <Text fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
-          {roomName}
-        </Text>
-        <Text
-          textAlign={'center'}
-          fontSize={hp('1.5%')}
-          fontFamily={textStyles.regularFont}>
-          Description entered during chat creation will be displayed here
-        </Text>
-      </View>
-    );
-  };
-
   const slider = () => {
     return (
       <TabView
@@ -480,11 +564,9 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   return (
     <View flex={1}>
-      <View justifyContent={'flex-start'}>
-        {chatDetailsNavBar()}
-      </View>
+      <View justifyContent={'flex-start'}>{chatDetailsNavBar()}</View>
       <View justifyContent={'center'}>
-        {roomDetails()}
+        <RoomDetails room={currentRoomDetail} />
       </View>
       <View justifyContent={'center'} flex={0.8}>
         {slider()}

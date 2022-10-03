@@ -80,6 +80,9 @@ const ChatListSchema = {
     createdAt: 'date?',
     priority: {type: 'int', optional: true},
     muted: {type: 'bool', optional: true},
+    roomThumbnail: {type: 'string', optional: true},
+    roomBackground: {type: 'string', optional: true},
+
   },
 };
 

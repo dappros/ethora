@@ -97,13 +97,13 @@ export const RoomList = observer(({roomsList}: any) => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, jid, chatStore.xmpp);
     chatStore.updateRoomInfo(jid, {muted: true});
   };
-  
+
   const subscribeRoom = (jid: string) => {
     subscribeToRoom(jid, manipulatedWalletAddress, chatStore.xmpp);
     chatStore.updateRoomInfo(jid, {muted: false});
   };
 
-  const toggleNotification = (value:boolean, jid:string) => {
+  const toggleNotification = (value: boolean, jid: string) => {
     if (!value) {
       // unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp);
       // chatStore.updateRoomInfo(roomJID, {muted: true});
@@ -212,48 +212,43 @@ export const RoomList = observer(({roomsList}: any) => {
         }}
       />
       <Pressable
-      onPress={()=>navigation.navigate(ROUTES.NEWCHAT)}
-      bg={createChatButtonPressed?"coolGray.200":"transparent"}
-      padding={"2"}
-      paddingLeft={"4"}
-      onPressIn={()=>setCreateChatButtonPressed(true)}
-      onPressOut={()=>setCreateChatButtonPressed(false)}
-      >
-        <HStack 
-        alignItems={"center"}
-        >
-        <Box
-        w={hp('5.5%')}
-        h={hp('5.5%')} 
-        bg={"#64BF7C"} 
-        rounded="full" 
-        justifyContent={"center"} 
-        alignItems="center"
-        marginRight={2}
-        >
-          <AntDesign 
-          name='plus' 
-          color={"#FFF"} 
-          size={hp('4.3%')}
-          />
-        </Box>
-        <View>
-          <Text
-          fontSize={hp('2%')}
-          fontFamily={textStyles.boldFont}
-          _dark={{
-            color: 'warmGray.50',
-          }}
-          color="coolGray.800">Create a new room</Text>
-          <Text
-          fontFamily={textStyles.regularFont}
-          fontSize={hp('1.5%')}
-          color="coolGray.600"
-          _dark={{
-            color: 'warmGray.100',
-          }}
-          >Your own room, share with anyone you like</Text>
-        </View>
+        onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
+        bg={createChatButtonPressed ? 'coolGray.200' : 'transparent'}
+        padding={'2'}
+        paddingLeft={'4'}
+        onPressIn={() => setCreateChatButtonPressed(true)}
+        onPressOut={() => setCreateChatButtonPressed(false)}>
+        <HStack alignItems={'center'}>
+          <Box
+            w={hp('5.5%')}
+            h={hp('5.5%')}
+            bg={'#64BF7C'}
+            rounded="full"
+            justifyContent={'center'}
+            alignItems="center"
+            marginRight={2}>
+            <AntDesign name="plus" color={'#FFF'} size={hp('4.3%')} />
+          </Box>
+          <View>
+            <Text
+              fontSize={hp('2%')}
+              fontFamily={textStyles.boldFont}
+              _dark={{
+                color: 'warmGray.50',
+              }}
+              color="coolGray.800">
+              Create a new room
+            </Text>
+            <Text
+              fontFamily={textStyles.regularFont}
+              fontSize={hp('1.5%')}
+              color="coolGray.600"
+              _dark={{
+                color: 'warmGray.100',
+              }}>
+              Your own room, share with anyone you like
+            </Text>
+          </View>
         </HStack>
       </Pressable>
     </>

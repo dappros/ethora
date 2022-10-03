@@ -79,19 +79,19 @@ interface defaultChatProps {
   removable: boolean;
 }
 
-interface replyProps{
-  messageID:string;
-  message:string;
-  isReply:boolean;
+interface replyProps {
+  messageID: string;
+  message: string;
+  isReply: boolean;
 }
 
-interface roomMemberInfoProps{
-  ban_status:string;
-  jid:string;
-  last_active:string;
-  name:string;
-  profile:string;
-  role:string
+interface roomMemberInfoProps {
+  ban_status: string;
+  jid: string;
+  last_active: string;
+  name: string;
+  profile: string;
+  role: string;
 }
 
 export class ChatStore {
@@ -123,12 +123,12 @@ export class ChatStore {
     chatJID: '',
   };
   replyData: replyProps = {
-    messageID:"",
-    message:"",
-    isReply:false
-  }
+    messageID: '',
+    message: '',
+    isReply: false,
+  };
 
-  roomMemberInfo= []
+  roomMemberInfo = [];
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -169,7 +169,9 @@ export class ChatStore {
   };
 
   setRoomRoles = (jid: string, role: string) => {
-    this.roomRoles[jid] = role;
+    runInAction(() => {
+      this.roomRoles[jid] = role;
+    });
   };
 
   xmppConnect = (username: string, password: string) => {
@@ -339,6 +341,14 @@ export class ChatStore {
             stanza.children[0].children[0].attrs.name;
         });
       }
+      if (stanza.attrs.id === XMPP_TYPES.setRoomImage) {
+        console.log(
+          stanza.children[0].attrs,
+          stanza.children[0].children,
+          stanza,
+        );
+        getUserRoomsStanza(xmppUsername, this.xmpp);
+      }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
@@ -379,10 +389,10 @@ export class ChatStore {
 
       if (stanza.attrs.id === XMPP_TYPES.vCardRequest) {
         const {photo, firstName, lastName} = this.stores.loginStore.initialData;
-        let fullName = firstName + " " + lastName;
+        let fullName = firstName + ' ' + lastName;
         let profileDescription = 'No description';
         if (!stanza.children[0].children.length) {
-          updateVCard(photo, profileDescription,fullName,this.xmpp);
+          updateVCard(photo, profileDescription, fullName, this.xmpp);
         } else {
           stanza.children[0].children.map((item: any) => {
             if (item.name === 'DESC') {
@@ -399,9 +409,11 @@ export class ChatStore {
         }
       }
 
-      if(stanza.attrs.id === XMPP_TYPES.roomMemberInfo){
-        if(stanza.children[0].children.length){
-          this.roomMemberInfo = stanza.children[0].children.map(item => (item.attrs));
+      if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
+        if (stanza.children[0].children.length) {
+          this.roomMemberInfo = stanza.children[0].children.map(
+            item => item.attrs,
+          );
         }
       }
 
@@ -409,8 +421,7 @@ export class ChatStore {
         let roomJID = stanza.attrs.from.split('/')[0];
         let userJID = stanza.attrs.from.split('/')[1];
 
-        let role = stanza.children[0].children[0].attrs.role;
-
+        let role = stanza.children[1].children[0].attrs.role;
         this.setRoomRoles(roomJID, role);
       }
 
@@ -423,10 +434,10 @@ export class ChatStore {
       //to catch error
       if (stanza.attrs.type === 'error') {
         stanza.children.filter(item => {
-          if(item.name === 'error'){
-            console.log(item.children, 'stanza error==============')
+          if (item.name === 'error') {
+            console.log(item.children, 'stanza error==============');
           }
-        })
+        });
       }
 
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
@@ -451,14 +462,20 @@ export class ChatStore {
             lastUserName: '',
             createdAt: new Date(),
             priority: 0,
+            roomThumbnail:
+              item.attrs.room_thumbnail === 'none'
+                ? ''
+                : item.attrs.room_thumbnail,
+            roomBackground:
+              item.attrs.room_background === 'none'
+                ? ''
+                : item.attrs.room_background,
           };
 
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
 
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat) {
-              console.log(item.attrs.name);
-
               addChatRoom(rosterObject);
               this.updateRoomInfo(item.attrs.jid, {
                 name: item.attrs.name,
@@ -644,7 +661,7 @@ export class ChatStore {
     });
 
     this.xmpp.on('online', async address => {
-      const {firstName, lastName, photo} = this.stores.loginStore.initialData
+      const {firstName, lastName, photo} = this.stores.loginStore.initialData;
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
@@ -653,7 +670,7 @@ export class ChatStore {
       });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       getBlackList(xmppUsername, this.xmpp);
-      updateVCard(photo, null, firstName + " " + lastName, this.xmpp)
+      updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });
   };

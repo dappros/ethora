@@ -633,7 +633,36 @@ export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   xmpp.send(message);
 };
 
-export const updateVCard = (photoURL: string|null, desc: string|null, fullName:string|null, xmpp: any) => {
+export const setRoomImage = (
+  userJid: string,
+  roomJid: string,
+  roomThumbnail: string,
+  roomBackground: string,
+  xmpp: any,
+) => {
+  const message = xml(
+    'iq',
+    {
+      from: userJid,
+      id: XMPP_TYPES.setRoomImage,
+      type: 'set',
+    },
+    xml('query', {
+      xmlns: 'ns:getrooms:setprofile',
+      room_thumbnail: roomThumbnail,
+      room_background: roomBackground,
+      room: roomJid,
+    }),
+  );
+  xmpp.send(message);
+};
+
+export const updateVCard = (
+  photoURL: string | null,
+  desc: string | null,
+  fullName: string | null,
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -645,9 +674,9 @@ export const updateVCard = (photoURL: string|null, desc: string|null, fullName:s
       {
         xmlns: 'vcard-temp',
       },
-      desc?xml('DESC', {}, desc):null,
-      desc?xml('URL', {}, photoURL):null,
-      desc?xml('FN', {}, fullName):null
+      desc ? xml('DESC', {}, desc) : null,
+      desc ? xml('URL', {}, photoURL) : null,
+      desc ? xml('FN', {}, fullName) : null,
     ),
   );
   xmpp.send(message);
@@ -672,7 +701,7 @@ export const retrieveOtherUserVcard = (
   xmpp.send(message);
 };
 
-export const createNewRoom = (from:string, to:string, xmpp:any) => {
+export const createNewRoom = (from: string, to: string, xmpp: any) => {
   let message = xml(
     'presence',
     {
@@ -791,42 +820,36 @@ export const banUser = (
   xmpp.send(message);
 };
 
-export const reply = (to) => {
+export const reply = to => {
   // <message to='anna@example.com' id='message-id2' type='chat'>
   // <body>Great idea!</body>
   // <reply to='anna@example.com/tablet' id='message-id1' xmlns='urn:xmpp:reply:0' />
   // </message>
 
+  const message = xml('message', {
+    to: to,
+    id: 'reply',
+  });
+};
+
+export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
+  //   <iq
+  // from="oleksiika@localhost" type="get"
+  // id="test2@conference.localhost"><query xmlns="ns:room:last"
+  // room="test2@conference.localhost"/></iq>
+
   const message = xml(
-    'message',
+    'iq',
     {
-      to:to,
-      id:'reply'
-    }
-  )
-}
+      from: from + '@' + DOMAIN,
+      type: 'get',
+      id: XMPP_TYPES.roomMemberInfo,
+    },
+    xml('query', {
+      xmlns: 'ns:room:last',
+      room: to,
+    }),
+  );
 
-export const getRoomMemberInfo = (from:string, to:string, xmpp:any) => {
-//   <iq 
-// from="oleksiika@localhost" type="get" 
-// id="test2@conference.localhost"><query xmlns="ns:room:last" 
-// room="test2@conference.localhost"/></iq>
-
-const message = xml(
-  'iq',
-  {
-    from: from + '@' + DOMAIN,
-    type: 'get',
-    id:XMPP_TYPES.roomMemberInfo
-  },
-  xml(
-    'query',
-    {
-      xmlns:"ns:room:last",
-      room: to
-    }
-  )
-)
-
-xmpp.send(message);
-}
+  xmpp.send(message);
+};
