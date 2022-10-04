@@ -55,7 +55,7 @@ export const RegularLoginScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <>
       <ImageBackground
         source={loginScreenBackgroundImage}
         style={{
@@ -166,7 +166,7 @@ export const RegularLoginScreen = ({navigation}) => {
           </View>
         </Modal>
       )}
-    </SafeAreaView>
+      </>
   );
 };
 const styles = StyleSheet.create({

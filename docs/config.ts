@@ -129,7 +129,7 @@ const allowIsTyping = true;
 
 const endPoints = ['DEV', 'QA', 'PROD'];
 
-const appEndpoint = endPoints[0];
+const appEndpoint = endPoints[2];
 
 const appVersion = DeviceInfo.getVersion();
 

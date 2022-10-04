@@ -167,7 +167,7 @@ const classes = StyleSheet.create({
     width: wp('47.69%'),
   },
   modal: {
-    // backgroundColor: 'white',
+    backgroundColor: 'white',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -176,7 +176,7 @@ const classes = StyleSheet.create({
   },
   modalImage: {
     width: wp('90%'),
-    height: wp('90%'),
+    height: hp('90%'),
     borderRadius: 10,
   },
 });
