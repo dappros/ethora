@@ -213,9 +213,8 @@ export const ProfileScreen = observer((props: any) => {
     };
   }, []);
   useEffect(() => {
-    setDescriptionLocal(userDescription)
-
-  }, [loginStore.userDescription])
+    setDescriptionLocal(userDescription);
+  }, [loginStore.userDescription]);
 
   useEffect(() => {
     if (balance?.length > 0) {
@@ -273,10 +272,14 @@ export const ProfileScreen = observer((props: any) => {
     type === 'firstName' ? setFirstNameLocal(text) : setLastNameLocal(text);
   };
 
-  const setDescription = async () => {
-    console.log(descriptionLocal)
-    if (userAvatarLocal && descriptionLocal) {
-      updateVCard(userAvatarLocal, descriptionLocal, null, chatStore.xmpp);
+  const setDescription = () => {
+    if (userAvatarLocal || descriptionLocal) {
+      updateVCard(
+        userAvatarLocal,
+        descriptionLocal,
+        firstName + ' ' + lastName,
+        chatStore.xmpp,
+      );
     }
 
     if (!descriptionLocal) {
@@ -303,7 +306,12 @@ export const ProfileScreen = observer((props: any) => {
         firstName: firstNameLocal,
         lastName: lastNameLocal,
       };
-      updateVCard(null, null, firstName + ' ' + lastName, chatStore.xmpp);
+      updateVCard(
+        userAvatarLocal,
+        descriptionLocal,
+        firstName + ' ' + lastName,
+        chatStore.xmpp,
+      );
       updateUserDisplayName(bodyData);
     } else {
       setFirstNameLocal(firstName);
@@ -347,7 +355,7 @@ export const ProfileScreen = observer((props: any) => {
         loginStore.userToken,
         console.log,
       );
-      console.log(userRes.data)
+      console.log(userRes.data);
       updateVCard(file.location, descriptionLocal, null, chatStore.xmpp);
     } catch (error) {
       console.log(error);
@@ -418,7 +426,7 @@ export const ProfileScreen = observer((props: any) => {
             )}
           </HStack>
 
-          <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
+          <View style={{marginTop: hp('1.47%'), marginBottom: hp('43%')}}>
             {activeAssetTab === 0 && (
               <FlatList
                 data={coinData}

@@ -337,7 +337,7 @@ const OtherUserProfileScreen = observer((props: any) => {
               </TouchableOpacity>
             )}
           </HStack>
-          <View style={{marginTop: hp('1.47%'), height: hp('43%')}}>
+          <View style={{marginTop: hp('1.47%'), marginBottom: hp('45%')}}>
             {activeAssetTab === 0 && (
               <FlatList
                 data={coinData}

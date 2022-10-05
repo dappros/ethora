@@ -60,7 +60,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
             }>
             <Text
               fontFamily={textStyles.semiBoldFont}
-              fontSize={hp('2.5%')}
+              fontSize={hp('2.2%')}
               color={'white'}>
               {title}
             </Text>
