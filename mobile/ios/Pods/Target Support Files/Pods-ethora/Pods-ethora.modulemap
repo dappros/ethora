@@ -1,0 +1,6 @@
+module Pods_ethora {
+  umbrella header "Pods-ethora-umbrella.h"
+
+  export *
+  module * { export * }
+}

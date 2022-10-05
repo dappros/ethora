@@ -1,0 +1,229 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-module-flags: -target arm64-apple-ios11.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name FBAEMKit
+import CommonCrypto
+import CommonCrypto.CommonHMAC
+@_exported import FBAEMKit
+import FBSDKCoreKit_Basics
+import Foundation
+import Swift
+import _Concurrency
+@objc(FBSKAdNetworkReporting) public protocol SKAdNetworkReporting {
+  @objc func shouldCutoff() -> Swift.Bool
+  @objc(isReportingEvent:) func isReportingEvent(_ event: Swift.String) -> Swift.Bool
+  @objc func checkAndRevokeTimer()
+}
+@objcMembers @objc(FBAEMAdvertiserMultiEntryRule) final public class _AEMAdvertiserMultiEntryRule : ObjectiveC.NSObject, FBAEMKit._AEMAdvertiserRuleMatching, Foundation.NSCopying, Foundation.NSSecureCoding {
+  @objc(initWithOperator:rules:) public init(with operator: FBAEMKit._AEMAdvertiserRuleOperator, rules: [FBAEMKit._AEMAdvertiserRuleMatching])
+  @objc final public func isMatchedEventParameters(_ eventParams: [Swift.String : Any]?) -> Swift.Bool
+  @objc public static var supportsSecureCoding: Swift.Bool {
+    @objc get
+  }
+  @objc convenience public init?(coder: Foundation.NSCoder)
+  @objc final public func encode(with coder: Foundation.NSCoder)
+  @objc final public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objcMembers @objc(FBAEMAdvertiserRuleFactory) final public class _AEMAdvertiserRuleFactory : ObjectiveC.NSObject, FBAEMKit._AEMAdvertiserRuleProviding {
+  @objc final public func createRule(json: Swift.String?) -> FBAEMKit._AEMAdvertiserRuleMatching?
+  @objc final public func createRule(dictionary: [Swift.String : Any]) -> FBAEMKit._AEMAdvertiserRuleMatching?
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc(FBAEMAdvertiserRuleOperator) public enum _AEMAdvertiserRuleOperator : Swift.Int {
+  case unknown = 0
+  case and
+  case or
+  case not
+  case contains
+  case notContains
+  case startsWith
+  case caseInsensitiveContains
+  case caseInsensitiveNotContains
+  case caseInsensitiveStartsWith
+  case regexMatch
+  case equal
+  case notEqual
+  case lessThan
+  case lessThanOrEqual
+  case greaterThan
+  case greaterThanOrEqual
+  case caseInsensitiveIsAny
+  case caseInsensitiveIsNotAny
+  case isAny
+  case isNotAny
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc(FBAEMAdvertiserRuleProviding) public protocol _AEMAdvertiserRuleProviding {
+  @objc(createRuleWithJson:) func createRule(json: Swift.String?) -> FBAEMKit._AEMAdvertiserRuleMatching?
+  @objc(createRuleWithDict:) func createRule(dictionary: [Swift.String : Any]) -> FBAEMKit._AEMAdvertiserRuleMatching?
+}
+@objcMembers @objc(FBAEMAdvertiserSingleEntryRule) final public class _AEMAdvertiserSingleEntryRule : ObjectiveC.NSObject, Foundation.NSCopying, Foundation.NSSecureCoding, FBAEMKit._AEMAdvertiserRuleMatching {
+  @objc final public var `operator`: FBAEMKit._AEMAdvertiserRuleOperator {
+    get
+  }
+  @objc final public let paramKey: Swift.String
+  @objc final public let linguisticCondition: Swift.String?
+  final public let numericalCondition: Swift.Double?
+  @objc final public let arrayCondition: [Swift.String]?
+  public init(operator: FBAEMKit._AEMAdvertiserRuleOperator, paramKey: Swift.String, linguisticCondition: Swift.String?, numericalCondition: Swift.Double?, arrayCondition: [Swift.String]?)
+  @objc(initWithOperator:paramKey:linguisticCondition:numericalCondition:arrayCondition:) convenience public init(with operator: FBAEMKit._AEMAdvertiserRuleOperator, paramKey: Swift.String, linguisticCondition: Swift.String?, numericalCondition: Foundation.NSNumber?, arrayCondition: [Swift.String]?)
+  @objc final public func isMatchedEventParameters(_ eventParams: [Swift.String : Any]?) -> Swift.Bool
+  @objc public static var supportsSecureCoding: Swift.Bool
+  @objc public init?(coder: Foundation.NSCoder)
+  @objc final public func encode(with coder: Foundation.NSCoder)
+  @objc final public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc override final public func isEqual(_ object: Any?) -> Swift.Bool
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objcMembers @objc(FBAEMConfiguration) final public class _AEMConfiguration : ObjectiveC.NSObject, Foundation.NSCopying, Foundation.NSSecureCoding {
+  @objc final public var cutoffTime: Swift.Int {
+    get
+  }
+  @objc final public var validFrom: Swift.Int {
+    get
+  }
+  @objc final public var defaultCurrency: Swift.String {
+    get
+  }
+  @objc final public var mode: Swift.String {
+    get
+  }
+  @objc final public var businessID: Swift.String? {
+    get
+  }
+  @objc final public var matchingRule: FBAEMKit._AEMAdvertiserRuleMatching? {
+    get
+  }
+  @objc final public var conversionValueRules: [FBAEMKit._AEMRule] {
+    get
+  }
+  @objc final public var eventSet: Swift.Set<Swift.String> {
+    get
+  }
+  @objc final public var currencySet: Swift.Set<Swift.String> {
+    get
+  }
+  @objc public static var ruleProvider: FBAEMKit._AEMAdvertiserRuleProviding? {
+    get
+  }
+  @objc public static func configure(withRuleProvider ruleProvider: FBAEMKit._AEMAdvertiserRuleProviding)
+  @objc(initWithJSON:) public init?(json dict: [Swift.String : Any]?)
+  @objc(isSameValidFrom:businessID:) final public func isSame(validFrom: Swift.Int, businessID: Swift.String?) -> Swift.Bool
+  @objc final public func isSameBusinessID(_ businessID: Swift.String?) -> Swift.Bool
+  @objc final public func encode(with coder: Foundation.NSCoder)
+  @objc convenience public init?(coder: Foundation.NSCoder)
+  @objc public static var supportsSecureCoding: Swift.Bool {
+    @objc get
+  }
+  @objc final public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objcMembers @objc(FBAEMEvent) final public class _AEMEvent : ObjectiveC.NSObject, Foundation.NSCopying, Foundation.NSSecureCoding {
+  @objc final public var eventName: Swift.String {
+    get
+  }
+  @objc final public var values: [Swift.String : Swift.Double]? {
+    get
+  }
+  @objc(initWithJSON:) public init?(dict: [Swift.String : Any]?)
+  @objc public static var supportsSecureCoding: Swift.Bool {
+    @objc get
+  }
+  @objc convenience public init?(coder: Foundation.NSCoder)
+  @objc final public func encode(with coder: Foundation.NSCoder)
+  @objc final public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc override final public func isEqual(_ object: Any?) -> Swift.Bool
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objcMembers @objc(FBAEMInvocation) public class _AEMInvocation : ObjectiveC.NSObject, Foundation.NSSecureCoding {
+  @objc public var campaignID: Swift.String {
+    get
+  }
+  @objc final public let acsToken: Swift.String
+  @objc public var acsConfigurationID: Swift.String? {
+    get
+  }
+  @objc public var businessID: Swift.String? {
+    get
+  }
+  @objc public var catalogID: Swift.String? {
+    get
+  }
+  @objc final public let isTestMode: Swift.Bool
+  @objc public var hasStoreKitAdNetwork: Swift.Bool
+  @objc public var isConversionFilteringEligible: Swift.Bool
+  @objc public var configurationID: Swift.Int {
+    get
+  }
+  @objc public var conversionValue: Swift.Int {
+    get
+  }
+  @objc public var isAggregated: Swift.Bool
+  @objc convenience public init?(appLinkData: [Swift.AnyHashable : Any]?)
+  @objc @discardableResult
+  public func attributeEvent(_ event: Swift.String, currency potentialValueCurrency: Swift.String?, value potentialValue: Foundation.NSNumber?, parameters: [Swift.String : Any]?, configurations: [Swift.String : [FBAEMKit._AEMConfiguration]]?, shouldUpdateCache: Swift.Bool, isRuleMatchInServer: Swift.Bool) -> Swift.Bool
+  @objc public func updateConversionValue(configurations: [Swift.String : [FBAEMKit._AEMConfiguration]]?, event: Swift.String, shouldBoostPriority: Swift.Bool) -> Swift.Bool
+  @objc public func isOptimizedEvent(_ event: Swift.String, configurations: [Swift.String : [FBAEMKit._AEMConfiguration]]?) -> Swift.Bool
+  @objc public func isOutOfWindow(configurations: [Swift.String : [FBAEMKit._AEMConfiguration]]?) -> Swift.Bool
+  @objc public func getHMAC(delay: Swift.Int) -> Swift.String?
+  @objc public static var supportsSecureCoding: Swift.Bool {
+    @objc get
+  }
+  @objc required public init?(coder decoder: Foundation.NSCoder)
+  @objc public func encode(with encoder: Foundation.NSCoder)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objcMembers @objc(FBAEMNetworker) final public class _AEMNetworker : ObjectiveC.NSObject, FBAEMKit.AEMNetworking, Foundation.URLSessionDataDelegate {
+  @objc final public var userAgentSuffix: Swift.String?
+  @objc final public func startGraphRequest(withGraphPath graphPath: Swift.String, parameters: [Swift.String : Any], tokenString: Swift.String?, httpMethod method: Swift.String?, completion: @escaping FBAEMKit.FBGraphRequestCompletion)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objcMembers @objc(FBAEMRequestBody) final public class _AEMRequestBody : ObjectiveC.NSObject {
+  @objc final public func compressedData() -> Foundation.Data?
+  @objc final public var data: Foundation.Data {
+    @objc get
+  }
+  @objc(appendWithKey:formValue:) final public func append(withKey key: Swift.String?, formValue value: Swift.String?)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objcMembers @objc(FBAEMRule) final public class _AEMRule : ObjectiveC.NSObject, Foundation.NSCopying, Foundation.NSSecureCoding {
+  @objc final public let conversionValue: Swift.Int
+  @objc final public let priority: Swift.Int
+  @objc final public let events: [FBAEMKit._AEMEvent]
+  @objc(initWithJSON:) public init?(json dict: [Swift.String : Any])
+  @objc(containsEvent:) final public func containsEvent(_ event: Swift.String) -> Swift.Bool
+  @objc(isMatchedWithRecordedEvents:recordedValues:) final public func isMatched(withRecordedEvents recordedEvents: Swift.Set<Swift.String>?, recordedValues: [Swift.String : [Swift.String : Any]]?) -> Swift.Bool
+  @objc public static var supportsSecureCoding: Swift.Bool {
+    @objc get
+  }
+  @objc public init?(coder: Foundation.NSCoder)
+  @objc final public func encode(with coder: Foundation.NSCoder)
+  @objc final public func copy(with zone: ObjectiveC.NSZone? = nil) -> Any
+  @objc override final public func isEqual(_ object: Any?) -> Swift.Bool
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objcMembers @objc(FBAEMSettings) final public class _AEMSettings : ObjectiveC.NSObject {
+  @objc public static func appID() -> Swift.String?
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objcMembers @objc(FBAEMUtility) final public class _AEMUtility : ObjectiveC.NSObject {
+  @objc(sharedUtility) public static let shared: FBAEMKit._AEMUtility
+  @objc final public func getMatchedInvocation(_ invocations: [FBAEMKit._AEMInvocation], businessID: Swift.String?) -> FBAEMKit._AEMInvocation?
+  @objc final public func getInSegmentValue(_ parameters: [Swift.String : Any]?, matchingRule: FBAEMKit._AEMAdvertiserRuleMatching?) -> Foundation.NSNumber
+  @objc final public func getContent(_ parameters: [Swift.String : Any]?) -> Swift.String?
+  @objc final public func getContentID(_ parameters: [Swift.String : Any]?) -> Swift.String?
+  @objc final public func getBusinessIDsInOrder(_ invocations: [FBAEMKit._AEMInvocation]) -> [Swift.String]
+  @objc override dynamic public init()
+  @objc deinit
+}
+extension FBAEMKit._AEMAdvertiserRuleOperator : Swift.Equatable {}
+extension FBAEMKit._AEMAdvertiserRuleOperator : Swift.Hashable {}
+extension FBAEMKit._AEMAdvertiserRuleOperator : Swift.RawRepresentable {}

@@ -1,0 +1,1 @@
+../../../../../node_modules/react-native-audio-recorder-player/ios/RNAudioRecorderPlayer.h

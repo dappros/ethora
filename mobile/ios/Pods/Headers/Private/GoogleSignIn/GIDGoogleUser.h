@@ -1,0 +1,1 @@
+../../../GoogleSignIn/GoogleSignIn/Sources/Public/GoogleSignIn/GIDGoogleUser.h

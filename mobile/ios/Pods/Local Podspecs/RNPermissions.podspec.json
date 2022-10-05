@@ -1,0 +1,23 @@
+{
+  "name": "RNPermissions",
+  "dependencies": {
+    "React-Core": [
+
+    ]
+  },
+  "version": "3.6.1",
+  "license": "MIT",
+  "summary": "An unified permissions API for React Native on iOS, Android and Windows",
+  "authors": "Mathieu Acthernoene <zoontek@gmail.com>",
+  "homepage": "https://github.com/zoontek/react-native-permissions#readme",
+  "platforms": {
+    "ios": "10.0",
+    "tvos": "11.0"
+  },
+  "requires_arc": true,
+  "source": {
+    "git": "https://github.com/zoontek/react-native-permissions.git",
+    "tag": "3.6.1"
+  },
+  "source_files": "ios/*.{h,m}"
+}

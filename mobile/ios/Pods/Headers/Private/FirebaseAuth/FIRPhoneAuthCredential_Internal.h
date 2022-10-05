@@ -1,0 +1,1 @@
+../../../FirebaseAuth/FirebaseAuth/Sources/AuthProvider/Phone/FIRPhoneAuthCredential_Internal.h

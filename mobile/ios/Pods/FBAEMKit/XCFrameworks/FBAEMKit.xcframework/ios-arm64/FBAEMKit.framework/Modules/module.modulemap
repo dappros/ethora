@@ -1,0 +1,11 @@
+framework module FBAEMKit {
+    umbrella header "FBAEMKit.h"
+
+    export *
+    module * { export * }
+}
+
+module FBAEMKit.Swift {
+    header "FBAEMKit-Swift.h"
+    requires objc
+}

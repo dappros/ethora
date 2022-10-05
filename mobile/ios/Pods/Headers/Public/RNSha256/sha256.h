@@ -1,0 +1,1 @@
+../../../../../node_modules/react-native-sha256/ios/sha256.h

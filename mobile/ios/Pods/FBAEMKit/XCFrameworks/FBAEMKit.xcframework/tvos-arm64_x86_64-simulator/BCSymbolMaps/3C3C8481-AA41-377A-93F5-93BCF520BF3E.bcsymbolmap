@@ -1,0 +1,77 @@
+BCSymbolMap Version: 2.0
+Apple clang version 13.0.0 (clang-1300.0.29.3)
+/Users/joesusnick/Downloads/Xcode.app/Contents/Developer/Platforms/AppleTVSimulator.platform/Developer/SDKs/AppleTVSimulator15.0.sdk
+AppleTVSimulator15.0.sdk
+/Users/joesusnick/Library/Developer/Xcode/DerivedData/FacebookSDK-cuswusyibvxiezclthokdrjmqrij/Build/Intermediates.noindex/ArchiveIntermediates/FBAEMKit_TV-Dynamic/IntermediateBuildFilesPath/FBAEMKit.build/Release-appletvsimulator/FBAEMKit_TV-Dynamic.build/DerivedSources/FBAEMKit_vers.c
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/FBAEMReporter.m
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs0E0AAsAEP7_domainSSvgTW
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs0E0AAsAEP5_codeSivgTW
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs0E0AAsAEP9_userInfoyXlSgvgTW
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs0E0AAsAEP19_getEmbeddedNSErroryXlSgyFTW
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs23CustomStringConvertibleAAsAEP11descriptionSSvgTW
+_$s8FBAEMKit28MissingTypeDependenciesErrorVMi
+___swift_memcpy8_8
+___swift_noop_void_return
+_$s8FBAEMKit28MissingTypeDependenciesErrorVwet
+_$s8FBAEMKit28MissingTypeDependenciesErrorVwst
+___swift_instantiateGenericMetadata
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs0E0AAMcMK
+_$s8FBAEMKit28MissingTypeDependenciesErrorVyxGs23CustomStringConvertibleAAMcMK
+_symbolic $s8FBAEMKit15DependentAsTypeP
+_$s8FBAEMKit15DependentAsType_pMF
+_$s8FBAEMKitMXM
+_$s8FBAEMKit28MissingTypeDependenciesErrorVWV
+_$s8FBAEMKit28MissingTypeDependenciesErrorVMI
+_symbolic x
+_$s8FBAEMKit28MissingTypeDependenciesErrorVMP
+_symbolic _____ 8FBAEMKit28MissingTypeDependenciesErrorV
+_symbolic xm
+_$s8FBAEMKit28MissingTypeDependenciesErrorVMF
+__swift_FORCE_LOAD_$_swiftFoundation_$_FBAEMKit
+__swift_FORCE_LOAD_$_swiftObjectiveC_$_FBAEMKit
+__swift_FORCE_LOAD_$_swiftDarwin_$_FBAEMKit
+__swift_FORCE_LOAD_$_swiftCoreFoundation_$_FBAEMKit
+__swift_FORCE_LOAD_$_swiftDispatch_$_FBAEMKit
+__swift_FORCE_LOAD_$_swiftCoreGraphics_$_FBAEMKit
+___swift_reflection_version
+Apple clang version 13.0.0 (clang-1300.0.29.6)
+-private-discriminator _BE0468A29374E32D6E8EC530CB573597
+<swift-imported-modules>
+Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/DependentAsType.swift
+__swift_instantiateGenericMetadata
+<compiler-generated>
+$s8FBAEMKit28MissingTypeDependenciesErrorVwst
+$s8FBAEMKit28MissingTypeDependenciesErrorVwet
+__swift_noop_void_return
+__swift_memcpy8_8
+$s8FBAEMKit28MissingTypeDependenciesErrorVMi
+description.get
+_getEmbeddedNSError
+_userInfo.get
+_code.get
+_domain.get
+appendLiteral
+appendInterpolation
+init
+$sSS12_createEmpty19withInitialCapacitySSSi_tFZ
+$sSS12_createEmpty19withInitialCapacitySSSi_tFZTf4nd_n
+subscript.get
+$s8FBAEMKit28MissingTypeDependenciesErrorVMa
+getDependencies
+setDependencies
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/SKAdNetworkReporting.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMAdvertiserMultiEntryRule.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMAdvertiserRuleFactory.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMAdvertiserRuleOperator.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMAdvertiserRuleProviding.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMAdvertiserSingleEntryRule.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMConfiguration.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMEvent.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMInvocation.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMNetworker.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMRequestBody.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMRule.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMSettings.swift
+/Users/joesusnick/Projects/iOS/facebook-ios-sdk/FBAEMKit/FBAEMKit/_AEMUtility.swift

@@ -1,0 +1,25 @@
+{
+  "name": "RNAppleAuthentication",
+  "version": "2.2.2",
+  "description": "A complete Apple Authentication services API for React Native iOS apps.",
+  "summary": "Apple Authentication services for React Native.",
+  "homepage": "http://invertase.io/oss/react-native-firebase",
+  "license": "Apache-2.0",
+  "authors": "Invertase Limited",
+  "source": {
+    "git": "https://github.com/invertase/react-native-apple-authentication.git",
+    "tag": "v2.2.2"
+  },
+  "social_media_url": "http://twitter.com/invertaseio",
+  "platforms": {
+    "ios": "9.0",
+    "osx": "10.15"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "dependencies": {
+    "React-Core": [
+
+    ]
+  },
+  "static_framework": true
+}

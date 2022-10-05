@@ -1,0 +1,1 @@
+../../../../../node_modules/react-native-pager-view/ios/RCTOnPageSelected.h

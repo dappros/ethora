@@ -1,0 +1,1 @@
+../../../Target Support Files/RNAudioRecorderPlayer/RNAudioRecorderPlayer-umbrella.h

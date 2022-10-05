@@ -1,0 +1,1 @@
+../../../../../node_modules/react-native-pdf/ios/RCTPdf/PdfManager.h

@@ -1,0 +1,8 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-module-flags: -target arm64-apple-tvos11.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name FBAEMKit
+@_exported import FBAEMKit
+import FBSDKCoreKit_Basics
+import Foundation
+import Swift
+import _Concurrency
