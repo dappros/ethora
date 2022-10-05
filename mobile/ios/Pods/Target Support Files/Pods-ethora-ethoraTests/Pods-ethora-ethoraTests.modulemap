@@ -1,6 +1,0 @@
-module Pods_ethora_ethoraTests {
-  umbrella header "Pods-ethora-ethoraTests-umbrella.h"
-
-  export *
-  module * { export * }
-}

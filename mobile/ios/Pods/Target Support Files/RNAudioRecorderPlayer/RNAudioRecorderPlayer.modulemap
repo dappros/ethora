@@ -1,6 +1,0 @@
-module RNAudioRecorderPlayer {
-  umbrella header "RNAudioRecorderPlayer-umbrella.h"
-
-  export *
-  module * { export * }
-}

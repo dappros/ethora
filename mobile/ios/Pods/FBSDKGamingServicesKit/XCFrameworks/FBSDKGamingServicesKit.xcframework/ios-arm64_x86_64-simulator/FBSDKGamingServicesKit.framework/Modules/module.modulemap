@@ -1,4 +1,0 @@
-framework module FBSDKGamingServicesKit {
-  header "FBSDKGamingServicesKit-Swift.h"
-  requires objc
-}

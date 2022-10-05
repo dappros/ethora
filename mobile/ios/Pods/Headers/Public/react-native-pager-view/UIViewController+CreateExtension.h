@@ -1,1 +1,0 @@
-../../../../../node_modules/react-native-pager-view/ios/UIViewController+CreateExtension.h
