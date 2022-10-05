@@ -11,7 +11,7 @@ import {refreshTokenURL} from './routesConstants';
 
 const http = axios.create();
 
-http.interceptors.response.use(undefined, async (error) => {
+http.interceptors.response.use(undefined, async error => {
   if (error?.response?.status === 401) {
     await rootStore.loginStore.getRefreshToken();
 
@@ -25,9 +25,9 @@ http.interceptors.response.use(undefined, async (error) => {
     if (rootStore.loginStore.userToken) {
       let request = error.config;
       const token = rootStore.loginStore.userToken;
-      request.headers["Authorization"] = token;
+      request.headers['Authorization'] = token;
 
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve(http(request));
       });
     }
@@ -85,6 +85,27 @@ export const httpPut = async (url: string, body: any, token: string) => {
     headers: {
       Authorization: token,
       'Accept-encoding': 'gzip, deflate',
+    },
+  });
+};
+
+export const httpUploadPut = async (
+  url: string,
+  body: any,
+  token: string,
+  onProgress: (progress: number) => void,
+) => {
+  return await http.put(url, body, {
+    headers: {
+      Accept: 'application/json',
+      'Accept-Encoding': 'gzip, deflate, br',
+
+      'Content-Type': 'multipart/form-data',
+      Authorization: token,
+    },
+    onUploadProgress: ev => {
+      const progress = (ev.loaded / ev.total) * 100;
+      onProgress(Math.round(progress));
     },
   });
 };

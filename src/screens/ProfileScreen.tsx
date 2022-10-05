@@ -51,6 +51,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import DocumentPicker from 'react-native-document-picker';
+import {changeUserData, fileUpload} from '../config/routesConstants';
+import {uploadFiles} from '../helpers/uploadFiles';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
+import {httpUploadPut} from '../config/apiService';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -168,6 +173,21 @@ export const ProfileScreen = observer((props: any) => {
   const [lastNameLocal, setLastNameLocal] = useState(lastName);
   const userAvatarLocal = userAvatar;
   const underlineOffset = useSharedValue(0);
+  const [uploadedAvatar, setUploadedAvatar] = useState({
+    _id: '',
+    createdAt: '',
+    expiresAt: 0,
+    filename: '',
+    isVisible: true,
+    location: '',
+    locationPreview: '',
+    mimetype: '',
+    originalname: '',
+    ownerKey: '',
+    size: 0,
+    updatedAt: '',
+    userId: '',
+  });
 
   const animatedTranslate = useAnimatedStyle(() => {
     return {
@@ -192,6 +212,10 @@ export const ProfileScreen = observer((props: any) => {
       clearPaginationData();
     };
   }, []);
+  useEffect(() => {
+    setDescriptionLocal(userDescription)
+
+  }, [loginStore.userDescription])
 
   useEffect(() => {
     if (balance?.length > 0) {
@@ -249,7 +273,8 @@ export const ProfileScreen = observer((props: any) => {
     type === 'firstName' ? setFirstNameLocal(text) : setLastNameLocal(text);
   };
 
-  const setDescription = () => {
+  const setDescription = async () => {
+    console.log(descriptionLocal)
     if (userAvatarLocal && descriptionLocal) {
       updateVCard(userAvatarLocal, descriptionLocal, null, chatStore.xmpp);
     }
@@ -257,6 +282,14 @@ export const ProfileScreen = observer((props: any) => {
     if (!descriptionLocal) {
       updateVCard(userAvatarLocal, 'No description', null, chatStore.xmpp);
     }
+    const formData = new FormData();
+    formData.append('description', descriptionLocal);
+    const userRes = await httpUploadPut(
+      apiStore.defaultUrl + changeUserData,
+      formData,
+      loginStore.userToken,
+      console.log,
+    );
     setIsDescriptionEditable(false);
     setModalVisible(false);
   };
@@ -270,7 +303,7 @@ export const ProfileScreen = observer((props: any) => {
         firstName: firstNameLocal,
         lastName: lastNameLocal,
       };
-      updateVCard(null, null, firstName + " " + lastName, chatStore.xmpp);
+      updateVCard(null, null, firstName + ' ' + lastName, chatStore.xmpp);
       updateUserDisplayName(bodyData);
     } else {
       setFirstNameLocal(firstName);
@@ -297,6 +330,44 @@ export const ProfileScreen = observer((props: any) => {
     const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
     setExtraQrData({link: profileLink, mode: 'profile'});
     setQrModalVisible(true);
+  };
+
+  const sendFiles = async (data: any) => {
+    try {
+      const url = apiStore.defaultUrl + fileUpload;
+      const response = await uploadFiles(data, loginStore.userToken, url);
+      const file = response.results[0];
+      setUploadedAvatar(file);
+      const formData = new FormData();
+      formData.append('description', descriptionLocal);
+      formData.append('profileImage', file.location);
+      const userRes = await httpUploadPut(
+        apiStore.defaultUrl + changeUserData,
+        formData,
+        loginStore.userToken,
+        console.log,
+      );
+      console.log(userRes.data)
+      updateVCard(file.location, descriptionLocal, null, chatStore.xmpp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const onAvatarPress = async () => {
+    try {
+      const res = await DocumentPicker.pickSingle({
+        type: [DocumentPicker.types.images],
+      });
+      const formData = new FormData();
+      formData.append('files', {
+        name: res.name,
+        type: res.type,
+        uri: res.uri,
+      });
+      sendFiles(formData);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const loadTabContent = () => {
@@ -457,24 +528,28 @@ export const ProfileScreen = observer((props: any) => {
             alignItems={'center'}
             bgColor={primaryColor}
             borderRadius={hp('10.46%') / 2}>
-            {loginStore.userAvatar ? (
-              <Image
-                source={{uri: loginStore.userAvatar}}
-                style={{
-                  height: hp('10.46%'),
-                  width: hp('10.46%'),
-                  borderRadius: hp('10.46%') / 2,
-                }}
-              />
-            ) : (
-              <Text
-                style={{
-                  fontSize: 40,
-                  color: 'white',
-                }}>
-                {firstNameLocal[0] + lastNameLocal[0]}
-              </Text>
-            )}
+            <TouchableOpacity onPress={onAvatarPress}>
+              {uploadedAvatar.location || loginStore.userAvatar ? (
+                <Image
+                  source={{
+                    uri: uploadedAvatar.location || loginStore.userAvatar,
+                  }}
+                  style={{
+                    height: hp('10.46%'),
+                    width: hp('10.46%'),
+                    borderRadius: hp('10.46%') / 2,
+                  }}
+                />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 40,
+                    color: 'white',
+                  }}>
+                  {firstNameLocal[0] + lastNameLocal[0]}
+                </Text>
+              )}
+            </TouchableOpacity>
           </HStack>
         </View>
         <VStack

@@ -390,6 +390,7 @@ export class ChatStore {
       if (stanza.attrs.id === XMPP_TYPES.vCardRequest) {
         const {photo, firstName, lastName} = this.stores.loginStore.initialData;
         let fullName = firstName + ' ' + lastName;
+        let profilePhoto = photo;
         let profileDescription = 'No description';
         if (!stanza.children[0].children.length) {
           updateVCard(photo, profileDescription, fullName, this.xmpp);
@@ -398,12 +399,12 @@ export class ChatStore {
             if (item.name === 'DESC') {
               profileDescription = item.children[0];
             }
-            // if (item.name === 'PHOTO') {
-            //   profilePhoto = initialData.photo;
-            // }
+            if (item.name === 'URL') {
+              profilePhoto = item.children[0];
+            }
           });
           this.stores.loginStore.updateUserPhotoAndDescription(
-            photo,
+            profilePhoto,
             profileDescription,
           );
         }
@@ -670,7 +671,7 @@ export class ChatStore {
       });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       getBlackList(xmppUsername, this.xmpp);
-      updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
+      // updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });
   };
