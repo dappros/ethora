@@ -7,7 +7,7 @@ import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
 import TransactionsTable from './TransactionsTable'
 import OtherItems from './OtherItemsTable'
-import {useState}  from '../../store'
+import {useStoreState}  from '../../store'
 import ItemsTable from './ItemsTable'
 
 
