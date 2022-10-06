@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "./config";
+import { ExplorerRespose, IHistory, ITransaction } from "./pages/Profile/types";
 import { useState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
@@ -156,9 +157,17 @@ export function getPublicProfile(walletAddress: string) {
 }
 
 export function getTransactions(walletAddress: string) {
-  return http.get(`/explorer/transactions?walletAddress=${walletAddress}`);
+  return http.get<ExplorerRespose<ITransaction[]>>(`/explorer/transactions?walletAddress=${walletAddress}`);
 }
-
+export function getExplorerHistory() {
+  return http.get<IHistory>(`/explorer/history`);
+}
+export function getExplorerBlocks() {
+  return http.get(`/explorer/blocks`);
+}
+export function getTransactionDetails(transactionHash: string) {
+  return http.get<ITransaction>(`/explorer/transactions/` + transactionHash);
+}
 export function checkExtWallet(walletAddress: string) {
   return http.post(
     `/users/checkExtWallet`,
