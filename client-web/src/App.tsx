@@ -7,6 +7,9 @@ import AppTopNavAuth from "./componets/AppTopNavAuth";
 import AppTopNav from "./componets/AppTopNav";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
+import { Explorer } from "./pages/Explorer/Explorer";
+import { TransactionDetails } from "./pages/Explorer/TransactionDetails";
+import { TransactionAddressDetails } from "./pages/Explorer/TransactionAddressDetails";
 
 const darkTheme = createTheme({
   palette: {
@@ -20,25 +23,27 @@ const lightTheme = createTheme({
 });
 
 function App() {
-  const viewMode = useState((state) => state.viewMode)
-  const firstName = useState((state) => state.user.firstName)
+  const viewMode = useState((state) => state.viewMode);
+  const firstName = useState((state) => state.user.firstName);
 
   return (
-    <ThemeProvider theme={viewMode === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={viewMode === "light" ? lightTheme : darkTheme}>
       <div className="app-root">
-        {
-          firstName ? <AppTopNav /> : <AppTopNavAuth />
-        }
+        {firstName ? <AppTopNav /> : <AppTopNavAuth />}
         <Switch>
           <Route path="/profile/:wallet">
-            <Profile></Profile>
+            <Profile />
           </Route>
           <Route path="/chat">
-            <Chat></Chat>
+            <Chat />
           </Route>
           <Route path="/" exact>
             <Signon />
           </Route>
+          <Route path={'/explorer'} component={Explorer}exact />
+          <Route path={'/explorer/transactions/:txId'} component={TransactionDetails} exact/>
+          <Route path={'/explorer/address/:address'} component={TransactionAddressDetails} exact/>
+
         </Switch>
       </div>
     </ThemeProvider>
