@@ -14,7 +14,7 @@ import {
   ITransaction,
   TTransactions,
 } from "../Profile/types";
-import { CircularProgress } from "@mui/material";
+import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
 export type TChartData = { date: string; y: number }[];
 
@@ -65,7 +65,7 @@ export const Explorer = () => {
   return (
     <>
       {loading ? (
-       <div style={{height: '90vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress /></div> 
+        <FullPageSpinner />
       ) : (
         <div>
           {!!user.token && (
