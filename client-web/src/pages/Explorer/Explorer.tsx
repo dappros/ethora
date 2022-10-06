@@ -14,6 +14,7 @@ import {
   ITransaction,
   TTransactions,
 } from "../Profile/types";
+import { CircularProgress } from "@mui/material";
 
 export type TChartData = { date: string; y: number }[];
 
@@ -38,11 +39,13 @@ export const Explorer = () => {
     total: 0,
   });
   const [explorerHistory, setExplorerHistory] = useState<TChartData | []>([]);
+  const [loading, setLoading] = useState(false);
   const [explorerBlocks, setExplorerBlocks] = useState<
     ExplorerRespose<TChartData>
   >({ limit: 0, offset: 0, items: [], total: 0 });
 
-  const getExplorerTransactions = async () => {
+  const getState = async () => {
+    setLoading(true);
     try {
       const { data } = await getTransactions(user.walletAddress);
       const { data: history } = await getExplorerHistory();
@@ -54,18 +57,25 @@ export const Explorer = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
   useEffect(() => {
-    getExplorerTransactions();
+    getState();
   }, []);
   return (
-    <div>
-      {!!user.token && (
-        <div style={{ width: "100vw", height: 300, padding: 20 }}>
-          <ExplorerChart data={explorerHistory} />
+    <>
+      {loading ? (
+       <div style={{height: '90vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}><CircularProgress /></div> 
+      ) : (
+        <div>
+          {!!user.token && (
+            <div style={{ width: "100vw", height: 300, padding: 20 }}>
+              <ExplorerChart data={explorerHistory} />
+            </div>
+          )}
+          <TransactionsTable transactions={transactions.items} />
         </div>
       )}
-      <TransactionsTable transactions={transactions.items} />
-    </div>
+    </>
   );
 };
