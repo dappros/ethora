@@ -6,7 +6,7 @@ import {TProfile, TTransactions} from './types'
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
 import TransactionsTable from './TransactionsTable'
-import OtherItems from './OtherItems'
+import OtherItems from './OtherItemsTable'
 
 type TProps = {
   walletAddress: string;
@@ -61,7 +61,7 @@ export default function OtherProfile(props: TProps) {
           <CircularProgress />
         </Box>
       ) : null}
-      <Box style={{display: 'flex'}}>
+      <Box>
         {profile ? <UserCard profile={profile}></UserCard> : null}
         <OtherItems walletAddress={props.walletAddress}></OtherItems>
       </Box>

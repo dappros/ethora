@@ -6,7 +6,7 @@ import {TProfile, TTransactions} from './types'
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
 import TransactionsTable from './TransactionsTable'
-import OtherItems from './OtherItems'
+import OtherItems from './OtherItemsTable'
 import {useState}  from '../../store'
 import ItemsTable from './ItemsTable'
 
