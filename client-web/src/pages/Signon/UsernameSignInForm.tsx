@@ -14,7 +14,7 @@ import { useFormik } from "formik";
 import { loginUsername } from "../../http";
 import { Typography } from "@mui/material";
 import { useHistory } from "react-router-dom";
-import { useState } from "../../store";
+import { useStoreState } from "../../store";
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
@@ -36,8 +36,8 @@ type TProps = {
   closeModal: () => void;
 };
 
-export default function UsernameSignInForm(props: TProps) {
-  const setUser = useState((state) => state.setUser);
+export function UsernameSignInForm(props: TProps) {
+  const setUser = useStoreState((state) => state.setUser);
   const history = useHistory();
   const formik = useFormik({
     initialValues: {
@@ -59,10 +59,12 @@ export default function UsernameSignInForm(props: TProps) {
             refreshToken: result.data.refreshToken,
           });
           props.closeModal();
-          history.push(`/profile/${result.data.user.defaultWallet.walletAddress}`);
+          history.push(
+            `/profile/${result.data.user.defaultWallet.walletAddress}`
+          );
         })
         .catch((error) => {
-          console.log(error)
+          console.log(error);
           setHttpError("http Error");
           if (error.response) {
             if (
@@ -128,15 +130,15 @@ export default function UsernameSignInForm(props: TProps) {
             </InputAdornment>
           }
         />
-        {formik.touched.password && formik.errors.password ? (
+        {formik.touched.password && formik.errors.password && (
           <FormHelperText>{formik.errors.password}</FormHelperText>
-        ) : null}
+        )}
       </FormControl>
-      {httpError ? (
+      {!!httpError && (
         <Typography sx={{ color: "error.main" }} component="p">
           {httpError}
         </Typography>
-      ) : null}
+      )}
       <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
         <Button disabled={disableSubmit} type="submit" variant="contained">
           Continue

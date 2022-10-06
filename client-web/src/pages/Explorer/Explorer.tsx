@@ -4,11 +4,16 @@ import {
   getExplorerHistory,
   getTransactions,
 } from "../../http";
-import { useState as useStoreState } from "../../store";
+import { useStoreState } from "../../store";
 import { ExplorerChart } from "./ExplorerChart";
 import { format } from "date-fns";
 import TransactionsTable from "../Profile/TransactionsTable";
-import { ExplorerRespose, IHistory, ITransaction, TTransactions } from "../Profile/types";
+import {
+  ExplorerRespose,
+  IHistory,
+  ITransaction,
+  TTransactions,
+} from "../Profile/types";
 
 export type TChartData = { date: string; y: number }[];
 
@@ -24,7 +29,9 @@ const transformDataForChart = (data: IHistory): TChartData => {
 
 export const Explorer = () => {
   const user = useStoreState((store) => store.user);
-  const [transactions, setTransactions] = useState<ExplorerRespose<ITransaction[]>>({
+  const [transactions, setTransactions] = useState<
+    ExplorerRespose<ITransaction[]>
+  >({
     limit: 0,
     offset: 0,
     items: [],
@@ -53,9 +60,11 @@ export const Explorer = () => {
   }, []);
   return (
     <div>
-      {!!user.token && <div style={{ width: "100vw", height: 300, padding: 20 }}>
-        <ExplorerChart data={explorerHistory} />
-      </div>}
+      {!!user.token && (
+        <div style={{ width: "100vw", height: 300, padding: 20 }}>
+          <ExplorerChart data={explorerHistory} />
+        </div>
+      )}
       <TransactionsTable transactions={transactions.items} />
     </div>
   );

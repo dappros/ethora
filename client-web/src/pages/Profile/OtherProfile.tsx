@@ -1,27 +1,28 @@
-import  React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import {ExplorerRespose, ITransaction, TProfile, TTransactions} from './types'
+import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
-import TransactionsTable from './TransactionsTable'
-import OtherItems from './OtherItems'
+import TransactionsTable from "./TransactionsTable";
+import OtherItems from "./OtherItems";
 
 type TProps = {
   walletAddress: string;
 };
 
 type TBalance = {
-  balance: string,
-  tokenName: string
-}
+  balance: string;
+  tokenName: string;
+};
 
-export default function OtherProfile(props: TProps) {
+export function OtherProfile(props: TProps) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<TProfile>();
-  const [transactions, setTransactions] = useState<ExplorerRespose<ITransaction[]>>();
-  const [balances, setBalances] = useState<TBalance>()
+  const [transactions, setTransactions] =
+    useState<ExplorerRespose<ITransaction[]>>();
+  const [balances, setBalances] = useState<TBalance>();
 
   useEffect(() => {
     setLoading(true);
@@ -31,21 +32,19 @@ export default function OtherProfile(props: TProps) {
       })
       .finally(() => setLoading(false));
 
-      getTransactions(props.walletAddress)
-        .then((result) => {
-          setTransactions(result.data)
-          console.log('balance ', result.data)
-        })
+    getTransactions(props.walletAddress).then((result) => {
+      setTransactions(result.data);
+      console.log("balance ", result.data);
+    });
 
-      getBalance(props.walletAddress)
-        .then((result) => {
-          setBalances(result.data)
-        })
+    getBalance(props.walletAddress).then((result) => {
+      setBalances(result.data);
+    });
   }, []);
 
   return (
-    <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)"}}>
-      {loading ? (
+    <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
+      {loading && (
         <Box
           style={{
             display: "flex",
@@ -60,12 +59,12 @@ export default function OtherProfile(props: TProps) {
         >
           <CircularProgress />
         </Box>
-      ) : null}
-      <Box style={{display: 'flex'}}>
-        {profile ? <UserCard profile={profile}></UserCard> : null}
+      )}
+      <Box style={{ display: "flex" }}>
+        {!!profile && <UserCard profile={profile} />}
         <OtherItems walletAddress={props.walletAddress}></OtherItems>
       </Box>
-      {transactions ? <TransactionsTable transactions={transactions.items}></TransactionsTable> : null}
+      {!!transactions && <TransactionsTable transactions={transactions.items} />}
     </Container>
   );
 }

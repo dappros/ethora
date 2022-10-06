@@ -85,4 +85,4 @@ declare global {
 
 window.useState = _useStore
 
-export const useState = _useStore
+export const useStoreState = _useStore

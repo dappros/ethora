@@ -1,7 +1,7 @@
 import axios from "axios";
 import { config } from "./config";
 import { ExplorerRespose, IHistory, ITransaction } from "./pages/Profile/types";
-import { useState } from "./store";
+import { useStoreState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
@@ -233,7 +233,7 @@ export function loginEmail(email: string, password: string) {
 }
 
 export function uploadFile(formData: FormData) {
-  const user = useState.getState().user
+  const user = useStoreState.getState().user
   return http.post(
     '/files',
     formData,
@@ -244,7 +244,7 @@ export function uploadFile(formData: FormData) {
 }
 
 export function nftDeploy(name: string, mediaId: string, rarity: string) {
-  const user = useState.getState().user
+  const user = useStoreState.getState().user
   return http.post(
     '/tokens/items',
     {

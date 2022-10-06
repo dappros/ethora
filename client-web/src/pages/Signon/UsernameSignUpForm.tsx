@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Input from "@mui/material/Input";
@@ -10,10 +10,10 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
-import { useFormik } from 'formik';
-import {useState} from '../../store'
+import { useFormik } from "formik";
+import { useStoreState } from "../../store";
 import { useHistory } from "react-router-dom";
-import { registerUsername, loginUsername } from '../../http'
+import { registerUsername, loginUsername } from "../../http";
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
@@ -29,60 +29,59 @@ const validate = (values: Record<string, string>) => {
   }
 
   if (!values.firstName) {
-    errors.firstName = "Required"
+    errors.firstName = "Required";
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required"
+    errors.lastName = "Required";
   }
 
   return errors;
 };
 
 type TProps = {
-  closeModal: () => void
-}
+  closeModal: () => void;
+};
 
-export default function UsernameSignUpForm(props: TProps) {
-  const history = useHistory()
-  const setUser = useState((state) => state.setUser)
+export function UsernameSignUpForm(props: TProps) {
+  const history = useHistory();
+  const setUser = useStoreState((state) => state.setUser);
 
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [disableSubmit, setDisableSubmit] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [disableSubmit, setDisableSubmit] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      username: '',
-      password: '',
-      firstName: '',
-      lastName: ''
+      username: "",
+      password: "",
+      firstName: "",
+      lastName: "",
     },
     validate,
-    onSubmit: fd => {
-      setDisableSubmit(true)
+    onSubmit: (fd) => {
+      setDisableSubmit(true);
       registerUsername(fd.username, fd.password, fd.firstName, fd.lastName)
-        .then(resp => {
-          loginUsername(fd.username, fd.password)
-            .then((result) => {
-              setUser({
-                firstName: result.data.user.firstName,
-                lastName: result.data.user.lastName,
-                xmppPassword: result.data.user.xmppPassword,
-                _id: result.data.user._id,
-                walletAddress: result.data.user.defaultWallet.walletAddress,
-                token: result.data.token,
-                refreshToken: result.data.refreshToken,
-              })
-              props.closeModal();
-              history.push(`/profile/${result.data.user.defaultWallet.walletAddress}`);
-            })
+        .then((resp) => {
+          loginUsername(fd.username, fd.password).then((result) => {
+            setUser({
+              firstName: result.data.user.firstName,
+              lastName: result.data.user.lastName,
+              xmppPassword: result.data.user.xmppPassword,
+              _id: result.data.user._id,
+              walletAddress: result.data.user.defaultWallet.walletAddress,
+              token: result.data.token,
+              refreshToken: result.data.refreshToken,
+            });
+            props.closeModal();
+            history.push(
+              `/profile/${result.data.user.defaultWallet.walletAddress}`
+            );
+          });
         })
-        .catch(error => {
-
-        })
+        .catch((error) => {})
         .finally(() => {
-          setDisableSubmit(false)
-        })
+          setDisableSubmit(false);
+        });
     },
   });
 
@@ -90,7 +89,11 @@ export default function UsernameSignUpForm(props: TProps) {
     <form onSubmit={formik.handleSubmit}>
       <TextField
         error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username ? formik.errors.username : ''}
+        helperText={
+          formik.touched.username && formik.errors.username
+            ? formik.errors.username
+            : ""
+        }
         margin="dense"
         label="Username"
         name="username"
@@ -102,7 +105,11 @@ export default function UsernameSignUpForm(props: TProps) {
           autoComplete: "off",
         }}
       />
-      <FormControl error={formik.touched.password && Boolean(formik.errors.password)} fullWidth variant="standard">
+      <FormControl
+        error={formik.touched.password && Boolean(formik.errors.password)}
+        fullWidth
+        variant="standard"
+      >
         <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
         <Input
           id="standard-adornment-password"
@@ -123,9 +130,9 @@ export default function UsernameSignUpForm(props: TProps) {
             </InputAdornment>
           }
         />
-        {
-          formik.touched.password && formik.errors.password ? <FormHelperText>{formik.errors.password}</FormHelperText> : null
-        }
+        {formik.touched.password && formik.errors.password && (
+          <FormHelperText>{formik.errors.password}</FormHelperText>
+        )}
       </FormControl>
       <TextField
         margin="dense"
@@ -140,7 +147,11 @@ export default function UsernameSignUpForm(props: TProps) {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-        helperText={formik.touched.firstName && formik.errors.firstName ? formik.errors.firstName : ''}
+        helperText={
+          formik.touched.firstName && formik.errors.firstName
+            ? formik.errors.firstName
+            : ""
+        }
       />
       <TextField
         margin="dense"
@@ -155,7 +166,11 @@ export default function UsernameSignUpForm(props: TProps) {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-        helperText={formik.touched.lastName && formik.errors.lastName ? formik.errors.lastName : ''}
+        helperText={
+          formik.touched.lastName && formik.errors.lastName
+            ? formik.errors.lastName
+            : ""
+        }
       />
       <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
         <Button disabled={disableSubmit} type="submit" variant="contained">

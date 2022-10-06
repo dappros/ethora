@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useRef } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -6,7 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Button, Icon, Typography } from "@mui/material";
-import { useState } from "../../store";
+import { useStoreState } from "../../store";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { Box } from "@mui/system";
@@ -19,29 +19,29 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import { useFormik } from "formik";
 import MenuItem from "@mui/material/MenuItem";
-import * as http from '../../http'
+import * as http from "../../http";
 
 export default function ItemsTable() {
-  const [itemModal, setItemModal] = React.useState(false);
-  const [preview, setPreview] = React.useState<any>(null);
-  const [file, setFile] = React.useState<File | null>(null);
-  const fileRef = React.useRef<HTMLInputElement>(null);
-  const [fileError, setFileError] = React.useState('')
-  const balances = useState((state) =>
+  const [itemModal, setItemModal] = useState(false);
+  const [preview, setPreview] = useState<any>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [fileError, setFileError] = useState("");
+  const balances = useStoreState((state) =>
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
     })
   );
-  const user = useState(state => state.user)
-  const setBalance = useState((state) => state.setBalance)
+  const user = useStoreState((state) => state.user);
+  const setBalance = useStoreState((state) => state.setBalance);
 
   const validate = (values: Record<string, string>) => {
     const errors: Record<string, string> = {};
-  
+
     if (!values.tokenName) {
       errors.tokenName = "Required";
     }
-  
+
     return errors;
   };
 
@@ -52,22 +52,27 @@ export default function ItemsTable() {
     },
     validate,
     onSubmit: async (values) => {
-      console.log(values)
+      console.log(values);
       if (!file) {
-        setFileError('required')
-        return
+        setFileError("required");
+        return;
       }
 
-      const fd = new FormData()
-      fd.append('files', file)
-      http.uploadFile(fd)
-        .then(async res => {
-          const depRes = await http.nftDeploy(values.tokenName, res.data.results[0]._id, values.rarity)
-          const balanceResp = await http.getBalance(user.walletAddress)
-          setBalance(balanceResp.data.balance)
-          onCloseModal()
+      const fd = new FormData();
+      fd.append("files", file);
+      http
+        .uploadFile(fd)
+        .then(async (res) => {
+          const depRes = await http.nftDeploy(
+            values.tokenName,
+            res.data.results[0]._id,
+            values.rarity
+          );
+          const balanceResp = await http.getBalance(user.walletAddress);
+          setBalance(balanceResp.data.balance);
+          onCloseModal();
         })
-        .catch(error => console.log(error))
+        .catch((error) => console.log(error));
     },
   });
 
@@ -88,19 +93,19 @@ export default function ItemsTable() {
           }
         }
       };
-      setFileError('')
+      setFileError("");
       setFile(input.files[0]);
       reader.readAsDataURL(input.files[0]);
     }
   };
 
   const onCloseModal = () => {
-    formik.resetForm()
-    setPreview(null)
-    setFile(null)
-    setItemModal(false)
-    setFileError('')
-  } 
+    formik.resetForm();
+    setPreview(null);
+    setFile(null);
+    setItemModal(false);
+    setFileError("");
+  };
 
   return (
     <TableContainer style={{ flex: 1, marginTop: "10px" }}>
@@ -158,21 +163,21 @@ export default function ItemsTable() {
               display: "flex",
             }}
           >
-            <Box style={{ flex: "1", padding: "5px", marginBottom: '10px' }}>
+            <Box style={{ flex: "1", padding: "5px", marginBottom: "10px" }}>
               <Box
                 style={{
                   padding: "10px",
                   display: "flex",
-                  flexDirection: 'column',
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "end",
                   border: "1px solid gray",
                   borderRadius: "10px",
                   height: "100%",
-                  backgroundImage: preview ? `url(${preview})` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
+                  backgroundImage: preview ? `url(${preview})` : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "no-repeat",
                 }}
               >
                 <input
@@ -182,8 +187,16 @@ export default function ItemsTable() {
                   accept="image/*"
                   style={{ display: "none" }}
                 ></input>
-                <Button color="secondary" variant="contained" onClick={() => fileRef.current?.click()}>upload image</Button>
-                { fileError ? <Box style={{color: 'red'}}>File is required</Box> : null }
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  upload image
+                </Button>
+                {fileError ? (
+                  <Box style={{ color: "red" }}>File is required</Box>
+                ) : null}
               </Box>
             </Box>
             <form style={{ flex: "1" }} onSubmit={formik.handleSubmit}>

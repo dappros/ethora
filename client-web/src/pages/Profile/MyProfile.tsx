@@ -2,17 +2,11 @@ import React, { useState, useEffect } from "react";
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import {
-  ExplorerRespose,
-  ITransaction,
-  TProfile,
-  TTransactions,
-} from "./types";
+import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
 import TransactionsTable from "./TransactionsTable";
-import OtherItems from "./OtherItems";
-import { useState as useStoreState } from "../../store";
+import { useStoreState } from "../../store";
 import ItemsTable from "./ItemsTable";
 
 type TBalance = {
@@ -20,7 +14,7 @@ type TBalance = {
   tokenName: string;
 };
 
-export default function MyProfile() {
+export function MyProfile() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<TProfile>();
   const [transactions, setTransactions] =
@@ -48,7 +42,7 @@ export default function MyProfile() {
 
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
-      {loading ? (
+      {loading && (
         <Box
           style={{
             display: "flex",
@@ -63,16 +57,14 @@ export default function MyProfile() {
         >
           <CircularProgress />
         </Box>
-      ) : null}
+      )}
       <Box style={{ display: "flex" }}>
-        {profile ? <UserCard profile={profile}></UserCard> : null}
+        {!!profile && <UserCard profile={profile} />}
       </Box>
-      <ItemsTable></ItemsTable>
-      {transactions ? (
-        <TransactionsTable
-          transactions={transactions.items}
-        ></TransactionsTable>
-      ) : null}
+      <ItemsTable />
+      {!!transactions && (
+        <TransactionsTable transactions={transactions.items} />
+      )}
     </Container>
   );
 }
