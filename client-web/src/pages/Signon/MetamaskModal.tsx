@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
@@ -8,9 +8,9 @@ import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useWeb3React } from "@web3-react/core";
-import { registerSignature } from '../../http'
-import {useHistory} from 'react-router-dom'
-import {useState} from '../../store'
+import { registerSignature } from "../../http";
+import { useHistory } from "react-router-dom";
+import { useStoreState } from "../../store";
 
 type TProps = {
   open: boolean;
@@ -21,21 +21,20 @@ const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
 
   if (!values.firstName) {
-    errors.firstName = "Required"
+    errors.firstName = "Required";
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required"
+    errors.lastName = "Required";
   }
 
-  return errors
+  return errors;
 };
 
-export default function MetamaskModal({ open, setOpen }: TProps) {
-  const { account, library, deactivate } =
-  useWeb3React();
-  const setUser = useState((state) => state.setUser)
-  const history = useHistory()
+export function MetamaskModal({ open, setOpen }: TProps) {
+  const { account, library, deactivate } = useWeb3React();
+  const setUser = useStoreState((state) => state.setUser);
+  const history = useHistory();
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -45,10 +44,16 @@ export default function MetamaskModal({ open, setOpen }: TProps) {
     onSubmit: async (values) => {
       const signer = library.getSigner();
       try {
-        const msg = 'Register'
-        const signature = await signer.signMessage(msg)
-        const resp = await registerSignature(account as string, signature, msg, values.firstName, values.lastName)
-        const user = resp.data.user
+        const msg = "Register";
+        const signature = await signer.signMessage(msg);
+        const resp = await registerSignature(
+          account as string,
+          signature,
+          msg,
+          values.firstName,
+          values.lastName
+        );
+        const user = resp.data.user;
         setUser({
           _id: user._id,
           firstName: user.firstName,
@@ -56,17 +61,15 @@ export default function MetamaskModal({ open, setOpen }: TProps) {
           xmppPassword: user.xmppPassword,
           walletAddress: user.defaultWallet.walletAddress,
           token: resp.data.token,
-          refreshToken: resp.data.refreshToken
-        })
-        deactivate()
-        history.push(`/profile/${user.defaultWallet.walletAddress}`)
+          refreshToken: resp.data.refreshToken,
+        });
+        deactivate();
+        history.push(`/profile/${user.defaultWallet.walletAddress}`);
       } catch (error) {
-        console.log('signature error ', error)
+        console.log("signature error ", error);
       }
     },
   });
-
-
 
   return (
     <Dialog onClose={() => {}} maxWidth={false} open={open}>

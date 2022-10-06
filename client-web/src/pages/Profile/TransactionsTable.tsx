@@ -6,11 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { TTransactions } from "./types";
+import { ITransaction, TTransactions } from "./types";
 import { Typography } from "@mui/material";
 
 type TProps = {
-  transactions: TTransactions;
+  transactions: ITransaction[];
 };
 
 export default function TransactionsTable(props: TProps) {
@@ -30,7 +30,7 @@ export default function TransactionsTable(props: TProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.transactions.items.map((row) => (
+          {props.transactions.map((row) => (
             <TableRow
               key={row._id}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

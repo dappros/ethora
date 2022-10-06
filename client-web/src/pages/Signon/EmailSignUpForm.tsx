@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, forwardRef } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Input from "@mui/material/Input";
@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
@@ -53,10 +53,10 @@ type TProps = {
   closeModal: () => void;
 };
 
-export default function EmailSignUpForm(props: TProps) {
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [openSnack, setOpenSnack] = React.useState(false);
-  const [errorMsg, setErrorMsg] = React.useState('')
+export function EmailSignUpForm(props: TProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [openSnack, setOpenSnack] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const history = useHistory();
 
   const formik = useFormik({
@@ -81,14 +81,14 @@ export default function EmailSignUpForm(props: TProps) {
         .catch((error) => {
           if (error.response && error.response.status === 400) {
             if (error.response.data.errors) {
-              let errors: string[] = []
+              let errors: string[] = [];
 
               for (const e of error.response.data.errors) {
                 if (e.msg) {
-                  errors.push(e.msg)
+                  errors.push(e.msg);
                 }
               }
-              setErrorMsg(errors.join(', '))
+              setErrorMsg(errors.join(", "));
             }
           }
         });
@@ -137,9 +137,9 @@ export default function EmailSignUpForm(props: TProps) {
             </InputAdornment>
           }
         />
-        {formik.touched.password && formik.errors.password ? (
+        {formik.touched.password && formik.errors.password && (
           <FormHelperText>{formik.errors.password}</FormHelperText>
-        ) : null}
+        )}
       </FormControl>
       <TextField
         margin="dense"
@@ -175,9 +175,7 @@ export default function EmailSignUpForm(props: TProps) {
             : ""
         }
       />
-      {
-        errorMsg ? <Box sx={{color: 'red'}}>{errorMsg}</Box> : null
-      }
+      {!!errorMsg && <Box sx={{ color: "red" }}>{errorMsg}</Box>}
       <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
         <Button type="submit" variant="contained">
           Continue

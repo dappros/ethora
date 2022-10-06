@@ -2,7 +2,7 @@ import { darkScrollbar } from "@mui/material";
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import {Element} from 'ltx'
-import {useState} from './store'
+import {useStoreState} from './store'
 
 export function walletToUsername(str: string) {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -39,7 +39,7 @@ const onMessage = async (stanza: Element) => {
 
       console.log('+++++ ', msg)
 
-      useState.getState().setNewMessage(msg)
+      useStoreState.getState().setNewMessage(msg)
     }
   }
 }

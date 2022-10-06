@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useRef } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,18 +22,32 @@ import MenuItem from "@mui/material/MenuItem";
 import * as http from "../../http";
 
 export default function ItemsTable() {
+<<<<<<< HEAD
   const [itemModal, setItemModal] = React.useState(false);
   const [preview, setPreview] = React.useState<any>(null);
   const [file, setFile] = React.useState<File | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = React.useState("");
   const balances = useState((state) =>
+=======
+  const [itemModal, setItemModal] = useState(false);
+  const [preview, setPreview] = useState<any>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [fileError, setFileError] = useState("");
+  const balances = useStoreState((state) =>
+>>>>>>> 0be3fbdaee04976ef1d9a17d3e5a7955a4dd5b85
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
     })
   );
+<<<<<<< HEAD
   const user = useState((state) => state.user);
   const setBalance = useState((state) => state.setBalance);
+=======
+  const user = useStoreState((state) => state.user);
+  const setBalance = useStoreState((state) => state.setBalance);
+>>>>>>> 0be3fbdaee04976ef1d9a17d3e5a7955a4dd5b85
 
   const validate = (values: Record<string, string>) => {
     const errors: Record<string, string> = {};
