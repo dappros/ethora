@@ -16,38 +16,59 @@ import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import { useFormik } from "formik";
 import MenuItem from "@mui/material/MenuItem";
-
-const validate = (values: Record<string, string>) => {
-  const errors: Record<string, string> = {};
-
-  if (!values.tokenName) {
-    errors.tokenName = "Required";
-  }
-
-  return errors;
-};
+import * as http from '../../http'
 
 export default function ItemsTable() {
   const [itemModal, setItemModal] = React.useState(false);
   const [preview, setPreview] = React.useState<any>(null);
   const [file, setFile] = React.useState<File | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
+  const [fileError, setFileError] = React.useState('')
   const balances = useState((state) =>
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
     })
   );
+  const user = useState(state => state.user)
+  const setBalance = useState((state) => state.setBalance)
+
+  const validate = (values: Record<string, string>) => {
+    const errors: Record<string, string> = {};
+  
+    if (!values.tokenName) {
+      errors.tokenName = "Required";
+    }
+  
+    return errors;
+  };
 
   const formik = useFormik({
     initialValues: {
       tokenName: "",
-      rarity: "",
+      rarity: "1",
     },
     validate,
-    onSubmit: async (values) => {},
+    onSubmit: async (values) => {
+      console.log(values)
+      if (!file) {
+        setFileError('required')
+        return
+      }
+
+      const fd = new FormData()
+      fd.append('files', file)
+      http.uploadFile(fd)
+        .then(async res => {
+          const depRes = await http.nftDeploy(values.tokenName, res.data.results[0]._id, values.rarity)
+          const balanceResp = await http.getBalance(user.walletAddress)
+          setBalance(balanceResp.data.balance)
+          onCloseModal()
+        })
+        .catch(error => console.log(error))
+    },
   });
 
   const addItem = () => {
@@ -67,10 +88,19 @@ export default function ItemsTable() {
           }
         }
       };
+      setFileError('')
       setFile(input.files[0]);
       reader.readAsDataURL(input.files[0]);
     }
   };
+
+  const onCloseModal = () => {
+    formik.resetForm()
+    setPreview(null)
+    setFile(null)
+    setItemModal(false)
+    setFileError('')
+  } 
 
   return (
     <TableContainer style={{ flex: 1, marginTop: "10px" }}>
@@ -116,7 +146,7 @@ export default function ItemsTable() {
             style={{ display: "flex", justifyContent: "space-between" }}
           >
             Create new Item Token
-            <IconButton onClick={() => setItemModal(false)}>
+            <IconButton onClick={onCloseModal}>
               <CloseIcon />
             </IconButton>
           </DialogTitle>
@@ -128,13 +158,14 @@ export default function ItemsTable() {
               display: "flex",
             }}
           >
-            <Box style={{ flex: "1", padding: "5px" }}>
+            <Box style={{ flex: "1", padding: "5px", marginBottom: '10px' }}>
               <Box
                 style={{
                   padding: "10px",
                   display: "flex",
-                  alignItems: "end",
-                  justifyContent: "center",
+                  flexDirection: 'column',
+                  alignItems: "center",
+                  justifyContent: "end",
                   border: "1px solid gray",
                   borderRadius: "10px",
                   height: "100%",
@@ -152,6 +183,7 @@ export default function ItemsTable() {
                   style={{ display: "none" }}
                 ></input>
                 <Button color="secondary" variant="contained" onClick={() => fileRef.current?.click()}>upload image</Button>
+                { fileError ? <Box style={{color: 'red'}}>File is required</Box> : null }
               </Box>
             </Box>
             <form style={{ flex: "1" }} onSubmit={formik.handleSubmit}>
@@ -161,7 +193,7 @@ export default function ItemsTable() {
                   autoComplete: "off",
                 }}
                 label="Token Name"
-                name="tokeName"
+                name="tokenName"
                 type="text"
                 fullWidth
                 variant="standard"
@@ -183,9 +215,10 @@ export default function ItemsTable() {
                 <Select
                   labelId="demo-simple-select-standard-label"
                   fullWidth
-                  value={1}
+                  value="1"
+                  name="rarity"
                   label="Rarity"
-                  onChange={() => {}}
+                  onChange={formik.handleChange}
                 >
                   <MenuItem value={1}>1</MenuItem>
                   <MenuItem value={2}>2</MenuItem>

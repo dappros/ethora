@@ -28,12 +28,8 @@ export default function Signon() {
     }
   }, [user])
 
-  const onMetamaskLogin = async () => {
-    try {
-      await activate(injected);
-    } catch (ex) {
-      console.log(ex);
-    }
+  const onMetamaskLogin = () => {
+    activate(injected);
   }
 
   React.useEffect(() => {
@@ -60,7 +56,7 @@ export default function Signon() {
     if (active) {
       console.log(active, account)
 
-      if (account) {
+      if (account && !user.firstName) {
         http.checkExtWallet(account)
         .then(async (result) => {
           console.log('login user')
@@ -101,7 +97,7 @@ export default function Signon() {
       <Box sx={{marginTop: 5}} style={{display: 'flex', maxWidth: '300px', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
         {/* <Button sx={{ margin: 1}} fullWidth variant="outlined" color="secondary">Continue with Facebook</Button>
         <Button sx={{ margin: 1}} fullWidth variant="outlined">Continue with Google</Button> */}
-        <Button sx={{ margin: 1}} fullWidth variant="outlined" onClick={onMetamaskLogin}>Continue with Metamask</Button>
+        <Button sx={{ margin: 1}} fullWidth variant="outlined" onClick={() => onMetamaskLogin()}>Continue with Metamask</Button>
         <Button sx={{ margin: 1}} fullWidth variant="outlined" onClick={() => setOpenEmail(true)}>Continue with e-mail</Button>
         <Button sx={{ margin: 1}} fullWidth variant="outlined" onClick={() => setOpenUsername(true)}>Continue with username</Button>
       </Box>

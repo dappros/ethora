@@ -32,7 +32,7 @@ const validate = (values: Record<string, string>) => {
 };
 
 export default function MetamaskModal({ open, setOpen }: TProps) {
-  const { active, account, library, connector, activate, deactivate } =
+  const { account, library, deactivate } =
   useWeb3React();
   const setUser = useState((state) => state.setUser)
   const history = useHistory()
@@ -58,6 +58,7 @@ export default function MetamaskModal({ open, setOpen }: TProps) {
           token: resp.data.token,
           refreshToken: resp.data.refreshToken
         })
+        deactivate()
         history.push(`/profile/${user.defaultWallet.walletAddress}`)
       } catch (error) {
         console.log('signature error ', error)

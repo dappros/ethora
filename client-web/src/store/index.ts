@@ -44,7 +44,7 @@ interface IStore {
   setNewMessage: (msg: TMessage) => void
 }
 
-const _useStore = create<IStore>()(devtools(persist(immer((set) => {
+const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
   return {
     user: {
       firstName: '',
@@ -75,7 +75,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set) => {
     setNewMessage: (message: TMessage) => set((state) => {
       console.log('setNewMessage')
       state.messages.unshift(message)
-    })
+    }),
   }
 }))))
 

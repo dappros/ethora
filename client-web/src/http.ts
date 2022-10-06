@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "./config";
+import { useState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
@@ -219,5 +220,31 @@ export function loginEmail(email: string, password: string) {
       password,
     },
     { headers: { Authorization: APP_JWT } }
+  )
+}
+
+export function uploadFile(formData: FormData) {
+  const user = useState.getState().user
+  return http.post(
+    '/files',
+    formData,
+    {
+      headers: { Authorization: user.token }
+    }
+  )
+}
+
+export function nftDeploy(name: string, mediaId: string, rarity: string) {
+  const user = useState.getState().user
+  return http.post(
+    '/tokens/items',
+    {
+      name,
+      mediaId,
+      rarity
+    },
+    {
+      headers: { Authorization: user.token }
+    }
   )
 }

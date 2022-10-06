@@ -30,14 +30,14 @@ function App() {
           firstName ? <AppTopNav /> : <AppTopNavAuth />
         }
         <Switch>
-          <Route path="/" exact>
-            <Signon />
-          </Route>
           <Route path="/profile/:wallet">
             <Profile></Profile>
           </Route>
           <Route path="/chat">
             <Chat></Chat>
+          </Route>
+          <Route path="/" exact>
+            <Signon />
           </Route>
         </Switch>
       </div>
