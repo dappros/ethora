@@ -1,8 +1,8 @@
-import * as React from "react";
+import  React, {useState, useEffect} from "react";
 import Container from "@mui/material/Container";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import {TProfile, TTransactions} from './types'
+import {ExplorerRespose, ITransaction, TProfile, TTransactions} from './types'
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
 import TransactionsTable from './TransactionsTable'
@@ -18,12 +18,12 @@ type TBalance = {
 }
 
 export default function OtherProfile(props: TProps) {
-  const [loading, setLoading] = React.useState(true);
-  const [profile, setProfile] = React.useState<TProfile>();
-  const [transactions, setTransactions] = React.useState<TTransactions>();
-  const [balances, setBalances] = React.useState<TBalance>()
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<TProfile>();
+  const [transactions, setTransactions] = useState<ExplorerRespose<ITransaction[]>>();
+  const [balances, setBalances] = useState<TBalance>()
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     getPublicProfile(props.walletAddress)
       .then((result) => {
@@ -65,7 +65,7 @@ export default function OtherProfile(props: TProps) {
         {profile ? <UserCard profile={profile}></UserCard> : null}
         <OtherItems walletAddress={props.walletAddress}></OtherItems>
       </Box>
-      {transactions ? <TransactionsTable transactions={transactions}></TransactionsTable> : null}
+      {transactions ? <TransactionsTable transactions={transactions.items}></TransactionsTable> : null}
     </Container>
   );
 }
