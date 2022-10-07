@@ -26,7 +26,7 @@ export const Routes = () => {
         exact
       />
       <Route
-        path={"/explorer/address/:address"}
+        path={["/explorer/address/:address", "/explorer/app/:address"]}
         component={TransactionAddressDetails}
         exact
       />
