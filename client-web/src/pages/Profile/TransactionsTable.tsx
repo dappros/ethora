@@ -8,15 +8,20 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { ITransaction, TTransactions } from "./types";
 import { Typography } from "@mui/material";
+import { useHistory } from "react-router";
 
 type TProps = {
   transactions: ITransaction[];
 };
 
-export default function TransactionsTable(props: TProps) {
+export function TransactionsTable(props: TProps) {
+  const history = useHistory();
+
   return (
     <TableContainer style={{ flex: 1, marginTop: "10px" }} component={Paper}>
-      <Typography variant="h6" style={{margin: '16px'}}>Transactions</Typography>
+      <Typography variant="h6" style={{ margin: "16px" }}>
+        Transactions
+      </Typography>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -38,10 +43,34 @@ export default function TransactionsTable(props: TProps) {
               <TableCell align="right">{row.tokenId}</TableCell>
               <TableCell align="right">{row.tokenName}</TableCell>
               <TableCell align="right">{row.type}</TableCell>
-              <TableCell align="right">{row.from}</TableCell>
-              <TableCell align="right">{row.to}</TableCell>
+              <TableCell
+                style={{cursor:'pointer', textDecoration: 'underline'}}
+                align="right"
+                onClick={() => history.push("/explorer/address/" + row.from)}
+              >
+                {row.from}
+              </TableCell>
+              <TableCell
+                              style={{cursor:'pointer', textDecoration: 'underline'}}
+
+
+                align="right"
+                onClick={() => history.push("/explorer/address/" + row.to)}
+              >
+                {row.to}
+              </TableCell>
               <TableCell align="right">{row.blockNumber}</TableCell>
-              <TableCell align="right">{row.transactionHash}</TableCell>
+              <TableCell
+                               style={{cursor:'pointer', textDecoration: 'underline'}}
+
+
+                align="right"
+                onClick={() =>
+                  history.push("/explorer/transactions/" + row.transactionHash)
+                }
+              >
+                {row.transactionHash}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
