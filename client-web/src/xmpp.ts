@@ -206,6 +206,31 @@ class XmppClass {
     );
     this.client.send(presence);
   }
+    presenceInRoom(room: string) {
+        const presence = xml(
+            'presence',
+            {
+                from: this.client.jid?.toString(),
+                to: room+'@conference.dev.dxmpp.com'+'/'+this.client.jid?.getLocal(),
+            },
+            xml('x', 'http://jabber.org/protocol/muc'),
+        );
+        this.client.send(presence);
+    }
+
+    sendMessage(roomJID: string, firstName: string, lastName: string, userMessage: string) {
+      const message = xml(
+          'message', {
+          to: roomJID,
+          type: 'groupchat',
+          id: "sendMessage"
+      }, xml('data', {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          senderFirstName: firstName,
+          senderLastName: lastName,
+      }), xml('body', {}, userMessage));
+        this.client.send(message);
+    }
 }
 
 export default new XmppClass();
