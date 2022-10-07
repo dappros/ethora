@@ -27,6 +27,10 @@ function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
 
+const menuItems = [
+  { name: "Chat", id: "chat" },
+  { name: "Explorer", id: "explorer" },
+];
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();
   const user = useStoreState((state) => state.user);
@@ -66,6 +70,10 @@ const AppTopNav = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const onMenuItemClick = (id: string) => {
+    history.push("/" + id);
+    handleCloseUserMenu();
   };
 
   const onLogout = () => {
@@ -144,9 +152,16 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={() => history.push("/chat")}>
-                <Typography textAlign="center">Chat</Typography>
-              </MenuItem>
+              {menuItems.map((item) => {
+                return (
+                  <MenuItem
+                    onClick={() => onMenuItemClick(item.id)}
+                    key={item.id}
+                  >
+                    <Typography textAlign="center">{item.name}</Typography>
+                  </MenuItem>
+                );
+              })}
               <MenuItem onClick={onLogout}>
                 <Typography textAlign="center">Logout</Typography>
               </MenuItem>
