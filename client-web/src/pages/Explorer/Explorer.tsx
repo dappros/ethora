@@ -7,7 +7,7 @@ import {
 import { useStoreState } from "../../store";
 import { ExplorerChart } from "./ExplorerChart";
 import { format } from "date-fns";
-import TransactionsTable from "../Profile/TransactionsTable";
+import {TransactionsTable} from "../Profile/TransactionsTable";
 import {
   ExplorerRespose,
   IHistory,

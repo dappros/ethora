@@ -1,8 +1,9 @@
+import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { getTransactions } from "../../http";
-import TransactionsTable from "../Profile/TransactionsTable";
+import { TransactionsTable } from "../Profile/TransactionsTable";
 import { ExplorerRespose, ITransaction } from "../Profile/types";
 
 interface ITransactionAddressDetailsProps {}
@@ -37,7 +38,12 @@ export const TransactionAddressDetails: React.FC<
       {loading ? (
         <FullPageSpinner />
       ) : (
-        <TransactionsTable transactions={transactions.items} />
+        <div>
+          <Typography variant="h4" style={{ padding: 10, fontSize: 25 }}>
+            Transactions from/to {params.address}
+          </Typography>
+          <TransactionsTable transactions={transactions.items} />
+        </div>
       )}
     </>
   );
