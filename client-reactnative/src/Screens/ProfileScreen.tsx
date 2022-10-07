@@ -272,7 +272,7 @@ export const ProfileScreen = observer((props: any) => {
     type === 'firstName' ? setFirstNameLocal(text) : setLastNameLocal(text);
   };
 
-  const setDescription = () => {
+  const setDescription = async () => {
     if (userAvatarLocal || descriptionLocal) {
       updateVCard(
         userAvatarLocal,
