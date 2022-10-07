@@ -144,6 +144,9 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
+              <MenuItem onClick={() => history.push("/chat-in-room")}>
+                <Typography textAlign="center">ChatInRoom</Typography>
+              </MenuItem>
               <MenuItem onClick={() => history.push("/chat")}>
                 <Typography textAlign="center">Chat</Typography>
               </MenuItem>
