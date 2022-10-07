@@ -5,7 +5,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { Button, Icon, Typography } from "@mui/material";
+import { Button, Icon, NativeSelect, Typography } from "@mui/material";
 import { useStoreState } from "../../store";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -210,7 +210,10 @@ export default function ItemsTable() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  console.log("onChange ", e);
+                  formik.handleChange(e);
+                }}
                 onBlur={formik.handleBlur}
                 error={
                   formik.touched.tokenName && Boolean(formik.errors.tokenName)
@@ -221,22 +224,24 @@ export default function ItemsTable() {
                     : ""
                 }
               />
-              <FormControl style={{ width: "100%" }} variant="standard">
-                <InputLabel id="demo-simple-select-standard-label">
+              <FormControl fullWidth>
+                <InputLabel variant="standard" htmlFor="uncontrolled-native">
                   Rarity
                 </InputLabel>
-                <Select
-                  labelId="demo-simple-select-standard-label"
-                  fullWidth
-                  value="1"
-                  name="rarity"
-                  label="Rarity"
-                  onChange={formik.handleChange}
+                <NativeSelect
+                  inputProps={{
+                    name: "rarity",
+                    id: "uncontrolled-native",
+                  }}
+                  onChange={(e) => {
+                    console.log(e)
+                    formik.handleChange(e)
+                  }}
                 >
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={2}>2</MenuItem>
-                  <MenuItem value={3}>3</MenuItem>
-                </Select>
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                </NativeSelect>
               </FormControl>
               <Box
                 sx={{ margin: 2, display: "flex", justifyContent: "center" }}

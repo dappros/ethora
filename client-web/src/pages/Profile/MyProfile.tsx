@@ -5,9 +5,11 @@ import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
-import TransactionsTable from "./TransactionsTable";
-import { useStoreState } from "../../store";
-import ItemsTable from "./ItemsTable";
+import TransactionsTable from './TransactionsTable'
+import OtherItems from './OtherItemsTable'
+import {useStoreState}  from '../../store'
+import ItemsTable from './ItemsTable'
+
 
 type TBalance = {
   balance: string;
