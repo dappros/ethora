@@ -1,6 +1,8 @@
 import React from "react";
 import { Route, Switch } from "react-router";
 import Chat from "./Chat";
+import { BlockDetails } from "./Explorer/BlockDetails";
+import { Blocks } from "./Explorer/Blocks";
 import { Explorer } from "./Explorer/Explorer";
 import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
 import { TransactionDetails } from "./Explorer/TransactionDetails";
@@ -20,6 +22,8 @@ export const Routes = () => {
         <Signon />
       </Route>
       <Route path={"/explorer"} component={Explorer} exact />
+      <Route path={"/explorer/block/:blockNumber"} component={BlockDetails} exact />
+      <Route path={"/explorer/blocks/"} component={Blocks} exact />
       <Route
         path={"/explorer/transactions/:txId"}
         component={TransactionDetails}
