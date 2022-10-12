@@ -1,6 +1,6 @@
 import axios from "axios";
 import { config } from "./config";
-import { ExplorerRespose, IHistory, ITransaction } from "./pages/Profile/types";
+import { ExplorerRespose, IBlock, IHistory, ITransaction } from "./pages/Profile/types";
 import { useStoreState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
@@ -162,8 +162,8 @@ export function getTransactions(walletAddress: string) {
 export function getExplorerHistory() {
   return http.get<IHistory>(`/explorer/history`);
 }
-export function getExplorerBlocks() {
-  return http.get(`/explorer/blocks`);
+export function getExplorerBlocks(blockNumber: number | string = '') {
+  return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
 }
 export function getTransactionDetails(transactionHash: string) {
   return http.get<ITransaction>(`/explorer/transactions/` + transactionHash);
