@@ -5,16 +5,28 @@ import {
   getTransactions,
 } from "../../http";
 import { useStoreState } from "../../store";
-import { ExplorerChart } from "./ExplorerChart";
+import { ExplorerChart } from "../../componets/ExplorerChart";
 import { format } from "date-fns";
-import {TransactionsTable} from "../Profile/TransactionsTable";
+import { TransactionsTable } from "../Profile/TransactionsTable";
 import {
   ExplorerRespose,
+  IBlock,
   IHistory,
   ITransaction,
   TTransactions,
 } from "../Profile/types";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { ExplorerBlocks } from "../../componets/ExplorerBlocks";
+import { Box, styled } from "@mui/material";
+
+const Container = styled(Box)(({ theme }) => ({
+  width: "100vw",
+  padding: 20,
+  display: "flex",
+  [theme.breakpoints.down("md")]: {
+    flexDirection: "column",
+  },
+}));
 
 export type TChartData = { date: string; y: number }[];
 
@@ -41,7 +53,7 @@ export const Explorer = () => {
   const [explorerHistory, setExplorerHistory] = useState<TChartData | []>([]);
   const [loading, setLoading] = useState(false);
   const [explorerBlocks, setExplorerBlocks] = useState<
-    ExplorerRespose<TChartData>
+    ExplorerRespose<IBlock[]>
   >({ limit: 0, offset: 0, items: [], total: 0 });
 
   const getState = async () => {
@@ -62,20 +74,23 @@ export const Explorer = () => {
   useEffect(() => {
     getState();
   }, []);
+
+  if (loading) {
+    return <FullPageSpinner />;
+  }
   return (
-    <>
-      {loading ? (
-        <FullPageSpinner />
-      ) : (
-        <div>
-          {!!user.token && (
-            <div style={{ width: "100vw", height: 300, padding: 20 }}>
-              <ExplorerChart data={explorerHistory} />
-            </div>
-          )}
-          <TransactionsTable transactions={transactions.items} />
-        </div>
+    <div>
+      {!!user.token && (
+        <Container>
+          <div style={{maxWidth: 500}}>
+          <ExplorerBlocks blocks={explorerBlocks.items} />
+          </div>
+          <div style={{ height: 300, width: '100%'}}>
+            <ExplorerChart data={explorerHistory} />
+          </div>
+        </Container>
       )}
-    </>
+      <TransactionsTable transactions={transactions.items} />
+    </div>
   );
 };
