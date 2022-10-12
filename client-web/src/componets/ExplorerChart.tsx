@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { TChartData } from "./Explorer";
+import { TChartData } from "../pages/Explorer/Explorer";
 
 interface ExplorerChartProps {
     data: TChartData
@@ -19,7 +19,7 @@ interface ExplorerChartProps {
 export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({data}) => {
   const theme = useTheme()
   return (
-    <ResponsiveContainer width={'100%'}>
+    <ResponsiveContainer height={'100%'}>
       <LineChart
         width={500}
         height={300}
