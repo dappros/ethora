@@ -44,6 +44,34 @@ const onMessage = async (stanza: Element) => {
   }
 }
 
+const onMessageHistory = async (stanza: Element) => {
+    console.log('start => ', stanza)
+    if (stanza.is('message')) {
+            const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
+            const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
+            const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
+            const id = stanza.getChild('result')?.attrs.id
+
+            if (!data || !body || !delay || !id) {
+                return
+            }
+
+            if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName) {
+                return
+            }
+            const msg = {
+                id,
+                body: body.getText(),
+                data: data.attrs,
+                roomJID: stanza.attrs.from,
+                date: delay.attrs.stamp
+            }
+            console.log(data.attrs)
+            useStoreState.getState().setNewMessageHistory(msg)
+            useStoreState.getState().sortMessageHistory();
+    }
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
   // "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
@@ -72,7 +100,17 @@ class XmppClass {
       // });
     });
 
-    this.client.on("stanza", onMessage);
+    this.client.on("stanza", (stanza) => {
+        if (stanza.attrs.id === "sendMessage") {
+            const data = stanza.getChild('stanza-id')
+            if(data){
+                this.getLastMessageArchive(data.attrs.by)
+                return;
+            }
+            return onMessage(stanza);
+        }
+        return onMessageHistory(stanza);
+    });
     this.client.on("stanza", (stanza) => console.log(stanza.toString()))
 
     this.client.on("offline", () => console.log("offline"));
@@ -211,14 +249,90 @@ class XmppClass {
             'presence',
             {
                 from: this.client.jid?.toString(),
-                to: room+'@conference.dev.dxmpp.com'+'/'+this.client.jid?.getLocal(),
+                to: room+'/'+this.client.jid?.getLocal(),
             },
             xml('x', 'http://jabber.org/protocol/muc'),
         );
         this.client.send(presence);
     }
 
-    sendMessage(roomJID: string, firstName: string, lastName: string, userMessage: string) {
+    getRoomArchiveStanza(chat_jid: string) {
+        let message = xml(
+            'iq',
+            {
+                type: 'set',
+                to: chat_jid,
+                id: 'GetArchive',
+            },
+            xml(
+                'query',
+                {xmlns: 'urn:xmpp:mam:2'},
+                xml(
+                    'set',
+                    {xmlns: 'http://jabber.org/protocol/rsm'},
+                    xml('max', {}, '10'),
+                    xml('before'),
+                ),
+            ),
+        );
+        this.client.send(message);
+    }
+
+    getPaginatedArchive = (
+        chat_jid: string,
+        firstUserMessageID: string,
+    ) => {
+      console.log(chat_jid, ' ==  ', firstUserMessageID)
+        const message = xml(
+            'iq',
+            {
+                type: 'set',
+                to: chat_jid,
+                id: 'paginatedArchive',
+            },
+            xml(
+                'query',
+                {xmlns: 'urn:xmpp:mam:2'},
+                xml(
+                    'set',
+                    {xmlns: 'http://jabber.org/protocol/rsm'},
+                    xml('max', {}, '10'),
+                    xml('before', {}, firstUserMessageID),
+                ),
+            ),
+        );
+        this.client.send(message);
+    }
+
+    getLastMessageArchive(chat_jid: string) {
+        let message = xml(
+            'iq',
+            {
+                type: 'set',
+                to: chat_jid,
+                id: 'GetArchive',
+            },
+            xml(
+                'query',
+                {xmlns: 'urn:xmpp:mam:2'},
+                xml(
+                    'set',
+                    {xmlns: 'http://jabber.org/protocol/rsm'},
+                    xml('max', {}, '1'),
+                    xml('before'),
+                ),
+            ),
+        );
+        this.client.send(message);
+    }
+
+    test() {
+      console.log(this.client)
+    }
+
+    sendMessage(roomJID: string, firstName: string, lastName: string, photo: string, walletAddress: string, userMessage: string) {
+      console.log('SENDER JID ', this.client.jid)
+      // console.log('SENDER JID ', this.client.jid?.toString())
       const message = xml(
           'message', {
           to: roomJID,
@@ -228,6 +342,13 @@ class XmppClass {
           xmlns: "wss://dev.dxmpp.com:5443/ws",
           senderFirstName: firstName,
           senderLastName: lastName,
+          photoURL: photo,
+          senderJID: this.client.jid?.toString(),
+          senderWalletAddress: walletAddress,
+          roomJid: roomJID,
+          isSystemMessage: false,
+          tokenAmount: 0,
+          quickReplies: []
       }), xml('body', {}, userMessage));
         this.client.send(message);
     }

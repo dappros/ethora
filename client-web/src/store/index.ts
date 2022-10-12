@@ -32,6 +32,15 @@ type TMessage = {
   room: string
 }
 
+type TMessageHistory = {
+  id: number
+  body: string
+  data: any
+  roomJID: string
+  date: string
+  photo?: string
+}
+
 interface IStore {
   user: TUser
   messages: TMessage[],
@@ -41,7 +50,11 @@ interface IStore {
   setUser: (user: TUser) => void,
   clearUser: () => void,
   setBalance: (balance: TBalance[]) => void,
-  setNewMessage: (msg: TMessage) => void
+  setNewMessage: (msg: TMessage) => void,
+  historyMessages: TMessageHistory[],
+  setNewMessageHistory: (msg: TMessageHistory) => void
+  clearMessageHistory: () => void,
+  sortMessageHistory: () => void,
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -58,6 +71,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     balance: [],
     viewMode: 'light',
     messages: [],
+    historyMessages: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
     clearUser: () => set((state) => {
@@ -75,6 +89,16 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     setNewMessage: (message: TMessage) => set((state) => {
       console.log('setNewMessage')
       state.messages.unshift(message)
+    }),
+    setNewMessageHistory: (historyMessages: TMessageHistory) => set((state) => {
+      console.log('setNewMessageHistory')
+      state.historyMessages.unshift(historyMessages)
+    }),
+    clearMessageHistory: () => set((state) => {
+      state.historyMessages = [];
+    }),
+    sortMessageHistory: () => set((state) => {
+      state.historyMessages.sort((a: any, b: any) => a.id - b.id);
     }),
   }
 }))))
