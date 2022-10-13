@@ -25,6 +25,7 @@ export const ROUTES = {
   REGULARLOGIN: 'RegularLogin',
   REGISTER: 'Register',
   INVITEFRIENDS: 'InviteFriendsScreen',
-  CHATDETAILS:'ChatDetailsScreen',
-  RESETPASSWORD: 'ResetPasswordScreen'
+  CHATDETAILS: 'ChatDetailsScreen',
+  RESETPASSWORD: 'ResetPasswordScreen',
+  PRIVACY: 'PrivacyAndDataScreen',
 };

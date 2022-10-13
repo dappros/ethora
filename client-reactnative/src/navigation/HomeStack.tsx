@@ -24,6 +24,7 @@ import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
 import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
 import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
+import { PrivacyAndDataScreen } from '../Screens/PrivacyAndDataScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -235,6 +236,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.INVITEFRIENDS}
         component={InviteFriendsScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+           <HomeStack.Screen
+        name={ROUTES.PRIVACY}
+        component={PrivacyAndDataScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

@@ -27,7 +27,6 @@ export const HeaderMenu = () => {
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
     {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
     {value: ROUTES.INVITEFRIENDS, label: 'Enter code', visible: true},
-
   ];
 
   const ActionsMenuItems = [
@@ -37,6 +36,8 @@ export const HeaderMenu = () => {
   ];
 
   const SystemMenuItems = [
+    {value: ROUTES.PRIVACY, label: 'Privacy And Data', visible: true},
+
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
     {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
   ];
