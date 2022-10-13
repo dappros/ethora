@@ -42,10 +42,11 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     borderRadius: hp('1%'),
     margin: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
     flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#B22222',
+    paddingHorizontal: 10,
   },
   reportAndBlockText: {
     fontFamily: textStyles.semiBoldFont,
@@ -53,5 +54,6 @@ const styles = StyleSheet.create({
   },
   blockIcon: {
     marginRight: 5,
+    marginBottom: 3
   },
 });

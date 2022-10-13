@@ -9,44 +9,58 @@ import axios from 'axios';
 import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import {subscribePushNotification} from '../config/routesConstants';
-import { ROUTES } from '../constants/routes';
+import {ROUTES} from '../constants/routes';
 import {underscoreManipulation} from './underscoreLogic';
 
-export const subscribeForPushNotifications = async (data:any, defaultUrl:string) => {
+export const subscribeForPushNotifications = async (
+  data: any,
+  defaultUrl: string,
+) => {
   const qs = require('qs');
-  return await axios.post("https://"+defaultUrl+":7777/api/v1"+subscribePushNotification, qs.stringify(data), {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+  return await axios.post(
+    'https://' + defaultUrl + ':7777/api/v1' + subscribePushNotification,
+    qs.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     },
-  });
+  );
 };
 
-export const getPushToken = async (walletAddress:string, DOMAIN:string, defaultUrl:string, navigation:any) => {
+export const getPushToken = async (
+  walletAddress: string,
+  DOMAIN: string,
+  defaultUrl: string,
+  navigation: any,
+) => {
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
-    onRegister: async function (token:any) {
+    onRegister: async function (token: any) {
       console.log('TOKEN:', token);
-      const res = await subscribeForPushNotifications({
-        appId: 'Ethora',
-        deviceId: token.token,
-        deviceType: Platform.OS === 'ios' ? '0' : '1',
-        environment: 'Production',
-        externalId: '',
-        isSubscribed: '1',
-        jid: underscoreManipulation(walletAddress) + '@' + DOMAIN,
-        screenName: 'Ethora',
-      }, defaultUrl);
-
+      const res = await subscribeForPushNotifications(
+        {
+          appId: 'Ethora',
+          deviceId: token.token,
+          deviceType: Platform.OS === 'ios' ? '0' : '1',
+          environment: 'Production',
+          externalId: '',
+          isSubscribed: '1',
+          jid: underscoreManipulation(walletAddress) + '@' + DOMAIN,
+          screenName: 'Ethora',
+        },
+        defaultUrl,
+      );
     },
-    onNotification: function (notification:any) {
+    onNotification: function (notification: any) {
       console.log('NOTIFICATION:', notification);
       const chatJID = notification.data.mucId;
-      setTimeout(()=>{
-        navigation.navigate(ROUTES.CHAT, {chatJid: chatJID})
-      },2000)
+      setTimeout(() => {
+        navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
+      }, 2000);
     },
 
-    onAction: function (notification:any) {
+    onAction: function (notification: any) {
       console.log('ACTION:', notification.action);
     },
     onRegistrationError: function (err) {

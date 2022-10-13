@@ -94,6 +94,10 @@ interface roomMemberInfoProps {
   role: string;
 }
 
+export interface BlackListUser  {
+  userJid: string
+}
+
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -102,7 +106,7 @@ export class ChatStore {
   stores: RootStore | {} = {};
   roomsInfoMap: any = {};
   chatLinkInfo: any = {};
-  blackList = [];
+  blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,

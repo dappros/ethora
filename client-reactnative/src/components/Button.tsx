@@ -13,7 +13,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {commonColors, textStyles} from '../../docs/config';
 
 interface ButtonProps {
-  loading: boolean;
+  loading?: boolean;
   onPress: () => void;
   title: string;
   style?: StyleProp<ViewStyle>;

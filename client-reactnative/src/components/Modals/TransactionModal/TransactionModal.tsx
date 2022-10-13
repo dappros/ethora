@@ -6,11 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -516,10 +512,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                     alignItems: 'center',
                   },
                 ]}>
-                <View
-                  style={[
-                    styles.tokenTransferContainer,
-                  ]}>
+                <View style={[styles.tokenTransferContainer]}>
                   {renderNftItems()}
 
                   {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
@@ -640,7 +633,8 @@ const TransactionModal = (props: TransactionModalProps) => {
                     <Seperator />
                     <ReportAndBlockButton
                       onPress={handleBanUser}
-                      text={'Ban this user'}
+                      text={'Ban (this room)'}
+                      style={{backgroundColor: '#460000'}}
                     />
                   </>
                 )}
@@ -650,8 +644,8 @@ const TransactionModal = (props: TransactionModalProps) => {
               <Seperator />
               <ReportAndBlockButton
                 onPress={onBlackListPress}
-                text={'Blocklist this user'}
-                style={{backgroundColor: commonColors.primaryColor}}
+                text={'Block (your contacts)'}
+                style={{backgroundColor: '#460000'}}
               />
             </>
           </View>

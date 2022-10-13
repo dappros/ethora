@@ -12,7 +12,7 @@ import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
 import {commonColors, defaultChats, textStyles} from '../../../docs/config';
-import { Badge, Text } from 'native-base';
+import {Badge, Text} from 'native-base';
 
 const ROOM_KEYS = {
   official: 'official',
@@ -21,13 +21,12 @@ const ROOM_KEYS = {
 };
 
 const renderTabBar = (props: any) => {
-  
   return (
     <TabBar
-      renderLabel={({route, focused})=>(
+      renderLabel={({route, focused}) => (
         <Text
-        color={focused?'white':'info.200'}
-        fontFamily={textStyles.semiBoldFont}>
+          color={focused ? 'white' : 'info.200'}
+          fontFamily={textStyles.semiBoldFont}>
           {route.title}
         </Text>
       )}
@@ -80,7 +79,7 @@ export const RoomsTabBar = observer(() => {
           notificationsCount[ROOM_KEYS.official] += item.counter;
           return item;
         }
-        if(chatStore.roomsInfoMap[item.jid]?.isFavourite){
+        if (chatStore.roomsInfoMap[item.jid]?.isFavourite) {
           return item;
         }
       }),
