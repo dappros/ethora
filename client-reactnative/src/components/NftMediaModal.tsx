@@ -31,6 +31,7 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import VideoPlayer from 'react-native-video-player';
 import {commonColors, textStyles} from '../../docs/config';
 import {PdfViewer} from './PdfViewer';
+import FastImage from 'react-native-fast-image';
 export const NftMediaModal = ({
   closeModal,
   mimetype,
@@ -55,7 +56,14 @@ export const NftMediaModal = ({
         )}
         {imageMimetypes[mimetype] && (
           <TouchableOpacity onPress={closeModal}>
-            <Image source={{uri: url}} style={classes.modalImage} />
+            <FastImage
+              style={{width: wp('90%'), height: hp('90%')}}
+              source={{
+                uri: url,
+                priority: FastImage.priority.normal,
+              }}
+              resizeMode={FastImage.resizeMode.contain}
+            />
           </TouchableOpacity>
         )}
 
@@ -167,7 +175,7 @@ const classes = StyleSheet.create({
     width: wp('47.69%'),
   },
   modal: {
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -175,8 +183,8 @@ const classes = StyleSheet.create({
     height: wp('90%'),
   },
   modalImage: {
-    width: wp('90%'),
-    height: hp('90%'),
+    // width: wp('90%'),
+    // height: hp('90%'),
     borderRadius: 10,
   },
 });

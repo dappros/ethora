@@ -94,8 +94,10 @@ interface roomMemberInfoProps {
   role: string;
 }
 
-export interface BlackListUser  {
-  userJid: string
+export interface BlackListUser {
+  userJid: string;
+  date: number;
+  name: string;
 }
 
 export class ChatStore {
@@ -510,6 +512,8 @@ export class ChatStore {
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {
         const blackList = stanza.children[0].children.map(item => ({
           userJid: item.attrs.user,
+          date: +item.attrs.date * 1000,
+          name: item.attrs.fullname,
         }));
         runInAction(() => {
           this.blackList = blackList;
