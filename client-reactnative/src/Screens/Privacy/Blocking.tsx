@@ -2,15 +2,19 @@ import {observer} from 'mobx-react-lite';
 import {HStack, VStack} from 'native-base';
 import React from 'react';
 import {FlatList, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {textStyles} from '../../../docs/config';
+import {commonColors, textStyles} from '../../../docs/config';
 import {BlackListUser} from '../../stores/chatStore';
 import {useStores} from '../../stores/context';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+
+import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5';
+
 import {removeUserFromBlackList} from '../../xmpp/stanzas';
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
 } from '../../helpers/underscoreLogic';
+import moment from 'moment';
 export interface IBlocking {}
 
 export const Blocking: React.FC<IBlocking> = observer(({}) => {
@@ -26,12 +30,28 @@ export const Blocking: React.FC<IBlocking> = observer(({}) => {
     );
   };
   const UserItem = ({item}: {item: BlackListUser}) => (
-    <HStack alignItems={'center'} borderBottomWidth={1} borderRadius={10}>
-      <Text style={styles.userName}>
-        {reverseUnderScoreManipulation(item.userJid.split('@')[0])}
-      </Text>
+    <HStack
+      alignItems={'center'}
+      // borderBottomWidth={1}
+      borderRadius={10}
+      justifyContent={'space-between'}
+      marginBottom={'4'}
+      w="full">
+      <HStack alignItems={'center'}>
+        <FontAwesomeIcons
+          name="user-circle"
+          size={40}
+          color={commonColors.primaryColor}
+          style={{marginRight: 10}}
+        />
+
+        <VStack>
+          <Text style={styles.userName}>{item.name}</Text>
+          <Text>{moment(item.date).format('DD MMMM YYYY')}</Text>
+        </VStack>
+      </HStack>
       <TouchableOpacity onPress={() => unblockUser(item.userJid.split('@')[0])}>
-        <MaterialIcons name="block" size={30} color={'darkred'} />
+        <IonIcons name="remove-circle" size={30} color={'darkred'} />
       </TouchableOpacity>
     </HStack>
   );
@@ -72,7 +92,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     color: 'black',
-    width: '90%',
+    // width: '90%',
     fontFamily: textStyles.semiBoldFont,
     fontSize: 14,
   },
