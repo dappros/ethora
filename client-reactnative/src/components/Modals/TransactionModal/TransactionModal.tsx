@@ -376,7 +376,7 @@ const TransactionModal = (props: TransactionModalProps) => {
     const senderWalletAddres = underscoreManipulation(
       initialData.walletAddress,
     );
-    const roomJID = extraData.roomJID;
+    const roomJID = extraData.chatJid;
 
     banUser(
       roomJID,
@@ -628,7 +628,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                   title={'Direct Message'}
                   onPress={onDirectMessagePress}
                 />
-                {chatStore.roomRoles[extraData.roomJID] !== 'participant' && (
+                {chatStore.roomRoles[extraData.chatJid] !== 'participant' && (
                   <>
                     <Seperator />
                     <ReportAndBlockButton
