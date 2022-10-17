@@ -1,53 +1,131 @@
 import {HStack, Text, VStack} from 'native-base';
-import React, {Dispatch, SetStateAction} from 'react';
-import {StyleSheet, View, TouchableOpacity, FlatList} from 'react-native';
-import {commonColors, textStyles} from '../../../docs/config';
+import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import {commonColors, textStyles, unv_url} from '../../../docs/config';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {httpDelete, httpGet} from '../../config/apiService';
+import {useStores} from '../../stores/context';
+import {shareLink} from '../../config/routesConstants';
+import moment from 'moment';
+import {generateProfileLink} from '../../helpers/generateProfileLink';
+import {useClipboard} from '@react-native-clipboard/clipboard';
+import {showSuccess} from '../../components/Toast/toast';
+import QRCodeGenerator from '../../components/QRCodeGenerator';
+import Modal from 'react-native-modal';
 
 export interface IProfileShareManage {
   onAddPress: Dispatch<SetStateAction<number>>;
 }
 
-const items = [
-  {
-    createdAt: new Date().getTime(),
-    name: 'Hello',
-    expiresAt: new Date().getTime(),
-  },
-];
-
-interface ILink {
-  createdAt: number;
-  name: string;
-  expiresAt: number;
+interface ISharedLink {
+  _id: string;
+  createdAt: string;
+  expiration: string;
+  memo: string;
+  resource: string;
+  token: string;
+  updatedAt: string;
+  userId: string;
+  walletAddress: string;
 }
 
 export const ProfileShareManage: React.FC<IProfileShareManage> = ({
   onAddPress,
 }) => {
-  const UserItem = ({item}: {item: ILink}) => (
-    <HStack alignItems={'center'} justifyContent={'space-between'}>
-      <VStack>
-        <Text style={styles.linkName}>{item.name}</Text>
-        <Text style={styles.linkDate}>Created at: {item.createdAt}</Text>
-        <Text style={styles.linkDate}>Expires: {item.expiresAt}</Text>
-      </VStack>
-      <HStack>
-        <TouchableOpacity onPress={() => {}} style={styles.actionButton}>
-          <AntDesignIcons name="qrcode" size={35} color={'black'} />
-        </TouchableOpacity>
+  const [sharedLinks, setSharedLinks] = useState<ISharedLink[]>([]);
+  const {loginStore, apiStore} = useStores();
+  const [data, setClipboard] = useClipboard();
+  const [modalData, setModalData] = useState({visible: false, link: ''});
+  const [loading, setLoading] = useState(false);
 
-        <TouchableOpacity onPress={() => {}} style={styles.actionButton}>
-          <AntDesignIcons name="copy1" size={35} color={'black'} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => {}} style={styles.actionButton}>
-          <MaterialIcons name="delete" size={35} color={'darkred'} />
-        </TouchableOpacity>
+  const getSharedLinks = async () => {
+    setLoading(true);
+    try {
+      const {data} = await httpGet(
+        apiStore.defaultUrl + shareLink,
+        loginStore.userToken,
+      );
+      setSharedLinks(data.items);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  const deleteLink = async (linkToken: string) => {
+    try {
+      const {data} = await httpDelete(
+        apiStore.defaultUrl + shareLink + linkToken,
+        loginStore.userToken,
+      );
+      await getSharedLinks();
+      showSuccess('Success', 'Link deleted');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getSharedLinks();
+  }, []);
+
+  const showQr = (link: string) => {
+    setModalData({visible: true, link});
+  };
+  const UserItem = ({item}: {item: ISharedLink}) => {
+    const link = generateProfileLink({
+      firstName: loginStore.initialData.firstName,
+      lastName: loginStore.initialData.lastName,
+      walletAddress: item.walletAddress,
+      xmppId:
+        loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
+      linkToken: item.token,
+    });
+
+    return (
+      <HStack alignItems={'center'} justifyContent={'space-between'}>
+        <VStack>
+          <Text style={styles.linkName}>{item.memo}</Text>
+          <Text style={styles.linkDate}>
+            Created at: {moment(item.createdAt).format('MMMM DD YYYY, hh:mm')}
+          </Text>
+          <Text style={styles.linkDate}>
+            Expires:{' '}
+            {moment(
+              new Date(item.createdAt).getTime() + +item.expiration,
+            ).format('MMMM DD YYYY hh:mm')}
+          </Text>
+        </VStack>
+        <HStack>
+          <TouchableOpacity
+            onPress={() => showQr(link)}
+            style={styles.actionButton}>
+            <AntDesignIcons name="qrcode" size={35} color={'black'} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              setClipboard(unv_url + link);
+            }}
+            style={styles.actionButton}>
+            <AntDesignIcons name="copy1" size={35} color={'black'} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => deleteLink(item.token)}
+            style={styles.actionButton}>
+            <MaterialIcons name="delete" size={35} color={'darkred'} />
+          </TouchableOpacity>
+        </HStack>
       </HStack>
-    </HStack>
-  );
-  const renderItem = ({item}: {item: ILink}) => <UserItem item={item} />;
+    );
+  };
+  const renderItem = ({item}: {item: ISharedLink}) => <UserItem item={item} />;
 
   return (
     <VStack paddingX={5}>
@@ -71,12 +149,30 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
         </Text>
       </View>
       <View style={{marginTop: 10}}>
-        <FlatList
-          data={items}
-          renderItem={renderItem}
-          keyExtractor={item => item.createdAt.toString()}
-        />
+        {loading && (
+          <ActivityIndicator size={40} color={commonColors.primaryDarkColor} />
+        )}
+        {sharedLinks.length ? (
+          <FlatList
+            data={sharedLinks}
+            renderItem={renderItem}
+            keyExtractor={item => item?.token.toString()}
+          />
+        ) : (
+          <>
+            {!loading && (
+              <Text style={styles.title}>You have no shared links...</Text>
+            )}
+          </>
+        )}
       </View>
+      <Modal
+        animationIn={'slideInUp'}
+        animationOut={'slideOutDown'}
+        isVisible={modalData.visible}
+        onBackdropPress={() => setModalData({visible: false, link: ''})}>
+        <QRCodeGenerator shareKey={modalData.link} close={() => {}} />
+      </Modal>
     </VStack>
   );
 };
@@ -111,5 +207,6 @@ const styles = StyleSheet.create({
   linkDate: {
     fontFamily: textStyles.regularFont,
     color: 'black',
+    fontSize: 12,
   },
 });
