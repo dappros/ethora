@@ -12,10 +12,12 @@ import {EmailModal} from "./EmailModal";
 import {UsernameModal} from "./UsernameModal";
 import {MetamaskModal} from "./MetamaskModal";
 import { OwnerRegistration } from "./OwnerRegistrationModal";
+import OwnerLogin from "./OwnerLogin";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
+  const owner = useStoreState((state) => state.owner);
   const query = useQuery();
   const history = useHistory();
   const { active, account, library, activate } = useWeb3React();
@@ -29,7 +31,11 @@ export function Signon() {
     if (user.firstName) {
       history.push(`/profile/${user.walletAddress}`);
     }
-  }, [user]);
+
+    if (owner.firstName) {
+      history.push('/owner')
+    }
+  }, [user, owner]);
 
   const onMetamaskLogin = () => {
     activate(injected);
@@ -169,6 +175,7 @@ export function Signon() {
         setOpen={setOpenUsername}
       ></UsernameModal>
       <OwnerRegistration open={ownerRegistration} setOpen={setOwnerRegistration}></OwnerRegistration>
+      <OwnerLogin open={ownerLogin} setOpen={setOwnerLogin}></OwnerLogin>
     </Container>
   );
 }
