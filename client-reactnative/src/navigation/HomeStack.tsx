@@ -24,7 +24,7 @@ import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
 import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
 import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
-import { PrivacyAndDataScreen } from '../Screens/PrivacyAndDataScreen';
+import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -74,6 +74,7 @@ export const HomeStackScreen = observer(() => {
           const xmppId: string = queryParams.get('xmppId');
           const walletAddressFromLink: string =
             queryParams.get('walletAddress');
+          const linkToken = queryParams.get('linkToken');
 
           if (walletAddress === walletAddressFromLink) {
             navigation.navigate(ROUTES.PROFILE);
@@ -92,7 +93,9 @@ export const HomeStackScreen = observer(() => {
                 anotherUserWalletAddress: walletAddressFromLink,
               });
             }, 2000);
-            navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+            navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN, {
+              linkToken: linkToken,
+            });
           }
         } else {
           const chatJID =
@@ -118,6 +121,8 @@ export const HomeStackScreen = observer(() => {
           const firstName: string = queryParams.get('firstName');
           const lastName: string = queryParams.get('lastName');
           const xmppId: string = queryParams.get('xmppId');
+          const linkToken: string = queryParams.get('linkToken');
+
           const walletAddressFromLink: string =
             queryParams.get('walletAddress');
           if (walletAddress === walletAddressFromLink) {
@@ -240,21 +245,21 @@ export const HomeStackScreen = observer(() => {
           header: ({navigation}) => <MainHeader />,
         })}
       />
-           <HomeStack.Screen
+      <HomeStack.Screen
         name={ROUTES.PRIVACY}
         component={PrivacyAndDataScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}
       />
-          
+
       <HomeStack.Screen
-      name={ROUTES.CHATDETAILS}
-      component={ChatDetailsScreen}
-      options={() => ({
-        // header: ({navigation}) => <MainHeader />,
-        headerShown:false
-      })}
+        name={ROUTES.CHATDETAILS}
+        component={ChatDetailsScreen}
+        options={() => ({
+          // header: ({navigation}) => <MainHeader />,
+          headerShown: false,
+        })}
       />
     </HomeStack.Navigator>
   );

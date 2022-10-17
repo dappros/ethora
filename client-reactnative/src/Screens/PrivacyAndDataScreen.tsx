@@ -1,5 +1,5 @@
 import {Text} from 'native-base';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {commonColors, textStyles} from '../../docs/config';
@@ -16,6 +16,7 @@ const renderTabBar = (props: any) => {
         <Text
           color={focused ? 'white' : 'info.200'}
           fontSize={10}
+          textAlign={'center'}
           fontFamily={textStyles.semiBoldFont}>
           {route.title}
         </Text>
@@ -36,7 +37,15 @@ export const PrivacyAndDataScreen = () => {
     {key: 'blocking', title: 'Blocking'},
     {key: 'manageData', title: 'Manage Data'},
   ];
-
+  const scene = useMemo(() => {
+    return SceneMap({
+      visibility: () => <Visibility />,
+      profileShares: () => <ProfileShare />,
+      documentShares: () => <DocumentShares />,
+      blocking: () => <Blocking />,
+      manageData: () => <ManageData />,
+    });
+  }, []);
   return (
     <>
       <SecondaryHeader title={'Privacy and Data'} />
@@ -47,13 +56,7 @@ export const PrivacyAndDataScreen = () => {
           index: routeIndex,
           routes: routes,
         }}
-        renderScene={SceneMap({
-          visibility: () => <Visibility />,
-          profileShares: () => <ProfileShare />,
-          documentShares: () => <DocumentShares />,
-          blocking: () => <Blocking />,
-          manageData: () => <ManageData />,
-        })}
+        renderScene={scene}
         onIndexChange={setRouteIndex}
         initialLayout={{width: widthPercentageToDP('100%')}}
       />
