@@ -126,7 +126,7 @@ const firstLayout = [
   },
 ];
 
-const OtherUserProfileScreen = observer((props: any) => {
+const OtherUserProfileScreen = observer(({navigation, route}) => {
   const {loginStore, walletStore, apiStore, chatStore, otherUserStore} =
     useStores();
 
@@ -151,7 +151,7 @@ const OtherUserProfileScreen = observer((props: any) => {
     mimetype: '',
   });
   const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
-
+  const linkToken = route.params?.linkToken;
   const anotherUserTransaction = walletStore.anotherUserTransaction;
   const transactionCount = anotherUserTransaction.length;
 
@@ -278,10 +278,10 @@ const OtherUserProfileScreen = observer((props: any) => {
       10,
       0,
     );
-    await walletStore.fetchWalletBalance(
+    await walletStore.fetchOtherUserWalletBalance(
       loginStore.anotherUserWalletAddress,
       loginStore.userToken,
-      false,
+      linkToken || '',
     );
     setIsLoading(false);
     setIsLoadingVCard(false);
@@ -356,7 +356,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                     assetsYouHave={e.item.balance}
                     totalAssets={e.item.total}
                     onClick={() =>
-                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                      navigation.navigate(ROUTES.NFTITEMHISTORY, {
                         screen: 'NftItemHistory',
                         params: {
                           item: e.item,
@@ -394,7 +394,7 @@ const OtherUserProfileScreen = observer((props: any) => {
                     nftId={e.item.nftId}
                     mimetype={e.item.nftMimetype}
                     onClick={() =>
-                      props.navigation.navigate(ROUTES.NFTITEMHISTORY, {
+                      navigation.navigate(ROUTES.NFTITEMHISTORY, {
                         screen: 'NftItemHistory',
                         params: {
                           item: e.item,
@@ -442,8 +442,6 @@ const OtherUserProfileScreen = observer((props: any) => {
       );
     }
   };
-
-  const {navigation} = props;
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>

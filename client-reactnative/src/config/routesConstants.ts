@@ -41,3 +41,7 @@ export const nfmtCollectionTransferURL = '/tokens/items/nfmt/transferOwnership';
 export const refreshTokenURL = '/users/login/refresh';
 export const resetPasswordURL = '/users/forgot';
 export const changeUserData = '/users/';
+export const otherProfileBalance = '/users/profile/';
+
+export const shareLink = '/shareLink/';
+

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {StyleSheet, ScrollView} from 'react-native';
 import {HStack, Input, Pressable, Text, View} from 'native-base';
 import {commonColors, textStyles, unv_url} from '../../../docs/config';
@@ -9,6 +9,12 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useClipboard} from '@react-native-clipboard/clipboard';
 import {Select} from 'native-base';
+import {Button} from '../../components/Button';
+import {httpPost} from '../../config/apiService';
+import {useStores} from '../../stores/context';
+import {shareLink} from '../../config/routesConstants';
+import {generateProfileLink} from '../../helpers/generateProfileLink';
+import QRCodeGenerator from '../../components/QRCodeGenerator';
 
 export interface IProfileShareAdd {}
 
@@ -17,80 +23,54 @@ const DAY = HOUR * 24;
 const WEEK = DAY * 7;
 const MONTH = WEEK * 28;
 
-const ShareOrCopy = () => {
-  const [data, setString] = useClipboard();
-  return (
-    <View alignItems={'center'}>
-      <Pressable
-        shadow={3}
-        style={({pressed}) => [
-          {
-            backgroundColor: pressed
-              ? '#1667e2'
-              : commonColors.primaryDarkColor,
-          },
-        ]}
-        height={wp('10%')}
-        justifyContent="center"
-        alignItems="center"
-        bg={commonColors.primaryDarkColor}
-        flexDirection="row"
-        margin={5}
-        marginBottom={2}
-        borderRadius={5}
-        onPress={() => {}}
-        w={'80%'}>
-        <Text style={styles.shareText}>Share QR</Text>
-        <Ionicons size={hp('2%')} color={'#fff'} name="share-social" />
-      </Pressable>
-
-      <Text>Or copy link</Text>
-      <Pressable
-        shadow={2}
-        height={wp('10%')}
-        justifyContent="center"
-        alignItems="center"
-        bg={'#fff'}
-        flexDirection="row"
-        margin={5}
-        marginTop={2}
-        w={'80%'}
-        borderRadius={5}
-        onPress={() => setString(unv_url)}>
-        <View flex={0.8}>
-          <Text
-            color={'#000'}
-            overflow={'hidden'}
-            fontFamily={textStyles.mediumFont}
-            numberOfLines={1}>
-            {' '}
-            {unv_url}
-          </Text>
-        </View>
-
-        <View
-          flex={0.2}
-          bg={commonColors.primaryDarkColor}
-          w={wp('18%')}
-          h={wp('9%')}
-          borderRadius={5}
-          justifyContent={'center'}
-          alignItems={'center'}
-          shadow={1}
-          margin={1}>
-          <Text color={'#fff'} fontFamily={textStyles.mediumFont}>
-            Copy
-          </Text>
-        </View>
-      </Pressable>
-    </View>
-  );
-};
+interface ISharedLink {
+  _id: string;
+  createdAt?: Date;
+  expiration: string;
+  memo: string;
+  resource: string;
+  token: string;
+  updatedAt: string;
+  userId: string;
+  walletAddress: string;
+}
 
 export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
   const [memo, setMemo] = useState('');
   const [expiration, setExpiration] = useState('');
+  const [createdLink, setCreatedLink] = useState<ISharedLink>({
+    _id: '',
+    expiration: '',
+    memo: '',
+    resource: '',
+    token: '',
+    updatedAt: '',
+    userId: '',
+    walletAddress: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const {apiStore, loginStore} = useStores();
+  const inputRef = useRef();
+  const generateLink = async () => {
+    const body = {
+      expiration: expiration,
+      memo: memo,
+      resource: 'profile',
+    };
+    setLoading(true);
 
+    try {
+      const {data} = await httpPost(
+        apiStore.defaultUrl + shareLink,
+        body,
+        loginStore.userToken,
+      );
+      setCreatedLink(data.sharelinkData);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
   return (
     <ScrollView
       style={{backgroundColor: 'white', paddingHorizontal: 20, flex: 1}}>
@@ -123,7 +103,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           color={commonColors.primaryColor}
           mt={1}
           onValueChange={itemValue => setExpiration(itemValue)}>
-          <Select.Item label="No Expiration" value={Infinity.toString()} />
+          <Select.Item label="No Expiration" value={(-1).toString()} />
           <Select.Item label="1 hour" value={HOUR.toString()} />
           <Select.Item label="1 day" value={DAY.toString()} />
           <Select.Item label="1 week" value={WEEK.toString()} />
@@ -136,6 +116,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           Add an optional note so that you remember who you shared this with.
         </Text>
         <Input
+          ref={inputRef}
           maxLength={30}
           marginBottom={2}
           marginTop={1}
@@ -149,6 +130,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           borderColor={commonColors.primaryColor}
         />
       </View>
+
       <View>
         <Text style={styles.title}> Here you go!</Text>
         <Text>
@@ -160,7 +142,27 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           link in future.
         </Text>
       </View>
-      <ShareOrCopy />
+      {createdLink.walletAddress ? (
+        <QRCodeGenerator
+          shareKey={generateProfileLink({
+            firstName: loginStore.initialData.firstName,
+            lastName: loginStore.initialData.lastName,
+            walletAddress: createdLink.walletAddress,
+            xmppId:
+              loginStore.initialData.xmppUsername +
+              '@' +
+              apiStore.xmppDomains.DOMAIN,
+          })}
+          close={() => {}}
+        />
+      ) : (
+        <Button
+         style={{marginBottom: 30}}
+          loading={loading}
+          title={'Generate Link'}
+          onPress={generateLink}
+        />
+      )}
     </ScrollView>
   );
 };

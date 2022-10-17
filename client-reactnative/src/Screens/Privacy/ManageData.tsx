@@ -3,10 +3,28 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import {Button} from '../../components/Button';
+import {showError, showSuccess} from '../../components/Toast/toast';
+import {httpDelete} from '../../config/apiService';
+import {changeUserData} from '../../config/routesConstants';
+import {useStores} from '../../stores/context';
 
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
+  const {loginStore, apiStore} = useStores();
+  const deleteAccount = async () => {
+    try {
+      await httpDelete(
+        apiStore.defaultUrl + changeUserData,
+        loginStore.userToken,
+      );
+      showSuccess('Success', 'Account deleted successfully');
+      loginStore.logOut();
+    } catch (error) {
+      console.log(error)
+      showError('Error', 'Something went wrong');
+    }
+  };
   return (
     <VStack paddingX={5} marginTop={5}>
       <VStack>
@@ -47,7 +65,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
             <Button
               style={{backgroundColor: 'red', width: '60%'}}
               title="Delete my account"
-              onPress={() => {}}
+              onPress={deleteAccount}
             />
           </View>
         </VStack>

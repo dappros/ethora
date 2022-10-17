@@ -224,7 +224,7 @@ export class LoginStore {
       this.stores.apiStore.defaultToken,
     );
     if (response.data.success) {
-      this.loginHandler(response,'');
+      this.loginHandler(response, '');
     }
   };
 
@@ -257,7 +257,7 @@ export class LoginStore {
     }
   };
 
-  loginHandler = async (response:any, photo:string) => {
+  loginHandler = async (response: any, photo: string) => {
     await asyncStorageSetItem('userToken', response.data.token);
     await asyncStorageSetItem('refreshToken', response.data.refreshToken);
     runInAction(() => {
@@ -266,8 +266,16 @@ export class LoginStore {
       this.refreshToken = response.data.refreshToken;
     });
 
-    let {firstName, lastName, username, password, xmppPassword, _id} =
-      response.data.user;
+    let {
+      firstName,
+      lastName,
+      username,
+      password,
+      xmppPassword,
+      _id,
+      isProfileOpen,
+      isAssetsOpen,
+    } = response.data.user;
 
     if (!lastName) {
       lastName = firstName.split(' ')[1];
@@ -288,7 +296,10 @@ export class LoginStore {
       xmppUsername,
       _id,
       referrerId: response.data.referrerId || '',
+      isProfileOpen: isProfileOpen,
+      isAssetsOpen: isAssetsOpen,
     };
+    console.log(response.data.user)
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
       this.initialData = dataForStorage;
@@ -310,7 +321,7 @@ export class LoginStore {
         body,
         this.stores.apiStore.defaultToken,
       );
-      await this.loginHandler(response,'');
+      await this.loginHandler(response, '');
     } catch (error) {
       console.log(error);
     }
@@ -406,7 +417,7 @@ export class LoginStore {
       const url = this.stores.apiStore.defaultUrl + registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
-        this.loginHandler(response,'');
+        this.loginHandler(response, '');
       }
     } catch (error: any) {
       console.log(error.response, 'sdjfklsdjfjlsdkfj');

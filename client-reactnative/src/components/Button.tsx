@@ -35,7 +35,7 @@ export const Button: React.FC<ButtonProps> = ({
           alignItems: 'center',
         }}>
         <Text style={styles.submitButtonText}>
-          {loading ? <ActivityIndicator color={'white'} size={20} /> : title}
+          {loading ? <ActivityIndicator color={'white'} size={30} /> : title}
         </Text>
       </View>
     </TouchableOpacity>

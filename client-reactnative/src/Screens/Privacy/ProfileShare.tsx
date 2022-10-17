@@ -1,5 +1,5 @@
 import {Text} from 'native-base';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {commonColors, textStyles} from '../../../docs/config';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
@@ -25,13 +25,19 @@ const renderTabBar = (props: any) => {
     />
   );
 };
+const routes = [
+  {key: 'manage', title: 'Manage'},
+  {key: 'add', title: 'Add'},
+];
+
 export const ProfileShare = () => {
   const [routeIndex, setRouteIndex] = useState(0);
-
-  const routes = [
-    {key: 'manage', title: 'Manage'},
-    {key: 'add', title: 'Add'},
-  ];
+  const scene = useMemo(() => {
+    return SceneMap({
+      manage: () => <ProfileShareManage onAddPress={setRouteIndex} />,
+      add: () => <ProfileShareAdd />,
+    });
+  }, [routeIndex]);
 
   return (
     <TabView
@@ -41,10 +47,7 @@ export const ProfileShare = () => {
         index: routeIndex,
         routes: routes,
       }}
-      renderScene={SceneMap({
-        manage: () => <ProfileShareManage onAddPress={setRouteIndex} />,
-        add: () => <ProfileShareAdd />,
-      })}
+      renderScene={scene}
       onIndexChange={setRouteIndex}
       initialLayout={{width: widthPercentageToDP('100%')}}
     />

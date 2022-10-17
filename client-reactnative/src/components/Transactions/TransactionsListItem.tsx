@@ -29,8 +29,8 @@ interface TransactionListProps {
   transactionSender: string;
   transactionReceiver: string;
   transactionOwnerWalletAddress: string;
-  from:string;
-  to:string;
+  from: string;
+  to: string;
 }
 
 export const TransactionsListItem = (props: TransactionListProps) => {
@@ -48,14 +48,12 @@ export const TransactionsListItem = (props: TransactionListProps) => {
     name,
     transactionOwnerWalletAddress,
     from,
-    to
+    to,
   } = props;
   const [expanded, setExpanded] = useState(false);
   const isTransactionOwner =
-    from === transactionOwnerWalletAddress || to===from;
+    from === transactionOwnerWalletAddress || to === from;
 
-
-    
   return (
     <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
@@ -64,8 +62,8 @@ export const TransactionsListItem = (props: TransactionListProps) => {
           <HStack>
             <VStack justifyContent={'center'} alignItems={'center'}>
               <Box
-                w={hp('2.89%')}
-                h={hp('2.89%')}
+                w={hp('2.8%')}
+                h={hp('2.8%')}
                 rounded={'full'}
                 bg={commonColors.primaryColor}
                 justifyContent={'center'}
