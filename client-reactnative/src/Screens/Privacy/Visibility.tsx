@@ -3,13 +3,66 @@ import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import {Button} from '../../components/Button';
+import {showSuccess} from '../../components/Toast/toast';
+import {httpUploadPut} from '../../config/apiService';
+import {changeUserData} from '../../config/routesConstants';
+import {useStores} from '../../stores/context';
 
 export interface IVisibility {}
+
+const state: Record<string, boolean> = {
+  open: true,
+  restricted: false,
+  full: true,
+  individual: false,
+};
 
 export const Visibility: React.FC<IVisibility> = ({}) => {
   const [visibilityValue, setVisibilityValue] = useState('open');
   const [assetsValue, setAssetsValue] = useState('full');
+  const {apiStore, loginStore} = useStores();
+  const [loading, setLoading] = useState(false);
 
+  const updateProfileVisibility = async () => {
+    const profileState = state[visibilityValue];
+    setLoading(true);
+    console.log(profileState)
+
+    try {
+      const formData = new FormData();
+      formData.append('isProfileOpen', profileState);
+      await httpUploadPut(
+        apiStore.defaultUrl + changeUserData,
+        formData,
+        loginStore.userToken,
+        console.log,
+      );
+      showSuccess('Success', 'Profile permissions updated');
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  const updateAssetsVisibility = async () => {
+    setLoading(true);
+    const assetsState = state[assetsValue];
+    console.log(assetsState)
+    try {
+      const formData = new FormData();
+      formData.append('isAssetsOpen', assetsState);
+      const {data} = await httpUploadPut(
+        apiStore.defaultUrl + changeUserData,
+        formData,
+        loginStore.userToken,
+        console.log,
+      );
+      showSuccess('Success', 'Assets permissions updated');
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
   return (
     <VStack paddingX={10}>
       <View>
@@ -59,7 +112,11 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
             </View>
           </Radio.Group>
           <View mt={5}>
-            <Button title="Manage profile shares" onPress={() => {}} />
+            <Button
+              title="Manage profile shares"
+              onPress={updateProfileVisibility}
+              loading={loading}
+            />
           </View>
         </VStack>
       </View>
@@ -112,7 +169,11 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
             </View>
           </Radio.Group>
           <View mt={1}>
-            <Button title="Manage assets shares" onPress={() => {}} />
+            <Button
+              loading={loading}
+              title="Manage assets shares"
+              onPress={updateAssetsVisibility}
+            />
           </View>
         </VStack>
       </View>
