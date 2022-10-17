@@ -6,6 +6,7 @@ import {
   itemTransferURL,
   nfmtCollectionTransferURL,
   nfmtTransferURL,
+  otherProfileBalance,
   tokenEtherBalanceURL,
   tokenTransferURL,
   transactionURL,
@@ -269,6 +270,47 @@ export class WalletStore {
     }
   }
 
+  async fetchOtherUserWalletBalance(
+    walletAddress: string,
+    token: string,
+    linkToken?: string,
+  ) {
+    let url =
+      this.defaultUrl +
+      otherProfileBalance +
+      walletAddress +
+      '/' +
+      (linkToken || '');
+      console.log(url)
+    runInAction(() => {
+      this.isFetching = true;
+    });
+    try {
+      const response = await httpGet(url, token);
+
+      runInAction(() => {
+        this.isFetching = false;
+      });
+      this.stores.debugStore.addLogsApi(response.data);
+      const extBalance = response.data?.extBalance || [];
+
+      runInAction(() => {
+        this.anotherUserBalance = response.data.balances.balance;
+        this.anotherUserNfmtCollections =
+          response.data.balances.nfmtContracts.map(item =>
+            generateCollections(item),
+          );
+      });
+    } catch (error: any) {
+      console.log(error);
+      runInAction(() => {
+        this.stores.debugStore.addLogsApi(error);
+        this.isFetching = false;
+        this.error = true;
+        this.errorMessage = error;
+      });
+    }
+  }
   clearPreviousTransfer = () => {
     runInAction(() => {
       this.tokenTransferSuccess = {
@@ -281,12 +323,7 @@ export class WalletStore {
       };
     });
   };
-  async transferCollection(
-    body,
-    senderName,
-    receiverName,
-    tokenName,
-  ) {
+  async transferCollection(body, senderName, receiverName, tokenName) {
     const response = await httpPost(
       this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,
       body,
