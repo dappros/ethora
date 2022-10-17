@@ -257,3 +257,16 @@ export function nftDeploy(name: string, mediaId: string, rarity: string) {
     }
   )
 }
+
+export function registerOwner(firstName: string, lastName: string, email: string, company: string, tnc: string) {
+  return http.post(
+    '/users/register',
+    {
+      firstName,
+      lastName,
+      email,
+      company,
+      tnc
+    }
+  )
+}

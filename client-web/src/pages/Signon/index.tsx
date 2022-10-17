@@ -11,6 +11,7 @@ import { useQuery } from "../../utils";
 import {EmailModal} from "./EmailModal";
 import {UsernameModal} from "./UsernameModal";
 import {MetamaskModal} from "./MetamaskModal";
+import { OwnerRegistration } from "./OwnerRegistrationModal";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -21,6 +22,8 @@ export function Signon() {
   const [openEmail, setOpenEmail] = useState(false);
   const [openUsername, setOpenUsername] = useState(false);
   const [showMetamask, setShowMetamask] = useState(false);
+  const [ownerRegistration, setOwnerRegistration] = useState(false);
+  const [ownerLogin, setOwnerLogin] = useState(false);
 
   useEffect(() => {
     if (user.firstName) {
@@ -139,6 +142,24 @@ export function Signon() {
         >
           Continue with username
         </Button>
+        <Button
+          sx={{ margin: 1 }}
+          fullWidth
+          variant="outlined"
+          color="success"
+          onClick={() => setOwnerRegistration(true)}
+        >
+          Owner Registration
+        </Button>
+        <Button
+          sx={{ margin: 1 }}
+          fullWidth
+          variant="outlined"
+          color="success"
+          onClick={() => setOwnerLogin(true)}
+        >
+          Owner Login
+        </Button>
       </Box>
 
       <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />
@@ -147,6 +168,7 @@ export function Signon() {
         open={openUsername}
         setOpen={setOpenUsername}
       ></UsernameModal>
+      <OwnerRegistration open={ownerRegistration} setOpen={setOwnerRegistration}></OwnerRegistration>
     </Container>
   );
 }
