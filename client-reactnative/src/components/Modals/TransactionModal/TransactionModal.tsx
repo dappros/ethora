@@ -629,25 +629,47 @@ const TransactionModal = (props: TransactionModalProps) => {
                   onPress={onDirectMessagePress}
                 />
                 {chatStore.roomRoles[extraData.chatJid] !== 'participant' && (
-                  <>
+                  <View style={{width: wp('70%'), alignItems: 'center'}}>
                     <Seperator />
                     <ReportAndBlockButton
                       onPress={handleBanUser}
-                      text={'Ban (this room)'}
-                      style={{backgroundColor: '#460000'}}
+                      text={'Ban this user'}
+                      style={{backgroundColor: '#a32f2b'}}
                     />
-                  </>
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        textAlign: 'center',
+                        lineHeight: 10,
+                        marginTop: 5,
+                      }}>
+                      The ban feature allows you to kick a user out of the chat
+                      without the possibility of returning to it before
+                      unbanning.
+                    </Text>
+                  </View>
                 )}
               </>
             )}
-            <>
+            <View style={{width: wp('70%'), alignItems: 'center'}}>
               <Seperator />
               <ReportAndBlockButton
                 onPress={onBlackListPress}
-                text={'Block (your contacts)'}
-                style={{backgroundColor: '#460000'}}
+                text={'Block this user'}
+                style={{backgroundColor: commonColors.primaryColor}}
               />
-            </>
+
+              <Text
+                style={{
+                  fontSize: 10,
+                  textAlign: 'center',
+                  lineHeight: 10,
+                  marginTop: 5,
+                }}>
+                The block list is a global feature that allows you not to
+                receive any messages from a blocklisted user before unblocking,
+              </Text>
+            </View>
           </View>
         </Modal>
       );
