@@ -1,0 +1,485 @@
+@import "../variables";
+
+$_message-avatar-justify-content: flex-end;
+
+// How far message avatar should be postponed from message (and message from avatar for outgoing)
+$_message-avatar-offset: $message-avatar-width + $message-avatar-horizontal-margin;
+
+
+.#{$prefix}-message {
+  // Local alias
+  $message-class: &;
+
+  box-sizing: border-box;
+  font-size: $message-font-size;
+  font-family: $message-font-family;
+  color: $message-color;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  background-color: $message-bg-color;
+  overflow: hidden;
+
+  border-radius: $message-border-radius;
+  
+  &:only-child {
+    margin: $message-only-child-margin;
+  }
+  
+  &:not(:only-child) {
+    margin: $message-not-only-child-margin;
+  }
+
+  &__avatar {
+    box-sizing: border-box;
+    margin: $message-avatar-margin;
+    display: flex;
+    flex-direction: column;
+    justify-content: $_message-avatar-justify-content;
+    width: $message-avatar-width;
+  }
+  
+  &__content-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    box-sizing: border-box;
+    color: $message-header-color;
+    background-color: $message-header-bg-color;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    font-size: 0.8em;
+    margin: $message-header-margin;
+
+    #{$message-class}__sender-name {
+      box-sizing: border-box;
+      color: $message-sender-name-color;
+      background-color: $message-sender-name-bg-color;
+    }
+
+    #{$message-class}__sent-time {
+      box-sizing: border-box;
+      color: $message-sent-time-color;
+      background-color: $message-sent-time-bg-color;
+      margin-left: auto;
+      padding-left: 0.8em;
+    }
+    
+  }
+
+  &__footer {
+    box-sizing: border-box;
+    color: $message-footer-color;
+    background-color: $message-footer-bg-color;
+    display: flex;
+    font-size: 0.8em;
+    margin: $message-footer-margin;
+
+    #{$message-class}__sender-name {
+      box-sizing: border-box;
+      color: $message-sender-name-color;
+      background-color: $message-sender-name-bg-color;
+    }
+
+    #{$message-class}__sent-time {
+      box-sizing: border-box;
+      color: $message-sent-time-color;
+      background-color: $message-sent-time-bg-color;
+      margin-left: auto;
+      padding-left: 0.8em;
+    }
+    
+  }
+  
+  &__content {
+    box-sizing: border-box;
+    color: $message-content-color;
+    background-color: $message-content-bg-color;
+    margin-top: $message-content-margin-top;
+    padding: 0.6em 0.9em;
+    border-radius: $message-content-border-radius;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word; // break-word value is deprecated, but it's necessary for Safari
+    font-family: $message-content-font-family;
+    font-weight: $message-content-font-weight;
+    font-size: $message-content-font-size;
+    font-variant: $message-content-font-variant;
+  }
+
+  // Modifier: Incoming message
+  &--incoming {
+    color: $message-incoming-color;
+    background-color: $message-incoming-bg-color;
+    margin-right: auto;
+
+    & #{$message-class}__avatar {
+      margin: $message-incoming-avatar-margin;
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-incoming-sender-name {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-incoming-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    // Incoming message content
+    & #{$message-class}__content {
+      color: $message-content-incoming-color;
+      background-color: $message-content-incoming-bg-color;
+      border-radius: $message-incoming-content-border-radius;
+    }
+  }
+
+  // Modifier: Outgoing message
+  &--outgoing {
+    color: $message-outgoing-color;
+    background-color: $message-outgoing-bg-color;
+    margin-left: auto;
+    justify-content: flex-end;
+
+    & #{$message-class}__avatar {
+      order: 1;
+      margin: $message-outgoing-avatar-margin;
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-outgoing-sender-name {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-outgoing-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    // Outgoing message content
+    & #{$message-class}__content {
+      color: $message-content-outgoing-color;
+      background-color: $message-content-outgoing-bg-color;
+      border-radius: $message-outgoing-content-border-radius;
+    }
+  }
+
+  // Modifier: Single incoming message
+  &#{$message-class}--incoming#{$message-class}--single {
+    border-radius: $message-incoming-single-border-radius;
+
+    // Top margin for monologue (only when its not first message in conversation)
+    &:not(:first-child) {
+      margin-top: $message-monologue-margin-top;
+    }
+
+    & #{$message-class}__avatar {
+
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-incoming-single-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-incoming-single-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-incoming-content-single-border-radius;
+    }
+  }
+
+  // Modifier: First incoming message
+  &#{$message-class}--incoming#{$message-class}--first {
+    border-radius: $message-incoming-first-border-radius;
+
+    // Top margin for monologue (only when its not first message in conversation)
+    &:not(:first-child) {
+      margin-top: $message-monologue-margin-top;
+    }
+    
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-incoming-first-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-incoming-first-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-incoming-content-first-border-radius;
+      background-color: $message-content-incoming-bg-color;
+    }
+  }
+
+  // Modifier: Last incoming message
+  &#{$message-class}--incoming#{$message-class}--last {
+    border-radius: $message-incoming-last-border-radius;
+
+    & #{$message-class}__avatar {
+      
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-incoming-last-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-incoming-last-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-incoming-content-last-border-radius;
+    }
+  }
+
+  // Modifier: Single outgoing message
+  &#{$message-class}--outgoing#{$message-class}--single {
+    border-radius: $message-outgoing-single-border-radius;
+
+    // Top margin for monologue (only when its not first message in conversation)
+    &:not(:first-child) {
+      margin-top: $message-monologue-margin-top;
+    }
+
+    & #{$message-class}__avatar {
+      
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-outgoing-single-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-outgoing-single-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-outgoing-content-single-border-radius;
+    }
+  }
+
+  // Modifier: First outgoing message
+  &#{$message-class}--outgoing#{$message-class}--first {
+    border-radius: $message-outgoing-first-border-radius;
+    
+    margin-top: $message-monologue-margin-top;
+    
+    & #{$message-class}__avatar {
+      
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-outgoing-first-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-outgoing-first-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-outgoing-content-first-border-radius;
+      background-color: $message-content-outgoing-bg-color;
+    }
+  }
+
+  // Modifier: Last outgoing message
+  &#{$message-class}--outgoing#{$message-class}--last {
+    border-radius: $message-outgoing-last-border-radius;
+
+    & #{$message-class}__avatar {
+      
+    }
+
+    & #{$message-class}__content-wrapper {
+    }
+
+    & #{$message-class}__sender-name {
+      @if $show-message-outgoing-last-sender-name {
+        display: block;
+      }
+    }
+
+    & #{$message-class}__sent-time {
+      @if $show-message-outgoing-last-sent-time {
+        display: block;
+      } @else {
+        display: none;
+      }
+    }
+
+    #{$message-class}__content {
+      border-radius: $message-outgoing-content-last-border-radius;
+    }
+  }
+  
+  // Free space instead of avatar
+  &--incoming#{$message-class}--avatar-spacer {
+    margin-left: $_message-avatar-offset;
+  }
+
+  &--outgoing#{$message-class}--avatar-spacer {
+    margin-right: $_message-avatar-offset;
+  }
+  
+  // Avatar position
+  // By default incoming and default message has avatar on left and outoging has avatar on right.
+  // This can be changed by adding --avatar-left or avatar-right modifier
+  &--avatar-tl {
+
+    #{$message-class}__avatar {
+      justify-content:flex-start;
+      order:0;
+      margin-right: $message-avatar-horizontal-margin;
+      margin-left:0;
+    }
+    
+    #{$message-class}__message-wrapper {
+      order:1;
+    }
+
+  }
+
+  &--avatar-tr {
+    #{$message-class}__avatar {
+      justify-content:flex-start;
+      order:1;
+      margin-left: $message-avatar-horizontal-margin;
+      margin-right:0;
+    }
+    #{$message-class}__message-wrapper {
+      order:0;
+    }
+  }
+
+  &--avatar-br {
+
+    #{$message-class}__avatar {
+      justify-content:flex-end;
+      order:1;
+      margin-left: $message-avatar-horizontal-margin;
+      margin-right:0;
+    }
+
+    #{$message-class}__message-wrapper {
+      order:0;
+    }
+
+  }
+
+  &--avatar-bl {
+
+    #{$message-class}__avatar {
+      justify-content:flex-end;
+      order:0;
+      margin-right: $message-avatar-horizontal-margin;
+      margin-left:0;
+    }
+
+    #{$message-class}__message-wrapper {
+      order:1;
+    }
+
+  }
+
+  &--avatar-cl {
+
+    #{$message-class}__avatar {
+      justify-content:center;
+      order:0;
+      margin-right: $message-avatar-horizontal-margin;
+      margin-left:0;
+    }
+
+    #{$message-class}__message-wrapper {
+      order:1;
+    }
+
+  }
+
+  &--avatar-cr {
+
+    #{$message-class}__avatar {
+      justify-content:center;
+      order:1;
+      margin-left: $message-avatar-horizontal-margin;
+      margin-right:0;
+    }
+
+    #{$message-class}__message-wrapper {
+      order:0;
+    }
+
+  }
+  
+}

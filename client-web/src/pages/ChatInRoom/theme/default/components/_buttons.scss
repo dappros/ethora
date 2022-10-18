@@ -1,0 +1,100 @@
+@import "../variables";
+
+.#{$prefix}-button {
+  
+  // Local alias
+  $button-class: &;
+
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  color: $button-color;
+  background-color: $button-bg-color;
+  border: none;
+  border-radius: $button-border-radius;
+  margin: $button-margin;
+  padding: $button-padding;
+  outline: none;
+  font-size: $button-font-size;
+  line-height: $button-line-height;
+
+  &:focus {
+    outline:none;
+  }
+  
+  &:disabled {
+    opacity: $button-disabled-opacity;
+  }
+  
+  &:not(:disabled) {
+    cursor:pointer;
+  }
+
+  &#{$button-class}--border {
+    border: $button-border;  
+  }
+  
+  &:hover:not(:disabled) {
+    opacity: $button-hover-opacity;
+  }
+  
+  &#{$button-class}--right {
+    > svg[data-icon]:first-child {
+      margin-right:0.5em;
+    }
+  }
+
+  &#{$button-class}--left {
+    >svg[data-icon]:last-child {
+      margin-left:0.5em;
+    }
+  }
+
+  &--adduser {
+    color: $button-adduser-color;
+    background-color: $button-adduser-bg-color;
+  }
+  
+  &--arrow {
+    color: $button-arrow-color;
+    background-color: $button-arrow-bg-color;
+  }
+
+  &--ellipsis {
+    color: $button-ellipis-color;
+    background-color: $button-ellipis-bg-color;
+  }
+  
+  &--info {
+    color: $button-info-color;
+    background-color: $button-info-bg-color;
+  }
+
+  &--star {
+    color: $button-star-color;
+    background-color: $button-star-bg-color;
+  }
+
+  &--videocall {
+    color: $button-videocall-color;
+    background-color: $button-videocall-bg-color;
+  }
+  
+  &--voicecall {
+    color: $button-voicecall-color;
+    background-color: $button-voicecall-bg-color;
+  }
+
+  &--send {
+    color: $button-send-color;
+    background-color: $button-send-bg-color;
+  }
+
+  &--attachment {
+    color: $button-attachment-color;
+    background-color: $button-attachment-bg-color;
+  }
+  
+}
+

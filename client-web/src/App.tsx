@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useStoreState } from "./store";
 import AppTopNavAuth from "./componets/AppTopNavAuth";
 import AppTopNav from "./componets/AppTopNav";
-
+import "./pages/ChatInRoom/theme/default/main.scss"
 import { Routes } from "./pages/Routes";
 
 const darkTheme = createTheme({

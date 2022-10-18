@@ -1,0 +1,52 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+/********** Colors **********/
+
+/********** Fonts **********/
+
+/********** Styles **********/
+.#{$prefix}-conversation-list {
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  color: $conversation-list-color;
+  background-color: $conversation-list-bg-color;
+
+  & > div > ul {
+    @include reset-list;
+  }
+  
+  &__loading-more {
+    box-sizing: content-box;
+    @include flex-row;
+    justify-content: center;
+    position:absolute;
+    background-color: $conversation-list-loading-more-bg-color;
+    padding: $conversation-list-loading-more-padding;
+    bottom:0;
+    left:0;
+    right:0;
+    height: $conversation-list-loading-more-height;
+    z-index: 1;
+
+    .#{$prefix}-loader {
+      width:$conversation-list-loading-more-height;
+      height:$conversation-list-loading-more-height;
+    }
+    .#{$prefix}-loader::before,
+    .#{$prefix}-loader::after
+    {
+      width:100%;
+      height:100%;
+    }
+
+  }
+
+  // Perfect scrollbar fix to hide loading more indicator
+  .ps__rail-y {
+    z-index:2;
+  }
+  
+}

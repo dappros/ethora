@@ -1,0 +1,69 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-search {
+
+  box-sizing: border-box;
+  @include flex-row;
+  @include reset-spacing;
+  background-color: $search-bg-color;
+  align-items: center;
+  position: relative;
+  border-radius: $search-border-radius;
+  padding: 0.6em 0.9em;
+  font-size: $search-font-size;
+  font-family: $search-font-family;
+  
+  &__input {
+    box-sizing: border-box;
+    order:1;
+    color: $search-color;
+    border:none;
+    width:100%;
+    min-width: 0; // FF fix
+    outline:0;
+    margin-right:0.5em;
+    background-color:$search-input-bg-color;
+    font-size: $search-input-font-size;
+    font-family: $search-input-font-family;
+  }
+
+  &__input:disabled {
+    color: $search-disabled-color;
+    background-color:$search-input-disabled-bg-color;
+  }
+
+  &__input::placeholder {
+    color: $search-placeholder-color;
+  }
+  
+  &__search-icon {
+    box-sizing: border-box;
+    order:0;
+    display:block;
+    margin-right:0.5em;
+    color: $search-icon-color;
+  }
+
+  &__clear-icon {
+    box-sizing: border-box;
+    &:hover {
+      color: $search-clear-icon-color-hover;
+      cursor: pointer;
+    }
+    order: 2;
+    color: $search-clear-icon-color;
+    visibility:hidden;
+    
+    &--active {
+      visibility: visible;
+    }
+  }
+  
+  &--disabled {
+    opacity: $search-disabled-opacity;
+    color: $search-disabled-color;
+    background-color: $search-disabled-bg-color;
+  }
+  
+}

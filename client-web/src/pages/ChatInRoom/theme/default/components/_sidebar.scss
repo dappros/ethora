@@ -1,0 +1,28 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+// Sidebar variables
+
+.#{$prefix}-sidebar {
+
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  @include flex-column;
+  
+  
+  // For now left and right modifiers are only for indicate on what side sidebar should be placed inside container
+  &--left {
+    background-color: $sidebar-left-bg-color;
+  }
+  
+  &--right {
+    background-color: $sidebar-right-bg-color;
+  }
+  
+  & .#{$prefix}-expansion-panel + .#{$prefix}-expansion-panel {
+    border-top:0;
+  }
+  
+}
