@@ -46,8 +46,6 @@ const onMessage = async (stanza: Element) => {
 
 const onMessageHistory = async (stanza: Element) => {
     if (stanza.is('message')) {
-            console.log('Got a message')
-
             const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
             const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
             const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
@@ -57,7 +55,7 @@ const onMessageHistory = async (stanza: Element) => {
                 return
             }
 
-            if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName) {
+            if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName || !data.attrs.senderJID) {
                 return
             }
             const msg = {
@@ -68,7 +66,6 @@ const onMessageHistory = async (stanza: Element) => {
                 date: delay.attrs.stamp,
                 key: Date.now()
             }
-            console.log('Saved the message: ',body.getText())
             useStoreState.getState().setNewMessageHistory(msg)
             useStoreState.getState().sortMessageHistory();
     }
