@@ -28,6 +28,7 @@ import {
     MessageSeparator,
     ExpansionPanel
 } from '@chatscope/chat-ui-kit-react';
+import {stringify} from "querystring";
 
 export function ChatInRoom() {
     const [room, setRoom] = useState("");
@@ -45,7 +46,17 @@ export function ChatInRoom() {
         users_cnt: ''
     })
     const [defaultAvatar, setDefaultAvatar] = useState("https://cdn-icons-png.flaticon.com/512/2102/2102647.png")
+    const [loadingMore, setLoadingMore] = useState(false);
 
+    const onYReachStart = () => {
+        if (loadingMore) {
+            return;
+        }
+            setLoadingMore(true);
+            const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
+            xmpp.getPaginatedArchive(currentRoom, String(lastMessageID));
+            setLoadingMore(false);
+    }
 
     useEffect(() => {
         getPublicProfile(user.walletAddress)
@@ -96,6 +107,10 @@ export function ChatInRoom() {
         }
         xmpp.sendMessage(currentRoom, user.firstName, user.lastName, userAvatar, user.walletAddress, myMessage)
     };
+
+
+
+
     return (
         <div>
             <Box>
@@ -146,12 +161,13 @@ export function ChatInRoom() {
                         </ConversationHeader>
                         : null}
                         <MessageList
+                            loadingMore={loadingMore} onYReachStart={onYReachStart}
                             typingIndicator={<TypingIndicator content="Test is typing"/>}
                         >
                             {
                                 messages.filter((item: any) => item.roomJID === currentRoom).map(message =>
                                     <Message
-                                        key={message.id}
+                                        key={message.key}
                                         model={{
                                             sentTime: message.date,
                                             sender: message.data.senderFirstName + ' ' + message.data.senderLastName,
