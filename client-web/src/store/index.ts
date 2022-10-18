@@ -58,12 +58,26 @@ type TUserChatRooms = {
   users_cnt: string
 }
 
+type TApp = {
+  _id: string,
+  appName: string,
+  appToken: string,
+  createdAt: string,
+  updatedAt: string,
+  defaultAccessAssetsOpen: boolean,
+  defaultAccessProfileOpen: boolean,
+  usersCanFree: string,
+  appGoogleId?: string,
+  appLogo?: string,
+}
+
 interface IStore {
   user: TUser
   owner: TOwner
   messages: TMessage[],
   viewMode: TMode,
   balance: TBalance[],
+  apps: TApp[],
   toggleMode: () => void,
   setUser: (user: TUser) => void,
   setOwner: (owner: TOwner) => void,
@@ -78,7 +92,8 @@ interface IStore {
   userChatRooms: TUserChatRooms[],
   setNewUserChatRoom: (msg: TUserChatRooms) => void
   clearUserChatRooms: () => void,
-
+  setApps: (apps: TApp[]) => void,
+  setApp: (app: TApp) => void,
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -99,6 +114,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
       _id: '',
       walletAddress: ''
     },
+    apps: [],
     balance: [],
     viewMode: 'light',
     messages: [],
@@ -107,6 +123,9 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
     setOwner: (user: TOwner) => set((state) => {state.owner = user}),
+    setApps: (apps: TApp[]) => set((state) => {state.apps = apps}),
+    setApp: (app: TApp) => set((state) => {state.apps = [...state.apps, app]}),
+    clearApps: () => set((state) => {state.apps = []}),
     clearUser: () => set((state) => {
       state.user = {
         firstName: '',
