@@ -270,3 +270,13 @@ export function registerOwner(firstName: string, lastName: string, email: string
     }
   )
 }
+
+export function loginOwner(email: string, password: string) {
+  return http.post(
+    '/users/login/owner',
+    {
+      email,
+      password
+    }
+  )
+}

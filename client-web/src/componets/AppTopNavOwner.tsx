@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,44 +19,31 @@ import { NavLink } from "react-router-dom";
 
 import { useStoreState } from "../store";
 import coinImg from "../assets/images/coin.png";
-import xmpp from "../xmpp";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
 
-const menuItems = [
-  { name: "Chat", id: "chat" },
-  { name: "Explorer", id: "explorer" },
-];
 const AppTopNavOwner = () => {
   const user = useStoreState((state) => state.owner);
   const balances = useStoreState((state) => state.balance);
   const clearOwner = useStoreState((state) => state.clearOwner);
-  const setBalance = useStoreState((state) => state.setBalance);
-  const history = useHistory();
-
-  const mainCoinBalance = balances.find(
-    (el) => el.tokenName === "Dappros Platform Token"
-  );
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+  const [open, setOpen] = useState(false)
+  const history = useHistory();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
+  const mainCoinBalance = balances.find(
+    (el) => el.tokenName === "Dappros Platform Token"
+  );
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-  const onMenuItemClick = (id: string) => {
-    history.push("/" + id);
-    handleCloseUserMenu();
   };
 
   const onLogout = () => {
@@ -118,11 +105,11 @@ const AppTopNavOwner = () => {
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
-              anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: "top",
                 horizontal: "right",
               }}
+              anchorEl={anchorElUser}
               keepMounted
               transformOrigin={{
                 vertical: "top",
@@ -131,16 +118,9 @@ const AppTopNavOwner = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {menuItems.map((item) => {
-                return (
-                  <MenuItem
-                    onClick={() => onMenuItemClick(item.id)}
-                    key={item.id}
-                  >
-                    <Typography textAlign="center">{item.name}</Typography>
-                  </MenuItem>
-                );
-              })}
+              <MenuItem onClick={() => {}}>
+                CreateApp
+              </MenuItem>
               <MenuItem onClick={onLogout}>
                 <Typography textAlign="center">Logout</Typography>
               </MenuItem>
