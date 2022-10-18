@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     height: hp('5%'),
     borderRadius: hp('1%'),
     margin: 5,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#B22222',
