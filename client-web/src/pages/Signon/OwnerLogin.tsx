@@ -59,8 +59,11 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
           setOwner({
             firstName: response.data.user.firstName,
             lastName: response.data.user.lastName,
-            token: response.data.token
+            token: response.data.token,
+            walletAddress: response.data.user.defaultWallet.walletAddress,
+            _id: response.data.user._id
           })
+          history.push('/owner')
         })
         .catch((error) => {
           console.log('error ', error)

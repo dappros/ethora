@@ -11,10 +11,10 @@ import { useStoreState } from "../../store";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import FormGroup from "@mui/material/FormGroup";
-import Tnc from './Tnc';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Alert from '@mui/material/Alert';
-import * as http from '../../http'
+import Tnc from "./Tnc";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Alert from "@mui/material/Alert";
+import * as http from "../../http";
 
 type TProps = {
   open: boolean;
@@ -41,13 +41,31 @@ const validate = (values: Record<string, string>) => {
   return errors;
 };
 
-function getTnc(company: string, fname: string, lname: string, email: string, date: string) {
+function getTnc(
+  company: string,
+  fname: string,
+  lname: string,
+  email: string,
+  date: string
+) {
   let customer: string;
 
   if (company) {
-    customer = company + ", a company, represented by " + fname + " "+ lname + ", an individual, available at e-mail address: " + email;
+    customer =
+      company +
+      ", a company, represented by " +
+      fname +
+      " " +
+      lname +
+      ", an individual, available at e-mail address: " +
+      email;
   } else {
-    customer = fname + " " + lname + ", an individual, available at e-mail address: " + email
+    customer =
+      fname +
+      " " +
+      lname +
+      ", an individual, available at e-mail address: " +
+      email;
   }
   return `
   SaaS terms and conditions
@@ -571,39 +589,58 @@ function getTnc(company: string, fname: string, lname: string, email: string, da
   13.	Harmful software
   13.1	The Content must not contain or consist of, and you must not promote, distribute or execute by means of the Services, any viruses, worms, spyware, adware or other harmful or malicious software, programs, routines, applications or technologies.
   13.2	The Content must not contain or consist of, and you must not promote, distribute or execute by means of the Services, any software, programs, routines, applications or technologies that will or may have a material negative effect upon the performance of a computer or introduce material security risks to a computer.
-  `
+  `;
 }
 
 export function OwnerRegistration({ open, setOpen }: TProps) {
   const setOwner = useStoreState((state) => state.setOwner);
   const history = useHistory();
-  const [termsOpen, setTermsOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const formik = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
       email: "",
-      companyName: ""
+      companyName: "",
     },
     validate,
-    onSubmit: ({firstName, lastName, email, companyName}) => {
-      setLoading(true)
-      http.registerOwner(firstName, lastName, email, companyName, getTnc(companyName, firstName, lastName, email, new Date().toDateString()))
+    onSubmit: ({ firstName, lastName, email, companyName }) => {
+      setLoading(true);
+      http
+        .registerOwner(
+          firstName,
+          lastName,
+          email,
+          companyName,
+          getTnc(
+            companyName,
+            firstName,
+            lastName,
+            email,
+            new Date().toDateString()
+          )
+        )
         .then((result) => {
-          const data = result.data
-          setOwner({token: data.token, firstName: data.user.firstName, lastName: data.user.lastName })
-          history.push('/owner')
+          const data = result.data;
+          setOwner({
+            token: data.token,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+            _id: data.user._id,
+            walletAddress: data.user.defaultWallet.walletAddress
+          });
+          history.push("/owner");
         })
         .catch((error) => {
           if (error.response && error.response.status === 409) {
-            setError(error.response.data)
+            setError(error.response.data);
           }
         })
         .finally(() => {
-          setLoading(false)
-        })
+          setLoading(false);
+        });
     },
   });
 
@@ -700,13 +737,16 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
                   : ""
               }
             />
-            <a href="/" onClick={(e) => {
-              e.preventDefault()
-              setTermsOpen(true)
-            }}>
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                setTermsOpen(true);
+              }}
+            >
               Terms and Conditions
             </a>
-            <FormGroup >
+            <FormGroup>
               <FormControlLabel
                 value="I agree to the above terms and conditions"
                 checked={true}
@@ -715,7 +755,7 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
                 labelPlacement="end"
               />
             </FormGroup>
-            { !!error && <Alert severity="error">{error}</Alert> }
+            {!!error && <Alert severity="error">{error}</Alert>}
             <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
               <LoadingButton
                 loading={loading}
@@ -730,8 +770,14 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
         </Box>
       </Box>
       <Dialog onClose={() => {}} maxWidth={false} open={termsOpen}>
-        <Box sx={{width: 800 }}>
-          <Tnc setTermsOpen={(isOpen: boolean) => (setTermsOpen(isOpen))} firstName={formik.values.firstName} lastName={formik.values.lastName} email={formik.values.email} company="company"></Tnc>
+        <Box sx={{ width: 800 }}>
+          <Tnc
+            setTermsOpen={(isOpen: boolean) => setTermsOpen(isOpen)}
+            firstName={formik.values.firstName}
+            lastName={formik.values.lastName}
+            email={formik.values.email}
+            company="company"
+          ></Tnc>
         </Box>
       </Dialog>
     </Dialog>

@@ -118,7 +118,7 @@ const AppTopNavOwner = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={() => {}}>
+              <MenuItem onClick={() => {history.push('/owner/create-app')}}>
                 CreateApp
               </MenuItem>
               <MenuItem onClick={onLogout}>
