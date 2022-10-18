@@ -13,13 +13,15 @@ import {
 import { TChartData } from "../pages/Explorer/Explorer";
 
 interface ExplorerChartProps {
-    data: TChartData
+  data: TChartData;
 }
 
-export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({data}) => {
-  const theme = useTheme()
+export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({
+  data,
+}) => {
+  const theme = useTheme();
   return (
-    <ResponsiveContainer height={'100%'}>
+    <ResponsiveContainer height={"100%"}>
       <LineChart
         width={500}
         height={300}
@@ -33,12 +35,12 @@ export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({data
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" />
-        <YAxis dataKey={'y'} />
+        <YAxis dataKey={"y"} />
         <Tooltip />
         <Legend />
         <Line
           type="monotone"
-          name="Date"
+          name="Transactions"
           dataKey="y"
           stroke={theme.palette.primary.main}
           activeDot={{ r: 8 }}
