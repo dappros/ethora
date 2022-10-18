@@ -59,13 +59,25 @@ const onMessageHistory = async (stanza: Element) => {
                 return
             }
             const msg = {
-                id,
+                id: Number(id),
                 body: body.getText(),
-                data: data.attrs,
+                data: {
+                    isSystemMessage: data.attrs.isSystemMessage,
+                    photoURL: data.attrs.photoURL,
+                    quickReplies: data.attrs.quickReplies,
+                    roomJid: data.attrs.roomJid,
+                    senderFirstName: data.attrs.senderFirstName,
+                    senderJID: data.attrs.senderJID,
+                    senderLastName: data.attrs.senderLastName,
+                    senderWalletAddress: data.attrs.senderWalletAddress,
+                    tokenAmount: data.attrs.tokenAmount,
+                    xmlns: data.attrs.xmlns
+                },
                 roomJID: stanza.attrs.from,
                 date: delay.attrs.stamp,
                 key: Date.now()
             }
+            console.log(data.attrs)
             useStoreState.getState().setNewMessageHistory(msg)
             useStoreState.getState().sortMessageHistory();
     }
