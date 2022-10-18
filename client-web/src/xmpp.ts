@@ -77,7 +77,6 @@ const onMessageHistory = async (stanza: Element) => {
                 date: delay.attrs.stamp,
                 key: Date.now()
             }
-            console.log(data.attrs)
             useStoreState.getState().setNewMessageHistory(msg)
             useStoreState.getState().sortMessageHistory();
     }
