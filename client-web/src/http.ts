@@ -280,3 +280,24 @@ export function loginOwner(email: string, password: string) {
     }
   )
 }
+
+export function getApps() {
+  const owner = useStoreState.getState().owner
+  return http.get(
+    '/owner2apps',
+    {
+      headers: { Authorization: owner.token }
+    }
+  )
+}
+
+export function createApp(fd: FormData) {
+  const owner = useStoreState.getState().owner
+  return http.post(
+    '/apps',
+    fd,
+    {
+      headers: { Authorization: owner.token }
+    }
+  )
+}

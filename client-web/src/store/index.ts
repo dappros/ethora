@@ -13,9 +13,11 @@ type TUser = {
 }
 
 type TOwner = {
+  _id: string
   firstName: string
   lastName: string
   token: string
+  walletAddress: string
 }
 
 type TMode = 'light' | 'dark'
@@ -67,7 +69,9 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     owner: {
       firstName: '',
       lastName: '',
-      token: ''
+      token: '',
+      _id: '',
+      walletAddress: ''
     },
     balance: [],
     viewMode: 'light',
@@ -91,6 +95,8 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
         firstName: '',
         lastName: '',
         token: '',
+        _id: '',
+        walletAddress: ''
       }
     }),
     setBalance: (balance: TBalance[]) => set((state) => {state.balance = balance}),
