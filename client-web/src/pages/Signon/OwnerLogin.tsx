@@ -43,6 +43,7 @@ const validate = (values: Record<string, string>) => {
 export default function OwnerLogin({ open, setOpen }: TProps) {
   const [showPassword, setShowPassword] = useState(false);
   const setOwner = useStoreState((state) => state.setOwner);
+  const setApps = useStoreState((state) => state.setApps);
   const history = useHistory();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -64,6 +65,7 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
             walletAddress: response.data.user.defaultWallet.walletAddress,
             _id: response.data.user._id
           })
+          setApps(response.data.apps)
           history.push('/owner')
         })
         .catch((error) => {

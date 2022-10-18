@@ -11,6 +11,7 @@ import {
   getAllMessages,
   insertMessages,
   updateMessageToWrapped,
+  updateNumberOfReplies,
   updateTokenAmount,
 } from '../components/realmModels/messages';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
@@ -128,12 +129,7 @@ export class ChatStore {
     manipulatedWalletAddress: '',
     chatJID: '',
   };
-  replyData: replyProps = {
-    messageID: '',
-    message: '',
-    isReply: false,
-  };
-
+  listOfThreads= [];
   roomMemberInfo = [];
 
   constructor(stores: RootStore) {
@@ -171,6 +167,7 @@ export class ChatStore {
         manipulatedWalletAddress: '',
         chatJID: '',
       };
+      this.listOfThreads = []
     });
   };
 
@@ -241,6 +238,22 @@ export class ChatStore {
       this.roomList = roomsArray;
     });
   };
+
+  updateMessageReplyNumbers = (messageId:any) => {
+    const messages = toJS(this.messages);
+    const index = messages.findIndex(item => item._id === messageId);
+    if(index !== -1){
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[index])),
+        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1
+      };
+
+      runInAction(() => {
+        this.messages[index] = message;
+      })
+    }
+  }
+
   updateMessageProperty = (messageId, property, value) => {
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
@@ -249,7 +262,7 @@ export class ChatStore {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
         [property]:
-          property === 'tokenAmount'
+          property === 'tokenAmount' || 'numberOfReplies'
             ? messages[index][property] + value
             : value,
       };
@@ -264,14 +277,14 @@ export class ChatStore {
       if (item.jid === roomJid) {
         if (type === 'CLEAR') {
           runInAction(() => {
-            // item.counter = 0;
-            // this.roomsInfoMap[roomJid].counter = 0
+            item.counter = 0;
+            this.roomsInfoMap[roomJid].counter = 0
           });
         }
         if (type === 'UPDATE') {
           runInAction(() => {
-            // item.counter++;
-            // this.roomsInfoMap[roomJid].counter = item.counter;
+            item.counter++;
+            this.roomsInfoMap[roomJid].counter = item.counter;
           });
         }
       }
@@ -561,8 +574,8 @@ export class ChatStore {
           const singleMessageDetailArray =
             stanza.children[0].children[0].children[0].children;
 
-          const roomJID = stanza.attrs.from;
           const message = createMessageObject(singleMessageDetailArray);
+
           if (
             this.blackList.find(item => item.userJid === message.user._id)
               ?.userJid
@@ -582,12 +595,46 @@ export class ChatStore {
               message.tokenAmount,
             );
           }
+          
+          if(message.isReply){
+            await updateNumberOfReplies(message.mainMessageId);
+            // console.log(message,"This is thread")
+            this.listOfThreads.push(message)
+          }
+          
+          const threadsOfCurrentMessage = this.listOfThreads
+          .filter((item:any) => item.mainMessageId === message._id)
+          // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
+          // if(threadIndex != -1){
+          //   // alert(threadIndex) 
+          //   const threadMessage = {
+          //     ...JSON.parse(JSON.stringify(this.listOfThreads[threadIndex]))
+          //   };
+
+          //   this.addMessage(threadMessage);
+          //   await insertMessages(threadMessage);
+          //   this.listOfThreads.splice(threadIndex,1);
+          //   message.numberOfReplies = message.numberOfReplies + 1;
+          // }
+
+          // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
+
+          if(threadsOfCurrentMessage){
+            threadsOfCurrentMessage.map(async item => {
+              this.addMessage(item);
+              await insertMessages(item);
+              const threadIndex = this.listOfThreads.findIndex(listItem => listItem._id === item._id);
+              this.listOfThreads.splice(threadIndex, 1);
+            })
+            message.numberOfReplies = threadsOfCurrentMessage.length;
+          }
+
           const messageAlreadyExist = this.messages.findIndex(
             x => x._id === message._id,
           );
           if (messageAlreadyExist === -1) {
             this.addMessage(message);
-            insertMessages(message);
+            await insertMessages(message);
           }
         }
 
@@ -635,6 +682,14 @@ export class ChatStore {
               message.tokenAmount,
             );
             playCoinSound(message.tokenAmount);
+          }
+          if(message.isReply){
+            this.updateMessageProperty(
+              message.mainMessageId,
+              'numberOfReplies',
+              1
+            )
+            await updateNumberOfReplies(message.mainMessageId);
           }
           insertMessages(message);
         }

@@ -17,7 +17,7 @@ export default function BasicTable() {
     <TableContainer component={Paper} style={{maxWidth: 900, margin: '0 auto'}}>
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
-          Apps
+          Users
         </Typography>
         <IconButton onClick={() => {}} size="large" color="success">
           <AddCircleIcon fontSize="large"></AddCircleIcon>

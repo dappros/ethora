@@ -142,7 +142,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   });
 
   const messages = chatStore.messages
-    .filter((item: any) => item.roomJid === chatJid)
+    .filter((item: any) => item.roomJid === chatJid && item.isReply === false)
     .sort((a: any, b: any) => b._id - a._id);
 
   useEffect(() => {
@@ -260,8 +260,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   ];
 
   const sendMessage = (messageString: any, isSystemMessage: boolean) => {
-    //this will close the reply component and empty the state onTapMessageObject
-    handleReply('close');
     const messageText = messageString[0].text;
     const tokenAmount = messageString[0].tokenAmount || 0;
     const receiverMessageId = messageString[0].receiverMessageId || 0;
@@ -297,17 +295,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
-  const onUserAvatarPress = (props: any) => {
+  const getOtherUserDetails = (props:any) => {
     const {avatar, name, _id} = props;
     const firstName = name.split(' ')[0];
     const lastName = name.split(' ')[1];
     const xmppID = _id.split('@')[0];
     // const {anotherUserWalletAddress} = this.props.loginReducer;
     const walletAddress = reverseUnderScoreManipulation(xmppID);
-    if (walletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate(ROUTES.PROFILE);
-      return;
-    }
     //fetch transaction
 
     //check if user clicked their own avatar/profile
@@ -328,10 +322,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
       anotherUserAvatar: avatar,
     });
 
+  }
+
+  const onUserAvatarPress = (props: any) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-
-    navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+    const xmppID = props._id.split('@')[0];
+    const walletAddress = reverseUnderScoreManipulation(xmppID);
+    if (walletAddress === loginStore.initialData.walletAddress) {
+      navigation.navigate(ROUTES.PROFILE);
+      return;
+    }else{
+      getOtherUserDetails(props)
+      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+    }
   };
   const onMediaMessagePress = (type: any, url: any, message) => {
     setMediaModal({open: true, type, url, message});
@@ -424,7 +428,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
   };
 
-  const handleOnLongPress = (context: any, message: any) => {
+  const handleOnLongPress = (message: any) => {
     let extraData = {};
     if (
       message.user._id.includes(
@@ -460,11 +464,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = (context: any, message: any) => {
+  const handleOnPress = ( message: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
     }
-    console.log(message, 'Sdafvdfvgfdb');
     setOnTapMessageObject(message);
     return onOpen();
   };
@@ -476,15 +479,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleReply = (type: 'open' | 'close') => {
-    if (type === 'open') {
-      setIsReply(true);
-      onClose();
-    }
 
-    if (type === 'close') {
-      setIsReply(false);
-      setOnTapMessageObject('');
-    }
+    //navigate to thread screen with current message details.
+    getOtherUserDetails(onTapMessageObject.user)
+    navigation.navigate(ROUTES.THREADS,{currentMessage:onTapMessageObject, chatJid:chatJid, chatName:chatName})
+    onClose();
+
+    // if (type === 'open') {
+    //   setIsReply(true);
+    //   onClose();
+    // }
+
+    // if (type === 'close') {
+    //   setIsReply(false);
+    //   setOnTapMessageObject('');
+    // }
   };
 
   const closeModal = () => {
@@ -879,10 +888,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
           color: 'black',
           onSelectionChange: e => setSelection(e.nativeEvent.selection),
         }}
-        onLongPress={(context: any, message: any) =>
-          handleOnLongPress(context, message)
+        onLongPress={( message: any) =>
+          handleOnLongPress(message)
         }
-        onTap={(context: any, message: any) => handleOnPress(context, message)}
+        onTap={(message: any) => handleOnPress(message)}
         // onInputTextChanged={()=>{alert('hhh')}}
         parsePatterns={linkStyle => [
           {
