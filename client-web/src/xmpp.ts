@@ -65,7 +65,8 @@ const onMessageHistory = async (stanza: Element) => {
                 body: body.getText(),
                 data: data.attrs,
                 roomJID: stanza.attrs.from,
-                date: delay.attrs.stamp
+                date: delay.attrs.stamp,
+                key: Date.now()
             }
             console.log('Saved the message: ',body.getText())
             useStoreState.getState().setNewMessageHistory(msg)

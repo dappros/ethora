@@ -39,6 +39,7 @@ type TMessageHistory = {
   roomJID: string
   date: string
   photo?: string
+  key: number
 }
 
 type TUserChatRooms = {
