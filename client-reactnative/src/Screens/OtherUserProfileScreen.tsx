@@ -138,7 +138,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   const [collections, setCollections] = useState([]);
 
   const [activeTab, setActiveTab] = useState(0);
-  const [activeAssetTab, setActiveAssetTab] = useState(0);
+  const [activeAssetTab, setActiveAssetTab] = useState(1);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingVCard, setIsLoadingVCard] = useState(true);
@@ -289,13 +289,13 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   useEffect(() => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
-
+  console.log(itemsBalance)
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('3%')}}>
+        <View style={{marginTop: hp('1%')}}>
           <HStack paddingX={wp('4%')}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
               style={{marginRight: 20}}>
               <Text
@@ -307,8 +307,8 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                 ]}>
                 Coins ({parseFloat(assetCount - itemsBalance).toFixed(0)})
               </Text>
-            </TouchableOpacity>
-            {itemsTransfersAllowed && (
+            </TouchableOpacity> */}
+            {itemsTransfersAllowed && collections.length > 0 && (
               <TouchableOpacity
                 onPress={() => setActiveAssetTab(1)}
                 style={{marginRight: 20}}>
@@ -337,8 +337,8 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               </TouchableOpacity>
             )}
           </HStack>
-          <View style={{marginTop: hp('1.47%'), marginBottom: hp('45%')}}>
-            {activeAssetTab === 0 && (
+          <View style={{marginBottom: hp('33%')}}>
+            {activeAssetTab === 1 && itemsData.length === 0 && (
               <FlatList
                 data={coinData}
                 nestedScrollEnabled={true}
@@ -566,7 +566,8 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                             color: activeTab === 0 ? '#000000' : '#0000004D',
                           },
                         ]}>
-                        Assets ({assetCount})
+                        Assets ({itemsBalance === 0 ? assetCount : itemsBalance}
+                        )
                       </Text>
                     </TouchableOpacity>
 

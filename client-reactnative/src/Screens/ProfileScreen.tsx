@@ -151,7 +151,7 @@ export const ProfileScreen = observer((props: any) => {
   const coinData = walletStore.balance;
 
   const [activeTab, setActiveTab] = useState(0);
-  const [activeAssetTab, setActiveAssetTab] = useState(0);
+  const [activeAssetTab, setActiveAssetTab] = useState(1);
 
   const [assetCount, setAssetCount] = useState(0);
   const [itemsBalance, setItemsBalance] = useState(0);
@@ -381,9 +381,9 @@ export const ProfileScreen = observer((props: any) => {
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('3%')}}>
+        <View style={{marginTop: hp('1%')}}>
           <HStack paddingX={wp('4%')}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
               style={{marginRight: 20}}>
               <Animated.Text
@@ -395,8 +395,8 @@ export const ProfileScreen = observer((props: any) => {
                 ]}>
                 Coins ({parseFloat(walletStore.coinBalance).toFixed(0)})
               </Animated.Text>
-            </TouchableOpacity>
-            {itemsTransfersAllowed && (
+            </TouchableOpacity> */}
+            {itemsTransfersAllowed && walletStore.collections.length > 0 && (
               <TouchableOpacity
                 onPress={() => setActiveAssetTab(1)}
                 style={{marginRight: 20}}>
@@ -426,8 +426,8 @@ export const ProfileScreen = observer((props: any) => {
             )}
           </HStack>
 
-          <View style={{marginTop: hp('1.47%'), marginBottom: hp('43%')}}>
-            {activeAssetTab === 0 && (
+          <View style={{marginBottom: hp('33%')}}>
+            {activeAssetTab === 1 && walletStore.nftItems.length === 0 && (
               <FlatList
                 data={coinData}
                 nestedScrollEnabled={true}
@@ -626,7 +626,7 @@ export const ProfileScreen = observer((props: any) => {
                         color: activeTab === 0 ? '#000000' : '#0000004D',
                       },
                     ]}>
-                    Assets ({assetCount})
+                    Assets ({itemsBalance === 0 ? assetCount : itemsBalance})
                   </Animated.Text>
                 </TouchableOpacity>
                 <TouchableOpacity
