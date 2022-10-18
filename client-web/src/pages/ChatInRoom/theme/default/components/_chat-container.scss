@@ -1,0 +1,42 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-chat-container {
+  box-sizing: border-box;
+  @include flex-column;
+  height: 100%;
+  min-width: $chat-container-min-width; // Required for ellipsis in child elements
+  color: $chat-container-color;
+  background-color: $chat-container-bg-color;
+  
+  & .#{$prefix}-message-input {
+    border-top: $chat-container-message-input-border-top;
+    border-right: $chat-container-message-input-border-right;
+    border-bottom: $chat-container-message-input-border-bottom;
+    border-left: $chat-container-message-input-border-left;
+    
+    //box-shadow: 0px -4px 5px -5px rgba(0, 0, 0, 0.38);
+    margin-top:auto; // Message input and following elements (input toolbox) will be placed at the bottom of the chat-container
+    padding: 0.3em 0 0.3em 0em;
+    color: $chat-container-message-input-color;
+    background-color: $chat-container-message-input-bg-color;
+    
+    & .#{$prefix}-message-input__content-editor-wrapper:first-child {
+      margin-left:0.8em;
+    }
+
+    & .#{$prefix}-message-input__content-editor-wrapper:last-child {
+      margin-right:0.8em;
+    }
+    
+  }
+
+  & .#{$prefix}-input-toolbox {
+    margin: $chat-container-input-toolbox-margin;
+    padding: $chat-container-input-toolbox-padding;
+    color: $chat-container-input-toolbox-color;
+    background-color: $chat-container-input-toolbox-bg-color;
+  }
+  
+}
+

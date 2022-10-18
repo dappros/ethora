@@ -4,6 +4,7 @@ import Chat from "./Chat";
 import CreateApp from "./CreateApp";
 import { BlockDetails } from "./Explorer/BlockDetails";
 import { Blocks } from "./Explorer/Blocks";
+import ChatInRoom from "./ChatInRoom"
 import { Explorer } from "./Explorer/Explorer";
 import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
 import { TransactionDetails } from "./Explorer/TransactionDetails";
@@ -20,6 +21,9 @@ export const Routes = () => {
       <Route path="/chat">
         <Chat />
       </Route>
+        <Route path="/chat-in-room">
+            <ChatInRoom />
+        </Route>
       <Route path="/" exact>
         <Signon />
       </Route>

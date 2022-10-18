@@ -1,0 +1,12 @@
+@function rgba-to-rgb($rgba, $background: #fff) {
+  @return mix(rgb(red($rgba), green($rgba), blue($rgba)), $background, alpha($rgba) * 100%)
+}
+
+@function color-by-background($bg-color, $text-color, $inverted-text-color) {
+  @if (lightness( $bg-color ) > 40) {
+    @return $text-color;
+  }
+  @else {
+    @return $inverted-text-color;
+  }
+}

@@ -40,6 +40,24 @@ type TMessage = {
   room: string
 }
 
+type TMessageHistory = {
+  id: number
+  body: string
+  data: any
+  roomJID: string
+  date: string
+  photo?: string
+  key: number
+}
+
+type TUserChatRooms = {
+  jid: string
+  name: string
+  room_background: string
+  room_thumbnail: string
+  users_cnt: string
+}
+
 interface IStore {
   user: TUser
   owner: TOwner
@@ -52,7 +70,15 @@ interface IStore {
   clearUser: () => void,
   clearOwner: () => void,
   setBalance: (balance: TBalance[]) => void,
-  setNewMessage: (msg: TMessage) => void
+  setNewMessage: (msg: TMessage) => void,
+  historyMessages: TMessageHistory[],
+  setNewMessageHistory: (msg: TMessageHistory) => void
+  clearMessageHistory: () => void,
+  sortMessageHistory: () => void,
+  userChatRooms: TUserChatRooms[],
+  setNewUserChatRoom: (msg: TUserChatRooms) => void
+  clearUserChatRooms: () => void,
+
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -76,6 +102,8 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     balance: [],
     viewMode: 'light',
     messages: [],
+    historyMessages: [],
+    userChatRooms: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
     setOwner: (user: TOwner) => set((state) => {state.owner = user}),
@@ -103,6 +131,23 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     setNewMessage: (message: TMessage) => set((state) => {
       console.log('setNewMessage')
       state.messages.unshift(message)
+    }),
+    setNewMessageHistory: (historyMessages: TMessageHistory) => set((state) => {
+      console.log('setNewMessageHistory')
+      state.historyMessages.unshift(historyMessages)
+    }),
+    clearMessageHistory: () => set((state) => {
+      state.historyMessages = [];
+    }),
+    sortMessageHistory: () => set((state) => {
+      state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+    }),
+    setNewUserChatRoom: (userChatRooms: TUserChatRooms) => set((state) => {
+      state.userChatRooms.unshift(userChatRooms)
+    }),
+    clearUserChatRooms: () => set((state) => {
+      state.userChatRooms = [];
+
     }),
   }
 }))))
