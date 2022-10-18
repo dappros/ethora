@@ -1,0 +1,118 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-message-list {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-height: 1em + (1em * 0.25); // Place for typing indicator
+  position: relative;
+  color: $message-list-color;
+  background-color: $message-list-bg-color;
+
+  &__scroll-wrapper {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    /*overflow-y: scroll*/; // TODO: Uncomment this when not using fancy scroll
+    padding: $message-list-scroll-wrapper-padding;
+  }
+
+  // Scroll-to point for sticky scroll
+  &__scroll-to:first-child {
+    box-sizing: border-box;
+    float: left;
+    clear: both;
+    height: 0;
+  }
+
+  // Last message must have place for typing indicator when scrolled down to be able to read last message
+  // TODO: If fancy scroll is not used it should be nth-last-child(2).
+  //  Value 4 is set because PerfectScrollbar ads two divs at the end of container 
+  &__scroll-wrapper > .#{$prefix}-message:nth-last-child(4) {
+    margin-bottom: 1.4em + (1em * 0.25) + 1em;
+  }
+
+  &__scroll-wrapper > .#{$prefix}-message-group:nth-last-child(4) {
+    margin-bottom: 1.4em + (1em * 0.25) + 1em;
+  }
+  
+  // Typing indicator (when exists)
+  & .#{$prefix}-typing-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    // !!!! TODO: set to 20px when not using fancy scroll
+    right: 15px; 
+    background-color: $message-list-typing-indicator-bg-color;
+    padding: 0.5em 0.5em;
+    font-size: 0.9em;
+    height: 1em + (1em * 0.25);
+    line-height: 1em + (1em * 0.25);
+  }
+  
+  // Because message in group cant have max-width, only if its direct child of list
+  &__scroll-wrapper > .#{$prefix}-message,
+  &__scroll-wrapper > .#{$prefix}-message-group
+  {
+    max-width: 85%;
+  }
+
+  & .#{$prefix}-message.#{$prefix}-message--incoming,
+  & .#{$prefix}-message-group.#{$prefix}-message-group--incoming,
+  {
+    margin-right: auto;
+  }
+  
+  & .#{$prefix}-message.#{$prefix}-message--outgoing,
+  & .#{$prefix}-message-group.#{$prefix}-message-group--outgoing,
+  {
+    margin-left: auto;
+  }
+
+  & .#{$prefix}-message-separator:not(:first-child) {
+    margin-top: $message-list-message-separator-margin-top;
+  }
+
+  &__loading-more {
+    box-sizing: content-box;
+    @include flex-row;
+    justify-content: center;
+    position:absolute;
+    background-color: $message-list-loading-more-bg-color;
+    padding: $message-list-loading-more-padding;
+    top:0;
+    left:0;
+    right:0;
+    height: $message-list-loading-more-height;
+    z-index: 1;
+
+    .#{$prefix}-loader {
+      width:$message-list-loading-more-height;
+      height:$message-list-loading-more-height;
+    }
+    .#{$prefix}-loader::before,
+    .#{$prefix}-loader::after
+    {
+      width:100%;
+      height:100%;
+    }
+    
+    &--bottom {
+      top:initial;
+      bottom:0;
+    }
+    
+  }
+  
+  // Perfect scrollbar fix to hide loading more indicator
+  .ps__rail-y {
+    z-index:2;
+  }
+  
+}

@@ -1,0 +1,10 @@
+@import "variables";
+
+// Experimental! Export theme variables for Webpack
+//
+// Exported variables can be loaded by Webpack and used in Javascript
+// This file is not included in css build
+
+:export {
+  buttonInfoColor: $button-info-color;
+}  

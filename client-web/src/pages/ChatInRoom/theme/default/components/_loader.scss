@@ -1,0 +1,66 @@
+@use "sass:math";
+@import "../variables";
+
+.#{$prefix}-loader {
+  box-sizing: border-box;
+  display:inline-flex;
+  position:relative;
+  font-size:1em;
+  width:$loader-width;
+  height: $loader-height;
+  color: $loader-color;
+  background-color: $loader-bg-color;
+  
+  &::before,
+  &::after {
+    box-sizing: border-box;
+    display:block;
+    width: $loader-width;
+    height: $loader-height;
+    margin: 0 0 0 ( math.div($loader-width, 2) * -1 ); // Center horizontally
+  }
+  
+  // Background circle
+  &::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 50%;
+    border-radius:50%;
+    border-color: $loader-spinner-bg-color;
+    border-style: solid;
+    border-width: $loader-border-width;
+    //box-shadow: 0 0 2px $loader-spinner-bg-color;
+  }
+  
+  // Animated "circle"
+  &::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 50%;
+    animation: loader-default .6s linear;
+    animation-iteration-count: infinite;
+    border-radius: 50%;
+    border-color: $loader-spinner-color  transparent transparent transparent;
+    border-style: solid;
+    border-width: $loader-border-width;
+    box-shadow: 0 0 0 transparent;
+  }
+  
+  &--content {
+    width:auto;
+    height:auto;
+    padding-top: $loader-height + 0.8em;
+  }
+  
+  // Variant or future use
+  &--variant-default {
+    
+  }
+  
+}
+
+@keyframes loader-default {
+  to { transform: rotate(360deg); }
+}

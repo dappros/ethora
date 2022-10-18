@@ -1,0 +1,34 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-message-separator {
+  box-sizing: border-box;
+  color: $message-separator-color;
+  background-color: $message-separator-bg-color;
+  font-size: $message-separator-font-size;
+  font-family: $message-separator-font-family;
+  text-align: center;
+  @include flex-row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  
+  &::before,
+  &::after {
+    box-sizing: border-box;
+    content: "";
+    background-color: $message-separator-color;
+    display: block;
+    flex-grow: 1;
+    height: 1px;
+  }
+  
+  &:not(:empty)::before {
+    margin: $message-separator-left-line-margin;
+  }
+
+  &:not(:empty)::after {
+    margin: $message-separator-right-line-margin;
+  }
+  
+}

@@ -30,6 +30,7 @@ function firstLetersFromName(fN: string, lN: string) {
 const menuItems = [
   { name: "Chat", id: "chat" },
   { name: "Explorer", id: "explorer" },
+  { name: "Chat in room", id: "chat-in-room" }
 ];
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();

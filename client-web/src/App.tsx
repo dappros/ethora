@@ -5,6 +5,7 @@ import AppTopNavAuth from "./componets/AppTopNavAuth";
 import AppTopNav from "./componets/AppTopNav";
 import AppTopNavOwner from "./componets/AppTopNavOwner";
 
+import "./pages/ChatInRoom/theme/default/main.scss"
 import { Routes } from "./pages/Routes";
 
 const darkTheme = createTheme({
