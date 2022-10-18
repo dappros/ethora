@@ -121,7 +121,7 @@ export function ChatInRoom() {
                         <Search placeholder="Search..."/>
                         <ConversationList>
                             {useChatRooms.map(room =>
-                                <Conversation key={room.jid} onClick={() => chooseRoom(room.jid)} name={room.name}
+                                <Conversation active={room.jid === currentRoom} key={room.jid} onClick={() => chooseRoom(room.jid)} name={room.name}
                                               info={room.room_thumbnail !== "none" ? room.room_thumbnail : ""}>
                                     <Avatar
                                         src={room.room_background !== "none" ? room.room_background : "https://cdn-icons-png.flaticon.com/512/6016/6016734.png"}/>
