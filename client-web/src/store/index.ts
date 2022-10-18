@@ -41,6 +41,14 @@ type TMessageHistory = {
   photo?: string
 }
 
+type TUserChatRooms = {
+  jid: string
+  name: string
+  room_background: string
+  room_thumbnail: string
+  users_cnt: string
+}
+
 interface IStore {
   user: TUser
   messages: TMessage[],
@@ -55,6 +63,10 @@ interface IStore {
   setNewMessageHistory: (msg: TMessageHistory) => void
   clearMessageHistory: () => void,
   sortMessageHistory: () => void,
+  userChatRooms: TUserChatRooms[],
+  setNewUserChatRoom: (msg: TUserChatRooms) => void
+  clearUserChatRooms: () => void,
+
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -72,6 +84,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     viewMode: 'light',
     messages: [],
     historyMessages: [],
+    userChatRooms: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
     clearUser: () => set((state) => {
@@ -99,6 +112,13 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     }),
     sortMessageHistory: () => set((state) => {
       state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+    }),
+    setNewUserChatRoom: (userChatRooms: TUserChatRooms) => set((state) => {
+      state.userChatRooms.unshift(userChatRooms)
+    }),
+    clearUserChatRooms: () => set((state) => {
+      state.userChatRooms = [];
+
     }),
   }
 }))))

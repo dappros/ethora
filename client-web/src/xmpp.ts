@@ -45,8 +45,9 @@ const onMessage = async (stanza: Element) => {
 }
 
 const onMessageHistory = async (stanza: Element) => {
-    console.log('start => ', stanza)
     if (stanza.is('message')) {
+            console.log('Got a message')
+
             const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
             const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
             const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
@@ -66,7 +67,7 @@ const onMessageHistory = async (stanza: Element) => {
                 roomJID: stanza.attrs.from,
                 date: delay.attrs.stamp
             }
-            console.log(data.attrs)
+            console.log('Saved the message: ',body.getText())
             useStoreState.getState().setNewMessageHistory(msg)
             useStoreState.getState().sortMessageHistory();
     }
@@ -94,8 +95,9 @@ class XmppClass {
     this.client.on("online", (jid) => {
       console.log("online");
       // this.client.send(xml('presence'))
-      // this.getRooms()
-      // defaultRooms.forEach((room) => {
+      this.getRooms();
+      useStoreState.getState().clearMessageHistory();
+        // defaultRooms.forEach((room) => {
       //   this.subsribe(room);
       // });
     });
@@ -108,6 +110,33 @@ class XmppClass {
                 return;
             }
             return onMessage(stanza);
+        }
+        if(stanza.attrs.id === "getUserRooms"){
+            if(stanza.getChild('query')?.children){
+                useStoreState.getState().clearUserChatRooms()
+                stanza.getChild('query')?.children.forEach((result: Object) => {
+                    // @ts-ignore
+                    const roomJID: string = result.attrs.jid;
+                        this.presenceInRoom(roomJID)
+                        console.log('RESULT => ', roomJID);
+
+                        const roomData = {
+                            jid: roomJID,
+                            // @ts-ignore
+                            name: result?.attrs.name,
+                            // @ts-ignore
+                            room_background: result?.attrs.room_background,
+                            // @ts-ignore
+                            room_thumbnail: result?.attrs.room_thumbnail,
+                            // @ts-ignore
+                            users_cnt: result?.attrs.users_cnt,
+                        }
+                        console.log(roomData)
+                        // @ts-ignore
+                        useStoreState.getState().setNewUserChatRoom(roomData);
+                        this.getRoomArchiveStanza(roomJID)
+                })
+            }
         }
         return onMessageHistory(stanza);
     });
