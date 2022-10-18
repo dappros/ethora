@@ -26,7 +26,7 @@ interface RenderChatFooterProps {
   allowIsTyping: boolean;
   isTyping: boolean;
   composingUsername: string;
-  isReply: boolean;
+  isReply?: boolean;
   replyUserName?: string;
   replyMessage?: string;
   closeReply?: any;

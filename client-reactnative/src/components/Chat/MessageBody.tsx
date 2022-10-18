@@ -22,6 +22,8 @@ export default class Message extends React.Component {
 
     const nextPropsPreviousMessage = nextProps.previousMessage;
     if(next.tokenAmount !== current.tokenAmount) return true
+
+    if(next.numberOfReplies !== current.numberOfReplies) return true
     
     return false;
   }

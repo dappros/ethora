@@ -43,7 +43,18 @@ type TMessage = {
 type TMessageHistory = {
   id: number
   body: string
-  data: any
+  data: {
+    isSystemMessage: string,
+    photoURL: string,
+    quickReplies: string,
+    roomJid: string,
+    senderFirstName: string,
+    senderJID: string,
+    senderLastName: string,
+    senderWalletAddress: string,
+    tokenAmount: string,
+    xmlns: string
+  },
   roomJID: string
   date: string
   photo?: string
