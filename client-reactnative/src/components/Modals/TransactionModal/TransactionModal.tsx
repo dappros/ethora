@@ -665,9 +665,10 @@ const TransactionModal = (props: TransactionModalProps) => {
                   textAlign: 'center',
                   lineHeight: 10,
                   marginTop: 5,
+                  paddingHorizontal:1
                 }}>
-                The block list is a global feature that allows you not to
-                receive any messages from a blocklisted user before unblocking,
+                The blocklist is a global feature that allows you not to receive
+                any messages from a blocklisted user before unblocking,
               </Text>
             </View>
           </View>
