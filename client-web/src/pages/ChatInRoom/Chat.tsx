@@ -108,30 +108,9 @@ export function ChatInRoom() {
         xmpp.sendMessage(currentRoom, user.firstName, user.lastName, userAvatar, user.walletAddress, myMessage)
     };
 
-
-
-
     return (
-        <div>
-            <Box>
-                <Box>ChatInRoom</Box>
-                <Box>My jid: {xmpp.client.jid?.toString()}</Box>
-                <Box>Chat: {currentRoom}</Box>
-                <Box>
-                    <TextField
-                        value={room}
-                        onChange={(e) => setRoom(e.target.value)}
-                    ></TextField>
-                    <Button onClick={onSubscribe}>Subscribe</Button>
-                </Box>
-                <Button onClick={getMoreMessages}>Get more</Button>
-                <Button onClick={testData}>testData</Button>
-            </Box>
-
-            <div style={{position: "relative", height: "500px"}}>
-
+        <Box style={{height: "500px"}}>
                 <MainContainer responsive>
-
                     <Sidebar position="left" scrollable={false}>
                         <Search placeholder="Search..."/>
                         <ConversationList>
@@ -213,8 +192,6 @@ export function ChatInRoom() {
                             : null}
                     </ChatContainer>
                 </MainContainer>
-            </div>
-
-        </div>
+       </Box>
     );
 }
