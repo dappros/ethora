@@ -44,6 +44,7 @@ interface createMessageObjectProps {
   mainMessageText?: string;
   mainMessageId?: string;
   mainMessageUserName?: string;
+  numberOfReplies?:number;
   preview?: string;
 
 }
@@ -125,6 +126,7 @@ export const createMessageObject = (
       message.mainMessageText = item.attrs.mainMessageText || '';
       message.isReply = item.attrs.isReply === 'true' || false;
       message.mainMessageUserName = item.attrs.mainMessageUserName || '';
+      message.numberOfReplies = item.attrs.numberOfReplies || 0;
       message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
     }

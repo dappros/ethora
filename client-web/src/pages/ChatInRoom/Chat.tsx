@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import xmpp from "../../xmpp";
-import { useStoreState } from "../../store";
-import { Stack, Typography } from "@mui/material";
-import { getBalance, getPublicProfile, getTransactions } from "../../http";
-import { TProfile } from "../Profile/types";
-import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
+import {useStoreState} from "../../store";
+import {Stack, Typography} from "@mui/material";
+import {getBalance, getPublicProfile, getTransactions} from "../../http";
+import {TProfile} from "../Profile/types";
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 
 import {
-  MainContainer,
-  Avatar,
-  ChatContainer,
-  MessageList,
-  Message,
-  MessageInput,
-  Conversation,
-  ConversationList,
-  Sidebar,
-  Search,
-  ConversationHeader,
-  VoiceCallButton,
-  VideoCallButton,
-  InfoButton,
-  TypingIndicator,
-  MessageSeparator,
-  ExpansionPanel,
-} from "@chatscope/chat-ui-kit-react";
-import { stringify } from "querystring";
+    MainContainer,
+    Avatar,
+    ChatContainer,
+    MessageList,
+    Message,
+    MessageInput,
+    Conversation,
+    ConversationList,
+    Sidebar,
+    Search,
+    ConversationHeader,
+    VoiceCallButton,
+    VideoCallButton,
+    InfoButton,
+    TypingIndicator,
+    MessageSeparator,
+    ExpansionPanel
+} from '@chatscope/chat-ui-kit-react';
+import {stringify} from "querystring";
 
 export function ChatInRoom() {
   const [room, setRoom] = useState("");
@@ -68,22 +68,23 @@ export function ChatInRoom() {
     setLoadingMore(false);
   };
 
-  useEffect(() => {
-    getPublicProfile(user.walletAddress).then((result) => {
-      setProfile(result.data.result);
-    });
-  }, []);
+    useEffect(() => {
+        getPublicProfile(user.walletAddress)
+            .then((result) => {
+                setProfile(result.data.result);
+            });
+    }, []);
 
-  const onSubscribe = () => {
-    const newCurrentRoom = room + "@conference.dev.dxmpp.com";
-    setCurrentRoom(newCurrentRoom);
+    const onSubscribe = () => {
+        const newCurrentRoom = room + '@conference.dev.dxmpp.com';
+        setCurrentRoom(newCurrentRoom);
 
-    if (messages.length > 0) {
-      // getMoreMessages();
-      console.log("delete", messages);
-      useStoreState.getState().clearMessageHistory();
-      return;
-    }
+        if (messages.length > 0) {
+            // getMoreMessages();
+            console.log('delete', messages)
+            useStoreState.getState().clearMessageHistory()
+            return
+        }
 
     xmpp.presenceInRoom(newCurrentRoom);
     xmpp.getRoomArchiveStanza(newCurrentRoom);

@@ -62,6 +62,7 @@ const MessageSchema = {
     mainMessageUserName: {type: 'string', optional: true},
     mainMessageText: {type: 'string', optional: true},
     mainMessageId: {type: 'string', optional: true},
+    numberOfReplies:{type:'int', optional: true},
     preview: {type: 'string', optional: true},
   },
 };

@@ -82,13 +82,37 @@ export const updateTokenAmount = async (messageId, tokenAmount) => {
       messageId,
     );
 
-    realm.write(() => {
-      message.tokenAmount = message.tokenAmount + tokenAmount;
-    });
+    if(message){
+      realm.write(() => {
+        message.tokenAmount = message.tokenAmount + tokenAmount;
+      });
+    }else{
+      console.log("Message object not yet created for token", message)
+    }
   } catch (error) {
     console.log(error);
   }
 };
+
+export const updateNumberOfReplies = async (messageId) => {
+  try{
+    const realm = await Realm.open(databaseOptions);
+    let message = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId
+    )
+
+    if(message){
+      realm.write(() => {
+        message.numberOfReplies = message.numberOfReplies + 1
+      });
+    }else{
+      console.log("Message object not yet created for reply", message)
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 export const updateMessageToWrapped = async (messageId, {nftId, contractAddress}) => {
   try {
     const realm = await Realm.open(databaseOptions);
