@@ -5,8 +5,8 @@ import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
-import {TransactionsTable} from './TransactionsTable'
 import OtherItems from './OtherItemsTable'
+import { Transactions } from "../Transactions/Transactions";
 
 type TProps = {
   walletAddress: string;
@@ -64,7 +64,7 @@ export function OtherProfile(props: TProps) {
         {!!profile && <UserCard profile={profile} />}
         <OtherItems walletAddress={props.walletAddress}></OtherItems>
       </Box>
-      {!!transactions && <TransactionsTable transactions={transactions.items} />}
+      {!!transactions && <Transactions transactions={transactions.items} />}
     </Container>
   );
 }

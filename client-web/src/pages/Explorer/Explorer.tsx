@@ -7,17 +7,16 @@ import {
 import { useStoreState } from "../../store";
 import { ExplorerChart } from "../../componets/ExplorerChart";
 import { format } from "date-fns";
-import { TransactionsTable } from "../Profile/TransactionsTable";
 import {
   ExplorerRespose,
   IBlock,
   IHistory,
   ITransaction,
-  TTransactions,
 } from "../Profile/types";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { ExplorerBlocks } from "../../componets/ExplorerBlocks";
 import { Box, styled } from "@mui/material";
+import { Transactions } from "../Transactions/Transactions";
 
 const Container = styled(Box)(({ theme }) => ({
   width: "100vw",
@@ -90,7 +89,7 @@ export const Explorer = () => {
           </div>
         </Container>
       )}
-      <TransactionsTable transactions={transactions.items} />
+      <Transactions transactions={transactions.items} />
     </div>
   );
 };
