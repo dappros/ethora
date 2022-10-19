@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
+import DiamondIcon from "@mui/icons-material/Diamond";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GoogleIcon from "@mui/icons-material/Google";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { injected } from "../../connector";
 import { useWeb3React } from "@web3-react/core";
-import * as http from "../../http";
-import { useStoreState } from "../../store";
+import { useEffect, useState } from "react";
+import FacebookLogin from "react-facebook-login";
 import { useHistory } from "react-router-dom";
+import { injected } from "../../connector";
+import * as http from "../../http";
+import { signInWithGoogle } from "../../services/firebase";
+import { useStoreState } from "../../store";
 import { useQuery } from "../../utils";
-import {EmailModal} from "./EmailModal";
-import {UsernameModal} from "./UsernameModal";
-import {MetamaskModal} from "./MetamaskModal";
-import { OwnerRegistration } from "./OwnerRegistrationModal";
+import { EmailModal } from "./EmailModal";
+import { MetamaskModal } from "./MetamaskModal";
 import OwnerLogin from "./OwnerLogin";
+import { OwnerRegistration } from "./OwnerRegistrationModal";
+import { UsernameModal } from "./UsernameModal";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -33,7 +38,7 @@ export function Signon() {
     }
 
     if (owner.firstName) {
-      history.push('/owner')
+      history.push("/owner");
     }
   }, [user, owner]);
 
@@ -122,20 +127,52 @@ export function Signon() {
           justifyContent: "center",
         }}
       >
-        {/* <Button sx={{ margin: 1}} fullWidth variant="outlined" color="secondary">Continue with Facebook</Button>
-        <Button sx={{ margin: 1}} fullWidth variant="outlined">Continue with Google</Button> */}
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="outlined"
+          variant="contained"
           onClick={() => onMetamaskLogin()}
+          startIcon={<DiamondIcon />}
+          style={{ backgroundColor: "#d9711a" }}
         >
           Continue with Metamask
+        </Button>
+        <FacebookLogin
+          appId="1172938123281314"
+          autoLoad={true}
+          fields={"all"}
+          onClick={() => {}}
+          callback={(res) => console.log(res)}
+          icon={<FacebookIcon style={{ marginRight: 10 }} />}
+          buttonStyle={{
+            display: "flex",
+            justifyContent: "space-around",
+            alignItems: "center",
+            fontSize: 14,
+            padding: 5,
+            borderRadius: 4,
+            width: "100%",
+            margin: "3px 0",
+            fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+            fontWeight: 500,
+          }}
+          textButton={"Continue with facebook"}
+          containerStyle={{ padding: 0, width: "100%" }}
+        />
+        <Button
+          sx={{ margin: 1 }}
+          fullWidth
+          variant="contained"
+          onClick={signInWithGoogle}
+          startIcon={<GoogleIcon />}
+          style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
+        >
+          Continue with Google
         </Button>
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="outlined"
+          variant="contained"
           onClick={() => setOpenEmail(true)}
         >
           Continue with e-mail
@@ -143,15 +180,16 @@ export function Signon() {
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="outlined"
+          variant="contained"
           onClick={() => setOpenUsername(true)}
         >
           Continue with username
         </Button>
+
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="outlined"
+          variant="contained"
           color="success"
           onClick={() => setOwnerRegistration(true)}
         >
@@ -160,7 +198,7 @@ export function Signon() {
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="outlined"
+          variant="contained"
           color="success"
           onClick={() => setOwnerLogin(true)}
         >
@@ -169,13 +207,13 @@ export function Signon() {
       </Box>
 
       <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />
-      <EmailModal open={openEmail} setOpen={setOpenEmail}></EmailModal>
-      <UsernameModal
-        open={openUsername}
-        setOpen={setOpenUsername}
-      ></UsernameModal>
-      <OwnerRegistration open={ownerRegistration} setOpen={setOwnerRegistration}></OwnerRegistration>
-      <OwnerLogin open={ownerLogin} setOpen={setOwnerLogin}></OwnerLogin>
+      <EmailModal open={openEmail} setOpen={setOpenEmail} />
+      <UsernameModal open={openUsername} setOpen={setOpenUsername} />
+      <OwnerRegistration
+        open={ownerRegistration}
+        setOpen={setOwnerRegistration}
+      />
+      <OwnerLogin open={ownerLogin} setOpen={setOwnerLogin} />
     </Container>
   );
 }
