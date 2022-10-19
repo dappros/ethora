@@ -12,10 +12,20 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useStoreState } from "../../store";
 import NoDataImage from "../../componets/NoDataImage";
 import NewAppModal from "./NewAppModal";
+import Button from '@mui/material/Button';
+import DeleteAppModal from './DeletAppModal';
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
   const [open, setOpen] = React.useState(false)
+  const [showDelete, setShowDelete] = React.useState(false)
+  const [currentApp, setCurrentApp] = React.useState(null)
+
+  const onDelete = (app: any) => {
+    setCurrentApp(app)
+    setShowDelete(true)
+  }
+
   return (
     <TableContainer
       component={Paper}
@@ -68,7 +78,12 @@ export default function BasicTable() {
                   <TableCell align="right">
                     {new Date(app.createdAt).toDateString()}
                   </TableCell>
-                  <TableCell align="right">Edit</TableCell>
+                  <TableCell align="right">
+                    <Box style={{display: 'flex', flexDirection: 'column'}}>
+                      <Button onClick={() => onDelete(app)}>Delete</Button>
+                      <Button onClick={() => {}}>Edit</Button>
+                    </Box>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -76,6 +91,7 @@ export default function BasicTable() {
         )
       }
       <NewAppModal open={open} setOpen={setOpen}></NewAppModal>
+      <DeleteAppModal app={currentApp} open={showDelete} setOpen={setShowDelete}/>
     </TableContainer>
   );
 }
