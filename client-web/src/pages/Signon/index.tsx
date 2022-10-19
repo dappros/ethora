@@ -139,7 +139,7 @@ export function Signon() {
         </Button>
         <FacebookLogin
           appId="1172938123281314"
-          autoLoad={true}
+          autoLoad={false}
           fields={"all"}
           onClick={() => {}}
           callback={(res) => console.log(res)}
