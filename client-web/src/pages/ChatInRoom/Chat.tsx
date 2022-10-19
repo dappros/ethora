@@ -8,8 +8,9 @@ import {Stack, Typography} from "@mui/material";
 import {getBalance, getPublicProfile, getTransactions} from "../../http";
 import {TProfile} from "../Profile/types";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-import {format, formatDistance, subDays} from 'date-fns';
+import {differenceInDays, differenceInHours, format, formatDistance, subDays} from 'date-fns';
 import { enUS } from 'date-fns/locale';
+
 import {
     MainContainer,
     Avatar,
@@ -134,7 +135,7 @@ export function ChatInRoom() {
                             <ConversationHeader.Back/>
                             <ConversationHeader.Content
                                 userName={roomData.name}
-                                info="Active 10 mins ago"
+                                info={'Active '+formatDistance(subDays(new Date(messages.filter((item: any) => item.roomJID === currentRoom).slice(-1)[0].date), 0), new Date(), { addSuffix: true })}
                             />
                             <ConversationHeader.Actions>
                                 <BookmarkRemoveIcon/>
@@ -147,6 +148,13 @@ export function ChatInRoom() {
                     >
                         {
                             messages.filter((item: any) => item.roomJID === currentRoom).map(message =>
+                                < >
+                                    {differenceInDays(new Date(), new Date(message.date)) === 1 ?
+                                        <MessageSeparator>
+                                            {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
+                                        </MessageSeparator> : null
+                                    }
+
                                 <Message
                                     key={message.key}
                                     model={{
@@ -161,18 +169,14 @@ export function ChatInRoom() {
                                     <Message.CustomContent>
                                         <strong>{message.data.senderFirstName} {message.data.senderLastName}</strong><br/>
                                         {message.body}
-                                        <Typography variant="caption" display="block" gutterBottom>
-                                            {message.date}
-                                            <p>--- --- ---</p>
-                                            {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
-                                            <p> -- </p>
-                                            {format(new Date(message.date),  'h:mm a')}
-
-                                        </Typography>
                                     </Message.CustomContent>
-                                    <Message.Footer sentTime={formatDistance(subDays(new Date(message.date), 0), new Date(), { addSuffix: true })} />
+
+                                    <Message.Footer sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
+                                        format(new Date(message.date),  'h:mm a') :
+                                        formatDistance(subDays(new Date(message.date), 0), new Date(), { addSuffix: true })} />
 
                                 </Message>
+                                </>
                             )
                         }
                         {messages.length <= 0 || !currentRoom ?
