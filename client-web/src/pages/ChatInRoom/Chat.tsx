@@ -8,7 +8,8 @@ import {Stack, Typography} from "@mui/material";
 import {getBalance, getPublicProfile, getTransactions} from "../../http";
 import {TProfile} from "../Profile/types";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-
+import {format, formatDistance, subDays} from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import {
     MainContainer,
     Avatar,
@@ -149,11 +150,9 @@ export function ChatInRoom() {
                                 <Message
                                     key={message.key}
                                     model={{
-                                        sentTime: message.date,
                                         sender: message.data.senderFirstName + ' ' + message.data.senderLastName,
                                         direction: xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "outgoing" : "incoming",
-                                        position: "normal",
-
+                                        position: 0,
                                     }}
                                 >
                                     <Avatar
@@ -164,9 +163,14 @@ export function ChatInRoom() {
                                         {message.body}
                                         <Typography variant="caption" display="block" gutterBottom>
                                             {message.date}
+                                            <p>--- --- ---</p>
+                                            {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
+                                            <p> -- </p>
+                                            {format(new Date(message.date),  'h:mm a')}
+
                                         </Typography>
                                     </Message.CustomContent>
-                                    <Message.Footer sender="Emily" sentTime="just now"/>
+                                    <Message.Footer sentTime={formatDistance(subDays(new Date(message.date), 0), new Date(), { addSuffix: true })} />
 
                                 </Message>
                             )
