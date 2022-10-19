@@ -57,12 +57,10 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
       setLoading(true)
       http.loginOwner(email, password)
         .then((response) => {
-          console.log("owner ", response.data)
           setOwner({
             firstName: response.data.user.firstName,
             lastName: response.data.user.lastName,
             token: response.data.token,
-            walletAddress: response.data.user.defaultWallet.walletAddress,
             _id: response.data.user._id
           })
           setApps(response.data.apps)

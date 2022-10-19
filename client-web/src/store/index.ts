@@ -17,7 +17,6 @@ type TOwner = {
   firstName: string
   lastName: string
   token: string
-  walletAddress: string
 }
 
 type TMode = 'light' | 'dark'
@@ -122,7 +121,6 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
       lastName: '',
       token: '',
       _id: '',
-      walletAddress: ''
     },
     apps: [],
     balance: [],
@@ -132,7 +130,10 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     userChatRooms: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
-    setOwner: (user: TOwner) => set((state) => {state.owner = user}),
+    setOwner: (user: TOwner) => set((state) => {
+      console.log('setOwner ', user)
+      state.owner = user
+    }),
     setApps: (apps: TApp[]) => set((state) => {state.apps = apps}),
     setApp: (app: TApp) => set((state) => {state.apps = [...state.apps, app]}),
     clearApps: () => set((state) => {state.apps = []}),
@@ -152,8 +153,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
         firstName: '',
         lastName: '',
         token: '',
-        _id: '',
-        walletAddress: ''
+        _id: ''
       }
     }),
     setBalance: (balance: TBalance[]) => set((state) => {state.balance = balance}),
