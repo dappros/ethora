@@ -12,10 +12,31 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {useStoreState} from '../../store'
 import NoDataImage from "../../componets/NoDataImage";
 import NewUserModal from './NewUserModal';
+import * as http from '../../http'
 
 export default function BasicTable() {
   const apps = useStoreState(state => state.apps)
   const [showNewUser, setShowNewUser] = React.useState(false)
+
+  const getUsers = async (apps: any) => {
+    const users = []
+    for (const app of apps) {
+      try {
+        const getUsersResp = await http.getAppUsers(app.appToken)
+        users.push(...getUsersResp.data.users)
+      } catch (e) {
+      }
+    }
+
+    return users
+  }
+
+  React.useEffect(() => {
+    if (apps.length) {
+      getUsers(apps).then((users) => {console.log('users ', users)})
+    }
+  }, [apps])
+
   return (
     <TableContainer component={Paper} style={{maxWidth: 900, margin: '0 auto'}}>
       <Box style={{ display: "flex", alignItems: "center" }}>
