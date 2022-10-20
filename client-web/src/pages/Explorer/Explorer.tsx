@@ -15,7 +15,7 @@ import {
 } from "../Profile/types";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { ExplorerBlocks } from "../../componets/ExplorerBlocks";
-import { Box, styled } from "@mui/material";
+import { Box, styled, Typography } from "@mui/material";
 import { Transactions } from "../Transactions/Transactions";
 
 const Container = styled(Box)(({ theme }) => ({
@@ -89,6 +89,9 @@ export const Explorer = () => {
           </div>
         </Container>
       )}
+       <Typography variant="h6" style={{ margin: "16px" }}>
+          Transactions
+        </Typography>
       <Transactions transactions={transactions.items} />
     </div>
   );

@@ -132,8 +132,8 @@ export default function ItemsTable() {
         <TableBody>
           {balances.map((row) => (
             <TableRow key={row.contractAddress}>
-              <TableCell style={{ width: "200" }}>
-                <img alt="" src={row.imagePreview}></img>
+              <TableCell style={{ width: "200px" }} align={'center'}>
+                <img alt="" src={row.imagePreview} style={{width: 100, borderRadius: 5}}/>
               </TableCell>
               <TableCell align="center">{row.tokenName}</TableCell>
               <TableCell align="center">{row.balance}</TableCell>

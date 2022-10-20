@@ -27,7 +27,7 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
           justifyContent: "space-between",
         }}
       >
-        <Typography variant={"h4"} color={"primary"}>
+        <Typography variant={"h6"} style={{fontSize: '20px'}}>
           Blocks
         </Typography>
         <Button variant="contained" onClick={() => history.push('/explorer/blocks')}>View All</Button>
@@ -67,8 +67,8 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
                 lg={4}
               >
                 <Grid>
-                  <Typography color={"primary"} style={{ fontWeight: "bold" }}>
-                    <Link to={"/explorer/block/" + item.number} style={{textDecoration: 'none'}}>
+                  <Typography style={{ fontWeight: "bold", color: 'black' }}>
+                    <Link to={"/explorer/block/" + item.number} style={{textDecoration: 'none',color: 'black'}}>
                       Block {item.number}
                     </Link>
                   </Typography>
