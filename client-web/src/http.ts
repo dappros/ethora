@@ -229,6 +229,32 @@ export function loginEmail(email: string, password: string) {
   )
 }
 
+export function loginSocial(idToken: string, accessToken: string, loginType: string) {
+  return http.post(
+    '/users/login',
+    {
+      idToken,
+      accessToken,
+      loginType,
+      authToken: '',
+    },
+    { headers: { Authorization: APP_JWT } }
+  )
+}
+
+
+export function registerSocial(idToken: string, accessToken: string, loginType: string) {
+  return http.post(
+    '/users',
+    {
+      idToken,
+      accessToken,
+      loginType,
+      authToken: '',
+    },
+    { headers: { Authorization: APP_JWT } }
+  )
+}
 export function uploadFile(formData: FormData) {
   const user = useStoreState.getState().user
   return http.post(
