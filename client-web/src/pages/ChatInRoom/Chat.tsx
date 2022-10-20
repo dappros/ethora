@@ -149,10 +149,12 @@ export function ChatInRoom() {
                     {roomData.name ?
                         <ConversationHeader>
                             <ConversationHeader.Back/>
-                            <ConversationHeader.Content
-                                userName={roomData.name}
-                                info={'Active '+formatDistance(subDays(new Date(messages.filter((item: any) => item.roomJID === currentRoom).slice(-1)[0].date), 0), new Date(), { addSuffix: true })}
-                            />
+                            {messages.filter((item: any) => item.roomJID === currentRoom).length > 0 ?
+                                <ConversationHeader.Content
+                                    userName={roomData.name}
+                                    info={'Active ' + formatDistance(subDays(new Date(messages.filter((item: any) => item.roomJID === currentRoom).slice(-1)[0].date), 0), new Date(), {addSuffix: true})}
+                                /> :null
+                            }
                             <ConversationHeader.Actions>
                                 <BookmarkRemoveIcon/>
                             </ConversationHeader.Actions>

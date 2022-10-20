@@ -71,10 +71,11 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       console.log({appId})
       setLoading(true);
       const app = apps.find((el) => el._id === appId)
-      console.log({app})
+      console.log("create user from app ", {app})
       http.registerUsername(username, password, firstName, lastName, app?.appToken)
         .then((result) => {
           console.log(result.data)
+          setOpen(false)
         })
     },
   });
@@ -130,8 +131,8 @@ export default function NewUserModal({ open, setOpen }: TProps) {
                     id: "uncontrolled-native",
                   }}
                   onChange={(e) => {
-                    console.log(e);
-                    formik.handleChange(e);
+                    console.log('on change ')
+                    formik.setFieldValue("appId", e.target.value);
                   }}
                 >
                   {apps.map((app) => {
