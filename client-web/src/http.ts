@@ -319,3 +319,12 @@ export function updateApp(id: string, fd: FormData) {
     }
   )
 }
+
+export function getAppUsers(appToken: string) {
+  return http.get(
+    `/users`,
+    {
+      headers: { Authorization: appToken }
+    }
+  )
+}
