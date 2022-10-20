@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { useTheme } from '@mui/material/styles';
+import * as http from '../../http'
+import { useStoreState } from '../../store'
 
 type TProps = {
   open: boolean;
@@ -19,8 +21,22 @@ type TProps = {
 };
 
 export default function DeletAppModal(props: TProps) {
+  const [loading, setLoading] = React.useState(false)
+  const deleteApp = useStoreState(state => state.deleteApp)
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const onDelete = () => {
+    if (props.app && props.app?._id) {
+      setLoading(true)
+      http.deleteApp(props.app._id)
+        .then(() => {
+          deleteApp(props.app?._id as string)
+          props.setOpen(false)
+        })
+        .finally(() => setLoading(false))
+    }
+  }
 
   return (
     <div>
@@ -39,10 +55,10 @@ export default function DeletAppModal(props: TProps) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button disabled={false} variant="contained" autoFocus onClick={() => props.setOpen(false)}>
+          <Button disabled={loading} variant="contained" autoFocus onClick={() => props.setOpen(false)}>
             Cancel
           </Button>
-          <LoadingButton variant="contained" loading={false} color="error" onClick={() => {}} autoFocus>
+          <LoadingButton variant="contained" loading={loading} color="error" onClick={onDelete} autoFocus>
             Delete
           </LoadingButton>
         </DialogActions>

@@ -36,7 +36,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   const formik = useFormik({
     initialValues: {
       appName: "",
-      appDesctription: "",
+      appDescription: "",
       appGoogleId: "",
       defaultAccessProfileOpen: false,
       defaultAccessAssetsOpen: false,
@@ -55,7 +55,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
     },
     onSubmit: ({
       appName,
-      appDesctription,
+      appDescription,
       appGoogleId,
       defaultAccessAssetsOpen,
       defaultAccessProfileOpen,
@@ -76,7 +76,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       }
 
       fd.append("appName", appName);
-      fd.append("appDesctription", appDesctription);
+      fd.append("appDescription", appDescription);
       fd.append("appGoogleId", appGoogleId);
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
       fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString());

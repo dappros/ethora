@@ -103,6 +103,8 @@ interface IStore {
   clearUserChatRooms: () => void,
   setApps: (apps: TApp[]) => void,
   setApp: (app: TApp) => void,
+  updateApp: (app: TApp) => void,
+  deleteApp: (id: string) => void
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -136,6 +138,15 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     }),
     setApps: (apps: TApp[]) => set((state) => {state.apps = apps}),
     setApp: (app: TApp) => set((state) => {state.apps = [...state.apps, app]}),
+    updateApp: (app: TApp) => set((state) => {
+      const index = state.apps.findIndex((el) => el._id === app._id)
+      state.apps.splice(index, 1, app)
+      state.apps = [...state.apps]
+    }),
+    deleteApp: (id: string) => set((state) => {
+      const apps = state.apps.filter(app => app._id !== id)
+      state.apps = [...apps]
+    }),
     clearApps: () => set((state) => {state.apps = []}),
     clearUser: () => set((state) => {
       state.user = {

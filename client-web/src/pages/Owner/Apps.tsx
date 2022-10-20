@@ -14,16 +14,31 @@ import NoDataImage from "../../componets/NoDataImage";
 import NewAppModal from "./NewAppModal";
 import Button from '@mui/material/Button';
 import DeleteAppModal from './DeletAppModal';
+import EditAppModal from "./EditAppModal";
 
 export default function BasicTable() {
-  const apps = useStoreState((state) => state.apps);
+  const apps = useStoreState((state) => state.apps)
   const [open, setOpen] = React.useState(false)
   const [showDelete, setShowDelete] = React.useState(false)
-  const [currentApp, setCurrentApp] = React.useState(null)
+  const [showEdit, setShowEdit] = React.useState(false)
+  const [currentApp, setCurrentApp] = React.useState({
+    _id: '',
+    appName: '',
+    appDescription: '',
+    appGoogleId: '',
+    defaultAccessProfileOpen: false,
+    defaultAccessAssetsOpen: false,
+    usersCanFree: false
+  })
 
   const onDelete = (app: any) => {
     setCurrentApp(app)
     setShowDelete(true)
+  }
+
+  const onEdit = (app: any) => {
+    setCurrentApp(app)
+    setShowEdit(true)
   }
 
   return (
@@ -81,7 +96,7 @@ export default function BasicTable() {
                   <TableCell align="right">
                     <Box style={{display: 'flex', flexDirection: 'column'}}>
                       <Button onClick={() => onDelete(app)}>Delete</Button>
-                      <Button onClick={() => {}}>Edit</Button>
+                      <Button onClick={() => onEdit(app)}>Edit</Button>
                     </Box>
                   </TableCell>
                 </TableRow>
@@ -92,6 +107,7 @@ export default function BasicTable() {
       }
       <NewAppModal open={open} setOpen={setOpen}></NewAppModal>
       <DeleteAppModal app={currentApp} open={showDelete} setOpen={setShowDelete}/>
+      {showEdit && <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit}></EditAppModal>}
     </TableContainer>
   );
 }
