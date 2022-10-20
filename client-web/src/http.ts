@@ -1,6 +1,11 @@
 import axios from "axios";
 import { config } from "./config";
-import { ExplorerRespose, IBlock, IHistory, ITransaction } from "./pages/Profile/types";
+import {
+  ExplorerRespose,
+  IBlock,
+  IHistory,
+  ITransaction,
+} from "./pages/Profile/types";
 import { useStoreState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
@@ -158,12 +163,14 @@ export function getPublicProfile(walletAddress: string) {
 }
 
 export function getTransactions(walletAddress: string) {
-  return http.get<ExplorerRespose<ITransaction[]>>(`/explorer/transactions?walletAddress=${walletAddress}`);
+  return http.get<ExplorerRespose<ITransaction[]>>(
+    `/explorer/transactions?walletAddress=${walletAddress}`
+  );
 }
 export function getExplorerHistory() {
   return http.get<IHistory>(`/explorer/history`);
 }
-export function getExplorerBlocks(blockNumber: number | string = '') {
+export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
 }
 export function getTransactionDetails(transactionHash: string) {
@@ -177,180 +184,189 @@ export function checkExtWallet(walletAddress: string) {
   );
 }
 
-export function registerSignature(walletAddress: string, signature: string, msg: string, firstName: string, lastName: string) {
+export function registerSignature(
+  walletAddress: string,
+  signature: string,
+  msg: string,
+  firstName: string,
+  lastName: string
+) {
   return http.post(
-    '/users',
+    "/users",
     {
-      loginType: 'signature',
+      loginType: "signature",
       walletAddress,
       signature,
       msg,
       firstName,
-      lastName
+      lastName,
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 
-export function loginSignature(walletAddress: string, signature: string, msg: string) {
+export function loginSignature(
+  walletAddress: string,
+  signature: string,
+  msg: string
+) {
   return http.post(
-    '/users/login',
+    "/users/login",
     {
-      loginType: 'signature',
+      loginType: "signature",
       walletAddress,
       signature,
-      msg
+      msg,
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 
-export function registerByEmail(email: string, password: string, firstName: string, lastName: string) {
+export function registerByEmail(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+) {
   return http.post(
-    '/users',
+    "/users",
     {
       email,
       password,
       firstName,
-      lastName
+      lastName,
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 
 export function loginEmail(email: string, password: string) {
   return http.post(
-    '/users/login',
+    "/users/login",
     {
       email,
       password,
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 
-export function loginSocial(idToken: string, accessToken: string, loginType: string) {
+export function loginSocial(
+  idToken: string,
+  accessToken: string,
+  loginType: string
+) {
   return http.post(
-    '/users/login',
+    "/users/login",
     {
       idToken,
       accessToken,
       loginType,
-      authToken: '',
+      authToken: "",
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 
+export function checkEmailExist(email: string) {
+  return http.get(
+    "/users/checkEmail/" + email,
 
-export function registerSocial(idToken: string, accessToken: string, loginType: string) {
+    { headers: { Authorization: APP_JWT } }
+  );
+}
+
+export function registerSocial(
+  idToken: string,
+  accessToken: string,
+  loginType: string
+) {
   return http.post(
-    '/users',
+    "/users",
     {
       idToken,
       accessToken,
       loginType,
-      authToken: '',
+      authToken: "",
     },
     { headers: { Authorization: APP_JWT } }
-  )
+  );
 }
 export function uploadFile(formData: FormData) {
-  const user = useStoreState.getState().user
-  return http.post(
-    '/files',
-    formData,
-    {
-      headers: { Authorization: user.token }
-    }
-  )
+  const user = useStoreState.getState().user;
+  return http.post("/files", formData, {
+    headers: { Authorization: user.token },
+  });
 }
 
 export function nftDeploy(name: string, mediaId: string, rarity: string) {
-  const user = useStoreState.getState().user
+  const user = useStoreState.getState().user;
   return http.post(
-    '/tokens/items',
+    "/tokens/items",
     {
       name,
       mediaId,
-      rarity
+      rarity,
     },
     {
-      headers: { Authorization: user.token }
+      headers: { Authorization: user.token },
     }
-  )
+  );
 }
 
-export function registerOwner(firstName: string, lastName: string, email: string, company: string, tnc: string) {
-  return http.post(
-    '/users/register',
-    {
-      firstName,
-      lastName,
-      email,
-      company,
-      tnc
-    }
-  )
+export function registerOwner(
+  firstName: string,
+  lastName: string,
+  email: string,
+  company: string,
+  tnc: string
+) {
+  return http.post("/users/register", {
+    firstName,
+    lastName,
+    email,
+    company,
+    tnc,
+  });
 }
 
 export function loginOwner(email: string, password: string) {
-  return http.post(
-    '/users/login/owner',
-    {
-      email,
-      password
-    }
-  )
+  return http.post("/users/login/owner", {
+    email,
+    password,
+  });
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().owner
-  return http.get(
-    '/apps',
-    {
-      headers: { Authorization: owner.token }
-    }
-  )
+  const owner = useStoreState.getState().owner;
+  return http.get("/apps", {
+    headers: { Authorization: owner.token },
+  });
 }
 
 export function createApp(fd: FormData) {
-  const owner = useStoreState.getState().owner
-  return http.post(
-    '/apps',
-    fd,
-    {
-      headers: { Authorization: owner.token }
-    }
-  )
+  const owner = useStoreState.getState().owner;
+  return http.post("/apps", fd, {
+    headers: { Authorization: owner.token },
+  });
 }
 
 export function deleteApp(id: string) {
-  const owner = useStoreState.getState().owner
-  return http.delete(
-    `/apps/${id}`,
-    {
-      headers: { Authorization: owner.token }
-    }
-  )
+  const owner = useStoreState.getState().owner;
+  return http.delete(`/apps/${id}`, {
+    headers: { Authorization: owner.token },
+  });
 }
 
 export function updateApp(id: string, fd: FormData) {
-  const owner = useStoreState.getState().owner
-  return http.put(
-    `/apps/${id}`,
-    fd,
-    {
-      headers: { Authorization: owner.token }
-    }
-  )
+  const owner = useStoreState.getState().owner;
+  return http.put(`/apps/${id}`, fd, {
+    headers: { Authorization: owner.token },
+  });
 }
 
 export function getAppUsers(appToken: string) {
-  return http.get(
-    `/users`,
-    {
-      headers: { Authorization: appToken }
-    }
-  )
+  return http.get(`/users`, {
+    headers: { Authorization: appToken },
+  });
 }

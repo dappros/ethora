@@ -107,18 +107,32 @@ export function Signon() {
   }, [active, account]);
 
   const onGoogleClick = async () => {
-    const {user, idToken} = await signInWithGoogle();
-
-    if(user && idToken) {
+    const { user, idToken } = await signInWithGoogle();
+    if (user && idToken && user.providerData[0].email) {
       try {
-        const res = await http.registerSocial(idToken, user?.accessToken, 'google')
-        console.log(res)
+        const emailExist = await http.checkEmailExist(
+          user.providerData[0].email
+        );
+        if (!emailExist.data.success) {
+          const res = await http.loginSocial(
+            idToken,
+            user?.accessToken,
+            "google"
+          );
+          console.log(res);
+        } else {
+          const res = await http.registerSocial(
+            idToken,
+            user?.accessToken,
+            "google"
+          );
+          console.log(res);
+        }
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
-   
-  }
+  };
 
   return (
     <Container
