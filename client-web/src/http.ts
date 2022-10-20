@@ -236,7 +236,8 @@ export function loginSocial(idToken: string, accessToken: string, loginType: str
       idToken,
       accessToken,
       loginType,
-      authToken: '',
+      authToken: 'authToken',
+      password: ''
     },
     { headers: { Authorization: APP_JWT } }
   )
@@ -250,7 +251,8 @@ export function registerSocial(idToken: string, accessToken: string, loginType: 
       idToken,
       accessToken,
       loginType,
-      authToken: '',
+      authToken: 'authToken',
+      password: 'password'
     },
     { headers: { Authorization: APP_JWT } }
   )
