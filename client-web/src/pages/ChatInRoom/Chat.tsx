@@ -8,6 +8,8 @@ import {Stack, Typography} from "@mui/material";
 import {getBalance, getPublicProfile, getTransactions} from "../../http";
 import {TProfile} from "../Profile/types";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
+import {differenceInDays, differenceInHours, format, formatDistance, subDays} from 'date-fns';
+import { enUS } from 'date-fns/locale';
 
 import {
     MainContainer,
@@ -56,17 +58,18 @@ export function ChatInRoom() {
   );
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const onYReachStart = () => {
-    if (loadingMore) {
-      return;
+    const onYReachStart = () => {
+        if (loadingMore) {
+            return;
+        }
+        setLoadingMore(true);
+
+        setTimeout(() => {
+            const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
+            xmpp.getPaginatedArchive(currentRoom, String(lastMessageID));
+            setLoadingMore(false);
+        }, 1500);
     }
-    setLoadingMore(true);
-    const lastMessageID = messages.filter(
-      (item: any) => item.roomJID === currentRoom
-    )[0].id;
-    xmpp.getPaginatedArchive(currentRoom, String(lastMessageID));
-    setLoadingMore(false);
-  };
 
     useEffect(() => {
         getPublicProfile(user.walletAddress)
@@ -125,144 +128,96 @@ export function ChatInRoom() {
     );
   };
 
-  return (
-    <div>
-      <Box>
-        <Box>ChatInRoom</Box>
-        <Box>My jid: {xmpp.client.jid?.toString()}</Box>
-        <Box>Chat: {currentRoom}</Box>
-        <Box>
-          <TextField
-            value={room}
-            onChange={(e) => setRoom(e.target.value)}
-          ></TextField>
-          <Button onClick={onSubscribe}>Subscribe</Button>
+    return (
+        <Box style={{height: "500px"}}>
+            <MainContainer responsive>
+                <Sidebar position="left" scrollable={false}>
+                    <Search placeholder="Search..."/>
+                    <ConversationList>
+                        {useChatRooms.map(room =>
+                            <Conversation active={room.jid === currentRoom} key={room.jid}
+                                          onClick={() => chooseRoom(room.jid)} name={room.name}
+                                          info={room.room_thumbnail !== "none" ? room.room_thumbnail : ""}>
+                                <Avatar
+                                    src={room.room_background !== "none" ? room.room_background : "https://icotar.com/initials/" + room.name}/>
+                            </Conversation>
+                        )}
+                    </ConversationList>
+                </Sidebar>
+
+                <ChatContainer>
+                    {roomData.name ?
+                        <ConversationHeader>
+                            <ConversationHeader.Back/>
+                            <ConversationHeader.Content
+                                userName={roomData.name}
+                                info={'Active '+formatDistance(subDays(new Date(messages.filter((item: any) => item.roomJID === currentRoom).slice(-1)[0].date), 0), new Date(), { addSuffix: true })}
+                            />
+                            <ConversationHeader.Actions>
+                                <BookmarkRemoveIcon/>
+                            </ConversationHeader.Actions>
+                        </ConversationHeader>
+                        : null}
+                    <MessageList
+                        loadingMore={loadingMore} onYReachStart={onYReachStart}
+                        typingIndicator={<TypingIndicator content="Test is typing"/>}
+                    >
+                        {
+                            messages.filter((item: any) => item.roomJID === currentRoom).map(message =>
+                                < >
+                                    {differenceInDays(new Date(), new Date(message.date)) === 1 ?
+                                        <MessageSeparator>
+                                            {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
+                                        </MessageSeparator> : null
+                                    }
+
+                                <Message
+                                    key={message.key}
+                                    model={{
+                                        sender: message.data.senderFirstName + ' ' + message.data.senderLastName,
+                                        direction: xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "outgoing" : "incoming",
+                                        position: 0,
+                                    }}
+                                >
+                                    <Avatar
+                                        src={message.data.photoURL ? message.data.photoURL : "https://icotar.com/initials/" + message.data.senderFirstName + "%20" + message.data.senderLastName}
+                                        name={message.data.senderFirstName}/>
+                                    <Message.CustomContent>
+                                        <strong>{message.data.senderFirstName} {message.data.senderLastName}</strong><br/>
+                                        {message.body}
+                                    </Message.CustomContent>
+
+                                    <Message.Footer sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
+                                        format(new Date(message.date),  'h:mm a') :
+                                        formatDistance(subDays(new Date(message.date), 0), new Date(), { addSuffix: true })} />
+
+                                </Message>
+                                </>
+                            )
+                        }
+                        {messages.length <= 0 || !currentRoom ?
+                            <MessageList.Content style={{
+                                display: "flex",
+                                "flexDirection": "column",
+                                "justifyContent": "center",
+                                height: "100%",
+                                textAlign: "center",
+                                fontSize: "1.2em"
+                            }}>
+                                {!currentRoom ? "To get started, please select a chat room." : null}
+                                {messages.length <= 0 ? "Message list is empty" : null}
+                            </MessageList.Content> : null
+                        }
+                    </MessageList>
+                    {roomData.name ?
+                        <MessageInput
+                            placeholder="Type message here"
+                            onChange={(val) => setMyMessage(val)}
+                            onSend={sendMessage}
+                        />
+                        : null}
+                </ChatContainer>
+            </MainContainer>
         </Box>
-        <Button onClick={getMoreMessages}>Get more</Button>
-        <Button onClick={testData}>testData</Button>
-      </Box>
-
-      <div style={{ position: "relative", height: "500px" }}>
-        <MainContainer responsive>
-          <Sidebar position="left" scrollable={false}>
-            <Search placeholder="Search..." />
-            <ConversationList>
-              {useChatRooms.map((room) => (
-                <Conversation
-                  active={room.jid === currentRoom}
-                  key={room.jid}
-                  onClick={() => chooseRoom(room.jid)}
-                  name={room.name}
-                  info={
-                    room.room_thumbnail !== "none" ? room.room_thumbnail : ""
-                  }
-                >
-                  <Avatar
-                    src={
-                      room.room_background !== "none"
-                        ? room.room_background
-                        : "https://icotar.com/initials/" + room.name
-                    }
-                  />
-                </Conversation>
-              ))}
-            </ConversationList>
-          </Sidebar>
-
-          <ChatContainer>
-            {roomData.name ? (
-              <ConversationHeader>
-                <ConversationHeader.Back />
-                <ConversationHeader.Content
-                  userName={roomData.name}
-                  info="Active 10 mins ago"
-                />
-                <ConversationHeader.Actions>
-                  <BookmarkRemoveIcon />
-                </ConversationHeader.Actions>
-              </ConversationHeader>
-            ) : null}
-            <MessageList
-              loadingMore={loadingMore}
-              onYReachStart={onYReachStart}
-              typingIndicator={<TypingIndicator content="Test is typing" />}
-            >
-              {messages
-                .filter((item: any) => item.roomJID === currentRoom)
-                .map((message) => (
-                  <Message
-                    key={message.key}
-                    model={{
-                      sentTime: message.date,
-                      sender:
-                        message.data.senderFirstName +
-                        " " +
-                        message.data.senderLastName,
-                      direction:
-                        xmpp.client.jid?.toString().split("/")[0] ===
-                        message.data.senderJID.split("/")[0]
-                          ? "outgoing"
-                          : "incoming",
-                      position: "normal",
-                    }}
-                  >
-                    <Avatar
-                      src={
-                        message.data.photoURL
-                          ? message.data.photoURL
-                          : "https://icotar.com/initials/" +
-                            message.data.senderFirstName +
-                            "%20" +
-                            message.data.senderLastName
-                      }
-                      name={message.data.senderFirstName}
-                    />
-                    <Message.CustomContent>
-                      <strong>
-                        {message.data.senderFirstName}{" "}
-                        {message.data.senderLastName}
-                      </strong>
-                      <br />
-                      {message.body}
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        {message.date}
-                      </Typography>
-                    </Message.CustomContent>
-                    <Message.Footer sender="Emily" sentTime="just now" />
-                  </Message>
-                ))}
-              {messages.length <= 0 || !currentRoom ? (
-                <MessageList.Content
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100%",
-                    textAlign: "center",
-                    fontSize: "1.2em",
-                  }}
-                >
-                  {!currentRoom
-                    ? "To get started, please select a chat room."
-                    : null}
-                  {messages.length <= 0 ? "Message list is empty" : null}
-                </MessageList.Content>
-              ) : null}
-            </MessageList>
-            {roomData.name ? (
-              <MessageInput
-                placeholder="Type message here"
-                onChange={(val) => setMyMessage(val)}
-                onSend={sendMessage}
-              />
-            ) : null}
-          </ChatContainer>
-        </MainContainer>
-      </div>
-    </div>
-  );
+    );
 }
