@@ -10,20 +10,27 @@ import Box from "@mui/material/Box";
 import { IconButton, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {useStoreState} from '../../store'
+import NoDataImage from "../../componets/NoDataImage";
+import NewUserModal from './NewUserModal';
 
 export default function BasicTable() {
   const apps = useStoreState(state => state.apps)
+  const [showNewUser, setShowNewUser] = React.useState(false)
   return (
     <TableContainer component={Paper} style={{maxWidth: 900, margin: '0 auto'}}>
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
           Users
         </Typography>
-        <IconButton onClick={() => {}} size="large" color="success">
+        <IconButton onClick={() => setShowNewUser(true)} size="large">
           <AddCircleIcon fontSize="large"></AddCircleIcon>
         </IconButton>
       </Box>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Box style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <NoDataImage></NoDataImage>
+        <Typography style={{marginTop: '20px', marginBottom: '20px'}}>Users not found.</Typography>
+      </Box>
+      {/* <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell width={200}>appName</TableCell>
@@ -51,7 +58,8 @@ export default function BasicTable() {
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </Table> */}
+      <NewUserModal open={showNewUser} setOpen={setShowNewUser}></NewUserModal>
     </TableContainer>
   );
 }

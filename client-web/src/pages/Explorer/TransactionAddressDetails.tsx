@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { getTransactions } from "../../http";
-import { TransactionsTable } from "../Profile/TransactionsTable";
 import { ExplorerRespose, ITransaction } from "../Profile/types";
+import { Transactions } from "../Transactions/Transactions";
 
 interface ITransactionAddressDetailsProps {}
 
@@ -42,7 +42,7 @@ export const TransactionAddressDetails: React.FC<
           <Typography variant="h4" style={{ padding: 10, fontSize: 25 }}>
             Transactions from/to {params.address}
           </Typography>
-          <TransactionsTable transactions={transactions.items} />
+          <Transactions transactions={transactions.items} />
         </div>
       )}
     </>

@@ -33,21 +33,30 @@ import {
 import {stringify} from "querystring";
 
 export function ChatInRoom() {
-    const [room, setRoom] = useState("");
-    const messages = useStoreState((state) => state.historyMessages);
-    const user = useStoreState((store) => store.user);
-    const useChatRooms = useStoreState((store) => store.userChatRooms);
-    const [profile, setProfile] = useState<TProfile>();
-    const [myMessage, setMyMessage] = useState('');
-    const [currentRoom, setCurrentRoom] = useState("");
-    const [roomData, setRoomData] = useState<{ jid: string; name: string; room_background: string; room_thumbnail: string; users_cnt: string }>({
-        jid: '',
-        name: '',
-        room_background: '',
-        room_thumbnail: '',
-        users_cnt: ''
-    })
-    const [loadingMore, setLoadingMore] = useState(false);
+  const [room, setRoom] = useState("");
+  const messages = useStoreState((state) => state.historyMessages);
+  const user = useStoreState((store) => store.user);
+  const useChatRooms = useStoreState((store) => store.userChatRooms);
+  const [profile, setProfile] = useState<TProfile>();
+  const [myMessage, setMyMessage] = useState("");
+  const [currentRoom, setCurrentRoom] = useState("");
+  const [roomData, setRoomData] = useState<{
+    jid: string;
+    name: string;
+    room_background: string;
+    room_thumbnail: string;
+    users_cnt: string;
+  }>({
+    jid: "",
+    name: "",
+    room_background: "",
+    room_thumbnail: "",
+    users_cnt: "",
+  });
+  const [defaultAvatar, setDefaultAvatar] = useState(
+    "https://cdn-icons-png.flaticon.com/512/2102/2102647.png"
+  );
+  const [loadingMore, setLoadingMore] = useState(false);
 
     const onYReachStart = () => {
         if (loadingMore) {
@@ -80,37 +89,44 @@ export function ChatInRoom() {
             return
         }
 
-        xmpp.presenceInRoom(newCurrentRoom);
-        xmpp.getRoomArchiveStanza(newCurrentRoom);
-        console.log(messages)
-    };
+    xmpp.presenceInRoom(newCurrentRoom);
+    xmpp.getRoomArchiveStanza(newCurrentRoom);
+    console.log(messages);
+  };
 
-    const saveCurrentRoom = (room: string) => {
-        setCurrentRoom(room)
+  const saveCurrentRoom = (room: string) => {
+    setCurrentRoom(room);
+  };
+
+  const getMoreMessages = () => {
+    // @ts-ignore
+    xmpp.getPaginatedArchive(currentRoom, messages[0].id);
+  };
+
+  const testData = () => {
+    console.log(messages);
+  };
+
+  const chooseRoom = (jid: string) => {
+    setCurrentRoom(jid);
+    setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
+    console.log(roomData, currentRoom);
+  };
+
+  const sendMessage = () => {
+    let userAvatar = "";
+    if (profile?.profileImage) {
+      userAvatar = profile?.profileImage;
     }
-
-    const getMoreMessages = () => {
-        // @ts-ignore
-        xmpp.getPaginatedArchive(currentRoom, messages[0].id);
-    };
-
-    const testData = () => {
-        console.log(messages)
-    }
-
-    const chooseRoom = (jid: string) => {
-        setCurrentRoom(jid)
-        setRoomData(useChatRooms.filter(e => e.jid === jid)[0])
-        console.log(roomData, currentRoom)
-    }
-
-    const sendMessage = () => {
-        let userAvatar = "";
-        if (profile?.profileImage) {
-            userAvatar = profile?.profileImage;
-        }
-        xmpp.sendMessage(currentRoom, user.firstName, user.lastName, userAvatar, user.walletAddress, myMessage)
-    };
+    xmpp.sendMessage(
+      currentRoom,
+      user.firstName,
+      user.lastName,
+      userAvatar,
+      user.walletAddress,
+      myMessage
+    );
+  };
 
     return (
         <Box style={{height: "500px"}}>

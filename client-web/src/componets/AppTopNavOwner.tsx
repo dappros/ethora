@@ -52,7 +52,7 @@ const AppTopNavOwner = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar style={{backgroundColor: '#313949'}} position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -61,15 +61,12 @@ const AppTopNavOwner = () => {
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            <NavLink style={{ color: "white" }} to="/">
-              Ethora
+            <NavLink style={{ color: "white", textDecoration: 'none', fontSize: "25px" }} to="/">
+              Dappros Platform
             </NavLink>
           </Typography>
 
@@ -80,23 +77,6 @@ const AppTopNavOwner = () => {
               marginLeft: "auto",
             }}
           >
-            {mainCoinBalance ? (
-              <ButtonUnstyled
-                style={{
-                  marginRight: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  alt=""
-                  style={{ width: "20px", height: "20px" }}
-                  src={coinImg}
-                ></img>
-                {mainCoinBalance?.balance}
-              </ButtonUnstyled>
-            ) : null}
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar>
                 {firstLetersFromName(user.firstName, user.lastName)}
@@ -118,9 +98,6 @@ const AppTopNavOwner = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={() => {history.push('/owner/create-app')}}>
-                CreateApp
-              </MenuItem>
               <MenuItem onClick={onLogout}>
                 <Typography textAlign="center">Logout</Typography>
               </MenuItem>

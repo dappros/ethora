@@ -97,7 +97,8 @@ export const registerUsername = (
   username: string,
   password: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  appJwt?: string
 ) => {
   return http.post(
     "/users",
@@ -107,7 +108,7 @@ export const registerUsername = (
       firstName,
       lastName,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
   );
 };
 
@@ -205,10 +206,6 @@ export function loginSignature(walletAddress: string, signature: string, msg: st
 }
 
 export function registerByEmail(email: string, password: string, firstName: string, lastName: string) {
-  // "email": "keyboardcat@mailinator.com",
-  // "password": "pass",
-  // "firstName": "Lucky",
-  // "lastName": "Guy"
   return http.post(
     '/users',
     {
@@ -284,7 +281,7 @@ export function loginOwner(email: string, password: string) {
 export function getApps() {
   const owner = useStoreState.getState().owner
   return http.get(
-    '/owner2apps',
+    '/apps',
     {
       headers: { Authorization: owner.token }
     }
@@ -295,6 +292,27 @@ export function createApp(fd: FormData) {
   const owner = useStoreState.getState().owner
   return http.post(
     '/apps',
+    fd,
+    {
+      headers: { Authorization: owner.token }
+    }
+  )
+}
+
+export function deleteApp(id: string) {
+  const owner = useStoreState.getState().owner
+  return http.delete(
+    `/apps/${id}`,
+    {
+      headers: { Authorization: owner.token }
+    }
+  )
+}
+
+export function updateApp(id: string, fd: FormData) {
+  const owner = useStoreState.getState().owner
+  return http.put(
+    `/apps/${id}`,
     fd,
     {
       headers: { Authorization: owner.token }
