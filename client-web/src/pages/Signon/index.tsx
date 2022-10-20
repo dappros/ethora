@@ -106,6 +106,20 @@ export function Signon() {
     }
   }, [active, account]);
 
+  const onGoogleClick = async () => {
+    const {user, idToken} = await signInWithGoogle();
+
+    if(user && idToken) {
+      try {
+        const res = await http.registerSocial(idToken, user?.accessToken, 'google')
+        console.log(res)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+   
+  }
+
   return (
     <Container
       maxWidth="xl"
@@ -163,7 +177,7 @@ export function Signon() {
           sx={{ margin: 1 }}
           fullWidth
           variant="contained"
-          onClick={signInWithGoogle}
+          onClick={onGoogleClick}
           startIcon={<GoogleIcon />}
           style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
         >
