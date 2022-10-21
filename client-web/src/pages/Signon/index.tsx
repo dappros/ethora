@@ -10,7 +10,6 @@ import FacebookLogin from "react-facebook-login";
 import { useHistory } from "react-router-dom";
 import { injected } from "../../connector";
 import * as http from "../../http";
-import { signInWithGoogle } from "../../services/firebase";
 import { useStoreState } from "../../store";
 import { useQuery } from "../../utils";
 import { EmailModal } from "./EmailModal";
@@ -18,6 +17,9 @@ import { MetamaskModal } from "./MetamaskModal";
 import OwnerLogin from "./OwnerLogin";
 import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
+import { GoogleLogin } from "react-google-login";
+import { gapi } from "gapi-script";
+import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -31,6 +33,18 @@ export function Signon() {
   const [showMetamask, setShowMetamask] = useState(false);
   const [ownerRegistration, setOwnerRegistration] = useState(false);
   const [ownerLogin, setOwnerLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId:
+          "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
+        scope: "",
+      });
+    };
+    gapi.load("client:auth2", initClient);
+  });
 
   useEffect(() => {
     if (user.firstName) {
@@ -81,15 +95,7 @@ export function Signon() {
             const resp = await http.loginSignature(account, signature, msg);
             const user = resp.data.user;
 
-            setUser({
-              _id: user._id,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              xmppPassword: user.xmppPassword,
-              walletAddress: user.defaultWallet.walletAddress,
-              token: resp.data.token,
-              refreshToken: resp.data.refreshToken,
-            });
+            updateUserInfo(user, resp.data);
 
             history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
@@ -105,6 +111,82 @@ export function Signon() {
       }
     }
   }, [active, account]);
+
+  const onGoogleClickSuccess = async (res: any) => {
+    const loginType = "google";
+    const emailExist = await http.checkEmailExist(res.profileObj.email);
+    setLoading(true);
+    if (!emailExist.data.success) {
+      const loginRes = await http.loginSocial(
+        res.tokenId,
+        res.accessToken,
+        loginType
+      );
+      const user = loginRes.data.user;
+
+      updateUserInfo(user, loginRes.data);
+    } else {
+      await http.registerSocial(res.tokenId, res.accessToken, "", loginType);
+      const loginRes = await http.loginSocial(
+        res.tokenId,
+        res.accessToken,
+        loginType
+      );
+      const user = loginRes.data.user;
+
+      updateUserInfo(user, loginRes.data);
+    }
+    setLoading(false);
+  };
+
+  const onFailure = (err: any) => {
+    console.log("failed:", err);
+  };
+  const updateUserInfo = (
+    user: http.TUser,
+    tokens: { refreshToken: string; token: string }
+  ) => {
+    setUser({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      xmppPassword: user.xmppPassword,
+      walletAddress: user.defaultWallet.walletAddress,
+      token: tokens.token,
+      refreshToken: tokens.refreshToken,
+    });
+  };
+
+  const onFacebookClick = async (info: any) => {
+    const loginType = "facebook";
+    setLoading(true);
+    const emailExist = await http.checkEmailExist(info.email);
+    if (!emailExist.data.success) {
+      const loginRes = await http.loginSocial(
+        "",
+        "",
+        loginType,
+        info.accessToken
+      );
+      const user = loginRes.data.user;
+      updateUserInfo(user, loginRes.data);
+    } else {
+      await http.registerSocial("", "", info.accessToken, loginType);
+      const loginRes = await http.loginSocial(
+        "",
+        "",
+        loginType,
+        info.accessToken
+      );
+      const user = loginRes.data.user;
+      updateUserInfo(user, loginRes.data);
+    }
+    setLoading(false);
+  };
+
+  if (loading) {
+    return <FullPageSpinner />;
+  }
 
   return (
     <Container
@@ -140,9 +222,9 @@ export function Signon() {
         <FacebookLogin
           appId="1172938123281314"
           autoLoad={false}
-          fields={"all"}
+          fields="name,email,picture"
           onClick={() => {}}
-          callback={(res) => console.log(res)}
+          callback={onFacebookClick}
           icon={<FacebookIcon style={{ marginRight: 10 }} />}
           buttonStyle={{
             display: "flex",
@@ -159,16 +241,25 @@ export function Signon() {
           textButton={"Continue with facebook"}
           containerStyle={{ padding: 0, width: "100%" }}
         />
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          onClick={signInWithGoogle}
-          startIcon={<GoogleIcon />}
-          style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
-        >
-          Continue with Google
-        </Button>
+        <GoogleLogin
+          clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
+          buttonText="Continue with Google"
+          onSuccess={onGoogleClickSuccess}
+          onFailure={onFailure}
+          cookiePolicy={"single_host_origin"}
+          render={(props) => (
+            <Button
+              {...props}
+              sx={{ margin: 1 }}
+              fullWidth
+              variant="contained"
+              startIcon={<GoogleIcon />}
+              style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
+            >
+              Continue with Google
+            </Button>
+          )}
+        />
         <Button
           sx={{ margin: 1 }}
           fullWidth

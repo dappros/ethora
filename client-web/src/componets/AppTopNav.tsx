@@ -108,7 +108,7 @@ const AppTopNav = () => {
           </Typography>
 
           <Box
-            style={{
+            sx={{
               display: "flex",
               alignItems: "center",
               marginLeft: "auto",

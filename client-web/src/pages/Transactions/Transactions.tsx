@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Collapse,
   List,
   ListItem,
@@ -42,8 +43,8 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
             primary={item.fromFirstName + " " + item.fromLastName}
             secondary={format(new Date(item.timestamp), "pp PP")}
           />
-          <div
-            style={{
+          <Box
+            sx={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -56,7 +57,7 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
             )}
             <span>{item.value}</span>
             <img src={coin} style={{ width: 20, height: 20 }} alt={"coin"} />
-          </div>
+          </Box>
         </ListItemButton>
       </ListItem>
 

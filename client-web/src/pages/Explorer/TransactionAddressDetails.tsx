@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
@@ -38,12 +38,12 @@ export const TransactionAddressDetails: React.FC<
       {loading ? (
         <FullPageSpinner />
       ) : (
-        <div>
-          <Typography variant="h4" style={{ padding: 10, fontSize: 25 }}>
+        <Box>
+          <Typography variant="h4" sx={{ padding: "10px", fontSize: "25px" }}>
             Transactions from/to {params.address}
           </Typography>
           <Transactions transactions={transactions.items} />
-        </div>
+        </Box>
       )}
     </>
   );

@@ -1,17 +1,17 @@
-import { CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 
 export const FullPageSpinner = () => {
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         height: "90vh",
-        display: "flex",
+        display: 'flex',
         justifyContent: "center",
         alignItems: "center",
       }}
     >
       <CircularProgress />
-    </div>
+    </Box>
   );
 };
