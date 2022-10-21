@@ -106,7 +106,7 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
     if(stanza.attrs.id === "getUserRooms"){
         if(stanza.getChild('query')?.children){
             useStoreState.getState().clearUserChatRooms();
-            console.log(stanza.getChild('query')?.children)
+            console.log('ROOOMS ==> ',stanza.getChild('query')?.children)
             stanza.getChild('query')?.children.forEach((result: Object) => {
                 // @ts-ignore
                 const roomJID: string = result.attrs.jid;
@@ -125,19 +125,27 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
                 }
                 // @ts-ignore
                 useStoreState.getState().setNewUserChatRoom(roomData);
-                useStoreState.getState().setLoaderArchive(false);
 
                 //get message history in the room
                 xmpp.getRoomArchiveStanza(roomJID)
             })
+            useStoreState.getState().setLoaderArchive(false);
         }
     }
 }
 
+const getListOfRooms = (xmpp: any) => {
+    defaultRooms.map(roomJID => {
+        xmpp.presenceInRoom(roomJID)
+    });
+    xmpp.getRooms();
+    useStoreState.getState().clearMessageHistory();
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
-  // "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
-  // "fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e@conference.dev.dxmpp.com",
+  "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
+  "fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e@conference.dev.dxmpp.com",
 ];
 
 class XmppClass {
@@ -153,15 +161,7 @@ class XmppClass {
 
     this.client.start();
 
-    this.client.on("online", (jid) => {
-      console.log("online");
-      // this.client.send(xml('presence'))
-      this.getRooms();
-      useStoreState.getState().clearMessageHistory();
-        // defaultRooms.forEach((room) => {
-      //   this.subsribe(room);
-      // });
-    });
+    this.client.on("online", (jid) => getListOfRooms(this));
 
     this.client.on("stanza", onMessageHistory);
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this))
@@ -313,6 +313,7 @@ class XmppClass {
     }
 
     getRoomArchiveStanza(chat_jid: string) {
+        useStoreState.getState().setLoaderArchive(true);
         let message = xml(
             'iq',
             {
@@ -405,6 +406,22 @@ class XmppClass {
       }), xml('body', {}, userMessage));
         this.client.send(message);
     }
+
+    getRoomInfo = (
+        roomJID: string
+    ) => {
+        const message = xml(
+            'iq',
+            {
+                from: this.client.jid?.toString(),
+                id: 'roomInfo',
+                to: roomJID,
+                type: 'get',
+            },
+            xml('query', {xmlns: 'http://jabber.org/protocol/disco#info'}),
+        );
+        this.client.send(message);
+    };
 }
 
 export default new XmppClass();
