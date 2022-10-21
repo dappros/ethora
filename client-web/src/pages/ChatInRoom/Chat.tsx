@@ -37,6 +37,7 @@ export function ChatInRoom() {
   const messages = useStoreState((state) => state.historyMessages);
   const user = useStoreState((store) => store.user);
   const useChatRooms = useStoreState((store) => store.userChatRooms);
+  const loaderArchive = useStoreState((store) => store.loaderArchive);
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
   const [currentRoom, setCurrentRoom] = useState("");
@@ -53,22 +54,17 @@ export function ChatInRoom() {
     room_thumbnail: "",
     users_cnt: "",
   });
-  const [defaultAvatar, setDefaultAvatar] = useState(
-    "https://cdn-icons-png.flaticon.com/512/2102/2102647.png"
-  );
-  const [loadingMore, setLoadingMore] = useState(false);
 
     const onYReachStart = () => {
-        if (loadingMore) {
+        if (loaderArchive) {
             return;
-        }
-        setLoadingMore(true);
-
-        setTimeout(() => {
+        }else{
             const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
+
+            setTimeout(() => {
             xmpp.getPaginatedArchive(currentRoom, String(lastMessageID));
-            setLoadingMore(false);
-        }, 1500);
+            }, 1000);
+        }
     }
 
     useEffect(() => {
@@ -161,17 +157,17 @@ export function ChatInRoom() {
                         </ConversationHeader>
                         : null}
                     <MessageList
-                        loadingMore={loadingMore} onYReachStart={onYReachStart}
-                        typingIndicator={<TypingIndicator content="Test is typing"/>}
+                        loadingMore={loaderArchive} onYReachStart={onYReachStart}
+                        // typingIndicator={<TypingIndicator content="Test is typing"/>}
                     >
                         {
                             messages.filter((item: any) => item.roomJID === currentRoom).map(message =>
-                                < >
-                                    {differenceInDays(new Date(), new Date(message.date)) === 1 ?
-                                        <MessageSeparator>
-                                            {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
-                                        </MessageSeparator> : null
-                                    }
+                                // < >
+                                //     {differenceInDays(new Date(), new Date(message.date)) === 1 ?
+                                //         <MessageSeparator>
+                                //             {format(new Date(message.date),  'LLL', { locale: enUS })} {format(new Date(message.date),  'dd,yyyy')}
+                                //         </MessageSeparator> : null
+                                //     }
 
                                 <Message
                                     key={message.key}
@@ -190,11 +186,11 @@ export function ChatInRoom() {
                                     </Message.CustomContent>
 
                                     <Message.Footer sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
-                                        format(new Date(message.date),  'h:mm a') :
+                                        format(new Date(message.date),  'h:mm:ss a') :
                                         formatDistance(subDays(new Date(message.date), 0), new Date(), { addSuffix: true })} />
 
                                 </Message>
-                                </>
+                                // </>
                             )
                         }
                         {messages.length <= 0 || !currentRoom ?
@@ -206,7 +202,7 @@ export function ChatInRoom() {
                                 textAlign: "center",
                                 fontSize: "1.2em"
                             }}>
-                                {!currentRoom ? "To get started, please select a chat room." : null}
+                                {!currentRoom ? "To get started, please select a chat room."+loaderArchive : null}
                                 {messages.length <= 0 ? "Message list is empty" : null}
                             </MessageList.Content> : null
                         }
