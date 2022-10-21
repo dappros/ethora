@@ -280,7 +280,8 @@ export function checkEmailExist(email: string) {
 export function registerSocial(
   idToken: string,
   accessToken: string,
-  loginType: string
+  authToken: string,
+  loginType: string,
 ) {
   return http.post(
     "/users",
@@ -288,7 +289,7 @@ export function registerSocial(
       idToken,
       accessToken,
       loginType,
-      authToken: "",
+      authToken: authToken,
     },
     { headers: { Authorization: APP_JWT } }
   );

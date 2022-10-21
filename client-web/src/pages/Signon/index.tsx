@@ -19,6 +19,7 @@ import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
+import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -32,6 +33,7 @@ export function Signon() {
   const [showMetamask, setShowMetamask] = useState(false);
   const [ownerRegistration, setOwnerRegistration] = useState(false);
   const [ownerLogin, setOwnerLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const initClient = () => {
@@ -93,15 +95,7 @@ export function Signon() {
             const resp = await http.loginSignature(account, signature, msg);
             const user = resp.data.user;
 
-            setUser({
-              _id: user._id,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              xmppPassword: user.xmppPassword,
-              walletAddress: user.defaultWallet.walletAddress,
-              token: resp.data.token,
-              refreshToken: resp.data.refreshToken,
-            });
+            updateUserInfo(user, resp.data);
 
             history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
@@ -121,7 +115,7 @@ export function Signon() {
   const onGoogleClickSuccess = async (res: any) => {
     const loginType = "google";
     const emailExist = await http.checkEmailExist(res.profileObj.email);
-
+    setLoading(true);
     if (!emailExist.data.success) {
       const loginRes = await http.loginSocial(
         res.tokenId,
@@ -130,17 +124,9 @@ export function Signon() {
       );
       const user = loginRes.data.user;
 
-      setUser({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        xmppPassword: user.xmppPassword,
-        walletAddress: user.defaultWallet.walletAddress,
-        token: loginRes.data.token,
-        refreshToken: loginRes.data.refreshToken,
-      });
+      updateUserInfo(user, loginRes.data);
     } else {
-      await http.registerSocial(res.tokenId, res.accessToken, loginType);
+      await http.registerSocial(res.tokenId, res.accessToken, "", loginType);
       const loginRes = await http.loginSocial(
         res.tokenId,
         res.accessToken,
@@ -148,31 +134,59 @@ export function Signon() {
       );
       const user = loginRes.data.user;
 
-      setUser({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        xmppPassword: user.xmppPassword,
-        walletAddress: user.defaultWallet.walletAddress,
-        token: loginRes.data.token,
-        refreshToken: loginRes.data.refreshToken,
-      });
+      updateUserInfo(user, loginRes.data);
     }
+    setLoading(false);
   };
 
   const onFailure = (err: any) => {
     console.log("failed:", err);
   };
-
-  const onFacebookClick = async (info:any) => {
-    console.log(info)
-    try {
-      const res = await http.loginSocial('', '', 'facebook', info.accessToken)
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
+  const updateUserInfo = (
+    user: http.TUser,
+    tokens: { refreshToken: string; token: string }
+  ) => {
+    setUser({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      xmppPassword: user.xmppPassword,
+      walletAddress: user.defaultWallet.walletAddress,
+      token: tokens.token,
+      refreshToken: tokens.refreshToken,
+    });
   };
+
+  const onFacebookClick = async (info: any) => {
+    const loginType = "facebook";
+    setLoading(true);
+    const emailExist = await http.checkEmailExist(info.email);
+    if (!emailExist.data.success) {
+      const loginRes = await http.loginSocial(
+        "",
+        "",
+        loginType,
+        info.accessToken
+      );
+      const user = loginRes.data.user;
+      updateUserInfo(user, loginRes.data);
+    } else {
+      await http.registerSocial("", "", info.accessToken, loginType);
+      const loginRes = await http.loginSocial(
+        "",
+        "",
+        loginType,
+        info.accessToken
+      );
+      const user = loginRes.data.user;
+      updateUserInfo(user, loginRes.data);
+    }
+    setLoading(false);
+  };
+
+  if (loading) {
+    return <FullPageSpinner />;
+  }
 
   return (
     <Container
