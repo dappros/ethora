@@ -78,21 +78,21 @@ export const Explorer = () => {
     return <FullPageSpinner />;
   }
   return (
-    <div>
+    <Box>
       {!!user.token && (
         <Container>
-          <div style={{maxWidth: 500}}>
+          <Box sx={{maxWidth: 500}}>
           <ExplorerBlocks blocks={explorerBlocks.items} />
-          </div>
-          <div style={{ height: 300, width: '100%'}}>
+          </Box>
+          <Box sx={{ height: 300, width: '100%'}}>
             <ExplorerChart data={explorerHistory} />
-          </div>
+          </Box>
         </Container>
       )}
-       <Typography variant="h6" style={{ margin: "16px" }}>
+       <Typography variant="h6" sx={{ margin: "16px" }}>
           Transactions
         </Typography>
       <Transactions transactions={transactions.items} />
-    </div>
+    </Box>
   );
 };

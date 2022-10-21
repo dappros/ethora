@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -17,21 +18,26 @@ export interface IBlocksProps {
 
 export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
   const theme = useTheme();
-  const history = useHistory()
+  const history = useHistory();
   return (
-    <div>
-      <div
-        style={{
+    <Box>
+      <Box
+        sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <Typography variant={"h6"} style={{fontSize: '20px'}}>
+        <Typography variant={"h6"} style={{ fontSize: "20px" }}>
           Blocks
         </Typography>
-        <Button variant="contained" onClick={() => history.push('/explorer/blocks')}>View All</Button>
-      </div>
+        <Button
+          variant="contained"
+          onClick={() => history.push("/explorer/blocks")}
+        >
+          View All
+        </Button>
+      </Box>
       <div
         style={{
           height: 2,
@@ -44,7 +50,7 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
       <Grid
         container
         spacing={2}
-        style={{ maxHeight: 300, overflowY: "scroll", marginTop: 10 }}
+        sx={{ maxHeight: 300, overflowY: "scroll", marginTop: "10px" }}
       >
         {blocks.map((item) => {
           return (
@@ -52,13 +58,13 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
               container
               justifyContent={"flex-start"}
               key={item.hash}
-              style={{ marginBottom: 10, marginLeft: 15 }}
+              sx={{ marginBottom: '10px', marginLeft: '15px' }}
             >
               <Grid
-                style={{
+                sx={{
                   backgroundColor: "lightgrey",
                   borderRadius: 5,
-                  padding: 5,
+                  padding: "5px",
                   marginRight: 10,
                 }}
                 item
@@ -67,8 +73,11 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
                 lg={4}
               >
                 <Grid>
-                  <Typography style={{ fontWeight: "bold", color: 'black' }}>
-                    <Link to={"/explorer/block/" + item.number} style={{textDecoration: 'none',color: 'black'}}>
+                  <Typography sx={{ fontWeight: "bold", color: "black" }}>
+                    <Link
+                      to={"/explorer/block/" + item.number}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
                       Block {item.number}
                     </Link>
                   </Typography>
@@ -84,7 +93,7 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
                 <Typography
                   fontSize={14}
                   color={"primary"}
-                  style={{ fontWeight: "bold" }}
+                  sx={{ fontWeight: "bold" }}
                 >
                   {item.transactions.length} Transactions{" "}
                 </Typography>
@@ -93,6 +102,6 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
           );
         })}
       </Grid>
-    </div>
+    </Box>
   );
 };

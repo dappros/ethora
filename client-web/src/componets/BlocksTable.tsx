@@ -6,7 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useHistory } from "react-router";
 import { IBlock } from "../pages/Profile/types";
 import { truncateString } from "../utils";
@@ -19,13 +19,13 @@ export const BlocksTable: React.FC<TProps> = ({ blocks }) => {
   const history = useHistory();
   const theme = useTheme();
   return (
-    <div style={{ padding: 10 }}>
+    <Box sx={{ padding: '10px' }}>
       <TableContainer
-        style={{
+        sx={{
           flex: 1,
           marginTop: "10px",
           border: "3px solid " + theme.palette.primary.main,
-          borderRadius: 10,
+          borderRadius: '10px',
         }}
         component={Paper}
       >
@@ -75,6 +75,6 @@ export const BlocksTable: React.FC<TProps> = ({ blocks }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Box>
   );
 };

@@ -4,7 +4,7 @@ import { getTransactionDetails } from "../../http";
 import { ITransaction } from "../Profile/types";
 import { format } from "date-fns";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface ITransactionDetailsProps {}
 
@@ -70,32 +70,32 @@ export const TransactionDetails: React.FC<ITransactionDetailsProps> = (
       {loading ? (
         <FullPageSpinner />
       ) : (
-        <div>
+        <Box>
           <Typography variant="h4" style={{ paddingInline: 20, fontSize: 25, paddingTop: 20 }}>
             Transaction details {params.txId}
           </Typography>
-          <div
-            style={{
+          <Box
+            sx={{
               display: "flex",
               alignItems: "flex-start",
               flexDirection: "column",
-              padding: 20,
+              padding: '20px',
             }}
           >
             {Object.entries(transactionDetails).map(
               (item: [string, string]) => {
                 return (
-                  <div key={item[0]}>
+                  <Box key={item[0]}>
                     <span>
                       <b>{keysMap[item[0]] || item[0]}: </b>
                     </span>
                     <span>{item[1]}</span>
-                  </div>
+                  </Box>
                 );
               }
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
       )}
     </>
   );

@@ -4,7 +4,7 @@ import { getExplorerBlocks } from "../../http";
 import { IBlock } from "../Profile/types";
 import { format } from "date-fns";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface IBlockDetailsProps {}
 
@@ -62,14 +62,14 @@ export const BlockDetails: React.FC<IBlockDetailsProps> = (props) => {
   }, [params]);
   if (loading) return <FullPageSpinner />;
   return (
-    <div style={{ overflowX: "hidden" }}>
+    <Box sx={{ overflowX: "hidden" }}>
       <Typography
         variant="h4"
-        style={{ paddingInline: 20, fontSize: 25, paddingTop: 20 }}
+        sx={{ paddingInline: '20px', fontSize: 25, paddingTop: '20px' }}
       >
         Block details: #{params.blockNumber}
       </Typography>
-      <div
+      <Box
         style={{
           display: "flex",
           alignItems: "flex-start",
@@ -79,15 +79,15 @@ export const BlockDetails: React.FC<IBlockDetailsProps> = (props) => {
       >
         {Object.entries(blockDetails).map((item: [string, string]) => {
           return (
-            <div key={item[0]}>
+            <Box key={item[0]}>
               <span>
                 <b>{keysMap[item[0]] || item[0]}: </b>
               </span>
               <span>{item[1]}</span>
-            </div>
+            </Box>
           );
         })}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
