@@ -27,6 +27,6 @@ export const ROUTES = {
   INVITEFRIENDS: 'InviteFriendsScreen',
   CHATDETAILS: 'ChatDetailsScreen',
   RESETPASSWORD: 'ResetPasswordScreen',
-  PRIVACY: 'PrivacyAndDataScreen',,
-  THREADS:'ThreadScreen'
+  PRIVACY: 'PrivacyAndDataScreen',
+  THREADS: 'ThreadScreen',
 };
