@@ -208,7 +208,7 @@ export function Signon() {
         <FacebookLogin
           appId="1172938123281314"
           autoLoad={false}
-          fields={"all"}
+          fields="name,email,picture"
           onClick={() => {}}
           callback={onFacebookClick}
           icon={<FacebookIcon style={{ marginRight: 10 }} />}
