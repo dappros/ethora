@@ -164,6 +164,16 @@ export function Signon() {
     console.log("failed:", err);
   };
 
+  const onFacebookClick = async (info:any) => {
+    console.log(info)
+    try {
+      const res = await http.loginSocial('', '', 'facebook', info.accessToken)
+      console.log(res)
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
   return (
     <Container
       maxWidth="xl"
@@ -200,7 +210,7 @@ export function Signon() {
           autoLoad={false}
           fields={"all"}
           onClick={() => {}}
-          callback={(res) => console.log(res)}
+          callback={onFacebookClick}
           icon={<FacebookIcon style={{ marginRight: 10 }} />}
           buttonStyle={{
             display: "flex",
