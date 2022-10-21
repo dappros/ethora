@@ -18,6 +18,8 @@ import { MetamaskModal } from "./MetamaskModal";
 import OwnerLogin from "./OwnerLogin";
 import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from 'gapi-script';
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -31,6 +33,45 @@ export function Signon() {
   const [showMetamask, setShowMetamask] = useState(false);
   const [ownerRegistration, setOwnerRegistration] = useState(false);
   const [ownerLogin, setOwnerLogin] = useState(false);
+
+  useEffect(() => {
+    const initClient = () => {
+          gapi.client.init({
+          clientId: "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
+          scope: ''
+        });
+     };
+     gapi.load('client:auth2', initClient);
+  });
+
+  const onSuccess = async (res: any) => {
+    console.log('success:', res);
+    // res.tokenId
+    // res.accessToken
+    const emailExist = await http.checkEmailExist(
+      res.profileObj.email
+    );
+
+    if (!emailExist.data.success) {
+      const loginRes = await http.loginSocial(
+        res.tokenId,
+        res.accessToken,
+        "google"
+      );
+      console.log({loginRes});
+    } else {
+      const registerRes = await http.registerSocial(
+        res.tokenId,
+        res.accessToken,
+        "google"
+      );
+      console.log({registerRes});
+    }
+  };
+
+  const onFailure = (err: any) => {
+      console.log('failed:', err);
+  };
 
   useEffect(() => {
     if (user.firstName) {
@@ -134,6 +175,10 @@ export function Signon() {
     }
   };
 
+  const onGoogleClick2 = () => {
+
+  }
+
   return (
     <Container
       maxWidth="xl"
@@ -187,11 +232,18 @@ export function Signon() {
           textButton={"Continue with facebook"}
           containerStyle={{ padding: 0, width: "100%" }}
         />
+        <GoogleLogin
+          clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
+          buttonText="Sign in with Google"
+          onSuccess={onSuccess}
+          onFailure={onFailure}
+          cookiePolicy={'single_host_origin'}
+        />
         <Button
           sx={{ margin: 1 }}
           fullWidth
           variant="contained"
-          onClick={onGoogleClick}
+          onClick={onGoogleClick2}
           startIcon={<GoogleIcon />}
           style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
         >

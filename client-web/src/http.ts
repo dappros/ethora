@@ -254,7 +254,8 @@ export function loginEmail(email: string, password: string) {
 export function loginSocial(
   idToken: string,
   accessToken: string,
-  loginType: string
+  loginType: string,
+  authToken: string = 'authToken'
 ) {
   return http.post(
     "/users/login",
@@ -262,7 +263,7 @@ export function loginSocial(
       idToken,
       accessToken,
       loginType,
-      authToken: "",
+      authToken
     },
     { headers: { Authorization: APP_JWT } }
   );
