@@ -10,7 +10,6 @@ import FacebookLogin from "react-facebook-login";
 import { useHistory } from "react-router-dom";
 import { injected } from "../../connector";
 import * as http from "../../http";
-import { signInWithGoogle } from "../../services/firebase";
 import { useStoreState } from "../../store";
 import { useQuery } from "../../utils";
 import { EmailModal } from "./EmailModal";
@@ -18,8 +17,8 @@ import { MetamaskModal } from "./MetamaskModal";
 import OwnerLogin from "./OwnerLogin";
 import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
-import { GoogleLogin } from 'react-google-login';
-import { gapi } from 'gapi-script';
+import { GoogleLogin } from "react-google-login";
+import { gapi } from "gapi-script";
 
 export function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -36,42 +35,14 @@ export function Signon() {
 
   useEffect(() => {
     const initClient = () => {
-          gapi.client.init({
-          clientId: "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
-          scope: ''
-        });
-     };
-     gapi.load('client:auth2', initClient);
+      gapi.client.init({
+        clientId:
+          "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
+        scope: "",
+      });
+    };
+    gapi.load("client:auth2", initClient);
   });
-
-  const onSuccess = async (res: any) => {
-    console.log('success:', res);
-    // res.tokenId
-    // res.accessToken
-    const emailExist = await http.checkEmailExist(
-      res.profileObj.email
-    );
-
-    if (!emailExist.data.success) {
-      const loginRes = await http.loginSocial(
-        res.tokenId,
-        res.accessToken,
-        "google"
-      );
-      console.log({loginRes});
-    } else {
-      const registerRes = await http.registerSocial(
-        res.tokenId,
-        res.accessToken,
-        "google"
-      );
-      console.log({registerRes});
-    }
-  };
-
-  const onFailure = (err: any) => {
-      console.log('failed:', err);
-  };
 
   useEffect(() => {
     if (user.firstName) {
@@ -147,37 +118,51 @@ export function Signon() {
     }
   }, [active, account]);
 
-  const onGoogleClick = async () => {
-    const { user, idToken } = await signInWithGoogle();
-    if (user && idToken && user.providerData[0].email) {
-      try {
-        const emailExist = await http.checkEmailExist(
-          user.providerData[0].email
-        );
-        if (!emailExist.data.success) {
-          const res = await http.loginSocial(
-            idToken,
-            user?.accessToken,
-            "google"
-          );
-          console.log(res);
-        } else {
-          const res = await http.registerSocial(
-            idToken,
-            user?.accessToken,
-            "google"
-          );
-          console.log(res);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+  const onGoogleClickSuccess = async (res: any) => {
+    const loginType = "google";
+    const emailExist = await http.checkEmailExist(res.profileObj.email);
+
+    if (!emailExist.data.success) {
+      const loginRes = await http.loginSocial(
+        res.tokenId,
+        res.accessToken,
+        loginType
+      );
+      const user = loginRes.data.user;
+
+      setUser({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        xmppPassword: user.xmppPassword,
+        walletAddress: user.defaultWallet.walletAddress,
+        token: loginRes.data.token,
+        refreshToken: loginRes.data.refreshToken,
+      });
+    } else {
+      await http.registerSocial(res.tokenId, res.accessToken, loginType);
+      const loginRes = await http.loginSocial(
+        res.tokenId,
+        res.accessToken,
+        loginType
+      );
+      const user = loginRes.data.user;
+
+      setUser({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        xmppPassword: user.xmppPassword,
+        walletAddress: user.defaultWallet.walletAddress,
+        token: loginRes.data.token,
+        refreshToken: loginRes.data.refreshToken,
+      });
     }
   };
 
-  const onGoogleClick2 = () => {
-
-  }
+  const onFailure = (err: any) => {
+    console.log("failed:", err);
+  };
 
   return (
     <Container
@@ -234,21 +219,24 @@ export function Signon() {
         />
         <GoogleLogin
           clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
-          buttonText="Sign in with Google"
-          onSuccess={onSuccess}
+          buttonText="Continue with Google"
+          onSuccess={onGoogleClickSuccess}
           onFailure={onFailure}
-          cookiePolicy={'single_host_origin'}
+          cookiePolicy={"single_host_origin"}
+          render={(props) => (
+            <Button
+              {...props}
+              sx={{ margin: 1 }}
+              fullWidth
+              variant="contained"
+              startIcon={<GoogleIcon />}
+              style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
+            >
+              Continue with Google
+            </Button>
+          )}
         />
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          onClick={onGoogleClick2}
-          startIcon={<GoogleIcon />}
-          style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
-        >
-          Continue with Google
-        </Button>
+
         <Button
           sx={{ margin: 1 }}
           fullWidth
