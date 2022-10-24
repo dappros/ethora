@@ -57,7 +57,7 @@ export function UsernameSignInForm(props: TProps) {
             walletAddress: result.data.user.defaultWallet.walletAddress,
             token: result.data.token,
             refreshToken: result.data.refreshToken,
-            profilePicture: result.data.user.profilePicture
+            profileImage: result.data.user.profileImage
           });
           props.closeModal();
           history.push(

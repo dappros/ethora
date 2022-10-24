@@ -10,7 +10,7 @@ type TUser = {
   walletAddress: string
   token: string
   refreshToken: string
-  profilePicture: string
+  profileImage: string
 }
 
 type TOwner = {
@@ -120,7 +120,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
       walletAddress: '',
       token: '',
       refreshToken: '',
-      profilePicture: ''
+      profileImage: ''
     },
     owner: {
       firstName: '',
@@ -162,7 +162,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
         walletAddress: '',
         token: '',
         refreshToken: '',
-        profilePicture: ''
+        profileImage: ''
       }
     }),
     clearOwner: () => set((state) => {
