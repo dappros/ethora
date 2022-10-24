@@ -12,15 +12,16 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useStoreState } from "../../store";
 import NoDataImage from "../../componets/NoDataImage";
 import NewAppModal from "./NewAppModal";
-import Button from '@mui/material/Button';
 import DeleteAppModal from './DeletAppModal';
 import EditAppModal from "./EditAppModal";
+import RotateModal from "./RotateModal";
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps)
   const [open, setOpen] = React.useState(false)
   const [showDelete, setShowDelete] = React.useState(false)
   const [showEdit, setShowEdit] = React.useState(false)
+  const [showRotate, setShowRotate] = React.useState(false)
   const [currentApp, setCurrentApp] = React.useState({
     _id: '',
     appName: '',
@@ -39,6 +40,11 @@ export default function BasicTable() {
   const onEdit = (app: any) => {
     setCurrentApp(app)
     setShowEdit(true)
+  }
+
+  const onRotateJwt = (app: any) => {
+    setCurrentApp(app)
+    setShowRotate(true)
   }
 
   return (
@@ -66,11 +72,11 @@ export default function BasicTable() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell width={200}>appName</TableCell>
-                <TableCell align="right">AssetsOpen</TableCell>
-                <TableCell align="right">ProfileOpen</TableCell>
-                <TableCell align="right">usersCanFree</TableCell>
-                <TableCell align="right">createdAt</TableCell>
+                <TableCell width={200}>Application Name</TableCell>
+                <TableCell align="right">Is Assets Open</TableCell>
+                <TableCell align="right">Is Profile Open</TableCell>
+                <TableCell align="right">Is Users Can Free</TableCell>
+                <TableCell align="right">Created</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -116,6 +122,7 @@ export default function BasicTable() {
                       </a>
                       <a href="/" onClick={(e) => {
                         e.preventDefault()
+                        onRotateJwt(app)
                       }}>Rotate App Jwt</a>
                       <a href="/" onClick={(e) => {
                         e.preventDefault()
@@ -131,6 +138,7 @@ export default function BasicTable() {
       }
       <NewAppModal open={open} setOpen={setOpen}></NewAppModal>
       <DeleteAppModal app={currentApp} open={showDelete} setOpen={setShowDelete}/>
+      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate}></RotateModal>
       {showEdit && <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit}></EditAppModal>}
     </TableContainer>
   );
