@@ -95,8 +95,32 @@ export default function BasicTable() {
                   </TableCell>
                   <TableCell align="right">
                     <Box style={{display: 'flex', flexDirection: 'column'}}>
-                      <Button onClick={() => onDelete(app)}>Delete</Button>
-                      <Button onClick={() => onEdit(app)}>Edit</Button>
+                      <a href="/" onClick={(e) => {
+                        e.preventDefault()
+                        onDelete(app)
+                      }}>Delete</a>
+                      <a 
+                        href={`data:text/json;chatset=utf-8,${encodeURIComponent(
+                          JSON.stringify({appJwt: app.appToken})
+                        )}`}
+                        style={{display: 'none'}}
+                        download = "data.json"
+                        id={`app-jwt-${app._id}`}
+                      >download jwt</a>
+                      <a href="/" onClick={(e) => {
+                        e.preventDefault()
+                        const el = document.querySelector(`#app-jwt-${app._id}`) as HTMLElement
+                        el?.click()
+                      }}>
+                        Download App JWT
+                      </a>
+                      <a href="/" onClick={(e) => {
+                        e.preventDefault()
+                      }}>Rotate App Jwt</a>
+                      <a href="/" onClick={(e) => {
+                        e.preventDefault()
+                        onEdit(app)
+                      }}>Edit</a>
                     </Box>
                   </TableCell>
                 </TableRow>
