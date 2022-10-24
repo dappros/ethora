@@ -29,4 +29,5 @@ export const ROUTES = {
   RESETPASSWORD: 'ResetPasswordScreen',
   PRIVACY: 'PrivacyAndDataScreen',
   THREADS: 'ThreadScreen',
+  SWIPERCHAT: 'SwiperChatScreen',
 };

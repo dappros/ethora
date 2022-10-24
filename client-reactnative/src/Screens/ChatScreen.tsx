@@ -295,7 +295,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
-  const getOtherUserDetails = (props:any) => {
+  const getOtherUserDetails = (props: any) => {
     const {avatar, name, _id} = props;
     const firstName = name.split(' ')[0];
     const lastName = name.split(' ')[1];
@@ -321,8 +321,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       anotherUserWalletAddress: walletAddress,
       anotherUserAvatar: avatar,
     });
-
-  }
+  };
 
   const onUserAvatarPress = (props: any) => {
     //to set the current another user profile
@@ -332,8 +331,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (walletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate(ROUTES.PROFILE);
       return;
-    }else{
-      getOtherUserDetails(props)
+    } else {
+      getOtherUserDetails(props);
       navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
     }
   };
@@ -464,7 +463,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = ( message: any) => {
+  const handleOnPress = (message: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
     }
@@ -479,10 +478,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleReply = (type: 'open' | 'close') => {
-
     //navigate to thread screen with current message details.
-    getOtherUserDetails(onTapMessageObject.user)
-    navigation.navigate(ROUTES.THREADS,{currentMessage:onTapMessageObject, chatJid:chatJid, chatName:chatName})
+    getOtherUserDetails(onTapMessageObject.user);
+    navigation.navigate(ROUTES.THREADS, {
+      currentMessage: onTapMessageObject,
+      chatJid: chatJid,
+      chatName: chatName,
+    });
     onClose();
 
     // if (type === 'open') {
@@ -888,9 +890,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           color: 'black',
           onSelectionChange: e => setSelection(e.nativeEvent.selection),
         }}
-        onLongPress={( message: any) =>
-          handleOnLongPress(message)
-        }
+        onLongPress={(message: any) => handleOnLongPress(message)}
         onTap={(message: any) => handleOnPress(message)}
         // onInputTextChanged={()=>{alert('hhh')}}
         parsePatterns={linkStyle => [
@@ -907,7 +907,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
           },
         ]}
       />
-
       <TransactionModal
         type={modalType}
         closeModal={closeModal}

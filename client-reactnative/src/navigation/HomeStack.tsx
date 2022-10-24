@@ -26,6 +26,7 @@ import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
 import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
 import ThreadScreen from '../Screens/ThreadScreen';
 import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
+import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -263,12 +264,19 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-      name={ROUTES.THREADS}
-      component={ThreadScreen}
-      options={() => ({
-        // header: ({navigation}) => <MainHeader />,
-        headerShown:false
-      })}
+        name={ROUTES.SWIPERCHAT}
+        component={SwiperChatScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.THREADS}
+        component={ThreadScreen}
+        options={() => ({
+          // header: ({navigation}) => <MainHeader />,
+          headerShown: false,
+        })}
       />
     </HomeStack.Navigator>
   );
