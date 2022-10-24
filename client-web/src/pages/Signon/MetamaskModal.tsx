@@ -62,6 +62,7 @@ export function MetamaskModal({ open, setOpen }: TProps) {
           walletAddress: user.defaultWallet.walletAddress,
           token: resp.data.token,
           refreshToken: resp.data.refreshToken,
+          profilePicture: user.profilePicture
         });
         deactivate();
         history.push(`/profile/${user.defaultWallet.walletAddress}`);

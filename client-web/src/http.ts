@@ -30,6 +30,7 @@ export type TUser = {
   };
   appId: string;
   xmppPassword: string;
+  profilePicture: string;
 };
 
 export type TLoginSuccessResponse = {
