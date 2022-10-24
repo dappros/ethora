@@ -154,6 +154,7 @@ export function Signon() {
       walletAddress: user.defaultWallet.walletAddress,
       token: tokens.token,
       refreshToken: tokens.refreshToken,
+      profileImage: user.profileImage
     });
   };
 

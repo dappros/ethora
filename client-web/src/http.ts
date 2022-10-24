@@ -30,6 +30,7 @@ export type TUser = {
   };
   appId: string;
   xmppPassword: string;
+  profileImage: string;
 };
 
 export type TLoginSuccessResponse = {
@@ -255,7 +256,7 @@ export function loginSocial(
   idToken: string,
   accessToken: string,
   loginType: string,
-  authToken: string = 'authToken'
+  authToken: string = "authToken"
 ) {
   return http.post(
     "/users/login",
@@ -263,7 +264,7 @@ export function loginSocial(
       idToken,
       accessToken,
       loginType,
-      authToken
+      authToken,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -281,7 +282,7 @@ export function registerSocial(
   idToken: string,
   accessToken: string,
   authToken: string,
-  loginType: string,
+  loginType: string
 ) {
   return http.post(
     "/users",
@@ -370,5 +371,12 @@ export function updateApp(id: string, fd: FormData) {
 export function getAppUsers(appToken: string) {
   return http.get(`/users`, {
     headers: { Authorization: appToken },
+  });
+}
+
+export function rotateAppJwt(appId: string) {
+  const owner = useStoreState.getState().owner;
+  return http.post(`/apps/rotate-jwt/${appId}`, null, {
+    headers: { Authorization: owner.token },
   });
 }

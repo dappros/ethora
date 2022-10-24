@@ -44,7 +44,7 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]._id
+      appId: apps[0]?._id
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -203,10 +203,10 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.lastName && formik.errors.password ? true : false
+                  formik.touched.password && formik.errors.password ? true : false
                 }
                 helperText={
-                  formik.touched.username && formik.errors.password
+                  formik.touched.password && formik.errors.password
                     ? formik.errors.password
                     : ""
                 }

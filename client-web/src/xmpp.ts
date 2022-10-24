@@ -2,7 +2,9 @@ import { darkScrollbar } from "@mui/material";
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import {Element} from 'ltx'
-import {useStoreState} from './store'
+import {TMessageHistory, useStoreState} from './store'
+
+let lastMsgId: string = '';
 
 export function walletToUsername(str: string) {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -77,8 +79,15 @@ const onMessageHistory = async (stanza: Element) => {
                 date: delay.attrs.stamp,
                 key: Date.now()
             }
-            useStoreState.getState().setNewMessageHistory(msg)
-            useStoreState.getState().sortMessageHistory();
+        useStoreState.getState().setNewMessageHistory(msg)
+        useStoreState.getState().sortMessageHistory();
+    }
+}
+
+const onLastMessageArchive = (stanza: Element, xmpp: any) => {
+    if (stanza.attrs.id === "paginatedArchive") {
+        lastMsgId = String(stanza.getChild('fin')?.getChild('set')?.getChild('last')?.children[0]);
+        useStoreState.getState().setLoaderArchive(false);
     }
 }
 
@@ -96,7 +105,8 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
     if(stanza.attrs.id === "getUserRooms"){
         if(stanza.getChild('query')?.children){
-            useStoreState.getState().clearUserChatRooms()
+            useStoreState.getState().clearUserChatRooms();
+            console.log('ROOOMS ==> ',stanza.getChild('query')?.children)
             stanza.getChild('query')?.children.forEach((result: Object) => {
                 // @ts-ignore
                 const roomJID: string = result.attrs.jid;
@@ -115,17 +125,27 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
                 }
                 // @ts-ignore
                 useStoreState.getState().setNewUserChatRoom(roomData);
+
                 //get message history in the room
                 xmpp.getRoomArchiveStanza(roomJID)
             })
+            useStoreState.getState().setLoaderArchive(false);
         }
     }
 }
 
+const getListOfRooms = (xmpp: any) => {
+    defaultRooms.map(roomJID => {
+        xmpp.presenceInRoom(roomJID)
+    });
+    xmpp.getRooms();
+    useStoreState.getState().clearMessageHistory();
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
-  // "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
-  // "fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e@conference.dev.dxmpp.com",
+  "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
+  "fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e@conference.dev.dxmpp.com",
 ];
 
 class XmppClass {
@@ -141,19 +161,12 @@ class XmppClass {
 
     this.client.start();
 
-    this.client.on("online", (jid) => {
-      console.log("online");
-      // this.client.send(xml('presence'))
-      this.getRooms();
-      useStoreState.getState().clearMessageHistory();
-        // defaultRooms.forEach((room) => {
-      //   this.subsribe(room);
-      // });
-    });
+    this.client.on("online", (jid) => getListOfRooms(this));
 
     this.client.on("stanza", onMessageHistory);
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this))
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this))
+    this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this))
     this.client.on("stanza", (stanza) => console.log(stanza.toString()))
 
     this.client.on("offline", () => console.log("offline"));
@@ -300,6 +313,7 @@ class XmppClass {
     }
 
     getRoomArchiveStanza(chat_jid: string) {
+        useStoreState.getState().setLoaderArchive(true);
         let message = xml(
             'iq',
             {
@@ -325,7 +339,10 @@ class XmppClass {
         chat_jid: string,
         firstUserMessageID: string,
     ) => {
-      console.log(chat_jid, ' ==  ', firstUserMessageID)
+      if(lastMsgId === firstUserMessageID){
+          return
+      }
+        useStoreState.getState().setLoaderArchive(true);
         const message = xml(
             'iq',
             {
@@ -389,6 +406,22 @@ class XmppClass {
       }), xml('body', {}, userMessage));
         this.client.send(message);
     }
+
+    getRoomInfo = (
+        roomJID: string
+    ) => {
+        const message = xml(
+            'iq',
+            {
+                from: this.client.jid?.toString(),
+                id: 'roomInfo',
+                to: roomJID,
+                type: 'get',
+            },
+            xml('query', {xmlns: 'http://jabber.org/protocol/disco#info'}),
+        );
+        this.client.send(message);
+    };
 }
 
 export default new XmppClass();

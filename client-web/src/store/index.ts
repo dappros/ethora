@@ -10,6 +10,7 @@ type TUser = {
   walletAddress: string
   token: string
   refreshToken: string
+  profileImage: string
 }
 
 type TOwner = {
@@ -39,7 +40,7 @@ type TMessage = {
   room: string
 }
 
-type TMessageHistory = {
+export type TMessageHistory = {
   id: number
   body: string
   data: {
@@ -104,7 +105,9 @@ interface IStore {
   setApps: (apps: TApp[]) => void,
   setApp: (app: TApp) => void,
   updateApp: (app: TApp) => void,
-  deleteApp: (id: string) => void
+  deleteApp: (id: string) => void,
+  loaderArchive: boolean,
+  setLoaderArchive: (status: boolean) => void
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -116,7 +119,8 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
       _id: '',
       walletAddress: '',
       token: '',
-      refreshToken: ''
+      refreshToken: '',
+      profileImage: ''
     },
     owner: {
       firstName: '',
@@ -129,6 +133,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     viewMode: 'light',
     messages: [],
     historyMessages: [],
+    loaderArchive: false,
     userChatRooms: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
@@ -156,7 +161,8 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
         _id: '',
         walletAddress: '',
         token: '',
-        refreshToken: ''
+        refreshToken: '',
+        profileImage: ''
       }
     }),
     clearOwner: () => set((state) => {
@@ -175,6 +181,9 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     setNewMessageHistory: (historyMessages: TMessageHistory) => set((state) => {
       console.log('setNewMessageHistory')
       state.historyMessages.unshift(historyMessages)
+    }),
+    setLoaderArchive: (status: boolean) => set((state) => {
+      state.loaderArchive = status;
     }),
     clearMessageHistory: () => set((state) => {
       state.historyMessages = [];

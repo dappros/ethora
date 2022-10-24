@@ -60,12 +60,12 @@ export function MyProfile() {
           <CircularProgress />
         </Box>
       )}
-      <Box style={{ display: "flex" }}>
+      <Box sx={{margin: 'auto', width: '200px'}}>
         {!!profile && <UserCard profile={profile} />}
       </Box>
       <ItemsTable />
       {!!transactions && (
-        <Box>
+        <Box >
            <Typography variant="h6" style={{ margin: "16px" }}>
           Transactions
         </Typography>
