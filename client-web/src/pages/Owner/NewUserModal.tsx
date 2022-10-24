@@ -44,7 +44,7 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]._id
+      appId: apps[0]?._id
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
