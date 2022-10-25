@@ -31,6 +31,11 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
+const ROOM_KEYS = {
+  official: 'official',
+  private: 'private',
+  groups: 'groups',
+};
 
 interface recentRealtimeChatProps {
   avatar?: string;
@@ -123,14 +128,20 @@ export class ChatStore {
   roomRoles = {};
   isOnline = false;
   isLoadingEarlierMessages = false;
+  activeChats = ROOM_KEYS.official;
   isComposing: isComposingProps = {
     state: false,
     username: '',
     manipulatedWalletAddress: '',
     chatJID: '',
   };
-  listOfThreads= [];
+  listOfThreads = [];
   roomMemberInfo = [];
+  unreadMessagesForGroups = {
+    [ROOM_KEYS.official]: 0,
+    [ROOM_KEYS.private]: 0,
+    [ROOM_KEYS.groups]: 0,
+  };
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -167,7 +178,7 @@ export class ChatStore {
         manipulatedWalletAddress: '',
         chatJID: '',
       };
-      this.listOfThreads = []
+      this.listOfThreads = [];
     });
   };
 
@@ -213,6 +224,12 @@ export class ChatStore {
     }
   };
 
+  setUnreadMessages = (unreadMessagesObject: any) => {
+    runInAction(() => {
+      this.unreadMessagesForGroups = unreadMessagesObject;
+    });
+  };
+
   updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
@@ -221,6 +238,11 @@ export class ChatStore {
       asyncStorageConstants.roomsListHashMap,
       this.roomsInfoMap,
     );
+  };
+  changeActiveChats = (type: string) => {
+    runInAction(() => {
+      this.activeChats = type;
+    });
   };
 
   addMessage = (message: any) => {
@@ -239,20 +261,20 @@ export class ChatStore {
     });
   };
 
-  updateMessageReplyNumbers = (messageId:any) => {
+  updateMessageReplyNumbers = (messageId: any) => {
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
-    if(index !== -1){
+    if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
-        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1
+        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1,
       };
 
       runInAction(() => {
         this.messages[index] = message;
-      })
+      });
     }
-  }
+  };
 
   updateMessageProperty = (messageId, property, value) => {
     const messages = toJS(this.messages);
@@ -278,7 +300,7 @@ export class ChatStore {
         if (type === 'CLEAR') {
           runInAction(() => {
             item.counter = 0;
-            this.roomsInfoMap[roomJid].counter = 0
+            this.roomsInfoMap[roomJid].counter = 0;
           });
         }
         if (type === 'UPDATE') {
@@ -595,18 +617,19 @@ export class ChatStore {
               message.tokenAmount,
             );
           }
-          
-          if(message.isReply){
+
+          if (message.isReply) {
             await updateNumberOfReplies(message.mainMessageId);
             // console.log(message,"This is thread")
-            this.listOfThreads.push(message)
+            this.listOfThreads.push(message);
           }
-          
-          const threadsOfCurrentMessage = this.listOfThreads
-          .filter((item:any) => item.mainMessageId === message._id)
+
+          const threadsOfCurrentMessage = this.listOfThreads.filter(
+            (item: any) => item.mainMessageId === message._id,
+          );
           // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
           // if(threadIndex != -1){
-          //   // alert(threadIndex) 
+          //   // alert(threadIndex)
           //   const threadMessage = {
           //     ...JSON.parse(JSON.stringify(this.listOfThreads[threadIndex]))
           //   };
@@ -619,13 +642,15 @@ export class ChatStore {
 
           // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
 
-          if(threadsOfCurrentMessage){
+          if (threadsOfCurrentMessage) {
             threadsOfCurrentMessage.map(async item => {
               this.addMessage(item);
               await insertMessages(item);
-              const threadIndex = this.listOfThreads.findIndex(listItem => listItem._id === item._id);
+              const threadIndex = this.listOfThreads.findIndex(
+                listItem => listItem._id === item._id,
+              );
               this.listOfThreads.splice(threadIndex, 1);
-            })
+            });
             message.numberOfReplies = threadsOfCurrentMessage.length;
           }
 
@@ -683,12 +708,12 @@ export class ChatStore {
             );
             playCoinSound(message.tokenAmount);
           }
-          if(message.isReply){
+          if (message.isReply) {
             this.updateMessageProperty(
               message.mainMessageId,
               'numberOfReplies',
-              1
-            )
+              1,
+            );
             await updateNumberOfReplies(message.mainMessageId);
           }
           insertMessages(message);

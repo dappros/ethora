@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {observer} from 'mobx-react-lite';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
@@ -51,70 +51,83 @@ export const RoomsTabBar = observer(() => {
 
   const {chatStore} = useStores();
   // const roomsList = chatStore.roomList;
-  const notificationsCount = {
+  const notificationsCount: Record<string, number> = {
     official: 0,
     private: 0,
     groups: 0,
   };
+  const updateCounter = () => {
+    chatStore.roomList?.forEach(item => {
+      const splitedJid = item?.jid?.split('@')[0];
 
-  const privateChats = useMemo(
-    () =>
-      chatStore.roomList?.filter((item: any) => {
+      if (item.participants < 3 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.private] += item.counter;
+      }
+
+      if (
+        defaultChats[splitedJid] ||
+        chatStore.roomsInfoMap[item.jid]?.isFavourite
+      ) {
+        notificationsCount[ROOM_KEYS.official] += item.counter;
+      }
+
+      if (item.participants > 2 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.groups] += item.counter;
+      }
+    });
+    chatStore.setUnreadMessages(notificationsCount);
+  };
+
+  useEffect(() => {
+    if (chatStore.roomList) {
+      updateCounter();
+    }
+  }, [chatStore.roomList]);
+
+  const filterRooms = () => {
+    if (chatStore.activeChats === ROOM_KEYS.private) {
+      const rooms = chatStore.roomList?.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
         if (item.participants < 3 && !defaultChats[splitedJid]) {
-          notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;
         }
-      }),
-    [chatStore.roomList],
-  );
+      });
 
-  const officialChats = useMemo(
-    () =>
-      chatStore.roomList.filter(item => {
+      return rooms;
+    }
+
+    if (chatStore.activeChats === ROOM_KEYS.official) {
+      const rooms = chatStore.roomList.filter(item => {
         const splitedJid = item?.jid?.split('@')[0];
 
-        if (defaultChats[splitedJid]) {
-          notificationsCount[ROOM_KEYS.official] += item.counter;
+        if (
+          defaultChats[splitedJid] ||
+          chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           return item;
         }
-        if (chatStore.roomsInfoMap[item.jid]?.isFavourite) {
-          return item;
-        }
-      }),
-    [chatStore.roomList],
-  );
+      });
 
-  const groupsChats = useMemo(
-    () =>
-      chatStore.roomList.filter((item: any) => {
+      return rooms;
+    }
+
+    if (chatStore.activeChats === ROOM_KEYS.groups) {
+      const rooms = chatStore.roomList.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
         if (item.participants > 2 && !defaultChats[splitedJid]) {
-          notificationsCount[ROOM_KEYS.groups] += item.counter;
           return item;
         }
-      }),
-    [chatStore.roomList],
+      });
+      return rooms;
+    }
+  };
+
+  const roomList = useMemo(
+    () => filterRooms(),
+    [chatStore.roomList, chatStore.activeChats],
   );
 
-  return (
-    <TabView
-      swipeEnabled={false}
-      renderTabBar={renderTabBar}
-      navigationState={{
-        index: routeIndex,
-        routes: routes,
-        notificationsCount,
-      }}
-      renderScene={SceneMap({
-        official: () => <RoomList roomsList={officialChats} />,
-        private: () => <RoomList roomsList={privateChats} />,
-        groups: () => <RoomList roomsList={groupsChats} />,
-      })}
-      onIndexChange={setRouteIndex}
-      initialLayout={{width: widthPercentageToDP('100%')}}
-    />
-  );
+  return <RoomList roomsList={roomList} />;
 });

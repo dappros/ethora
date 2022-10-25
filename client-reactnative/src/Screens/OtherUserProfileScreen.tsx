@@ -289,7 +289,10 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   useEffect(() => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
-  console.log(itemsBalance)
+
+  const onTransactionNumberPress = () => {
+    setActiveTab(1);
+  };
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
@@ -424,7 +427,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
 
     if (activeTab === 1) {
       return (
-        <View style={{paddingBottom: hp('63%')}}>
+        <View style={{paddingBottom: hp('57%')}}>
           <TransactionListTab
             transactions={anotherUserTransaction}
             walletAddress={loginStore.anotherUserWalletAddress}
@@ -446,7 +449,12 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        <SecondaryHeader title={"User's profile"} />
+        <SecondaryHeader
+          title={"User's profile"}
+          onBackPress={() =>
+            activeTab === 1 ? setActiveTab(0) : navigation.goBack()
+          }
+        />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <HStack
@@ -485,7 +493,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
         </View>
         <View style={{flex: 1, marginTop: hp('5.5%')}}>
           <VStack
-            paddingTop={hp('2.4%')}
+            // paddingTop={hp('2.4%')}
             bgColor={'#FBFBFB'}
             borderTopLeftRadius={30}
             borderTopRightRadius={30}
@@ -497,15 +505,37 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                   {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
                 ]}
                 isLoading={isLoadingVCard}>
-                <Text
-                  style={{
-                    fontSize: hp('2.216%'),
-                    fontFamily: textStyles.mediumFont,
-                    color: '#000000',
-                  }}>
-                  {loginStore.anotherUserFirstname}{' '}
-                  {loginStore.anotherUserLastname}
-                </Text>
+                <HStack alignItems={'center'}>
+                  <Text
+                    style={{
+                      fontSize: hp('2.216%'),
+                      fontFamily: textStyles.mediumFont,
+                      color: '#000000',
+                    }}>
+                    {loginStore.anotherUserFirstname}{' '}
+                    {loginStore.anotherUserLastname}
+                  </Text>
+                  <TouchableOpacity onPress={onTransactionNumberPress} style={{marginLeft: 5}}>
+                    <Text
+                      style={{
+                        fontSize: hp('2.216%'),
+                        fontFamily: textStyles.mediumFont,
+                        color: commonColors.primaryColor,
+                      }}>
+                      (
+                      <Text
+                        style={{
+                          fontSize: hp('2.216%'),
+                          fontFamily: textStyles.mediumFont,
+                          color: commonColors.primaryColor,
+                          textDecorationLine: 'underline',
+                        }}>
+                        {anotherUserTransaction.length}
+                      </Text>
+                      )
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
               </SkeletonContent>
               <View
                 style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
@@ -553,7 +583,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                   layout={[
                     {width: wp('90%'), height: hp('2.216%'), marginBottom: 6},
                   ]}>
-                  <View style={{flexDirection: 'row'}}>
+                  {/* <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity
                       onPress={() => {
                         setActiveTab(0);
@@ -587,10 +617,10 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                         Transactions ({transactionCount})
                       </Text>
                     </TouchableOpacity>
-                  </View>
+                  </View> */}
                 </SkeletonContent>
 
-                {isLoading ? null : (
+                {/* {isLoading ? null : (
                   <Animated.View
                     style={[
                       {
@@ -600,7 +630,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                       animatedTranslate,
                     ]}
                   />
-                )}
+                )} */}
               </View>
               <SkeletonContent
                 isLoading={isLoading}

@@ -6,35 +6,120 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {useNavigation} from '@react-navigation/native';
-import {Box, HStack, Image, Pressable, Text, View, VStack} from 'native-base';
+import {
+  Badge,
+  Box,
+  HStack,
+  Image,
+  Pressable,
+  Text,
+  View,
+  VStack,
+} from 'native-base';
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { coinsMainName, commonColors, navbarLogoShow } from '../../../docs/config';
-import { useStores } from '../../stores/context';
+import {
+  coinsMainName,
+  commonColors,
+  navbarLogoShow,
+  ROOM_KEYS,
+} from '../../../docs/config';
+import {useStores} from '../../stores/context';
 import {HeaderAppLogo} from './HeaderAppLogo';
 import {HeaderAppTitle} from './HeaderAppTitle';
 import {HeaderBalanceButton} from './HeaderBalanceButton';
 import {HeaderMenu} from './HeaderMenu';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {observer} from 'mobx-react-lite';
 
-export const MainHeader = () => {
+export const MainHeader = observer(() => {
+  const {chatStore} = useStores();
   return (
-    <Box height={hp('9%')} bgColor={commonColors.primaryColor}>
+    <Box
+      height={hp('9%')}
+      justifyContent={'center'}
+      bgColor={commonColors.primaryColor}>
       <HStack space={3} alignItems="center" justifyContent="space-between">
         <VStack>
-          {!!navbarLogoShow && <HeaderAppLogo />}
-          <HeaderAppTitle />
+          <HStack>
+            <HeaderMenu />
+          </HStack>
         </VStack>
         <VStack>
-          <HStack>
+          <TouchableOpacity
+            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.official)}>
+            <Ionicons name="star" size={30} color={'white'} />
+          </TouchableOpacity>
+          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.official] && (
+            <View style={{position: 'absolute', right: -5, bottom: -4}}>
+              <Badge
+                colorScheme="danger"
+                rounded="full"
+                zIndex={1111}
+                variant="solid"
+                alignSelf="flex-end"
+                _text={{
+                  fontSize: 8,
+                }}>
+                {chatStore.unreadMessagesForGroups[ROOM_KEYS.official]}
+              </Badge>
+            </View>
+          )}
+        </VStack>
+        <VStack>
+          <TouchableOpacity
+            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.private)}>
+            <Ionicons name="people" size={30} color={'white'} />
+          </TouchableOpacity>
+          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.private] && (
+            <View style={{position: 'absolute', right: -5, bottom: -4}}>
+              <Badge
+                colorScheme="danger"
+                rounded="full"
+                zIndex={1111}
+                variant="solid"
+                alignSelf="flex-end"
+                _text={{
+                  fontSize: 8,
+                }}>
+                {chatStore.unreadMessagesForGroups[ROOM_KEYS.private]}
+              </Badge>
+            </View>
+          )}
+        </VStack>
+
+        <VStack>
+          <TouchableOpacity
+            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.groups)}>
+            <Ionicons name="compass" size={30} color={'white'} />
+          </TouchableOpacity>
+          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.groups] && (
+            <View style={{position: 'absolute', right: -5, bottom: -4}}>
+              <Badge
+                colorScheme="danger"
+                rounded="full"
+                zIndex={1111}
+                variant="solid"
+                alignSelf="flex-end"
+                _text={{
+                  fontSize: 8,
+                }}>
+                {chatStore.unreadMessagesForGroups[ROOM_KEYS.groups]}
+              </Badge>
+            </View>
+          )}
+        </VStack>
+        <VStack>
+          <HStack marginRight={5}>
             <HeaderBalanceButton />
-            <HeaderMenu />
           </HStack>
         </VStack>
       </HStack>
     </Box>
   );
-};
+});
 
 const styles = StyleSheet.create({
   appTitleButton: {
