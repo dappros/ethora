@@ -27,6 +27,7 @@ import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
 import ThreadScreen from '../Screens/ThreadScreen';
 import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
 import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
+import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -266,6 +267,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.SWIPERCHAT}
         component={SwiperChatScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.DOCUMENTHISTORY}
+        component={DocumentHistoryScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

@@ -56,6 +56,7 @@ import {changeUserData, fileUpload} from '../config/routesConstants';
 import {uploadFiles} from '../helpers/uploadFiles';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {httpUploadPut} from '../config/apiService';
+import {DocumentListItem} from '../components/Profile/DocumentListItem';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -207,6 +208,7 @@ export const ProfileScreen = observer((props: any) => {
     setTotal(0);
     walletStore.fetchOwnTransactions(walletAddress, walletStore.limit, 0);
     walletStore.fetchWalletBalance(walletAddress, loginStore.userToken, true);
+    walletStore.getDocuments(walletAddress);
 
     return () => {
       clearPaginationData();
@@ -377,6 +379,9 @@ export const ProfileScreen = observer((props: any) => {
       console.log(error);
     }
   };
+  const onTransactionNumberPress = () => {
+    setActiveTab(1);
+  };
 
   const loadTabContent = () => {
     if (activeTab === 0) {
@@ -411,6 +416,7 @@ export const ProfileScreen = observer((props: any) => {
                 </Animated.Text>
               </TouchableOpacity>
             )}
+
             {walletStore.collections.length > 0 && (
               <TouchableOpacity onPress={() => setActiveAssetTab(2)}>
                 <Animated.Text
@@ -424,17 +430,34 @@ export const ProfileScreen = observer((props: any) => {
                 </Animated.Text>
               </TouchableOpacity>
             )}
+            {walletStore.documents.length > 0 && (
+              <TouchableOpacity
+                onPress={() => setActiveAssetTab(3)}
+                style={{marginRight: 20}}>
+                <Animated.Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color: activeAssetTab === 3 ? '#000000' : '#0000004D',
+                    },
+                  ]}>
+                  Documents ({walletStore.documents.length})
+                </Animated.Text>
+              </TouchableOpacity>
+            )}
           </HStack>
 
-          <View style={{marginBottom: hp('33%')}}>
-            {activeAssetTab === 1 && walletStore.nftItems.length === 0 && (
-              <FlatList
-                data={coinData}
-                nestedScrollEnabled={true}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            )}
+          <View style={{marginBottom: hp('24%')}}>
+            {activeAssetTab === 1 &&
+              walletStore.nftItems.length === 0 &&
+              walletStore.documents.length === 0 && (
+                <FlatList
+                  data={coinData}
+                  nestedScrollEnabled={true}
+                  renderItem={renderItem}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              )}
             {activeAssetTab === 1 && (
               <FlatList
                 data={walletStore.nftItems}
@@ -493,6 +516,31 @@ export const ProfileScreen = observer((props: any) => {
                 keyExtractor={(item, index) => index.toString()}
               />
             )}
+            {activeAssetTab === 3 && (
+              <FlatList
+                data={walletStore.documents}
+                renderItem={e => (
+                  <DocumentListItem
+                    item={e.item}
+                    onAssetPress={() =>
+                      setMediaModalData({
+                        open: true,
+                        mimetype: e.item.file.mimetype,
+                        url: e.item.file.location,
+                      })
+                    }
+                    onItemPress={() => {
+                      navigation.navigate(ROUTES.DOCUMENTHISTORY, {
+                        item: e.item,
+                        userWalletAddress: loginStore.initialData.walletAddress,
+                      });
+                    }}
+                  />
+                )}
+                nestedScrollEnabled={true}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            )}
           </View>
         </View>
       );
@@ -500,7 +548,7 @@ export const ProfileScreen = observer((props: any) => {
 
     if (activeTab === 1) {
       return (
-        <View style={{paddingBottom: hp('63%')}}>
+        <View style={{paddingBottom: hp('50%')}}>
           <TransactionsList
             transactions={transactions}
             walletAddress={walletAddress}
@@ -525,6 +573,9 @@ export const ProfileScreen = observer((props: any) => {
           title={"User's profile"}
           isQR
           onQRPressed={QRPressed}
+          onBackPress={() =>
+            activeTab === 1 ? setActiveTab(0) : navigation.goBack()
+          }
         />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
@@ -561,24 +612,47 @@ export const ProfileScreen = observer((props: any) => {
           </HStack>
         </View>
         <VStack
-          paddingTop={hp('2.4%')}
+          // paddingTop={hp('2.4%')}
           marginTop={hp('5.5%')}
           bgColor={'#FBFBFB'}
           borderTopLeftRadius={30}
           borderTopRightRadius={30}
           height={hp('75%')}>
           <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
-            <TouchableOpacity onPress={onNamePressed}>
-              <Text
-                style={{
-                  fontSize: hp('2.216%'),
-                  fontFamily: textStyles.mediumFont,
-                  color: '#000000',
-                }}>
-                {firstNameLocal} {lastNameLocal}
-              </Text>
-            </TouchableOpacity>
-
+            <HStack alignItems={'center'}>
+              <TouchableOpacity onPress={onNamePressed} style={{marginLeft: 5}}>
+                <Text
+                  style={{
+                    fontSize: hp('2.216%'),
+                    fontFamily: textStyles.mediumFont,
+                    color: '#000000',
+                  }}>
+                  {firstNameLocal} {lastNameLocal}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onTransactionNumberPress}
+                style={{marginLeft: 5}}>
+                <Text
+                  style={{
+                    fontSize: hp('2.216%'),
+                    fontFamily: textStyles.mediumFont,
+                    color: commonColors.primaryColor,
+                  }}>
+                  (
+                  <Text
+                    style={{
+                      fontSize: hp('2.216%'),
+                      fontFamily: textStyles.mediumFont,
+                      color: commonColors.primaryColor,
+                      textDecorationLine: 'underline',
+                    }}>
+                    {transactions.length}
+                  </Text>
+                  )
+                </Text>
+              </TouchableOpacity>
+            </HStack>
             <HStack paddingX={wp('4%')}>
               <Hyperlink
                 onPress={url => handleChatLinks(url)}
@@ -614,7 +688,7 @@ export const ProfileScreen = observer((props: any) => {
           <View>
             <View style={{padding: wp('4%')}}>
               <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => {
                     setActiveTab(0);
                     underlineOffset.value = 0;
@@ -628,8 +702,8 @@ export const ProfileScreen = observer((props: any) => {
                     ]}>
                     Assets ({itemsBalance === 0 ? assetCount : itemsBalance})
                   </Animated.Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </TouchableOpacity> */}
+                {/* <TouchableOpacity
                   style={{marginLeft: 20}}
                   onPress={() => {
                     setActiveTab(1);
@@ -644,10 +718,10 @@ export const ProfileScreen = observer((props: any) => {
                     ]}>
                     Transactions ({walletStore.transactions.length})
                   </Animated.Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
-              <Animated.View
+              {/* <Animated.View
                 style={[
                   animatedTranslate,
                   {
@@ -655,7 +729,7 @@ export const ProfileScreen = observer((props: any) => {
                     borderWidth: 1,
                   },
                 ]}
-              />
+              /> */}
             </View>
 
             {loadTabContent()}

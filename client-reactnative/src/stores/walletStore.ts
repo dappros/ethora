@@ -2,7 +2,9 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import {Alert} from 'react-native';
 import {httpGet, httpPost} from '../config/apiService';
 import {
+  docsURL,
   etherTransferURL,
+  fileUpload,
   itemTransferURL,
   nfmtCollectionTransferURL,
   nfmtTransferURL,
@@ -36,6 +38,40 @@ export const NFMT_TRAITS = {
   Rare: {color: 'lightgreen'},
   'Unique!': {color: 'black'},
 };
+export interface IFile {
+  _id: string;
+  createdAt: string;
+  expiresAt: number;
+  filename: string;
+  isVisible: true;
+  location: string;
+  locationPreview: string;
+  mimetype: string;
+  originalname: string;
+  ownerKey: string;
+  size: number;
+  updatedAt: string;
+  userId: string;
+}
+export interface IDocument {
+  _id: string;
+  admin: string;
+  contractAddress: string;
+  createdAt: Date;
+  documentName: 'Fff';
+  files: Array<string>;
+  hashes: Array<string>;
+  isBurnable: boolean;
+  isFilesMutableByAdmin: boolean;
+  isFilesMutableByOwner: boolean;
+  isSignable: boolean;
+  isSignatureRevoсable: boolean;
+  isTransferable: boolean;
+  owner: string;
+  updatedAt: Date;
+  userId: string;
+  file: IFile;
+}
 
 export const mapTransactions = (item, walletAddress) => {
   if (item.tokenId === 'NFT') {
@@ -127,6 +163,7 @@ export class WalletStore {
   total = 0;
   nftItems = [];
   collections = [];
+  documents: IDocument[] = [];
   tokenTransferSuccess: {
     success: boolean;
     senderName: string;
@@ -281,7 +318,7 @@ export class WalletStore {
       walletAddress +
       '/' +
       (linkToken || '');
-      console.log(url)
+    console.log(url);
     runInAction(() => {
       this.isFetching = true;
     });
@@ -323,6 +360,27 @@ export class WalletStore {
       };
     });
   };
+  async getDocuments(walletAddress: string) {
+    try {
+      const docs = await httpGet(
+        this.stores.apiStore.defaultUrl + docsURL + '/' + walletAddress,
+        this.stores.loginStore.userToken,
+      );
+      const documents = docs.data.results;
+      const mappedDocuments = [];
+      for (const item of documents) {
+        const {data: file} = await httpGet(
+          this.stores.apiStore.defaultUrl + fileUpload + item.files[0],
+          this.stores.loginStore.userToken,
+        );
+        item.file = file;
+        mappedDocuments.push(item);
+      }
+      this.documents = mappedDocuments;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async transferCollection(body, senderName, receiverName, tokenName) {
     const response = await httpPost(
       this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,

@@ -5,18 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-export const imageMimetypes = {
+export const imageMimetypes: Record<string, string> = {
   'image/png': 'image/png',
   'image/jpeg': 'image/jpeg',
   'image/jpg': 'image/jpg',
 };
-export const videoMimetypes = {'video/mp4': 'video/mp4'};
-export const audioMimetypes = {
+export const videoMimetypes: Record<string, string> = {
+  'video/mp4': 'video/mp4',
+};
+export const audioMimetypes: Record<string, string> = {
   'audio/mpeg': 'audio/mpeg',
   'application/octet-stream': 'application/octet-stream',
   'audio/x-m4a': 'audio/x-m4a',
 };
 
-export const pdfMimemtype = {
-  'application/pdf': 'application/pdf'
-}
+export const pdfMimemtype: Record<string, string> = {
+  'application/pdf': 'application/pdf',
+};

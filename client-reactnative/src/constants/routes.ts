@@ -30,4 +30,5 @@ export const ROUTES = {
   PRIVACY: 'PrivacyAndDataScreen',
   THREADS: 'ThreadScreen',
   SWIPERCHAT: 'SwiperChatScreen',
+  DOCUMENTHISTORY: 'DocumentHistoryScreen',
 };
