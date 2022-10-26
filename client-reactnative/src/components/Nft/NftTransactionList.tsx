@@ -129,7 +129,7 @@ const NftTransactionsHistoryComponent = props => {
       style={{flex: 1, paddingBottom: Platform.OS === 'android' ? 5 : null}}>
       {Header}
       <TouchableOpacity
-    onPress={() => setExpanded(prev => !prev)}
+        onPress={() => setExpanded(prev => !prev)}
         style={{
           flexDirection: 'row',
           // justifyContent: 'space-between',
@@ -362,9 +362,7 @@ const NftTransactionsHistoryComponent = props => {
           <View style={styles.detailsItem}>
             <Text style={styles.detailsItemTextBold}>To:</Text>
             <View>
-              <Text style={{textAlign: 'left'}}>
-                {item.to}
-              </Text>
+              <Text style={{textAlign: 'left'}}>{item.to}</Text>
             </View>
           </View>
           <View style={styles.detailsItem}>
@@ -394,65 +392,64 @@ const NftTransactionsHistoryComponent = props => {
         </View>
       )}
       <Divider />
-     
     </View>
   );
 };
 
-const TransactionList = (params, tabIndex) => {
-  let {transactions, walletAddress, historyItem} = params;
-  let currentHeaderDate: any = null;
-  //   console.log(transactions, 'mytraaa');
-  if (transactions.length > 0) {
-    if (tabIndex === 0) {
-      return (
-        <View style={{backgroundColor: 'white'}}>
-          <ScrollView nestedScrollEnabled={true}>
-            {transactions
-              .sort(
-                (a, b) =>
-                  new Date(b.timestamp).getTime() -
-                  new Date(a.timestamp).getTime(),
-              )
-              .map(item => {
-                // console.log(item, 'traaasss')
-                // if (item.tokenId === 'NFT') return
+// const TransactionList = (params, tabIndex) => {
+//   let {transactions, walletAddress, historyItem} = params;
+//   let currentHeaderDate: any = null;
+//   //   console.log(transactions, 'mytraaa');
+//   if (transactions.length > 0) {
+//     if (tabIndex === 0) {
+//       return (
+//         <View style={{backgroundColor: 'white'}}>
+//           <ScrollView nestedScrollEnabled={true}>
+//             {transactions
+//               .sort(
+//                 (a, b) =>
+//                   new Date(b.timestamp).getTime() -
+//                   new Date(a.timestamp).getTime(),
+//               )
+//               .map(item => {
+//                 // console.log(item, 'traaasss')
+//                 // if (item.tokenId === 'NFT') return
 
-                let showHeader = false;
-                const transactionTimeStamp =
-                  item?.timestamp instanceof Date
-                    ? item.timestamp
-                    : new Date(item.timestamp);
-                if (currentHeaderDate === null) {
-                  currentHeaderDate = transactionTimeStamp;
-                  showHeader = true;
-                }
-                if (
-                  currentHeaderDate.getDate() +
-                    currentHeaderDate.getMonth() +
-                    currentHeaderDate.getFullYear() !==
-                  transactionTimeStamp.getDate() +
-                    transactionTimeStamp.getMonth() +
-                    transactionTimeStamp.getFullYear()
-                ) {
-                  currentHeaderDate = transactionTimeStamp;
-                  showHeader = true;
-                }
+//                 let showHeader = false;
+//                 const transactionTimeStamp =
+//                   item?.timestamp instanceof Date
+//                     ? item.timestamp
+//                     : new Date(item.timestamp);
+//                 if (currentHeaderDate === null) {
+//                   currentHeaderDate = transactionTimeStamp;
+//                   showHeader = true;
+//                 }
+//                 if (
+//                   currentHeaderDate.getDate() +
+//                     currentHeaderDate.getMonth() +
+//                     currentHeaderDate.getFullYear() !==
+//                   transactionTimeStamp.getDate() +
+//                     transactionTimeStamp.getMonth() +
+//                     transactionTimeStamp.getFullYear()
+//                 ) {
+//                   currentHeaderDate = transactionTimeStamp;
+//                   showHeader = true;
+//                 }
 
-                return NftTransactionsHistoryComponent({
-                  showHeader,
-                  currentHeaderDate,
-                  item,
-                  walletAddress,
-                  historyItem,
-                });
-              })}
-          </ScrollView>
-        </View>
-      );
-    }
-  }
-};
+//                 return NftTransactionsHistoryComponent({
+//                   showHeader,
+//                   currentHeaderDate,
+//                   item,
+//                   walletAddress,
+//                   historyItem,
+//                 });
+//               })}
+//           </ScrollView>
+//         </View>
+//       );
+//     }
+//   }
+// };
 
 const NftTransactionListTab = params => {
   const [tabIndex, settabIndex] = useState(0);
@@ -470,9 +467,11 @@ const NftTransactionListTab = params => {
   );
 };
 
-const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
+const RenderTransactionItem = ({
+  transaction,
+  transactionOwnerWalletAddress,
+}: any) => {
   const {
-    tokenId,
     from,
     to,
     tokenName,
@@ -498,8 +497,7 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
     balance,
     nftName,
     nftTotal,
-  } = item;
-
+  } = transaction;
   return (
     <NftTransactionItem
       from={from}
@@ -533,26 +531,21 @@ interface TransactionListProps {
 
 const TransactionsList = observer(
   ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
-    const getFilteredTransactions = () => {
-      transactions;
-    };
-
     return (
       <Box>
-        ]
         <FlatList
           height={'100%'}
           scrollEnabled
           style={{paddingBottom: 50}}
-          renderItem={({item}) => (
+          renderItem={transaction => (
             <RenderTransactionItem
-              item={item}
+              transaction={transaction.item}
               transactionOwnerWalletAddress={walletAddress}
             />
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(transactions)}
-          keyExtractor={item => item.transactionHash}
+          keyExtractor={transaction => transaction.transactionHash}
         />
       </Box>
     );
@@ -580,4 +573,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NftTransactionListTab;
+export default TransactionsList;

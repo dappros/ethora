@@ -40,22 +40,22 @@ export const DocumentListItem: React.FC<IDocumentListItem> = ({
       alignItems={'center'}>
       <HStack>
         <View style={styles.imageContainer}>
-          {!!imageMimetypes[item.file.mimetype] ||
+          {(!!imageMimetypes[item.file.mimetype] ||
             !!videoMimetypes[item.file.mimetype] ||
-            (!!pdfMimemtype[item.file.mimetype] && (
-              <TouchableWithoutFeedback onPress={onAssetPress}>
-                <FastImage
-                  style={styles.image}
-                  source={{
-                    // @ts-ignore
-                    uri: item.file.locationPreview,
-                    priority: FastImage.priority.normal,
-                  }}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              </TouchableWithoutFeedback>
-            ))}
-          {audioMimetypes[item.file.mimetype] && (
+            !!pdfMimemtype[item.file.mimetype]) && (
+            <TouchableWithoutFeedback onPress={onAssetPress}>
+              <FastImage
+                style={styles.image}
+                source={{
+                  // @ts-ignore
+                  uri: item.file.locationPreview,
+                  priority: FastImage.priority.normal,
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            </TouchableWithoutFeedback>
+          )}
+          {!!audioMimetypes[item.file.mimetype] && (
             <TouchableWithoutFeedback onPress={onAssetPress}>
               <AntIcon
                 name={'playcircleo'}
@@ -65,9 +65,9 @@ export const DocumentListItem: React.FC<IDocumentListItem> = ({
             </TouchableWithoutFeedback>
           )}
         </View>
-        <View>
+        <View style={{marginLeft: 10, justifyContent: 'center'}}>
           <TouchableOpacity onPress={onItemPress}>
-            <Text style={styles.itemName}> {item.documentName}</Text>
+            <Text style={styles.itemName}>{item.documentName}</Text>
             <Text>{moment(item.createdAt).format('DD.MM.YYYY')}</Text>
           </TouchableOpacity>
         </View>

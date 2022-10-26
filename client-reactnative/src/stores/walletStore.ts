@@ -369,16 +369,21 @@ export class WalletStore {
       const documents = docs.data.results;
       const mappedDocuments = [];
       for (const item of documents) {
-        const {data: file} = await httpGet(
-          this.stores.apiStore.defaultUrl + fileUpload + item.files[0],
-          this.stores.loginStore.userToken,
-        );
-        item.file = file;
-        mappedDocuments.push(item);
+        try {
+          const {data: file} = await httpGet(
+            this.stores.apiStore.defaultUrl + fileUpload + item.files[0],
+            this.stores.loginStore.userToken,
+          );
+          item.file = file;
+          mappedDocuments.push(item);
+        } catch (error) {
+          console.log(item.files[0], 'sdjfkls')
+        }
+       
       }
       this.documents = mappedDocuments;
     } catch (error) {
-      console.log(error);
+      console.log(error, '404');
     }
   }
   async transferCollection(body, senderName, receiverName, tokenName) {
