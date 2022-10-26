@@ -23,7 +23,7 @@ export default function BasicTable() {
     const users = [];
     for (const app of apps) {
       try {
-        const getUsersResp = await http.getAppUsers(app.appToken);
+        const getUsersResp = await http.getAppUsers(app._id);
         users.push(...getUsersResp.data.users);
       } catch (e) {}
     }

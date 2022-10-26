@@ -6,17 +6,8 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
-import { useHistory } from "react-router-dom";
 import { useStoreState } from "../../store";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
 import LoadingButton from '@mui/lab/LoadingButton';
-import Alert from '@mui/material/Alert';
 import * as http from '../../http'
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -29,9 +20,7 @@ type TProps = {
 export default function NewAppModal({ open, setOpen }: TProps) {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const setApp = useStoreState((state) => state.setApp);
-  const history = useHistory();
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   const formik = useFormik({
     initialValues: {
@@ -84,7 +73,6 @@ export default function NewAppModal({ open, setOpen }: TProps) {
 
       http.createApp(fd)
         .then(response => {
-          console.log(response.data)
           setApp(response.data.app)
           setOpen(false)
         })

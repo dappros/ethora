@@ -6,17 +6,8 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
-import { useHistory } from "react-router-dom";
 import { useStoreState } from "../../store";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
 import LoadingButton from '@mui/lab/LoadingButton';
-import Alert from '@mui/material/Alert';
 import * as http from '../../http'
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -87,11 +78,8 @@ export default function EditAppModal({ open, setOpen, app }: TProps) {
       fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString());
       fd.append("usersCanFree", usersCanFree.toString());
 
-      console.log('submiting app update ', {appName, appDescription})
-
       http.updateApp(app._id, fd)
         .then(response => {
-          console.log(response.data)
           updateApp(response.data.app)
           setOpen(false)
         })

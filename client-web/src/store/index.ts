@@ -81,6 +81,21 @@ type TApp = {
   appLogo?: string,
 }
 
+type TAppUser = {
+  appId: string,
+  firstName: string,
+  lastName: string,
+  username?: string,
+  email?: string,
+  defaultWallet: {
+    walletAddress: string
+  },
+  isAssetsOpen: boolean,
+  isProfileOpen: boolean,
+  createdAt: string,
+  updatedAt: string
+}
+
 interface IStore {
   user: TUser
   owner: TOwner
@@ -88,6 +103,7 @@ interface IStore {
   viewMode: TMode,
   balance: TBalance[],
   apps: TApp[],
+  appUsers: TAppUser[],
   toggleMode: () => void,
   setUser: (user: TUser) => void,
   setOwner: (owner: TOwner) => void,
@@ -107,7 +123,8 @@ interface IStore {
   updateApp: (app: TApp) => void,
   deleteApp: (id: string) => void,
   loaderArchive: boolean,
-  setLoaderArchive: (status: boolean) => void
+  setLoaderArchive: (status: boolean) => void,
+  addAppUsers: (users: TAppUser[]) => void
 }
 
 const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
@@ -135,6 +152,7 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     historyMessages: [],
     loaderArchive: false,
     userChatRooms: [],
+    appUsers: [],
     toggleMode: () => set((state) => {state.viewMode = state.viewMode === 'light' ? 'dark' : 'light'}),
     setUser: (user: TUser) => set((state) => {state.user = user}),
     setOwner: (user: TOwner) => set((state) => {
@@ -196,8 +214,10 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     }),
     clearUserChatRooms: () => set((state) => {
       state.userChatRooms = [];
-
     }),
+    addAppUsers: (users: TAppUser[]) => set((state) => {
+      state.appUsers = [...state.appUsers, ...users];
+    })
   }
 }))))
 
