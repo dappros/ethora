@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
-import {Image, ScrollView, Text, View} from 'native-base';
+import {HStack, Image, ScrollView, Text, View, VStack} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
@@ -23,6 +23,8 @@ import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 import {NftMediaModal} from '../components/NftMediaModal';
 import {downloadFile} from '../helpers/downloadFile';
 import {IDocument} from '../stores/walletStore';
+import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface DocumentHistoryScreenProps {
   route: {params: {item: IDocument; userWalletAddress: string}};
@@ -61,18 +63,19 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
         } else {
           document.balance = document.receiverBalance + '/' + document.nftTotal;
         }
-        return item;
+
+        return document;
       });
 
       setItemTransactions(
-        allTransactions.sort((a: any, b: any) => {
-          return (
+        allTransactions.sort(
+          (a: any, b: any) =>
             new Date(a.createdAt).toUTCString() -
-            new Date(b.createdAt).toUTCString()
-          );
-        }),
+            new Date(b.createdAt).toUTCString(),
+        ),
       );
     });
+
     return () => {};
   }, [item]);
 
@@ -106,19 +109,22 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
   const closeModal = () => {
     setModalData(prev => ({...prev, visible: false, url: ''}));
   };
-
   return (
     <Fragment>
       <SecondaryHeader title="Item details" />
 
       {/* <ScrollView style={styles.container}> */}
       <View style={{...styles.contentContainer, margin: 0}}>
-        <View style={styles.justifyBetween}>
-          <TouchableOpacity
-            onPress={onPreviewClick}
-            style={{alignItems: 'center', width: wp('100%')}}>
-            <View style={[styles.alignCenter, styles.imageContainer]}>
-              {!!imageMimetypes[item.file.mimetype] && (
+        <VStack paddingTop={5} paddingX={5}>
+          <VStack justifyContent={'center'} alignItems={'center'} marginBottom={3}>
+            <Text fontFamily={textStyles.boldFont} fontSize={16}>{item.documentName}</Text>
+          </VStack>
+          <HStack justifyContent={'flex-start'}>
+            <TouchableOpacity
+              onPress={onPreviewClick}
+              style={{alignItems: 'center',}}>
+              {(!!imageMimetypes[item.file.mimetype] ||
+                !!pdfMimemtype[item.file.mimetype]) && (
                 <FastImage
                   style={styles.tokenImage}
                   source={{
@@ -131,21 +137,11 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 
               {videoMimetypes[item.file.mimetype] && (
                 <View style={{position: 'relative'}}>
-                  <View
-                    style={{
-                      position: 'absolute',
-                      zIndex: 99999,
-                      backgroundColor: 'rgba(0,0,0,0.2)',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: wp('60%'),
-                      height: wp('40%'),
-                    }}>
+                  <View style={styles.playButton}>
                     <AntIcon
                       name={'playcircleo'}
                       color={'white'}
                       size={hp('5%')}
-                      // style={{marginRight: 40}}
                     />
                   </View>
 
@@ -168,39 +164,22 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
                   // style={{marginRight: 40}}
                 />
               )}
-              {!!pdfMimemtype[item.file.mimetype] && (
-                <FastImage
-                  style={styles.tokenImage}
-                  source={{
-                    uri: item.file.locationPreview,
-                    priority: FastImage.priority.normal,
-                  }}
-                  resizeMode={FastImage.resizeMode.cover}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
-          <View style={styles.tokenDescriptionContainer}>
-            <Text
-              style={{
-                ...styles.textStyle,
-                wordWrap: 'wrap',
-                fontWeight: 'bold',
-              }}>
-              {item.documentName}
-            </Text>
-            {/* <Text
-                style={{
-                  ...styles.textStyle,
-                  marginTop: 10,
-                  alignSelf: 'flex-start',
-                }}>
-                Balance: {item.balance + '/' + item.total}
-              </Text> */}
+            </TouchableOpacity>
 
-            <View />
-          </View>
-        </View>
+            <VStack marginLeft={10} justifyContent={'space-between'}>
+              <TouchableOpacity style={styles.actionButton}>
+                <AntDesignIcons name="qrcode" size={35} color={'black'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.actionButton}>
+                <AntDesignIcons name="copy1" size={35} color={'black'} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <MaterialIcons name="delete" size={35} color={'darkred'} />
+              </TouchableOpacity>
+            </VStack>
+          </HStack>
+        </VStack>
 
         <TouchableOpacity
           disabled={loading}
@@ -308,6 +287,18 @@ const styles = StyleSheet.create({
     width: wp('40%'),
     // height: wp('10%'),
     paddingRight: 10,
+  },
+  actionButton: {
+    marginBottom: 5,
+  },
+  playButton: {
+    position: 'absolute',
+    zIndex: 99999,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: wp('60%'),
+    height: wp('40%'),
   },
   textStyle: {
     fontFamily: textStyles.lightFont,
