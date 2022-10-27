@@ -368,9 +368,9 @@ export function updateApp(id: string, fd: FormData) {
   });
 }
 
-export function getAppUsers(appId: string) {
+export function getAppUsers(appId: string, limit: number = 10, offset: number = 0) {
   const owner = useStoreState.getState().owner;
-  return http.get(`/users?appId=${appId}`, {
+  return http.get(`/users?appId=${appId}&limit=${limit}&offset=${offset}`, {
     headers: { Authorization: owner.token },
   });
 }

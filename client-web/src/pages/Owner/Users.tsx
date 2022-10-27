@@ -16,6 +16,8 @@ import NoDataImage from "../../componets/NoDataImage";
 import NewUserModal from "./NewUserModal";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 import * as http from "../../http";
 
@@ -24,11 +26,23 @@ export default function BasicTable() {
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<any[]>([]);
   const [currentApp, setCurrentApp] = React.useState<string>();
+  const [pagination, setPagination] = React.useState<{total: number, limit: number, offset: number}>()
 
-  const getUsers = async (appId: string) => {
+  const getUsers = async (appId: string | null, limit: number = 10, offset: number = 0) => {
     try {
-      const getUsersResp = await http.getAppUsers(appId);
-      return getUsersResp.data.users;
+      if (appId) {
+        const getUsersResp = await http.getAppUsers(appId, limit, offset);
+        const { data } = getUsersResp
+        setPagination({
+          limit: data.limit,
+          offset: data.offset,
+          total: data.total
+        })
+        return data.items;
+      } else {
+        return [];
+      }
+
     } catch (e) {}
   };
 
@@ -47,6 +61,18 @@ export default function BasicTable() {
       setUsers(users);
     });
   };
+
+  const onPagination = (event: React.ChangeEvent<unknown>, page: number) => {
+    // page = 1 => offset 0
+    // page = 2 => offset 10
+    // page = 3 => offset 20
+    let offset = 0
+    if (page - 1 > 0) {
+      offset = (page - 1) * (pagination?.limit || 10)
+    }
+
+    getUsers(currentApp || null, pagination?.limit || 10, offset).then((users) => setUsers(users))
+  }
 
   return (
     <TableContainer
@@ -129,6 +155,7 @@ export default function BasicTable() {
                 <TableCell align="right">Edit</TableCell>
               </TableRow>
             ))}
+            { pagination?.total && <TableRow><TableCell colSpan={6}><Pagination onChange={onPagination} count={Math.ceil(pagination.total / pagination.limit)} /></TableCell></TableRow>}
           </TableBody>
         </Table>
       )}
