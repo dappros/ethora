@@ -20,27 +20,6 @@ const ROOM_KEYS = {
   groups: 'groups',
 };
 
-const renderTabBar = (props: any) => {
-  return (
-    <TabBar
-      renderLabel={({route, focused}) => (
-        <Text
-          color={focused ? 'white' : 'info.200'}
-          fontFamily={textStyles.semiBoldFont}>
-          {route.title}
-        </Text>
-      )}
-      {...props}
-      // renderBadge={({route}) => (
-      //   <Badge variant={"subtle"}>
-      //     <Text>{props.navigationState.notificationsCount[route.key]}</Text>
-      //   </Badge>
-      // )}
-      indicatorStyle={{backgroundColor: 'white'}}
-      style={{backgroundColor: commonColors.primaryDarkColor}}
-    />
-  );
-};
 export const RoomsTabBar = observer(() => {
   const [routeIndex, setRouteIndex] = useState(0);
   const routes = [
@@ -51,38 +30,6 @@ export const RoomsTabBar = observer(() => {
 
   const {chatStore} = useStores();
   // const roomsList = chatStore.roomList;
-  const notificationsCount: Record<string, number> = {
-    official: 0,
-    private: 0,
-    groups: 0,
-  };
-  const updateCounter = () => {
-    chatStore.roomList?.forEach(item => {
-      const splitedJid = item?.jid?.split('@')[0];
-
-      if (item.participants < 3 && !defaultChats[splitedJid]) {
-        notificationsCount[ROOM_KEYS.private] += item.counter;
-      }
-
-      if (
-        defaultChats[splitedJid] ||
-        chatStore.roomsInfoMap[item.jid]?.isFavourite
-      ) {
-        notificationsCount[ROOM_KEYS.official] += item.counter;
-      }
-
-      if (item.participants > 2 && !defaultChats[splitedJid]) {
-        notificationsCount[ROOM_KEYS.groups] += item.counter;
-      }
-    });
-    chatStore.setUnreadMessages(notificationsCount);
-  };
-
-  useEffect(() => {
-    if (chatStore.roomList) {
-      updateCounter();
-    }
-  }, [chatStore.roomList]);
 
   const filterRooms = () => {
     if (chatStore.activeChats === ROOM_KEYS.private) {
@@ -123,7 +70,11 @@ export const RoomsTabBar = observer(() => {
       return rooms;
     }
   };
-
+  useEffect(() => {
+    if (chatStore.roomList) {
+      chatStore.updateCounter();
+    }
+  }, [chatStore.roomList]);
   const roomList = useMemo(
     () => filterRooms(),
     [chatStore.roomList, chatStore.activeChats],

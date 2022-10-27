@@ -33,9 +33,31 @@ import {HeaderMenu} from './HeaderMenu';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {observer} from 'mobx-react-lite';
+import {ROUTES} from '../../constants/routes';
+
+const buttons = [
+  {
+    key: ROOM_KEYS.official,
+    icon: 'star',
+  },
+  {
+    key: ROOM_KEYS.private,
+    icon: 'people',
+  },
+  {
+    key: ROOM_KEYS.groups,
+    icon: 'compass',
+  },
+];
 
 export const MainHeader = observer(() => {
   const {chatStore} = useStores();
+  const navigation = useNavigation();
+
+  const onTabPress = (key: string) => {
+    chatStore.changeActiveChats(key);
+    navigation.navigate(ROUTES.ROOMSLIST);
+  };
   return (
     <Box
       height={hp('9%')}
@@ -47,70 +69,32 @@ export const MainHeader = observer(() => {
             <HeaderMenu />
           </HStack>
         </VStack>
-        <VStack>
-          <TouchableOpacity
-            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.official)}>
-            <Ionicons name="star" size={30} color={'white'} />
-          </TouchableOpacity>
-          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.official] && (
-            <View style={{position: 'absolute', right: -5, bottom: -4}}>
-              <Badge
-                colorScheme="danger"
-                rounded="full"
-                zIndex={1111}
-                variant="solid"
-                alignSelf="flex-end"
-                _text={{
-                  fontSize: 8,
-                }}>
-                {chatStore.unreadMessagesForGroups[ROOM_KEYS.official]}
-              </Badge>
-            </View>
-          )}
-        </VStack>
-        <VStack>
-          <TouchableOpacity
-            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.private)}>
-            <Ionicons name="people" size={30} color={'white'} />
-          </TouchableOpacity>
-          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.private] && (
-            <View style={{position: 'absolute', right: -5, bottom: -4}}>
-              <Badge
-                colorScheme="danger"
-                rounded="full"
-                zIndex={1111}
-                variant="solid"
-                alignSelf="flex-end"
-                _text={{
-                  fontSize: 8,
-                }}>
-                {chatStore.unreadMessagesForGroups[ROOM_KEYS.private]}
-              </Badge>
-            </View>
-          )}
-        </VStack>
+        {buttons.map(item => {
 
-        <VStack>
-          <TouchableOpacity
-            onPress={() => chatStore.changeActiveChats(ROOM_KEYS.groups)}>
-            <Ionicons name="compass" size={30} color={'white'} />
-          </TouchableOpacity>
-          {!!chatStore.unreadMessagesForGroups[ROOM_KEYS.groups] && (
-            <View style={{position: 'absolute', right: -5, bottom: -4}}>
-              <Badge
-                colorScheme="danger"
-                rounded="full"
-                zIndex={1111}
-                variant="solid"
-                alignSelf="flex-end"
-                _text={{
-                  fontSize: 8,
-                }}>
-                {chatStore.unreadMessagesForGroups[ROOM_KEYS.groups]}
-              </Badge>
-            </View>
-          )}
-        </VStack>
+          return (
+            <VStack key={item.key}>
+              <TouchableOpacity onPress={() => onTabPress(item.key)}>
+                <Ionicons name={item.icon} size={30} color={'white'} />
+              </TouchableOpacity>
+              {!!chatStore.unreadMessagesForGroups[item.key] && (
+                <View style={{position: 'absolute', right: -5, bottom: -4}}>
+                  <Badge
+                    colorScheme="danger"
+                    rounded="full"
+                    zIndex={1111}
+                    variant="solid"
+                    alignSelf="flex-end"
+                    _text={{
+                      fontSize: 8,
+                    }}>
+                    {chatStore.unreadMessagesForGroups[item.key]}
+                  </Badge>
+                </View>
+              )}
+            </VStack>
+          );
+        })}
+
         <VStack>
           <HStack marginRight={5}>
             <HeaderBalanceButton />

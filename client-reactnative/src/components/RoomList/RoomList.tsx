@@ -29,7 +29,12 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import {Pressable, HStack, Input, Text, View, Box} from 'native-base';
-import {commonColors, textStyles} from '../../../docs/config';
+import {
+  commonColors,
+  defaultChats,
+  ROOM_KEYS,
+  textStyles,
+} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -138,7 +143,7 @@ export const RoomList = observer(({roomsList}: any) => {
     }
     setModalVisible(false);
   };
-
+  
   return (
     <>
       <Modal

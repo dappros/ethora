@@ -35,7 +35,6 @@ const ChatDragItem = (props: ChatDragItemProps) => {
     const ref = useRef();
 
     const [animation, setAnimation] = useState(new Animated.Value(0));
-
     const {
         item,
         openChat,

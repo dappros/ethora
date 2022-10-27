@@ -229,7 +229,35 @@ export class ChatStore {
       this.unreadMessagesForGroups = unreadMessagesObject;
     });
   };
+  
+ updateCounter = () => {
+    const notificationsCount: Record<string, number> = {
+      official: 0,
+      private: 0,
+      groups: 0,
+    };
+    this.roomList?.forEach(item => {
+      const splitedJid = item?.jid?.split('@')[0];
+      if (item.participants < 3 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.private] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
 
+      if (
+        defaultChats[splitedJid] ||
+        this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
+        notificationsCount[ROOM_KEYS.official] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+
+      if (item.participants > 2 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.groups] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+    });
+    this.setUnreadMessages(notificationsCount);
+  };
   updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
@@ -311,6 +339,7 @@ export class ChatStore {
         }
       }
     });
+    this.updateCounter()
   };
 
   updateMessageComposingState = (props: isComposingProps) => {

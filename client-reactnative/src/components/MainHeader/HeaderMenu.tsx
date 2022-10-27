@@ -38,7 +38,7 @@ export const HeaderMenu = () => {
   ];
 
   const SystemMenuItems = [
-    {value: ROUTES.PRIVACY, label: 'Privacy And Data', visible: true},
+    {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
 
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
     {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
