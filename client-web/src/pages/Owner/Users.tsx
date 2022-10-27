@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -16,34 +16,40 @@ import NoDataImage from "../../componets/NoDataImage";
 import NewUserModal from "./NewUserModal";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 import * as http from "../../http";
+import { EditAcl } from "../../componets/EditAcl";
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
   const [showNewUser, setShowNewUser] = React.useState(false);
-  const [users, setUsers] = React.useState<any[]>([]);
+  const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
   const [currentApp, setCurrentApp] = React.useState<string>();
-  const [pagination, setPagination] = React.useState<{total: number, limit: number, offset: number}>()
-
-  const getUsers = async (appId: string | null, limit: number = 10, offset: number = 0) => {
+  const [pagination, setPagination] = React.useState<{
+    total: number;
+    limit: number;
+    offset: number;
+  }>();
+  const getUsers = async (
+    appId: string | null,
+    limit: number = 10,
+    offset: number = 0
+  ) => {
     try {
       if (appId) {
         const getUsersResp = await http.getAppUsers(appId, limit, offset);
-        const { data } = getUsersResp
+        const { data } = getUsersResp;
         setPagination({
           limit: data.limit,
           offset: data.offset,
-          total: data.total
-        })
+          total: data.total,
+        });
         return data.items;
-      } else {
-        return [];
       }
-
     } catch (e) {}
+    return [];
   };
 
   React.useEffect(() => {
@@ -66,13 +72,15 @@ export default function BasicTable() {
     // page = 1 => offset 0
     // page = 2 => offset 10
     // page = 3 => offset 20
-    let offset = 0
+    let offset = 0;
     if (page - 1 > 0) {
-      offset = (page - 1) * (pagination?.limit || 10)
+      offset = (page - 1) * (pagination?.limit || 10);
     }
 
-    getUsers(currentApp || null, pagination?.limit || 10, offset).then((users) => setUsers(users))
-  }
+    getUsers(currentApp || null, pagination?.limit || 10, offset).then(
+      (users) => setUsers(users)
+    );
+  };
 
   return (
     <TableContainer
@@ -155,11 +163,19 @@ export default function BasicTable() {
                 <TableCell align="right">Edit</TableCell>
               </TableRow>
             ))}
-            { pagination?.total && <TableRow><TableCell colSpan={6}><Pagination onChange={onPagination} count={Math.ceil(pagination.total / pagination.limit)} /></TableCell></TableRow>}
+            {pagination?.total && (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <Pagination
+                    onChange={onPagination}
+                    count={Math.ceil(pagination.total / pagination.limit)}
+                  />
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       )}
-
       <NewUserModal open={showNewUser} setOpen={setShowNewUser}></NewUserModal>
     </TableContainer>
   );
