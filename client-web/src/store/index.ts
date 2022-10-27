@@ -190,6 +190,8 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
         token: '',
         _id: ''
       }
+      state.apps = []
+      state.appUsers = []
     }),
     setBalance: (balance: TBalance[]) => set((state) => {state.balance = balance}),
     setNewMessage: (message: TMessage) => set((state) => {

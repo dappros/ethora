@@ -9,35 +9,44 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import { IconButton, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { useStoreState } from "../../store";
 import NoDataImage from "../../componets/NoDataImage";
 import NewUserModal from "./NewUserModal";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+
 import * as http from "../../http";
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<any[]>([]);
+  const [currentApp, setCurrentApp] = React.useState<string>();
 
-  const getUsers = async (apps: any) => {
-    const users = [];
-    for (const app of apps) {
-      try {
-        const getUsersResp = await http.getAppUsers(app._id);
-        users.push(...getUsersResp.data.users);
-      } catch (e) {}
-    }
-
-    return users;
+  const getUsers = async (appId: string) => {
+    try {
+      const getUsersResp = await http.getAppUsers(appId);
+      return getUsersResp.data.users;
+    } catch (e) {}
   };
 
   React.useEffect(() => {
     if (apps.length) {
-      getUsers(apps).then((users) => {
+      setCurrentApp(apps[0]._id);
+      getUsers(apps[0]._id).then((users) => {
         setUsers(users);
       });
     }
   }, [apps]);
+
+  const onAppSelectChange = (e: SelectChangeEvent) => {
+    setCurrentApp(e.target.value);
+    getUsers(e.target.value).then((users) => {
+      setUsers(users);
+    });
+  };
 
   return (
     <TableContainer
@@ -48,6 +57,27 @@ export default function BasicTable() {
         <Typography variant="h6" style={{ margin: "16px" }}>
           Users
         </Typography>
+        {currentApp ? (
+          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            <InputLabel id="demo-simple-select-label">App</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="App"
+              value={currentApp}
+              onChange={onAppSelectChange}
+            >
+              {apps.map((app) => {
+                return (
+                  <MenuItem key={app._id} value={app._id}>
+                    {app.appName}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        ) : null}
+
         <IconButton onClick={() => setShowNewUser(true)} size="large">
           <AddCircleIcon fontSize="large"></AddCircleIcon>
         </IconButton>
@@ -88,17 +118,13 @@ export default function BasicTable() {
                 <TableCell component="th" scope="row">
                   {user.appId}
                 </TableCell>
+                <TableCell align="right">{user.firstName}</TableCell>
+                <TableCell align="right">{user.lastName}</TableCell>
                 <TableCell align="right">
-                  {user.firstName}
+                  {user.username ? user.username : "-"}
                 </TableCell>
                 <TableCell align="right">
-                  {user.lastName}
-                </TableCell>
-                <TableCell align="right">
-                  {user.username ? user.username : '-'}
-                </TableCell>
-                <TableCell align="right">
-                  {user.email ? user.email : '-'}
+                  {user.email ? user.email : "-"}
                 </TableCell>
                 <TableCell align="right">Edit</TableCell>
               </TableRow>
