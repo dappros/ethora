@@ -21,7 +21,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import * as http from "../../http";
 import { EditAcl } from "../../componets/EditAcl";
 
-
 const boxStyle = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -105,7 +104,7 @@ export default function BasicTable() {
   return (
     <TableContainer
       component={Paper}
-      style={{ maxWidth: 900, margin: "0 auto" }}
+      style={{ margin: "0 auto" }}
     >
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
@@ -152,7 +151,7 @@ export default function BasicTable() {
       )}
 
       {users.length > 0 && (
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell width={200}>appId</TableCell>
@@ -161,7 +160,6 @@ export default function BasicTable() {
               <TableCell align="right">username</TableCell>
               <TableCell align="right">email</TableCell>
               <TableCell align="right">Actions</TableCell>
-              <TableCell align="center">ACL</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -181,14 +179,13 @@ export default function BasicTable() {
                 <TableCell align="right">
                   {user.email ? user.email : "-"}
                 </TableCell>
-                <TableCell align="right">Edit</TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    onClick={() => handleAclEditOpen(user._id)}
-                  >
-                    Edit
-                  </Button>
+                <TableCell  align="right">
+                  <Box sx={{width: '200px'}} >
+                  <Typography>Edit</Typography>
+                  <Typography style={{cursor: 'pointer', textDecoration: 'underline'}} onClick={() => handleAclEditOpen(user._id)}>
+                    Edit ACL
+                  </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
