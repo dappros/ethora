@@ -5,6 +5,8 @@ import {Element} from 'ltx'
 import {TMessageHistory, useStoreState} from './store'
 
 let lastMsgId: string = '';
+let temporaryMessages: TMessageHistory[] = [];
+let isGettingMessages: boolean = false;
 
 export function walletToUsername(str: string) {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -77,17 +79,25 @@ const onMessageHistory = async (stanza: Element) => {
                 },
                 roomJID: stanza.attrs.from,
                 date: delay.attrs.stamp,
-                key: Date.now()
+                key: Date.now()+Number(id)
             }
-        useStoreState.getState().setNewMessageHistory(msg)
-        useStoreState.getState().sortMessageHistory();
+            if(isGettingMessages){
+                temporaryMessages.push(msg)
+            }
+            if(!isGettingMessages){
+                useStoreState.getState().setNewMessageHistory(msg)
+                useStoreState.getState().sortMessageHistory();
+            }
     }
 }
 
 const onLastMessageArchive = (stanza: Element, xmpp: any) => {
-    if (stanza.attrs.id === "paginatedArchive") {
+    if (stanza.attrs.id === "paginatedArchive" || stanza.attrs.id === "GetArchive") {
         lastMsgId = String(stanza.getChild('fin')?.getChild('set')?.getChild('last')?.children[0]);
+        useStoreState.getState().updateMessageHistory(temporaryMessages);
+        isGettingMessages = false
         useStoreState.getState().setLoaderArchive(false);
+        temporaryMessages = [];
     }
 }
 
@@ -106,30 +116,32 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
     if(stanza.attrs.id === "getUserRooms"){
         if(stanza.getChild('query')?.children){
             useStoreState.getState().clearUserChatRooms();
-            console.log('ROOOMS ==> ',stanza.getChild('query')?.children)
+            useStoreState.getState().setLoaderArchive(true);
             stanza.getChild('query')?.children.forEach((result: Object) => {
                 // @ts-ignore
-                const roomJID: string = result.attrs.jid;
-                xmpp.presenceInRoom(roomJID)
+                if(result?.attrs.name) {
+                    // @ts-ignore
+                    const roomJID: string = result.attrs.jid;
+                    xmpp.presenceInRoom(roomJID)
 
-                const roomData = {
-                    jid: roomJID,
+                    const roomData = {
+                        jid: roomJID,
+                        // @ts-ignore
+                        name: result?.attrs.name,
+                        // @ts-ignore
+                        room_background: result?.attrs.room_background,
+                        // @ts-ignore
+                        room_thumbnail: result?.attrs.room_thumbnail,
+                        // @ts-ignore
+                        users_cnt: result?.attrs.users_cnt,
+                    }
                     // @ts-ignore
-                    name: result?.attrs.name,
-                    // @ts-ignore
-                    room_background: result?.attrs.room_background,
-                    // @ts-ignore
-                    room_thumbnail: result?.attrs.room_thumbnail,
-                    // @ts-ignore
-                    users_cnt: result?.attrs.users_cnt,
+                    useStoreState.getState().setNewUserChatRoom(roomData);
+
+                    //get message history in the room
+                    xmpp.getRoomArchiveStanza(roomJID, 1)
                 }
-                // @ts-ignore
-                useStoreState.getState().setNewUserChatRoom(roomData);
-
-                //get message history in the room
-                xmpp.getRoomArchiveStanza(roomJID)
             })
-            useStoreState.getState().setLoaderArchive(false);
         }
     }
 }
@@ -312,13 +324,12 @@ class XmppClass {
         this.client.send(presence);
     }
 
-    getRoomArchiveStanza(chat_jid: string) {
-        useStoreState.getState().setLoaderArchive(true);
+    getRoomArchiveStanza(chatJID: string, amount: number) {
         let message = xml(
             'iq',
             {
                 type: 'set',
-                to: chat_jid,
+                to: chatJID,
                 id: 'GetArchive',
             },
             xml(
@@ -327,7 +338,7 @@ class XmppClass {
                 xml(
                     'set',
                     {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '10'),
+                    xml('max', {}, String(amount)),
                     xml('before'),
                 ),
             ),
@@ -336,18 +347,20 @@ class XmppClass {
     }
 
     getPaginatedArchive = (
-        chat_jid: string,
+        chatJID: string,
         firstUserMessageID: string,
+        amount: number
     ) => {
       if(lastMsgId === firstUserMessageID){
           return
       }
+        isGettingMessages = true;
         useStoreState.getState().setLoaderArchive(true);
         const message = xml(
             'iq',
             {
                 type: 'set',
-                to: chat_jid,
+                to: chatJID,
                 id: 'paginatedArchive',
             },
             xml(
@@ -356,7 +369,7 @@ class XmppClass {
                 xml(
                     'set',
                     {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '10'),
+                    xml('max', {}, String(amount)),
                     xml('before', {}, firstUserMessageID),
                 ),
             ),

@@ -96,6 +96,7 @@ interface IStore {
   setNewMessage: (msg: TMessage) => void,
   historyMessages: TMessageHistory[],
   setNewMessageHistory: (msg: TMessageHistory) => void
+  updateMessageHistory: (messages: TMessageHistory[]) => void
   clearMessageHistory: () => void,
   sortMessageHistory: () => void,
   userChatRooms: TUserChatRooms[],
@@ -178,6 +179,16 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     setNewMessageHistory: (historyMessages: TMessageHistory) => set((state) => {
       console.log('setNewMessageHistory')
       state.historyMessages.unshift(historyMessages)
+    }),
+    updateMessageHistory: (messages: TMessageHistory[]) => set((state) => {
+      console.log('updateMessageHistory')
+      // state.historyMessages.push(messages);
+      console.log(state.historyMessages, messages)
+      state.historyMessages = [...state.historyMessages, ...messages];
+
+      state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+
+      // state.historyMessages.unshift(historyMessages)
     }),
     setLoaderArchive: (status: boolean) => set((state) => {
       state.loaderArchive = status;

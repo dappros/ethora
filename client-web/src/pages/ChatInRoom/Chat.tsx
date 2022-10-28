@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import xmpp from "../../xmpp";
-import {useStoreState} from "../../store";
+import {TMessageHistory, useStoreState} from "../../store";
 import {Stack, Typography} from "@mui/material";
 import {getBalance, getPublicProfile, getTransactions} from "../../http";
 import {TProfile} from "../Profile/types";
@@ -17,6 +17,7 @@ import {
     ChatContainer,
     MessageList,
     Message,
+    MessageGroup,
     MessageInput,
     Conversation,
     ConversationList,
@@ -31,6 +32,7 @@ import {
     ExpansionPanel
 } from '@chatscope/chat-ui-kit-react';
 import {stringify} from "querystring";
+import MessageInGroup from "../../componets/Chat/Messages/MessageInGroup";
 import MessageDefault from "../../componets/Chat/Messages/MessageDefault";
 
 export function ChatInRoom() {
@@ -62,9 +64,9 @@ export function ChatInRoom() {
         }else{
             const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
 
-            setTimeout(() => {
-            xmpp.getPaginatedArchive(currentRoom, String(lastMessageID));
-            }, 1000);
+            // setTimeout(() => {
+            xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
+            // }, 1000);
         }
     }
 
@@ -87,7 +89,7 @@ export function ChatInRoom() {
         }
 
     xmpp.presenceInRoom(newCurrentRoom);
-    xmpp.getRoomArchiveStanza(newCurrentRoom);
+    xmpp.getRoomArchiveStanza(newCurrentRoom, 1);
     console.log(messages);
   };
 
@@ -107,7 +109,16 @@ export function ChatInRoom() {
   const chooseRoom = (jid: string) => {
     setCurrentRoom(jid);
     setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
-    console.log(roomData, currentRoom);
+
+    const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
+
+    if (!loaderArchive && filteredMessages.length === 1) {
+        console.log('LOADING =', filteredMessages, filteredMessages.length)
+
+        const lastMessageID = filteredMessages[0].id;
+        xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
+        // xmpp.getRoomArchiveStanza(jid, 10)
+    }
   };
 
   const sendMessage = () => {
@@ -162,8 +173,12 @@ export function ChatInRoom() {
                         // typingIndicator={<TypingIndicator content="Test is typing"/>}
                     >
                         {
-                            messages.filter((item: any) => item.roomJID === currentRoom).map(message =>
-                                <MessageDefault key={message.key} message={message}/>
+                            messages.filter((item: any) => item.roomJID === currentRoom).map((message, index, arr) =>
+
+                                <MessageDefault is="Message" key={message.key} message={message} previousJID={arr[index-1]?.data.senderJID} nextJID={arr[index+1]?.data.senderJID}/>
+
+
+
                             )
                         }
                         {messages.length <= 0 || !currentRoom ?
@@ -175,8 +190,9 @@ export function ChatInRoom() {
                                 textAlign: "center",
                                 fontSize: "1.2em"
                             }}>
-                                {!currentRoom ? "To get started, please select a chat room."+loaderArchive : null}
-                                {messages.length <= 0 ? "Message list is empty" : null}
+                                {/*{!currentRoom ? "To get started, please select a chat room."+loaderArchive : null}*/}
+                                {/*{messages.length <= 0 ? "Message list is empty" : null}*/}
+                                {loaderArchive ? "LOADING" : "LOADED"}
                             </MessageList.Content> : null
                         }
                     </MessageList>
