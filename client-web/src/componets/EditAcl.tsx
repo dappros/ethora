@@ -14,9 +14,12 @@ import {
   TPermission,
   updateUserAcl,
 } from "../http";
+import { Box } from "@mui/system";
+import { FullPageSpinner } from "./FullPageSpinner";
 
 export interface IEditAcl {
   userId: string;
+  updateData?(): Promise<void>;
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -103,7 +106,7 @@ const Row = ({
   );
 };
 
-export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
+export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
   const [userAcl, setUserAcl] = useState<IUserAcl>();
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
@@ -111,8 +114,10 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
   const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>(
     []
   );
+  const [loading, setLoading] = useState(false);
 
   const getAcl = async () => {
+    setLoading(true);
     try {
       const { data } = await getUserAcl(userId);
       setUserAcl(data);
@@ -124,6 +129,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
 
   const onApplicationAclChange = (
@@ -162,6 +168,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
   };
 
   const updateAcl = async () => {
+    setLoading(true);
     try {
       const filteredApplication = Object.fromEntries(
         Object.entries(userAcl!.result!.application).map((item) => {
@@ -181,19 +188,28 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
         network: filteredNetwork,
       } as IAclBody;
 
-      const res = await updateUserAcl(userId, body);
-      console.log(res);
+      await updateUserAcl(userId, body);
+      if (updateData) {
+        await updateData();
+      }
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
   useEffect(() => {
     getAcl();
   }, []);
 
+  if (loading) {
+    return <FullPageSpinner />;
+  }
+
   return (
     <>
-      <Typography>Applications</Typography>
+      <Typography marginBottom={"10px"} fontWeight={"bold"}>
+        Applications
+      </Typography>
 
       <TableContainer component={Paper}>
         <Table size={"small"} sx={{ minWidth: 650 }} aria-label="simple table">
@@ -223,7 +239,9 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Typography>Networks</Typography>
+      <Typography marginBottom={"10px"} marginTop={"10px"} fontWeight={"bold"}>
+        Networks
+      </Typography>
 
       <TableContainer component={Paper}>
         <Table size={"small"} sx={{ minWidth: 650 }} aria-label="simple table">
@@ -253,7 +271,18 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Button onClick={updateAcl}>Update Acl</Button>
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          justifyContent: "flex-end",
+          marginTop: "20px",
+        }}
+      >
+        <Button variant="contained" onClick={updateAcl}>
+          Update Acl
+        </Button>
+      </Box>
     </>
   );
 };

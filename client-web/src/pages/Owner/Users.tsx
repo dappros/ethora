@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Button, IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Modal, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,16 +17,33 @@ import NewUserModal from "./NewUserModal";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
-
+import CloseIcon from "@mui/icons-material/Close";
 import * as http from "../../http";
 import { EditAcl } from "../../componets/EditAcl";
+
+
+const boxStyle = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: "70vw",
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  borderRadius: "10px",
+  p: 4,
+};
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
   const [currentApp, setCurrentApp] = React.useState<string>();
+  const [aclEditData, setAclEditData] = React.useState({
+    modalOpen: false,
+    userId: "",
+  });
+
   const [pagination, setPagination] = React.useState<{
     total: number;
     limit: number;
@@ -81,7 +98,10 @@ export default function BasicTable() {
       (users) => setUsers(users)
     );
   };
-
+  const handleAclEditOpen = (userId: string) =>
+    setAclEditData({ modalOpen: true, userId: userId });
+  const handleAclEditClose = () =>
+    setAclEditData({ modalOpen: false, userId: "" });
   return (
     <TableContainer
       component={Paper}
@@ -141,6 +161,7 @@ export default function BasicTable() {
               <TableCell align="right">username</TableCell>
               <TableCell align="right">email</TableCell>
               <TableCell align="right">Actions</TableCell>
+              <TableCell align="center">ACL</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -161,6 +182,14 @@ export default function BasicTable() {
                   {user.email ? user.email : "-"}
                 </TableCell>
                 <TableCell align="right">Edit</TableCell>
+                <TableCell align="right">
+                  <Button
+                    variant="contained"
+                    onClick={() => handleAclEditOpen(user._id)}
+                  >
+                    Edit
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
             {pagination?.total && (
@@ -176,7 +205,30 @@ export default function BasicTable() {
           </TableBody>
         </Table>
       )}
-      <NewUserModal open={showNewUser} setOpen={setShowNewUser}></NewUserModal>
+      <NewUserModal open={showNewUser} setOpen={setShowNewUser} />
+      <Modal
+        open={aclEditData.modalOpen}
+        onClose={handleAclEditClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={boxStyle}>
+          <EditAcl
+            updateData={() =>
+              getUsers(apps[0]._id).then((users) => {
+                setUsers(users);
+              })
+            }
+            userId={aclEditData.userId}
+          />
+          <IconButton
+            onClick={handleAclEditClose}
+            sx={{ position: "absolute", top: 0, right: 0, color: "black" }}
+          >
+            <CloseIcon fontSize={"large"} />
+          </IconButton>
+        </Box>
+      </Modal>
     </TableContainer>
   );
 }
