@@ -1,5 +1,5 @@
-import { Actionsheet, Divider, HStack, Text, useDisclose, View } from 'native-base';
-import React, { useState, useCallback, useEffect } from 'react'
+import { Actionsheet, Checkbox, Divider, HStack, Text, useDisclose, View } from 'native-base';
+import React, { useState, useEffect } from 'react'
 import { Actions, GiftedChat, Send } from 'react-native-gifted-chat'
 import { allowIsTyping, commonColors, defaultBotsList, textStyles } from '../../docs/config';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
@@ -71,6 +71,7 @@ const ThreadScreen = observer((props: any) => {
     const [isTyping, setIsTyping] = useState(false);
     const [onTapMessageObject, setOnTapMessageObject] = useState('');
     const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
+    const [showInChannel, setShowInChannel] = useState(false)
 
     const [fileUploadProgress, setFileUploadProgress] = useState(0);
 
@@ -83,6 +84,7 @@ const ThreadScreen = observer((props: any) => {
     const debouncedChatText = useDebounce(text, 500);
 
     const {isOpen, onOpen, onClose} = useDisclose();
+
 
     const messages = chatStore.messages
     .filter((item: any) => item.roomJid === chatJid && item.mainMessageId === currentMessage._id)
@@ -207,6 +209,26 @@ const ThreadScreen = observer((props: any) => {
             waveForm: JSON.stringify(waveForm),
             attachmentId: item._id,
             wrappable: true,
+            isReply: true,
+            mainMessageText: currentMessage.text,
+            mainMessageId: currentMessage._id,
+            mainMessageUserName: currentMessage.user?.name,
+            mainMessageCreatedAt: currentMessage.createdAt,
+            mainMessageFileName: currentMessage.fileName,
+            mainMessageImageLocation: currentMessage.image,
+            mainMessageImagePreview: currentMessage.preview,
+            mainMessageMimeType: currentMessage.mimetype,
+            mainMessageOriginalName: currentMessage.originalName,
+            mainMessageSize: currentMessage.size,
+            mainMessageDuration: currentMessage?.duration,
+            mainMessageWaveForm: currentMessage.waveForm,
+            mainMessageAttachmentId: currentMessage.attachmentId,
+            mainMessageWrappable: currentMessage.wrappable,
+            mainMessageNftId: currentMessage.nftId,
+            mainMessageNftActionType: currentMessage.nftActionType,
+            mainMessageContractAddress: currentMessage.contractAddress,
+            mainMessageRoomJid: currentMessage.roomJid,
+            showInChannel:showInChannel
           };
     
           sendMediaMessageStanza(
@@ -612,6 +634,7 @@ const ThreadScreen = observer((props: any) => {
         const manipulatedWalletAddress = underscoreManipulation(
           loginStore.initialData.walletAddress,
         );
+        
         const data = {
           senderFirstName: loginStore.initialData.firstName,
           senderLastName: loginStore.initialData.lastName,
@@ -626,6 +649,22 @@ const ThreadScreen = observer((props: any) => {
           mainMessageText: currentMessage.text,
           mainMessageId: currentMessage._id,
           mainMessageUserName: currentMessage.user?.name,
+          mainMessageCreatedAt: currentMessage.createdAt,
+          mainMessageFileName: currentMessage.fileName,
+          mainMessageImageLocation: currentMessage.image,
+          mainMessageImagePreview: currentMessage.preview,
+          mainMessageMimeType: currentMessage.mimetype,
+          mainMessageOriginalName: currentMessage.originalName,
+          mainMessageSize: currentMessage.size,
+          mainMessageDuration: currentMessage?.duration,
+          mainMessageWaveForm: currentMessage.waveForm,
+          mainMessageAttachmentId: currentMessage.attachmentId,
+          mainMessageWrappable: currentMessage.wrappable,
+          mainMessageNftId: currentMessage.nftId,
+          mainMessageNftActionType: currentMessage.nftActionType,
+          mainMessageContractAddress: currentMessage.contractAddress,
+          mainMessageRoomJid: currentMessage.roomJid,
+          showInChannel:showInChannel,
         };
         const text = parseValue(messageText, partTypes).plainText;
         const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -671,7 +710,27 @@ const ThreadScreen = observer((props: any) => {
           originalname: item.nftOriginalname,
           // attachmentId: item.nftId,
           nftId: item.nftId,
+          isReply:true,
           wrappable: true,
+          mainMessageText: currentMessage.text,
+          mainMessageId: currentMessage._id,
+          mainMessageUserName: currentMessage.user?.name,
+          mainMessageCreatedAt: currentMessage.createdAt,
+          mainMessageFileName: currentMessage.fileName,
+          mainMessageImageLocation: currentMessage.image,
+          mainMessageImagePreview: currentMessage.preview,
+          mainMessageMimeType: currentMessage.mimetype,
+          mainMessageOriginalName: currentMessage.originalName,
+          mainMessageSize: currentMessage.size,
+          mainMessageDuration: currentMessage?.duration,
+          mainMessageWaveForm: currentMessage.waveForm,
+          mainMessageAttachmentId: currentMessage.attachmentId,
+          mainMessageWrappable: currentMessage.wrappable,
+          mainMessageNftId: currentMessage.nftId,
+          mainMessageNftActionType: currentMessage.nftActionType,
+          mainMessageContractAddress: currentMessage.contractAddress,
+          mainMessageRoomJid: currentMessage.roomJid,
+          showInChannel:showInChannel
         };
     
         sendMediaMessageStanza(
@@ -701,24 +760,19 @@ const ThreadScreen = observer((props: any) => {
         return onClose();
       };
 
-  return (
-    <View flex={1} bg={"white"}>
-        <SecondaryHeader
-        title='Thread'
-        />
-              {audioMimetypes[mediaModal.type] && (
-        <AudioPlayer audioUrl={mediaModal.url} />
-      )}
-        <HStack margin={2}>
+      const renderMainMessageSection = () => {
+        return(
+          <HStack shadow="5" borderRadius={10} bg={commonColors.primaryColor} margin={2}>
             <View 
-            flex={0.1}
+            flex={0.19}
+            alignItems="center"
             paddingTop={2}>
                 <View
                 width={hp('5.46%')}
                 height={hp('5.46%')}
                 justifyContent={'center'}
                 alignItems={'center'}
-                bgColor={commonColors.primaryColor}
+                bgColor={commonColors.primaryDarkColor}
                 borderRadius={hp('5.46%') / 2}>
                     {loginStore.anotherUserAvatar ? (
                     <Image
@@ -746,7 +800,7 @@ const ThreadScreen = observer((props: any) => {
             <View 
             flex={0.9}
             padding={2}
-            paddingLeft={6}
+            justifyContent={"flex-start"}
             >
             <HStack>
             <Text
@@ -754,7 +808,7 @@ const ThreadScreen = observer((props: any) => {
             style={{
             fontSize: hp('2.216%'),
             fontFamily: textStyles.boldFont,
-            color: '#000000',
+            color: '#ffff',
             }}>
                 {loginStore.anotherUserFirstname}{' '}
                 {loginStore.anotherUserLastname}
@@ -764,7 +818,7 @@ const ThreadScreen = observer((props: any) => {
             style={{
                 fontSize: hp('1.5%'),
                 fontFamily: textStyles.mediumFont,
-                color: '#000000',
+                color: '#ffff',
             }}
             >
                 {parentTime}
@@ -776,82 +830,101 @@ const ThreadScreen = observer((props: any) => {
                 style={{
                     fontSize: hp('2%'),
                     fontFamily: textStyles.mediumFont,
-                    color: '#000000',
+                    color: '#ffff',
                 }}>
                     {currentMessage.text}
                 </Text>
             </View>
+            {renderMessageImage({currentMessage})}
             </View>
-        </HStack>
+          </HStack>
+        )
+      }
 
-        <Text selectable>{currentMessage._id}</Text>
+  return (
+    <View flex={1} bg={"white"}>
+      <SecondaryHeader
+      title='Thread'
+      />
+      {audioMimetypes[mediaModal.type] && (
+        <AudioPlayer audioUrl={mediaModal.url} />
+      )}
+      <View bg={commonColors.primaryDarkColor}>
+      {renderMainMessageSection()}
+      </View>
+      <View margin={2}>
+        <Checkbox onChange={()=>setShowInChannel(!showInChannel)} value='show' isChecked={showInChannel} colorScheme="green">
+          Also send in Chat room?
+        </Checkbox>
+      </View>
+        {/* <Text selectable>{currentMessage._id}</Text> */}
+      <Divider/>
 
-        <Divider/>
-
-        <GiftedChat
-        renderSend={renderSend}
-        renderActions={renderAttachment}
-        renderLoading={() => (
-          <ActivityIndicator size={30} color={commonColors.primaryColor} />
-        )}
-        text={text}
-        renderUsernameOnMessage
-        onInputTextChanged={handleInputChange}
-        renderMessage={renderMessage}
-        renderMessageImage={props => renderMessageImage(props)}
-        renderComposer={renderComposer}
-        messages={messages}
-        renderAvatarOnTop
-        onPressAvatar={onUserAvatarPress}
-        renderChatFooter={() => (
-          <RenderChatFooter
-            allowIsTyping={allowIsTyping}
-            composingUsername={composingUsername}
-            fileUploadProgress={fileUploadProgress}
-            isTyping={isTyping}
-            setFileUploadProgress={setFileUploadProgress}
-          />
-        )}
-        placeholder={'Type a message'}
-        // listViewProps={{
-        //   onEndReached: onLoadEarlier,
-        //   onEndReachedThreshold: 0.05,
-        // }}
-        // textInputProps={{onSelectionChange: e => console.log(e)}}
-        keyboardShouldPersistTaps={'handled'}
-        onSend={messageString => sendMessage(messageString, false)}
-        user={{
-          _id:
-            loginStore.initialData.xmppUsername +
-            '@' +
-            apiStore.xmppDomains.DOMAIN,
-          name: loginStore.initialData.username,
-        }}
-        // inverted={true}
-        alwaysShowSend
-        showUserAvatar
-        textInputProps={{
-          color: 'black',
-          onSelectionChange: e => setSelection(e.nativeEvent.selection),
-        }}
-        onLongPress={(message: any) =>
-          handleOnLongPress(message)
-        }
-        onTap={(message: any) => handleOnPress(message)}
-        // onInputTextChanged={()=>{alert('hhh')}}
-        parsePatterns={linkStyle => [
-          {
-            pattern:
-              /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-          {
-            pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-        ]}
+      <GiftedChat
+      renderSend={renderSend}
+      renderActions={renderAttachment}
+      renderLoading={() => (
+        <ActivityIndicator size={30} color={commonColors.primaryColor} />
+      )}
+      text={text}
+      type={'thread'}
+      renderUsernameOnMessage
+      onInputTextChanged={handleInputChange}
+      renderMessage={renderMessage}
+      renderMessageImage={props => renderMessageImage(props)}
+      renderComposer={renderComposer}
+      messages={messages}
+      renderAvatarOnTop
+      onPressAvatar={onUserAvatarPress}
+      renderChatFooter={() => (
+        <RenderChatFooter
+          allowIsTyping={allowIsTyping}
+          composingUsername={composingUsername}
+          fileUploadProgress={fileUploadProgress}
+          isTyping={isTyping}
+          setFileUploadProgress={setFileUploadProgress}
+        />
+      )}
+      placeholder={'Type a message'}
+      // listViewProps={{
+      //   onEndReached: onLoadEarlier,
+      //   onEndReachedThreshold: 0.05,
+      // }}
+      // textInputProps={{onSelectionChange: e => console.log(e)}}
+      keyboardShouldPersistTaps={'handled'}
+      onSend={messageString => sendMessage(messageString, false)}
+      user={{
+        _id:
+          loginStore.initialData.xmppUsername +
+          '@' +
+          apiStore.xmppDomains.DOMAIN,
+        name: loginStore.initialData.username,
+      }}
+      // inverted={true}
+      alwaysShowSend
+      showUserAvatar
+      textInputProps={{
+        color: 'black',
+        onSelectionChange: e => setSelection(e.nativeEvent.selection),
+      }}
+      onLongPress={(message: any) =>
+        handleOnLongPress(message)
+      }
+      onTap={(message: any) => handleOnPress(message)}
+      // onInputTextChanged={()=>{alert('hhh')}}
+      parsePatterns={linkStyle => [
+        {
+          pattern:
+            /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+          style: linkStyle,
+          onPress: handleChatLinks,
+        },
+        {
+          pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+          style: linkStyle,
+          onPress: handleChatLinks,
+        },
+      ]}
       />
     <Actionsheet
         isOpen={isOpen}

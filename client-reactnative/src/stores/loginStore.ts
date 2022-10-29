@@ -298,8 +298,8 @@ export class LoginStore {
       referrerId: response.data.referrerId || '',
       isProfileOpen: isProfileOpen,
       isAssetsOpen: isAssetsOpen,
+      desc:''
     };
-    console.log(response.data.user)
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
       this.initialData = dataForStorage;
@@ -436,9 +436,8 @@ export class LoginStore {
     firstName: string;
     lastName: string;
   }) => {
-    const url = this.stores.apiStore.defaultUrl + registerUserURL;
+    const url = this.stores.apiStore.defaultUrl + registerUserURL; 
     const response: any = await httpPut(url, bodyData, this.userToken);
-
     if (response.data.success) {
       const updatedData = {
         ...this.initialData,

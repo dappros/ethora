@@ -72,15 +72,16 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         alert('Please fill Chat Name');
       } else {
         createNewRoom(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-
+         
         setOwner(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-
+        
         roomConfig(
           manipulatedWalletAddress,
           roomHash,
           {roomName: chatName},
           chatStore.xmpp,
         );
+        
 
         subscribeToRoom(
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,

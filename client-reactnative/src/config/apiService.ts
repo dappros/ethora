@@ -80,12 +80,14 @@ export const httpUpload = async (url, body, token, onProgress) => {
   });
 };
 
-export const httpPut = async (url: string, body: any, token: string) => {
+export const httpPut = async (url: string, body: any, token: string) => { 
   return await axios.put(url, body, {
     headers: {
       Authorization: token,
       'Accept-encoding': 'gzip, deflate',
     },
+  }).catch(err => {
+    console.log(err,body,url)
   });
 };
 
