@@ -50,7 +50,7 @@ export default function BasicTable() {
   return (
     <TableContainer
       component={Paper}
-      style={{ maxWidth: 900, margin: "0 auto" }}
+      style={{ margin: "0 auto" }}
     >
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>

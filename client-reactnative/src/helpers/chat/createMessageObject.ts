@@ -44,7 +44,23 @@ interface createMessageObjectProps {
   mainMessageText?: string;
   mainMessageId?: string;
   mainMessageUserName?: string;
+  mainMessageCreatedAt?:string;
+  mainMessageFileName?:string;
+  mainMessageImageLocation?:string;
+  mainMessageImagePreview?:string;
+  mainMessageMimeType?:string;
+  mainMessageOriginalName?:string;
+  mainMessageSize?:string;
+  mainMessageDuration?:string;
+  mainMessageWaveForm?:string;
+  mainMessageAttachmentId?:string;
+  mainMessageWrappable?:boolean;
+  mainMessageNftId?:string;
+  mainMessageNftActionType?:string;
+  mainMessageContractAddress?:string;
+  mainMessageRoomJid?:string;
   numberOfReplies?:number;
+  showInChannel?:boolean;
   preview?: string;
 
 }
@@ -86,6 +102,8 @@ export const createMessageObject = (
     mainMessageText: '',
     mainMessageId: '',
     mainMessageUserName: '',
+    numberOfReplies:0,
+    showInChannel:false,
     preview: ''
   };
   messageDetails.forEach((item: any) => {
@@ -126,7 +144,23 @@ export const createMessageObject = (
       message.mainMessageText = item.attrs.mainMessageText || '';
       message.isReply = item.attrs.isReply === 'true' || false;
       message.mainMessageUserName = item.attrs.mainMessageUserName || '';
-      message.numberOfReplies = item.attrs.numberOfReplies || 0;
+      message.mainMessageCreatedAt = item.attrs.mainMessageCreatedAt;
+      message.mainMessageFileName = item.attrs.mainMessageFileName;
+      message.mainMessageImageLocation = item.attrs.mainMessageImageLocation;
+      message.mainMessageImagePreview = item.attrs.mainMessageImagePreview;
+      message.mainMessageMimeType = item.attrs.mainMessageMimeType;
+      message.mainMessageOriginalName = item.attrs.mainMessageOriginalName;
+      message.mainMessageSize = item.attrs.mainMessageSize;
+      message.mainMessageDuration = item.attrs.mainMessageDuration;
+      message.mainMessageWaveForm = item.attrs.mainMessageWaveForm;
+      message.mainMessageAttachmentId = item.attrs.mainMessageAttachmentId;
+      message.mainMessageWrappable = item.attrs.mainMessageWrappable === 'true' || false;
+      message.mainMessageNftId = item.attrs.mainMessageNftId;
+      message.mainMessageNftActionType = item.attrs.mainMessageNftActionType;
+      message.mainMessageContractAddress = item.attrs.mainMessageContractAddress;
+      message.mainMessageRoomJid = item.attrs.mainMessageRoomJid
+      message.numberOfReplies = 0;
+      message.showInChannel = item.attrs.showInChannel === 'true' || false;
       message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
     }

@@ -40,6 +40,58 @@ export type TLoginSuccessResponse = {
   user: TUser;
 };
 
+export interface IUser {
+  ACL: { ownerAccess: boolean };
+  appId: string;
+  createdAt: Date;
+  defaultWallet: {
+    walletAddress: string;
+  };
+  emails: [];
+  email?: string;
+  firstName: string;
+  isAssetsOpen: true;
+  isProfileOpen: true;
+  lastName: string;
+  password: string;
+  roles: [];
+  tags: [];
+  updatedAt: Date;
+  username: string;
+  xmppPassword: string;
+  __v: number;
+  _id: string;
+}
+
+export type TPermission = {
+  admin?: false;
+  create?: false;
+  delete?: false;
+  read?: false;
+  update?: false;
+  disabled?: Array<string>;
+};
+
+export interface IUserAcl {
+  result: {
+    application: {
+      appCreate: TPermission;
+      appPush: TPermission;
+      appSettings: TPermission;
+      appStats: TPermission;
+      appTokens: TPermission;
+      appUsers: TPermission;
+    };
+    network: {
+      netStats: TPermission;
+    };
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    userId: string;
+    _id: string;
+    appId: string;
+  };
+}
 const http = axios.create({
   baseURL: API_URL,
 });
@@ -277,6 +329,48 @@ export function checkEmailExist(email: string) {
     { headers: { Authorization: APP_JWT } }
   );
 }
+export function getUserAcl(userId: string) {
+  const owner = useStoreState.getState().owner;
+
+  return http.get<IUserAcl>(
+    "/users/acl/" + userId,
+
+    { headers: { Authorization: owner.token } }
+  );
+}
+export function getMyAcl() {
+  const owner = useStoreState.getState().owner;
+  const user = useStoreState.getState().user;
+
+  return http.get<IUserAcl>(
+    "/users/acl/",
+
+    { headers: { Authorization: owner.token || user.token } }
+  );
+}
+export interface IAclBody {
+  application: {
+    appCreate?: TPermission;
+    appPush?: TPermission;
+    appSettings?: TPermission;
+    appStats?: TPermission;
+    appTokens?: TPermission;
+    appUsers?: TPermission;
+  };
+  network: {
+    netStats: TPermission;
+  };
+}
+export function updateUserAcl(userId: string, body: IAclBody) {
+  const owner = useStoreState.getState().owner;
+
+  return http.put<IUserAcl>(
+    "/users/acl/" + userId,
+    body,
+
+    { headers: { Authorization: owner.token } }
+  );
+}
 
 export function registerSocial(
   idToken: string,
@@ -368,10 +462,18 @@ export function updateApp(id: string, fd: FormData) {
   });
 }
 
-export function getAppUsers(appToken: string) {
-  return http.get(`/users`, {
-    headers: { Authorization: appToken },
-  });
+export function getAppUsers(
+  appId: string,
+  limit: number = 10,
+  offset: number = 0
+) {
+  const owner = useStoreState.getState().owner;
+  return http.get<ExplorerRespose<IUser[]>>(
+    `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
+    {
+      headers: { Authorization: owner.token },
+    }
+  );
 }
 
 export function rotateAppJwt(appId: string) {
