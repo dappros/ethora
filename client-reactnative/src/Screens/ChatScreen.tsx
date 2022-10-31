@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   GiftedChat,
   Send,
@@ -124,9 +124,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const debouncedChatText = useDebounce(text, 500);
   const [onTapMessageObject, setOnTapMessageObject] = useState('');
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
+  const [showReplyOption, setShowReplyOption] = useState(true)
   const [isReply, setIsReply] = useState(false);
 
   const {isOpen, onOpen, onClose} = useDisclose();
+
+  const giftedRef = useRef(null);
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -142,9 +145,24 @@ const ChatScreen = observer(({route, navigation}: any) => {
   });
 
   const messages = chatStore.messages
-    .filter((item: any) => item.roomJid === chatJid && item.isReply === false)
+    .filter((item: any) => {
+      // item.roomJid === chatJid && item.isReply?item.showInChannel?true:false:true
+
+      if(item.roomJid === chatJid){
+        if(item.isReply){
+          if(item.showInChannel){
+            return true
+          }else{
+            return false
+          }
+        }else{
+          return true
+        }
+      }
+    })
     .sort((a: any, b: any) => b._id - a._id);
 
+  
   useEffect(() => {
     chatStore.toggleShouldCount(false);
     return () => {
@@ -276,10 +294,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mucname: chatName,
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
-      isReply: isReply,
-      mainMessageText: onTapMessageObject?.text,
-      mainMessageId: onTapMessageObject?.message_id,
-      mainMessageUserName: onTapMessageObject?.user?.name,
+      isReply: false,
+      mainMessageText: '',
+      mainMessageId: '',
+      mainMessageUserName: '',
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -467,6 +485,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
     }
+
+    if(message.isReply){
+      setShowReplyOption(false)
+    }
+
     setOnTapMessageObject(message);
     return onOpen();
   };
@@ -823,6 +846,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
+  const scrollToParentMessage = (currentMessage:any) => {
+    const parentIndex = messages.findIndex(item => item._id === currentMessage.mainMessageId);
+    console.log(giftedRef.current?._messageContainerRef?.current?.scrollToIndex,"parent Index")
+    giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
+      animated:true,
+      index: parentIndex
+    });
+  }
+
   return (
     <>
       <SecondaryHeader
@@ -841,12 +873,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
       )}
 
       <GiftedChat
+        ref={giftedRef}
         renderSend={renderSend}
         renderActions={renderAttachment}
         renderLoading={() => (
           <ActivityIndicator size={30} color={commonColors.primaryColor} />
         )}
         text={text}
+        type={"main"}
+        scrollToParentMessage={(currentMessage:any)=>scrollToParentMessage(currentMessage)}
         renderUsernameOnMessage
         onInputTextChanged={handleInputChange}
         renderMessage={renderMessage}
@@ -922,12 +957,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
       <Actionsheet
         isOpen={isOpen}
         onClose={() => {
-          onClose(), setIsShowDeleteOption(true);
+          onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
         }}>
         <Actionsheet.Content>
+          {showReplyOption?
           <Actionsheet.Item onPress={() => handleReply('open')}>
             Reply
-          </Actionsheet.Item>
+          </Actionsheet.Item>:null
+          }
           <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
           {isShowDeleteOption ? (
             <Actionsheet.Item onPress={onClose} color="red.500">

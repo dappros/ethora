@@ -188,6 +188,10 @@ export const RoomList = observer(({roomsList}: any) => {
           <Entypo color={'white'} size={hp('3%')} name={'list'} />
         )}
       </FloatingActionButton>
+      <View
+      bg={"#e9f1fd"}
+      shadow="2"
+       style={{maxHeight:hp("60%")}}>
       <DraggableFlatList
         nestedScrollEnabled={true}
         data={sortedRoomsList}
@@ -211,6 +215,7 @@ export const RoomList = observer(({roomsList}: any) => {
           );
         }}
       />
+      </View>
       <Pressable
         onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
         bg={createChatButtonPressed ? 'coolGray.200' : 'transparent'}

@@ -13,6 +13,7 @@ import {
   Image,
   Animated,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -61,6 +62,8 @@ interface BubbleProps {
   timeProps?:any;
   usernameProps?:any;
   messageImageProps?:any;
+  type:'main'|'thread';
+  scrollToParentMessage:any;
 }
 
 const Bubble = observer((props:BubbleProps)=> {
@@ -104,7 +107,9 @@ const Bubble = observer((props:BubbleProps)=> {
     touchableProps,
     timeProps,
     usernameProps,
-    messageImageProps
+    messageImageProps,
+    type,
+    scrollToParentMessage
   } = props
 
 
@@ -380,28 +385,47 @@ const Bubble = observer((props:BubbleProps)=> {
   };
 
     const replyComponent = () => {
-
     return (
     currentMessage.isReply?
-    <HStack
-    style={styles[position].replyWrapper}
-    borderLeftColor={"green.100"}
-    h={hp('6%')} w="100%" bg={"white"}>
-      {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
+    <TouchableOpacity
+    onPress={()=>scrollToParentMessage(currentMessage)}
+    >
+      <HStack
+      style={styles[position].replyWrapper}
+      borderLeftColor={"green.100"}
+      minH={hp('6%')} w="100%" bg={"white"}>
+        {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
 
-      </Box> */}
-      <View marginLeft={4}>
-        <Text
-        
+        </Box> */}
+        <View marginLeft={4}>
+          <Text
+          
+          fontSize={hp('1.5%')}
+          fontFamily={textStyles.boldFont}
+          >{currentMessage.mainMessageUserName?currentMessage.mainMessageUserName:'N/A'}</Text>
+          {
+            currentMessage.mainMessageImagePreview?
+            <Image
+            source={{uri:currentMessage.mainMessageImagePreview}}
+              style={{
+                height:hp("10%"),
+                width:hp('10%')
+              }}
+            />:null
+          }
+                <Text
         fontSize={hp('1.5%')}
-        fontFamily={textStyles.boldFont}
-        >{currentMessage.mainMessageUserName?currentMessage.mainMessageUserName:'N/A'}</Text>
-        <Text
-        fontFamily={textStyles.regularFont}
-        >{currentMessage.mainMessageText}</Text>
-      </View>
-    </HStack>:null
-      )
+        fontFamily={textStyles.mediumFont}
+        >
+          {currentMessage.mainMessageText}
+        </Text>
+        <Text color={"blue.100"}>
+          {currentMessage.showInChannel}
+        </Text>
+        </View>
+      </HStack>
+    </TouchableOpacity>:null
+    )
   }
 
   return (
@@ -421,7 +445,7 @@ const Bubble = observer((props:BubbleProps)=> {
           AnimatedStyle,
           // {maxWidth: 200}
         ]}>
-        {/* {replyComponent()} */}
+        {type==='main'? replyComponent():null}
         {!isSameUser(currentMessage, previousMessage)
           ? renderUsernameHandle()
           : null}
@@ -479,6 +503,12 @@ const styles = {
     },
     replyWrapper:{
       borderTopRightRadius: 15,
+      padding:2,
+      borderLeftWidth:2,
+      borderLeftColor:"green",
+      borderWidth:2,
+      borderColor:"green",
+      borderBottomWidth:0
     },
     wrapper: {
       borderRadius: 15,
