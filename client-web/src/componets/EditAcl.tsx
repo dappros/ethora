@@ -16,6 +16,7 @@ import {
 } from "../http";
 import { Box } from "@mui/system";
 import { FullPageSpinner } from "./FullPageSpinner";
+import { useStoreState } from "../store";
 
 export interface IEditAcl {
   userId: string;
@@ -35,14 +36,19 @@ const checkDisabled = (arr: Array<string> | undefined, property: string) => {
   if (!arr) return false;
   return !!arr.find((item) => item === property);
 };
-
+const checkAdminEnabled = (acl: TPermission) => {
+  if (!acl) return false;
+  return !!Object.entries(acl).find((item) => item[0] === "admin" && !!item[1]);
+};
 const Row = ({
   name,
   row,
   onChange,
+  disableAllRow,
 }: {
   name: TKeys;
   row: TPermission;
+  disableAllRow: boolean;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement>,
     keyToChange: TKeys
@@ -57,48 +63,83 @@ const Row = ({
       <TableCell component="th" scope="row">
         {name}
       </TableCell>
-      <TableCell align="left">
+      <TableCell
+        style={{
+          backgroundColor: !checkDisabled(row?.disabled, "create")
+            ? "white"
+            : "lightgrey",
+        }}
+        align="left"
+      >
         <Checkbox
           checked={row?.create}
           name={"create"}
+          disabled={checkDisabled(row?.disabled, "create") || disableAllRow}
           onChange={(e) => onChange(e, name)}
-          disabled={checkDisabled(row?.disabled, "create")}
           {...label}
         />
       </TableCell>
-      <TableCell align="left">
+      <TableCell
+        style={{
+          backgroundColor: !checkDisabled(row?.disabled, "read")
+            ? "white"
+            : "lightgrey",
+        }}
+        align="left"
+      >
         <Checkbox
           name={"read"}
           onChange={(e) => onChange(e, name)}
+          disabled={checkDisabled(row?.disabled, "read") || disableAllRow}
           checked={row?.read}
-          disabled={checkDisabled(row?.disabled, "read")}
           {...label}
         />
       </TableCell>
-      <TableCell align="left">
+      <TableCell
+        style={{
+          backgroundColor: !checkDisabled(row?.disabled, "update")
+            ? "white"
+            : "lightgrey",
+        }}
+        align="left"
+      >
         <Checkbox
           name={"update"}
           onChange={(e) => onChange(e, name)}
+          disabled={checkDisabled(row?.disabled, "update") || disableAllRow}
           checked={row?.update}
-          disabled={checkDisabled(row?.disabled, "update")}
           {...label}
         />
       </TableCell>
-      <TableCell align="left">
+      <TableCell
+        style={{
+          backgroundColor: !checkDisabled(row?.disabled, "delete")
+            ? "white"
+            : "lightgrey",
+        }}
+        align="left"
+      >
         <Checkbox
           name={"delete"}
           onChange={(e) => onChange(e, name)}
+          disabled={checkDisabled(row?.disabled, "delete") || disableAllRow}
           checked={row?.delete}
-          disabled={checkDisabled(row?.disabled, "delete")}
           {...label}
         />
       </TableCell>
-      <TableCell align="left">
+      <TableCell
+        style={{
+          backgroundColor: !checkDisabled(row?.disabled, "admin")
+            ? "white"
+            : "lightgrey",
+        }}
+        align="left"
+      >
         <Checkbox
           name={"admin"}
           onChange={(e) => onChange(e, name)}
+          disabled={checkDisabled(row?.disabled, "admin") || disableAllRow}
           checked={row?.admin}
-          disabled={checkDisabled(row?.disabled, "admin")}
           {...label}
         />
       </TableCell>
@@ -114,6 +155,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
   const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>(
     []
   );
+  const myAcl = useStoreState((state) => state.ACL);
   const [loading, setLoading] = useState(false);
 
   const getAcl = async () => {
@@ -226,9 +268,12 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
           <TableBody>
             {userAclApplicationKeys.map((row) => {
               const application = userAcl!.result.application[row];
+              const myApplicationAcl = myAcl!.result.application[row];
 
               return (
                 <Row
+                  disableAllRow={!checkAdminEnabled(myApplicationAcl)}
+                  // disableAllRow={false}
                   onChange={onApplicationAclChange}
                   name={row}
                   row={application}
@@ -259,8 +304,12 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
           <TableBody>
             {userAclNetworkKeys.map((row) => {
               const network = userAcl!.result.network.netStats;
+              const myNetworkAcl = myAcl!.result.network.netStats;
+
               return (
                 <Row
+                  disableAllRow={!checkAdminEnabled(myNetworkAcl)}
+                  // disableAllRow={false}
                   onChange={onNetworkAclChange}
                   name={row}
                   row={network}

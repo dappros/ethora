@@ -85,8 +85,8 @@ export interface IUserAcl {
     network: {
       netStats: TPermission;
     };
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: Date | string;
+    updatedAt: Date | string;
     userId: string;
     _id: string;
     appId: string;
@@ -338,6 +338,16 @@ export function getUserAcl(userId: string) {
     { headers: { Authorization: owner.token } }
   );
 }
+export function getMyAcl() {
+  const owner = useStoreState.getState().owner;
+  const user = useStoreState.getState().user;
+
+  return http.get<IUserAcl>(
+    "/users/acl/",
+
+    { headers: { Authorization: owner.token || user.token } }
+  );
+}
 export interface IAclBody {
   application: {
     appCreate?: TPermission;
@@ -351,10 +361,7 @@ export interface IAclBody {
     netStats: TPermission;
   };
 }
-export function updateUserAcl(
-  userId: string,
-  body: IAclBody
-) {
+export function updateUserAcl(userId: string, body: IAclBody) {
   const owner = useStoreState.getState().owner;
 
   return http.put<IUserAcl>(
