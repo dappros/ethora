@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   Badge,
   Box,
@@ -34,6 +34,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {observer} from 'mobx-react-lite';
 import {ROUTES} from '../../constants/routes';
+import { alpha } from '../../helpers/aplha';
 
 const buttons = [
   {
@@ -53,10 +54,15 @@ const buttons = [
 export const MainHeader = observer(() => {
   const {chatStore} = useStores();
   const navigation = useNavigation();
+  const route = useRoute();
 
   const onTabPress = (key: string) => {
     chatStore.changeActiveChats(key);
     navigation.navigate(ROUTES.ROOMSLIST);
+  };
+
+  const highlightIcon = (id: string) => {
+    return chatStore.activeChats === id;
   };
   return (
     <Box
@@ -70,11 +76,14 @@ export const MainHeader = observer(() => {
           </HStack>
         </VStack>
         {buttons.map(item => {
-
           return (
             <VStack key={item.key}>
               <TouchableOpacity onPress={() => onTabPress(item.key)}>
-                <Ionicons name={item.icon} size={30} color={'white'} />
+                <Ionicons
+                  name={item.icon}
+                  size={30}
+                  color={!highlightIcon(item.key) ? 'rgba(255,255,255,0.6)' : 'white'}
+                />
               </TouchableOpacity>
               {!!chatStore.unreadMessagesForGroups[item.key] && (
                 <View style={{position: 'absolute', right: -5, bottom: -4}}>
