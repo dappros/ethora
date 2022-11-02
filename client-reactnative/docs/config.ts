@@ -44,6 +44,49 @@ const textStyles = {
   thinFont: 'Poppins-Thin',
 }; //done
 
+const defaultChatBackgroundTheme = [
+  {
+    value:'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
+    isSelected:false,
+    alt:'Default'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
+    isSelected:false,
+    alt:'#00C49F'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
+    isSelected:false,
+    alt:'#85BACD'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
+    isSelected:false,
+    alt:'#D6A4A6'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
+    isSelected:false,
+    alt:'Colourful'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
+    isSelected:false,
+    alt:'Pattern'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
+    isSelected:false,
+    alt:'Pillars of creation'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
+    isSelected:false,
+    alt:'Tech Doodle'
+  },
+]
+
 /* TUTORIAL */
 // If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
 const tutorialStartUponLogin = false; // show tutorial upon login //done
@@ -226,4 +269,5 @@ export {
   facebookSignIn,
   regularLoginEmail,
   regularLogin,
+  defaultChatBackgroundTheme
 };

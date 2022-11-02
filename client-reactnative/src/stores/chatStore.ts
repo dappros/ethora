@@ -1,7 +1,7 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
-import {action, makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChats} from '../../docs/config';
+import {makeAutoObservable, runInAction, toJS} from 'mobx';
+import {defaultChatBackgroundTheme, defaultChats} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -14,6 +14,7 @@ import {
   updateNumberOfReplies,
   updateTokenAmount,
 } from '../components/realmModels/messages';
+import { showToast } from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -131,6 +132,8 @@ export class ChatStore {
   };
   listOfThreads= [];
   roomMemberInfo = [];
+  backgroundTheme = defaultChatBackgroundTheme;
+  selectedBackgroundIndex = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -142,6 +145,17 @@ export class ChatStore {
       this.shouldCount = value;
     });
   };
+
+
+  changeBackgroundTheme = (index:number) => {
+    runInAction(()=>{
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      if(index!=-1){
+        this.backgroundTheme[index].isSelected = true;
+      }
+      this.selectedBackgroundIndex = index;
+    })
+  }
 
   setInitialState = () => {
     runInAction(() => {
@@ -168,6 +182,8 @@ export class ChatStore {
         chatJID: '',
       };
       this.listOfThreads = []
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      this.selectedBackgroundIndex = 0;
     });
   };
 
@@ -373,6 +389,8 @@ export class ChatStore {
           stanza,
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
+        showToast('success','Success','Chat background set successfully','top')
+        // showToast('success', 'Info', 'Link copied', 'top')
       }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
@@ -437,9 +455,11 @@ export class ChatStore {
 
       if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
         if (stanza.children[0].children.length) {
-          this.roomMemberInfo = stanza.children[0].children.map(
-            item => item.attrs,
-          );
+          runInAction(()=>{
+            this.roomMemberInfo = stanza.children[0].children.map(
+              item => item.attrs,
+            );
+          })
         }
       }
 
@@ -631,8 +651,6 @@ export class ChatStore {
                 this.addThreadMessage(message)
               }
             }
-
-
 
             const threadsOfCurrentMessage = this.listOfThreads
             .filter((item:any) => item.mainMessageId === message._id)

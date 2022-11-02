@@ -21,6 +21,7 @@ import MessageBody from '../components/Chat/MessageBody';
 import {
   ActivityIndicator,
   Animated,
+  ImageBackground,
   NativeModules,
   Platform,
   Pressable,
@@ -106,6 +107,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const duration = 2000;
 
   const fullName = firstName + ' ' + lastName;
+  
 
   const mediaButtonAnimation = new Animated.Value(1);
 
@@ -143,6 +145,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
     type: '',
     message: {},
   });
+
+  const room = chatStore.roomList.find(item => item.jid === chatJid);
 
   const messages = chatStore.messages
     .filter((item: any) => {
@@ -214,7 +218,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [chatStore.isComposing.state]);
 
   const renderMessage = props => {
-    return <MessageBody {...props} />;
+    return (
+      <MessageBody {...props} />
+    );
   };
 
   const onLoadEarlier = () => {
@@ -857,129 +863,135 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   return (
     <>
-      <SecondaryHeader
-        title={chatStore.roomsInfoMap[chatJid]?.name}
-        isQR={true}
-        onQRPressed={QRPressed}
-        isChatRoomDetail={true}
-      />
-      {audioMimetypes[mediaModal.type] && (
-        <AudioPlayer audioUrl={mediaModal.url} />
-      )}
-      {chatStore.isLoadingEarlierMessages && (
-        <View style={{backgroundColor: 'transparent'}}>
-          <ActivityIndicator size={30} color={commonColors.primaryColor} />
-        </View>
-      )}
-
-      <GiftedChat
-        ref={giftedRef}
-        renderSend={renderSend}
-        renderActions={renderAttachment}
-        renderLoading={() => (
-          <ActivityIndicator size={30} color={commonColors.primaryColor} />
+      <ImageBackground
+      style={{ width:'100%', height: '100%', zIndex:0}}
+      source={{uri:room.roomBackground?room.roomBackground:null}}
+      >
+        <SecondaryHeader
+          title={chatStore.roomsInfoMap[chatJid]?.name}
+          isQR={true}
+          onQRPressed={QRPressed}
+          isChatRoomDetail={true}
+        />
+        {audioMimetypes[mediaModal.type] && (
+          <AudioPlayer audioUrl={mediaModal.url} />
         )}
-        text={text}
-        type={"main"}
-        scrollToParentMessage={(currentMessage:any)=>scrollToParentMessage(currentMessage)}
-        renderUsernameOnMessage
-        onInputTextChanged={handleInputChange}
-        renderMessage={renderMessage}
-        renderMessageImage={props => renderMessageImage(props)}
-        renderComposer={renderComposer}
-        messages={messages}
-        renderAvatarOnTop
-        onPressAvatar={onUserAvatarPress}
-        renderChatFooter={() => (
-          <RenderChatFooter
-            isReply={isReply}
-            closeReply={() => handleReply('close')}
-            replyMessage={onTapMessageObject?.text}
-            replyUserName={onTapMessageObject?.user?.name}
-            allowIsTyping={allowIsTyping}
-            composingUsername={composingUsername}
-            fileUploadProgress={fileUploadProgress}
-            isTyping={isTyping}
-            setFileUploadProgress={setFileUploadProgress}
-          />
+        {chatStore.isLoadingEarlierMessages && (
+          <View style={{backgroundColor: 'transparent'}}>
+            <ActivityIndicator size={30} color={commonColors.primaryColor} />
+          </View>
         )}
-        placeholder={'Type a message'}
-        listViewProps={{
-          onEndReached: onLoadEarlier,
-          onEndReachedThreshold: 0.05,
-        }}
-        // textInputProps={{onSelectionChange: e => console.log(e)}}
-        keyboardShouldPersistTaps={'handled'}
-        onSend={messageString => sendMessage(messageString, false)}
-        user={{
-          _id:
-            loginStore.initialData.xmppUsername +
-            '@' +
-            apiStore.xmppDomains.DOMAIN,
-          name: loginStore.initialData.username,
-        }}
-        // inverted={true}
-        alwaysShowSend
-        showUserAvatar
-        textInputProps={{
-          color: 'black',
-          onSelectionChange: e => setSelection(e.nativeEvent.selection),
-        }}
-        onLongPress={(message: any) => handleOnLongPress(message)}
-        onTap={(message: any) => handleOnPress(message)}
-        // onInputTextChanged={()=>{alert('hhh')}}
-        parsePatterns={linkStyle => [
-          {
-            pattern:
-              /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-          {
-            pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-        ]}
-      />
-      <TransactionModal
-        type={modalType}
-        closeModal={closeModal}
-        extraData={extraData}
-        isVisible={showModal}
-      />
-      <NftItemGalleryModal
-        onItemPress={sendNftItemsFromGallery}
-        isModalVisible={isNftItemGalleryVisible}
-        nftItems={walletStore.nftItems}
-        closeModal={() => setIsNftItemGalleryVisible(false)}
-      />
-      <Actionsheet
-        isOpen={isOpen}
-        onClose={() => {
-          onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
-        }}>
-        <Actionsheet.Content>
-          {showReplyOption?
-          <Actionsheet.Item onPress={() => handleReply('open')}>
-            Reply
-          </Actionsheet.Item>:null
-          }
-          <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
-          {isShowDeleteOption ? (
-            <Actionsheet.Item onPress={onClose} color="red.500">
-              Delete
-            </Actionsheet.Item>
-          ) : null}
-        </Actionsheet.Content>
-      </Actionsheet>
-      <ChatMediaModal
-        url={mediaModal.url}
-        type={mediaModal.type}
-        onClose={closeMediaModal}
-        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
-        messageData={mediaModal.message}
-      />
+        <GiftedChat
+          ref={giftedRef}
+          renderSend={renderSend}
+          renderActions={renderAttachment}
+          renderLoading={() => (
+            <ActivityIndicator size={30} color={commonColors.primaryColor} />
+          )}
+          text={text}
+          type={"main"}
+          scrollToParentMessage={(currentMessage:any)=>scrollToParentMessage(currentMessage)}
+          renderUsernameOnMessage
+          onInputTextChanged={handleInputChange}
+          renderMessage={renderMessage}
+          renderMessageImage={props => renderMessageImage(props)}
+          renderComposer={renderComposer}
+          messages={messages}
+          renderAvatarOnTop
+          onPressAvatar={onUserAvatarPress}
+          renderChatFooter={() => (
+            <RenderChatFooter
+              isReply={isReply}
+              closeReply={() => handleReply('close')}
+              replyMessage={onTapMessageObject?.text}
+              replyUserName={onTapMessageObject?.user?.name}
+              allowIsTyping={allowIsTyping}
+              composingUsername={composingUsername}
+              fileUploadProgress={fileUploadProgress}
+              isTyping={isTyping}
+              setFileUploadProgress={setFileUploadProgress}
+            />
+          )}
+          placeholder={'Type a message'}
+          listViewProps={{
+            onEndReached: onLoadEarlier,
+            onEndReachedThreshold: 0.05,
+          }}
+          // textInputProps={{onSelectionChange: e => console.log(e)}}
+          keyboardShouldPersistTaps={'handled'}
+          onSend={messageString => sendMessage(messageString, false)}
+          user={{
+            _id:
+              loginStore.initialData.xmppUsername +
+              '@' +
+              apiStore.xmppDomains.DOMAIN,
+            name: loginStore.initialData.username,
+          }}
+          // inverted={true}
+          alwaysShowSend
+          showUserAvatar
+          textInputProps={{
+            color: 'black',
+            onSelectionChange: e => setSelection(e.nativeEvent.selection),
+          }}
+          onLongPress={(message: any) => handleOnLongPress(message)}
+          onTap={(message: any) => handleOnPress(message)}
+          // onInputTextChanged={()=>{alert('hhh')}}
+          parsePatterns={linkStyle => [
+            {
+              pattern:
+                /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: handleChatLinks,
+            },
+            {
+              pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: handleChatLinks,
+            },
+          ]}
+        />
+        
+        
+        <TransactionModal
+          type={modalType}
+          closeModal={closeModal}
+          extraData={extraData}
+          isVisible={showModal}
+        />
+        <NftItemGalleryModal
+          onItemPress={sendNftItemsFromGallery}
+          isModalVisible={isNftItemGalleryVisible}
+          nftItems={walletStore.nftItems}
+          closeModal={() => setIsNftItemGalleryVisible(false)}
+        />
+        <Actionsheet
+          isOpen={isOpen}
+          onClose={() => {
+            onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
+          }}>
+          <Actionsheet.Content>
+            {showReplyOption?
+            <Actionsheet.Item onPress={() => handleReply('open')}>
+              Reply
+            </Actionsheet.Item>:null
+            }
+            <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
+            {isShowDeleteOption ? (
+              <Actionsheet.Item onPress={onClose} color="red.500">
+                Delete
+              </Actionsheet.Item>
+            ) : null}
+          </Actionsheet.Content>
+        </Actionsheet>
+        <ChatMediaModal
+          url={mediaModal.url}
+          type={mediaModal.type}
+          onClose={closeMediaModal}
+          open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+          messageData={mediaModal.message}
+        />
+      </ImageBackground>
     </>
   );
 });
