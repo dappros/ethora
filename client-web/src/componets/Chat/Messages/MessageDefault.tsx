@@ -10,7 +10,8 @@ import {differenceInHours, format, formatDistance, subDays} from "date-fns";
 interface IMessagesProps {
     message: TMessageHistory,
     previousJID: string,
-    nextJID: string
+    nextJID: string,
+    // is: string
 }
 
 type IMessagePosition = {
@@ -95,11 +96,6 @@ const MessageDefault: React.FC<IMessagesProps> = ({message, previousJID, nextJID
                 {messagePositionData.type === 'first' || messagePositionData.type === 'single' ?
                     <strong>{message.data.senderFirstName} {message.data.senderLastName}<br/></strong> : null
                 }
-
-                {/*{previousJID?.split("/")[0]} <br/>*/}
-                {/*{message.data.senderJID?.split("/")[0]} <br/>*/}
-                {/*{nextJID?.split("/")[0]} <br/>*/}
-                {/*<p>{messagePositionData.type}</p>*/}
                 {message.body}
             </Message.CustomContent>
 

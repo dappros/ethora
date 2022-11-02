@@ -7,6 +7,7 @@ import {TMessageHistory, useStoreState} from './store'
 let lastMsgId: string = '';
 let temporaryMessages: TMessageHistory[] = [];
 let isGettingMessages: boolean = false;
+let lastRomJIDLoading: string = '';
 
 export function walletToUsername(str: string) {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -50,12 +51,12 @@ const onMessage = async (stanza: Element) => {
 
 const onMessageHistory = async (stanza: Element) => {
     if (stanza.is('message')) {
-            const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
-            const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
-            const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
-            const id = stanza.getChild('result')?.attrs.id
+        const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
+        const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
+        const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
+        const id = stanza.getChild('result')?.attrs.id
 
-            if (!data || !body || !delay || !id) {
+        if (!data || !body || !delay || !id) {
                 return
             }
 
@@ -88,16 +89,24 @@ const onMessageHistory = async (stanza: Element) => {
                 useStoreState.getState().setNewMessageHistory(msg)
                 useStoreState.getState().sortMessageHistory();
             }
+            useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
     }
 }
 
 const onLastMessageArchive = (stanza: Element, xmpp: any) => {
     if (stanza.attrs.id === "paginatedArchive" || stanza.attrs.id === "GetArchive") {
         lastMsgId = String(stanza.getChild('fin')?.getChild('set')?.getChild('last')?.children[0]);
-        useStoreState.getState().updateMessageHistory(temporaryMessages);
-        isGettingMessages = false
-        useStoreState.getState().setLoaderArchive(false);
-        temporaryMessages = [];
+        if(isGettingMessages){
+            useStoreState.getState().updateMessageHistory(temporaryMessages);
+            isGettingMessages = false
+            useStoreState.getState().setLoaderArchive(false);
+            temporaryMessages = [];
+        }
+
+        if(lastRomJIDLoading && lastRomJIDLoading === stanza.attrs.from){
+            useStoreState.getState().setLoaderArchive(false);
+            lastRomJIDLoading = '';
+        }
     }
 }
 
@@ -117,11 +126,12 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
         if(stanza.getChild('query')?.children){
             useStoreState.getState().clearUserChatRooms();
             useStoreState.getState().setLoaderArchive(true);
+            let roomJID: string = '';
             stanza.getChild('query')?.children.forEach((result: Object) => {
                 // @ts-ignore
                 if(result?.attrs.name) {
                     // @ts-ignore
-                    const roomJID: string = result.attrs.jid;
+                    roomJID = result.attrs.jid;
                     xmpp.presenceInRoom(roomJID)
 
                     const roomData = {
@@ -134,13 +144,15 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
                         room_thumbnail: result?.attrs.room_thumbnail,
                         // @ts-ignore
                         users_cnt: result?.attrs.users_cnt,
+                        unreadMessages: 0
                     }
                     // @ts-ignore
                     useStoreState.getState().setNewUserChatRoom(roomData);
 
                     //get message history in the room
-                    xmpp.getRoomArchiveStanza(roomJID, 1)
+                    xmpp.getRoomArchiveStanza(roomJID, 1);
                 }
+                lastRomJIDLoading = roomJID;
             })
         }
     }
@@ -378,6 +390,8 @@ class XmppClass {
     }
 
     getLastMessageArchive(chat_jid: string) {
+        isGettingMessages = true;
+
         let message = xml(
             'iq',
             {

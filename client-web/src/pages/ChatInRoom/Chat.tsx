@@ -31,8 +31,6 @@ import {
     MessageSeparator,
     ExpansionPanel
 } from '@chatscope/chat-ui-kit-react';
-import {stringify} from "querystring";
-import MessageInGroup from "../../componets/Chat/Messages/MessageInGroup";
 import MessageDefault from "../../componets/Chat/Messages/MessageDefault";
 
 export function ChatInRoom() {
@@ -63,10 +61,7 @@ export function ChatInRoom() {
             return;
         }else{
             const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
-
-            // setTimeout(() => {
             xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
-            // }, 1000);
         }
     }
 
@@ -77,49 +72,43 @@ export function ChatInRoom() {
             });
     }, []);
 
-    const onSubscribe = () => {
-        const newCurrentRoom = room + '@conference.dev.dxmpp.com';
-        setCurrentRoom(newCurrentRoom);
-
-        if (messages.length > 0) {
-            // getMoreMessages();
-            console.log('delete', messages)
-            useStoreState.getState().clearMessageHistory()
-            return
-        }
-
-    xmpp.presenceInRoom(newCurrentRoom);
-    xmpp.getRoomArchiveStanza(newCurrentRoom, 1);
-    console.log(messages);
-  };
-
-  const saveCurrentRoom = (room: string) => {
-    setCurrentRoom(room);
-  };
-
-  const getMoreMessages = () => {
-    // @ts-ignore
-    xmpp.getPaginatedArchive(currentRoom, messages[0].id);
-  };
-
-  const testData = () => {
-    console.log(messages);
-  };
-
   const chooseRoom = (jid: string) => {
     setCurrentRoom(jid);
     setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
+    useStoreState.getState().clearCounterChatRoom(jid);
 
-    const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
+      const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
 
     if (!loaderArchive && filteredMessages.length === 1) {
-        console.log('LOADING =', filteredMessages, filteredMessages.length)
-
         const lastMessageID = filteredMessages[0].id;
         xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
-        // xmpp.getRoomArchiveStanza(jid, 10)
     }
   };
+
+  const getConversationInfo = (roomJID: string) => {
+      const messagesInRoom = messages.filter((item: any) => item.roomJID === roomJID).slice(-1);
+      if(loaderArchive && messagesInRoom.length <= 0){
+          return "Loading..."
+      }
+
+      if(messagesInRoom.length > 0){
+          return messagesInRoom[0].body;
+      }
+      return "No messages yet"
+    }
+
+    const getLastActiveTime = (roomJID: string) => {
+        const messagesInRoom = messages.filter((item: any) => item.roomJID === roomJID).slice(-1);
+        if(messagesInRoom.length <= 0){
+            return ""
+        }
+
+        if(differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1){
+            return format(new Date(messagesInRoom[0].date), 'hh:mm');
+        }else{
+            return formatDistance(subDays(new Date(messagesInRoom[0].date), 0), new Date(), {addSuffix: true})
+        }
+    }
 
   const sendMessage = () => {
     let userAvatar = "";
@@ -141,11 +130,13 @@ export function ChatInRoom() {
             <MainContainer responsive>
                 <Sidebar position="left" scrollable={false}>
                     <Search placeholder="Search..."/>
-                    <ConversationList>
+                    <ConversationList loading={loaderArchive}>
                         {useChatRooms.map(room =>
                             <Conversation active={room.jid === currentRoom} key={room.jid}
+                                          unreadCnt={room.unreadMessages}
                                           onClick={() => chooseRoom(room.jid)} name={room.name}
-                                          info={room.room_thumbnail !== "none" ? room.room_thumbnail : ""}>
+                                          info={getConversationInfo(room.jid)}
+                                          lastActivityTime={getLastActiveTime(room.jid)}>
                                 <Avatar
                                     src={room.room_background !== "none" ? room.room_background : "https://icotar.com/initials/" + room.name}/>
                             </Conversation>
@@ -174,14 +165,13 @@ export function ChatInRoom() {
                     >
                         {
                             messages.filter((item: any) => item.roomJID === currentRoom).map((message, index, arr) =>
+                                <div key={message.key} is={"Message"}>
 
-                                <MessageDefault is="Message" key={message.key} message={message} previousJID={arr[index-1]?.data.senderJID} nextJID={arr[index+1]?.data.senderJID}/>
-
-
-
+                                <MessageDefault   message={message} previousJID={arr[index-1]?.data.senderJID} nextJID={arr[index+1]?.data.senderJID}/>
+                                </div>
                             )
                         }
-                        {messages.length <= 0 || !currentRoom ?
+                        {messages.length <= 0 || !currentRoom?
                             <MessageList.Content style={{
                                 display: "flex",
                                 "flexDirection": "column",
@@ -190,11 +180,27 @@ export function ChatInRoom() {
                                 textAlign: "center",
                                 fontSize: "1.2em"
                             }}>
-                                {/*{!currentRoom ? "To get started, please select a chat room."+loaderArchive : null}*/}
-                                {/*{messages.length <= 0 ? "Message list is empty" : null}*/}
-                                {loaderArchive ? "LOADING" : "LOADED"}
+
+                                {!loaderArchive ?
+                                    <span>
+                                        {!currentRoom ? "To get started, please select a chat room." : null}
+                                    </span>
+                                    : "Loading..."
+                                }
                             </MessageList.Content> : null
                         }
+                        {!loaderArchive && currentRoom && messages.filter((item: any) => item.roomJID === currentRoom).length <= 0 ?
+                            <MessageList.Content style={{
+                                display: "flex",
+                                "flexDirection": "column",
+                                "justifyContent": "center",
+                                height: "100%",
+                                textAlign: "center",
+                                fontSize: "1.2em"
+                            }}>
+                            Message list is empty
+                            </MessageList.Content>
+                            : null}
                     </MessageList>
                     {roomData.name ?
                         <MessageInput

@@ -59,12 +59,13 @@ export type TMessageHistory = {
   key: number
 }
 
-type TUserChatRooms = {
+export type TUserChatRooms = {
   jid: string
   name: string
   room_background: string
   room_thumbnail: string
   users_cnt: string
+  unreadMessages: number
 }
 
 type TApp = {
@@ -101,6 +102,8 @@ interface IStore {
   sortMessageHistory: () => void,
   userChatRooms: TUserChatRooms[],
   setNewUserChatRoom: (msg: TUserChatRooms) => void
+  updateCounterChatRoom: (roomJID: string) => void
+  clearCounterChatRoom: (roomJID: string) => void
   clearUserChatRooms: () => void,
   setApps: (apps: TApp[]) => void,
   setApp: (app: TApp) => void,
@@ -201,6 +204,14 @@ const _useStore = create<IStore>()(devtools(persist(immer((set, get) => {
     }),
     setNewUserChatRoom: (userChatRooms: TUserChatRooms) => set((state) => {
       state.userChatRooms.unshift(userChatRooms)
+    }),
+    updateCounterChatRoom: (roomJID: string) => set((state) => {
+      const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
+      state.userChatRooms[currentIndex].unreadMessages++;
+    }),
+    clearCounterChatRoom: (roomJID: string) => set((state) => {
+      const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
+      state.userChatRooms[currentIndex].unreadMessages = 0;
     }),
     clearUserChatRooms: () => set((state) => {
       state.userChatRooms = [];
