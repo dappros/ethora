@@ -39,29 +39,14 @@ import {uploadFiles} from '../helpers/uploadFiles';
 import {fileUpload} from '../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
-
-interface ChatDetailsScreenProps {}
-
-const data = [
-  {
-    fullName: 'Yehor Markelov',
-    role: 'admin',
-  },
-  {
-    fullName: 'Eillie Bilish',
-    role: 'admin',
-  },
-  {
-    fullName: 'Roger Jetson',
-    role: null,
-  },
-];
+import { ROUTES } from '../constants/routes';
 
 const RoomDetails = ({
   room,
 }: {
-  room: {jid: string; name: string; roomThumbnail: string};
+  room: {jid: string; name: string; roomThumbnail: string, roomBackground:string};
 }) => {
+  console.log(room,"roooooomdetails")
   const roomName = room.name;
   const [uploadedImage, setUploadedImage] = useState({
     _id: '',
@@ -90,7 +75,7 @@ const RoomDetails = ({
       const response = await uploadFiles(data, loginStore.userToken, url);
       const file = response.results[0];
       setUploadedImage(response.results[0]);
-      setRoomImage(userJid, roomJid, file.location, 'none', chatStore.xmpp);
+      setRoomImage(userJid, roomJid, file.location, room.roomBackground?room.roomBackground:'none', chatStore.xmpp);
     } catch (error) {
       console.log(error);
     }
@@ -132,8 +117,8 @@ const RoomDetails = ({
           rounded="md"
           shadow={'5'}
           bg={commonColors.primaryDarkColor}
-          h={hp('18%')}
-          w={hp('18%')}
+          h={wp('22%')}
+          w={wp('22%')}
           marginBottom={4}>
           {uploadedImage.location || room.roomThumbnail ? (
             <FastImage
@@ -143,8 +128,8 @@ const RoomDetails = ({
               }}
               resizeMode={FastImage.resizeMode.cover}
               style={{
-                width: wp('45%'),
-                height: wp('45%'),
+                width: wp('22%'),
+                height: wp('22%'),
                 borderRadius: 10,
               }}
             />
@@ -353,12 +338,16 @@ const ChatDetailsScreen = observer(({route}: any) => {
                     <Divider />
                   </>
                 )}
+                {chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
+                chatStore.roomRoles[currentRoomDetail.jid] === 'admin'?
                 <Menu.Item
+                  onPress={() => navigation.navigate(ROUTES.CHANGEBACKGROUNDSCREEN,{roomJID:roomJID, roomName:route.params.roomName})}
                   _text={{
                     fontFamily: textStyles.lightFont,
                   }}>
-                  Edit settings
-                </Menu.Item>
+                  Change Background
+                </Menu.Item>:null
+                }
                 {defaultChats[roomJID.split('@')[0]] ? null : (
                   <>
                     <Divider />
@@ -381,7 +370,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const FirstRoute = () => (
-    <Box bg={'#E5EBF5'}>
+    <Box minH={hp('20%')} bg={'#E5EBF5'}>
       <FlatList
         data={roomMemberInfo}
         renderItem={({item}) => (

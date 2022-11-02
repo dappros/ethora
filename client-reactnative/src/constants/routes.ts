@@ -29,4 +29,7 @@ export const ROUTES = {
   RESETPASSWORD: 'ResetPasswordScreen',
   PRIVACY: 'PrivacyAndDataScreen',
   THREADS: 'ThreadScreen',
+  SWIPERCHAT: 'SwiperChatScreen',
+  DOCUMENTHISTORY: 'DocumentHistoryScreen',
+  CHANGEBACKGROUNDSCREEN: 'ChangeBackgroundScreen'
 };

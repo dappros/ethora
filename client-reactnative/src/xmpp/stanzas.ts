@@ -192,6 +192,26 @@ export const sendMediaMessageStanza = async (
       attachmentId: data?.attachmentId,
       wrappable: data?.wrappable,
       nftId: data?.nftId,
+      isReply: data?.isReply,
+      mainMessageText:data?.mainMessageText,
+      mainMessageId:data?.mainMessageId,
+      mainMessageUserName:data?.mainMessageUserName,
+      mainMessageCreatedAt:data?.mainMessageCreatedAt,
+      mainMessageFileName:data?.mainMessageFileName,
+      mainMessageImageLocation:data?.mainMessageImageLocation,
+      mainMessageImagePreview:data?.mainMessageImagePreview,
+      mainMessageMimeType:data?.mainMessageMimeType,
+      mainMessageOriginalName:data?.mainMessageOriginalName,
+      mainMessageSize:data?.mainMessageSize,
+      mainMessageDuration:data?.mainMessageDuration,
+      mainMessageWaveForm:data?.mainMessageWaveForm,
+      mainMessageAttachmentId:data?.mainMessageAttachmentId,
+      mainMessageWrappable:data?.mainMessageWrappable,
+      mainMessageNftId:data?.mainMessageNftId,
+      mainMessageNftActionType:data?.mainMessageNftActionType,
+      mainMessageContractAddress:data?.mainMessageContractAddress,
+      mainMessageRoomJid:data?.mainMessageRoomJid,
+      showInChannel:data?.showInChannel,
     }),
   );
 
@@ -853,3 +873,36 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
 
   xmpp.send(message);
 };
+
+export const changeRoomBackgroundStanza = (
+  from:string,
+  to:string,
+  roomThumbnail:string,
+  roomBackground:string
+) => {
+  // <iq from="user_jid" type="set" id="set_room_profile">
+  //   <query xmlns="ns:getrooms:setprofile" 
+  //       room_thumbnail="https://img.dxmpp.com/thumbnail.jpg" 
+  //       room_background="https://img.dxmpp.com/background.jpg" 
+  //       room="test12@conference.localhost"/>
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.changeRoomBackground
+    },
+    xml(
+      'query',
+      {
+        xmlns:'ns:getrooms:setprofile',
+        room_thumbnail:roomThumbnail,
+        room_background:roomBackground,
+        room:to
+      },
+
+    )
+  )
+}

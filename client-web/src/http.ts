@@ -30,6 +30,7 @@ export type TUser = {
   };
   appId: string;
   xmppPassword: string;
+  profileImage: string;
 };
 
 export type TLoginSuccessResponse = {
@@ -39,6 +40,58 @@ export type TLoginSuccessResponse = {
   user: TUser;
 };
 
+export interface IUser {
+  ACL: { ownerAccess: boolean };
+  appId: string;
+  createdAt: Date;
+  defaultWallet: {
+    walletAddress: string;
+  };
+  emails: [];
+  email?: string;
+  firstName: string;
+  isAssetsOpen: true;
+  isProfileOpen: true;
+  lastName: string;
+  password: string;
+  roles: [];
+  tags: [];
+  updatedAt: Date;
+  username: string;
+  xmppPassword: string;
+  __v: number;
+  _id: string;
+}
+
+export type TPermission = {
+  admin?: false;
+  create?: false;
+  delete?: false;
+  read?: false;
+  update?: false;
+  disabled?: Array<string>;
+};
+
+export interface IUserAcl {
+  result: {
+    application: {
+      appCreate: TPermission;
+      appPush: TPermission;
+      appSettings: TPermission;
+      appStats: TPermission;
+      appTokens: TPermission;
+      appUsers: TPermission;
+    };
+    network: {
+      netStats: TPermission;
+    };
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    userId: string;
+    _id: string;
+    appId: string;
+  };
+}
 const http = axios.create({
   baseURL: API_URL,
 });
@@ -255,7 +308,7 @@ export function loginSocial(
   idToken: string,
   accessToken: string,
   loginType: string,
-  authToken: string = 'authToken'
+  authToken: string = "authToken"
 ) {
   return http.post(
     "/users/login",
@@ -263,7 +316,7 @@ export function loginSocial(
       idToken,
       accessToken,
       loginType,
-      authToken
+      authToken,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -276,12 +329,54 @@ export function checkEmailExist(email: string) {
     { headers: { Authorization: APP_JWT } }
   );
 }
+export function getUserAcl(userId: string) {
+  const owner = useStoreState.getState().user;
+
+  return http.get<IUserAcl>(
+    "/users/acl/" + userId,
+
+    { headers: { Authorization: owner.token } }
+  );
+}
+export function getMyAcl() {
+  const owner = useStoreState.getState().user;
+  const user = useStoreState.getState().user;
+
+  return http.get<IUserAcl>(
+    "/users/acl/",
+
+    { headers: { Authorization: owner.token || user.token } }
+  );
+}
+export interface IAclBody {
+  application: {
+    appCreate?: TPermission;
+    appPush?: TPermission;
+    appSettings?: TPermission;
+    appStats?: TPermission;
+    appTokens?: TPermission;
+    appUsers?: TPermission;
+  };
+  network: {
+    netStats: TPermission;
+  };
+}
+export function updateUserAcl(userId: string, body: IAclBody) {
+  const owner = useStoreState.getState().user;
+
+  return http.put<IUserAcl>(
+    "/users/acl/" + userId,
+    body,
+
+    { headers: { Authorization: owner.token } }
+  );
+}
 
 export function registerSocial(
   idToken: string,
   accessToken: string,
   authToken: string,
-  loginType: string,
+  loginType: string
 ) {
   return http.post(
     "/users",
@@ -340,35 +435,58 @@ export function loginOwner(email: string, password: string) {
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.get("/apps", {
     headers: { Authorization: owner.token },
   });
 }
 
 export function createApp(fd: FormData) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.post("/apps", fd, {
     headers: { Authorization: owner.token },
   });
 }
 
 export function deleteApp(id: string) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.delete(`/apps/${id}`, {
     headers: { Authorization: owner.token },
   });
 }
 
 export function updateApp(id: string, fd: FormData) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.put(`/apps/${id}`, fd, {
     headers: { Authorization: owner.token },
   });
 }
 
-export function getAppUsers(appToken: string) {
-  return http.get(`/users`, {
-    headers: { Authorization: appToken },
+export function getAppUsers(
+  appId: string,
+  limit: number = 10,
+  offset: number = 0
+) {
+  const owner = useStoreState.getState().user;
+  return http.get<ExplorerRespose<IUser[]>>(
+    `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
+    {
+      headers: { Authorization: owner.token },
+    }
+  );
+}
+
+export function rotateAppJwt(appId: string) {
+  const owner = useStoreState.getState().user;
+  return http.post(`/apps/rotate-jwt/${appId}`, null, {
+    headers: { Authorization: owner.token },
+  });
+}
+
+export function updateProfile(fd: FormData, id?: string) {
+  const path = id ? `/users/${id}` : "/users";
+  const user = useStoreState.getState().user;
+  return http.put(path, fd, {
+    headers: { Authorization: user.token },
   });
 }

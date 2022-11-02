@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {
@@ -25,10 +26,17 @@ import {showToast} from '../components/Toast/toast';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
 import {httpPost} from '../config/apiService';
-import {fileUpload, nftTransferURL} from '../config/routesConstants';
+import {docsURL, fileUpload, nftTransferURL} from '../config/routesConstants';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
-import {audioMimetypes} from '../constants/mimeTypes';
+import {
+  audioMimetypes,
+  imageMimetypes,
+  pdfMimemtype,
+} from '../constants/mimeTypes';
+import {underscoreManipulation} from '../helpers/underscoreLogic';
+import moment from 'moment';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 interface MintScreenProps {}
 
@@ -42,39 +50,83 @@ const options = {
 };
 
 const MintScreen = (props: MintScreenProps) => {
-  const {loginStore, walletStore, apiStore} = useStores();
+  const {loginStore, walletStore, apiStore, debugStore} = useStores();
   const navigation = useNavigation();
 
   const [itemName, setItemName] = useState<string>('');
+  const [doctorsName, setDoctorsName] = useState<string>('');
+  const [reportType, setReportType] = useState<string>('');
+  const [reportKind, setReportKind] = useState<string>('');
+
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [filePickResult, setFilePickResult] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<number>(1);
-  const [fileId, setFileId] = useState<any>('');
+  const [uploadedFile, setUploadedFile] = useState<any>({
+    _id: '',
+    createdAt: '',
+    expiresAt: 0,
+    filename: '',
+    isVisible: true,
+    location: '',
+    locationPreview: '',
+    mimetype: '',
+    originalname: '',
+    ownerKey: '',
+    size: 0,
+    updatedAt: '',
+    userId: '',
+  });
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [isSelected, setSelection] = useState<boolean>(true);
-
+  const [date, setDate] = useState(new Date());
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
+  const [open, setOpen] = useState(false);
 
   const clearData = () => {
     setLoading(false);
     setAvatarSource(null);
     setItemName('');
     setSelection(false);
+    setUploadedFile({
+      _id: '',
+      createdAt: '',
+      expiresAt: 0,
+      filename: '',
+      isVisible: true,
+      location: '',
+      locationPreview: '',
+      mimetype: '',
+      originalname: '',
+      ownerKey: '',
+      size: 0,
+      updatedAt: '',
+      userId: '',
+    });
+    setReportKind('');
+    setReportType('');
+    setAvatarSource(null);
+    setDoctorsName('');
+    setDate(new Date());
   };
 
   const selectNftQuantity = (value: number) => {
     setSelectedValue(value);
     setModalVisible(false);
   };
-
   const createNftItem = async () => {
-    let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
-    const url = apiStore.defaultUrl + nftTransferURL;
+    let item = {files: [uploadedFile.location], documentName: itemName};
+
+    // alert(JSON.stringify(item))
+    const url = apiStore.defaultUrl + docsURL;
+    setLoading(true);
     try {
-      await httpPost(url, item, loginStore.userToken);
+      const res = await httpPost(url, item, loginStore.userToken);
+      // alert(JSON.stringify(res.data))
+
+      debugStore.addLogsApi(res.data);
       walletStore.fetchWalletBalance(
         loginStore.initialData.walletAddress,
         loginStore.userToken,
@@ -82,15 +134,16 @@ const MintScreen = (props: MintScreenProps) => {
       );
     } catch (error) {
       showToast('error', 'Error', 'Cannot create item, try again later', 'top');
-      console.log(error);
+      console.log(error.response);
     }
+    setLoading(false);
   };
 
-  const onMintClick = () => {
-    if (!avatarSource) {
-      showToast('error', 'Error', 'Please load the image.', 'top');
-      return;
-    }
+  const onMintClick = async () => {
+    // if (!avatarSource) {
+    //   showToast("error", "Error", "Please load the image.", "top");
+    //   return;
+    // }
     if (!itemName.length) {
       showToast('error', 'Error', 'Please fill the item name.', 'top');
       return;
@@ -100,31 +153,38 @@ const MintScreen = (props: MintScreenProps) => {
       return;
     }
 
-    createNftItem();
+    await createNftItem();
     walletStore.fetchOwnTransactions(
       loginStore.initialData.walletAddress,
       100,
       0,
     );
-    Alert.alert(
-      'Minting...',
-      'Awesome! 😎 Once blockchain confirms it, you will see this Item in your wallet and Profile screen.',
-      [
-        {text: 'Mint another', onPress: () => clearData()},
-        {
-          text: 'My Profile',
-          onPress: () => {
-            navigation.navigate(ROUTES.PROFILE, {
-              screen: 'Profile',
-              params: {
-                viewItems: true,
-              },
-            });
-            clearData();
-          },
-        },
-      ],
+    showToast(
+      'success',
+      'Success',
+      'You minted new document, it will appear in your profile',
+      'bottom',
     );
+    clearData();
+    // Alert.alert(
+    //   "Uploading...",
+    //   "Awesome! Once uploaded, you will see this Document in your wallet and Profile screen",
+    //   [
+    //     { text: "Upload another", onPress: () => clearData() },
+    //     {
+    //       text: "My Profile",
+    //       onPress: () => {
+    //         navigation.navigate(ROUTES.PROFILE, {
+    //           screen: "Profile",
+    //           params: {
+    //             viewItems: true,
+    //           },
+    //         });
+    //         clearData();
+    //       },
+    //     },
+    //   ]
+    // );
   };
 
   const chooseImageOption = () => {
@@ -139,10 +199,17 @@ const MintScreen = (props: MintScreenProps) => {
     try {
       const url = apiStore.defaultUrl + fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
-      console.log(JSON.stringify(response), 'sdfasdfadf');
-      setFileId(response.results[0]['_id']);
       setLoading(false);
-      setAvatarSource(response.results[0].location);
+
+      setUploadedFile(response.results[0]);
+      debugStore.addLogsApi(response.results[0]);
+      // alert(JSON.stringify(response.results[0]))
+      const isPdf = !!pdfMimemtype[response.results[0].mimetype];
+      setAvatarSource(
+        isPdf
+          ? response.results[0].locationPreview
+          : response.results[0].location,
+      );
     } catch (error) {
       console.log(error);
     }
@@ -182,6 +249,7 @@ const MintScreen = (props: MintScreenProps) => {
             DocumentPicker.types.images,
             DocumentPicker.types.audio,
             DocumentPicker.types.video,
+            DocumentPicker.types.pdf,
           ],
         });
         setFilePickResult(res[0]);
@@ -203,9 +271,14 @@ const MintScreen = (props: MintScreenProps) => {
   };
 
   return (
-    <Fragment>
+    <KeyboardAwareScrollView
+      style={{flex: 1, backgroundColor: 'white'}}
+      // behavior={ "height"}
+      // keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 20}
+      // enabled={ false}
+    >
       <View>
-        <SecondaryHeader title="Mint Item" />
+        <SecondaryHeader title="Upload files" />
       </View>
       <ScrollView style={classes.container}>
         <View style={classes.contentContainer}>
@@ -213,7 +286,7 @@ const MintScreen = (props: MintScreenProps) => {
             <TextInput
               value={itemName}
               onChangeText={setItemName}
-              placeholder="Item Name"
+              placeholder="Document Name"
               placeholderTextColor={commonColors.primaryColor}
               style={classes.itemNameInput}
               maxLength={50}
@@ -229,11 +302,11 @@ const MintScreen = (props: MintScreenProps) => {
             }}>
             <TouchableOpacity
               onPress={chooseImageOption}
-              style={{alignItems: 'flex-start', width: wp('50%')}}>
+              style={{alignItems: 'flex-start', width: wp('90%')}}>
               <View
                 style={{
                   ...classes.alignCenter,
-                  width: wp('50%'),
+                  width: wp('90%'),
                   height: wp('50%'),
                   borderRadius: 10,
                   borderColor: commonColors.primaryColor,
@@ -242,16 +315,31 @@ const MintScreen = (props: MintScreenProps) => {
                 }}>
                 {avatarSource !== null ? (
                   <>
-                    {audioMimetypes[filePickResult.type] ? (
+                    {audioMimetypes[uploadedFile.mimetype] && (
                       <AntIcon
                         name={'playcircleo'}
                         color={commonColors.primaryColor}
                         size={hp('5%')}
                       />
-                    ) : (
+                    )}
+                    {!!imageMimetypes[uploadedFile.mimetype] && (
                       <FastImage
                         source={{
-                          uri: avatarSource,
+                          uri: uploadedFile.locationPreview,
+                          priority: FastImage.priority.normal,
+                        }}
+                        resizeMode={FastImage.resizeMode.contain}
+                        style={{
+                          width: wp('90%'),
+                          height: wp('50%'),
+                          borderRadius: 10,
+                        }}
+                      />
+                    )}
+                    {!!pdfMimemtype[uploadedFile.mimetype] && (
+                      <FastImage
+                        source={{
+                          uri: uploadedFile.locationPreview,
                           priority: FastImage.priority.normal,
                         }}
                         resizeMode={FastImage.resizeMode.cover}
@@ -283,50 +371,8 @@ const MintScreen = (props: MintScreenProps) => {
                 )}
               </View>
             </TouchableOpacity>
-            <View
-              style={{
-                borderColor: commonColors.primaryColor,
-                borderWidth: 1,
-                // marginTop: 10,
-                borderRadius: 5,
-                marginLeft: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                width: wp('35%'),
-                height: wp('10%'),
-              }}>
-              <Text
-                style={{
-                  ...classes.textStyle,
-                  left: 5,
-                }}>
-                {' '}
-                Rarity
-              </Text>
-              <Text
-                style={{
-                  ...classes.textStyle,
-                  right: 40,
-                }}>
-                {' '}
-                {selectedValue}
-              </Text>
 
-              <View />
-              <>
-                <TouchableOpacity onPress={toggleModal}>
-                  <AntIcon
-                    // onPress={() => props.navigation.navigate('LoginComponent')}
-                    color={commonColors.primaryColor}
-                    name="caretdown"
-                    size={hp('2%')}
-                    style={{marginRight: 5, marginBottom: 2}}
-                  />
-                </TouchableOpacity>
-              </>
-              {/* )} */}
-            </View>
+          
           </View>
 
           <TouchableOpacity
@@ -345,7 +391,7 @@ const MintScreen = (props: MintScreenProps) => {
                   color={'white'}
                 />
               ) : (
-                <Text style={classes.createButtonText}>Mint Item</Text>
+                <Text style={classes.createButtonText}>Upload files</Text>
               )}
             </View>
           </TouchableOpacity>
@@ -428,7 +474,7 @@ const MintScreen = (props: MintScreenProps) => {
           {/* <Button title="Hide modal" onPress={toggleModal} /> */}
         </View>
       </Modal>
-    </Fragment>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -465,9 +511,10 @@ const classes = StyleSheet.create({
     flex: 1,
     paddingLeft: 20,
     alignItems: 'flex-start',
-    height: wp('10%'),
+    // height: wp('10%'),
     fontFamily: textStyles.lightFont,
     fontSize: hp('1.8%'),
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
   },
   checkboxContainer: {
     flexDirection: 'row',

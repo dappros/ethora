@@ -6,20 +6,11 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
-import { useHistory } from "react-router-dom";
 import { useStoreState } from "../../store";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
 import LoadingButton from "@mui/lab/LoadingButton";
-import Alert from "@mui/material/Alert";
 import * as http from "../../http";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
@@ -32,11 +23,9 @@ type TProps = {
 };
 
 export default function NewUserModal({ open, setOpen }: TProps) {
-  const fileRef = React.useRef<HTMLInputElement>(null);
   const apps = useStoreState((state) => state.apps);
-  const history = useHistory();
+  const addAppUsers = useStoreState((state) => state.addAppUsers)
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +33,7 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]._id
+      appId: apps[0]?._id
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -68,13 +57,11 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       return errors;
     },
     onSubmit: ({username, firstName, lastName, password, appId}) => {
-      console.log({appId})
       setLoading(true);
       const app = apps.find((el) => el._id === appId)
-      console.log("create user from app ", {app})
       http.registerUsername(username, password, firstName, lastName, app?.appToken)
         .then((result) => {
-          console.log(result.data)
+          addAppUsers([result.data.user])
           setOpen(false)
         })
     },
@@ -131,7 +118,6 @@ export default function NewUserModal({ open, setOpen }: TProps) {
                     id: "uncontrolled-native",
                   }}
                   onChange={(e) => {
-                    console.log('on change ')
                     formik.setFieldValue("appId", e.target.value);
                   }}
                 >
@@ -203,10 +189,10 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.lastName && formik.errors.password ? true : false
+                  formik.touched.password && formik.errors.password ? true : false
                 }
                 helperText={
-                  formik.touched.username && formik.errors.password
+                  formik.touched.password && formik.errors.password
                     ? formik.errors.password
                     : ""
                 }

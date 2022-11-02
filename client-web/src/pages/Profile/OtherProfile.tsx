@@ -5,8 +5,9 @@ import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
-import OtherItems from './OtherItemsTable'
+import OtherItems from "./OtherItemsTable";
 import { Transactions } from "../Transactions/Transactions";
+import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
 type TProps = {
   walletAddress: string;
@@ -42,27 +43,18 @@ export function OtherProfile(props: TProps) {
     });
   }, []);
 
+  if (loading) {
+    return <FullPageSpinner />;
+  }
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
-      {loading && (
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
-      <Box style={{ display: "flex" }}>
-        {!!profile && <UserCard profile={profile} />}
-        <OtherItems walletAddress={props.walletAddress}></OtherItems>
+      <Box>
+        {!!profile && (
+          <Box sx={{ width: "200px", margin: "auto", padding: '10px' }}>
+            <UserCard profile={profile} />
+          </Box>
+        )}
+        <OtherItems walletAddress={props.walletAddress} />
       </Box>
       {!!transactions && <Transactions transactions={transactions.items} />}
     </Container>

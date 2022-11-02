@@ -26,11 +26,15 @@ import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
 import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
 import ThreadScreen from '../Screens/ThreadScreen';
 import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
+import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
+import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
+import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
 
 const HomeStack = createNativeStackNavigator();
 
 export const HomeStackScreen = observer(() => {
   const {chatStore, loginStore, walletStore, apiStore} = useStores();
+  console.log(loginStore.userToken,"tokennnnnn")
   const {initialData} = loginStore;
   const {xmppPassword, xmppUsername, password, walletAddress} = initialData;
   const navigation = useNavigation();
@@ -263,14 +267,37 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-      name={ROUTES.THREADS}
-      component={ThreadScreen}
-      options={() => ({
-        // header: ({navigation}) => <MainHeader />,
-        headerShown:false
-      })}
+        name={ROUTES.SWIPERCHAT}
+        component={SwiperChatScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.DOCUMENTHISTORY}
+        component={DocumentHistoryScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.THREADS}
+        component={ThreadScreen}
+        options={() => ({
+          // header: ({navigation}) => <MainHeader />,
+          headerShown: false,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.CHANGEBACKGROUNDSCREEN}
+        component={ChangeBackgroundScreen}
+        options={() => ({
+          // header: ({navigation}) => <MainHeader />,
+          headerShown: false,
+        })}
       />
     </HomeStack.Navigator>
+    
   );
 });
 

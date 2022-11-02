@@ -44,6 +44,49 @@ const textStyles = {
   thinFont: 'Poppins-Thin',
 }; //done
 
+const defaultChatBackgroundTheme = [
+  {
+    value:'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
+    isSelected:false,
+    alt:'Default'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
+    isSelected:false,
+    alt:'#00C49F'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
+    isSelected:false,
+    alt:'#85BACD'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
+    isSelected:false,
+    alt:'#D6A4A6'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
+    isSelected:false,
+    alt:'Colourful'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
+    isSelected:false,
+    alt:'Pattern'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
+    isSelected:false,
+    alt:'Pillars of creation'
+  },
+  {
+    value:'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
+    isSelected:false,
+    alt:'Tech Doodle'
+  },
+]
+
 /* TUTORIAL */
 // If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
 const tutorialStartUponLogin = false; // show tutorial upon login //done
@@ -136,7 +179,7 @@ const appVersion = DeviceInfo.getVersion();
 //Application token
 
 const TOKENS = {
-  DEV: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU',
+  DEV: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBHb29nbGVJZCI6Ijk3MjkzMzQ3MDA1NC1oYnNmMjlvaHBhdG83NnRpbDJqdGY2amdnMWI0Mzc0Yy5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsImNyZWF0b3JJZCI6IjYyYzNmNGE5M2FkMjcwNjc0YzFmNjJmYiIsImNyZWF0ZWRBdCI6IjIwMjItMDctMDVUMDg6Mjc6MjYuMzM2WiIsIl9fdiI6MH0sImlhdCI6MTY1NzAwOTY1OH0.dnvrO_dQ_2GLyUX-b71CcHFDnphpjeTYOxz6vZ2fsPY',
   QA: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU',
   PROD: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYyZDAwNTQyMGY5NTFhNjA0MjJhNTRhNCIsImFwcE5hbWUiOiJFdGhvcmEgUHJvZCIsImFwcERlc2NyaXB0aW9uIjoidW5kZWZpbmVkIiwiYXBwVXJsIjoidW5kZWZpbmVkIiwiYXBwR29vZ2xlSWQiOiI5NzI5MzM0NzAwNTQtdjY0dWE5NDc5MWczMmZhMHNoZG0zbGZvZjkzMGhvbjAuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJjcmVhdG9ySWQiOiI2MmQwMDM5NzBmOTUxYTYwNDIyYTUzNTAiLCJjcmVhdGVkQXQiOiIyMDIyLTA3LTE0VDEyOjAwOjAyLjM4OFoiLCJfX3YiOjB9LCJpYXQiOjE2NTc4MDAwMTR9.qCOeOhL6fFMzmHr3rI6CF28KUS4c9mMNaWN0rxnSniY',
 };
@@ -166,6 +209,11 @@ const defaultBotsList = [
     walletAddress: '0x9B8D0cdCDba8efE145de2E5986d1b455C07B78c0',
   },
 ];
+export const ROOM_KEYS: Record<string, string> = {
+  official: 'official',
+  private: 'private',
+  groups: 'groups',
+};
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle: boolean = false;
@@ -221,4 +269,5 @@ export {
   facebookSignIn,
   regularLoginEmail,
   regularLogin,
+  defaultChatBackgroundTheme
 };

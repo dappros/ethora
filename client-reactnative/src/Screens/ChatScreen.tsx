@@ -1,5 +1,5 @@
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   GiftedChat,
   Send,
@@ -21,6 +21,7 @@ import MessageBody from '../components/Chat/MessageBody';
 import {
   ActivityIndicator,
   Animated,
+  ImageBackground,
   NativeModules,
   Platform,
   Pressable,
@@ -106,6 +107,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const duration = 2000;
 
   const fullName = firstName + ' ' + lastName;
+  
 
   const mediaButtonAnimation = new Animated.Value(1);
 
@@ -124,9 +126,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const debouncedChatText = useDebounce(text, 500);
   const [onTapMessageObject, setOnTapMessageObject] = useState('');
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
+  const [showReplyOption, setShowReplyOption] = useState(true)
   const [isReply, setIsReply] = useState(false);
 
   const {isOpen, onOpen, onClose} = useDisclose();
+
+  const giftedRef = useRef(null);
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -141,10 +146,27 @@ const ChatScreen = observer(({route, navigation}: any) => {
     message: {},
   });
 
+  const room = chatStore.roomList.find(item => item.jid === chatJid);
+
   const messages = chatStore.messages
-    .filter((item: any) => item.roomJid === chatJid && item.isReply === false)
+    .filter((item: any) => {
+      // item.roomJid === chatJid && item.isReply?item.showInChannel?true:false:true
+
+      if(item.roomJid === chatJid){
+        if(item.isReply){
+          if(item.showInChannel){
+            return true
+          }else{
+            return false
+          }
+        }else{
+          return true
+        }
+      }
+    })
     .sort((a: any, b: any) => b._id - a._id);
 
+  
   useEffect(() => {
     chatStore.toggleShouldCount(false);
     return () => {
@@ -196,7 +218,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   }, [chatStore.isComposing.state]);
 
   const renderMessage = props => {
-    return <MessageBody {...props} />;
+    return (
+      <MessageBody {...props} />
+    );
   };
 
   const onLoadEarlier = () => {
@@ -276,10 +300,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mucname: chatName,
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
-      isReply: isReply,
-      mainMessageText: onTapMessageObject?.text,
-      mainMessageId: onTapMessageObject?.message_id,
-      mainMessageUserName: onTapMessageObject?.user?.name,
+      isReply: false,
+      mainMessageText: '',
+      mainMessageId: '',
+      mainMessageUserName: '',
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -295,7 +319,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
-  const getOtherUserDetails = (props:any) => {
+  const getOtherUserDetails = (props: any) => {
     const {avatar, name, _id} = props;
     const firstName = name.split(' ')[0];
     const lastName = name.split(' ')[1];
@@ -321,8 +345,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       anotherUserWalletAddress: walletAddress,
       anotherUserAvatar: avatar,
     });
-
-  }
+  };
 
   const onUserAvatarPress = (props: any) => {
     //to set the current another user profile
@@ -332,8 +355,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (walletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate(ROUTES.PROFILE);
       return;
-    }else{
-      getOtherUserDetails(props)
+    } else {
+      getOtherUserDetails(props);
       navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
     }
   };
@@ -464,10 +487,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = ( message: any) => {
+  const handleOnPress = (message: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
     }
+
+    if(message.isReply){
+      setShowReplyOption(false)
+    }
+
     setOnTapMessageObject(message);
     return onOpen();
   };
@@ -479,10 +507,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleReply = (type: 'open' | 'close') => {
-
     //navigate to thread screen with current message details.
-    getOtherUserDetails(onTapMessageObject.user)
-    navigation.navigate(ROUTES.THREADS,{currentMessage:onTapMessageObject, chatJid:chatJid, chatName:chatName})
+    getOtherUserDetails(onTapMessageObject.user);
+    navigation.navigate(ROUTES.THREADS, {
+      currentMessage: onTapMessageObject,
+      chatJid: chatJid,
+      chatName: chatName,
+    });
     onClose();
 
     // if (type === 'open') {
@@ -821,129 +852,146 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
   };
 
+  const scrollToParentMessage = (currentMessage:any) => {
+    const parentIndex = messages.findIndex(item => item._id === currentMessage.mainMessageId);
+    console.log(giftedRef.current?._messageContainerRef?.current?.scrollToIndex,"parent Index")
+    giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
+      animated:true,
+      index: parentIndex
+    });
+  }
+
   return (
     <>
-      <SecondaryHeader
-        title={chatStore.roomsInfoMap[chatJid]?.name}
-        isQR={true}
-        onQRPressed={QRPressed}
-        isChatRoomDetail={true}
-      />
-      {audioMimetypes[mediaModal.type] && (
-        <AudioPlayer audioUrl={mediaModal.url} />
-      )}
-      {chatStore.isLoadingEarlierMessages && (
-        <View style={{backgroundColor: 'transparent'}}>
-          <ActivityIndicator size={30} color={commonColors.primaryColor} />
-        </View>
-      )}
-
-      <GiftedChat
-        renderSend={renderSend}
-        renderActions={renderAttachment}
-        renderLoading={() => (
-          <ActivityIndicator size={30} color={commonColors.primaryColor} />
+      <ImageBackground
+      style={{ width:'100%', height: '100%', zIndex:0}}
+      source={{uri:room.roomBackground?room.roomBackground:null}}
+      >
+        <SecondaryHeader
+          title={chatStore.roomsInfoMap[chatJid]?.name}
+          isQR={true}
+          onQRPressed={QRPressed}
+          isChatRoomDetail={true}
+        />
+        {audioMimetypes[mediaModal.type] && (
+          <AudioPlayer audioUrl={mediaModal.url} />
         )}
-        text={text}
-        renderUsernameOnMessage
-        onInputTextChanged={handleInputChange}
-        renderMessage={renderMessage}
-        renderMessageImage={props => renderMessageImage(props)}
-        renderComposer={renderComposer}
-        messages={messages}
-        renderAvatarOnTop
-        onPressAvatar={onUserAvatarPress}
-        renderChatFooter={() => (
-          <RenderChatFooter
-            isReply={isReply}
-            closeReply={() => handleReply('close')}
-            replyMessage={onTapMessageObject?.text}
-            replyUserName={onTapMessageObject?.user?.name}
-            allowIsTyping={allowIsTyping}
-            composingUsername={composingUsername}
-            fileUploadProgress={fileUploadProgress}
-            isTyping={isTyping}
-            setFileUploadProgress={setFileUploadProgress}
-          />
+        {chatStore.isLoadingEarlierMessages && (
+          <View style={{backgroundColor: 'transparent'}}>
+            <ActivityIndicator size={30} color={commonColors.primaryColor} />
+          </View>
         )}
-        placeholder={'Type a message'}
-        listViewProps={{
-          onEndReached: onLoadEarlier,
-          onEndReachedThreshold: 0.05,
-        }}
-        // textInputProps={{onSelectionChange: e => console.log(e)}}
-        keyboardShouldPersistTaps={'handled'}
-        onSend={messageString => sendMessage(messageString, false)}
-        user={{
-          _id:
-            loginStore.initialData.xmppUsername +
-            '@' +
-            apiStore.xmppDomains.DOMAIN,
-          name: loginStore.initialData.username,
-        }}
-        // inverted={true}
-        alwaysShowSend
-        showUserAvatar
-        textInputProps={{
-          color: 'black',
-          onSelectionChange: e => setSelection(e.nativeEvent.selection),
-        }}
-        onLongPress={( message: any) =>
-          handleOnLongPress(message)
-        }
-        onTap={(message: any) => handleOnPress(message)}
-        // onInputTextChanged={()=>{alert('hhh')}}
-        parsePatterns={linkStyle => [
-          {
-            pattern:
-              /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-          {
-            pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
-            style: linkStyle,
-            onPress: handleChatLinks,
-          },
-        ]}
-      />
-
-      <TransactionModal
-        type={modalType}
-        closeModal={closeModal}
-        extraData={extraData}
-        isVisible={showModal}
-      />
-      <NftItemGalleryModal
-        onItemPress={sendNftItemsFromGallery}
-        isModalVisible={isNftItemGalleryVisible}
-        nftItems={walletStore.nftItems}
-        closeModal={() => setIsNftItemGalleryVisible(false)}
-      />
-      <Actionsheet
-        isOpen={isOpen}
-        onClose={() => {
-          onClose(), setIsShowDeleteOption(true);
-        }}>
-        <Actionsheet.Content>
-          <Actionsheet.Item onPress={() => handleReply('open')}>
-            Reply
-          </Actionsheet.Item>
-          <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
-          {isShowDeleteOption ? (
-            <Actionsheet.Item onPress={onClose} color="red.500">
-              Delete
-            </Actionsheet.Item>
-          ) : null}
-        </Actionsheet.Content>
-      </Actionsheet>
-      <ChatMediaModal
-        url={mediaModal.url}
-        type={mediaModal.type}
-        onClose={closeMediaModal}
-        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
-        messageData={mediaModal.message}
-      />
+        <GiftedChat
+          ref={giftedRef}
+          renderSend={renderSend}
+          renderActions={renderAttachment}
+          renderLoading={() => (
+            <ActivityIndicator size={30} color={commonColors.primaryColor} />
+          )}
+          text={text}
+          type={"main"}
+          scrollToParentMessage={(currentMessage:any)=>scrollToParentMessage(currentMessage)}
+          renderUsernameOnMessage
+          onInputTextChanged={handleInputChange}
+          renderMessage={renderMessage}
+          renderMessageImage={props => renderMessageImage(props)}
+          renderComposer={renderComposer}
+          messages={messages}
+          renderAvatarOnTop
+          onPressAvatar={onUserAvatarPress}
+          renderChatFooter={() => (
+            <RenderChatFooter
+              isReply={isReply}
+              closeReply={() => handleReply('close')}
+              replyMessage={onTapMessageObject?.text}
+              replyUserName={onTapMessageObject?.user?.name}
+              allowIsTyping={allowIsTyping}
+              composingUsername={composingUsername}
+              fileUploadProgress={fileUploadProgress}
+              isTyping={isTyping}
+              setFileUploadProgress={setFileUploadProgress}
+            />
+          )}
+          placeholder={'Type a message'}
+          listViewProps={{
+            onEndReached: onLoadEarlier,
+            onEndReachedThreshold: 0.05,
+          }}
+          // textInputProps={{onSelectionChange: e => console.log(e)}}
+          keyboardShouldPersistTaps={'handled'}
+          onSend={messageString => sendMessage(messageString, false)}
+          user={{
+            _id:
+              loginStore.initialData.xmppUsername +
+              '@' +
+              apiStore.xmppDomains.DOMAIN,
+            name: loginStore.initialData.username,
+          }}
+          // inverted={true}
+          alwaysShowSend
+          showUserAvatar
+          textInputProps={{
+            color: 'black',
+            onSelectionChange: e => setSelection(e.nativeEvent.selection),
+          }}
+          onLongPress={(message: any) => handleOnLongPress(message)}
+          onTap={(message: any) => handleOnPress(message)}
+          // onInputTextChanged={()=>{alert('hhh')}}
+          parsePatterns={linkStyle => [
+            {
+              pattern:
+                /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: handleChatLinks,
+            },
+            {
+              pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              style: linkStyle,
+              onPress: handleChatLinks,
+            },
+          ]}
+        />
+        
+        
+        <TransactionModal
+          type={modalType}
+          closeModal={closeModal}
+          extraData={extraData}
+          isVisible={showModal}
+        />
+        <NftItemGalleryModal
+          onItemPress={sendNftItemsFromGallery}
+          isModalVisible={isNftItemGalleryVisible}
+          nftItems={walletStore.nftItems}
+          closeModal={() => setIsNftItemGalleryVisible(false)}
+        />
+        <Actionsheet
+          isOpen={isOpen}
+          onClose={() => {
+            onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
+          }}>
+          <Actionsheet.Content>
+            {showReplyOption?
+            <Actionsheet.Item onPress={() => handleReply('open')}>
+              Reply
+            </Actionsheet.Item>:null
+            }
+            <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
+            {isShowDeleteOption ? (
+              <Actionsheet.Item onPress={onClose} color="red.500">
+                Delete
+              </Actionsheet.Item>
+            ) : null}
+          </Actionsheet.Content>
+        </Actionsheet>
+        <ChatMediaModal
+          url={mediaModal.url}
+          type={mediaModal.type}
+          onClose={closeMediaModal}
+          open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+          messageData={mediaModal.message}
+        />
+      </ImageBackground>
     </>
   );
 });

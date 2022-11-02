@@ -45,3 +45,4 @@ export const otherProfileBalance = '/users/profile/';
 
 export const shareLink = '/shareLink/';
 
+export const docsURL = '/docs'

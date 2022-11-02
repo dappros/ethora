@@ -22,6 +22,7 @@ interface SecondaryHeaderProps {
   showVersion?: boolean;
   onQRPressed?: any;
   isChatRoomDetail?: boolean;
+  onBackPress?: () => void;
 }
 
 const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
@@ -31,42 +32,47 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   showVersion,
   onQRPressed,
   isChatRoomDetail,
+  onBackPress,
 }) => {
   const navigation = useNavigation();
   const onArrowClick = () => {
+    if (onBackPress) {
+      onBackPress();
+      return;
+    }
     navigation.goBack();
   };
   return (
     <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
-        <HStack>
-          <TouchableOpacity
-          style={{flex:0.12, justifyContent:"center", alignItems:"center"}}
+      <HStack>
+        <TouchableOpacity
+          style={{flex: 0.12, justifyContent: 'center', alignItems: 'center'}}
           onPress={onArrowClick}>
-            <AntIcon
-              name={'arrowleft'}
-              style={{marginRight: 5, marginLeft: 5}}
-              size={hp('3%')}
-              color={'white'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
+          <AntIcon
+            name={'arrowleft'}
+            style={{marginRight: 5, marginLeft: 5}}
+            size={hp('3%')}
+            color={'white'}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
           style={{
-            flex:0.7
+            flex: 0.7,
           }}
-            activeOpacity={1}
-            onPress={() =>
-              isChatRoomDetail &&
-              navigation.navigate(ROUTES.CHATDETAILS, {roomName: title})
-            }>
-            <Text
-              fontFamily={textStyles.semiBoldFont}
-              fontSize={hp('2.2%')}
-              color={'white'}>
-              {title}
-            </Text>
-          </TouchableOpacity>
+          activeOpacity={1}
+          onPress={() =>
+            isChatRoomDetail &&
+            navigation.navigate(ROUTES.CHATDETAILS, {roomName: title})
+          }>
+          <Text
+            fontFamily={textStyles.semiBoldFont}
+            fontSize={hp('2.2%')}
+            color={'white'}>
+            {title}
+          </Text>
+        </TouchableOpacity>
 
-        <View style={{marginLeft: 'auto', flex:0.1}}>
+        <View style={{marginLeft: 'auto', flex: 0.1}}>
           {isQR && (
             <TouchableOpacity onPress={onQRPressed} style={{marginRight: 10}}>
               <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />

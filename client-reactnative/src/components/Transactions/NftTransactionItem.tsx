@@ -43,16 +43,20 @@ interface TransactionListProps {
 
 const UserBlock = ({name, balance, total}) => {
   return (
-    <HStack w={'40%'}>
+    <HStack alignItems={'center'}>
       <VStack justifyContent={'center'} alignItems={'center'}>
         <Box
-          w={hp('2.89%')}
-          h={hp('2.89%')}
+          w={hp('3.5%')}
+          h={hp('3.5%')}
           rounded={'full'}
           bg={commonColors.primaryColor}
           justifyContent={'center'}
           alignItems={'center'}>
-          <Text fontSize={hp('1.46%')} fontWeight={'bold'} color={'white'}>
+          <Text
+            fontSize={hp('1.46%')}
+            textTransform={'uppercase'}
+            fontWeight={'bold'}
+            color={'white'}>
             {name.slice(0, 2)}
           </Text>
         </Box>
@@ -63,14 +67,14 @@ const UserBlock = ({name, balance, total}) => {
             {name}
           </Text>
         </Box>
-        <Box>
+        {/* <Box>
           <Text fontSize={hp('1.6%')} fontWeight={'light'}>
             Balance: 
           </Text>
           <Text fontSize={hp('1.6%')} fontWeight={'light'}>
           {balance}/{total}
           </Text>
-        </Box>
+        </Box> */}
       </VStack>
     </HStack>
   );
@@ -83,10 +87,14 @@ export const NftTransactionItem = (props: TransactionListProps) => {
     transactionAmount,
     showDate,
     formattedDate,
-
+    blockNumber,
+    timestamp,
+    transactionHash,
     senderName,
     receiverName,
-
+    from,
+    to,
+    value,
     type,
     tokenName,
     senderBalance,
@@ -94,20 +102,30 @@ export const NftTransactionItem = (props: TransactionListProps) => {
     nftTotal,
   } = props;
   const [expanded, setExpanded] = useState(false);
-і
+
   return (
-    <Box>
+    <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
       <Box borderColor="coolGray.200" borderWidth="1" p={'3'}>
-        <HStack justifyContent={'space-between'}>
+        <HStack
+          justifyContent={'space-between'}
+          alignItems={'center'}
+          width={wp('100%')}>
           <HStack justifyContent={'center'} space={1} alignItems={'center'}>
             {type === 'Token Creation' ? (
-              <HStack w={'40%'}>
-                <Text>{tokenName}</Text>
-                <Text    style={{marginRight: 'auto'}}>{'Was minted by'}</Text>
+              <HStack
+                style={{width: wp('60%'), marginRight: 'auto'}}
+                justifyContent={'space-around'}>
+                <Text fontFamily={textStyles.boldFont}>
+                  {tokenName || 'Document'}
+                </Text>
+                <Text fontSize={hp('1.4%')}>{'Was created by'}</Text>
               </HStack>
             ) : (
-              <>
+              <HStack
+                style={{width: wp('55%')}}
+                alignItems={'center'}
+                justifyContent={'space-between'}>
                 <UserBlock
                   name={senderName}
                   balance={senderBalance}
@@ -117,23 +135,74 @@ export const NftTransactionItem = (props: TransactionListProps) => {
                   name={'arrowright'}
                   color={'#69CB41'}
                   size={hp('1.7%')}
-                  style={{marginRight: 'auto'}}
+                  style={{marginRight: 30}}
                 />
-              </>
+              </HStack>
             )}
-            <UserBlock
-              name={receiverName}
-              balance={receiverBalance}
-              total={nftTotal}
-            />
-
-            <Box>
-              <Text fontWeight={'bold'}>{transactionAmount}</Text>
-            </Box>
+            <HStack
+              style={{width: wp('33%')}}
+              justifyContent={'flex-start'}
+              marginLeft={'auto'}>
+              <UserBlock
+                name={receiverName}
+                balance={receiverBalance}
+                total={nftTotal}
+              />
+              <HStack justifyContent={'flex-end'} alignItems={'center'}>
+                {/* <Text fontWeight={"bold"}>{transactionAmount}</Text> */}
+              </HStack>
+            </HStack>
           </HStack>
         </HStack>
       </Box>
-    </Box>
+      {expanded && (
+        <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
+          {/* <Text style={styles.detailsItemTextBold}>Details:</Text> */}
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>TX hash: </Text>
+            <Text style={{textAlign: 'left', color: 'black'}}>
+              {transactionHash}
+            </Text>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>From:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>{from}</Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>To:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>{to}</Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Timestamp:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>
+                {new Date(timestamp).getTime()}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Value:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>{value}</Text>
+            </View>
+          </View>
+          <View style={styles.detailsItem}>
+            <Text style={styles.detailsItemTextBold}>Block:</Text>
+            <View>
+              <Text style={{textAlign: 'left'}}>
+                {String(blockNumber).replace(/(.)(?=(\d{3})+$)/g, '$1,')}
+              </Text>
+            </View>
+          </View>
+
+          {/* <Text>To: {JSON.stringify(item)}</Text> */}
+        </View>
+      )}
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

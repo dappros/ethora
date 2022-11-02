@@ -25,13 +25,13 @@ function firstLetersFromName(fN: string, lN: string) {
 }
 
 const AppTopNavOwner = () => {
-  const user = useStoreState((state) => state.owner);
+  const user = useStoreState((state) => state.user);
   const balances = useStoreState((state) => state.balance);
   const clearOwner = useStoreState((state) => state.clearOwner);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const history = useHistory();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -52,7 +52,7 @@ const AppTopNavOwner = () => {
   };
 
   return (
-    <AppBar style={{backgroundColor: '#313949'}} position="static">
+    <AppBar style={{ backgroundColor: "#313949" }} position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -65,7 +65,14 @@ const AppTopNavOwner = () => {
               textDecoration: "none",
             }}
           >
-            <NavLink style={{ color: "white", textDecoration: 'none', fontSize: "25px" }} to="/">
+            <NavLink
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontSize: "25px",
+              }}
+              to="/"
+            >
               Dappros Platform
             </NavLink>
           </Typography>

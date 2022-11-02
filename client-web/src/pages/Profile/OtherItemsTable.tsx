@@ -19,7 +19,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import { useFormik } from "formik";
 import MenuItem from "@mui/material/MenuItem";
-import * as http from '../../http'
+import * as http from "../../http";
 
 type TProps = {
   walletAddress: string;
@@ -45,51 +45,51 @@ type TNftBalance = {
 type TBalances = TNftBalance[];
 
 export default function OtherItemsTable(props: TProps) {
-  const [balances, setBalances] = React.useState<TBalances>();
+  const [balances, setBalances] = React.useState<TBalances>([]);
   React.useEffect(() => {
     if (props.walletAddress) {
       http.getBalance(props.walletAddress).then((response) => {
         // @ts-ignore
-        setBalances(response.data.balance.filter(el => el.tokenType === "NFT"));
+        setBalances(
+          response.data.balance.filter((el: any) => el.tokenType === "NFT")
+        );
       });
     }
   }, [props.walletAddress]);
-
-  if (!balances) {
+  if (!balances.length) {
     return null;
-  } else {
-    return (
-      <TableContainer style={{ flex: 1, marginTop: "10px" }}>
-        <Box style={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="h6" style={{ margin: "16px" }}>
-            Items
-          </Typography>
-        </Box>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" width={200}>
-                Image
-              </TableCell>
-              <TableCell align="center">Name</TableCell>
-              <TableCell align="center">Balance</TableCell>
-              <TableCell align="center">Total</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {balances.map((row) => (
-              <TableRow key={row.contractAddress}>
-                <TableCell style={{ width: "200" }}>
-                  <img alt="" src={row.imagePreview}></img>
-                </TableCell>
-                <TableCell align="center">{row.tokenName}</TableCell>
-                <TableCell align="center">{row.balance}</TableCell>
-                <TableCell align="center">{row.total}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
   }
+  return (
+    <TableContainer style={{ flex: 1, marginTop: "10px" }}>
+      <Box style={{ display: "flex", alignItems: "center" }}>
+        <Typography variant="h6" style={{ margin: "16px" }}>
+          Items
+        </Typography>
+      </Box>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell align="center" width={200}>
+              Image
+            </TableCell>
+            <TableCell align="center">Name</TableCell>
+            <TableCell align="center">Balance</TableCell>
+            <TableCell align="center">Total</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {balances.map((row) => (
+            <TableRow key={row.contractAddress}>
+              <TableCell style={{ width: "200" }}>
+                <img alt="" src={row.imagePreview}></img>
+              </TableCell>
+              <TableCell align="center">{row.tokenName}</TableCell>
+              <TableCell align="center">{row.balance}</TableCell>
+              <TableCell align="center">{row.total}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }

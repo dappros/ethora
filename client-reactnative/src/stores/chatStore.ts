@@ -1,7 +1,7 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
-import {action, makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChats} from '../../docs/config';
+import {makeAutoObservable, runInAction, toJS} from 'mobx';
+import {defaultChatBackgroundTheme, defaultChats} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -14,6 +14,7 @@ import {
   updateNumberOfReplies,
   updateTokenAmount,
 } from '../components/realmModels/messages';
+import { showToast } from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -131,6 +132,8 @@ export class ChatStore {
   };
   listOfThreads= [];
   roomMemberInfo = [];
+  backgroundTheme = defaultChatBackgroundTheme;
+  selectedBackgroundIndex = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -142,6 +145,17 @@ export class ChatStore {
       this.shouldCount = value;
     });
   };
+
+
+  changeBackgroundTheme = (index:number) => {
+    runInAction(()=>{
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      if(index!=-1){
+        this.backgroundTheme[index].isSelected = true;
+      }
+      this.selectedBackgroundIndex = index;
+    })
+  }
 
   setInitialState = () => {
     runInAction(() => {
@@ -168,6 +182,8 @@ export class ChatStore {
         chatJID: '',
       };
       this.listOfThreads = []
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      this.selectedBackgroundIndex = 0;
     });
   };
 
@@ -228,6 +244,12 @@ export class ChatStore {
       this.messages.push(message);
     });
   };
+
+  addThreadMessage = (message: any)=> {
+    runInAction(() => {
+      this.listOfThreads.push(message)
+    })
+  }
   addRoom = (room: any) => {
     runInAction(() => {
       this.roomList.push(room);
@@ -367,6 +389,8 @@ export class ChatStore {
           stanza,
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
+        showToast('success','Success','Chat background set successfully','top')
+        // showToast('success', 'Info', 'Link copied', 'top')
       }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
@@ -431,9 +455,11 @@ export class ChatStore {
 
       if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
         if (stanza.children[0].children.length) {
-          this.roomMemberInfo = stanza.children[0].children.map(
-            item => item.attrs,
-          );
+          runInAction(()=>{
+            this.roomMemberInfo = stanza.children[0].children.map(
+              item => item.attrs,
+            );
+          })
         }
       }
 
@@ -575,35 +601,7 @@ export class ChatStore {
             stanza.children[0].children[0].children[0].children;
 
           const message = createMessageObject(singleMessageDetailArray);
-
-          if (
-            this.blackList.find(item => item.userJid === message.user._id)
-              ?.userJid
-          ) {
-            return;
-          }
-
-          if (message.system) {
-            if (message?.contractAddress) {
-              await updateMessageToWrapped(message.receiverMessageId, {
-                nftId: message.nftId,
-                contractAddress: message.contractAddress,
-              });
-            }
-            await updateTokenAmount(
-              message.receiverMessageId,
-              message.tokenAmount,
-            );
-          }
           
-          if(message.isReply){
-            await updateNumberOfReplies(message.mainMessageId);
-            // console.log(message,"This is thread")
-            this.listOfThreads.push(message)
-          }
-          
-          const threadsOfCurrentMessage = this.listOfThreads
-          .filter((item:any) => item.mainMessageId === message._id)
           // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
           // if(threadIndex != -1){
           //   // alert(threadIndex) 
@@ -619,22 +617,50 @@ export class ChatStore {
 
           // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
 
-          if(threadsOfCurrentMessage){
-            threadsOfCurrentMessage.map(async item => {
-              this.addMessage(item);
-              await insertMessages(item);
-              const threadIndex = this.listOfThreads.findIndex(listItem => listItem._id === item._id);
-              this.listOfThreads.splice(threadIndex, 1);
-            })
-            message.numberOfReplies = threadsOfCurrentMessage.length;
-          }
+
 
           const messageAlreadyExist = this.messages.findIndex(
             x => x._id === message._id,
           );
           if (messageAlreadyExist === -1) {
-            this.addMessage(message);
+
+            if (
+              this.blackList.find(item => item.userJid === message.user._id)
+                ?.userJid
+            ) {
+              return;
+            }
+  
+            if (message.system) {
+              if (message?.contractAddress) {
+                await updateMessageToWrapped(message.receiverMessageId, {
+                  nftId: message.nftId,
+                  contractAddress: message.contractAddress,
+                });
+              }
+              await updateTokenAmount(
+                message.receiverMessageId,
+                message.tokenAmount,
+              );
+            }
+
+            if(message.isReply){
+              const threadIndex = this.listOfThreads.findIndex(item => message._id === item._id)
+              if(threadIndex === -1){
+
+                this.addThreadMessage(message)
+              }
+            }
+
+            const threadsOfCurrentMessage = this.listOfThreads
+            .filter((item:any) => item.mainMessageId === message._id)
+
+            if(threadsOfCurrentMessage){
+              message.numberOfReplies = threadsOfCurrentMessage.length;
+            }
             await insertMessages(message);
+            this.addMessage(message);
+
           }
         }
 
@@ -734,7 +760,7 @@ export class ChatStore {
       });
       getUserRoomsStanza(xmppUsername, this.xmpp);
       getBlackList(xmppUsername, this.xmpp);
-      // updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
+      updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
     });
   };
