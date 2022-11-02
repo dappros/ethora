@@ -57,12 +57,13 @@ export type TMessageHistory = {
   key: number;
 };
 
-type TUserChatRooms = {
+export type TUserChatRooms = {
   jid: string;
   name: string;
   room_background: string;
   room_thumbnail: string;
   users_cnt: string;
+  unreadMessages: number;
 };
 
 type TApp = {
@@ -110,10 +111,13 @@ interface IStore {
   setNewMessage: (msg: TMessage) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
+  updateMessageHistory: (messages: TMessageHistory[]) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
   userChatRooms: TUserChatRooms[];
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
+  updateCounterChatRoom: (roomJID: string) => void;
+  clearCounterChatRoom: (roomJID: string) => void;
   clearUserChatRooms: () => void;
   setApps: (apps: TApp[]) => void;
   setApp: (app: TApp) => void;
@@ -246,6 +250,11 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.historyMessages.unshift(historyMessages);
             }),
+          updateMessageHistory: (messages: TMessageHistory[]) =>
+              set((state) => {
+                state.historyMessages = [...state.historyMessages, ...messages];
+                state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+          }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
               state.loaderArchive = status;
@@ -262,6 +271,16 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
             }),
+          updateCounterChatRoom: (roomJID: string) =>
+              set((state) => {
+                const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
+                state.userChatRooms[currentIndex].unreadMessages++;
+          }),
+          clearCounterChatRoom: (roomJID: string) =>
+              set((state) => {
+                const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
+                state.userChatRooms[currentIndex].unreadMessages = 0;
+          }),
           clearUserChatRooms: () =>
             set((state) => {
               state.userChatRooms = [];
