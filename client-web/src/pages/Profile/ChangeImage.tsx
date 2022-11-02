@@ -5,20 +5,9 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Button } from "@mui/material";
-import ReactCrop, {
-  centerCrop,
-  makeAspectCrop,
-  Crop,
-  PixelCrop,
-} from "react-image-crop";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import { useStoreState } from "../../store";
-import LoadingButton from "@mui/lab/LoadingButton";
+import ReactCrop, { centerCrop, makeAspectCrop, Crop } from "react-image-crop";
 import * as http from "../../http";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import defUserImage from "../../assets/images/def-ava.png";
+import { useStoreState } from "../../store";
 import "react-image-crop/dist/ReactCrop.css";
 
 type TProps = {
@@ -47,12 +36,14 @@ function centerAspectCrop(
 }
 
 export default function ChangeImage({ open, setOpen }: TProps) {
+  const user = useStoreState((state) => state.user);
+  const setUser = useStoreState((state) => state.setUser);
   const fileRef = useRef<HTMLInputElement>(null);
   const [imgSrc, setImgSrc] = useState("");
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
-  const [aspect, setAspect] = useState<number | undefined>(16 / 9);
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const [blob, setBlob] = useState<Blob>();
+  const aspect = 2;
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
@@ -71,7 +62,58 @@ export default function ChangeImage({ open, setOpen }: TProps) {
     }
   }
 
-  function onSave() {}
+  function onSave() {
+    const form = new FormData();
+    form.append("file", blob, "profileImg");
+    http
+      .updateProfile(form)
+      .then((response) => {
+        // response.data.user
+        setUser(response.data.user);
+        setOpen(false);
+      })
+      .catch((e) => console.log(e));
+  }
+
+  function onCropComplete(crop) {
+    const canvas = document.createElement("canvas");
+    const pixelRatio = window.devicePixelRatio;
+    const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
+    const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = crop.width * pixelRatio * scaleX;
+    canvas.height = crop.height * pixelRatio * scaleY;
+
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = "high";
+
+    ctx.drawImage(
+      imgRef.current,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width * scaleX,
+      crop.height * scaleY
+    );
+
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          //reject(new Error('Canvas is empty'));
+          console.error("Canvas is empty");
+          return;
+        }
+
+        setBlob(blob);
+      },
+      "image/jpeg",
+      1
+    );
+  }
 
   return (
     <Dialog onClose={() => {}} open={open}>
@@ -115,10 +157,7 @@ export default function ChangeImage({ open, setOpen }: TProps) {
                 <ReactCrop
                   crop={crop}
                   onChange={(_, percentCrop) => setCrop(percentCrop)}
-                  onComplete={(c) => {
-                    console.log("onComplete ");
-                    setCompletedCrop(c);
-                  }}
+                  onComplete={onCropComplete}
                   minWidth={100}
                   minHeight={100}
                 >

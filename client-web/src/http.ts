@@ -482,3 +482,11 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
+
+export function updateProfile(fd: FormData, id?: string) {
+  const path = id ? `/users/${id}` : "/users";
+  const user = useStoreState.getState().user;
+  return http.put(path, fd, {
+    headers: { Authorization: user.token },
+  });
+}
