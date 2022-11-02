@@ -1,33 +1,33 @@
 import { darkScrollbar } from "@mui/material";
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
-import {Element} from 'ltx'
-import {TMessageHistory, useStoreState} from './store'
+import { Element } from "ltx";
+import { TMessageHistory, useStoreState } from "./store";
 
-let lastMsgId: string = '';
+let lastMsgId: string = "";
 
 export function walletToUsername(str: string) {
   return str.replace(/([A-Z])/g, "_$1").toLowerCase();
 }
 
 export function usernameToWallet(str: string) {
-  str.replace(/_([a-z])/gm, (m1:string, m2:string) => {
+  str.replace(/_([a-z])/gm, (m1: string, m2: string) => {
     return m2.toUpperCase();
   });
 }
 
 const onMessage = async (stanza: Element) => {
-  if (stanza.is('message')) {
+  if (stanza.is("message")) {
     if (stanza.attrs.id === "sendMessage") {
-      const body = stanza.getChild('body')
-      const data = stanza.getChild('data')
+      const body = stanza.getChild("body");
+      const data = stanza.getChild("data");
 
       if (!data || !body) {
-        return
+        return;
       }
 
-      if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName) {
-        return
+      if (!data.attrs.senderFirstName || !data.attrs.senderLastName) {
+        return;
       }
 
       const msg = {
@@ -36,111 +36,128 @@ const onMessage = async (stanza: Element) => {
         lastName: data.attrs.senderLastName,
         wallet: data.attrs.senderWalletAddress,
         from: stanza.attrs.from,
-        room: stanza.attrs.from.toString().split('/')[0]
-      }
+        room: stanza.attrs.from.toString().split("/")[0],
+      };
 
-      console.log('+++++ ', msg)
+      console.log("+++++ ", msg);
 
-      useStoreState.getState().setNewMessage(msg)
+      useStoreState.getState().setNewMessage(msg);
     }
   }
-}
+};
 
 const onMessageHistory = async (stanza: Element) => {
-    if (stanza.is('message')) {
-            const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body')
-            const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data')
-            const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay')
-            const id = stanza.getChild('result')?.attrs.id
+  if (stanza.is("message")) {
+    const body = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("message")
+      ?.getChild("body");
+    const data = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("message")
+      ?.getChild("data");
+    const delay = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("delay");
+    const id = stanza.getChild("result")?.attrs.id;
 
-            if (!data || !body || !delay || !id) {
-                return
-            }
-
-            if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName || !data.attrs.senderJID) {
-                return
-            }
-            const msg = {
-                id: Number(id),
-                body: body.getText(),
-                data: {
-                    isSystemMessage: data.attrs.isSystemMessage,
-                    photoURL: data.attrs.photoURL,
-                    quickReplies: data.attrs.quickReplies,
-                    roomJid: data.attrs.roomJid,
-                    senderFirstName: data.attrs.senderFirstName,
-                    senderJID: data.attrs.senderJID,
-                    senderLastName: data.attrs.senderLastName,
-                    senderWalletAddress: data.attrs.senderWalletAddress,
-                    tokenAmount: data.attrs.tokenAmount,
-                    xmlns: data.attrs.xmlns
-                },
-                roomJID: stanza.attrs.from,
-                date: delay.attrs.stamp,
-                key: Date.now()
-            }
-        useStoreState.getState().setNewMessageHistory(msg)
-        useStoreState.getState().sortMessageHistory();
+    if (!data || !body || !delay || !id) {
+      return;
     }
-}
+
+    if (
+      !data.attrs.senderFirstName ||
+      !data.attrs.senderLastName ||
+      !data.attrs.senderJID
+    ) {
+      return;
+    }
+    const msg = {
+      id: Number(id),
+      body: body.getText(),
+      data: {
+        isSystemMessage: data.attrs.isSystemMessage,
+        photoURL: data.attrs.photoURL,
+        quickReplies: data.attrs.quickReplies,
+        roomJid: data.attrs.roomJid,
+        senderFirstName: data.attrs.senderFirstName,
+        senderJID: data.attrs.senderJID,
+        senderLastName: data.attrs.senderLastName,
+        senderWalletAddress: data.attrs.senderWalletAddress,
+        tokenAmount: data.attrs.tokenAmount,
+        xmlns: data.attrs.xmlns,
+      },
+      roomJID: stanza.attrs.from,
+      date: delay.attrs.stamp,
+      key: Date.now(),
+    };
+    useStoreState.getState().setNewMessageHistory(msg);
+    useStoreState.getState().sortMessageHistory();
+  }
+};
 
 const onLastMessageArchive = (stanza: Element, xmpp: any) => {
-    if (stanza.attrs.id === "paginatedArchive") {
-        lastMsgId = String(stanza.getChild('fin')?.getChild('set')?.getChild('last')?.children[0]);
-        useStoreState.getState().setLoaderArchive(false);
-    }
-}
+  if (stanza.attrs.id === "paginatedArchive") {
+    lastMsgId = String(
+      stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
+    );
+    useStoreState.getState().setLoaderArchive(false);
+  }
+};
 
 const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
-    if (stanza.attrs.id === "sendMessage") {
-        const data = stanza.getChild('stanza-id')
-        if(data){
-            xmpp.getLastMessageArchive(data.attrs.by)
-            return;
-        }
-        return onMessage(stanza);
+  if (stanza.attrs.id === "sendMessage") {
+    const data = stanza.getChild("stanza-id");
+    if (data) {
+      xmpp.getLastMessageArchive(data.attrs.by);
+      return;
     }
-}
+    return onMessage(stanza);
+  }
+};
 
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
-    if(stanza.attrs.id === "getUserRooms"){
-        if(stanza.getChild('query')?.children){
-            useStoreState.getState().clearUserChatRooms();
-            console.log('ROOOMS ==> ',stanza.getChild('query')?.children)
-            stanza.getChild('query')?.children.forEach((result: Object) => {
-                // @ts-ignore
-                const roomJID: string = result.attrs.jid;
-                xmpp.presenceInRoom(roomJID)
+  if (stanza.attrs.id === "getUserRooms") {
+    if (stanza.getChild("query")?.children) {
+      useStoreState.getState().clearUserChatRooms();
+      console.log("ROOOMS ==> ", stanza.getChild("query")?.children);
+      stanza.getChild("query")?.children.forEach((result: Object) => {
+        // @ts-ignore
+        const roomJID: string = result.attrs.jid;
+        xmpp.presenceInRoom(roomJID);
 
-                const roomData = {
-                    jid: roomJID,
-                    // @ts-ignore
-                    name: result?.attrs.name,
-                    // @ts-ignore
-                    room_background: result?.attrs.room_background,
-                    // @ts-ignore
-                    room_thumbnail: result?.attrs.room_thumbnail,
-                    // @ts-ignore
-                    users_cnt: result?.attrs.users_cnt,
-                }
-                // @ts-ignore
-                useStoreState.getState().setNewUserChatRoom(roomData);
+        const roomData = {
+          jid: roomJID,
+          // @ts-ignore
+          name: result?.attrs.name,
+          // @ts-ignore
+          room_background: result?.attrs.room_background,
+          // @ts-ignore
+          room_thumbnail: result?.attrs.room_thumbnail,
+          // @ts-ignore
+          users_cnt: result?.attrs.users_cnt,
+        };
+        // @ts-ignore
+        useStoreState.getState().setNewUserChatRoom(roomData);
 
-                //get message history in the room
-                xmpp.getRoomArchiveStanza(roomJID)
-            })
-            useStoreState.getState().setLoaderArchive(false);
-        }
+        //get message history in the room
+        xmpp.getRoomArchiveStanza(roomJID);
+      });
+      useStoreState.getState().setLoaderArchive(false);
     }
-}
+  }
+};
 
 const getListOfRooms = (xmpp: any) => {
-    defaultRooms.map(roomJID => {
-        xmpp.presenceInRoom(roomJID)
-    });
-    xmpp.getRooms();
-    useStoreState.getState().clearMessageHistory();
-}
+  defaultRooms.map((roomJID) => {
+    xmpp.presenceInRoom(roomJID);
+  });
+  xmpp.getRooms();
+  useStoreState.getState().clearMessageHistory();
+};
 
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
@@ -152,7 +169,7 @@ class XmppClass {
   public client!: Client;
 
   init(walletAddress: string, password: string) {
-    console.log('init ', walletAddress, password)
+    console.log("init ", walletAddress, password);
     this.client = xmpp.client({
       service: "wss://dev.dxmpp.com:5443/ws",
       username: walletToUsername(walletAddress),
@@ -164,13 +181,16 @@ class XmppClass {
     this.client.on("online", (jid) => getListOfRooms(this));
 
     this.client.on("stanza", onMessageHistory);
-    this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this))
-    this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this))
-    this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this))
-    this.client.on("stanza", (stanza) => console.log(stanza.toString()))
+    this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
+    this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
+    this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
 
     this.client.on("offline", () => console.log("offline"));
-    this.client.on("error", (error) => console.log("on error ", error));
+    this.client.on("error", (error) => {
+      console.log("xmmpp on error ", error);
+      this.client.stop();
+      alert("xmmpp error, terminating collection");
+    });
   }
 
   subsribe(address: string) {
@@ -192,7 +212,7 @@ class XmppClass {
       )
     );
 
-    this.client.send(message)
+    this.client.send(message);
   }
 
   discoInfo() {
@@ -201,13 +221,13 @@ class XmppClass {
       {
         from: this.client?.jid?.toString(),
         to: this.client?.jid?.getDomain(),
-        type: 'get',
-        id: 'discover'
+        type: "get",
+        id: "discover",
       },
-      xml("query", { xmlns: 'http://jabber.org/protocol/disco#info' })
-    )
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
 
-    this.client.send(message)
+    this.client.send(message);
   }
 
   unsubscribe(address: string) {
@@ -219,209 +239,212 @@ class XmppClass {
         type: "set",
         id: "unsubscribe",
       },
-      xml(
-        "unsubscribe",
-        { xmlns: "urn:xmpp:mucsub:0" }
-      )
+      xml("unsubscribe", { xmlns: "urn:xmpp:mucsub:0" })
     );
 
-    this.client.send(message); 
+    this.client.send(message);
   }
 
   getRooms() {
     const message = xml(
-      'iq',
+      "iq",
       {
-        type: 'get',
+        type: "get",
         from: this.client.jid?.toString(),
-        id: 'getUserRooms',
+        id: "getUserRooms",
       },
-      xml('query', {xmlns: 'ns:getrooms'}),
+      xml("query", { xmlns: "ns:getrooms" })
     );
     this.client.send(message);
   }
 
   getVcard(username: string) {
-    console.log(username + '@' + this.client.jid?.getDomain())
+    console.log(username + "@" + this.client.jid?.getDomain());
     if (username !== this.client.jid?.getLocal()) {
       // get other vcard
       const message = xml(
-        'iq',
+        "iq",
         {
           from: this.client.jid?.toString(),
-          id: 'vCardOther',
-          to: username + '@' + this.client.jid?.getDomain(),
-          type: 'get',
+          id: "vCardOther",
+          to: username + "@" + this.client.jid?.getDomain(),
+          type: "get",
         },
-        xml('vCard', {xmlns: 'vcard-temp'}),
+        xml("vCard", { xmlns: "vcard-temp" })
       );
-    
+
       this.client.send(message);
     } else {
       const message = xml(
-        'iq',
+        "iq",
         {
-          from: username + '@' + this.client.jid?.getDomain(),
-          id: 'vCardMy',
-          type: 'get',
+          from: username + "@" + this.client.jid?.getDomain(),
+          id: "vCardMy",
+          type: "get",
         },
-        xml('vCard', {
-          xmlns: 'vcard-temp',
-        }),
+        xml("vCard", {
+          xmlns: "vcard-temp",
+        })
       );
       this.client.send(message);
     }
   }
 
   presence() {
-    this.client.send(xml('presence'))
+    this.client.send(xml("presence"));
   }
 
   botPresence(room: string) {
     const xmlMsg = xml(
-      'presence',
-      {
-        from: this.client.jid?.toString(),
-        to: `${room}/${this.client.jid?.getLocal()}` ,
-      },
-      xml('x', 'http://jabber.org/protocol/muc')
-    )
-    this.client.send(xmlMsg)
-  }
-
-  roomPresence(room: string) {
-    const presence = xml(
-      'presence',
+      "presence",
       {
         from: this.client.jid?.toString(),
         to: `${room}/${this.client.jid?.getLocal()}`,
       },
-      xml('x', 'http://jabber.org/protocol/muc'),
+      xml("x", "http://jabber.org/protocol/muc")
+    );
+    this.client.send(xmlMsg);
+  }
+
+  roomPresence(room: string) {
+    const presence = xml(
+      "presence",
+      {
+        from: this.client.jid?.toString(),
+        to: `${room}/${this.client.jid?.getLocal()}`,
+      },
+      xml("x", "http://jabber.org/protocol/muc")
     );
     this.client.send(presence);
   }
-    presenceInRoom(room: string) {
-        const presence = xml(
-            'presence',
-            {
-                from: this.client.jid?.toString(),
-                to: room+'/'+this.client.jid?.getLocal(),
-            },
-            xml('x', 'http://jabber.org/protocol/muc'),
-        );
-        this.client.send(presence);
-    }
+  presenceInRoom(room: string) {
+    const presence = xml(
+      "presence",
+      {
+        from: this.client.jid?.toString(),
+        to: room + "/" + this.client.jid?.getLocal(),
+      },
+      xml("x", "http://jabber.org/protocol/muc")
+    );
+    this.client.send(presence);
+  }
 
-    getRoomArchiveStanza(chat_jid: string) {
-        useStoreState.getState().setLoaderArchive(true);
-        let message = xml(
-            'iq',
-            {
-                type: 'set',
-                to: chat_jid,
-                id: 'GetArchive',
-            },
-            xml(
-                'query',
-                {xmlns: 'urn:xmpp:mam:2'},
-                xml(
-                    'set',
-                    {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '10'),
-                    xml('before'),
-                ),
-            ),
-        );
-        this.client.send(message);
-    }
+  getRoomArchiveStanza(chat_jid: string) {
+    useStoreState.getState().setLoaderArchive(true);
+    let message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chat_jid,
+        id: "GetArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, "10"),
+          xml("before")
+        )
+      )
+    );
+    this.client.send(message);
+  }
 
-    getPaginatedArchive = (
-        chat_jid: string,
-        firstUserMessageID: string,
-    ) => {
-      if(lastMsgId === firstUserMessageID){
-          return
-      }
-        useStoreState.getState().setLoaderArchive(true);
-        const message = xml(
-            'iq',
-            {
-                type: 'set',
-                to: chat_jid,
-                id: 'paginatedArchive',
-            },
-            xml(
-                'query',
-                {xmlns: 'urn:xmpp:mam:2'},
-                xml(
-                    'set',
-                    {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '10'),
-                    xml('before', {}, firstUserMessageID),
-                ),
-            ),
-        );
-        this.client.send(message);
+  getPaginatedArchive = (chat_jid: string, firstUserMessageID: string) => {
+    if (lastMsgId === firstUserMessageID) {
+      return;
     }
+    useStoreState.getState().setLoaderArchive(true);
+    const message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chat_jid,
+        id: "paginatedArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, "10"),
+          xml("before", {}, firstUserMessageID)
+        )
+      )
+    );
+    this.client.send(message);
+  };
 
-    getLastMessageArchive(chat_jid: string) {
-        let message = xml(
-            'iq',
-            {
-                type: 'set',
-                to: chat_jid,
-                id: 'GetArchive',
-            },
-            xml(
-                'query',
-                {xmlns: 'urn:xmpp:mam:2'},
-                xml(
-                    'set',
-                    {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '1'),
-                    xml('before'),
-                ),
-            ),
-        );
-        this.client.send(message);
-    }
+  getLastMessageArchive(chat_jid: string) {
+    let message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chat_jid,
+        id: "GetArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, "1"),
+          xml("before")
+        )
+      )
+    );
+    this.client.send(message);
+  }
 
-    sendMessage(roomJID: string, firstName: string, lastName: string, photo: string, walletAddress: string, userMessage: string) {
-      const message = xml(
-          'message', {
-          to: roomJID,
-          type: 'groupchat',
-          id: "sendMessage"
-      }, xml('data', {
-          xmlns: "wss://dev.dxmpp.com:5443/ws",
-          senderFirstName: firstName,
-          senderLastName: lastName,
-          photoURL: photo,
-          senderJID: this.client.jid?.toString(),
-          senderWalletAddress: walletAddress,
-          roomJid: roomJID,
-          isSystemMessage: false,
-          tokenAmount: 0,
-          quickReplies: []
-      }), xml('body', {}, userMessage));
-        this.client.send(message);
-    }
+  sendMessage(
+    roomJID: string,
+    firstName: string,
+    lastName: string,
+    photo: string,
+    walletAddress: string,
+    userMessage: string
+  ) {
+    const message = xml(
+      "message",
+      {
+        to: roomJID,
+        type: "groupchat",
+        id: "sendMessage",
+      },
+      xml("data", {
+        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        senderFirstName: firstName,
+        senderLastName: lastName,
+        photoURL: photo,
+        senderJID: this.client.jid?.toString(),
+        senderWalletAddress: walletAddress,
+        roomJid: roomJID,
+        isSystemMessage: false,
+        tokenAmount: 0,
+        quickReplies: [],
+      }),
+      xml("body", {}, userMessage)
+    );
+    this.client.send(message);
+  }
 
-    getRoomInfo = (
-        roomJID: string
-    ) => {
-        const message = xml(
-            'iq',
-            {
-                from: this.client.jid?.toString(),
-                id: 'roomInfo',
-                to: roomJID,
-                type: 'get',
-            },
-            xml('query', {xmlns: 'http://jabber.org/protocol/disco#info'}),
-        );
-        this.client.send(message);
-    };
+  getRoomInfo = (roomJID: string) => {
+    const message = xml(
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: "roomInfo",
+        to: roomJID,
+        type: "get",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
+    this.client.send(message);
+  };
 }
 
 export default new XmppClass();
