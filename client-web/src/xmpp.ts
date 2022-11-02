@@ -88,7 +88,10 @@ const onMessageHistory = async (stanza: Element) => {
                 useStoreState.getState().setNewMessageHistory(msg);
                 useStoreState.getState().sortMessageHistory();
             }
-            useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+
+            if(stanza.attrs.to.split("@")[0] !== data.attrs.senderJID){
+                useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+            }
     }
 }
 
@@ -223,7 +226,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-    this.client.on("stanza", (stanza) => console.log(stanza));
+    // this.client.on("stanza", (stanza) => console.log(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
