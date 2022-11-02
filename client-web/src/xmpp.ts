@@ -1,4 +1,3 @@
-import { darkScrollbar } from "@mui/material";
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
@@ -144,7 +143,8 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
                         room_thumbnail: result?.attrs.room_thumbnail,
                         // @ts-ignore
                         users_cnt: result?.attrs.users_cnt,
-                        unreadMessages: 0
+                        unreadMessages: 0,
+                        composing: ""
                     };
                     // @ts-ignore
                     useStoreState.getState().setNewUserChatRoom(roomData);
@@ -157,6 +157,21 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
         }
     }
 };
+
+const onComposing = (stanza: Element) => {
+    if (stanza.attrs.id === "isComposing") {
+        useStoreState.getState().updateComposingChatRoom(
+            stanza.attrs.from.toString().split("/")[0],
+            true,
+            stanza.getChild('data').attrs.fullName);
+    }
+
+    if (stanza.attrs.id === "pausedComposing") {
+        useStoreState.getState().updateComposingChatRoom(
+            stanza.attrs.from.toString().split("/")[0],
+            false);
+    }
+}
 
 const getListOfRooms = (xmpp: any) => {
   defaultRooms.map((roomJID) => {
@@ -191,6 +206,8 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
+    this.client.on("stanza", (stanza) => onComposing(stanza));
+    this.client.on("stanza", (stanza) => console.log(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {

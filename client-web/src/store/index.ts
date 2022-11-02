@@ -64,6 +64,7 @@ export type TUserChatRooms = {
   room_thumbnail: string;
   users_cnt: string;
   unreadMessages: number;
+  composing: string;
 };
 
 type TApp = {
@@ -118,6 +119,7 @@ interface IStore {
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
   updateCounterChatRoom: (roomJID: string) => void;
   clearCounterChatRoom: (roomJID: string) => void;
+  updateComposingChatRoom: (roomJID: string, status: boolean, userName?: string) => void;
   clearUserChatRooms: () => void;
   setApps: (apps: TApp[]) => void;
   setApp: (app: TApp) => void;
@@ -284,6 +286,15 @@ const _useStore = create<IStore>()(
           clearUserChatRooms: () =>
             set((state) => {
               state.userChatRooms = [];
+            }),
+          updateComposingChatRoom: (roomJID: string, status: boolean, userName: string) =>
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
+              if(status){
+                state.userChatRooms[currentIndex].composing = userName + " is typing";
+              }else{
+                state.userChatRooms[currentIndex].composing = "";
+              }
             }),
           addAppUsers: (users: TAppUser[]) =>
             set((state) => {
