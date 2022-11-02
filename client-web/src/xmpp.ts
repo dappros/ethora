@@ -159,17 +159,33 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
 };
 
 const onComposing = (stanza: Element) => {
-    if (stanza.attrs.id === "isComposing") {
-        useStoreState.getState().updateComposingChatRoom(
-            stanza.attrs.from.toString().split("/")[0],
-            true,
-            stanza.getChild('data').attrs.fullName);
-    }
+    if(stanza.attrs.id === "isComposing" || stanza.attrs.id === "pausedComposing"){
+        const requestType = stanza.attrs.id;
+        const recipientID = stanza.attrs.to.split("@")[0];
+        const senderID = stanza.getChild('data').attrs.manipulatedWalletAddress;
 
-    if (stanza.attrs.id === "pausedComposing") {
-        useStoreState.getState().updateComposingChatRoom(
-            stanza.attrs.from.toString().split("/")[0],
-            false);
+        if (recipientID === senderID) {
+            return;
+        }
+
+        if (requestType === "isComposing") {
+            useStoreState.getState().updateComposingChatRoom(
+                stanza.attrs.from.toString().split("/")[0],
+                true,
+                stanza.getChild('data').attrs.fullName);
+
+            setTimeout(() =>
+                    useStoreState.getState().updateComposingChatRoom(
+                        stanza.attrs.from.toString().split("/")[0],
+                        false)
+                , 1500);
+        }
+
+        if (stanza.attrs.id === "pausedComposing") {
+            useStoreState.getState().updateComposingChatRoom(
+                stanza.attrs.from.toString().split("/")[0],
+                false);
+        }
     }
 }
 
