@@ -6,19 +6,15 @@ import { IUserAcl } from "../http";
 type TUser = {
   firstName: string;
   lastName: string;
-  xmppPassword: string;
+  xmppPassword?: string;
   _id: string;
   walletAddress: string;
   token: string;
-  refreshToken: string;
-  profileImage: string;
-};
-
-type TOwner = {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  token: string;
+  refreshToken?: string;
+  profileImage?: string;
+  ACL?: {
+    ownerAccess: boolean;
+  };
 };
 
 type TMode = "light" | "dark";
@@ -99,7 +95,6 @@ type TAppUser = {
 
 interface IStore {
   user: TUser;
-  owner: TOwner;
   ACL: IUserAcl;
   messages: TMessage[];
   viewMode: TMode;
@@ -108,7 +103,7 @@ interface IStore {
   appUsers: TAppUser[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
-  setOwner: (owner: TOwner) => void;
+  setOwner: (owner: TUser) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
@@ -144,12 +139,6 @@ const _useStore = create<IStore>()(
             token: "",
             refreshToken: "",
             profileImage: "",
-          },
-          owner: {
-            firstName: "",
-            lastName: "",
-            token: "",
-            _id: "",
           },
           ACL: {
             result: {
@@ -190,10 +179,9 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.user = user;
             }),
-          setOwner: (user: TOwner) =>
+          setOwner: (user: TUser) =>
             set((state) => {
-              console.log("setOwner ", user);
-              state.owner = user;
+              state.user = user;
             }),
           setApps: (apps: TApp[]) =>
             set((state) => {
@@ -233,11 +221,15 @@ const _useStore = create<IStore>()(
             }),
           clearOwner: () =>
             set((state) => {
-              state.owner = {
+              state.user = {
                 firstName: "",
                 lastName: "",
-                token: "",
+                xmppPassword: "",
                 _id: "",
+                walletAddress: "",
+                token: "",
+                refreshToken: "",
+                profileImage: "",
               };
               state.apps = [];
               state.appUsers = [];
@@ -248,12 +240,10 @@ const _useStore = create<IStore>()(
             }),
           setNewMessage: (message: TMessage) =>
             set((state) => {
-              console.log("setNewMessage");
               state.messages.unshift(message);
             }),
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
-              console.log("setNewMessageHistory");
               state.historyMessages.unshift(historyMessages);
             }),
           setLoaderArchive: (status: boolean) =>

@@ -29,7 +29,7 @@ function firstLetersFromName(fN: string, lN: string) {
 
 const menuItems = [
   { name: "Chat", id: "chat-in-room" },
-  { name: "Explorer", id: "explorer" }
+  { name: "Explorer", id: "explorer" },
 ];
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();
@@ -47,7 +47,7 @@ const AppTopNav = () => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
-    xmpp.init(user.walletAddress, user.xmppPassword);
+    xmpp.init(user.walletAddress, user?.xmppPassword as string);
   }, []);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
