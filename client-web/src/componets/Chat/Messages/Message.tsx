@@ -1,19 +1,19 @@
 import React from "react";
-import { Message } from "@chatscope/chat-ui-kit-react";
+import { Message as KitMessage, MessageModel } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import { TMessageHistory } from "../../../store";
 
-export interface ICustomMessage {
+export interface IMessage {
   message: TMessageHistory;
   userJid: string;
   position: {
     type: string;
-    position: 0 | 1 | "single" | "first" | "normal" | "last" | 2 | 3;
+    position: MessageModel['position'];
   };
   is?: string;
 }
 
-export const CustomMessage: React.FC<ICustomMessage> = ({
+export const Message: React.FC<IMessage> = ({
   message,
   userJid,
   position,
@@ -23,7 +23,7 @@ export const CustomMessage: React.FC<ICustomMessage> = ({
   const messageJid = message.data.senderJID;
 
   return (
-    <Message
+    <KitMessage
       key={message.key}
       model={{
         sender: firstName + " " + lastName,
@@ -52,7 +52,7 @@ export const CustomMessage: React.FC<ICustomMessage> = ({
         />
       )}
 
-      <Message.CustomContent>
+      <KitMessage.CustomContent>
         {(position.type === "first" || position.type === "single") && (
           <strong>
             {firstName} {lastName}
@@ -60,10 +60,10 @@ export const CustomMessage: React.FC<ICustomMessage> = ({
           </strong>
         )}
         {message.body}
-      </Message.CustomContent>
+      </KitMessage.CustomContent>
 
       {(position.type === "last" || position.type === "single") && (
-        <Message.Footer
+        <KitMessage.Footer
           sentTime={
             differenceInHours(new Date(), new Date(message.date)) > 5
               ? format(new Date(message.date), "h:mm:ss a")
@@ -73,6 +73,6 @@ export const CustomMessage: React.FC<ICustomMessage> = ({
           }
         />
       )}
-    </Message>
+    </KitMessage>
   );
 };

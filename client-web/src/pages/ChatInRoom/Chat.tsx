@@ -19,11 +19,12 @@ import {
   Search,
   ConversationHeader,
   TypingIndicator,
+  MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import { CustomMessage } from "../../componets/Chat/Messages/CustomMessage";
+import { Message } from "../../componets/Chat/Messages/Message";
 
 type IMessagePosition = {
-  position: 0 | 1 | "single" | "first" | "normal" | "last" | 2 | 3;
+  position: MessageModel["position"];
   type: string;
 };
 
@@ -246,7 +247,7 @@ export function ChatInRoom() {
               .map((message, index, arr) => {
                 const position = getPosition(arr, message, index);
                 return (
-                  <CustomMessage
+                  <Message
                     key={message.id}
                     is={"Message"}
                     position={position}
