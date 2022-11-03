@@ -174,7 +174,7 @@ export const ROOM_KEYS: Record<string, string> = {
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle: boolean = false;
-
+export const appWallets = ['0xB91F341f948469D77D607E36E5264aB0e0479c9C']
 // Login screen
 const googleSignIn = true;
 const appleSignIn = true;

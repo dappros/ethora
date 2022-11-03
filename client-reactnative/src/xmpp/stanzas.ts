@@ -193,25 +193,25 @@ export const sendMediaMessageStanza = async (
       wrappable: data?.wrappable,
       nftId: data?.nftId,
       isReply: data?.isReply,
-      mainMessageText:data?.mainMessageText,
-      mainMessageId:data?.mainMessageId,
-      mainMessageUserName:data?.mainMessageUserName,
-      mainMessageCreatedAt:data?.mainMessageCreatedAt,
-      mainMessageFileName:data?.mainMessageFileName,
-      mainMessageImageLocation:data?.mainMessageImageLocation,
-      mainMessageImagePreview:data?.mainMessageImagePreview,
-      mainMessageMimeType:data?.mainMessageMimeType,
-      mainMessageOriginalName:data?.mainMessageOriginalName,
-      mainMessageSize:data?.mainMessageSize,
-      mainMessageDuration:data?.mainMessageDuration,
-      mainMessageWaveForm:data?.mainMessageWaveForm,
-      mainMessageAttachmentId:data?.mainMessageAttachmentId,
-      mainMessageWrappable:data?.mainMessageWrappable,
-      mainMessageNftId:data?.mainMessageNftId,
-      mainMessageNftActionType:data?.mainMessageNftActionType,
-      mainMessageContractAddress:data?.mainMessageContractAddress,
-      mainMessageRoomJid:data?.mainMessageRoomJid,
-      showInChannel:data?.showInChannel,
+      mainMessageText: data?.mainMessageText,
+      mainMessageId: data?.mainMessageId,
+      mainMessageUserName: data?.mainMessageUserName,
+      mainMessageCreatedAt: data?.mainMessageCreatedAt,
+      mainMessageFileName: data?.mainMessageFileName,
+      mainMessageImageLocation: data?.mainMessageImageLocation,
+      mainMessageImagePreview: data?.mainMessageImagePreview,
+      mainMessageMimeType: data?.mainMessageMimeType,
+      mainMessageOriginalName: data?.mainMessageOriginalName,
+      mainMessageSize: data?.mainMessageSize,
+      mainMessageDuration: data?.mainMessageDuration,
+      mainMessageWaveForm: data?.mainMessageWaveForm,
+      mainMessageAttachmentId: data?.mainMessageAttachmentId,
+      mainMessageWrappable: data?.mainMessageWrappable,
+      mainMessageNftId: data?.mainMessageNftId,
+      mainMessageNftActionType: data?.mainMessageNftActionType,
+      mainMessageContractAddress: data?.mainMessageContractAddress,
+      mainMessageRoomJid: data?.mainMessageRoomJid,
+      showInChannel: data?.showInChannel,
     }),
   );
 
@@ -677,6 +677,33 @@ export const setRoomImage = (
   xmpp.send(message);
 };
 
+export const deleteMessageStanza = (
+  from: string,
+  roomJid: string,
+  messageId: string,
+  xmpp,
+) => {
+  // <message
+  //   from="olek@localhost"
+  //   id="1635229272917013"
+  //   to="test_olek@conference.localhost"
+  //   type="groupchat">
+  //   <body>Wow</body>
+  //   <delete id="1635229272917013" />
+  // </message>;
+
+  const stanza = xml(
+    'message',
+    {from: from, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
+    xml('body', 'wow'),
+    xml('delete', {
+      id: messageId,
+    }),
+  );
+
+
+  xmpp.send(stanza);
+};
 export const updateVCard = (
   photoURL: string | null,
   desc: string | null,

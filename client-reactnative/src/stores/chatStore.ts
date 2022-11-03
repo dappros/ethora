@@ -129,7 +129,7 @@ export class ChatStore {
     manipulatedWalletAddress: '',
     chatJID: '',
   };
-  listOfThreads= [];
+  listOfThreads = [];
   roomMemberInfo = [];
 
   constructor(stores: RootStore) {
@@ -167,7 +167,7 @@ export class ChatStore {
         manipulatedWalletAddress: '',
         chatJID: '',
       };
-      this.listOfThreads = []
+      this.listOfThreads = [];
     });
   };
 
@@ -229,11 +229,11 @@ export class ChatStore {
     });
   };
 
-  addThreadMessage = (message: any)=> {
+  addThreadMessage = (message: any) => {
     runInAction(() => {
-      this.listOfThreads.push(message)
-    })
-  }
+      this.listOfThreads.push(message);
+    });
+  };
   addRoom = (room: any) => {
     runInAction(() => {
       this.roomList.push(room);
@@ -245,20 +245,20 @@ export class ChatStore {
     });
   };
 
-  updateMessageReplyNumbers = (messageId:any) => {
+  updateMessageReplyNumbers = (messageId: any) => {
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
-    if(index !== -1){
+    if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
-        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1
+        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1,
       };
 
       runInAction(() => {
         this.messages[index] = message;
-      })
+      });
     }
-  }
+  };
 
   updateMessageProperty = (messageId, property, value) => {
     const messages = toJS(this.messages);
@@ -284,7 +284,7 @@ export class ChatStore {
         if (type === 'CLEAR') {
           runInAction(() => {
             item.counter = 0;
-            this.roomsInfoMap[roomJid].counter = 0
+            this.roomsInfoMap[roomJid].counter = 0;
           });
         }
         if (type === 'UPDATE') {
@@ -544,7 +544,11 @@ export class ChatStore {
       ) {
         getBlackList(xmppUsername, this.xmpp);
       }
+      if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
+        console.log(stanza, '1');
 
+
+      }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
         const room = await getChatRoom(stanza.attrs.from);
@@ -581,10 +585,10 @@ export class ChatStore {
             stanza.children[0].children[0].children[0].children;
 
           const message = createMessageObject(singleMessageDetailArray);
-          
+
           // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
           // if(threadIndex != -1){
-          //   // alert(threadIndex) 
+          //   // alert(threadIndex)
           //   const threadMessage = {
           //     ...JSON.parse(JSON.stringify(this.listOfThreads[threadIndex]))
           //   };
@@ -597,20 +601,17 @@ export class ChatStore {
 
           // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
 
-
-
           const messageAlreadyExist = this.messages.findIndex(
             x => x._id === message._id,
           );
           if (messageAlreadyExist === -1) {
-
             if (
               this.blackList.find(item => item.userJid === message.user._id)
                 ?.userJid
             ) {
               return;
             }
-  
+
             if (message.system) {
               if (message?.contractAddress) {
                 await updateMessageToWrapped(message.receiverMessageId, {
@@ -624,25 +625,24 @@ export class ChatStore {
               );
             }
 
-            if(message.isReply){
-              const threadIndex = this.listOfThreads.findIndex(item => message._id === item._id)
-              if(threadIndex === -1){
-
-                this.addThreadMessage(message)
+            if (message.isReply) {
+              const threadIndex = this.listOfThreads.findIndex(
+                item => message._id === item._id,
+              );
+              if (threadIndex === -1) {
+                this.addThreadMessage(message);
               }
             }
 
+            const threadsOfCurrentMessage = this.listOfThreads.filter(
+              (item: any) => item.mainMessageId === message._id,
+            );
 
-
-            const threadsOfCurrentMessage = this.listOfThreads
-            .filter((item:any) => item.mainMessageId === message._id)
-
-            if(threadsOfCurrentMessage){
+            if (threadsOfCurrentMessage) {
               message.numberOfReplies = threadsOfCurrentMessage.length;
             }
             await insertMessages(message);
             this.addMessage(message);
-
           }
         }
 
@@ -691,12 +691,12 @@ export class ChatStore {
             );
             playCoinSound(message.tokenAmount);
           }
-          if(message.isReply){
+          if (message.isReply) {
             this.updateMessageProperty(
               message.mainMessageId,
               'numberOfReplies',
-              1
-            )
+              1,
+            );
             await updateNumberOfReplies(message.mainMessageId);
           }
           insertMessages(message);
