@@ -302,10 +302,12 @@ const _useStore = create<IStore>()(
           updateComposingChatRoom: (roomJID: string, status: boolean, userName: string) =>
             set((state) => {
               const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
-              if(status){
-                state.userChatRooms[currentIndex].composing = userName + " is typing";
-              }else{
-                state.userChatRooms[currentIndex].composing = "";
+              if(state.userChatRooms[currentIndex]){
+                if(status){
+                  state.userChatRooms[currentIndex].composing = userName + " is typing";
+                }else{
+                  state.userChatRooms[currentIndex].composing = "";
+                }
               }
             }),
           addAppUsers: (users: TAppUser[]) =>
