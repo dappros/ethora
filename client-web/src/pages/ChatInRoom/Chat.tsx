@@ -20,7 +20,6 @@ import {
     ConversationHeader,
     TypingIndicator, Message,
 } from '@chatscope/chat-ui-kit-react';
-import MessageDefault from "../../componets/Chat/Messages/MessageDefault";
 
 type IMessagePosition = {
     position: 0 | 1 | "single" | "first" | "normal" | "last" | 2 | 3;
@@ -153,16 +152,6 @@ export function ChatInRoom() {
         return result;
     }
 
-    const getImageLink = (message: TMessageHistory) => {
-        if (message.data.photoURL) {
-            const img = new Image();
-            img.onload = function () {
-                return message.data.photoURL;
-            }
-            img.src = message.data.photoURL;
-        }
-    }
-
     return (
         <Box style={{height: "500px"}}>
             <MainContainer responsive>
@@ -221,9 +210,20 @@ export function ChatInRoom() {
 
                                     {getPosition(arr, message, index).type === 'first' ||
                                     getPosition(arr, message, index).type === 'single' ?
-                                        // @ts-ignore
-                                        <Avatar src={getImageLink(message) ? getImageLink(message) : "https://icotar.com/initials/" + message.data.senderFirstName + " " + message.data.senderLastName}
-                                            name={message.data.senderFirstName}/> : null
+                                        <img
+                                            style={{
+                                                borderRadius: "50%",
+                                                boxSizing: "border-box",
+                                                width: "42px",
+                                                height: "42px"
+                                            }}
+                                            is={"Avatar"}
+                                            src={message.data.photoURL}
+                                            onError={({currentTarget}) => {
+                                                currentTarget.onerror = null;
+                                                currentTarget.src = "https://icotar.com/initials/" + message.data.senderFirstName + " " + message.data.senderLastName;
+                                            }}
+                                            alt={message.data.senderFirstName}/> : null
                                     }
 
                                     <Message.CustomContent>
