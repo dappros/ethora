@@ -1,65 +1,53 @@
 import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import xmpp from "../../xmpp";
-import {TMessageHistory, useStoreState} from "../../store";
-import {Stack, Typography} from "@mui/material";
-import {getBalance, getPublicProfile, getTransactions} from "../../http";
+import {useStoreState} from "../../store";
+import {getPublicProfile} from "../../http";
 import {TProfile} from "../Profile/types";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
-import {differenceInDays, differenceInHours, format, formatDistance, subDays} from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import {differenceInHours, format, formatDistance, subDays} from 'date-fns';
 
 import {
     MainContainer,
     Avatar,
     ChatContainer,
     MessageList,
-    Message,
-    MessageGroup,
     MessageInput,
     Conversation,
     ConversationList,
     Sidebar,
     Search,
     ConversationHeader,
-    VoiceCallButton,
-    VideoCallButton,
-    InfoButton,
     TypingIndicator,
-    MessageSeparator,
-    ExpansionPanel
 } from '@chatscope/chat-ui-kit-react';
 import MessageDefault from "../../componets/Chat/Messages/MessageDefault";
 
 export function ChatInRoom() {
-  const [room, setRoom] = useState("");
-  const messages = useStoreState((state) => state.historyMessages);
-  const user = useStoreState((store) => store.user);
-  const useChatRooms = useStoreState((store) => store.userChatRooms);
-  const loaderArchive = useStoreState((store) => store.loaderArchive);
-  const [profile, setProfile] = useState<TProfile>();
-  const [myMessage, setMyMessage] = useState("");
-  const [currentRoom, setCurrentRoom] = useState("");
-  const [roomData, setRoomData] = useState<{
-    jid: string;
-    name: string;
-    room_background: string;
-    room_thumbnail: string;
-    users_cnt: string;
-  }>({
-    jid: "",
-    name: "",
-    room_background: "",
-    room_thumbnail: "",
-    users_cnt: "",
-  });
+    const messages = useStoreState((state) => state.historyMessages);
+    const user = useStoreState((store) => store.user);
+    const useChatRooms = useStoreState((store) => store.userChatRooms);
+    const loaderArchive = useStoreState((store) => store.loaderArchive);
+    const [profile, setProfile] = useState<TProfile>();
+    const [myMessage, setMyMessage] = useState("");
+    const [currentRoom, setCurrentRoom] = useState("");
+    const [roomData, setRoomData] = useState<{
+        jid: string;
+        name: string;
+        room_background: string;
+        room_thumbnail: string;
+        users_cnt: string;
+    }>({
+        jid: "",
+        name: "",
+        room_background: "",
+        room_thumbnail: "",
+        users_cnt: "",
+    });
 
     const onYReachStart = () => {
         if (loaderArchive) {
             return;
-        }else{
+        } else {
             const lastMessageID = messages.filter((item: any) => item.roomJID === currentRoom)[0].id;
             xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
         }
@@ -72,58 +60,58 @@ export function ChatInRoom() {
             });
     }, []);
 
-  const chooseRoom = (jid: string) => {
-    setCurrentRoom(jid);
-    setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
-    useStoreState.getState().clearCounterChatRoom(jid);
+    const chooseRoom = (jid: string) => {
+        setCurrentRoom(jid);
+        setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
+        useStoreState.getState().clearCounterChatRoom(jid);
 
-      const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
+        const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
 
-    if (!loaderArchive && filteredMessages.length === 1) {
-        const lastMessageID = filteredMessages[0].id;
-        xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
-    }
-  };
+        if (!loaderArchive && filteredMessages.length === 1) {
+            const lastMessageID = filteredMessages[0].id;
+            xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
+        }
+    };
 
-  const getConversationInfo = (roomJID: string) => {
-      const messagesInRoom = messages.filter((item: any) => item.roomJID === roomJID).slice(-1);
-      if(loaderArchive && messagesInRoom.length <= 0){
-          return "Loading..."
-      }
+    const getConversationInfo = (roomJID: string) => {
+        const messagesInRoom = messages.filter((item: any) => item.roomJID === roomJID).slice(-1);
+        if (loaderArchive && messagesInRoom.length <= 0) {
+            return "Loading..."
+        }
 
-      if(messagesInRoom.length > 0){
-          return messagesInRoom[0].body;
-      }
-      return "No messages yet"
+        if (messagesInRoom.length > 0) {
+            return messagesInRoom[0].body;
+        }
+        return "No messages yet"
     }
 
     const getLastActiveTime = (roomJID: string) => {
         const messagesInRoom = messages.filter((item: any) => item.roomJID === roomJID).slice(-1);
-        if(messagesInRoom.length <= 0){
+        if (messagesInRoom.length <= 0) {
             return ""
         }
 
-        if(differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1){
+        if (differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1) {
             return format(new Date(messagesInRoom[0].date), 'hh:mm');
-        }else{
+        } else {
             return formatDistance(subDays(new Date(messagesInRoom[0].date), 0), new Date(), {addSuffix: true})
         }
     }
 
-  const sendMessage = () => {
-    let userAvatar = "";
-    if (profile?.profileImage) {
-      userAvatar = profile?.profileImage;
-    }
-    xmpp.sendMessage(
-      currentRoom,
-      user.firstName,
-      user.lastName,
-      userAvatar,
-      user.walletAddress,
-      myMessage
-    );
-  };
+    const sendMessage = () => {
+        let userAvatar = "";
+        if (profile?.profileImage) {
+            userAvatar = profile?.profileImage;
+        }
+        xmpp.sendMessage(
+            currentRoom,
+            user.firstName,
+            user.lastName,
+            userAvatar,
+            user.walletAddress,
+            myMessage
+        );
+    };
 
     return (
         <Box style={{height: "500px"}}>
@@ -152,7 +140,7 @@ export function ChatInRoom() {
                                 <ConversationHeader.Content
                                     userName={roomData.name}
                                     info={'Active ' + formatDistance(subDays(new Date(messages.filter((item: any) => item.roomJID === currentRoom).slice(-1)[0].date), 0), new Date(), {addSuffix: true})}
-                                /> :null
+                                /> : null
                             }
                             <ConversationHeader.Actions>
                                 <BookmarkRemoveIcon/>
@@ -161,17 +149,22 @@ export function ChatInRoom() {
                         : null}
                     <MessageList
                         loadingMore={loaderArchive} onYReachStart={onYReachStart}
-                        // typingIndicator={<TypingIndicator content="Test is typing"/>}
+                        typingIndicator={
+                            useChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing ?
+                                <TypingIndicator content={useChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing}/>
+                            : null
+                        }
                     >
                         {
                             messages.filter((item: any) => item.roomJID === currentRoom).map((message, index, arr) =>
                                 <div key={message.key} is={"Message"}>
 
-                                <MessageDefault   message={message} previousJID={arr[index-1]?.data.senderJID} nextJID={arr[index+1]?.data.senderJID}/>
+                                    <MessageDefault message={message} previousJID={arr[index - 1]?.data.senderJID}
+                                                    nextJID={arr[index + 1]?.data.senderJID}/>
                                 </div>
                             )
                         }
-                        {messages.length <= 0 || !currentRoom?
+                        {messages.length <= 0 || !currentRoom ?
                             <MessageList.Content style={{
                                 display: "flex",
                                 "flexDirection": "column",
@@ -198,7 +191,7 @@ export function ChatInRoom() {
                                 textAlign: "center",
                                 fontSize: "1.2em"
                             }}>
-                            Message list is empty
+                                Message list is empty
                             </MessageList.Content>
                             : null}
                     </MessageList>

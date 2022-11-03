@@ -103,7 +103,10 @@ const onMessageHistory = async (stanza: Element) => {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
     }
-    useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+
+    if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID) {
+      useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+    }
   }
 };
 
@@ -164,6 +167,7 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
             // @ts-ignore
             users_cnt: result?.attrs.users_cnt,
             unreadMessages: 0,
+            composing: "",
           };
           // @ts-ignore
           useStoreState.getState().setNewUserChatRoom(roomData);
@@ -173,6 +177,51 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
         }
         lastRomJIDLoading = roomJID;
       });
+    }
+  }
+};
+
+const onComposing = (stanza: Element) => {
+  if (
+    stanza.attrs.id === "isComposing" ||
+    stanza.attrs.id === "pausedComposing"
+  ) {
+    const requestType = stanza.attrs.id;
+    const recipientID = stanza.attrs.to.split("@")[0];
+    const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
+
+    if (recipientID === senderID) {
+      return;
+    }
+
+    if (requestType === "isComposing") {
+      useStoreState
+        .getState()
+        .updateComposingChatRoom(
+          stanza.attrs.from.toString().split("/")[0],
+          true,
+          stanza.getChild("data").attrs.fullName
+        );
+
+      setTimeout(
+        () =>
+          useStoreState
+            .getState()
+            .updateComposingChatRoom(
+              stanza.attrs.from.toString().split("/")[0],
+              false
+            ),
+        1500
+      );
+    }
+
+    if (stanza.attrs.id === "pausedComposing") {
+      useStoreState
+        .getState()
+        .updateComposingChatRoom(
+          stanza.attrs.from.toString().split("/")[0],
+          false
+        );
     }
   }
 };
@@ -210,6 +259,8 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
+    this.client.on("stanza", (stanza) => onComposing(stanza));
+    // this.client.on("stanza", (stanza) => console.log(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
