@@ -71,7 +71,7 @@ export function ChatInRoom() {
 
         const filteredMessages = messages.filter((item: any) => item.roomJID === jid);
 
-        if (!loaderArchive && filteredMessages.length === 1) {
+        if (!loaderArchive && filteredMessages.length < 10) {
             const lastMessageID = filteredMessages[0].id;
             xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
         }
