@@ -527,6 +527,54 @@ class XmppClass {
     );
     this.client.send(message);
   };
+
+  isComposing = (
+      walletAddress: string,
+      chatJID: string,
+      fullName: string,
+  ) => {
+    const message = xml(
+        'message',
+        {
+          from: this.client.jid?.toString(),
+          to: chatJID,
+          id: "isComposing",
+          type: "groupchat",
+        },
+        xml("composing", {
+          xmlns: "http://jabber.org/protocol/chatstates",
+        }),
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          fullName: fullName,
+          manipulatedWalletAddress: walletAddress,
+        }),
+    );
+    this.client.send(message);
+  };
+
+  pausedComposing = (
+      walletAddress: string,
+      chatJID: string
+  ) => {
+    const message = xml(
+        "message",
+        {
+          from: this.client.jid?.toString(),
+          to: chatJID,
+          id: "pausedComposing",
+          type: "groupchat",
+        },
+        xml("paused", {
+          xmlns: "http://jabber.org/protocol/chatstates",
+        }),
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          manipulatedWalletAddress: walletAddress,
+        }),
+    );
+    this.client.send(message);
+  };
 }
 
 export default new XmppClass();
