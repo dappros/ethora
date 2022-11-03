@@ -15,9 +15,9 @@ import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
-import LoadingButton from '@mui/lab/LoadingButton';
-import Alert from '@mui/material/Alert';
-import * as http from '../../http'
+import LoadingButton from "@mui/lab/LoadingButton";
+import Alert from "@mui/material/Alert";
+import * as http from "../../http";
 
 type TProps = {
   open: boolean;
@@ -45,31 +45,33 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
   const setOwner = useStoreState((state) => state.setOwner);
   const setApps = useStoreState((state) => state.setApps);
   const history = useHistory();
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
     validate,
-    onSubmit: ({email, password}) => {
-      setLoading(true)
-      http.loginOwner(email, password)
+    onSubmit: ({ email, password }) => {
+      setLoading(true);
+      http
+        .loginOwner(email, password)
         .then((response) => {
           setOwner({
             firstName: response.data.user.firstName,
             lastName: response.data.user.lastName,
             token: response.data.token,
-            _id: response.data.user._id
-          })
-          setApps(response.data.apps)
-          history.push('/owner')
+            _id: response.data.user._id,
+            walletAddress: response.data.user.defaultWallet.walletAddress,
+          });
+          setApps(response.data.apps);
+          history.push("/owner");
         })
         .catch((error) => {
-          console.log('error ', error)
+          console.log("error ", error);
         })
-        .finally(() => setLoading(false))
+        .finally(() => setLoading(false));
     },
   });
 
@@ -98,9 +100,7 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
               variant="standard"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={
-                formik.touched.email && Boolean(formik.errors.email)
-              }
+              error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={
                 formik.touched.email && formik.errors.email
                   ? formik.errors.email
@@ -112,7 +112,9 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
               fullWidth
               variant="standard"
             >
-              <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+              <InputLabel htmlFor="standard-adornment-password">
+                Password
+              </InputLabel>
               <Input
                 id="standard-adornment-password"
                 type={showPassword ? "text" : "password"}
@@ -136,7 +138,7 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
                 <FormHelperText>{formik.errors.password}</FormHelperText>
               )}
             </FormControl>
-            { !!error && <Alert severity="error">{error}</Alert> }
+            {!!error && <Alert severity="error">{error}</Alert>}
             <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
               <LoadingButton
                 loading={loading}

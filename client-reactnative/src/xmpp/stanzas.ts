@@ -900,3 +900,36 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
 
   xmpp.send(message);
 };
+
+export const changeRoomBackgroundStanza = (
+  from:string,
+  to:string,
+  roomThumbnail:string,
+  roomBackground:string
+) => {
+  // <iq from="user_jid" type="set" id="set_room_profile">
+  //   <query xmlns="ns:getrooms:setprofile" 
+  //       room_thumbnail="https://img.dxmpp.com/thumbnail.jpg" 
+  //       room_background="https://img.dxmpp.com/background.jpg" 
+  //       room="test12@conference.localhost"/>
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.changeRoomBackground
+    },
+    xml(
+      'query',
+      {
+        xmlns:'ns:getrooms:setprofile',
+        room_thumbnail:roomThumbnail,
+        room_background:roomBackground,
+        room:to
+      },
+
+    )
+  )
+}

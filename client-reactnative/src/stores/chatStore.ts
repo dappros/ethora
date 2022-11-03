@@ -1,7 +1,7 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
-import {action, makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChats} from '../../docs/config';
+import {makeAutoObservable, runInAction, toJS} from 'mobx';
+import {defaultChatBackgroundTheme, defaultChats} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -14,6 +14,7 @@ import {
   updateNumberOfReplies,
   updateTokenAmount,
 } from '../components/realmModels/messages';
+import {showToast} from '../components/Toast/toast';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -131,6 +132,8 @@ export class ChatStore {
   };
   listOfThreads = [];
   roomMemberInfo = [];
+  backgroundTheme = defaultChatBackgroundTheme;
+  selectedBackgroundIndex = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -140,6 +143,16 @@ export class ChatStore {
   toggleShouldCount = (value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
+    });
+  };
+
+  changeBackgroundTheme = (index: number) => {
+    runInAction(() => {
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      if (index != -1) {
+        this.backgroundTheme[index].isSelected = true;
+      }
+      this.selectedBackgroundIndex = index;
     });
   };
 
@@ -168,6 +181,8 @@ export class ChatStore {
         chatJID: '',
       };
       this.listOfThreads = [];
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      this.selectedBackgroundIndex = 0;
     });
   };
 
@@ -373,6 +388,13 @@ export class ChatStore {
           stanza,
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
+        showToast(
+          'success',
+          'Success',
+          'Chat background set successfully',
+          'top',
+        );
+        // showToast('success', 'Info', 'Link copied', 'top')
       }
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
@@ -437,9 +459,11 @@ export class ChatStore {
 
       if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
         if (stanza.children[0].children.length) {
-          this.roomMemberInfo = stanza.children[0].children.map(
-            item => item.attrs,
-          );
+          runInAction(() => {
+            this.roomMemberInfo = stanza.children[0].children.map(
+              item => item.attrs,
+            );
+          });
         }
       }
 
@@ -546,8 +570,6 @@ export class ChatStore {
       }
       if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
         console.log(stanza, '1');
-
-
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);

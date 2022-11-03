@@ -15,9 +15,8 @@ import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 
 export const Routes = () => {
-  const userToken = useStoreState((state) => state.user.token);
+  const userId = useStoreState((state) => state.user._id);
 
-  const ownerToken = useStoreState((state) => state.owner.token);
   const setACL = useStoreState((state) => state.setACL);
 
   const getAcl = async () => {
@@ -29,10 +28,11 @@ export const Routes = () => {
     }
   };
   useEffect(() => {
-    if (userToken || ownerToken) {
+    if (userId) {
       getAcl();
     }
-  }, [userToken, ownerToken]);
+  }, [userId]);
+
   return (
     <Switch>
       <Route path="/profile/:wallet">

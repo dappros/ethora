@@ -38,4 +38,5 @@ export const XMPP_TYPES = {
   roomMemberInfo: 'roomMemberInfo',
   setRoomImage: 'setRoomImage',
   deleteMessage: 'deleteMessage',
+  changeRoomBackground: 'changeRoomBackground',
 };

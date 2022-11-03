@@ -10,11 +10,6 @@ import { useStoreState } from "./store";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
-const store = {
-  token: "",
-  refreshToken: "",
-};
-
 export type TUser = {
   defaultWallet: {
     walletAddress: string;
@@ -92,56 +87,59 @@ export interface IUserAcl {
     appId: string;
   };
 }
-const http = axios.create({
+
+export const http = axios.create({
   baseURL: API_URL,
 });
 
-const refresh = () => {
+export function refresh() {
   return new Promise((resolve, reject) => {
+    const state = useStoreState.getState();
+    console.log("post to refresh ", state.user.refreshToken);
     http
       .post(
         "/users/login/refresh",
         {},
-        { headers: { Authorization: store.refreshToken } }
+        { headers: { Authorization: state.user.refreshToken } }
       )
       .then((response) => {
-        store.token = response.data.token;
-        store.refreshToken = response.data.refreshToken;
-        resolve(response);
+        useStoreState.setState((state) => {
+          state.user.token = response.data.token;
+          state.user.refreshToken = response.data.refreshToken;
+          resolve(response);
+        });
       })
       .catch((error) => {
         reject(error);
       });
   });
-};
+}
+http.interceptors.response.use(undefined, (error) => {
+  if (!error.response || error.response.status !== 401) {
+    return Promise.reject(error);
+  }
 
-// http.interceptors.response.use(undefined, (error) => {
-//   console.log('interceprots ', error.request.path, error.request.path)
-//   if (!error.response || error.response.status !== 401) {
-//     return Promise.reject(error)
-//   }
+  if (
+    error.config.url === "/users/login/refresh" ||
+    error.config.url === "/users/login"
+  ) {
+    return Promise.reject(error);
+  }
 
-//   if (error.request.path === '/v1/users/login/refresh' || error.request.path === '/v1/users/login') {
-//     console.log(`error.request.path === '/v1/users/login/refresh' || error.request.path === '/v1/users/login'`)
-//     return Promise.reject(error)
-//   }
+  const request = error.config;
 
-//   const request = error.config
-
-//   return refresh()
-//     .then(() => {
-//       return new Promise((resolve) => {
-//         request.headers['Authorization'] = store.token
-//         resolve(http(request))
-//       })
-//     })
-//     .catch((error) => {
-//       return Promise.reject(error)
-//     })
-// })
-
-// this.xmpp.on('online', async address => {
-//     this.xmpp.reconnect.delay = 2000;
+  return refresh()
+    .then(() => {
+      return new Promise((resolve) => {
+        const user = useStoreState.getState().user;
+        request.headers["Authorization"] = user.token;
+        resolve(http(request));
+      });
+    })
+    .catch((error) => {
+      return Promise.reject(error);
+    });
+});
 
 export const loginUsername = (username: string, password: string) => {
   return http.post(
@@ -182,6 +180,7 @@ export async function deployNfmt(
   attachmentId: string,
   maxSupplies: number[]
 ): Promise<any | null> {
+  const user = useStoreState.getState().user;
   try {
     const respData = await http.post(
       "/tokens/items/nfmt",
@@ -197,7 +196,7 @@ export async function deployNfmt(
         attachmentId,
         maxSupplies,
       },
-      { headers: { Authorization: store.token } }
+      { headers: { Authorization: user.token } }
     );
 
     return respData.data;
@@ -330,22 +329,21 @@ export function checkEmailExist(email: string) {
   );
 }
 export function getUserAcl(userId: string) {
-  const owner = useStoreState.getState().owner;
+  const user = useStoreState.getState().user;
 
   return http.get<IUserAcl>(
     "/users/acl/" + userId,
 
-    { headers: { Authorization: owner.token } }
+    { headers: { Authorization: user.token } }
   );
 }
 export function getMyAcl() {
-  const owner = useStoreState.getState().owner;
   const user = useStoreState.getState().user;
 
   return http.get<IUserAcl>(
     "/users/acl/",
 
-    { headers: { Authorization: owner.token || user.token } }
+    { headers: { Authorization: user.token } }
   );
 }
 export interface IAclBody {
@@ -362,7 +360,7 @@ export interface IAclBody {
   };
 }
 export function updateUserAcl(userId: string, body: IAclBody) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
 
   return http.put<IUserAcl>(
     "/users/acl/" + userId,
@@ -435,28 +433,28 @@ export function loginOwner(email: string, password: string) {
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.get("/apps", {
     headers: { Authorization: owner.token },
   });
 }
 
 export function createApp(fd: FormData) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.post("/apps", fd, {
     headers: { Authorization: owner.token },
   });
 }
 
 export function deleteApp(id: string) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.delete(`/apps/${id}`, {
     headers: { Authorization: owner.token },
   });
 }
 
 export function updateApp(id: string, fd: FormData) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.put(`/apps/${id}`, fd, {
     headers: { Authorization: owner.token },
   });
@@ -467,7 +465,7 @@ export function getAppUsers(
   limit: number = 10,
   offset: number = 0
 ) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.get<ExplorerRespose<IUser[]>>(
     `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
     {
@@ -477,8 +475,16 @@ export function getAppUsers(
 }
 
 export function rotateAppJwt(appId: string) {
-  const owner = useStoreState.getState().owner;
+  const owner = useStoreState.getState().user;
   return http.post(`/apps/rotate-jwt/${appId}`, null, {
     headers: { Authorization: owner.token },
+  });
+}
+
+export function updateProfile(fd: FormData, id?: string) {
+  const path = id ? `/users/${id}` : "/users";
+  const user = useStoreState.getState().user;
+  return http.put(path, fd, {
+    headers: { Authorization: user.token },
   });
 }
