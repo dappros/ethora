@@ -62,20 +62,26 @@ export const RoomsTabBar = observer(() => {
       chatStore.roomList?.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
-        if (item.participants < 3 && !defaultChats[splitedJid]) {
+        if (
+          item.participants < 3 &&
+          !defaultChats[splitedJid] &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           notificationsCount[ROOM_KEYS.private] += item.counter;
           return item;
         }
       }),
-    [chatStore.roomList],
+    [chatStore.roomList, chatStore.roomsInfoMap.isUpdated],
   );
 
   const officialChats = useMemo(
     () =>
       chatStore.roomList.filter(item => {
         const splitedJid = item?.jid?.split('@')[0];
-
-        if (defaultChats[splitedJid]) {
+        if (
+          defaultChats[splitedJid] ||
+          chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           notificationsCount[ROOM_KEYS.official] += item.counter;
           return item;
         }
@@ -83,7 +89,7 @@ export const RoomsTabBar = observer(() => {
           return item;
         }
       }),
-    [chatStore.roomList],
+    [chatStore.roomList, chatStore.roomsInfoMap.isUpdated],
   );
 
   const groupsChats = useMemo(
@@ -91,12 +97,16 @@ export const RoomsTabBar = observer(() => {
       chatStore.roomList.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
-        if (item.participants > 2 && !defaultChats[splitedJid]) {
+        if (
+          item.participants > 2 &&
+          !defaultChats[splitedJid] &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           notificationsCount[ROOM_KEYS.groups] += item.counter;
           return item;
         }
       }),
-    [chatStore.roomList],
+    [chatStore.roomList, chatStore.roomsInfoMap.isUpdated],
   );
 
   return (

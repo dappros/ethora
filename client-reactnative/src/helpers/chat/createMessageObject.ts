@@ -44,25 +44,24 @@ interface createMessageObjectProps {
   mainMessageText?: string;
   mainMessageId?: string;
   mainMessageUserName?: string;
-  mainMessageCreatedAt?:string;
-  mainMessageFileName?:string;
-  mainMessageImageLocation?:string;
-  mainMessageImagePreview?:string;
-  mainMessageMimeType?:string;
-  mainMessageOriginalName?:string;
-  mainMessageSize?:string;
-  mainMessageDuration?:string;
-  mainMessageWaveForm?:string;
-  mainMessageAttachmentId?:string;
-  mainMessageWrappable?:boolean;
-  mainMessageNftId?:string;
-  mainMessageNftActionType?:string;
-  mainMessageContractAddress?:string;
-  mainMessageRoomJid?:string;
-  numberOfReplies?:number;
-  showInChannel?:boolean;
+  mainMessageCreatedAt?: string;
+  mainMessageFileName?: string;
+  mainMessageImageLocation?: string;
+  mainMessageImagePreview?: string;
+  mainMessageMimeType?: string;
+  mainMessageOriginalName?: string;
+  mainMessageSize?: string;
+  mainMessageDuration?: string;
+  mainMessageWaveForm?: string;
+  mainMessageAttachmentId?: string;
+  mainMessageWrappable?: boolean;
+  mainMessageNftId?: string;
+  mainMessageNftActionType?: string;
+  mainMessageContractAddress?: string;
+  mainMessageRoomJid?: string;
+  numberOfReplies?: number;
+  showInChannel?: boolean;
   preview?: string;
-
 }
 
 export const createMessageObject = (
@@ -102,9 +101,9 @@ export const createMessageObject = (
     mainMessageText: '',
     mainMessageId: '',
     mainMessageUserName: '',
-    numberOfReplies:0,
-    showInChannel:false,
-    preview: ''
+    numberOfReplies: 0,
+    showInChannel: false,
+    preview: '',
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -131,7 +130,7 @@ export const createMessageObject = (
       message.duration = item.attrs.duration;
       message.size = item.attrs.size;
       message.image = item.attrs.location;
-      message.receiverMessageId = item.attrs.receiverMessageId.toString() || '';
+      message.receiverMessageId = item.attrs.receiverMessageId || '';
       message.quickReplies = item.attrs.quickReplies || '';
       message.attachmentId = item.attrs.attachmentId || '';
       message.wrappable = true;
@@ -154,11 +153,13 @@ export const createMessageObject = (
       message.mainMessageDuration = item.attrs.mainMessageDuration;
       message.mainMessageWaveForm = item.attrs.mainMessageWaveForm;
       message.mainMessageAttachmentId = item.attrs.mainMessageAttachmentId;
-      message.mainMessageWrappable = item.attrs.mainMessageWrappable === 'true' || false;
+      message.mainMessageWrappable =
+        item.attrs.mainMessageWrappable === 'true' || false;
       message.mainMessageNftId = item.attrs.mainMessageNftId;
       message.mainMessageNftActionType = item.attrs.mainMessageNftActionType;
-      message.mainMessageContractAddress = item.attrs.mainMessageContractAddress;
-      message.mainMessageRoomJid = item.attrs.mainMessageRoomJid
+      message.mainMessageContractAddress =
+        item.attrs.mainMessageContractAddress;
+      message.mainMessageRoomJid = item.attrs.mainMessageRoomJid;
       message.numberOfReplies = 0;
       message.showInChannel = item.attrs.showInChannel === 'true' || false;
       message.preview = item.attrs.locationPreview;

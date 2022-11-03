@@ -34,7 +34,6 @@ const HomeStack = createNativeStackNavigator();
 
 export const HomeStackScreen = observer(() => {
   const {chatStore, loginStore, walletStore, apiStore} = useStores();
-  console.log(loginStore.userToken,"tokennnnnn")
   const {initialData} = loginStore;
   const {xmppPassword, xmppUsername, password, walletAddress} = initialData;
   const navigation = useNavigation();
@@ -47,11 +46,15 @@ export const HomeStackScreen = observer(() => {
     }
   }, [chatStore.roomList, chatStore.isOnline]);
 
+  const getCache = async () => {
+    await chatStore.getCachedRoomsInfo();
+    await chatStore.getRoomsFromCache();
+    await chatStore.getCachedMessages();
+    await walletStore.getCachedTransactions();
+  };
+
   useEffect(() => {
-    chatStore.getCachedRoomsInfo();
-    chatStore.getRoomsFromCache();
-    chatStore.getCachedMessages();
-    walletStore.getCachedTransactions();
+    getCache();
     if (xmppUsername && xmppPassword) {
       getPushToken(
         loginStore.initialData.walletAddress,
@@ -297,7 +300,6 @@ export const HomeStackScreen = observer(() => {
         })}
       />
     </HomeStack.Navigator>
-    
   );
 });
 
