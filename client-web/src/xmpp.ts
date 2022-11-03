@@ -191,7 +191,7 @@ const onComposing = (stanza: Element) => {
     stanza.attrs.id === "pausedComposing"
   ) {
     const requestType = stanza.attrs.id;
-    const recipientID = stanza.attrs.to.split("@")[0];
+    const recipientID = String(stanza.attrs.to).split("@")[0];
     const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
 
     if (recipientID === walletToUsername(senderID)) {
