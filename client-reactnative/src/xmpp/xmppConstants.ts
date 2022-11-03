@@ -37,5 +37,6 @@ export const XMPP_TYPES = {
   removeFromBlackList: 'removeFromBlackList',
   roomMemberInfo: 'roomMemberInfo',
   setRoomImage: 'setRoomImage',
-  changeRoomBackground: 'changeRoomBackground'
+  deleteMessage: 'deleteMessage',
+  changeRoomBackground: 'changeRoomBackground',
 };

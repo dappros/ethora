@@ -46,7 +46,6 @@ const RoomDetails = ({
 }: {
   room: {jid: string; name: string; roomThumbnail: string, roomBackground:string};
 }) => {
-  console.log(room,"roooooomdetails")
   const roomName = room.name;
   const [uploadedImage, setUploadedImage] = useState({
     _id: '',
