@@ -108,7 +108,7 @@ export class ChatStore {
   xmppError: any = '';
   roomList: roomListProps | [] = [];
   stores: RootStore | {} = {};
-  roomsInfoMap: any = {};
+  roomsInfoMap: any = {isUpdated: 0};
   chatLinkInfo: any = {};
   blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
@@ -231,6 +231,10 @@ export class ChatStore {
   updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
+      if (data?.isFavourite !== undefined) {
+
+        this.roomsInfoMap.isUpdated += 1;
+      }
     });
     await asyncStorageSetItem(
       asyncStorageConstants.roomsListHashMap,
@@ -319,7 +323,7 @@ export class ChatStore {
   };
 
   updateAllRoomsInfo = async () => {
-    let map = {};
+    let map = {isUpdated: 0};
     this.roomList.forEach(item => {
       const latestMessage = this.messages
         .filter(message => item.jid === message.roomJid)
