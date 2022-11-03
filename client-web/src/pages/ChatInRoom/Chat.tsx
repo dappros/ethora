@@ -293,7 +293,6 @@ export function ChatInRoom() {
                         <MessageInput
                             placeholder="Type message here"
                             onChange={setMessage}
-                            value={myMessage}
                             onSend={sendMessage}
                         />
                         : null}
