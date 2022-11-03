@@ -26,11 +26,19 @@ export default function UserCard({ profile }: TProps) {
         }}
       >
         <Box sx={{ marginRight: "10px" }}>
-          <img
-            style={{ width: "150px", borderRadius: "10px" }}
-            alt=""
-            src={profile.profileImage ? profile.profileImage : defUserImage}
-          />
+          {user.firstName ? (
+            <img
+              style={{ width: "150px", borderRadius: "10px" }}
+              alt=""
+              src={user.profileImage ? user.profileImage : defUserImage}
+            />
+          ) : (
+            <img
+              style={{ width: "150px", borderRadius: "10px" }}
+              alt=""
+              src={profile.profileImage ? profile.profileImage : defUserImage}
+            />
+          )}
         </Box>
         <Box>
           <Box sx={{ fontWeight: "bold" }}>
