@@ -5,11 +5,10 @@ import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
 import { getPublicProfile, getTransactions, getBalance } from "../../http";
-import {useStoreState}  from '../../store'
-import ItemsTable from './ItemsTable'
+import { useStoreState } from "../../store";
+import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
 import { Typography } from "@mui/material";
-
 
 type TBalance = {
   balance: string;
@@ -60,16 +59,16 @@ export function MyProfile() {
           <CircularProgress />
         </Box>
       )}
-      <Box sx={{margin: 'auto', width: '200px'}}>
+      <Box sx={{ margin: "auto", width: "200px" }}>
         {!!profile && <UserCard profile={profile} />}
       </Box>
       <ItemsTable />
       {!!transactions && (
-        <Box >
-           <Typography variant="h6" style={{ margin: "16px" }}>
-          Transactions
-        </Typography>
-        <Transactions transactions={transactions.items} />
+        <Box>
+          <Typography variant="h6" style={{ margin: "16px" }}>
+            Transactions
+          </Typography>
+          <Transactions transactions={transactions.items} />
         </Box>
       )}
     </Container>

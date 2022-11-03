@@ -49,68 +49,88 @@ const onMessage = async (stanza: Element) => {
 };
 
 const onMessageHistory = async (stanza: Element) => {
-    if (stanza.is('message')) {
-        const body = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('body');
-        const data = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('data');
-        const delay = stanza.getChild('result')?.getChild('forwarded')?.getChild('delay');
-        const id = stanza.getChild('result')?.attrs.id;
+  if (stanza.is("message")) {
+    const body = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("message")
+      ?.getChild("body");
+    const data = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("message")
+      ?.getChild("data");
+    const delay = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("delay");
+    const id = stanza.getChild("result")?.attrs.id;
 
-        if (!data || !body || !delay || !id) {
-                return;
-            }
-
-            if (!data.attrs.senderFirstName ||  !data.attrs.senderLastName || !data.attrs.senderJID) {
-                return;
-            }
-            const msg = {
-                id: Number(id),
-                body: body.getText(),
-                data: {
-                    isSystemMessage: data.attrs.isSystemMessage,
-                    photoURL: data.attrs.photoURL,
-                    quickReplies: data.attrs.quickReplies,
-                    roomJid: data.attrs.roomJid,
-                    senderFirstName: data.attrs.senderFirstName,
-                    senderJID: data.attrs.senderJID,
-                    senderLastName: data.attrs.senderLastName,
-                    senderWalletAddress: data.attrs.senderWalletAddress,
-                    tokenAmount: data.attrs.tokenAmount,
-                    xmlns: data.attrs.xmlns
-                },
-                roomJID: stanza.attrs.from,
-                date: delay.attrs.stamp,
-                key: Date.now()+Number(id)
-            }
-            if(isGettingMessages){
-                temporaryMessages.push(msg)
-            }
-            if(!isGettingMessages){
-                useStoreState.getState().setNewMessageHistory(msg);
-                useStoreState.getState().sortMessageHistory();
-            }
-
-            if(stanza.attrs.to.split("@")[0] !== data.attrs.senderJID){
-                useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-            }
+    if (!data || !body || !delay || !id) {
+      return;
     }
-}
+
+    if (
+      !data.attrs.senderFirstName ||
+      !data.attrs.senderLastName ||
+      !data.attrs.senderJID
+    ) {
+      return;
+    }
+    const msg = {
+      id: Number(id),
+      body: body.getText(),
+      data: {
+        isSystemMessage: data.attrs.isSystemMessage,
+        photoURL: data.attrs.photoURL,
+        quickReplies: data.attrs.quickReplies,
+        roomJid: data.attrs.roomJid,
+        senderFirstName: data.attrs.senderFirstName,
+        senderJID: data.attrs.senderJID,
+        senderLastName: data.attrs.senderLastName,
+        senderWalletAddress: data.attrs.senderWalletAddress,
+        tokenAmount: data.attrs.tokenAmount,
+        xmlns: data.attrs.xmlns,
+      },
+      roomJID: stanza.attrs.from,
+      date: delay.attrs.stamp,
+      key: Date.now() + Number(id),
+    };
+    if (isGettingMessages) {
+      temporaryMessages.push(msg);
+    }
+    if (!isGettingMessages) {
+      useStoreState.getState().setNewMessageHistory(msg);
+      useStoreState.getState().sortMessageHistory();
+    }
+
+    if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID) {
+      useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+    }
+  }
+};
 
 const onLastMessageArchive = (stanza: Element, xmpp: any) => {
-    if (stanza.attrs.id === "paginatedArchive" || stanza.attrs.id === "GetArchive") {
-        lastMsgId = String(stanza.getChild('fin')?.getChild('set')?.getChild('last')?.children[0]);
-        if(isGettingMessages){
-            useStoreState.getState().updateMessageHistory(temporaryMessages);
-            isGettingMessages = false
-            useStoreState.getState().setLoaderArchive(false);
-            temporaryMessages = [];
-        }
-
-        if(lastRomJIDLoading && lastRomJIDLoading === stanza.attrs.from){
-            useStoreState.getState().setLoaderArchive(false);
-            lastRomJIDLoading = '';
-        }
+  if (
+    stanza.attrs.id === "paginatedArchive" ||
+    stanza.attrs.id === "GetArchive"
+  ) {
+    lastMsgId = String(
+      stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
+    );
+    if (isGettingMessages) {
+      useStoreState.getState().updateMessageHistory(temporaryMessages);
+      isGettingMessages = false;
+      useStoreState.getState().setLoaderArchive(false);
+      temporaryMessages = [];
     }
-}
+
+    if (lastRomJIDLoading && lastRomJIDLoading === stanza.attrs.from) {
+      useStoreState.getState().setLoaderArchive(false);
+      lastRomJIDLoading = "";
+    }
+  }
+};
 
 const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "sendMessage") {
@@ -124,73 +144,87 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
 };
 
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
-    if(stanza.attrs.id === "getUserRooms"){
-        if(stanza.getChild('query')?.children){
-            useStoreState.getState().clearUserChatRooms();
-            useStoreState.getState().setLoaderArchive(true);
-            let roomJID: string = '';
-            stanza.getChild('query')?.children.forEach((result: Object) => {
-                // @ts-ignore
-                if(result?.attrs.name) {
-                    // @ts-ignore
-                    roomJID = result.attrs.jid;
-                    xmpp.presenceInRoom(roomJID)
+  if (stanza.attrs.id === "getUserRooms") {
+    if (stanza.getChild("query")?.children) {
+      useStoreState.getState().clearUserChatRooms();
+      useStoreState.getState().setLoaderArchive(true);
+      let roomJID: string = "";
+      stanza.getChild("query")?.children.forEach((result: Object) => {
+        // @ts-ignore
+        if (result?.attrs.name) {
+          // @ts-ignore
+          roomJID = result.attrs.jid;
+          xmpp.presenceInRoom(roomJID);
 
-                    const roomData = {
-                        jid: roomJID,
-                        // @ts-ignore
-                        name: result?.attrs.name,
-                        // @ts-ignore
-                        room_background: result?.attrs.room_background,
-                        // @ts-ignore
-                        room_thumbnail: result?.attrs.room_thumbnail,
-                        // @ts-ignore
-                        users_cnt: result?.attrs.users_cnt,
-                        unreadMessages: 0,
-                        composing: ""
-                    };
-                    // @ts-ignore
-                    useStoreState.getState().setNewUserChatRoom(roomData);
+          const roomData = {
+            jid: roomJID,
+            // @ts-ignore
+            name: result?.attrs.name,
+            // @ts-ignore
+            room_background: result?.attrs.room_background,
+            // @ts-ignore
+            room_thumbnail: result?.attrs.room_thumbnail,
+            // @ts-ignore
+            users_cnt: result?.attrs.users_cnt,
+            unreadMessages: 0,
+            composing: "",
+          };
+          // @ts-ignore
+          useStoreState.getState().setNewUserChatRoom(roomData);
 
-                    //get message history in the room
-                    xmpp.getRoomArchiveStanza(roomJID, 1);
-                }
-                lastRomJIDLoading = roomJID;
-            })
+          //get message history in the room
+          xmpp.getRoomArchiveStanza(roomJID, 1);
         }
+        lastRomJIDLoading = roomJID;
+      });
     }
+  }
 };
 
 const onComposing = (stanza: Element) => {
-    if(stanza.attrs.id === "isComposing" || stanza.attrs.id === "pausedComposing"){
-        const requestType = stanza.attrs.id;
-        const recipientID = stanza.attrs.to.split("@")[0];
-        const senderID = stanza.getChild('data').attrs.manipulatedWalletAddress;
+  if (
+    stanza.attrs.id === "isComposing" ||
+    stanza.attrs.id === "pausedComposing"
+  ) {
+    const requestType = stanza.attrs.id;
+    const recipientID = stanza.attrs.to.split("@")[0];
+    const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
 
-        if (recipientID === senderID) {
-            return;
-        }
-
-        if (requestType === "isComposing") {
-            useStoreState.getState().updateComposingChatRoom(
-                stanza.attrs.from.toString().split("/")[0],
-                true,
-                stanza.getChild('data').attrs.fullName);
-
-            setTimeout(() =>
-                    useStoreState.getState().updateComposingChatRoom(
-                        stanza.attrs.from.toString().split("/")[0],
-                        false)
-                , 1500);
-        }
-
-        if (stanza.attrs.id === "pausedComposing") {
-            useStoreState.getState().updateComposingChatRoom(
-                stanza.attrs.from.toString().split("/")[0],
-                false);
-        }
+    if (recipientID === senderID) {
+      return;
     }
-}
+
+    if (requestType === "isComposing") {
+      useStoreState
+        .getState()
+        .updateComposingChatRoom(
+          stanza.attrs.from.toString().split("/")[0],
+          true,
+          stanza.getChild("data").attrs.fullName
+        );
+
+      setTimeout(
+        () =>
+          useStoreState
+            .getState()
+            .updateComposingChatRoom(
+              stanza.attrs.from.toString().split("/")[0],
+              false
+            ),
+        1500
+      );
+    }
+
+    if (stanza.attrs.id === "pausedComposing") {
+      useStoreState
+        .getState()
+        .updateComposingChatRoom(
+          stanza.attrs.from.toString().split("/")[0],
+          false
+        );
+    }
+  }
+};
 
 const getListOfRooms = (xmpp: any) => {
   defaultRooms.map((roomJID) => {
@@ -372,81 +406,81 @@ class XmppClass {
     this.client.send(presence);
   }
 
-    getRoomArchiveStanza(chatJID: string, amount: number) {
-        let message = xml(
-            "iq",
-            {
-                type: "set",
-                to: chatJID,
-                id: "GetArchive",
-            },
-            xml(
-                "query",
-                {xmlns: "urn:xmpp:mam:2"},
-                xml(
-                    "set",
-                    {xmlns: "http://jabber.org/protocol/rsm"},
-                    xml("max", {}, String(amount)),
-                    xml("before"),
-                ),
-            ),
-        );
-        this.client.send(message);
-    }
+  getRoomArchiveStanza(chatJID: string, amount: number) {
+    let message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chatJID,
+        id: "GetArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, String(amount)),
+          xml("before")
+        )
+      )
+    );
+    this.client.send(message);
+  }
 
-    getPaginatedArchive = (
-        chatJID: string,
-        firstUserMessageID: string,
-        amount: number
-    ) => {
-      if(lastMsgId === firstUserMessageID){
-          return;
-      }
-        isGettingMessages = true;
-        useStoreState.getState().setLoaderArchive(true);
-        const message = xml(
-            'iq',
-            {
-                type: 'set',
-                to: chatJID,
-                id: 'paginatedArchive',
-            },
-            xml(
-                'query',
-                {xmlns: 'urn:xmpp:mam:2'},
-                xml(
-                    'set',
-                    {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, String(amount)),
-                    xml('before', {}, firstUserMessageID),
-                ),
-            ),
-        );
-        this.client.send(message);
+  getPaginatedArchive = (
+    chatJID: string,
+    firstUserMessageID: string,
+    amount: number
+  ) => {
+    if (lastMsgId === firstUserMessageID) {
+      return;
     }
+    isGettingMessages = true;
+    useStoreState.getState().setLoaderArchive(true);
+    const message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chatJID,
+        id: "paginatedArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, String(amount)),
+          xml("before", {}, firstUserMessageID)
+        )
+      )
+    );
+    this.client.send(message);
+  };
 
-    getLastMessageArchive(chat_jid: string) {
-        isGettingMessages = true;
-        let message = xml(
-            'iq',
-            {
-                type: 'set',
-                to: chat_jid,
-                id: 'GetArchive',
-            },
-            xml(
-                'query',
-                {xmlns: 'urn:xmpp:mam:2'},
-                xml(
-                    'set',
-                    {xmlns: 'http://jabber.org/protocol/rsm'},
-                    xml('max', {}, '1'),
-                    xml('before'),
-                ),
-            ),
-        );
-        this.client.send(message);
-    }
+  getLastMessageArchive(chat_jid: string) {
+    isGettingMessages = true;
+    let message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chat_jid,
+        id: "GetArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, "1"),
+          xml("before")
+        )
+      )
+    );
+    this.client.send(message);
+  }
 
   sendMessage(
     roomJID: string,

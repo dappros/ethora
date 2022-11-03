@@ -4,6 +4,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { Button } from "@mui/material";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import { useStoreState } from "../../store";
@@ -35,24 +36,55 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
           </IconButton>
         </DialogTitle>
         <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
-          <Box
-            sx={{ marginRight: "10px" }}
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            <img
-              style={{ width: "150px", borderRadius: "10px" }}
-              alt=""
-              src={user.profileImage ? user.profileImage : defUserImage}
-            />
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                setChange(true);
-              }}
+          <Box style={{ display: "flex" }}>
+            {" "}
+            <Box
+              sx={{ marginRight: "10px" }}
+              style={{ display: "flex", flexDirection: "column" }}
             >
-              change image
-            </a>
+              <img
+                style={{ width: "150px", borderRadius: "10px" }}
+                alt=""
+                src={user.profileImage ? user.profileImage : defUserImage}
+              />
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setChange(true);
+                }}
+              >
+                change image
+              </a>
+            </Box>
+            <Box>
+              <form
+                style={{ display: "flex", flexDirection: "column" }}
+                onSubmit={() => {}}
+              >
+                <TextField
+                  margin="dense"
+                  label="First Name"
+                  name="appName"
+                  variant="standard"
+                />
+                <TextField
+                  margin="dense"
+                  label="Last Name"
+                  name="appName"
+                  variant="standard"
+                />
+                <TextField
+                  margin="dense"
+                  label="Description"
+                  name="appName"
+                  variant="standard"
+                />
+              </form>
+            </Box>
+          </Box>
+          <Box>
+            <Button>Save</Button>
           </Box>
         </Box>
       </Box>

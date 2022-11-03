@@ -1,7 +1,7 @@
 import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
-import { IUserAcl } from "../http";
+import * as http from "../http";
 
 type TUser = {
   firstName: string;
@@ -97,7 +97,11 @@ type TAppUser = {
 
 interface IStore {
   user: TUser;
-  ACL: IUserAcl;
+  oldTokens?: {
+    token: string;
+    refreshToken: string;
+  };
+  ACL: http.IUserAcl;
   messages: TMessage[];
   viewMode: TMode;
   balance: TBalance[];
@@ -128,7 +132,7 @@ interface IStore {
   loaderArchive: boolean;
   setLoaderArchive: (status: boolean) => void;
   addAppUsers: (users: TAppUser[]) => void;
-  setACL: (acl: IUserAcl) => void;
+  setACL: (acl: http.IUserAcl) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -165,6 +169,10 @@ const _useStore = create<IStore>()(
               appId: "",
             },
           },
+          oldTokens: {
+            token: "",
+            refreshToken: "",
+          },
           apps: [],
           balance: [],
           viewMode: "light",
@@ -173,7 +181,7 @@ const _useStore = create<IStore>()(
           loaderArchive: false,
           userChatRooms: [],
           appUsers: [],
-          setACL: (acl: IUserAcl) =>
+          setACL: (acl: http.IUserAcl) =>
             set((state) => {
               state.ACL = acl;
             }),
@@ -253,10 +261,10 @@ const _useStore = create<IStore>()(
               state.historyMessages.unshift(historyMessages);
             }),
           updateMessageHistory: (messages: TMessageHistory[]) =>
-              set((state) => {
-                state.historyMessages = [...state.historyMessages, ...messages];
-                state.historyMessages.sort((a: any, b: any) => a.id - b.id);
-          }),
+            set((state) => {
+              state.historyMessages = [...state.historyMessages, ...messages];
+              state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+            }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
               state.loaderArchive = status;
@@ -274,15 +282,19 @@ const _useStore = create<IStore>()(
               state.userChatRooms.unshift(userChatRooms);
             }),
           updateCounterChatRoom: (roomJID: string) =>
-              set((state) => {
-                const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
-                state.userChatRooms[currentIndex].unreadMessages++;
-          }),
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              state.userChatRooms[currentIndex].unreadMessages++;
+            }),
           clearCounterChatRoom: (roomJID: string) =>
-              set((state) => {
-                const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
-                state.userChatRooms[currentIndex].unreadMessages = 0;
-          }),
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              state.userChatRooms[currentIndex].unreadMessages = 0;
+            }),
           clearUserChatRooms: () =>
             set((state) => {
               state.userChatRooms = [];

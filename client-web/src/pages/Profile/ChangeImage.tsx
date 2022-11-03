@@ -69,7 +69,10 @@ export default function ChangeImage({ open, setOpen }: TProps) {
       .updateProfile(form)
       .then((response) => {
         // response.data.user
-        setUser(response.data.user);
+        setUser({
+          ...user,
+          profileImage: response.data.user.profileImage,
+        });
         setOpen(false);
       })
       .catch((e) => console.log(e));
