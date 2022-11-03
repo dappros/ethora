@@ -194,7 +194,7 @@ const onComposing = (stanza: Element) => {
     const recipientID = stanza.attrs.to.split("@")[0];
     const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
 
-    if (recipientID === senderID) {
+    if (recipientID === walletToUsername(senderID)) {
       return;
     }
 
