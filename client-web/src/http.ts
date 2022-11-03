@@ -14,6 +14,7 @@ export type TUser = {
   defaultWallet: {
     walletAddress: string;
   };
+  description?: string;
   tags: string[];
   roles: string[];
   _id: string;

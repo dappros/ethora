@@ -56,13 +56,14 @@ export function MetamaskModal({ open, setOpen }: TProps) {
         const user = resp.data.user;
         setUser({
           _id: user._id,
+          description: user.description,
           firstName: user.firstName,
           lastName: user.lastName,
           xmppPassword: user.xmppPassword,
           walletAddress: user.defaultWallet.walletAddress,
           token: resp.data.token,
           refreshToken: resp.data.refreshToken,
-          profileImage: user.profileImage
+          profileImage: user.profileImage,
         });
         deactivate();
         history.push(`/profile/${user.defaultWallet.walletAddress}`);

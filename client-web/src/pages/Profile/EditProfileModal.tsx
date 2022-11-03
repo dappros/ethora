@@ -24,6 +24,30 @@ type TProps = {
 export default function EditProfileModal({ open, setOpen, user }: TProps) {
   const [change, setChange] = useState(false);
 
+  const formik = useFormik({
+    initialValues: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      description: user.description,
+      isProfileOpen: user.isProfileOpen,
+      isAssetsOpen: user.isAssetsOpen,
+    },
+    validate: (values) => {
+      const errors: Record<string, string> = {};
+
+      if (!values.firstName) {
+        errors.firstName = "Required";
+      }
+
+      if (!values.lastName) {
+        errors.lastName = "Required";
+      }
+
+      return errors;
+    },
+    onSubmit: (values) => {},
+  });
+
   return (
     <Dialog onClose={() => {}} open={open}>
       <Box>
@@ -60,31 +84,89 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
             <Box>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
-                onSubmit={() => {}}
+                onSubmit={formik.handleSubmit}
               >
                 <TextField
                   margin="dense"
                   label="First Name"
-                  name="appName"
+                  name="firstName"
                   variant="standard"
+                  error={
+                    formik.touched.firstName && formik.errors.firstName
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                      ? (formik.errors.firstName as string)
+                      : ""
+                  }
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.firstName}
                 />
                 <TextField
                   margin="dense"
                   label="Last Name"
-                  name="appName"
+                  name="lastName"
                   variant="standard"
+                  error={
+                    formik.touched.lastName && formik.errors.lastName
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    formik.touched.lastName && formik.errors.lastName
+                      ? (formik.errors.lastName as string)
+                      : ""
+                  }
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.lastName}
                 />
                 <TextField
                   margin="dense"
-                  label="Description"
-                  name="appName"
+                  label="Profile Description"
+                  name="description"
                   variant="standard"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.description}
+                />
+                <FormControlLabel
+                  checked={formik.values.isProfileOpen}
+                  name="isProfileOpen"
+                  control={
+                    <Checkbox
+                      onChange={(e) => {
+                        formik.setFieldValue("isProfileOpen", e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Is Profile Open"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  checked={formik.values.isAssetsOpen}
+                  name="isAssetsOpen"
+                  control={
+                    <Checkbox
+                      onChange={(e) => {
+                        formik.setFieldValue(
+                          "defaultAccessProfileOpen",
+                          e.target.checked
+                        );
+                      }}
+                    />
+                  }
+                  label="Is Assets Open"
+                  labelPlacement="end"
                 />
               </form>
             </Box>
           </Box>
           <Box>
-            <Button>Save</Button>
+            <Button variant="contained">Save</Button>
           </Box>
         </Box>
       </Box>

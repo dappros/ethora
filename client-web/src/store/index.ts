@@ -6,6 +6,7 @@ import * as http from "../http";
 type TUser = {
   firstName: string;
   lastName: string;
+  description?: string;
   xmppPassword?: string;
   _id: string;
   walletAddress: string;
@@ -123,7 +124,11 @@ interface IStore {
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
   updateCounterChatRoom: (roomJID: string) => void;
   clearCounterChatRoom: (roomJID: string) => void;
-  updateComposingChatRoom: (roomJID: string, status: boolean, userName?: string) => void;
+  updateComposingChatRoom: (
+    roomJID: string,
+    status: boolean,
+    userName?: string
+  ) => void;
   clearUserChatRooms: () => void;
   setApps: (apps: TApp[]) => void;
   setApp: (app: TApp) => void;
@@ -144,6 +149,7 @@ const _useStore = create<IStore>()(
             firstName: "",
             lastName: "",
             xmppPassword: "",
+            description: "",
             _id: "",
             walletAddress: "",
             token: "",
@@ -299,12 +305,19 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.userChatRooms = [];
             }),
-          updateComposingChatRoom: (roomJID: string, status: boolean, userName: string) =>
+          updateComposingChatRoom: (
+            roomJID: string,
+            status: boolean,
+            userName: string
+          ) =>
             set((state) => {
-              const currentIndex = state.userChatRooms.findIndex(el => el.jid === roomJID);
-              if(status){
-                state.userChatRooms[currentIndex].composing = userName + " is typing";
-              }else{
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              if (status) {
+                state.userChatRooms[currentIndex].composing =
+                  userName + " is typing";
+              } else {
                 state.userChatRooms[currentIndex].composing = "";
               }
             }),

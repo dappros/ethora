@@ -60,7 +60,7 @@ export default function UserCard({ profile }: TProps) {
           </a>
         )}
       </Card>
-      <EditProfileModal open={edit} setOpen={setEdit} user={user} />
+      {edit && <EditProfileModal open={edit} setOpen={setEdit} user={user} />}
     </Box>
   );
 }
