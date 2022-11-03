@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
-import {useStoreState} from "../../store";
+import {TMessageHistory, useStoreState} from "../../store";
 import {getPublicProfile} from "../../http";
 import {TProfile} from "../Profile/types";
 import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
@@ -18,9 +18,14 @@ import {
     Sidebar,
     Search,
     ConversationHeader,
-    TypingIndicator,
+    TypingIndicator, Message,
 } from '@chatscope/chat-ui-kit-react';
 import MessageDefault from "../../componets/Chat/Messages/MessageDefault";
+
+type IMessagePosition = {
+    position: 0 | 1 | "single" | "first" | "normal" | "last" | 2 | 3;
+    type: string;
+}
 
 export function ChatInRoom() {
     const messages = useStoreState((state) => state.historyMessages);
@@ -113,6 +118,47 @@ export function ChatInRoom() {
         );
     };
 
+    const getPosition = (previousJID: string, nextJID: string, currentJID: string) => {
+        let result: IMessagePosition = {
+            position: "single",
+            type: 'single'
+        }
+
+        if (previousJID !== currentJID && nextJID !== currentJID) {
+            return result;
+        }
+
+        if (previousJID !== currentJID && nextJID === currentJID) {
+            result.position = 'first';
+            result.type = 'first';
+            return result;
+        }
+
+        if (previousJID === currentJID && nextJID === currentJID) {
+            result.position = 'normal';
+            result.type = 'normal';
+            return result;
+        }
+
+        if (previousJID === currentJID && nextJID !== currentJID) {
+            result.position = 'single';
+            result.type = 'last';
+            return result;
+        }
+
+        return result;
+    }
+
+    const getImageLink = (message: TMessageHistory) => {
+        if (message.data.photoURL) {
+            const img = new Image();
+            img.onload = function () {
+                return message.data.photoURL;
+            }
+            img.src = message.data.photoURL;
+        }
+    }
+
     return (
         <Box style={{height: "500px"}}>
             <MainContainer responsive>
@@ -157,11 +203,39 @@ export function ChatInRoom() {
                     >
                         {
                             messages.filter((item: any) => item.roomJID === currentRoom).map((message, index, arr) =>
-                                <div key={message.key} is={"Message"}>
+                                <Message
+                                    key={message.key}
+                                    model={{
+                                        sender: message.data.senderFirstName + ' ' + message.data.senderLastName,
+                                        direction: xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "outgoing" : "incoming",
+                                        position: getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).position,
+                                    }}
+                                    avatarPosition={xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "tr" : "tl"}
+                                    avatarSpacer={getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type !== 'first' &&
+                                        getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type !== 'single'}>
 
-                                    <MessageDefault message={message} previousJID={arr[index - 1]?.data.senderJID}
-                                                    nextJID={arr[index + 1]?.data.senderJID}/>
-                                </div>
+                                    {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'first' ||
+                                    getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
+                                        // @ts-ignore
+                                        <Avatar src={getImageLink(message) ? getImageLink(message) : "https://icotar.com/initials/"+message.data.senderFirstName+" "+message.data.senderLastName} name={message.data.senderFirstName}/> : null
+                                    }
+
+                                    <Message.CustomContent>
+                                        {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'first' ||
+                                        getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
+                                            <strong>{message.data.senderFirstName} {message.data.senderLastName}<br/></strong> : null
+                                        }
+                                        {message.body}
+                                    </Message.CustomContent>
+
+                                    {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'last' ||
+                                    getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
+                                        <Message.Footer sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
+                                            format(new Date(message.date), 'h:mm:ss a') :
+                                            formatDistance(subDays(new Date(message.date), 0), new Date(), {addSuffix: true})}/> : null
+                                    }
+
+                                </Message>
                             )
                         }
                         {messages.length <= 0 || !currentRoom ?
