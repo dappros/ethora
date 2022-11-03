@@ -166,6 +166,7 @@ export function ChatInRoom() {
 
     return (
         <Box style={{height: "500px"}}>
+            {xmpp.client ?
             <MainContainer responsive>
                 <Sidebar position="left" scrollable={false}>
                     <Search placeholder="Search..."/>
@@ -298,6 +299,7 @@ export function ChatInRoom() {
                         : null}
                 </ChatContainer>
             </MainContainer>
+                : null}
         </Box>
     );
 }
