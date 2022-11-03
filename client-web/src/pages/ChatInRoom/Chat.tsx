@@ -118,7 +118,11 @@ export function ChatInRoom() {
         );
     };
 
-    const getPosition = (previousJID: string, nextJID: string, currentJID: string) => {
+    const getPosition = (arr: TMessageHistory[], message: TMessageHistory, index: number) => {
+        const previousJID = arr[index - 1]?.data.senderJID;
+        const nextJID = arr[index + 1]?.data.senderJID;
+        const currentJID = message.data.senderJID?.split("/")[0];
+
         let result: IMessagePosition = {
             position: "single",
             type: 'single'
@@ -197,8 +201,9 @@ export function ChatInRoom() {
                         loadingMore={loaderArchive} onYReachStart={onYReachStart}
                         typingIndicator={
                             useChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing ?
-                                <TypingIndicator content={useChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing}/>
-                            : null
+                                <TypingIndicator
+                                    content={useChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing}/>
+                                : null
                         }
                     >
                         {
@@ -208,31 +213,33 @@ export function ChatInRoom() {
                                     model={{
                                         sender: message.data.senderFirstName + ' ' + message.data.senderLastName,
                                         direction: xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "outgoing" : "incoming",
-                                        position: getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).position,
+                                        position: getPosition(arr, message, index).position
                                     }}
                                     avatarPosition={xmpp.client.jid?.toString().split("/")[0] === message.data.senderJID.split("/")[0] ? "tr" : "tl"}
-                                    avatarSpacer={getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type !== 'first' &&
-                                        getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type !== 'single'}>
+                                    avatarSpacer={getPosition(arr, message, index).type !== 'first' &&
+                                        getPosition(arr, message, index).type !== 'single'}>
 
-                                    {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'first' ||
-                                    getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
+                                    {getPosition(arr, message, index).type === 'first' ||
+                                    getPosition(arr, message, index).type === 'single' ?
                                         // @ts-ignore
-                                        <Avatar src={getImageLink(message) ? getImageLink(message) : "https://icotar.com/initials/"+message.data.senderFirstName+" "+message.data.senderLastName} name={message.data.senderFirstName}/> : null
+                                        <Avatar src={getImageLink(message) ? getImageLink(message) : "https://icotar.com/initials/" + message.data.senderFirstName + " " + message.data.senderLastName}
+                                            name={message.data.senderFirstName}/> : null
                                     }
 
                                     <Message.CustomContent>
-                                        {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'first' ||
-                                        getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
+                                        {getPosition(arr, message, index).type === 'first' ||
+                                        getPosition(arr, message, index).type === 'single' ?
                                             <strong>{message.data.senderFirstName} {message.data.senderLastName}<br/></strong> : null
                                         }
                                         {message.body}
                                     </Message.CustomContent>
 
-                                    {getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'last' ||
-                                    getPosition(arr[index - 1]?.data.senderJID?.split("/")[0], arr[index + 1]?.data.senderJID?.split("/")[0], message.data.senderJID?.split("/")[0]).type === 'single' ?
-                                        <Message.Footer sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
-                                            format(new Date(message.date), 'h:mm:ss a') :
-                                            formatDistance(subDays(new Date(message.date), 0), new Date(), {addSuffix: true})}/> : null
+                                    {getPosition(arr, message, index).type === 'last' ||
+                                    getPosition(arr, message, index).type === 'single' ?
+                                        <Message.Footer
+                                            sentTime={differenceInHours(new Date(), new Date(message.date)) > 5 ?
+                                                format(new Date(message.date), 'h:mm:ss a') :
+                                                formatDistance(subDays(new Date(message.date), 0), new Date(), {addSuffix: true})}/> : null
                                     }
 
                                 </Message>
