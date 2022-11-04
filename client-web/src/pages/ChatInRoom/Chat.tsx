@@ -169,6 +169,18 @@ export function ChatInRoom() {
     );
   };
 
+  const setMessage = (value) => {
+    setMyMessage(value);
+    xmpp.isComposing(user.walletAddress, roomData.jid, user.firstName+" "+user.lastName);
+  }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      xmpp.pausedComposing(user.walletAddress, roomData.jid)
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [myMessage]);
+
   return (
     <Box style={{ height: "500px" }}>
       <MainContainer responsive>
@@ -299,7 +311,7 @@ export function ChatInRoom() {
           {!!roomData.name && (
             <MessageInput
               placeholder="Type message here"
-              onChange={(val) => setMyMessage(val)}
+              onChange={setMessage}
               onSend={sendMessage}
             />
           )}
