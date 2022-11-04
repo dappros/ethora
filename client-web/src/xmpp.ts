@@ -106,9 +106,11 @@ const onMessageHistory = async (stanza: Element) => {
     }
 
     const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
-    if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
-        stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
-        !isGettingFirstMessages) {
+    if (
+      stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
+      stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
+      !isGettingFirstMessages
+    ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
     }
   }
@@ -252,6 +254,9 @@ class XmppClass {
 
   init(walletAddress: string, password: string) {
     console.log("init ", walletAddress, password);
+    if (!password) {
+      return;
+    }
     this.client = xmpp.client({
       service: "wss://dev.dxmpp.com:5443/ws",
       username: walletToUsername(walletAddress),
@@ -516,7 +521,7 @@ class XmppClass {
         isSystemMessage: false,
         tokenAmount: 0,
         quickReplies: [],
-        notDisplayedValue: notDisplayedValue ? notDisplayedValue : ""
+        notDisplayedValue: notDisplayedValue ? notDisplayedValue : "",
       }),
       xml("body", {}, userMessage)
     );
@@ -537,50 +542,43 @@ class XmppClass {
     this.client.send(message);
   };
 
-  isComposing = (
-      walletAddress: string,
-      chatJID: string,
-      fullName: string,
-  ) => {
+  isComposing = (walletAddress: string, chatJID: string, fullName: string) => {
     const message = xml(
-        'message',
-        {
-          from: this.client.jid?.toString(),
-          to: chatJID,
-          id: "isComposing",
-          type: "groupchat",
-        },
-        xml("composing", {
-          xmlns: "http://jabber.org/protocol/chatstates",
-        }),
-        xml("data", {
-          xmlns: "wss://dev.dxmpp.com:5443/ws",
-          fullName: fullName,
-          manipulatedWalletAddress: walletAddress,
-        }),
+      "message",
+      {
+        from: this.client.jid?.toString(),
+        to: chatJID,
+        id: "isComposing",
+        type: "groupchat",
+      },
+      xml("composing", {
+        xmlns: "http://jabber.org/protocol/chatstates",
+      }),
+      xml("data", {
+        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        fullName: fullName,
+        manipulatedWalletAddress: walletAddress,
+      })
     );
     this.client.send(message);
   };
 
-  pausedComposing = (
-      walletAddress: string,
-      chatJID: string
-  ) => {
+  pausedComposing = (walletAddress: string, chatJID: string) => {
     const message = xml(
-        "message",
-        {
-          from: this.client.jid?.toString(),
-          to: chatJID,
-          id: "pausedComposing",
-          type: "groupchat",
-        },
-        xml("paused", {
-          xmlns: "http://jabber.org/protocol/chatstates",
-        }),
-        xml("data", {
-          xmlns: "wss://dev.dxmpp.com:5443/ws",
-          manipulatedWalletAddress: walletAddress,
-        }),
+      "message",
+      {
+        from: this.client.jid?.toString(),
+        to: chatJID,
+        id: "pausedComposing",
+        type: "groupchat",
+      },
+      xml("paused", {
+        xmlns: "http://jabber.org/protocol/chatstates",
+      }),
+      xml("data", {
+        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        manipulatedWalletAddress: walletAddress,
+      })
     );
     this.client.send(message);
   };

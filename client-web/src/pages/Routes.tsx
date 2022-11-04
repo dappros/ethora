@@ -35,8 +35,8 @@ export const Routes = () => {
 
   return (
     <Switch>
-      <Route path="/profile/:wallet">
-        <Profile />
+      <Route path="/" exact>
+        <Signon />
       </Route>
       <Route path="/chat">
         <Chat />
@@ -44,14 +44,14 @@ export const Routes = () => {
       <Route path="/chat-in-room">
         <ChatInRoom />
       </Route>
-      <Route path="/" exact>
-        <Signon />
-      </Route>
-      <Route path="/owner" exact>
+      <Route path="/owner">
         <Owner />
       </Route>
       <Route path="/owner/create-app">
         <CreateApp />
+      </Route>
+      <Route path="/profile/:wallet">
+        <Profile />
       </Route>
       <Route path={"/explorer"} component={Explorer} exact />
       <Route
