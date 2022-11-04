@@ -29,7 +29,7 @@ export const Message: React.FC<IMessage> = ({
       key={message.key}
       model={{
         sender: firstName + " " + lastName,
-        direction: userJid === messageJid ? "outgoing" : "incoming",
+        direction: userJid.split("/")[0] === messageJid.split("/")[0] ? "outgoing" : "incoming",
         position: position.position,
       }}
       avatarPosition={userJid === messageJid ? "tr" : "tl"}
