@@ -66,6 +66,7 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
             walletAddress: response.data.user.defaultWallet.walletAddress,
           });
           setApps(response.data.apps);
+          console.log("push /owner");
           history.push("/owner");
         })
         .catch((error) => {

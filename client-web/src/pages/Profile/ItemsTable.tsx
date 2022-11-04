@@ -20,6 +20,7 @@ import Select from "@mui/material/Select";
 import { useFormik } from "formik";
 import MenuItem from "@mui/material/MenuItem";
 import * as http from "../../http";
+import TransferItemsModal from "./TransferItemsModal";
 
 export default function ItemsTable() {
   const [itemModal, setItemModal] = useState(false);
@@ -27,7 +28,9 @@ export default function ItemsTable() {
   const [file, setFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState("");
-  const balances = useStoreState((state) =>
+  const [showTransfer, setShowTransfer] = useState(false);
+  // const [currentItem, setCurrentItem] = useState<TBalance>();
+  const items = useStoreState((state) =>
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
     })
@@ -130,16 +133,27 @@ export default function ItemsTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {balances.map((row) => (
+          {items.map((row) => (
             <TableRow key={row.contractAddress}>
-              <TableCell style={{ width: "200px" }} align={'center'}>
-                <img alt="" src={row.imagePreview} style={{width: 100, borderRadius: 5}}/>
+              <TableCell style={{ width: "200px" }} align={"center"}>
+                <img
+                  alt=""
+                  src={row.imagePreview}
+                  style={{ width: 100, borderRadius: 5 }}
+                />
               </TableCell>
               <TableCell align="center">{row.tokenName}</TableCell>
               <TableCell align="center">{row.balance}</TableCell>
               <TableCell align="center">{row.total}</TableCell>
               <TableCell align="center">
-                <Button>Transfer</Button>
+                <Button
+                  onClick={() => {
+                    // setCurrentItem(row);
+                    setShowTransfer(true);
+                  }}
+                >
+                  Transfer
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -234,8 +248,8 @@ export default function ItemsTable() {
                     id: "uncontrolled-native",
                   }}
                   onChange={(e) => {
-                    console.log(e)
-                    formik.handleChange(e)
+                    console.log(e);
+                    formik.handleChange(e);
                   }}
                 >
                   <option value={1}>1</option>
@@ -254,6 +268,7 @@ export default function ItemsTable() {
           </Box>
         </Box>
       </Dialog>
+      <TransferItemsModal open={showTransfer} setOpen={setShowTransfer} />
     </TableContainer>
   );
 }

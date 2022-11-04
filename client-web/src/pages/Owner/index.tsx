@@ -11,6 +11,7 @@ export default function Owner() {
   const history = useHistory();
   React.useEffect(() => {
     if (!owner.firstName) {
+      console.log("!owner.firstName");
       history.push("/");
     }
   }, [owner, history]);
