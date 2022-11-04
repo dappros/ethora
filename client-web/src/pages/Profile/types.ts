@@ -1,8 +1,8 @@
 export type TProfile = {
   firstName: string;
   lastName: string;
-  description: string;
-  profileImage: string;
+  description?: string;
+  profileImage?: string;
 };
 
 export type TTransactions = {
