@@ -66,12 +66,15 @@ export function UsernameSignUpForm(props: TProps) {
             setUser({
               firstName: result.data.user.firstName,
               lastName: result.data.user.lastName,
+              description: result.data.user.description,
               xmppPassword: result.data.user.xmppPassword,
               _id: result.data.user._id,
               walletAddress: result.data.user.defaultWallet.walletAddress,
               token: result.data.token,
               refreshToken: result.data.refreshToken,
-              profileImage: result.data.user.profileImage
+              profileImage: result.data.user.profileImage,
+              isProfileOpen: result.data.user.isProfileOpen,
+              isAssetsOpen: result.data.user.isAssetsOpen,
             });
             props.closeModal();
             history.push(

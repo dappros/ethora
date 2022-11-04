@@ -6,6 +6,7 @@ import {
 } from 'react-native-responsive-screen';
 import { commonColors } from '../../../docs/config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FastImage from 'react-native-fast-image';
 
 interface ChatBackgroundCardProps {
     value?:string
@@ -33,11 +34,13 @@ const ChatBackgroundCard = (props: ChatBackgroundCardProps) => {
         justifyContent="center"
         alignItems={"center"}
         >
-            <Image 
-            alt={"image"}
-            h={hp('40%')}
-            w={hp('20%')}
-            borderRadius={5}
+            <FastImage
+            style={{
+              height:hp('40%'),
+              width:hp('20%'),
+              borderRadius:5,
+              
+            }}
             source={{uri:props.value}}/>
         </Box>
         {props.isSelected?

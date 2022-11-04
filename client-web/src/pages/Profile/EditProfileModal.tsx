@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
@@ -9,7 +9,7 @@ import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import { useStoreState } from "../../store";
 import LoadingButton from "@mui/lab/LoadingButton";
-import * as http from "../../http";
+import { httpWithAuth } from "../../http";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import ChageImage from "./ChangeImage";
@@ -23,6 +23,55 @@ type TProps = {
 
 export default function EditProfileModal({ open, setOpen, user }: TProps) {
   const [change, setChange] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const setUser = useStoreState((state) => state.setUser);
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      description: user.description ? user.description : "",
+      isProfileOpen: user.isProfileOpen,
+      isAssetsOpen: user.isAssetsOpen,
+    },
+    validate: (values) => {
+      const errors: Record<string, string> = {};
+
+      if (!values.firstName) {
+        errors.firstName = "Required";
+      }
+
+      if (!values.lastName) {
+        errors.lastName = "Required";
+      }
+
+      return errors;
+    },
+    onSubmit: (values) => {
+      const fd = new FormData();
+      fd.append("firstName", values.firstName);
+      fd.append("lastName", values.lastName);
+      fd.append("description", values.description);
+      fd.append("isProfileOpen", values.isProfileOpen);
+      fd.append("isAssetsOpen", values.isAssetsOpen);
+      setLoading(true);
+      httpWithAuth()
+        .put("/users", fd)
+        .then((response) => {
+          const respUser = response.data.user;
+          setUser({
+            ...user,
+            firstName: respUser.firstName,
+            lastName: respUser.lastName,
+            description: respUser.description,
+            isProfileOpen: respUser.isProfileOpen,
+            isAssetsOpen: respUser.isAssetsOpen,
+          });
+          setOpen(false);
+        })
+        .finally(() => setLoading(false));
+    },
+  });
 
   return (
     <Dialog onClose={() => {}} open={open}>
@@ -37,7 +86,6 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
         </DialogTitle>
         <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
           <Box style={{ display: "flex" }}>
-            {" "}
             <Box
               sx={{ marginRight: "10px" }}
               style={{ display: "flex", flexDirection: "column" }}
@@ -60,31 +108,90 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
             <Box>
               <form
                 style={{ display: "flex", flexDirection: "column" }}
-                onSubmit={() => {}}
+                onSubmit={formik.handleSubmit}
               >
                 <TextField
                   margin="dense"
                   label="First Name"
-                  name="appName"
+                  name="firstName"
                   variant="standard"
+                  error={
+                    formik.touched.firstName && formik.errors.firstName
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                      ? (formik.errors.firstName as string)
+                      : ""
+                  }
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.firstName}
                 />
                 <TextField
                   margin="dense"
                   label="Last Name"
-                  name="appName"
+                  name="lastName"
                   variant="standard"
+                  error={
+                    formik.touched.lastName && formik.errors.lastName
+                      ? true
+                      : false
+                  }
+                  helperText={
+                    formik.touched.lastName && formik.errors.lastName
+                      ? (formik.errors.lastName as string)
+                      : ""
+                  }
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.lastName}
                 />
                 <TextField
                   margin="dense"
-                  label="Description"
-                  name="appName"
+                  label="Profile Description"
+                  name="description"
                   variant="standard"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.description}
                 />
+                <FormControlLabel
+                  checked={formik.values.isProfileOpen}
+                  name="isProfileOpen"
+                  control={
+                    <Checkbox
+                      onChange={(e) => {
+                        formik.setFieldValue("isProfileOpen", e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Is Profile Open"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  checked={formik.values.isAssetsOpen}
+                  name="isAssetsOpen"
+                  control={
+                    <Checkbox
+                      onChange={(e) => {
+                        formik.setFieldValue("isAssetsOpen", e.target.checked);
+                      }}
+                    />
+                  }
+                  label="Is Assets Open"
+                  labelPlacement="end"
+                />
+                <LoadingButton
+                  type="submit"
+                  loading={loading}
+                  variant="contained"
+                >
+                  Save
+                </LoadingButton>
               </form>
             </Box>
-          </Box>
-          <Box>
-            <Button>Save</Button>
           </Box>
         </Box>
       </Box>

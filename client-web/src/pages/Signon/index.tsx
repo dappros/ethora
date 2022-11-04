@@ -149,11 +149,14 @@ export function Signon() {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
+      description: user.description,
       xmppPassword: user.xmppPassword,
       walletAddress: user.defaultWallet.walletAddress,
       token: tokens.token,
       refreshToken: tokens.refreshToken,
       profileImage: user.profileImage,
+      isProfileOpen: user.isProfileOpen,
+      isAssetsOpen: user.isAssetsOpen,
     });
   };
 
