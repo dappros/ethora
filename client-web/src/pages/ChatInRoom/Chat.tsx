@@ -110,6 +110,7 @@ export function ChatInRoom() {
     setCurrentRoom(jid);
     setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
     useStoreState.getState().clearCounterChatRoom(jid);
+    useStoreState.getState().setCurrentUntrackedChatRoom(jid);
 
     const filteredMessages = messages.filter(
       (item: any) => item.roomJID === jid
@@ -180,6 +181,18 @@ export function ChatInRoom() {
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [myMessage]);
+
+  useEffect(() => {
+    window.onblur = () => {
+      useStoreState.getState().setCurrentUntrackedChatRoom("");
+    }
+    window.onfocus = () => {
+      if(currentRoom){
+        useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
+        useStoreState.getState().clearCounterChatRoom(currentRoom);
+      }
+    }
+  }, [])
 
   return (
     <Box style={{ height: "500px" }}>
