@@ -16,29 +16,18 @@ type TBalance = {
 };
 
 export function MyProfile() {
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<TProfile>();
+  const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] =
     useState<ExplorerRespose<ITransaction[]>>();
-  const [balances, setBalances] = useState<TBalance>();
   const user = useStoreState((store) => store.user);
 
   useEffect(() => {
     setLoading(true);
-    getPublicProfile(user.walletAddress)
+    getTransactions(user.walletAddress)
       .then((result) => {
-        setProfile(result.data.result);
+        setTransactions(result.data);
       })
       .finally(() => setLoading(false));
-
-    getTransactions(user.walletAddress).then((result) => {
-      setTransactions(result.data);
-      console.log("balance ", result.data);
-    });
-
-    getBalance(user.walletAddress).then((result) => {
-      setBalances(result.data);
-    });
   }, []);
 
   return (
@@ -60,7 +49,7 @@ export function MyProfile() {
         </Box>
       )}
       <Box sx={{ margin: "auto", width: "200px" }}>
-        {!!profile && <UserCard profile={profile} />}
+        <UserCard profile={user} />
       </Box>
       <ItemsTable />
       {!!transactions && (
