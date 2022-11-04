@@ -169,8 +169,8 @@ export function ChatInRoom() {
       user.lastName,
       userAvatar,
       user.walletAddress,
-      button ? button.value : myMessage,
-        button ? button.notDisplayedValue : null
+      typeof button === 'object' ? button.value : myMessage,
+        typeof button === 'object' ? button.notDisplayedValue : null
     );
   };
 
