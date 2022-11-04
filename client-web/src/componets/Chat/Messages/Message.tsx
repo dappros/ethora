@@ -1,5 +1,5 @@
-import React from "react";
-import { Message as KitMessage, MessageModel } from "@chatscope/chat-ui-kit-react";
+import React, {useEffect, useState} from "react";
+import { Message as KitMessage, MessageModel, Button } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import { TMessageHistory } from "../../../store";
 import {useHistory} from "react-router";
@@ -12,19 +12,35 @@ export interface IMessage {
     position: MessageModel['position'];
   };
   is?: string;
+  buttonSender: any
+}
+
+export interface IButtons {
+  name: string;
+  notDisplayedValue: string;
+  value: string
 }
 
 export const Message: React.FC<IMessage> = ({
   message,
   userJid,
   position,
+  buttonSender
 }) => {
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
   const messageJid = message.data.senderJID;
   const history = useHistory();
+  const [buttons, setButtons] = useState<IButtons[]>();
+
+  useEffect(() => {
+    if(message.data.quickReplies){
+      setButtons(JSON.parse(message.data.quickReplies));
+    }
+  }, [])
 
   return (
+  <div is={"Message"}>
     <KitMessage
       key={message.key}
       model={{
@@ -78,5 +94,20 @@ export const Message: React.FC<IMessage> = ({
         />
       )}
     </KitMessage>
+        {buttons ?
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "max-content",
+              marginLeft: "45px"
+            }}>
+              {buttons.map((button, index) => {
+                return (
+                  <Button onClick={() => buttonSender(button)} key={index} border>{button.name}</Button>
+                );
+             })}
+            </div>
+          : null}
+  </div>
   );
 };
