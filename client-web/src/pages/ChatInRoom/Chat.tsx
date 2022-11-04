@@ -21,7 +21,7 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import { Message } from "../../componets/Chat/Messages/Message";
+import {IButtons, Message} from "../../componets/Chat/Messages/Message";
 import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 
 type IMessagePosition = {
@@ -157,18 +157,20 @@ export function ChatInRoom() {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = (button: any) => {
     let userAvatar = "";
     if (profile?.profileImage) {
       userAvatar = profile?.profileImage;
     }
+
     xmpp.sendMessage(
       currentRoom,
       user.firstName,
       user.lastName,
       userAvatar,
       user.walletAddress,
-      myMessage
+      button ? button.value : myMessage,
+        button ? button.notDisplayedValue : null
     );
   };
 
@@ -285,6 +287,7 @@ export function ChatInRoom() {
                           position={position}
                           message={message}
                           userJid={xmpp.client?.jid?.toString()}
+                          buttonSender={sendMessage}
                       />
                   );
                 }else{

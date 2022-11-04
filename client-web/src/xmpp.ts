@@ -495,7 +495,8 @@ class XmppClass {
     lastName: string,
     photo: string,
     walletAddress: string,
-    userMessage: string
+    userMessage: string,
+    notDisplayedValue?: string
   ) {
     const message = xml(
       "message",
@@ -515,6 +516,7 @@ class XmppClass {
         isSystemMessage: false,
         tokenAmount: 0,
         quickReplies: [],
+        notDisplayedValue: notDisplayedValue ? notDisplayedValue : ""
       }),
       xml("body", {}, userMessage)
     );
