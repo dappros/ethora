@@ -29,6 +29,7 @@ export function OtherProfile(props: TProps) {
     setLoading(true);
     getPublicProfile(props.walletAddress)
       .then((result) => {
+        console.log("getPublicProfile ", result.data);
         setProfile(result.data.result);
       })
       .finally(() => setLoading(false));
@@ -50,7 +51,7 @@ export function OtherProfile(props: TProps) {
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box>
         {!!profile && (
-          <Box sx={{ width: "200px", margin: "auto", padding: '10px' }}>
+          <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>
             <UserCard profile={profile} />
           </Box>
         )}
