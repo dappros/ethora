@@ -6,6 +6,7 @@ import { TMessageHistory, useStoreState } from "./store";
 let lastMsgId: string = "";
 let temporaryMessages: TMessageHistory[] = [];
 let isGettingMessages: boolean = false;
+let isGettingFirstMessages: boolean = false;
 let lastRomJIDLoading: string = "";
 
 export function walletToUsername(str: string) {
@@ -103,8 +104,8 @@ const onMessageHistory = async (stanza: Element) => {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
     }
-
-    if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID) {
+    if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
+        !isGettingFirstMessages) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
     }
   }
@@ -123,11 +124,13 @@ const onLastMessageArchive = (stanza: Element, xmpp: any) => {
       isGettingMessages = false;
       useStoreState.getState().setLoaderArchive(false);
       temporaryMessages = [];
+      isGettingFirstMessages = false;
     }
 
     if (lastRomJIDLoading && lastRomJIDLoading === stanza.attrs.from) {
       useStoreState.getState().setLoaderArchive(false);
       lastRomJIDLoading = "";
+      isGettingFirstMessages = false;
     }
   }
 };
@@ -146,6 +149,7 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "getUserRooms") {
     if (stanza.getChild("query")?.children) {
+      isGettingFirstMessages = true;
       useStoreState.getState().clearUserChatRooms();
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
@@ -187,10 +191,10 @@ const onComposing = (stanza: Element) => {
     stanza.attrs.id === "pausedComposing"
   ) {
     const requestType = stanza.attrs.id;
-    const recipientID = stanza.attrs.to.split("@")[0];
+    const recipientID = String(stanza.attrs.to).split("@")[0];
     const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
 
-    if (recipientID === senderID) {
+    if (recipientID === walletToUsername(senderID)) {
       return;
     }
 
@@ -260,7 +264,6 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-    // this.client.on("stanza", (stanza) => console.log(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -437,6 +440,7 @@ class XmppClass {
       return;
     }
     isGettingMessages = true;
+    isGettingFirstMessages = true;
     useStoreState.getState().setLoaderArchive(true);
     const message = xml(
       "iq",
@@ -524,6 +528,54 @@ class XmppClass {
         type: "get",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
+    this.client.send(message);
+  };
+
+  isComposing = (
+      walletAddress: string,
+      chatJID: string,
+      fullName: string,
+  ) => {
+    const message = xml(
+        'message',
+        {
+          from: this.client.jid?.toString(),
+          to: chatJID,
+          id: "isComposing",
+          type: "groupchat",
+        },
+        xml("composing", {
+          xmlns: "http://jabber.org/protocol/chatstates",
+        }),
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          fullName: fullName,
+          manipulatedWalletAddress: walletAddress,
+        }),
+    );
+    this.client.send(message);
+  };
+
+  pausedComposing = (
+      walletAddress: string,
+      chatJID: string
+  ) => {
+    const message = xml(
+        "message",
+        {
+          from: this.client.jid?.toString(),
+          to: chatJID,
+          id: "pausedComposing",
+          type: "groupchat",
+        },
+        xml("paused", {
+          xmlns: "http://jabber.org/protocol/chatstates",
+        }),
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          manipulatedWalletAddress: walletAddress,
+        }),
     );
     this.client.send(message);
   };
