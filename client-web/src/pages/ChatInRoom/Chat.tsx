@@ -72,6 +72,7 @@ export function ChatInRoom() {
   const user = useStoreState((store) => store.user);
   const useChatRooms = useStoreState((store) => store.userChatRooms);
   const loaderArchive = useStoreState((store) => store.loaderArchive);
+  const currentUntrackedChatRoom = useStoreState((store) => store.currentUntrackedChatRoom);
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
   const [currentRoom, setCurrentRoom] = useState("");
@@ -191,6 +192,10 @@ export function ChatInRoom() {
         useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
+    }
+
+    if(currentUntrackedChatRoom){
+      chooseRoom(currentUntrackedChatRoom);
     }
   }, [])
 
