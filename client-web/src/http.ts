@@ -125,30 +125,34 @@ export function refresh() {
 }
 
 http.interceptors.response.use(undefined, (error) => {
-  if (!error.response || error.response.status !== 401) {
-    return Promise.reject(error);
-  }
+  const user = useStoreState.getState().user;
 
-  if (
-    error.config.url === "/users/login/refresh" ||
-    error.config.url === "/users/login"
-  ) {
-    return Promise.reject(error);
-  }
-
-  const request = error.config;
-
-  return refresh()
-    .then(() => {
-      return new Promise((resolve) => {
-        const user = useStoreState.getState().user;
-        request.headers["Authorization"] = user.token;
-        resolve(http(request));
-      });
-    })
-    .catch((error) => {
+  if (user.firstName) {
+    if (!error.response || error.response.status !== 401) {
       return Promise.reject(error);
-    });
+    }
+
+    if (
+      error.config.url === "/users/login/refresh" ||
+      error.config.url === "/users/login"
+    ) {
+      return Promise.reject(error);
+    }
+
+    const request = error.config;
+
+    return refresh()
+      .then(() => {
+        return new Promise((resolve) => {
+          const user = useStoreState.getState().user;
+          request.headers["Authorization"] = user.token;
+          resolve(http(request));
+        });
+      })
+      .catch((error) => {
+        return Promise.reject(error);
+      });
+  }
 });
 
 export const loginUsername = (username: string, password: string) => {
@@ -217,11 +221,14 @@ export async function deployNfmt(
 }
 
 export function getBalance(walletAddress: string) {
-  return http.get(`/wallets/balance/${walletAddress}`);
+  const user = useStoreState.getState().user;
+  return http.get(`/wallets/balance`, {
+    headers: { Authorization: user.token },
+  });
 }
 
 export function getPublicProfile(walletAddress: string) {
-  return http.get(`/users/publicProfile/${walletAddress}`);
+  return http.get(`/users/profile/${walletAddress}`);
 }
 
 export function getTransactions(walletAddress: string) {
