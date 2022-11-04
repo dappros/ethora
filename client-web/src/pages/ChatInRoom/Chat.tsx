@@ -22,6 +22,7 @@ import {
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
 import { Message } from "../../componets/Chat/Messages/Message";
+import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -197,6 +198,7 @@ export function ChatInRoom() {
     if(currentUntrackedChatRoom){
       chooseRoom(currentUntrackedChatRoom);
     }
+    console.log(messages)
   }, [])
 
   return (
@@ -276,15 +278,25 @@ export function ChatInRoom() {
               .filter((item: any) => item.roomJID === currentRoom)
               .map((message, index, arr) => {
                 const position = getPosition(arr, message, index);
-                return (
-                  <Message
-                    key={message.id}
-                    is={"Message"}
-                    position={position}
-                    message={message}
-                    userJid={xmpp.client?.jid?.toString()}
-                  />
-                );
+                if(message.data.isSystemMessage === "false") {
+                  return (
+                      <Message
+                          key={message.id}
+                          is={"Message"}
+                          position={position}
+                          message={message}
+                          userJid={xmpp.client?.jid?.toString()}
+                      />
+                  );
+                }else{
+                  return (
+                      <SystemMessage
+                          is={"Message"}
+                          message={message}
+                          userJid={xmpp.client?.jid?.toString()}
+                      />
+                  );
+                }
               })}
             {messages.length <= 0 ||
               (!currentRoom && (
