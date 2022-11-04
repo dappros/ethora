@@ -2,6 +2,7 @@ import React from "react";
 import { Message as KitMessage, MessageModel } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import { TMessageHistory } from "../../../store";
+import {useHistory} from "react-router";
 
 export interface IMessage {
   message: TMessageHistory;
@@ -21,6 +22,7 @@ export const Message: React.FC<IMessage> = ({
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
   const messageJid = message.data.senderJID;
+  const history = useHistory();
 
   return (
     <KitMessage
@@ -40,7 +42,9 @@ export const Message: React.FC<IMessage> = ({
             boxSizing: "border-box",
             width: "42px",
             height: "42px",
+            cursor: "pointer"
           }}
+          onClick={() => history.push("/profile/"+message.data.senderWalletAddress)}
           is={"Avatar"}
           src={message.data.photoURL}
           onError={({ currentTarget }) => {
@@ -54,7 +58,7 @@ export const Message: React.FC<IMessage> = ({
 
       <KitMessage.CustomContent>
         {(position.type === "first" || position.type === "single") && (
-          <strong>
+          <strong style={{cursor: "pointer"}} onClick={() => history.push("/profile/" + message.data.senderWalletAddress)}>
             {firstName} {lastName}
             <br />
           </strong>
