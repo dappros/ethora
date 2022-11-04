@@ -104,7 +104,10 @@ const onMessageHistory = async (stanza: Element) => {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
     }
+
+    const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
     if (stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
+        stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
         !isGettingFirstMessages) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
     }
@@ -492,7 +495,8 @@ class XmppClass {
     lastName: string,
     photo: string,
     walletAddress: string,
-    userMessage: string
+    userMessage: string,
+    notDisplayedValue?: string
   ) {
     const message = xml(
       "message",
@@ -512,6 +516,7 @@ class XmppClass {
         isSystemMessage: false,
         tokenAmount: 0,
         quickReplies: [],
+        notDisplayedValue: notDisplayedValue ? notDisplayedValue : ""
       }),
       xml("body", {}, userMessage)
     );

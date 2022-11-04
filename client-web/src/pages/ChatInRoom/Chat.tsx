@@ -21,7 +21,8 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import { Message } from "../../componets/Chat/Messages/Message";
+import {IButtons, Message} from "../../componets/Chat/Messages/Message";
+import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -72,6 +73,7 @@ export function ChatInRoom() {
   const user = useStoreState((store) => store.user);
   const useChatRooms = useStoreState((store) => store.userChatRooms);
   const loaderArchive = useStoreState((store) => store.loaderArchive);
+  const currentUntrackedChatRoom = useStoreState((store) => store.currentUntrackedChatRoom);
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
   const [currentRoom, setCurrentRoom] = useState("");
@@ -110,6 +112,7 @@ export function ChatInRoom() {
     setCurrentRoom(jid);
     setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
     useStoreState.getState().clearCounterChatRoom(jid);
+    useStoreState.getState().setCurrentUntrackedChatRoom(jid);
 
     const filteredMessages = messages.filter(
       (item: any) => item.roomJID === jid
@@ -154,18 +157,20 @@ export function ChatInRoom() {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = (button: any) => {
     let userAvatar = "";
     if (profile?.profileImage) {
       userAvatar = profile?.profileImage;
     }
+
     xmpp.sendMessage(
       currentRoom,
       user.firstName,
       user.lastName,
       userAvatar,
       user.walletAddress,
-      myMessage
+      typeof button === 'object' ? button.value : myMessage,
+        typeof button === 'object' ? button.notDisplayedValue : null
     );
   };
 
@@ -180,6 +185,22 @@ export function ChatInRoom() {
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [myMessage]);
+
+  useEffect(() => {
+    window.onblur = () => {
+      useStoreState.getState().setCurrentUntrackedChatRoom("");
+    }
+    window.onfocus = () => {
+      if(currentRoom){
+        useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
+        useStoreState.getState().clearCounterChatRoom(currentRoom);
+      }
+    }
+
+    if(currentUntrackedChatRoom){
+      chooseRoom(currentUntrackedChatRoom);
+    }
+  }, [])
 
   return (
     <Box style={{ height: "500px" }}>
@@ -258,15 +279,26 @@ export function ChatInRoom() {
               .filter((item: any) => item.roomJID === currentRoom)
               .map((message, index, arr) => {
                 const position = getPosition(arr, message, index);
-                return (
-                  <Message
-                    key={message.id}
-                    is={"Message"}
-                    position={position}
-                    message={message}
-                    userJid={xmpp.client?.jid?.toString()}
-                  />
-                );
+                if(message.data.isSystemMessage === "false") {
+                  return (
+                      <Message
+                          key={message.id}
+                          is={"Message"}
+                          position={position}
+                          message={message}
+                          userJid={xmpp.client?.jid?.toString()}
+                          buttonSender={sendMessage}
+                      />
+                  );
+                }else{
+                  return (
+                      <SystemMessage
+                          is={"Message"}
+                          message={message}
+                          userJid={xmpp.client?.jid?.toString()}
+                      />
+                  );
+                }
               })}
             {messages.length <= 0 ||
               (!currentRoom && (

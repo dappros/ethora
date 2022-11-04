@@ -140,6 +140,8 @@ interface IStore {
   setLoaderArchive: (status: boolean) => void;
   addAppUsers: (users: TAppUser[]) => void;
   setACL: (acl: http.IUserAcl) => void;
+  currentUntrackedChatRoom: string;
+  setCurrentUntrackedChatRoom: (roomJID: string) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -187,6 +189,7 @@ const _useStore = create<IStore>()(
           messages: [],
           historyMessages: [],
           loaderArchive: false,
+          currentUntrackedChatRoom: "",
           userChatRooms: [],
           appUsers: [],
           setACL: (acl: http.IUserAcl) =>
@@ -329,6 +332,10 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.appUsers = [...state.appUsers, ...users];
             }),
+          setCurrentUntrackedChatRoom: (roomJID: string) =>
+              set((state) => {
+                state.currentUntrackedChatRoom = roomJID;
+              }),
         };
       })
     )
