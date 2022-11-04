@@ -27,6 +27,8 @@ export type TUser = {
   appId: string;
   xmppPassword: string;
   profileImage: string;
+  isProfileOpen?: boolean;
+  isAssetsOpen?: boolean;
 };
 
 export type TLoginSuccessResponse = {
@@ -89,9 +91,15 @@ export interface IUserAcl {
   };
 }
 
-export const http = axios.create({
+const http = axios.create({
   baseURL: API_URL,
 });
+
+export const httpWithAuth = () => {
+  const user = useStoreState.getState().user;
+  http.defaults.headers.common["Authorization"] = user.token;
+  return http;
+};
 
 export function refresh() {
   return new Promise((resolve, reject) => {
@@ -115,6 +123,7 @@ export function refresh() {
       });
   });
 }
+
 http.interceptors.response.use(undefined, (error) => {
   if (!error.response || error.response.status !== 401) {
     return Promise.reject(error);

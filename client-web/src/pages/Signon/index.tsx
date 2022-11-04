@@ -155,6 +155,8 @@ export function Signon() {
       token: tokens.token,
       refreshToken: tokens.refreshToken,
       profileImage: user.profileImage,
+      isProfileOpen: user.isProfileOpen,
+      isAssetsOpen: user.isAssetsOpen,
     });
   };
 

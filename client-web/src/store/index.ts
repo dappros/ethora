@@ -16,6 +16,8 @@ type TUser = {
   ACL?: {
     ownerAccess: boolean;
   };
+  isProfileOpen?: boolean;
+  isAssetsOpen?: boolean;
 };
 
 type TMode = "light" | "dark";

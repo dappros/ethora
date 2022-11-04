@@ -73,6 +73,8 @@ export function UsernameSignUpForm(props: TProps) {
               token: result.data.token,
               refreshToken: result.data.refreshToken,
               profileImage: result.data.user.profileImage,
+              isProfileOpen: result.data.user.isProfileOpen,
+              isAssetsOpen: result.data.user.isAssetsOpen,
             });
             props.closeModal();
             history.push(

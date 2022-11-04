@@ -41,12 +41,25 @@ export default function UserCard({ profile }: TProps) {
           )}
         </Box>
         <Box>
-          <Box sx={{ fontWeight: "bold" }}>
-            {profile?.firstName} {profile?.lastName}
-          </Box>
-          {profile?.description && (
-            <Box>Description: {profile?.description}</Box>
+          {user.firstName ? (
+            <>
+              <Box sx={{ fontWeight: "bold" }}>
+                {user?.firstName} {user?.lastName}
+              </Box>
+              {user?.description && <Box>Description: {user?.description}</Box>}
+            </>
+          ) : (
+            <>
+              <Box sx={{ fontWeight: "bold" }}>
+                {profile?.firstName} {profile?.lastName}
+              </Box>
+              {profile?.description && (
+                <Box>Description: {profile?.description}</Box>
+              )}
+            </>
           )}
+
+          {}
         </Box>
         {user.firstName && (
           <a

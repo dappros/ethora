@@ -64,6 +64,8 @@ export function EmailSingInForm(props: TProps) {
             refreshToken: resp.data.refreshToken,
             token: resp.data.token,
             profileImage: user.profileImage,
+            isProfileOpen: user.isProfileOpen,
+            isAssetsOpen: user.isAssetsOpen,
           });
           history.push(`/profile/${user.defaultWallet.walletAddress}`);
           props.closeModal();
