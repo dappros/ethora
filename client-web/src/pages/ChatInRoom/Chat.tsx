@@ -198,7 +198,6 @@ export function ChatInRoom() {
     if(currentUntrackedChatRoom){
       chooseRoom(currentUntrackedChatRoom);
     }
-    console.log(messages)
   }, [])
 
   return (
