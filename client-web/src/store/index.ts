@@ -304,7 +304,9 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              state.userChatRooms[currentIndex].unreadMessages = 0;
+              if(currentIndex !== -1){
+                state.userChatRooms[currentIndex].unreadMessages = 0;
+              }
             }),
           clearUserChatRooms: () =>
             set((state) => {
