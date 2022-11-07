@@ -6,6 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Button, Icon, NativeSelect, Typography } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { useStoreState } from "../../store";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -20,6 +21,7 @@ import Select from "@mui/material/Select";
 import { useFormik } from "formik";
 import MenuItem from "@mui/material/MenuItem";
 import * as http from "../../http";
+import TransferItemsModal from "./TransferItemsModal";
 
 export default function ItemsTable() {
   const [itemModal, setItemModal] = useState(false);
@@ -27,7 +29,9 @@ export default function ItemsTable() {
   const [file, setFile] = useState<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState("");
-  const balances = useStoreState((state) =>
+  const [showTransfer, setShowTransfer] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const items = useStoreState((state) =>
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
     })
@@ -52,7 +56,6 @@ export default function ItemsTable() {
     },
     validate,
     onSubmit: async (values) => {
-      console.log(values);
       if (!file) {
         setFileError("required");
         return;
@@ -60,10 +63,12 @@ export default function ItemsTable() {
 
       const fd = new FormData();
       fd.append("files", file);
+
+      setLoading(true);
       http
         .uploadFile(fd)
         .then(async (res) => {
-          const depRes = await http.nftDeploy(
+          await http.nftDeploy(
             values.tokenName,
             res.data.results[0]._id,
             values.rarity
@@ -72,7 +77,7 @@ export default function ItemsTable() {
           setBalance(balanceResp.data.balance);
           onCloseModal();
         })
-        .catch((error) => console.log(error));
+        .finally(() => setLoading(false));
     },
   });
 
@@ -130,16 +135,27 @@ export default function ItemsTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {balances.map((row) => (
+          {items.map((row) => (
             <TableRow key={row.contractAddress}>
-              <TableCell style={{ width: "200px" }} align={'center'}>
-                <img alt="" src={row.imagePreview} style={{width: 100, borderRadius: 5}}/>
+              <TableCell style={{ width: "200px" }} align={"center"}>
+                <img
+                  alt=""
+                  src={row.imagePreview}
+                  style={{ width: 100, borderRadius: 5 }}
+                />
               </TableCell>
               <TableCell align="center">{row.tokenName}</TableCell>
               <TableCell align="center">{row.balance}</TableCell>
               <TableCell align="center">{row.total}</TableCell>
               <TableCell align="center">
-                <Button>Transfer</Button>
+                <Button
+                  onClick={() => {
+                    // setCurrentItem(row);
+                    setShowTransfer(true);
+                  }}
+                >
+                  Transfer
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -234,8 +250,8 @@ export default function ItemsTable() {
                     id: "uncontrolled-native",
                   }}
                   onChange={(e) => {
-                    console.log(e)
-                    formik.handleChange(e)
+                    console.log(e);
+                    formik.handleChange(e);
                   }}
                 >
                   <option value={1}>1</option>
@@ -246,14 +262,19 @@ export default function ItemsTable() {
               <Box
                 sx={{ margin: 2, display: "flex", justifyContent: "center" }}
               >
-                <Button type="submit" variant="contained">
+                <LoadingButton
+                  loading={loading}
+                  type="submit"
+                  variant="contained"
+                >
                   Create
-                </Button>
+                </LoadingButton>
               </Box>
             </form>
           </Box>
         </Box>
       </Dialog>
+      <TransferItemsModal open={showTransfer} setOpen={setShowTransfer} />
     </TableContainer>
   );
 }

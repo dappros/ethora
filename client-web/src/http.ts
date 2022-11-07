@@ -62,11 +62,11 @@ export interface IUser {
 }
 
 export type TPermission = {
-  admin?: false;
-  create?: false;
-  delete?: false;
-  read?: false;
-  update?: false;
+  admin?: boolean;
+  create?: boolean;
+  delete?: boolean;
+  read?: boolean;
+  update?: boolean;
   disabled?: Array<string>;
 };
 
@@ -83,11 +83,11 @@ export interface IUserAcl {
     network: {
       netStats: TPermission;
     };
-    createdAt: Date | string;
-    updatedAt: Date | string;
-    userId: string;
-    _id: string;
-    appId: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    userId?: string;
+    _id?: string;
+    appId?: string;
   };
 }
 

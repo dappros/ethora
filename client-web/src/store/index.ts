@@ -321,10 +321,10 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              if(state.userChatRooms[currentIndex]) {
+              if (state.userChatRooms[currentIndex]) {
                 if (status) {
                   state.userChatRooms[currentIndex].composing =
-                      userName + " is typing";
+                    userName + " is typing";
                 } else {
                   state.userChatRooms[currentIndex].composing = "";
                 }
