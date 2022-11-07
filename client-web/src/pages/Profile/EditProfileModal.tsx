@@ -51,7 +51,11 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
       const fd = new FormData();
       fd.append("firstName", values.firstName);
       fd.append("lastName", values.lastName);
-      fd.append("description", values.description);
+
+      if (values.description) {
+        fd.append("description", values.description);
+      }
+
       fd.append("isProfileOpen", values.isProfileOpen);
       fd.append("isAssetsOpen", values.isAssetsOpen);
       setLoading(true);

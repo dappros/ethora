@@ -6,6 +6,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Button, Icon, NativeSelect, Typography } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { useStoreState } from "../../store";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -29,7 +30,7 @@ export default function ItemsTable() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState("");
   const [showTransfer, setShowTransfer] = useState(false);
-  // const [currentItem, setCurrentItem] = useState<TBalance>();
+  const [loading, setLoading] = useState(false);
   const items = useStoreState((state) =>
     state.balance.filter((el) => {
       return el.tokenType === "NFT";
@@ -55,7 +56,6 @@ export default function ItemsTable() {
     },
     validate,
     onSubmit: async (values) => {
-      console.log(values);
       if (!file) {
         setFileError("required");
         return;
@@ -63,10 +63,12 @@ export default function ItemsTable() {
 
       const fd = new FormData();
       fd.append("files", file);
+
+      setLoading(true);
       http
         .uploadFile(fd)
         .then(async (res) => {
-          const depRes = await http.nftDeploy(
+          await http.nftDeploy(
             values.tokenName,
             res.data.results[0]._id,
             values.rarity
@@ -75,7 +77,7 @@ export default function ItemsTable() {
           setBalance(balanceResp.data.balance);
           onCloseModal();
         })
-        .catch((error) => console.log(error));
+        .finally(() => setLoading(false));
     },
   });
 
@@ -260,9 +262,13 @@ export default function ItemsTable() {
               <Box
                 sx={{ margin: 2, display: "flex", justifyContent: "center" }}
               >
-                <Button type="submit" variant="contained">
+                <LoadingButton
+                  loading={loading}
+                  type="submit"
+                  variant="contained"
+                >
                   Create
-                </Button>
+                </LoadingButton>
               </Box>
             </form>
           </Box>
