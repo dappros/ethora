@@ -16,11 +16,63 @@ import { getMyAcl } from "../http";
 
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
+  const user = useStoreState((state) => state.user);
 
   const setACL = useStoreState((state) => state.setACL);
 
   const getAcl = async () => {
     try {
+      if (user.ACL.ownerAccess) {
+        setACL({
+          result: {
+            network: {
+              netStats: {
+                read: true,
+                disabled: ["create", "update", "delete", "admin"],
+              },
+            },
+            application: {
+              appCreate: {
+                create: true,
+                disabled: ["read", "update", "delete", "admin"],
+              },
+              appSettings: {
+                read: true,
+                update: true,
+                admin: true,
+                disabled: ["create", "delete"],
+              },
+              appUsers: {
+                create: true,
+                read: true,
+                update: true,
+                delete: true,
+                admin: true,
+              },
+              appTokens: {
+                create: true,
+                read: true,
+                update: true,
+                admin: true,
+                disabled: ["delete"],
+              },
+              appPush: {
+                create: true,
+                read: true,
+                update: true,
+                admin: true,
+                disabled: ["delete"],
+              },
+              appStats: {
+                read: true,
+                admin: true,
+                disabled: ["create", "update", "delete"],
+              },
+            },
+          },
+        });
+        return;
+      }
       const res = await getMyAcl();
       setACL(res.data);
     } catch (error) {

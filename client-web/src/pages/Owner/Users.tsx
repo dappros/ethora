@@ -102,10 +102,7 @@ export default function BasicTable() {
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
   return (
-    <TableContainer
-      component={Paper}
-      style={{ margin: "0 auto" }}
-    >
+    <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
           Users
@@ -179,12 +176,15 @@ export default function BasicTable() {
                 <TableCell align="right">
                   {user.email ? user.email : "-"}
                 </TableCell>
-                <TableCell  align="right">
-                  <Box sx={{width: '200px'}} >
-                  <Typography>Edit</Typography>
-                  <Typography style={{cursor: 'pointer', textDecoration: 'underline'}} onClick={() => handleAclEditOpen(user._id)}>
-                    Edit ACL
-                  </Typography>
+                <TableCell align="right">
+                  <Box sx={{ width: "200px" }}>
+                    <Typography>Edit</Typography>
+                    <Typography
+                      style={{ cursor: "pointer", textDecoration: "underline" }}
+                      onClick={() => handleAclEditOpen(user._id)}
+                    >
+                      Edit ACL
+                    </Typography>
                   </Box>
                 </TableCell>
               </TableRow>

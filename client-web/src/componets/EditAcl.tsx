@@ -158,10 +158,15 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
   const myAcl = useStoreState((state) => state.ACL);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    console.log("userAclApplicationKeys ", userAclApplicationKeys);
+  }, [userAclApplicationKeys]);
+
   const getAcl = async () => {
     setLoading(true);
     try {
       const { data } = await getUserAcl(userId);
+      console.log("getAcl ", data);
       setUserAcl(data);
       const appKeys = Object.keys(data.result.application) as TKeys[];
       const networkKeys = Object.keys(data.result.network) as TKeys[];
@@ -266,21 +271,22 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userAclApplicationKeys.map((row) => {
-              const application = userAcl!.result.application[row];
-              const myApplicationAcl = myAcl!.result.application[row];
+            {myAcl.result &&
+              userAclApplicationKeys.map((row) => {
+                const application = userAcl!.result.application[row];
+                const myApplicationAcl = myAcl!.result.application[row];
 
-              return (
-                <Row
-                  disableAllRow={!checkAdminEnabled(myApplicationAcl)}
-                  // disableAllRow={false}
-                  onChange={onApplicationAclChange}
-                  name={row}
-                  row={application}
-                  key={row}
-                />
-              );
-            })}
+                return (
+                  <Row
+                    disableAllRow={!checkAdminEnabled(myApplicationAcl)}
+                    // disableAllRow={false}
+                    onChange={onApplicationAclChange}
+                    name={row}
+                    row={application}
+                    key={row}
+                  />
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -302,7 +308,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {userAclNetworkKeys.map((row) => {
+            {/* {userAclNetworkKeys.map((row) => {
               const network = userAcl!.result.network.netStats;
               const myNetworkAcl = myAcl!.result.network.netStats;
 
@@ -316,7 +322,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
                   key={row}
                 />
               );
-            })}
+            })} */}
           </TableBody>
         </Table>
       </TableContainer>
