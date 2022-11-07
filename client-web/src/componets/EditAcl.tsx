@@ -20,7 +20,7 @@ import { useStoreState } from "../store";
 
 export interface IEditAcl {
   userId: string;
-  updateData?(): Promise<void>;
+  updateData?(user: IUserAcl): void;
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -239,9 +239,10 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
         network: filteredNetwork,
       } as IAclBody;
 
-      await updateUserAcl(userId, body);
+      const aclRes = await updateUserAcl(userId, body);
+      const updatedUserAcl = aclRes.data as IUserAcl;
       if (updateData) {
-        await updateData();
+        updateData(updatedUserAcl);
       }
     } catch (error) {
       console.log(error);

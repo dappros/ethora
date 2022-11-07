@@ -101,6 +101,17 @@ export default function BasicTable() {
     setAclEditData({ modalOpen: true, userId: userId });
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
+
+  const updateUserDataAfterAclChange = (user: http.IUserAcl) => {
+    const oldUsers = users;
+    const indexToUpdate = oldUsers.findIndex(
+      (item) => item._id === aclEditData.userId
+    );
+    if (indexToUpdate !== -1) {
+    }
+    oldUsers[indexToUpdate]._id = user.result.userId;
+    setUsers(oldUsers);
+  };
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
@@ -211,11 +222,7 @@ export default function BasicTable() {
       >
         <Box sx={boxStyle}>
           <EditAcl
-            updateData={() =>
-              getUsers(apps[0]._id).then((users) => {
-                setUsers(users);
-              })
-            }
+            updateData={updateUserDataAfterAclChange}
             userId={aclEditData.userId}
           />
           <IconButton
