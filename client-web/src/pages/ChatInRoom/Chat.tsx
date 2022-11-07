@@ -21,7 +21,7 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import {IButtons, Message} from "../../componets/Chat/Messages/Message";
+import {Message} from "../../componets/Chat/Messages/Message";
 import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 
 type IMessagePosition = {
@@ -187,20 +187,21 @@ export function ChatInRoom() {
   }, [myMessage]);
 
   useEffect(() => {
+    if(currentUntrackedChatRoom){
+      chooseRoom(currentUntrackedChatRoom);
+    }
+
     window.onblur = () => {
       useStoreState.getState().setCurrentUntrackedChatRoom("");
     }
+
     window.onfocus = () => {
       if(currentRoom){
         useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
     }
-
-    if(currentUntrackedChatRoom){
-      chooseRoom(currentUntrackedChatRoom);
-    }
-  }, [])
+  }, [currentRoom])
 
   return (
     <Box style={{ height: "500px" }}>
