@@ -54,6 +54,7 @@ const Row = ({
     keyToChange: TKeys
   ) => void;
 }) => {
+  const isOwner = useStoreState((state) => state.user?.ACL.ownerAccess);
   return (
     <TableRow
       sx={{
@@ -74,7 +75,10 @@ const Row = ({
         <Checkbox
           checked={row?.create}
           name={"create"}
-          disabled={checkDisabled(row?.disabled, "create") || disableAllRow}
+          disabled={
+            (checkDisabled(row?.disabled, "create") || disableAllRow) &&
+            !isOwner
+          }
           onChange={(e) => onChange(e, name)}
           {...label}
         />
