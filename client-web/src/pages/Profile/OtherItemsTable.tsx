@@ -48,10 +48,13 @@ export default function OtherItemsTable(props: TProps) {
   const [balances, setBalances] = React.useState<TBalances>([]);
   React.useEffect(() => {
     if (props.walletAddress) {
-      http.getBalance(props.walletAddress).then((response) => {
+      http.getPublicProfile(props.walletAddress).then((response) => {
+        console.log("getPublicProvile ", response);
         // @ts-ignore
         setBalances(
-          response.data.balance.filter((el: any) => el.tokenType === "NFT")
+          response.data.balances.balance.filter(
+            (el: any) => el.tokenType === "NFT"
+          )
         );
       });
     }
