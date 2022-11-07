@@ -27,6 +27,7 @@ import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
+  separator?: string;
 };
 
 const getPosition = (
@@ -42,6 +43,12 @@ const getPosition = (
     position: "single",
     type: "single",
   };
+
+  if(arr[index - 1] && message){
+    if(format(new Date(arr[index - 1]?.date), "dd") !== format(new Date(message.date), "dd")){
+      result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy");
+    }
+  }
 
   if (previousJID !== currentJID && nextJID !== currentJID) {
     return result;
