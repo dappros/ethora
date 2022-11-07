@@ -30,10 +30,10 @@ export function OtherProfile(props: TProps) {
     getPublicProfile(props.walletAddress)
       .then((result) => {
         console.log("getPublicProfile ", result.data);
-        setProfile(result.data.result);
+        setProfile(result.data);
       })
-      .finally(() => setLoading(false));
-
+      // .finally(() => setLoading(false));
+      setLoading(false)
     getTransactions(props.walletAddress).then((result) => {
       setTransactions(result.data);
       console.log("balance ", result.data);
@@ -54,7 +54,7 @@ export function OtherProfile(props: TProps) {
           <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>
             <UserCard profile={profile} />
           </Box>
-        )}
+)} 
         <OtherItems walletAddress={props.walletAddress} />
       </Box>
       {!!transactions && <Transactions transactions={transactions.items} />}

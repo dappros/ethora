@@ -49,7 +49,7 @@ export function MyProfile() {
         </Box>
       )}
       <Box sx={{ margin: "auto", width: "200px" }}>
-        <UserCard profile={user} />
+        <UserCard  />
       </Box>
       <ItemsTable />
       {!!transactions && (
