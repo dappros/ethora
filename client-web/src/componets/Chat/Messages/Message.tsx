@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Message as KitMessage, MessageModel, Button } from "@chatscope/chat-ui-kit-react";
+import { Message as KitMessage, MessageModel, Button, MessageSeparator } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import { TMessageHistory } from "../../../store";
 import {useHistory} from "react-router";
@@ -10,6 +10,7 @@ export interface IMessage {
   position: {
     type: string;
     position: MessageModel['position'];
+    separator?: string;
   };
   is?: string;
   buttonSender: any
@@ -41,6 +42,11 @@ export const Message: React.FC<IMessage> = ({
 
   return (
   <div is={"Message"}>
+    {position.separator ?
+      <MessageSeparator>
+        {position.separator}
+      </MessageSeparator> : null
+    }
     <KitMessage
       key={message.key}
       model={{
