@@ -54,7 +54,7 @@ export const Message: React.FC<IMessage> = ({
         direction: String(userJid).split("/")[0] === String(messageJid).split("/")[0] ? "outgoing" : "incoming",
         position: position.position,
       }}
-      avatarPosition={userJid === messageJid ? "tr" : "tl"}
+      avatarPosition={String(userJid).split("/")[0] === String(messageJid).split("/")[0] ? "tr" : "tl"}
       avatarSpacer={position.type !== "first" && position.type !== "single"}
     >
       {(position.type === "first" || position.type === "single") && (
