@@ -21,7 +21,7 @@ export const Routes = () => {
 
   const getAcl = async () => {
     try {
-      if (user.ACL.ownerAccess) {
+      if (user?.ACL?.ownerAccess) {
         setACL({
           result: {
             network: {

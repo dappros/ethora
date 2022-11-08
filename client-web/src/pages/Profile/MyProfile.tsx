@@ -9,6 +9,7 @@ import { useStoreState } from "../../store";
 import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
 import { Typography } from "@mui/material";
+import DocumentsTable from "./DocumentsTable";
 
 type TBalance = {
   balance: string;
@@ -49,9 +50,10 @@ export function MyProfile() {
         </Box>
       )}
       <Box sx={{ margin: "auto", width: "200px" }}>
-        <UserCard  />
+        <UserCard />
       </Box>
       <ItemsTable />
+      <DocumentsTable></DocumentsTable>
       {!!transactions && (
         <Box>
           <Typography variant="h6" style={{ margin: "16px" }}>
