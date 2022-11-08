@@ -35,8 +35,8 @@ const getPosition = (
   message: TMessageHistory,
   index: number
 ) => {
-  const previousJID = arr[index - 1]?.data.senderJID;
-  const nextJID = arr[index + 1]?.data.senderJID;
+  const previousJID = arr[index - 1]?.data.senderJID?.split("/")[0];
+  const nextJID = arr[index + 1]?.data.senderJID?.split("/")[0];
   const currentJID = message.data.senderJID?.split("/")[0];
 
   let result: IMessagePosition = {
