@@ -21,12 +21,13 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import {IButtons, Message} from "../../componets/Chat/Messages/Message";
+import {Message} from "../../componets/Chat/Messages/Message";
 import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
 
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
+  separator?: string;
 };
 
 const getPosition = (
@@ -42,6 +43,12 @@ const getPosition = (
     position: "single",
     type: "single",
   };
+
+  if(arr[index - 1] && message){
+    if(format(new Date(arr[index - 1]?.date), "dd") !== format(new Date(message.date), "dd")){
+      result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy");
+    }
+  }
 
   if (previousJID !== currentJID && nextJID !== currentJID) {
     return result;
@@ -118,7 +125,7 @@ export function ChatInRoom() {
       (item: any) => item.roomJID === jid
     );
 
-    if (!loaderArchive && filteredMessages.length === 1) {
+    if (!loaderArchive && filteredMessages.length <= 10) {
       const lastMessageID = filteredMessages[0].id;
       xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
     }
@@ -187,20 +194,21 @@ export function ChatInRoom() {
   }, [myMessage]);
 
   useEffect(() => {
+    if(currentUntrackedChatRoom){
+      chooseRoom(currentUntrackedChatRoom);
+    }
+
     window.onblur = () => {
       useStoreState.getState().setCurrentUntrackedChatRoom("");
     }
+
     window.onfocus = () => {
       if(currentRoom){
         useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
     }
-
-    if(currentUntrackedChatRoom){
-      chooseRoom(currentUntrackedChatRoom);
-    }
-  }, [])
+  }, [currentRoom])
 
   return (
     <Box style={{ height: "500px" }}>
