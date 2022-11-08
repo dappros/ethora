@@ -54,6 +54,11 @@ export type TMessageHistory = {
     senderLastName: string;
     senderWalletAddress: string;
     tokenAmount: string;
+    isMediafile?: boolean;
+    originalName?: string;
+    location?: string;
+    locationPreview?: string;
+    mimetype?: string;
     xmlns: string;
   };
   roomJID: string;

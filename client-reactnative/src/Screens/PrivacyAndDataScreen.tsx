@@ -39,7 +39,7 @@ export const PrivacyAndDataScreen = () => {
   ];
   const scene = useMemo(() => {
     return SceneMap({
-      visibility: () => <Visibility />,
+      visibility: () => <Visibility changeScreen={setRouteIndex} />,
       profileShares: () => <ProfileShare />,
       documentShares: () => <DocumentShares />,
       blocking: () => <Blocking />,

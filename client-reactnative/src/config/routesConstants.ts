@@ -17,11 +17,9 @@ export const transactionURL = '/explorer/transactions?';
 
 export const registerUserURL = '/users';
 
-export const checkPushSubscribe =
-  '/subscriptions/deviceId/';
+export const checkPushSubscribe = '/subscriptions/deviceId/';
 
-export const subscribePushNotification =
-'/subscriptions/deviceId/';
+export const subscribePushNotification = '/subscriptions/deviceId/';
 
 export const getListOfEmails = '/users/emails';
 
@@ -45,4 +43,5 @@ export const otherProfileBalance = '/users/profile/';
 
 export const shareLink = '/shareLink/';
 
-export const docsURL = '/docs'
+export const docsURL = '/docs';
+export const otherUserProfileURL = '/user/profile/';

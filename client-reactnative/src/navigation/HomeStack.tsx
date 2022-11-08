@@ -51,6 +51,9 @@ export const HomeStackScreen = observer(() => {
     await chatStore.getRoomsFromCache();
     await chatStore.getCachedMessages();
     await walletStore.getCachedTransactions();
+    if (walletAddress) {
+      await walletStore.getDocuments(walletAddress);
+    }
   };
 
   useEffect(() => {

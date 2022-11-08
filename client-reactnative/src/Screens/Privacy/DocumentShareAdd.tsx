@@ -15,8 +15,10 @@ import {useStores} from '../../stores/context';
 import {shareLink} from '../../config/routesConstants';
 import {generateProfileLink} from '../../helpers/generateProfileLink';
 import QRCodeGenerator from '../../components/QRCodeGenerator';
+import {observer} from 'mobx-react-lite';
+import {generateDocumentLink} from '../../helpers/generateDocumentLink';
 
-export interface IProfileShareAdd {}
+export interface IDocumentShareAdd {}
 
 const HOUR = 60 * 60;
 const DAY = HOUR * 24;
@@ -35,9 +37,11 @@ interface ISharedLink {
   walletAddress: string;
 }
 
-export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
+export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
   const [memo, setMemo] = useState('');
   const [expiration, setExpiration] = useState('-1');
+  const [documentId, setDocumentId] = useState('');
+
   const [createdLink, setCreatedLink] = useState<ISharedLink>({
     _id: '',
     expiration: '',
@@ -51,11 +55,14 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
   const [loading, setLoading] = useState(false);
   const {apiStore, loginStore} = useStores();
   const inputRef = useRef();
+
+  const {walletStore} = useStores();
   const generateLink = async () => {
     const body = {
       expiration: new Date().getTime() + +expiration * 1000,
       memo: memo,
-      resource: 'profile',
+      resource: 'document',
+      documentId: documentId,
     };
     setLoading(true);
     try {
@@ -70,12 +77,21 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
     }
     setLoading(false);
   };
+  if (!walletStore.documents.length) {
+    return (
+      <View style={{marginHorizontal: 20}}>
+        <Text style={[styles.title, {textAlign: 'center'}]}>
+          You have no documents to share. Please, create one
+        </Text>
+      </View>
+    );
+  }
   return (
     <ScrollView
       style={{backgroundColor: 'white', paddingHorizontal: 20, flex: 1}}>
       <View style={{marginTop: 10}}>
         <HStack justifyContent={'space-between'}>
-          <Text style={styles.title}>Create a Profile Sharing link</Text>
+          <Text style={styles.title}>Create a Document Sharing link</Text>
         </HStack>
         <Text style={styles.description}>
           Send this link to your trusted contact(s) so they can access your
@@ -107,6 +123,33 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           <Select.Item label="1 day" value={DAY.toString()} />
           <Select.Item label="1 week" value={WEEK.toString()} />
           <Select.Item label="1 month" value={MONTH.toString()} />
+        </Select>
+      </View>
+      <View>
+        <Text style={styles.title}>Document</Text>
+
+        <Text marginBottom={1}>
+          If you set this, this link will only be valid for the given period of
+          time.
+        </Text>
+        <Select
+          selectedValue={documentId}
+          minWidth="200"
+          accessibilityLabel="Choose document"
+          placeholder="Choose document"
+          borderColor={commonColors.primaryColor}
+          color={commonColors.primaryColor}
+          mt={1}
+          onValueChange={itemValue => setDocumentId(itemValue)}>
+          {walletStore.documents.map(item => {
+            return (
+              <Select.Item
+                key={item._id}
+                label={item.documentName}
+                value={item._id}
+              />
+            );
+          })}
         </Select>
       </View>
       <View>
@@ -143,14 +186,9 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
       </View>
       {createdLink.walletAddress ? (
         <QRCodeGenerator
-          shareKey={generateProfileLink({
-            firstName: loginStore.initialData.firstName,
-            lastName: loginStore.initialData.lastName,
-            walletAddress: createdLink.walletAddress,
-            xmppId:
-              loginStore.initialData.xmppUsername +
-              '@' +
-              apiStore.xmppDomains.DOMAIN,
+          removeBaseUrl
+          shareKey={generateDocumentLink({
+            linkToken: createdLink.token,
           })}
           close={() => {}}
         />
@@ -164,7 +202,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
       )}
     </ScrollView>
   );
-};
+});
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,

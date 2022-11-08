@@ -68,11 +68,15 @@ export const Blocking: React.FC<IBlocking> = observer(({}) => {
           icon if you wish to remove the block.
         </Text>
         <View style={{marginTop: 10}}>
-          <FlatList
-            data={chatStore.blackList}
-            renderItem={renderItem}
-            keyExtractor={item => item.userJid}
-          />
+          {chatStore.blackList.length ? (
+            <FlatList
+              data={chatStore.blackList}
+              renderItem={renderItem}
+              keyExtractor={item => item.userJid}
+            />
+          ) : (
+            <Text style={styles.title}>No blocked users.</Text>
+          )}
         </View>
       </View>
     </VStack>

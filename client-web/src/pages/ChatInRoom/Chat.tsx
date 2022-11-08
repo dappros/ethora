@@ -35,8 +35,8 @@ const getPosition = (
   message: TMessageHistory,
   index: number
 ) => {
-  const previousJID = arr[index - 1]?.data.senderJID;
-  const nextJID = arr[index + 1]?.data.senderJID;
+  const previousJID = arr[index - 1]?.data.senderJID?.split("/")[0];
+  const nextJID = arr[index + 1]?.data.senderJID?.split("/")[0];
   const currentJID = message.data.senderJID?.split("/")[0];
 
   let result: IMessagePosition = {
@@ -125,7 +125,7 @@ export function ChatInRoom() {
       (item: any) => item.roomJID === jid
     );
 
-    if (!loaderArchive && filteredMessages.length <= 10) {
+    if (!loaderArchive && filteredMessages.length <= 10 && filteredMessages.length > 0) {
       const lastMessageID = filteredMessages[0].id;
       xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
     }

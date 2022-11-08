@@ -253,7 +253,7 @@ export class WalletStore {
     token: string,
     isOwn: boolean,
   ) {
-    let url = this.defaultUrl + tokenEtherBalanceURL + walletAddress;
+    let url = this.defaultUrl + tokenEtherBalanceURL;
     runInAction(() => {
       this.isFetching = true;
     });

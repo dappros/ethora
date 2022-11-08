@@ -85,7 +85,24 @@ export const Message: React.FC<IMessage> = ({
             <br />
           </strong>
         )}
-        {message.body}
+
+        {message.data.isMediafile && message.data.mimetype.split("/")[0] === "image"?
+           <KitMessage.ImageContent src={message.data.location} alt={message.data.originalName} width={200} />
+            :null
+        }
+
+        {message.data.isMediafile && message.data.mimetype.split("/")[0] === "video" ?
+            <video controls width="200px">
+              <source src={message.data.location} type={message.data.mimetype} title={message.data.originalName}/>
+              Sorry, your browser doesn't support videos.
+            </video>
+            : null
+        }
+
+        {!message.data.isMediafile ?
+            message.body
+            : null
+        }
       </KitMessage.CustomContent>
 
       {(position.type === "last" || position.type === "single") && (
