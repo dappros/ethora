@@ -19,8 +19,9 @@ import {useClipboard} from '@react-native-clipboard/clipboard';
 import {showSuccess} from '../../components/Toast/toast';
 import QRCodeGenerator from '../../components/QRCodeGenerator';
 import Modal from 'react-native-modal';
+import {generateDocumentLink} from '../../helpers/generateDocumentLink';
 
-export interface IProfileShareManage {
+export interface IDocumentShareManage {
   onAddPress: Dispatch<SetStateAction<number>>;
 }
 
@@ -35,8 +36,12 @@ interface ISharedLink {
   userId: string;
   walletAddress: string;
 }
+function addSeconds(numOfSeconds: number, date = new Date()) {
+  date.setSeconds(date.getSeconds() + numOfSeconds);
 
-export const ProfileShareManage: React.FC<IProfileShareManage> = ({
+  return date;
+}
+export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   onAddPress,
 }) => {
   const [sharedLinks, setSharedLinks] = useState<ISharedLink[]>([]);
@@ -52,7 +57,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
         apiStore.defaultUrl + shareLink,
         loginStore.userToken,
       );
-      setSharedLinks(data.items.filter(item => item.resource === 'profile'));
+      setSharedLinks(data.items.filter(item => item.resource === 'document'));
     } catch (error) {
       console.log(error);
     }
@@ -79,12 +84,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
     setModalData({visible: true, link});
   };
   const UserItem = ({item}: {item: ISharedLink}) => {
-    const link = generateProfileLink({
-      firstName: loginStore.initialData.firstName,
-      lastName: loginStore.initialData.lastName,
-      walletAddress: item.walletAddress,
-      xmppId:
-        loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
+    const link = generateDocumentLink({
       linkToken: item.token,
     });
     return (
@@ -113,7 +113,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
 
           <TouchableOpacity
             onPress={() => {
-              setClipboard(unv_url + link);
+              setClipboard(link);
             }}
             style={styles.actionButton}>
             <AntDesignIcons name="copy1" size={35} color={'black'} />
@@ -132,8 +132,10 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
   return (
     <VStack paddingX={5}>
       <View style={{marginTop: 10, marginBottom: 20}}>
-        <HStack justifyContent={'space-between'} mb={5}>
-          <Text style={styles.title}>Current Profile Shares</Text>
+        <VStack justifyContent={'space-between'} mb={5} alignItems={'center'}>
+          <Text style={[styles.title, {textAlign: 'center'}]}>
+            Current Document Shares
+          </Text>
           <TouchableOpacity
             onPress={() => onAddPress(1)}
             style={styles.addButton}>
@@ -144,9 +146,9 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
               </Text>
             </HStack>
           </TouchableOpacity>
-        </HStack>
+        </VStack>
         <Text style={styles.description}>
-          Listed below are your currently active profile sharing links. You can
+          Listed below are your currently active document sharing links. You can
           share or delete them.
         </Text>
       </View>
@@ -173,7 +175,11 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
         animationOut={'slideOutDown'}
         isVisible={modalData.visible}
         onBackdropPress={() => setModalData({visible: false, link: ''})}>
-        <QRCodeGenerator shareKey={modalData.link} close={() => {}} />
+        <QRCodeGenerator
+          removeBaseUrl
+          shareKey={modalData.link}
+          close={() => {}}
+        />
       </Modal>
     </VStack>
   );
@@ -196,6 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 5,
     paddingHorizontal: 10,
+    width: '50%',
   },
   actionButton: {
     marginRight: 5,

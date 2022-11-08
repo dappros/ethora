@@ -289,7 +289,6 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   useEffect(() => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
-  console.log(itemsBalance)
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
@@ -485,7 +484,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
         </View>
         <View style={{flex: 1, marginTop: hp('5.5%')}}>
           <VStack
-            paddingTop={hp('2.4%')}
+            // paddingTop={hp('2.4%')}
             bgColor={'#FBFBFB'}
             borderTopLeftRadius={30}
             borderTopRightRadius={30}

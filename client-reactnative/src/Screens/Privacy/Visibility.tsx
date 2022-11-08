@@ -8,7 +8,9 @@ import {httpUploadPut} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
 
-export interface IVisibility {}
+export interface IVisibility {
+  changeScreen: (index: number) => void;
+}
 
 const state: Record<string, boolean> = {
   open: true,
@@ -17,7 +19,7 @@ const state: Record<string, boolean> = {
   individual: false,
 };
 
-export const Visibility: React.FC<IVisibility> = ({}) => {
+export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
   const [visibilityValue, setVisibilityValue] = useState('open');
   const [assetsValue, setAssetsValue] = useState('full');
   const {apiStore, loginStore} = useStores();
@@ -26,7 +28,6 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
   const updateProfileVisibility = async () => {
     const profileState = state[visibilityValue];
     setLoading(true);
-    console.log(profileState)
 
     try {
       const formData = new FormData();
@@ -41,12 +42,13 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
     } catch (error) {
       console.log(error);
     }
+    changeScreen(1);
     setLoading(false);
   };
   const updateAssetsVisibility = async () => {
     setLoading(true);
     const assetsState = state[assetsValue];
-    console.log(assetsState)
+    console.log(assetsState);
     try {
       const formData = new FormData();
       formData.append('isAssetsOpen', assetsState);
@@ -61,6 +63,8 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
     } catch (error) {
       console.log(error);
     }
+    changeScreen(2);
+
     setLoading(false);
   };
   return (
@@ -121,7 +125,7 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
         </VStack>
       </View>
       <View mt={2}>
-        <Text style={styles.title}>Assets Visibility</Text>
+        <Text style={styles.title}>Documents Visibility</Text>
         <VStack>
           <Radio.Group
             name="myRadioGroup"
@@ -144,7 +148,7 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
                     <Text>(default)</Text>
                   </HStack>
                   <Text style={styles.description}>
-                    Show all Assets to those who can see your profile
+                    Show all Documents to those who can see your profile
                   </Text>
                 </View>
               </Radio>
@@ -161,8 +165,8 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
                     </Text>
                   </HStack>
                   <Text style={styles.description}>
-                    You need to share each asset individually before others can
-                    see them
+                    You need to share each document individually before others
+                    can see them
                   </Text>
                 </View>
               </Radio>
@@ -171,7 +175,7 @@ export const Visibility: React.FC<IVisibility> = ({}) => {
           <View mt={1}>
             <Button
               loading={loading}
-              title="Manage assets shares"
+              title="Manage documents shares"
               onPress={updateAssetsVisibility}
             />
           </View>

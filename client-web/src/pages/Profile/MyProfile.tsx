@@ -9,6 +9,7 @@ import { useStoreState } from "../../store";
 import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
 import { Typography } from "@mui/material";
+import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
 type TBalance = {
   balance: string;
@@ -30,26 +31,11 @@ export function MyProfile() {
       .finally(() => setLoading(false));
   }, []);
 
+  if (loading) return <FullPageSpinner />;
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
-      {loading && (
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      )}
       <Box sx={{ margin: "auto", width: "200px" }}>
-        <UserCard  />
+        <UserCard />
       </Box>
       <ItemsTable />
       {!!transactions && (

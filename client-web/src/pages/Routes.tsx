@@ -6,6 +6,7 @@ import { TransactionDetails } from "./Explorer/TransactionDetails";
 import { Blocks } from "./Explorer/Blocks";
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
+import { FullPageSpinner } from "../componets/FullPageSpinner";
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
@@ -85,7 +86,7 @@ export const Routes = () => {
   }, [userId]);
 
   return (
-    <React.Suspense fallback={<p>loading</p>}>
+    <React.Suspense fallback={<FullPageSpinner />}>
       <Switch>
         <Route path="/" exact>
           <Signon />
