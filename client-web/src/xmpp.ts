@@ -91,12 +91,18 @@ const onMessageHistory = async (stanza: Element) => {
         senderLastName: data.attrs.senderLastName,
         senderWalletAddress: data.attrs.senderWalletAddress,
         tokenAmount: data.attrs.tokenAmount,
+        isMediafile: data.attrs?.isMediafile,
+        originalName: data.attrs?.originalName,
+        location: data.attrs?.location,
+        locationPreview: data.attrs?.locationPreview,
+        mimetype: data.attrs?.mimetype,
         xmlns: data.attrs.xmlns,
       },
       roomJID: stanza.attrs.from,
       date: delay.attrs.stamp,
       key: Date.now() + Number(id),
     };
+    // console.log('TEST ', data.attrs)
     if (isGettingMessages) {
       temporaryMessages.push(msg);
     }
