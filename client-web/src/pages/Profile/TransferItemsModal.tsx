@@ -15,18 +15,23 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import ChageImage from "./ChangeImage";
 import defUserImage from "../../assets/images/def-ava.png";
+import { TBalance, useStoreState } from "../../store";
+import ItemsTable from "./ItemsTable";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  item: TBalance;
 };
 
-export default function TransferItemsModal({ open, setOpen }: TProps) {
+export default function TransferItemsModal({ open, setOpen, item }: TProps) {
   const [loading, setLoading] = useState(false);
+  const setBalance = useStoreState((state) => state.setBalance);
+  const balance = useStoreState((state) => state.balance);
 
   const formik = useFormik({
     initialValues: {
-      transferAmount: "",
+      transferAmount: 1,
       to: "",
     },
     validate: (values) => {
@@ -42,9 +47,18 @@ export default function TransferItemsModal({ open, setOpen }: TProps) {
       setLoading(true);
       httpWithAuth()
         .post("tokens/transfer/items", {
-          nftId: "",
-          receiverWallet: "",
-          amount: "",
+          nftId: item.nftId,
+          receiverWallet: values.to,
+          amount: values.transferAmount,
+        })
+        .then(() => {
+          const index = balance.findIndex((el) => el.nftId === item.nftId);
+          const current = { ...balance[index] };
+          current.balance = current.balance - 1;
+          let newBalance = [...balance];
+          newBalance[index] = current;
+          setBalance(newBalance);
+          setOpen(false);
         })
         .finally(() => setLoading(false));
     },
@@ -76,9 +90,13 @@ export default function TransferItemsModal({ open, setOpen }: TProps) {
                   formik.setFieldValue("transferAmount", e.target.value);
                 }}
               >
-                <option key={1} value={1}>
-                  1
-                </option>
+                {Array.from({ length: item.balance }).map((el, index) => {
+                  return (
+                    <option key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  );
+                })}
                 {/* {apps.map((app) => {
                     return (
                       <option key={app._id} value={app._id}>

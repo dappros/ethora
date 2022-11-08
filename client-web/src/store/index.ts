@@ -22,13 +22,14 @@ type TUser = {
 
 type TMode = "light" | "dark";
 
-type TBalance = {
+export type TBalance = {
   balance: number;
   tokenName: string;
   tokenType: string;
-  contractAddress: string;
+  contractAddress?: string;
   imagePreview?: string;
   total: number;
+  nftId?: string;
 };
 
 type TMessage = {
@@ -333,9 +334,9 @@ const _useStore = create<IStore>()(
               state.appUsers = [...state.appUsers, ...users];
             }),
           setCurrentUntrackedChatRoom: (roomJID: string) =>
-              set((state) => {
-                state.currentUntrackedChatRoom = roomJID;
-              }),
+            set((state) => {
+              state.currentUntrackedChatRoom = roomJID;
+            }),
         };
       })
     )

@@ -17,11 +17,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
 import { useFormik } from "formik";
-import MenuItem from "@mui/material/MenuItem";
 import * as http from "../../http";
 import TransferItemsModal from "./TransferItemsModal";
+import { TBalance } from "../../store";
 
 export default function ItemsTable() {
   const [itemModal, setItemModal] = useState(false);
@@ -33,11 +32,16 @@ export default function ItemsTable() {
   const [loading, setLoading] = useState(false);
   const items = useStoreState((state) =>
     state.balance.filter((el) => {
-      return el.tokenType === "NFT";
+      if (el.contractAddress) {
+        return el.tokenType === "NFT" && el.balance !== 0;
+      } else {
+        return el.tokenType === "NFT";
+      }
     })
   );
   const user = useStoreState((state) => state.user);
   const setBalance = useStoreState((state) => state.setBalance);
+  const [currentItem, setCurrentItem] = useState<TBalance>();
 
   const validate = (values: Record<string, string>) => {
     const errors: Record<string, string> = {};
@@ -145,12 +149,14 @@ export default function ItemsTable() {
                 />
               </TableCell>
               <TableCell align="center">{row.tokenName}</TableCell>
-              <TableCell align="center">{row.balance}</TableCell>
+              <TableCell align="center">
+                {row.balance === 0 ? <p>Creating... </p> : <p>{row.balance}</p>}
+              </TableCell>
               <TableCell align="center">{row.total}</TableCell>
               <TableCell align="center">
                 <Button
                   onClick={() => {
-                    // setCurrentItem(row);
+                    setCurrentItem(row);
                     setShowTransfer(true);
                   }}
                 >
@@ -274,7 +280,13 @@ export default function ItemsTable() {
           </Box>
         </Box>
       </Dialog>
-      <TransferItemsModal open={showTransfer} setOpen={setShowTransfer} />
+      {showTransfer && (
+        <TransferItemsModal
+          item={currentItem}
+          open={showTransfer}
+          setOpen={setShowTransfer}
+        />
+      )}
     </TableContainer>
   );
 }
