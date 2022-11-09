@@ -536,7 +536,6 @@ class XmppClass {
   }
 
   sendMediaMessageStanza (
-      from: string,
       roomJID: string,
       data: any
   ) {
