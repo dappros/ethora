@@ -7,6 +7,7 @@ import { Blocks } from "./Explorer/Blocks";
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
+import { checkNotificationsStatus } from "../utils";
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
@@ -82,6 +83,7 @@ export const Routes = () => {
   };
   useEffect(() => {
     if (userId) {
+      checkNotificationsStatus()
       getAcl();
     }
   }, [userId]);
