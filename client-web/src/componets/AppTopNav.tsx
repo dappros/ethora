@@ -53,7 +53,7 @@ const AppTopNav = () => {
     });
     xmpp.init(user.walletAddress, user?.xmppPassword as string);
 
-    if (ACL?.result[0]?.application?.appUsers?.read) {
+    if (ACL?.result?.application?.appUsers?.read) {
       setMenuItems((items) => {
         return [...items, { name: "Users", id: "users" }];
       });
