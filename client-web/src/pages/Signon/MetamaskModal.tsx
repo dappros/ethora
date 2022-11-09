@@ -66,6 +66,7 @@ export function MetamaskModal({ open, setOpen }: TProps) {
           profileImage: user.profileImage,
           isProfileOpen: user.isProfileOpen,
           isAssetsOpen: user.isAssetsOpen,
+          ACL: user.ACL,
         });
         deactivate();
         history.push(`/profile/${user.defaultWallet.walletAddress}`);

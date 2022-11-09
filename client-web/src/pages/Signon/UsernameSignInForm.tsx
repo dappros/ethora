@@ -61,6 +61,7 @@ export function UsernameSignInForm(props: TProps) {
             profileImage: result.data.user.profileImage,
             isProfileOpen: result.data.user.isProfileOpen,
             isAssetsOpen: result.data.user.isAssetsOpen,
+            ACL: result.data.user.ACL,
           });
           props.closeModal();
           history.push(

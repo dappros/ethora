@@ -13,6 +13,7 @@ const Signon = React.lazy(() => import("./Signon"));
 const Owner = React.lazy(() => import("./Owner"));
 const BlockDetails = React.lazy(() => import("./Explorer/BlockDetails"));
 const Explorer = React.lazy(() => import("./Explorer/Explorer"));
+const UsersPage = React.lazy(() => import("./UsersPage"));
 
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
@@ -96,6 +97,9 @@ export const Routes = () => {
         </Route>
         <Route path="/owner">
           <Owner />
+        </Route>
+        <Route path="/users">
+          <UsersPage />
         </Route>
         <Route path="/owner/create-app">
           <CreateApp />

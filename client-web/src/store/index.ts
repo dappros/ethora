@@ -18,6 +18,7 @@ type TUser = {
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  appId?: string;
 };
 
 type TMode = "light" | "dark";
@@ -310,7 +311,7 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              if(currentIndex !== -1){
+              if (currentIndex !== -1) {
                 state.userChatRooms[currentIndex].unreadMessages = 0;
               }
             }),
