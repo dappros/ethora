@@ -48,7 +48,7 @@ const NftItem = ({
             alignItems: "center",
           }}
         >
-          <span>
+          <span style={{ textAlign: "left", width: 50 }}>
             {item.balance}/{item.total}
           </span>
         </Box>
@@ -84,7 +84,7 @@ const NfmtItem = ({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "flex-end",
             alignItems: "center",
           }}
         >
@@ -109,7 +109,7 @@ const NfmtItem = ({
               );
             })}
           </Box>
-          <span style={{ textAlign: "left" }}>
+          <span style={{ textAlign: "left", width: 50 }}>
             {item.balance}/{item.total}
           </span>
         </Box>
@@ -126,16 +126,12 @@ export default function ItemsTable({
   walletAddress: string;
 }) {
   const nftItems = balance.filter((item) => item.tokenType === "NFT");
-  const nfmtItems = produceNfmtItems(balance)
+  const nfmtItems = produceNfmtItems(balance);
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {nftItems.map((item, i) => {
         return (
-          <NftItem
-            walletAddress={walletAddress}
-            item={item}
-            key={item.nftId}
-          />
+          <NftItem walletAddress={walletAddress} item={item} key={item.nftId} />
         );
       })}
       {nfmtItems.map((item, i) => {
