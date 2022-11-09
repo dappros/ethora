@@ -8,6 +8,8 @@ import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
+import * as http from "../http";
+
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
@@ -16,63 +18,65 @@ const BlockDetails = React.lazy(() => import("./Explorer/BlockDetails"));
 const Explorer = React.lazy(() => import("./Explorer/Explorer"));
 const UsersPage = React.lazy(() => import("./UsersPage"));
 
+const mockAcl = {
+  result: {
+    network: {
+      netStats: {
+        read: true,
+        disabled: ["create", "update", "delete", "admin"],
+      },
+    },
+    application: {
+      appCreate: {
+        create: true,
+        disabled: ["read", "update", "delete", "admin"],
+      },
+      appSettings: {
+        read: true,
+        update: true,
+        admin: true,
+        disabled: ["create", "delete"],
+      },
+      appUsers: {
+        create: true,
+        read: true,
+        update: true,
+        delete: true,
+        admin: true,
+      },
+      appTokens: {
+        create: true,
+        read: true,
+        update: true,
+        admin: true,
+        disabled: ["delete"],
+      },
+      appPush: {
+        create: true,
+        read: true,
+        update: true,
+        admin: true,
+        disabled: ["delete"],
+      },
+      appStats: {
+        read: true,
+        admin: true,
+        disabled: ["create", "update", "delete"],
+      },
+    },
+  },
+};
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
 
   const setACL = useStoreState((state) => state.setACL);
+  const setDocuments = useStoreState((state) => state.setDocuments);
 
   const getAcl = async () => {
     try {
       if (user?.ACL?.ownerAccess) {
-        setACL({
-          result: {
-            network: {
-              netStats: {
-                read: true,
-                disabled: ["create", "update", "delete", "admin"],
-              },
-            },
-            application: {
-              appCreate: {
-                create: true,
-                disabled: ["read", "update", "delete", "admin"],
-              },
-              appSettings: {
-                read: true,
-                update: true,
-                admin: true,
-                disabled: ["create", "delete"],
-              },
-              appUsers: {
-                create: true,
-                read: true,
-                update: true,
-                delete: true,
-                admin: true,
-              },
-              appTokens: {
-                create: true,
-                read: true,
-                update: true,
-                admin: true,
-                disabled: ["delete"],
-              },
-              appPush: {
-                create: true,
-                read: true,
-                update: true,
-                admin: true,
-                disabled: ["delete"],
-              },
-              appStats: {
-                read: true,
-                admin: true,
-                disabled: ["create", "update", "delete"],
-              },
-            },
-          },
-        });
+        setACL(mockAcl);
         return;
       }
       const res = await getMyAcl();
@@ -82,10 +86,35 @@ export const Routes = () => {
       console.log(error);
     }
   };
+
+  const getDocuments = async (walletAddress: string) => {
+    try {
+      const docs = await http.httpWithAuth().get(`/docs/${walletAddress}`);
+
+      const documents = docs.data.results;
+      const mappedDocuments = [];
+      for (const item of documents) {
+        try {
+          const { data: file } = await http
+            .httpWithAuth()
+            .get<http.IDocument[]>("/files/" + item.files[0]);
+          item.file = file;
+          mappedDocuments.push(item);
+        } catch (error) {
+          console.log(item.files[0], "sdjfkls");
+        }
+      }
+      setDocuments(mappedDocuments);
+    } catch (error) {
+      console.log(error, "404");
+    }
+  };
+
   useEffect(() => {
     if (userId) {
-      checkNotificationsStatus()
+      checkNotificationsStatus();
       getAcl();
+      getDocuments(user.walletAddress)
     }
   }, [userId]);
 
