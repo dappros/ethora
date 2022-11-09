@@ -91,6 +91,14 @@ export const Message: React.FC<IMessage> = ({
             :null
         }
 
+        {message.data.isMediafile && message.data.mimetype.split("/")[0] === "application"?
+            <a target="_blank" href={message.data.location}>
+              <KitMessage.ImageContent src={message.data.locationPreview} alt={message.data.originalName} width={150} />
+              {message.data.mimetype.split("/")[1]}
+            </a>
+            :null
+        }
+
         {message.data.isMediafile && message.data.mimetype.split("/")[0] === "video" ?
             <video controls width="200px">
               <source src={message.data.location} type={message.data.mimetype} title={message.data.originalName}/>
