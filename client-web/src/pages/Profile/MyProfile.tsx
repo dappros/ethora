@@ -12,10 +12,6 @@ import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
 
-type TBalance = {
-  balance: string;
-  tokenName: string;
-};
 
 export function MyProfile() {
   const [loading, setLoading] = useState(false);
@@ -43,13 +39,13 @@ export function MyProfile() {
       <Typography variant="h6" style={{ margin: "16px" }}>
         Items
       </Typography>
-      <ItemsTable balance={items.filter(filterNftBalances)} />
+      <ItemsTable balance={items.filter(filterNftBalances)} walletAddress={user.walletAddress} />
       {!!documents.length && (
         <>
           <Typography variant="h6" style={{ margin: "16px" }}>
             Documents
           </Typography>
-          <DocumentsTable documents={documents} />
+          <DocumentsTable walletAddress={user.walletAddress} documents={documents} />
         </>
       )}
 

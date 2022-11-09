@@ -120,7 +120,7 @@ export interface IDocument {
   admin: string;
   contractAddress: string;
   createdAt: Date;
-  documentName: 'Fff';
+  documentName: "Fff";
   files: Array<string>;
   hashes: Array<string>;
   isBurnable: boolean;
@@ -267,6 +267,17 @@ export function getPublicProfile(walletAddress: string) {
 export function getTransactions(walletAddress: string) {
   return http.get<ExplorerRespose<ITransaction[]>>(
     `/explorer/transactions?walletAddress=${walletAddress}`
+  );
+}
+export function getProvenanceTransacitons(walletAddress: string, nftId) {
+  return http.get<ExplorerRespose<ITransaction[]>>(
+    `/explorer/transactions?walletAddress`,
+    {
+      params: {
+        walletAddress,
+        nftId,
+      },
+    }
   );
 }
 export function getExplorerHistory() {

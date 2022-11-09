@@ -8,6 +8,7 @@ import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
+import { Provenance } from "./Transactions/Provenance";
 import * as http from "../http";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
@@ -146,6 +147,8 @@ export const Routes = () => {
           exact
         />
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
+        <Route path={"/provenance"} component={Provenance} exact />
+
         <Route
           path={"/explorer/transactions/:txId"}
           component={TransactionDetails}

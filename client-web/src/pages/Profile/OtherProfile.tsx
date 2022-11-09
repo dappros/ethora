@@ -44,6 +44,7 @@ export function OtherProfile(props: TProps) {
   if (loading) {
     return <FullPageSpinner />;
   }
+  console.log(balances)
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box>
@@ -52,10 +53,18 @@ export function OtherProfile(props: TProps) {
             <UserCard profile={profile} />
           </Box>
         )}
-        <Typography variant="h6" style={{ margin: "16px" }}>
-          Items
-        </Typography>
-        <ItemsTable balance={balances.filter(filterNftBalances)} />
+        {!!balances.length && (
+          <>
+            {" "}
+            <Typography variant="h6" style={{ margin: "16px" }}>
+              Items
+            </Typography>
+            <ItemsTable
+              balance={balances.filter(filterNftBalances)}
+              walletAddress={props.walletAddress}
+            />
+          </>
+        )}
       </Box>
 
       {!!transactions && (
