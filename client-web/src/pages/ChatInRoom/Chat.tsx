@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import { TMessageHistory, useStoreState } from "../../store";
-import { getPublicProfile } from "../../http";
+import {getPublicProfile, uploadFile} from "../../http";
 import { TProfile } from "../Profile/types";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
@@ -23,6 +23,17 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import {Message} from "../../componets/Chat/Messages/Message";
 import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  useMediaQuery,
+  useTheme
+} from "@mui/material";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -97,6 +108,12 @@ export function ChatInRoom() {
     room_thumbnail: "",
     users_cnt: "",
   });
+  const fileRef = useRef(null);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openDialog, setOpenDialog] = useState(false);
+  const [showDialogTxt, setShowDialogTxt] = useState(false);
+  const [dialogTxt, setDialogTxt] = useState<{headline: string, description: string}>({headline: "", description: ""});
 
   const onYReachStart = () => {
     if (loaderArchive) {
@@ -180,6 +197,54 @@ export function ChatInRoom() {
         typeof button === 'object' ? button.notDisplayedValue : null
     );
   };
+
+  const sendFile = (file: File) => {
+    setDialogTxt({headline: "File is loading, please wait...", description: ""})
+    setOpenDialog(true);
+
+    const formData = new FormData();
+    formData.append('filesi', file);
+
+    uploadFile(formData).then(result => {
+      let userAvatar = "";
+      if (profile?.profileImage) {
+        userAvatar = profile?.profileImage;
+      }
+
+      result.data.results.map(async (item: any) => {
+        const data = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          walletAddress: user.walletAddress,
+          chatName: roomData.name,
+          userAvatar: userAvatar,
+          createdAt: item.createdAt,
+          expiresAt: item.expiresAt,
+          fileName: item.filename,
+          isVisible: item.isVisible,
+          location: item.location,
+          locationPreview: item.locationPreview,
+          mimetype: item.mimetype,
+          originalName: item.originalname,
+          ownerKey: item.ownerKey,
+          size: item.size,
+          duration: item?.duration,
+          updatedAt: item.updatedAt,
+          userId: item.userId,
+          waveForm: "",
+          attachmentId: item._id,
+          wrappable: true,
+        };
+        xmpp.sendMediaMessageStanza(currentRoom, data);
+        setOpenDialog(false);
+      });
+    }).catch(error => {
+      console.log(error);
+      setDialogTxt({headline: "Error", description: "An error occurred while uploading the file"})
+      setShowDialogTxt(true);
+    })
+    fileRef.current.value = "";
+  }
 
   const setMessage = (value) => {
     setMyMessage(value);
@@ -349,14 +414,48 @@ export function ChatInRoom() {
               )}
           </MessageList>
           {!!roomData.name && (
-            <MessageInput
-              placeholder="Type message here"
-              onChange={setMessage}
-              onSend={sendMessage}
-            />
+              <div is={"MessageInput"}>
+                <MessageInput
+                    placeholder="Type message here"
+                    onChange={setMessage}
+                    onSend={sendMessage}
+                    onAttachClick={() => fileRef.current.click()}
+                />
+                <input type='file' name="file" id='file' onChange={event => sendFile(event.target.files[0])} ref={fileRef} style={{display: 'none'}}/>
+              </div>
           )}
         </ChatContainer>
       </MainContainer>
+
+      <Dialog
+          fullScreen={fullScreen}
+          open={openDialog}
+          onClose={() => setOpenDialog(true)}
+          aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {dialogTxt.headline}
+        </DialogTitle>
+        <DialogContent>
+          {showDialogTxt && dialogTxt.description.length > 0 ?
+              <DialogContentText>
+                {dialogTxt.description}
+              </DialogContentText>
+          :
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress />
+              </Box>
+          }
+        </DialogContent>
+        {showDialogTxt ?
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)} autoFocus>
+              Close
+          </Button>
+        </DialogActions>
+        :null
+        }
+      </Dialog>
     </Box>
   );
 }
