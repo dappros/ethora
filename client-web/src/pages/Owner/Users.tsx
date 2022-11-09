@@ -33,8 +33,10 @@ const boxStyle = {
   p: 4,
 };
 
-export default function BasicTable() {
+export default function UsersTable() {
   const apps = useStoreState((state) => state.apps);
+  const ownerAccess = useStoreState((state) => state.user.ACL.ownerAccess);
+  const user = useStoreState((state) => state.user);
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
   const [currentApp, setCurrentApp] = React.useState<string>();
@@ -69,13 +71,25 @@ export default function BasicTable() {
   };
 
   React.useEffect(() => {
-    if (apps.length) {
-      setCurrentApp(apps[0]._id);
-      getUsers(apps[0]._id).then((users) => {
+    if (ownerAccess) {
+      if (apps.length) {
+        setCurrentApp(apps[0]._id);
+        getUsers(apps[0]._id).then((users) => {
+          setUsers(users);
+        });
+      }
+    }
+  }, [apps]);
+
+  React.useEffect(() => {
+    if (!ownerAccess) {
+      setCurrentApp(user.appId);
+      getUsers(currentApp).then((users) => {
+        console.log("users ", users);
         setUsers(users);
       });
     }
-  }, [apps]);
+  }, []);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);

@@ -2,6 +2,7 @@ import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
 import { TMessageHistory, useStoreState } from "./store";
+import { sendBrowserNotification } from "./utils";
 
 let lastMsgId: string = "";
 let temporaryMessages: TMessageHistory[] = [];
@@ -20,11 +21,9 @@ export function usernameToWallet(str: string) {
 }
 
 const onMessage = async (stanza: Element) => {
-  if (stanza.is("message")) {
-    if (stanza.attrs.id === "sendMessage") {
+  if (stanza.is("message") && stanza.attrs.id === "sendMessage") {
       const body = stanza.getChild("body");
       const data = stanza.getChild("data");
-
       if (!data || !body) {
         return;
       }
@@ -46,7 +45,6 @@ const onMessage = async (stanza: Element) => {
 
       useStoreState.getState().setNewMessage(msg);
     }
-  }
 };
 
 const onMessageHistory = async (stanza: Element) => {
@@ -102,6 +100,7 @@ const onMessageHistory = async (stanza: Element) => {
       date: delay.attrs.stamp,
       key: Date.now() + Number(id),
     };
+
     // console.log('TEST ', data.attrs)
     if (isGettingMessages) {
       temporaryMessages.push(msg);
@@ -109,6 +108,7 @@ const onMessageHistory = async (stanza: Element) => {
     if (!isGettingMessages) {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
+
     }
 
     const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
@@ -118,6 +118,7 @@ const onMessageHistory = async (stanza: Element) => {
       !isGettingFirstMessages
     ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+      sendBrowserNotification(msg.body, () => {})
     }
   }
 };

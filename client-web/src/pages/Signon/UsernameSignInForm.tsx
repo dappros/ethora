@@ -25,8 +25,8 @@ const validate = (values: Record<string, string>) => {
 
   if (!values.password) {
     errors.password = "Required";
-  } else if (values.password.length <= 3) {
-    errors.password = "Must be 3 characters or more";
+  } else if (values.password.length <= 2) {
+    errors.password = "Must be 2 characters or more";
   }
 
   return errors;
@@ -61,6 +61,7 @@ export function UsernameSignInForm(props: TProps) {
             profileImage: result.data.user.profileImage,
             isProfileOpen: result.data.user.isProfileOpen,
             isAssetsOpen: result.data.user.isAssetsOpen,
+            ACL: result.data.user.ACL,
           });
           props.closeModal();
           history.push(

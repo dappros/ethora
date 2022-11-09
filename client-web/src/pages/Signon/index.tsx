@@ -157,6 +157,7 @@ export default function Signon() {
       profileImage: user.profileImage,
       isProfileOpen: user.isProfileOpen,
       isAssetsOpen: user.isAssetsOpen,
+      ACL: user.ACL,
     });
   };
 

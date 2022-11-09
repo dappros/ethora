@@ -18,18 +18,30 @@ type TUser = {
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  appId?: string;
 };
 
 type TMode = "light" | "dark";
 
 export type TBalance = {
   balance: number;
+  contractAddress: string;
+  contractTokenIds?: Array<string>;
+  createdAt: string;
+  imagePreview: string;
+  nftFileUrl: string;
+  nftId: string;
+  nftMetaUrl: string;
+  nftMimetype: string;
+  nftOriginalname: string;
   tokenName: string;
   tokenType: string;
-  contractAddress?: string;
-  imagePreview?: string;
-  total: number;
-  nftId?: string;
+  total: string;
+  updatedAt: string;
+
+  maxSupplies?: [100, 25, 5];
+
+  traits?: Array<string>;
 };
 
 type TMessage = {
@@ -116,8 +128,11 @@ interface IStore {
   balance: TBalance[];
   apps: TApp[];
   appUsers: TAppUser[];
+  documents: http.IDocument[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
+  setDocuments: (documents: http.IDocument[]) => void;
+
   setOwner: (owner: TUser) => void;
   clearUser: () => void;
   clearOwner: () => void;
@@ -198,6 +213,11 @@ const _useStore = create<IStore>()(
           currentUntrackedChatRoom: "",
           userChatRooms: [],
           appUsers: [],
+          documents: [],
+          setDocuments: (documents: http.IDocument[]) =>
+            set((state) => {
+              state.documents = documents;
+            }),
           setACL: (acl: http.IUserAcl) =>
             set((state) => {
               state.ACL = acl;
@@ -310,7 +330,7 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              if(currentIndex !== -1){
+              if (currentIndex !== -1) {
                 state.userChatRooms[currentIndex].unreadMessages = 0;
               }
             }),
