@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Container from "@mui/material/Container";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
@@ -11,6 +10,7 @@ import { Transactions } from "../Transactions/Transactions";
 import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { filterNftBalances } from "../../utils";
 
 type TBalance = {
   balance: string;
@@ -22,6 +22,8 @@ export function MyProfile() {
   const [transactions, setTransactions] =
     useState<ExplorerRespose<ITransaction[]>>();
   const user = useStoreState((store) => store.user);
+  const items = useStoreState((state) => state.balance);
+  const documents = useStoreState((state) => state.documents);
 
   useEffect(() => {
     setLoading(true);
@@ -38,8 +40,19 @@ export function MyProfile() {
       <Box sx={{ margin: "auto", width: "200px" }}>
         <UserCard />
       </Box>
-      <ItemsTable />
-      <DocumentsTable></DocumentsTable>
+      <Typography variant="h6" style={{ margin: "16px" }}>
+        Items
+      </Typography>
+      <ItemsTable balance={items.filter(filterNftBalances)} />
+      {!!documents.length && (
+        <>
+          <Typography variant="h6" style={{ margin: "16px" }}>
+            Documents
+          </Typography>
+          <DocumentsTable documents={documents} />
+        </>
+      )}
+
       {!!transactions && (
         <Box>
           <Typography variant="h6" style={{ margin: "16px" }}>
