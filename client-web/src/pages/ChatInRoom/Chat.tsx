@@ -186,7 +186,37 @@ export function ChatInRoom() {
     const formData = new FormData();
     formData.append('files', file);
     uploadFile(formData).then(result => {
-      console.log(result);
+      let userAvatar = "";
+      if (profile?.profileImage) {
+        userAvatar = profile?.profileImage;
+      }
+
+      result.data.results.map(async (item: any) => {
+        const data = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          walletAddress: user.walletAddress,
+          chatName: roomData.name,
+          userAvatar: userAvatar,
+          createdAt: item.createdAt,
+          expiresAt: item.expiresAt,
+          fileName: item.filename,
+          isVisible: item.isVisible,
+          location: item.location,
+          locationPreview: item.locationPreview,
+          mimetype: item.mimetype,
+          originalName: item.originalname,
+          ownerKey: item.ownerKey,
+          size: item.size,
+          duration: item?.duration,
+          updatedAt: item.updatedAt,
+          userId: item.userId,
+          waveForm: "",
+          attachmentId: item._id,
+          wrappable: true,
+        };
+        xmpp.sendMediaMessageStanza(currentRoom, data)
+      });
     })
     fileRef.current.value = "";
   }
