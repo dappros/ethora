@@ -203,7 +203,7 @@ export function ChatInRoom() {
     setOpenDialog(true);
 
     const formData = new FormData();
-    formData.append('filesi', file);
+    formData.append('files', file);
 
     uploadFile(formData).then(result => {
       let userAvatar = "";
