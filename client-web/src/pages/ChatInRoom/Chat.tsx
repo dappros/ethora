@@ -23,6 +23,17 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import {Message} from "../../componets/Chat/Messages/Message";
 import {SystemMessage} from "../../componets/Chat/Messages/SystemMessage";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  useMediaQuery,
+  useTheme
+} from "@mui/material";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -98,6 +109,11 @@ export function ChatInRoom() {
     users_cnt: "",
   });
   const fileRef = useRef(null);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openDialog, setOpenDialog] = useState(false);
+  const [showDialogTxt, setShowDialogTxt] = useState(false);
+  const [dialogTxt, setDialogTxt] = useState<{headline: string, description: string}>({headline: "", description: ""});
 
   const onYReachStart = () => {
     if (loaderArchive) {
@@ -183,8 +199,12 @@ export function ChatInRoom() {
   };
 
   const sendFile = (file: File) => {
+    setDialogTxt({headline: "File is loading, please wait...", description: ""})
+    setOpenDialog(true);
+
     const formData = new FormData();
-    formData.append('files', file);
+    formData.append('filesi', file);
+
     uploadFile(formData).then(result => {
       let userAvatar = "";
       if (profile?.profileImage) {
@@ -215,8 +235,13 @@ export function ChatInRoom() {
           attachmentId: item._id,
           wrappable: true,
         };
-        xmpp.sendMediaMessageStanza(currentRoom, data)
+        xmpp.sendMediaMessageStanza(currentRoom, data);
+        setOpenDialog(false);
       });
+    }).catch(error => {
+      console.log(error);
+      setDialogTxt({headline: "Error", description: "An error occurred while uploading the file"})
+      setShowDialogTxt(true);
     })
     fileRef.current.value = "";
   }
@@ -401,6 +426,36 @@ export function ChatInRoom() {
           )}
         </ChatContainer>
       </MainContainer>
+
+      <Dialog
+          fullScreen={fullScreen}
+          open={openDialog}
+          onClose={() => setOpenDialog(true)}
+          aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {dialogTxt.headline}
+        </DialogTitle>
+        <DialogContent>
+          {showDialogTxt && dialogTxt.description.length > 0 ?
+              <DialogContentText>
+                {dialogTxt.description}
+              </DialogContentText>
+          :
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress />
+              </Box>
+          }
+        </DialogContent>
+        {showDialogTxt ?
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)} autoFocus>
+              Close
+          </Button>
+        </DialogActions>
+        :null
+        }
+      </Dialog>
     </Box>
   );
 }
