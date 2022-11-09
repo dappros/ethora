@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import { TMessageHistory, useStoreState } from "../../store";
-import { getPublicProfile } from "../../http";
+import {getPublicProfile, uploadFile} from "../../http";
 import { TProfile } from "../Profile/types";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
@@ -97,6 +97,7 @@ export function ChatInRoom() {
     room_thumbnail: "",
     users_cnt: "",
   });
+  const fileRef = useRef(null);
 
   const onYReachStart = () => {
     if (loaderArchive) {
@@ -180,6 +181,15 @@ export function ChatInRoom() {
         typeof button === 'object' ? button.notDisplayedValue : null
     );
   };
+
+  const sendFile = (file: File) => {
+    const formData = new FormData();
+    formData.append('files', file);
+    uploadFile(formData).then(result => {
+      console.log(result);
+    })
+    fileRef.current.value = "";
+  }
 
   const setMessage = (value) => {
     setMyMessage(value);
@@ -349,11 +359,15 @@ export function ChatInRoom() {
               )}
           </MessageList>
           {!!roomData.name && (
-            <MessageInput
-              placeholder="Type message here"
-              onChange={setMessage}
-              onSend={sendMessage}
-            />
+              <div is={"MessageInput"}>
+                <MessageInput
+                    placeholder="Type message here"
+                    onChange={setMessage}
+                    onSend={sendMessage}
+                    onAttachClick={() => fileRef.current.click()}
+                />
+                <input type='file' name="file" id='file' onChange={event => sendFile(event.target.files[0])} ref={fileRef} style={{display: 'none'}}/>
+              </div>
           )}
         </ChatContainer>
       </MainContainer>
