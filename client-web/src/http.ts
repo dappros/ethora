@@ -100,7 +100,40 @@ export const httpWithAuth = () => {
   http.defaults.headers.common["Authorization"] = user.token;
   return http;
 };
-
+export interface IFile {
+  _id: string;
+  createdAt: string;
+  expiresAt: number;
+  filename: string;
+  isVisible: true;
+  location: string;
+  locationPreview: string;
+  mimetype: string;
+  originalname: string;
+  ownerKey: string;
+  size: number;
+  updatedAt: string;
+  userId: string;
+}
+export interface IDocument {
+  _id: string;
+  admin: string;
+  contractAddress: string;
+  createdAt: Date;
+  documentName: 'Fff';
+  files: Array<string>;
+  hashes: Array<string>;
+  isBurnable: boolean;
+  isFilesMutableByAdmin: boolean;
+  isFilesMutableByOwner: boolean;
+  isSignable: boolean;
+  isSignatureRevoсable: boolean;
+  isTransferable: boolean;
+  owner: string;
+  updatedAt: Date;
+  userId: string;
+  file: IFile;
+}
 export function refresh() {
   return new Promise((resolve, reject) => {
     const state = useStoreState.getState();

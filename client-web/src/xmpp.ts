@@ -108,7 +108,6 @@ const onMessageHistory = async (stanza: Element) => {
     if (!isGettingMessages) {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
-      sendBrowserNotification(msg.body, () => {})
 
     }
 
@@ -119,6 +118,7 @@ const onMessageHistory = async (stanza: Element) => {
       !isGettingFirstMessages
     ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+      sendBrowserNotification(msg.body, () => {})
     }
   }
 };
