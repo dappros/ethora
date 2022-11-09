@@ -1,10 +1,4 @@
-import React, { useState, useRef } from "react";
-
-import { useStoreState } from "../../store";
-
-import { Box } from "@mui/system";
-
-import * as http from "../../http";
+import React from "react";
 
 import { TBalance } from "../../store";
 import {
@@ -16,17 +10,30 @@ import {
   ListItemButton,
   ListItemText,
   useTheme,
+  Box,
 } from "@mui/material";
 import { produceNfmtItems } from "../../utils";
 import { NFMT_TRAITS } from "../../constants";
+import { useHistory } from "react-router";
 
-const NftItem = ({ item }: { item: TBalance }) => {
+const NftItem = ({
+  item,
+  walletAddress,
+}: {
+  item: TBalance;
+  walletAddress: string;
+}) => {
   const theme = useTheme();
-  const walletAddress = useStoreState((state) => state.user.walletAddress);
-
+  const history = useHistory();
+  const onItemClick = () => {
+    history.push({
+      pathname: "/provenance",
+      state: { nftItem: item, walletAddress },
+    });
+  };
   return (
     <ListItem key={item.nftId}>
-      <ListItemButton>
+      <ListItemButton onClick={onItemClick}>
         <ListItemAvatar>
           <Avatar
             style={{ backgroundColor: theme.palette.primary.main }}
@@ -49,11 +56,24 @@ const NftItem = ({ item }: { item: TBalance }) => {
     </ListItem>
   );
 };
-const NfmtItem = ({ item }: { item: TBalance }) => {
+const NfmtItem = ({
+  item,
+  walletAddress,
+}: {
+  item: TBalance;
+  walletAddress: string;
+}) => {
   const theme = useTheme();
+  const history = useHistory();
+  const onItemClick = () => {
+    history.push({
+      pathname: "/provenance",
+      state: { nftItem: item, walletAddress },
+    });
+  };
   return (
     <ListItem key={item.nftId}>
-      <ListItemButton>
+      <ListItemButton onClick={onItemClick}>
         <ListItemAvatar>
           <Avatar
             style={{ backgroundColor: theme.palette.primary.main }}
@@ -98,20 +118,34 @@ const NfmtItem = ({ item }: { item: TBalance }) => {
   );
 };
 
-
-
-export default function ItemsTable({balance}: {balance: TBalance[]}) {
-  
+export default function ItemsTable({
+  balance,
+  walletAddress,
+}: {
+  balance: TBalance[];
+  walletAddress: string;
+}) {
   const nftItems = balance.filter((item) => item.tokenType === "NFT");
-  const nfmtItems = produceNfmtItems(balance);
-
+  const nfmtItems = produceNfmtItems(balance)
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-      {nftItems.map((item) => {
-        return <NftItem item={item} key={item.balance} />;
+      {nftItems.map((item, i) => {
+        return (
+          <NftItem
+            walletAddress={walletAddress}
+            item={item}
+            key={item.nftId}
+          />
+        );
       })}
-      {nfmtItems.map((item) => {
-        return <NfmtItem item={item} key={item.balance} />;
+      {nfmtItems.map((item, i) => {
+        return (
+          <NfmtItem
+            walletAddress={walletAddress}
+            item={item}
+            key={item.nftId + i}
+          />
+        );
       })}
     </List>
   );

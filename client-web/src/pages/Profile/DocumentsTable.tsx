@@ -16,12 +16,26 @@ import {
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
+import { useHistory } from "react-router";
 
-const DocumentItems = ({ item }: { item: http.IDocument }) => {
+const DocumentItem = ({
+  item,
+  walletAddress,
+}: {
+  item: http.IDocument;
+  walletAddress: string;
+}) => {
   const theme = useTheme();
+  const history = useHistory();
+  const onItemClick = () => {
+    history.push({
+      pathname: "/provenance",
+      state: { nftItem: item, walletAddress },
+    });
+  };
   return (
     <ListItem key={item._id}>
-      <ListItemButton>
+      <ListItemButton onClick={onItemClick}>
         <ListItemAvatar>
           <Avatar
             style={{ backgroundColor: theme.palette.primary.main }}
@@ -39,8 +53,8 @@ const DocumentItems = ({ item }: { item: http.IDocument }) => {
             alignItems: "center",
           }}
         >
-          <IconButton sx={{color: 'black'}}>
-            <QrCodeIcon/>
+          <IconButton sx={{ color: "black" }}>
+            <QrCodeIcon />
           </IconButton>
         </Box>
       </ListItemButton>
@@ -50,14 +64,21 @@ const DocumentItems = ({ item }: { item: http.IDocument }) => {
 
 export default function DocumentsTable({
   documents,
+  walletAddress,
 }: {
   documents: http.IDocument[];
+  walletAddress: string;
 }) {
- 
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {documents.map((item) => {
-        return <DocumentItems item={item} key={item._id} />;
+        return (
+          <DocumentItem
+            walletAddress={walletAddress}
+            item={item}
+            key={item._id}
+          />
+        );
       })}
     </List>
   );
