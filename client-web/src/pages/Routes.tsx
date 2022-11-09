@@ -76,7 +76,7 @@ export const Routes = () => {
       }
       const res = await getMyAcl();
       console.log("res getMyAcl", res);
-      setACL(res.data);
+      setACL({ result: res.data.result[0] });
     } catch (error) {
       console.log(error);
     }
