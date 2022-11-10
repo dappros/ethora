@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { Message as KitMessage, MessageModel, Button, MessageSeparator } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
-import { TMessageHistory } from "../../../store";
+import {TMessageHistory, useStoreState} from "../../../store";
 import {useHistory} from "react-router";
 import {
   CircularProgress,
@@ -14,6 +14,9 @@ import {
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from "@mui/material/Box";
+import {getPublicProfile, transferCoin} from "../../../http";
+import xmpp from "../../../xmpp";
+import {TProfile} from "../../../pages/Profile/types";
 
 export interface IMessage {
   message: TMessageHistory;
@@ -56,6 +59,10 @@ export const Message: React.FC<IMessage> = ({
     setAnchorEl(event.currentTarget);
   };
   const [coinAmount, setCoinAmount] = useState("");
+  const balance = useStoreState((store) => store.balance);
+  const coinData = balance.filter(el => !el.tokenType && el.contractAddress.length > 10)
+  const [profile, setProfile] = useState<TProfile>();
+  const user = useStoreState((store) => store.user);
 
   const openDialogMenu = (type: IDialog) => {
     setAnchorEl(null)
@@ -63,10 +70,38 @@ export const Message: React.FC<IMessage> = ({
     setDialogMenuType(type);
   }
 
+  const sendCoins = () => {
+    // @ts-ignore
+    transferCoin(coinData[0].tokenName, coinData[0].tokenSymbol, Number(coinAmount), message.data.senderWalletAddress).then(result => {
+      console.log('Transfer success => ', result)
+
+      let userAvatar = "";
+      if (profile?.profileImage) {
+        userAvatar = profile?.profileImage;
+      }
+
+      xmpp.sendMessage(
+          message.roomJID,
+          user.firstName,
+          user.lastName,
+          userAvatar,
+          user.walletAddress,
+          "",
+          null
+      );
+
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+
   useEffect(() => {
     if(message.data.quickReplies){
       setButtons(JSON.parse(message.data.quickReplies));
     }
+    getPublicProfile(user.walletAddress).then((result) => {
+      setProfile(result.data.result);
+    });
   }, [])
 
   return (
@@ -210,8 +245,9 @@ export const Message: React.FC<IMessage> = ({
       <DialogContent>
         {dialogMenuType === "transfer" ?
             <div style={{display: "flex", flexDirection: "column"}}>
+              Rewards <strong>{coinData[0].tokenName}</strong> with coins
               <TextField id="outlined-basic" label="Outlined" type={"number"} variant="outlined" value={coinAmount} onChange={event => setCoinAmount(event.target.value)} />
-              <Button>Send</Button>
+              <Button onClick={sendCoins}>Send</Button>
             </div>
         :null
         }
