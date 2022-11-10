@@ -1,35 +1,47 @@
 import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
-import { IUserAcl } from "../http";
+import * as http from "../http";
 
 type TUser = {
   firstName: string;
   lastName: string;
-  xmppPassword: string;
+  description?: string;
+  xmppPassword?: string;
   _id: string;
   walletAddress: string;
   token: string;
-  refreshToken: string;
-  profileImage: string;
-};
-
-type TOwner = {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  token: string;
+  refreshToken?: string;
+  profileImage?: string;
+  ACL?: {
+    ownerAccess: boolean;
+  };
+  isProfileOpen?: boolean;
+  isAssetsOpen?: boolean;
+  appId?: string;
 };
 
 type TMode = "light" | "dark";
 
-type TBalance = {
+export type TBalance = {
   balance: number;
+  contractAddress: string;
+  contractTokenIds?: Array<string>;
+  createdAt: string;
+  imagePreview: string;
+  nftFileUrl: string;
+  nftId: string;
+  nftMetaUrl: string;
+  nftMimetype: string;
+  nftOriginalname: string;
   tokenName: string;
   tokenType: string;
-  contractAddress: string;
-  imagePreview?: string;
-  total: number;
+  total: string;
+  updatedAt: string;
+
+  maxSupplies?: [100, 25, 5];
+
+  traits?: Array<string>;
 };
 
 type TMessage = {
@@ -54,6 +66,11 @@ export type TMessageHistory = {
     senderLastName: string;
     senderWalletAddress: string;
     tokenAmount: string;
+    isMediafile?: boolean;
+    originalName?: string;
+    location?: string;
+    locationPreview?: string;
+    mimetype?: string;
     xmlns: string;
   };
   roomJID: string;
@@ -61,12 +78,14 @@ export type TMessageHistory = {
   key: number;
 };
 
-type TUserChatRooms = {
+export type TUserChatRooms = {
   jid: string;
   name: string;
   room_background: string;
   room_thumbnail: string;
   users_cnt: string;
+  unreadMessages: number;
+  composing: string;
 };
 
 type TApp = {
@@ -99,26 +118,40 @@ type TAppUser = {
 
 interface IStore {
   user: TUser;
-  owner: TOwner;
-  ACL: IUserAcl;
+  oldTokens?: {
+    token: string;
+    refreshToken: string;
+  };
+  ACL: http.IUserAcl;
   messages: TMessage[];
   viewMode: TMode;
   balance: TBalance[];
   apps: TApp[];
   appUsers: TAppUser[];
+  documents: http.IDocument[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
-  setOwner: (owner: TOwner) => void;
+  setDocuments: (documents: http.IDocument[]) => void;
+
+  setOwner: (owner: TUser) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
   setNewMessage: (msg: TMessage) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
+  updateMessageHistory: (messages: TMessageHistory[]) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
   userChatRooms: TUserChatRooms[];
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
+  updateCounterChatRoom: (roomJID: string) => void;
+  clearCounterChatRoom: (roomJID: string) => void;
+  updateComposingChatRoom: (
+    roomJID: string,
+    status: boolean,
+    userName?: string
+  ) => void;
   clearUserChatRooms: () => void;
   setApps: (apps: TApp[]) => void;
   setApp: (app: TApp) => void;
@@ -127,7 +160,9 @@ interface IStore {
   loaderArchive: boolean;
   setLoaderArchive: (status: boolean) => void;
   addAppUsers: (users: TAppUser[]) => void;
-  setACL: (acl: IUserAcl) => void;
+  setACL: (acl: http.IUserAcl) => void;
+  currentUntrackedChatRoom: string;
+  setCurrentUntrackedChatRoom: (roomJID: string) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -139,17 +174,12 @@ const _useStore = create<IStore>()(
             firstName: "",
             lastName: "",
             xmppPassword: "",
+            description: "",
             _id: "",
             walletAddress: "",
             token: "",
             refreshToken: "",
             profileImage: "",
-          },
-          owner: {
-            firstName: "",
-            lastName: "",
-            token: "",
-            _id: "",
           },
           ACL: {
             result: {
@@ -170,15 +200,25 @@ const _useStore = create<IStore>()(
               appId: "",
             },
           },
+          oldTokens: {
+            token: "",
+            refreshToken: "",
+          },
           apps: [],
           balance: [],
           viewMode: "light",
           messages: [],
           historyMessages: [],
           loaderArchive: false,
+          currentUntrackedChatRoom: "",
           userChatRooms: [],
           appUsers: [],
-          setACL: (acl: IUserAcl) =>
+          documents: [],
+          setDocuments: (documents: http.IDocument[]) =>
+            set((state) => {
+              state.documents = documents;
+            }),
+          setACL: (acl: http.IUserAcl) =>
             set((state) => {
               state.ACL = acl;
             }),
@@ -190,10 +230,9 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.user = user;
             }),
-          setOwner: (user: TOwner) =>
+          setOwner: (user: TUser) =>
             set((state) => {
-              console.log("setOwner ", user);
-              state.owner = user;
+              state.user = user;
             }),
           setApps: (apps: TApp[]) =>
             set((state) => {
@@ -233,11 +272,15 @@ const _useStore = create<IStore>()(
             }),
           clearOwner: () =>
             set((state) => {
-              state.owner = {
+              state.user = {
                 firstName: "",
                 lastName: "",
-                token: "",
+                xmppPassword: "",
                 _id: "",
+                walletAddress: "",
+                token: "",
+                refreshToken: "",
+                profileImage: "",
               };
               state.apps = [];
               state.appUsers = [];
@@ -248,13 +291,16 @@ const _useStore = create<IStore>()(
             }),
           setNewMessage: (message: TMessage) =>
             set((state) => {
-              console.log("setNewMessage");
               state.messages.unshift(message);
             }),
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
-              console.log("setNewMessageHistory");
               state.historyMessages.unshift(historyMessages);
+            }),
+          updateMessageHistory: (messages: TMessageHistory[]) =>
+            set((state) => {
+              state.historyMessages = [...state.historyMessages, ...messages];
+              state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
@@ -272,13 +318,51 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
             }),
+          updateCounterChatRoom: (roomJID: string) =>
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              state.userChatRooms[currentIndex].unreadMessages++;
+            }),
+          clearCounterChatRoom: (roomJID: string) =>
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              if (currentIndex !== -1) {
+                state.userChatRooms[currentIndex].unreadMessages = 0;
+              }
+            }),
           clearUserChatRooms: () =>
             set((state) => {
               state.userChatRooms = [];
             }),
+          updateComposingChatRoom: (
+            roomJID: string,
+            status: boolean,
+            userName: string
+          ) =>
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === roomJID
+              );
+              if (state.userChatRooms[currentIndex]) {
+                if (status) {
+                  state.userChatRooms[currentIndex].composing =
+                    userName + " is typing";
+                } else {
+                  state.userChatRooms[currentIndex].composing = "";
+                }
+              }
+            }),
           addAppUsers: (users: TAppUser[]) =>
             set((state) => {
               state.appUsers = [...state.appUsers, ...users];
+            }),
+          setCurrentUntrackedChatRoom: (roomJID: string) =>
+            set((state) => {
+              state.currentUntrackedChatRoom = roomJID;
             }),
         };
       })

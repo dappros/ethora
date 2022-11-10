@@ -99,7 +99,7 @@ const ChatListSchema = {
     muted: {type: 'bool', optional: true},
     roomThumbnail: {type: 'string', optional: true},
     roomBackground: {type: 'string', optional: true},
-
+    roomBackgroundIndex:{type:'int', optional:true}
   },
 };
 

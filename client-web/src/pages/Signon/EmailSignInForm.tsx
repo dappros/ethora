@@ -57,12 +57,16 @@ export function EmailSingInForm(props: TProps) {
           setUser({
             firstName: user.firstName,
             lastName: user.lastName,
+            description: user.description,
             _id: user._id,
             xmppPassword: user.xmppPassword,
             walletAddress: user.defaultWallet.walletAddress,
             refreshToken: resp.data.refreshToken,
             token: resp.data.token,
-            profileImage: user.profileImage
+            profileImage: user.profileImage,
+            isProfileOpen: user.isProfileOpen,
+            isAssetsOpen: user.isAssetsOpen,
+            ACL: user.ACL,
           });
           history.push(`/profile/${user.defaultWallet.walletAddress}`);
           props.closeModal();

@@ -25,8 +25,8 @@ const validate = (values: Record<string, string>) => {
 
   if (!values.password) {
     errors.password = "Required";
-  } else if (values.password.length <= 3) {
-    errors.password = "Must be 3 characters or more";
+  } else if (values.password.length <= 2) {
+    errors.password = "Must be 2 characters or more";
   }
 
   return errors;
@@ -52,12 +52,16 @@ export function UsernameSignInForm(props: TProps) {
           setUser({
             firstName: result.data.user.firstName,
             lastName: result.data.user.lastName,
+            description: result.data.user.description,
             xmppPassword: result.data.user.xmppPassword,
             _id: result.data.user._id,
             walletAddress: result.data.user.defaultWallet.walletAddress,
             token: result.data.token,
             refreshToken: result.data.refreshToken,
-            profileImage: result.data.user.profileImage
+            profileImage: result.data.user.profileImage,
+            isProfileOpen: result.data.user.isProfileOpen,
+            isAssetsOpen: result.data.user.isAssetsOpen,
+            ACL: result.data.user.ACL,
           });
           props.closeModal();
           history.push(

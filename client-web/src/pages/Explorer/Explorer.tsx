@@ -39,7 +39,7 @@ const transformDataForChart = (data: IHistory): TChartData => {
   return result;
 };
 
-export const Explorer = () => {
+export default function Explorer() {
   const user = useStoreState((store) => store.user);
   const [transactions, setTransactions] = useState<
     ExplorerRespose<ITransaction[]>
@@ -81,18 +81,18 @@ export const Explorer = () => {
     <Box>
       {!!user.token && (
         <Container>
-          <Box sx={{maxWidth: 500}}>
-          <ExplorerBlocks blocks={explorerBlocks.items} />
+          <Box sx={{ maxWidth: 500 }}>
+            <ExplorerBlocks blocks={explorerBlocks.items} />
           </Box>
-          <Box sx={{ height: 300, width: '100%'}}>
+          <Box sx={{ height: 300, width: "100%" }}>
             <ExplorerChart data={explorerHistory} />
           </Box>
         </Container>
       )}
-       <Typography variant="h6" sx={{ margin: "16px" }}>
-          Transactions
-        </Typography>
+      <Typography variant="h6" sx={{ margin: "16px" }}>
+        Transactions
+      </Typography>
       <Transactions transactions={transactions.items} />
     </Box>
   );
-};
+}

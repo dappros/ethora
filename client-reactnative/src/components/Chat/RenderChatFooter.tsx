@@ -43,7 +43,7 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     isReply,
     replyUserName,
     replyMessage,
-    closeReply
+    closeReply,
   } = props;
   const boxAnimation = useAnimatedStyle(() => {
     return {
@@ -53,16 +53,14 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
   useEffect(() => {
     if (!!isTyping || !!fileUploadProgress) {
       boxHeight.value = hp('5.5%');
-    }else if(!!isReply) {
-      boxHeight.value= hp('6%')
-    }
-    else {
+    } else if (!!isReply) {
+      boxHeight.value = hp('6%');
+    } else {
       boxHeight.value = 0;
     }
 
     return () => {};
   }, [isTyping, fileUploadProgress, isReply]);
-
 
   setTimeout(() => {
     if (fileUploadProgress === 100) {
@@ -71,60 +69,51 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
   }, 5000);
   return (
     <Animated.View style={[boxAnimation]}>
-      {isReply?
-      <HStack bg={"white"} h="100%">
-        <Box flex={0.019} bg={"green.600"} width={wp("2%")}>
-          
-        </Box>
-        <Box paddingLeft={3} flex={0.85}>
-          <Text
-          fontSize={hp('2%')}
-          fontFamily={textStyles.boldFont}
-          >{replyUserName}</Text>
-          <Text
-          fontFamily={textStyles.regularFont}
-          >{replyMessage}</Text>
-        </Box>
-
-        <Box
-        alignItems={"center"}
-        justifyContent={"center"}
-        flex={0.1}>
-          <Pressable onPress={()=>closeReply(false)}>
-            <SimpleIcons name='close' size={hp("3%")} />
-          </Pressable>
-        </Box>
-      </HStack>
-      :
-      <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
-      <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
-        {allowIsTyping && isTyping ? (
-          <HStack bg={'transparent'}>
-            <View bg={'transparent'} marginRight={30}>
-              <TypingAnimation dotColor="grey" />
-            </View>
-            <Text
-              color={'black'}
-              fontFamily={textStyles.regularFont}
-              fontSize={hp('1.4%')}>
-              {composingUsername}
+      {isReply ? (
+        <HStack bg={'white'} h="100%">
+          <Box flex={0.019} bg={'green.600'} width={wp('2%')}></Box>
+          <Box paddingLeft={3} flex={0.85}>
+            <Text fontSize={hp('2%')} fontFamily={textStyles.boldFont}>
+              {replyUserName}
             </Text>
-          </HStack>
-        ) : null}
-      </View>
-      <View alignItems={'flex-start'} justifyContent={'center'} flex={0.4}>
-        {fileUploadProgress ? (
-          <Text
-            color={'grey'}
-            fontFamily={textStyles.regularFont}
-            fontSize={hp('1.4%')}>
-            Uploading: {fileUploadProgress}%
-          </Text>
-        ) : null}
-      </View>
-    </HStack>
+            <Text fontFamily={textStyles.regularFont}>{replyMessage}</Text>
+          </Box>
 
-      }
+          <Box alignItems={'center'} justifyContent={'center'} flex={0.1}>
+            <Pressable onPress={() => closeReply(false)}>
+              <SimpleIcons name="close" size={hp('3%')} />
+            </Pressable>
+          </Box>
+        </HStack>
+      ) : (
+        <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
+          <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
+            {allowIsTyping && isTyping ? (
+              <HStack bg={'transparent'}>
+                <View bg={'transparent'} marginRight={30}>
+                  <TypingAnimation dotColor="grey" />
+                </View>
+                <Text
+                  color={'black'}
+                  fontFamily={textStyles.regularFont}
+                  fontSize={hp('1.4%')}>
+                  {composingUsername}
+                </Text>
+              </HStack>
+            ) : null}
+          </View>
+          <View alignItems={'flex-start'} justifyContent={'center'} flex={0.4}>
+            {fileUploadProgress ? (
+              <Text
+                color={'grey'}
+                fontFamily={textStyles.regularFont}
+                fontSize={hp('1.4%')}>
+                Uploading: {fileUploadProgress}%
+              </Text>
+            ) : null}
+          </View>
+        </HStack>
+      )}
     </Animated.View>
   );
 };

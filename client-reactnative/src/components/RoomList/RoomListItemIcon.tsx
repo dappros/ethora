@@ -45,7 +45,7 @@ export const RoomListItemIcon = observer(
             style={{
               width: hp('5.54%'),
               height: hp('5.54%'),
-              borderRadius: 10,
+              borderRadius:hp('0.7%'),
             }}
           />
         ) : (

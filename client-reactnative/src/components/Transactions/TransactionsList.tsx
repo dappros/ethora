@@ -14,6 +14,7 @@ import {TransactionsListItem} from './TransactionsListItem';
 import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
 import {Box, FlatList} from 'native-base';
 import {FILTERS} from '../../constants/transactionsFilter';
+import {appWallets} from '../../../docs/config';
 
 const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
   const {
@@ -42,7 +43,13 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
     formattedDate,
     balance,
   } = item;
-
+  const isApp = appWallets.find(item => item === from);
+  const name =
+    to === transactionOwnerWalletAddress
+      ? isApp
+        ? senderFirstName
+        : senderFirstName + ' ' + senderLastName
+      : receiverFirstName + ' ' + receiverLastName;
   return (
     <TransactionsListItem
       from={from}
@@ -57,11 +64,7 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
       showDate={showDate}
       formattedDate={formattedDate}
       image={item.nftFileUrl || item.nftPreview}
-      name={
-        to === transactionOwnerWalletAddress
-          ? senderFirstName + ' ' + senderLastName
-          : receiverFirstName + ' ' + receiverLastName
-      }
+      name={name}
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
     />
   );
@@ -82,14 +85,14 @@ const TransactionsList = observer(
       }
       if (activeFilter === FILTERS.sent) {
         const filteredTransactions = transactions.filter(
-          (item: any) => item.from === walletAddress ,
+          (item: any) => item.from === walletAddress,
         );
         return filteredTransactions;
       }
 
       if (activeFilter === FILTERS.received) {
         const filteredTransactions = transactions.filter(
-          (item: any) => (item.to === walletAddress && item.to !== item.from),
+          (item: any) => item.to === walletAddress && item.to !== item.from,
         );
         return filteredTransactions;
       }

@@ -21,10 +21,9 @@ import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 
-export function Signon() {
+export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
-  const owner = useStoreState((state) => state.owner);
   const query = useQuery();
   const history = useHistory();
   const { active, account, library, activate } = useWeb3React();
@@ -47,14 +46,14 @@ export function Signon() {
   });
 
   useEffect(() => {
-    if (user.firstName) {
+    if (user.firstName && !user.ACL?.ownerAccess) {
       history.push(`/profile/${user.walletAddress}`);
     }
 
-    if (owner.firstName) {
+    if (user.ACL?.ownerAccess) {
       history.push("/owner");
     }
-  }, [user, owner]);
+  }, [user]);
 
   const onMetamaskLogin = () => {
     activate(injected);
@@ -150,11 +149,15 @@ export function Signon() {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
+      description: user.description,
       xmppPassword: user.xmppPassword,
       walletAddress: user.defaultWallet.walletAddress,
       token: tokens.token,
       refreshToken: tokens.refreshToken,
-      profileImage: user.profileImage
+      profileImage: user.profileImage,
+      isProfileOpen: user.isProfileOpen,
+      isAssetsOpen: user.isAssetsOpen,
+      ACL: user.ACL,
     });
   };
 

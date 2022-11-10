@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -27,27 +27,37 @@ function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
 
-const menuItems = [
+const initMenuItems = [
   { name: "Chat", id: "chat-in-room" },
-  { name: "Explorer", id: "explorer" }
+  { name: "Explorer", id: "explorer" },
 ];
+
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();
   const user = useStoreState((state) => state.user);
   const balances = useStoreState((state) => state.balance);
   const clearUser = useStoreState((state) => state.clearUser);
   const setBalance = useStoreState((state) => state.setBalance);
+  const ACL = useStoreState((state) => state.ACL);
   const history = useHistory();
+  const [menuItems, setMenuItems] = useState(initMenuItems);
 
   const mainCoinBalance = balances.find(
     (el) => el.tokenName === "Dappros Platform Token"
   );
 
   useEffect(() => {
+    console.log("on mount ", ACL);
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
-    xmpp.init(user.walletAddress, user.xmppPassword);
+    xmpp.init(user.walletAddress, user?.xmppPassword as string);
+
+    if (ACL?.result?.application?.appUsers?.read) {
+      setMenuItems((items) => {
+        return [...items, { name: "Users", id: "users" }];
+      });
+    }
   }, []);
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(

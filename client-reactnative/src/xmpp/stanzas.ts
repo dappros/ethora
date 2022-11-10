@@ -193,25 +193,25 @@ export const sendMediaMessageStanza = async (
       wrappable: data?.wrappable,
       nftId: data?.nftId,
       isReply: data?.isReply,
-      mainMessageText:data?.mainMessageText,
-      mainMessageId:data?.mainMessageId,
-      mainMessageUserName:data?.mainMessageUserName,
-      mainMessageCreatedAt:data?.mainMessageCreatedAt,
-      mainMessageFileName:data?.mainMessageFileName,
-      mainMessageImageLocation:data?.mainMessageImageLocation,
-      mainMessageImagePreview:data?.mainMessageImagePreview,
-      mainMessageMimeType:data?.mainMessageMimeType,
-      mainMessageOriginalName:data?.mainMessageOriginalName,
-      mainMessageSize:data?.mainMessageSize,
-      mainMessageDuration:data?.mainMessageDuration,
-      mainMessageWaveForm:data?.mainMessageWaveForm,
-      mainMessageAttachmentId:data?.mainMessageAttachmentId,
-      mainMessageWrappable:data?.mainMessageWrappable,
-      mainMessageNftId:data?.mainMessageNftId,
-      mainMessageNftActionType:data?.mainMessageNftActionType,
-      mainMessageContractAddress:data?.mainMessageContractAddress,
-      mainMessageRoomJid:data?.mainMessageRoomJid,
-      showInChannel:data?.showInChannel,
+      mainMessageText: data?.mainMessageText,
+      mainMessageId: data?.mainMessageId,
+      mainMessageUserName: data?.mainMessageUserName,
+      mainMessageCreatedAt: data?.mainMessageCreatedAt,
+      mainMessageFileName: data?.mainMessageFileName,
+      mainMessageImageLocation: data?.mainMessageImageLocation,
+      mainMessageImagePreview: data?.mainMessageImagePreview,
+      mainMessageMimeType: data?.mainMessageMimeType,
+      mainMessageOriginalName: data?.mainMessageOriginalName,
+      mainMessageSize: data?.mainMessageSize,
+      mainMessageDuration: data?.mainMessageDuration,
+      mainMessageWaveForm: data?.mainMessageWaveForm,
+      mainMessageAttachmentId: data?.mainMessageAttachmentId,
+      mainMessageWrappable: data?.mainMessageWrappable,
+      mainMessageNftId: data?.mainMessageNftId,
+      mainMessageNftActionType: data?.mainMessageNftActionType,
+      mainMessageContractAddress: data?.mainMessageContractAddress,
+      mainMessageRoomJid: data?.mainMessageRoomJid,
+      showInChannel: data?.showInChannel,
     }),
   );
 
@@ -658,13 +658,14 @@ export const setRoomImage = (
   roomJid: string,
   roomThumbnail: string,
   roomBackground: string,
+  type:string,
   xmpp: any,
 ) => {
   const message = xml(
     'iq',
     {
       from: userJid,
-      id: XMPP_TYPES.setRoomImage,
+      id: type==='icon'? XMPP_TYPES.setRoomImage:XMPP_TYPES.setRoomBackgroundImage,
       type: 'set',
     },
     xml('query', {
@@ -677,6 +678,33 @@ export const setRoomImage = (
   xmpp.send(message);
 };
 
+export const deleteMessageStanza = (
+  from: string,
+  roomJid: string,
+  messageId: string,
+  xmpp,
+) => {
+  // <message
+  //   from="olek@localhost"
+  //   id="1635229272917013"
+  //   to="test_olek@conference.localhost"
+  //   type="groupchat">
+  //   <body>Wow</body>
+  //   <delete id="1635229272917013" />
+  // </message>;
+
+  const stanza = xml(
+    'message',
+    {from: from, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
+    xml('body', 'wow'),
+    xml('delete', {
+      id: messageId,
+    }),
+  );
+
+
+  xmpp.send(stanza);
+};
 export const updateVCard = (
   photoURL: string | null,
   desc: string | null,
@@ -695,8 +723,8 @@ export const updateVCard = (
         xmlns: 'vcard-temp',
       },
       desc ? xml('DESC', {}, desc) : null,
-      desc ? xml('URL', {}, photoURL) : null,
-      desc ? xml('FN', {}, fullName) : null,
+      photoURL ? xml('URL', {}, photoURL) : null,
+      fullName ? xml('FN', {}, fullName) : null,
     ),
   );
   xmpp.send(message);
@@ -775,6 +803,11 @@ export const roomConfig = (from, to, data, xmpp) => {
           {var: 'muc#roomconfig_roomname'},
           xml('value', {}, data.roomName),
         ),
+        xml(
+          'field',
+          {var: 'muc#roomconfig_roomdesc'},
+          xml('value', {}, data.roomDescription),
+        ),
       ),
     ),
   );
@@ -840,6 +873,190 @@ export const banUser = (
   xmpp.send(message);
 };
 
+export const banUserr = (
+  from:string,
+  banUserId:string,
+  roomJid:string,
+  xmpp:any
+) => {
+  // <iq from="oleksiika@localhost" type="set" id="ban">
+  //   <query 
+  //       xmlns="ns:deepx:muc:user:ban" 
+  //       action="ban" 
+  //       user="user@server" 
+  //       type="room" // Can be room or all 
+  //       room="name@conference.server" 
+  //       time="300" // Time of ban in seconds 
+  //       comment="Test ban" //Comment for ban
+  //   />
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.ban
+    },
+    xml(
+      'query',
+      {
+        xmlns:"ns:deepx:muc:user:ban",
+        action:"ban",
+        user:banUserId,
+        type:"room",
+        room:roomJid,
+        time:"3",
+        comment:"Ban"
+      }
+    )
+  )
+
+  xmpp.send(message);
+}
+
+export const unbanUser = (
+  from:string,
+  unbanUserId:string,
+  roomJid:string,
+  xmpp:any
+) => {
+  // <iq from="user@server" type="set" id="unban">
+  // <query 
+  //     xmlns="ns:deepx:muc:user:ban" 
+  //     action="unban" 
+  //     user="user@server" 
+  //     type="room" 
+  //     room="name@conference.server"/>
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.unBan
+    },
+    xml(
+      'query',
+      {
+        xmlns:"ns:deepx:muc:user:ban",
+        action:"unban",
+        user:unbanUserId,
+        type:'room',
+        room:roomJid
+      }
+    )
+  )
+
+  xmpp.send(message);
+}
+
+export const getListOfBannedUserInRoom = (
+  from:string,
+  roomJId:string,
+  xmpp:any
+) => {
+  const message = xml('iq', {
+        'from': from + '@' + DOMAIN,
+        type: 'set',
+        id: XMPP_TYPES.getBannedUserListOfRoom
+    },
+    xml('query', {
+        'xmlns': "ns:deepx:muc:user:ban",
+        'action': 'get_list',
+        'type': 'room',
+        'room': roomJId,
+    })
+  );
+
+  xmpp.send(message)
+}
+
+export const assignModerator = (
+  from:string,
+  to:string,
+  xmpp:any
+) => {
+  // <iq from='crone1@shakespeare.lit/desktop'
+  //     id='mod1'
+  //     to='coven@chat.shakespeare.lit'
+  //     type='set'>
+  //   <query xmlns='http://jabber.org/protocol/muc#admin'>
+  //     <item nick='thirdwitch'
+  //           role='moderator'/>
+  //   </query>
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      id: XMPP_TYPES.assignModerator,
+      to: to,
+      type: 'set'
+    },
+    xml(
+      'query',
+      {
+        xmlns:'http://jabber.org/protocol/muc#admin'
+      },
+      xml(
+        'item',
+        {
+          nick:'Moderator',
+          role:'moderator'
+        }
+      )
+    )
+  )
+
+  xmpp.send(message)
+  
+}
+
+export const unAssignModerator = (
+  from:string,
+  to:string,
+  xmpp:any
+) => {
+//   <iq from='crone1@shakespeare.lit/desktop'
+//     id='mod2'
+//     to='coven@chat.shakespeare.lit'
+//     type='set'>
+//   <query xmlns='http://jabber.org/protocol/muc#admin'>
+//     <item nick='thirdwitch'
+//           role='participant'/>
+//   </query>
+// </iq>
+
+const message = xml(
+  'iq',
+  {
+    from: from + '@' + DOMAIN,
+    id: XMPP_TYPES.unAssignModerator,
+    to: to,
+    type:'set'
+  },
+  xml(
+    'query',
+    {
+      xmlns:'http://jabber.org/protocol/muc#admin',
+    },
+    xml(
+      'item',
+      {
+        nick:'Participant',
+        role:'participant'
+      }
+    )
+  )
+)
+
+xmpp.send(message);
+
+}
+
 export const reply = to => {
   // <message to='anna@example.com' id='message-id2' type='chat'>
   // <body>Great idea!</body>
@@ -873,3 +1090,73 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
 
   xmpp.send(message);
 };
+
+export const changeRoomBackgroundStanza = (
+  from:string,
+  to:string,
+  roomThumbnail:string,
+  roomBackground:string
+) => {
+  // <iq from="user_jid" type="set" id="set_room_profile">
+  //   <query xmlns="ns:getrooms:setprofile" 
+  //       room_thumbnail="https://img.dxmpp.com/thumbnail.jpg" 
+  //       room_background="https://img.dxmpp.com/background.jpg" 
+  //       room="test12@conference.localhost"/>
+  // </iq>
+
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.changeRoomBackground
+    },
+    xml(
+      'query',
+      {
+        xmlns:'ns:getrooms:setprofile',
+        room_thumbnail:roomThumbnail,
+        room_background:roomBackground,
+        room:to
+      },
+
+    )
+  )
+}
+
+export const changeRoomDescription = (
+  from:string,
+  to:string,
+  desc:string,
+  xmpp:any
+) => {
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      id: XMPP_TYPES.changeRoomDescription,
+      to: to,
+      type: 'set',
+    },
+    xml(
+      'query',
+      {xmlns: 'http://jabber.org/protocol/muc#owner'},
+      xml(
+        'x',
+        {xmlns: 'jabber:x:data', type: 'submit'},
+        xml(
+          'field',
+          {var: 'FORM_TYPE'},
+          xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
+        ),
+        xml(
+          'field',
+          {var: 'muc#roomconfig_roomdesc'},
+          xml('value', {}, desc),
+        ),
+      ),
+    ),
+  );
+
+  xmpp.send(message)
+}

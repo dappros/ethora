@@ -628,12 +628,13 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
             token: data.token,
             firstName: data.user.firstName,
             lastName: data.user.lastName,
-            _id: data.user._id
-          }
+            _id: data.user._id,
+            walletAddress: data.user.defaultWallet.walletAddress,
+          };
 
           setOwner(owner);
           history.push("/owner");
-          setOpen(false)
+          setOpen(false);
         })
         .catch((error) => {
           if (error.response && error.response.status === 409) {

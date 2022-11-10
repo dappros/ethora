@@ -31,7 +31,7 @@ const keysMap: Record<string, string> = {
   uncles: "Uncles",
 };
 
-export const BlockDetails: React.FC<IBlockDetailsProps> = (props) => {
+export default function BlockDetails(props) {
   const [blockDetails, setBlockDetails] = useState<IBlock | {}>({});
   const [loading, setLoading] = useState(false);
   const params = useParams<{ blockNumber: string }>();
@@ -65,7 +65,7 @@ export const BlockDetails: React.FC<IBlockDetailsProps> = (props) => {
     <Box sx={{ overflowX: "hidden" }}>
       <Typography
         variant="h4"
-        sx={{ paddingInline: '20px', fontSize: 25, paddingTop: '20px' }}
+        sx={{ paddingInline: "20px", fontSize: 25, paddingTop: "20px" }}
       >
         Block details: #{params.blockNumber}
       </Typography>
@@ -90,4 +90,4 @@ export const BlockDetails: React.FC<IBlockDetailsProps> = (props) => {
       </Box>
     </Box>
   );
-};
+}

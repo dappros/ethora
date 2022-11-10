@@ -5,7 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Web3ReactProvider } from "@web3-react/core";
-import {providers} from 'ethers'
+import { providers } from "ethers";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -26,14 +26,14 @@ if (process.env.REACT_APP_DISABLE_STRICT) {
   );
 } else {
   root.render(
-    <>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
       <React.StrictMode>
         <Router>
           <App />
         </Router>
       </React.StrictMode>
-    </>
+    </Web3ReactProvider>
   );
 }
 

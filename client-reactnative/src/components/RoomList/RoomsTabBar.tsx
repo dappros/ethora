@@ -47,7 +47,6 @@ export const RoomsTabBar = observer(() => {
     if (chatStore.activeChats === ROOM_KEYS.official) {
       const rooms = chatStore.roomList.filter(item => {
         const splitedJid = item?.jid?.split('@')[0];
-
         if (
           defaultChats[splitedJid] ||
           chatStore.roomsInfoMap[item.jid]?.isFavourite

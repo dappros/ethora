@@ -7,24 +7,25 @@ import Users from "./Users";
 import { Container } from "@mui/material";
 
 export default function Owner() {
-  const owner = useStoreState((state) => state.owner);
+  const owner = useStoreState((state) => state.user);
   const history = useHistory();
   React.useEffect(() => {
     if (!owner.firstName) {
+      console.log("!owner.firstName");
       history.push("/");
     }
   }, [owner, history]);
 
   return (
     <div style={{ backgroundColor: "#edf0f4", padding: "20px" }}>
-      <Container maxWidth={'lg'}>
-      <Box style={{ marginTop: "20px" }}>
-        <Apps />
-      </Box>
+      <Container maxWidth={"lg"}>
+        <Box style={{ marginTop: "20px" }}>
+          <Apps />
+        </Box>
 
-      <Box style={{ marginTop: "20px" }}>
-        <Users />
-      </Box>
+        <Box style={{ marginTop: "20px" }}>
+          <Users />
+        </Box>
       </Container>
     </div>
   );

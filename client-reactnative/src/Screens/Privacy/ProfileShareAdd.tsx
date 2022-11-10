@@ -21,7 +21,7 @@ export interface IProfileShareAdd {}
 const HOUR = 60 * 60;
 const DAY = HOUR * 24;
 const WEEK = DAY * 7;
-const MONTH = WEEK * 28;
+const MONTH = WEEK * 4;
 
 interface ISharedLink {
   _id: string;
@@ -37,7 +37,7 @@ interface ISharedLink {
 
 export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
   const [memo, setMemo] = useState('');
-  const [expiration, setExpiration] = useState('');
+  const [expiration, setExpiration] = useState('-1');
   const [createdLink, setCreatedLink] = useState<ISharedLink>({
     _id: '',
     expiration: '',
@@ -53,12 +53,11 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
   const inputRef = useRef();
   const generateLink = async () => {
     const body = {
-      expiration: expiration,
+      expiration: new Date().getTime() + +expiration * 1000,
       memo: memo,
       resource: 'profile',
     };
     setLoading(true);
-
     try {
       const {data} = await httpPost(
         apiStore.defaultUrl + shareLink,
@@ -157,7 +156,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
         />
       ) : (
         <Button
-         style={{marginBottom: 30}}
+          style={{marginBottom: 30}}
           loading={loading}
           title={'Generate Link'}
           onPress={generateLink}

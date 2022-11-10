@@ -1,4 +1,5 @@
 import {
+  Actionsheet,
   Box,
   Center,
   Divider,
@@ -10,6 +11,7 @@ import {
   Switch,
   Text,
   useColorModeValue,
+  useDisclose,
   View,
 } from 'native-base';
 import React, {useState, useEffect} from 'react';
@@ -22,16 +24,25 @@ import {
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {Alert, Animated, Dimensions, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {SceneMap, TabView} from 'react-native-tab-view';
+import {SceneMap} from 'react-native-tab-view';
 import {useStores} from '../stores/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+import {reverseUnderScoreManipulation, underscoreManipulation} from '../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
+import ChangeRoomDesctionModal from '../components/Modals/Chat/changeRoomDescriptionModal';
 import {
+  assignModerator,
+  banUserr,
+  changeRoomDescription,
+  getListOfBannedUserInRoom,
+  getRoomInfo,
   getRoomMemberInfo,
   leaveRoomXmpp,
+  retrieveOtherUserVcard,
   setRoomImage,
   subscribeToRoom,
+  unAssignModerator,
+  unbanUser,
   unsubscribeFromChatXmpp,
 } from '../xmpp/stanzas';
 import {deleteChatRoom} from '../components/realmModels/chatList';
@@ -39,140 +50,21 @@ import {uploadFiles} from '../helpers/uploadFiles';
 import {fileUpload} from '../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
+import { ROUTES } from '../constants/routes';
 
-interface ChatDetailsScreenProps {}
 
-const data = [
-  {
-    fullName: 'Yehor Markelov',
-    role: 'admin',
-  },
-  {
-    fullName: 'Eillie Bilish',
-    role: 'admin',
-  },
-  {
-    fullName: 'Roger Jetson',
-    role: null,
-  },
-];
 
-const RoomDetails = ({
-  room,
-}: {
-  room: {jid: string; name: string; roomThumbnail: string};
-}) => {
-  const roomName = room.name;
-  const [uploadedImage, setUploadedImage] = useState({
-    _id: '',
-    createdAt: '',
-    expiresAt: 0,
-    filename: '',
-    isVisible: true,
-    location: '',
-    locationPreview: '',
-    mimetype: '',
-    originalname: '',
-    ownerKey: '',
-    size: 0,
-    updatedAt: '',
-    userId: '',
-  });
-  const {chatStore, loginStore, apiStore} = useStores();
-  const sendFiles = async (data: any) => {
-    const userJid =
-      underscoreManipulation(loginStore.initialData.walletAddress) +
-      '@' +
-      apiStore.xmppDomains.DOMAIN;
-    const roomJid = room.jid;
-    try {
-      const url = apiStore.defaultUrl + fileUpload;
-      const response = await uploadFiles(data, loginStore.userToken, url);
-      const file = response.results[0];
-      setUploadedImage(response.results[0]);
-      setRoomImage(userJid, roomJid, file.location, 'none', chatStore.xmpp);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const onImagePress = async () => {
-    if (
-      chatStore.roomRoles[room.jid] === 'moderator' ||
-      chatStore.roomRoles[room.jid] === 'admin'
-    ) {
-      try {
-        const res = await DocumentPicker.pickSingle({
-          type: [DocumentPicker.types.images],
-        });
-        const formData = new FormData();
-        formData.append('files', {
-          name: res.name,
-          type: res.type,
-          uri: res.uri,
-        });
-        sendFiles(formData);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-  return (
-    <View margin={10} justifyContent="center" alignItems="center">
-      <TouchableOpacity
-        onPress={onImagePress}
-        activeOpacity={
-          chatStore.roomRoles[room.jid] === 'moderator' ||
-          chatStore.roomRoles[room.jid] === 'admin'
-            ? 0.8
-            : 1
-        }>
-        <Box
-          justifyContent={'center'}
-          alignItems={'center'}
-          rounded="md"
-          shadow={'5'}
-          bg={commonColors.primaryDarkColor}
-          h={hp('18%')}
-          w={hp('18%')}
-          marginBottom={4}>
-          {uploadedImage.location || room.roomThumbnail ? (
-            <FastImage
-              source={{
-                uri: uploadedImage.location || room.roomThumbnail,
-                priority: FastImage.priority.normal,
-              }}
-              resizeMode={FastImage.resizeMode.cover}
-              style={{
-                width: wp('45%'),
-                height: wp('45%'),
-                borderRadius: 10,
-              }}
-            />
-          ) : (
-            <Text
-              shadow={'8'}
-              fontSize={hp('8%')}
-              fontFamily={textStyles.semiBoldFont}
-              color={'white'}>
-              {roomName[0]}
-            </Text>
-          )}
-        </Box>
-      </TouchableOpacity>
-      <Text fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
-        {roomName}
-      </Text>
-      <Text
-        textAlign={'center'}
-        fontSize={hp('1.5%')}
-        fontFamily={textStyles.regularFont}>
-        Description entered during chat creation will be displayed here
-      </Text>
-    </View>
-  );
-};
+interface longTapUserProps{
+  ban_status:string,
+  jid:string,
+  last_active:string,
+  name:string,
+  profile:string,
+  role:string
+}
 
 const ChatDetailsScreen = observer(({route}: any) => {
+
   const {chatStore, loginStore} = useStores();
   const currentRoomDetail = chatStore.roomList?.find((item: any) => {
     if (item.name === route.params.roomName) {
@@ -180,14 +72,19 @@ const ChatDetailsScreen = observer(({route}: any) => {
     }
   });
   const roomJID = currentRoomDetail.jid;
+  const { isOpen, onOpen, onClose } = useDisclose();
 
   const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
 
-  const roomMemberInfo = chatStore.roomMemberInfo;
+  const roomMemberInfo = chatStore.roomMemberInfo.filter(item => item.name !== 'none');
 
   const [open, setOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
+  const [longTapUser, setLongTapUser] = useState<longTapUserProps>({})
+  const [descriptionModalVisible, setDescriptionModalVisible] = useState<boolean>(false)
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
+
+  const navigation = useNavigation();
 
   const walletAddress = loginStore.initialData.walletAddress;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -204,6 +101,16 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   useEffect(() => {
     getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
+    getRoomInfo(
+      manipulatedWalletAddress,
+      roomJID,
+      chatStore.xmpp
+    )
+    getListOfBannedUserInRoom(
+      manipulatedWalletAddress,
+      roomJID,
+      chatStore.xmpp
+    )
   }, []);
 
   const toggleNotification = value => {
@@ -245,7 +152,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const routes = [
     {
       key: 'first',
-      title: `Members (${currentRoomDetail.participants})`,
+      title: `Members (${roomMemberInfo.length})`,
     },
     {
       key: 'second',
@@ -267,14 +174,251 @@ const ChatDetailsScreen = observer(({route}: any) => {
     setOpen(prev => !prev);
   };
 
-  const navigation = useNavigation();
+  const getOtherUserDetails = (props: any) => {
+    const {profile, name, jid, last_active} = props;
+    const firstName = name.split(' ')[0];
+    const lastName = name.split(' ')[1];
+    const xmppID = jid.split('@')[0];
+    const walletAddress = reverseUnderScoreManipulation(xmppID);
+    const theirXmppUsername = xmppID;
+
+    retrieveOtherUserVcard(
+      loginStore.initialData.xmppUsername,
+      theirXmppUsername,
+      chatStore.xmpp,
+    );
+
+    loginStore.setOtherUserDetails({
+      anotherUserFirstname: firstName,
+      anotherUserLastname: lastName,
+      anotherUserLastSeen: last_active,
+      anotherUserWalletAddress: walletAddress,
+      anotherUserAvatar: profile,
+    });
+  };
+
+  const onUserAvatarPress = (props: any) => {
+    //to set the current another user profile
+    // otherUserStore.setUserData(firstName, lastName, avatar);
+    const xmppID = props.jid.split('@')[0];
+    const walletAddress = reverseUnderScoreManipulation(xmppID);
+    if (walletAddress === loginStore.initialData.walletAddress) {
+      navigation.navigate(ROUTES.PROFILE);
+      return;
+    } else {
+      getOtherUserDetails(props);
+      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+    }
+  };
+
+  const handleMemberLongTap = (item:any) => {
+    if (
+      chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
+      chatStore.roomRoles[currentRoomDetail.jid] === 'admin'
+    ) {
+      setLongTapUser(item)
+      onOpen()
+    }
+  }
+
+  const handleLongTapMenu = (type:number) => {
+    if(type===0){
+      if(longTapUser.ban_status === 'clear'){
+        banUserr(
+          manipulatedWalletAddress,
+          longTapUser.jid,
+          currentRoomDetail.jid,
+          chatStore.xmpp
+        )
+      }else{
+        unbanUser(
+          manipulatedWalletAddress,
+          longTapUser.jid,
+          currentRoomDetail.jid,
+          chatStore.xmpp
+        )
+      }
+    }
+
+    if(type===1){
+      if(longTapUser.role === 'none'||'participant'){
+        assignModerator(
+          manipulatedWalletAddress,
+          longTapUser.jid,
+          chatStore.xmpp
+        )
+      }else{
+        unAssignModerator(
+          manipulatedWalletAddress,
+          longTapUser.jid,
+          chatStore.xmpp
+        )
+      }
+    }
+  }
+
+  const RoomDetails = ({
+    room,
+  }: {
+    room: {jid: string; name: string; roomThumbnail: string, roomBackground:string};
+  }) => {
+    const roomName = room.name;
+    const [uploadedImage, setUploadedImage] = useState({
+      _id: '',
+      createdAt: '',
+      expiresAt: 0,
+      filename: '',
+      isVisible: true,
+      location: '',
+      locationPreview: '',
+      mimetype: '',
+      originalname: '',
+      ownerKey: '',
+      size: 0,
+      updatedAt: '',
+      userId: '',
+    });
+    const {chatStore, loginStore, apiStore} = useStores();
+    const sendFiles = async (data: any) => {
+      const userJid =
+        underscoreManipulation(loginStore.initialData.walletAddress) +
+        '@' +
+        apiStore.xmppDomains.DOMAIN;
+      const roomJid = room.jid;
+      try {
+        const url = apiStore.defaultUrl + fileUpload;
+        const response = await uploadFiles(data, loginStore.userToken, url);
+        const file = response.results[0];
+        setUploadedImage(response.results[0]);
+        setRoomImage(userJid, roomJid, file.location, room.roomBackground?room.roomBackground:'none', 'icon',chatStore.xmpp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const onImagePress = async () => {
+      if (
+        chatStore.roomRoles[room.jid] === 'moderator' ||
+        chatStore.roomRoles[room.jid] === 'admin'
+      ) {
+        try {
+          const res = await DocumentPicker.pickSingle({
+            type: [DocumentPicker.types.images],
+          });
+          const formData = new FormData();
+          formData.append('files', {
+            name: res.name,
+            type: res.type,
+            uri: res.uri,
+          });
+          sendFiles(formData);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+
+    const handleEditDesriptionPress = () => {
+      if (
+        chatStore.roomRoles[room.jid] === 'moderator' ||
+        chatStore.roomRoles[room.jid] === 'admin'
+      ) {
+      setDescriptionModalVisible(true)
+      }else{
+        alert('Only owners and moderators can edit room details')
+      }
+    }
+
+    return (
+      <View margin={10} justifyContent="center" alignItems="center">
+        <TouchableOpacity
+          onPress={onImagePress}
+          activeOpacity={
+            chatStore.roomRoles[room.jid] === 'moderator' ||
+            chatStore.roomRoles[room.jid] === 'admin'
+              ? 0.8
+              : 1
+          }>
+          <Box
+            justifyContent={'center'}
+            alignItems={'center'}
+            borderRadius={10}
+            shadow={'5'}
+            bg={commonColors.primaryDarkColor}
+            h={wp('22%')}
+            w={wp('22%')}
+            marginBottom={4}>
+            {uploadedImage.location || room.roomThumbnail ? (
+              <FastImage
+                source={{
+                  uri: uploadedImage.location || room.roomThumbnail,
+                  priority: FastImage.priority.normal,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+                style={{
+                  width: wp('22%'),
+                  height: wp('22%'),
+                  borderRadius: 10,
+                }}
+              />
+            ) : (
+              <Text
+                // shadow={'8'}
+                fontSize={hp('6%')}
+                fontFamily={textStyles.semiBoldFont}
+                color={'white'}>
+                {roomName[0]}
+              </Text>
+            )}
+          </Box>
+        </TouchableOpacity>
+        <Text
+        color={"black"}
+        fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
+          {roomName}
+        </Text>
+        
+        <Text
+        color={"black"}
+          textAlign={'center'}
+          fontSize={hp('1.5%')}
+          fontFamily={textStyles.regularFont}>
+            {chatStore.roomsInfoMap[roomJID].roomDescription?chatStore.roomsInfoMap[roomJID].roomDescription:'No description here'}
+        </Text>
+        <Pressable
+        onPress={handleEditDesriptionPress}
+        >
+        <AntIcon
+          name="edit"
+          color={chatStore.roomRoles[room.jid] === 'moderator' ||
+          chatStore.roomRoles[room.jid] === 'admin'?commonColors.primaryColor:'grey'}
+          size={hp('2%')}
+        />
+        </Pressable>
+  
+        <HStack marginTop={2} justifyContent={'flex-end'} alignItems="center">
+              <Text
+                fontFamily={textStyles.boldFont}
+                fontSize={hp('2%')}
+                color={commonColors.primaryColor}>
+                Notifications
+              </Text>
+              <Switch
+                isChecked={!chatStore.roomsInfoMap[room.jid].muted}
+                onToggle={args => toggleNotification(args)}
+                onTrackColor={commonColors.primaryColor}
+                size={'sm'}
+              />
+        </HStack>
+      </View>
+    );
+  };
 
   const chatDetailsNavBar = () => {
     const FavMenuContent = chatStore.roomsInfoMap[roomJID]?.isFavourite
       ? 'Remove from favourites'
       : 'Add to favourites';
     return (
-      <Box h={60} justifyContent={'center'} bg={commonColors.primaryColor}>
+      <Box h={60} padding={2} justifyContent={'center'} bg={commonColors.primaryColor}>
         <HStack>
           <View flex={0.6}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -287,8 +431,25 @@ const ChatDetailsScreen = observer(({route}: any) => {
             </TouchableOpacity>
           </View>
 
-          <View flex={0.4} flexDirection="row">
-            <View flex={0.3}>
+          <View flex={0.4} justifyContent="flex-end" flexDirection="row">
+
+            {defaultChats[roomJID.split('@')[0]] ? (
+              null
+            ) : (
+              <View flex={0.3}>
+                <TouchableOpacity
+                  disabled={defaultChats[roomJID.split('@')[0]] ? true : false}
+                  onPress={deleteRoomAlert}>
+                  <AntIcon
+                    name={'delete'}
+                    style={{marginRight: 5, marginLeft: 5}}
+                    size={hp('3%')}
+                    color={'white'}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+              <View flex={0.3}>
               <TouchableOpacity
                 disabled={defaultChats[roomJID.split('@')[0]] ? true : false}
                 onPress={toggleFavourite}>
@@ -306,24 +467,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
               </TouchableOpacity>
             </View>
 
-            {defaultChats[roomJID.split('@')[0]] ? (
-              <View flex={0.3}></View>
-            ) : (
-              <View flex={0.3}>
-                <TouchableOpacity
-                  disabled={defaultChats[roomJID.split('@')[0]] ? true : false}
-                  onPress={deleteRoomAlert}>
-                  <AntIcon
-                    name={'delete'}
-                    style={{marginRight: 5, marginLeft: 5}}
-                    size={hp('3%')}
-                    color={'white'}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-
-            <View paddingRight={2} alignItems={'flex-end'} flex={0.4}>
+            <View paddingRight={2} alignItems={'flex-end'} flex={0.3}>
               <Menu
                 w="190"
                 isOpen={open}
@@ -353,12 +497,16 @@ const ChatDetailsScreen = observer(({route}: any) => {
                     <Divider />
                   </>
                 )}
+                {chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
+                chatStore.roomRoles[currentRoomDetail.jid] === 'admin'?
                 <Menu.Item
+                  onPress={() => navigation.navigate(ROUTES.CHANGEBACKGROUNDSCREEN,{roomJID:roomJID, roomName:route.params.roomName})}
                   _text={{
                     fontFamily: textStyles.lightFont,
                   }}>
-                  Edit settings
-                </Menu.Item>
+                  Change Background
+                </Menu.Item>:null
+                }
                 {defaultChats[roomJID.split('@')[0]] ? null : (
                   <>
                     <Divider />
@@ -381,39 +529,60 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const FirstRoute = () => (
-    <Box bg={'#E5EBF5'}>
+    <Box bg={"white"} minH={hp('40%')}>
       <FlatList
-        data={roomMemberInfo}
-        renderItem={({item}) => (
-          <Box h={hp('10%')} flexDirection={'row'} alignItems="center" flex={1}>
-            <Box
-              h={hp('6.5')}
-              w={hp('6.5%')}
-              rounded={'md'}
-              justifyContent={'center'}
-              alignItems={'center'}
+      contentContainerStyle={{
+        paddingBottom:50
+      }}
+      scrollEnabled={roomMemberInfo.length<5?false:true}
+      data={roomMemberInfo}
+      renderItem={({item}) => (
+        <Pressable
+        onLongPress={()=>handleMemberLongTap(item)}
+        onPress={()=>onUserAvatarPress(item) }
+        h={hp('10%')}
+        flexDirection={'row'}
+        alignItems="center"
+        flex={1}
+        >
+          <Box
+            h={hp('6.5')}
+            w={hp('6.5%')}
+            rounded={'md'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            shadow="2"
+            bg={commonColors.primaryColor}
+            margin={2}>
+            {item.profile !== 'none'?
+            <Image
+            alt={item.name}
+            source={{uri:item.profile}}
+            h={hp('6.5')}
+            w={hp('6.5%')}
+            rounded={'md'}
+            />:
+            <Text
+              fontWeight={'bold'}
+              fontFamily={textStyles.boldFont}
+              fontSize={hp('2.2%')}
+              shadow="10"
+              color={'white'}>
+              {item.name ? item.name[0] : null}
+            </Text>
+            }
+          </Box>
+          <Box flex={0.7}>
+            <Text
+              fontFamily={textStyles.boldFont}
+              fontWeight="bold"
               shadow="2"
-              bg={commonColors.primaryColor}
-              margin={2}>
-              <Text
-                fontWeight={'bold'}
-                fontFamily={textStyles.boldFont}
-                fontSize={hp('2.2%')}
-                shadow="10"
-                color={'white'}>
-                {item.name ? item.name[0] : null}
-              </Text>
-            </Box>
-            <Box flex={0.7}>
-              <Text
-                fontFamily={textStyles.boldFont}
-                fontWeight="bold"
-                shadow="2"
-                fontSize={hp('1.8%')}>
-                {item.name ? item.name : null}
-              </Text>
-            </Box>
+              fontSize={hp('1.8%')}>
+              {item.name ? item.name : null}
+            </Text>
+          </Box>
 
+          {item.role !== 'none'?
             <Box
               borderWidth={item.role ? 1 : 0}
               rounded="full"
@@ -421,8 +590,9 @@ const ChatDetailsScreen = observer(({route}: any) => {
               alignItems={'center'}
               flex={0.2}>
               {item.role}
-            </Box>
-          </Box>
+            </Box>:null
+          }
+        </Pressable>
         )}
       />
     </Box>
@@ -497,16 +667,29 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const slider = () => {
     return (
-      <TabView
-        navigationState={{
-          index,
-          routes,
-        }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        onIndexChange={setIndex}
-        initialLayout={initialLayout}
-      />
+      // <TabView
+      //   navigationState={{
+      //     index,
+      //     routes,
+      //   }}
+      //   renderScene={renderScene}
+      //   renderTabBar={renderTabBar}
+      //   onIndexChange={setIndex}
+      //   initialLayout={initialLayout}
+      // />
+      <View padding={2}>
+        <Box margin={2}>
+          <Text
+          color={"black"}
+          fontWeight={"bold"}
+          fontFamily={textStyles.boldFont}
+          fontSize={hp('2%')}
+          >
+            {routes[0].title}
+          </Text>
+        </Box>
+        <FirstRoute/>
+      </View>
     );
   };
 
@@ -542,38 +725,62 @@ const ChatDetailsScreen = observer(({route}: any) => {
               </Text>
             </TouchableOpacity>
           )}
-
-          <HStack justifyContent={'flex-end'} alignItems="center" flex={0.5}>
-            <Text
-              fontFamily={textStyles.boldFont}
-              fontSize={hp('2%')}
-              color={commonColors.primaryColor}>
-              Notifications
-            </Text>
-            <Switch
-              isChecked={!chatStore.roomsInfoMap[roomJID].muted}
-              onToggle={args => toggleNotification(args)}
-              onTrackColor={commonColors.primaryColor}
-              size={'sm'}
-            />
-          </HStack>
         </HStack>
       </Box>
     );
   };
 
+  const handleChangeDescription = (newDescription:string) => {
+    setDescriptionModalVisible(false);
+    changeRoomDescription(
+      manipulatedWalletAddress,
+      roomJID,
+      newDescription,
+      chatStore.xmpp
+    )
+  }
+
   return (
-    <View flex={1}>
+    <View bg={"white"} flex={1}>
       <View justifyContent={'flex-start'}>{chatDetailsNavBar()}</View>
-      <View justifyContent={'center'}>
+      <View flex={0.4} justifyContent={'center'}>
         <RoomDetails room={currentRoomDetail} />
       </View>
-      <View justifyContent={'center'} flex={0.8}>
+      <View justifyContent={'center'} flex={0.6}>
         {slider()}
       </View>
-      <View justifyContent={'center'} flex={0.3}>
+      {/* <View justifyContent={'center'} flex={0.3}>
         {footerControls()}
-      </View>
+      </View> */}
+
+      
+      <Actionsheet isOpen={isOpen} onClose={onClose}>
+        <Actionsheet.Content>
+          <Actionsheet.Item
+          onPress={()=>handleLongTapMenu(0)}
+          _text={{
+            fontFamily:textStyles.mediumFont,
+            color:"red.500"
+          }}>
+            {longTapUser.ban_status==='clear'?'Ban':'Unban'}
+          </Actionsheet.Item>
+
+          <Actionsheet.Item
+          onPress={()=>handleLongTapMenu(1)}
+          _text={{
+            fontFamily:textStyles.mediumFont,
+          }}>
+            {longTapUser.role==='none'||'participant'?'Assign Moderator':'Unassign Moderator'}
+          </Actionsheet.Item>
+        </Actionsheet.Content>
+      </Actionsheet>
+
+      <ChangeRoomDesctionModal
+      modalVisible={descriptionModalVisible}
+      setModalVisible={setDescriptionModalVisible}
+      currentDescription={chatStore.roomsInfoMap[roomJID].roomDescription}
+      changeDescription={handleChangeDescription}
+      />
     </View>
   );
 });

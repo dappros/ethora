@@ -33,8 +33,10 @@ const boxStyle = {
   p: 4,
 };
 
-export default function BasicTable() {
+export default function UsersTable() {
   const apps = useStoreState((state) => state.apps);
+  const ownerAccess = useStoreState((state) => state.user.ACL.ownerAccess);
+  const user = useStoreState((state) => state.user);
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
   const [currentApp, setCurrentApp] = React.useState<string>();
@@ -69,13 +71,25 @@ export default function BasicTable() {
   };
 
   React.useEffect(() => {
-    if (apps.length) {
-      setCurrentApp(apps[0]._id);
-      getUsers(apps[0]._id).then((users) => {
+    if (ownerAccess) {
+      if (apps.length) {
+        setCurrentApp(apps[0]._id);
+        getUsers(apps[0]._id).then((users) => {
+          setUsers(users);
+        });
+      }
+    }
+  }, [apps]);
+
+  React.useEffect(() => {
+    if (!ownerAccess) {
+      setCurrentApp(user.appId);
+      getUsers(currentApp).then((users) => {
+        console.log("users ", users);
         setUsers(users);
       });
     }
-  }, [apps]);
+  }, []);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
@@ -101,11 +115,19 @@ export default function BasicTable() {
     setAclEditData({ modalOpen: true, userId: userId });
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
+
+  const updateUserDataAfterAclChange = (user: http.IUserAcl) => {
+    const oldUsers = users;
+    const indexToUpdate = oldUsers.findIndex(
+      (item) => item._id === aclEditData.userId
+    );
+    if (indexToUpdate !== -1) {
+    }
+    oldUsers[indexToUpdate]._id = user.result.userId;
+    setUsers(oldUsers);
+  };
   return (
-    <TableContainer
-      component={Paper}
-      style={{ margin: "0 auto" }}
-    >
+    <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
           Users
@@ -179,12 +201,15 @@ export default function BasicTable() {
                 <TableCell align="right">
                   {user.email ? user.email : "-"}
                 </TableCell>
-                <TableCell  align="right">
-                  <Box sx={{width: '200px'}} >
-                  <Typography>Edit</Typography>
-                  <Typography style={{cursor: 'pointer', textDecoration: 'underline'}} onClick={() => handleAclEditOpen(user._id)}>
-                    Edit ACL
-                  </Typography>
+                <TableCell align="right">
+                  <Box sx={{ width: "200px" }}>
+                    <Typography>Edit</Typography>
+                    <Typography
+                      style={{ cursor: "pointer", textDecoration: "underline" }}
+                      onClick={() => handleAclEditOpen(user._id)}
+                    >
+                      Edit ACL
+                    </Typography>
                   </Box>
                 </TableCell>
               </TableRow>
@@ -211,11 +236,7 @@ export default function BasicTable() {
       >
         <Box sx={boxStyle}>
           <EditAcl
-            updateData={() =>
-              getUsers(apps[0]._id).then((users) => {
-                setUsers(users);
-              })
-            }
+            updateData={updateUserDataAfterAclChange}
             userId={aclEditData.userId}
           />
           <IconButton

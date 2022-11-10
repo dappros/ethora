@@ -118,7 +118,8 @@
   },
   "resolutions": {
     "@types/react": "^17",
-    "react-native-svg": "^12.3.0"
+    "react-native-svg": "^12.3.0",
+    "react-native": "0.68.1"
   },
   "jest": {
     "preset": "react-native",

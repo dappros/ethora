@@ -52,7 +52,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
         apiStore.defaultUrl + shareLink,
         loginStore.userToken,
       );
-      setSharedLinks(data.items);
+      setSharedLinks(data.items.filter(item => item.resource === 'profile'));
     } catch (error) {
       console.log(error);
     }
@@ -87,9 +87,11 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
         loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
       linkToken: item.token,
     });
-
     return (
-      <HStack alignItems={'center'} justifyContent={'space-between'}>
+      <HStack
+        alignItems={'center'}
+        justifyContent={'space-between'}
+        style={{marginBottom: 20}}>
         <VStack>
           <Text style={styles.linkName}>{item.memo}</Text>
           <Text style={styles.linkDate}>
@@ -97,9 +99,9 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
           </Text>
           <Text style={styles.linkDate}>
             Expires:{' '}
-            {moment(
-              new Date(item.createdAt).getTime() + +item.expiration,
-            ).format('MMMM DD YYYY hh:mm')}
+            {+item.expiration !== -1
+              ? moment(item.expiration).format('MMMM DD YYYY hh:mm')
+              : ''}
           </Text>
         </VStack>
         <HStack>

@@ -154,7 +154,7 @@ export const Transactions: React.FC<ITransactions> = ({ transactions }) => {
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {transactions.map((item) => {
-        return <TransactionItems item={item} key={item.transactionHash} />;
+        return <TransactionItems item={item} key={item._id} />;
       })}
     </List>
   );

@@ -28,6 +28,7 @@ import ThreadScreen from '../Screens/ThreadScreen';
 import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
 import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
 import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
+import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -45,11 +46,18 @@ export const HomeStackScreen = observer(() => {
     }
   }, [chatStore.roomList, chatStore.isOnline]);
 
+  const getCache = async () => {
+    await chatStore.getCachedRoomsInfo();
+    await chatStore.getRoomsFromCache();
+    await chatStore.getCachedMessages();
+    await walletStore.getCachedTransactions();
+    if (walletAddress) {
+      await walletStore.getDocuments(walletAddress);
+    }
+  };
+
   useEffect(() => {
-    chatStore.getCachedRoomsInfo();
-    chatStore.getRoomsFromCache();
-    chatStore.getCachedMessages();
-    walletStore.getCachedTransactions();
+    getCache();
     if (xmppUsername && xmppPassword) {
       getPushToken(
         loginStore.initialData.walletAddress,
@@ -281,6 +289,14 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.THREADS}
         component={ThreadScreen}
+        options={() => ({
+          // header: ({navigation}) => <MainHeader />,
+          headerShown: false,
+        })}
+      />
+      <HomeStack.Screen
+        name={ROUTES.CHANGEBACKGROUNDSCREEN}
+        component={ChangeBackgroundScreen}
         options={() => ({
           // header: ({navigation}) => <MainHeader />,
           headerShown: false,

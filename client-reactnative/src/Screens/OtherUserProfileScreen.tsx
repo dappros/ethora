@@ -469,7 +469,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
               isLoading={isLoadingVCard}>
-              {loginStore.anotherUserAvatar ? (
+              {loginStore.anotherUserAvatar !== 'none' ? (
                 <Image
                   source={{uri: loginStore.anotherUserAvatar}}
                   style={{
@@ -515,7 +515,9 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                     {loginStore.anotherUserFirstname}{' '}
                     {loginStore.anotherUserLastname}
                   </Text>
-                  <TouchableOpacity onPress={onTransactionNumberPress} style={{marginLeft: 5}}>
+                  <TouchableOpacity
+                    onPress={onTransactionNumberPress}
+                    style={{marginLeft: 5}}>
                     <Text
                       style={{
                         fontSize: hp('2.216%'),

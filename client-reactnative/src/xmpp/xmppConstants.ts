@@ -36,5 +36,14 @@ export const XMPP_TYPES = {
   addToBlackList: 'addToBlackList',
   removeFromBlackList: 'removeFromBlackList',
   roomMemberInfo: 'roomMemberInfo',
-  setRoomImage: 'setRoomImage'
+  setRoomImage: 'setRoomImage',
+  setRoomBackgroundImage: 'setRoomBackgroundImage',
+  deleteMessage: 'deleteMessage',
+  changeRoomBackground: 'changeRoomBackground',
+  ban: 'ban',
+  unBan: 'unban',
+  assignModerator: 'mod1',
+  unAssignModerator: 'mod2',
+  getBannedUserListOfRoom:'getBannedUserListOfRoom',
+  changeRoomDescription:'changeRoomDescription'
 };

@@ -1,8 +1,8 @@
 export type TProfile = {
   firstName: string;
   lastName: string;
-  description: string;
-  profileImage: string;
+  description?: string;
+  profileImage?: string;
 };
 
 export type TTransactions = {
@@ -48,6 +48,14 @@ export interface ITransaction {
   transactionHash: string;
   _id: string;
   tokenId: string;
+  receiverFirstName?: string;
+  receiverLastName?: string;
+  senderFirstName?: string;
+  senderLastName?: string;
+  nftName?: string;
+  senderBalance?: string;
+  receiverBalance?: string;
+nftTotal?: string;
 }
 
 export interface IBlock {
