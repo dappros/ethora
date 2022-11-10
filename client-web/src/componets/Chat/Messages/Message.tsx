@@ -9,9 +9,10 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle, Menu, MenuItem, useMediaQuery,
+  DialogTitle, IconButton, Menu, MenuItem, useMediaQuery,
   useTheme
 } from "@mui/material";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from "@mui/material/Box";
 
 export interface IMessage {
@@ -46,6 +47,11 @@ export const Message: React.FC<IMessage> = ({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openDialog, setOpenDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
 
   useEffect(() => {
@@ -94,10 +100,25 @@ export const Message: React.FC<IMessage> = ({
 
       <KitMessage.CustomContent>
         {(position.type === "first" || position.type === "single") && (
-          <strong style={{cursor: "pointer"}} onClick={() => history.push("/profile/" + message.data.senderWalletAddress)}>
-            {firstName} {lastName}
-            <br />
-          </strong>
+            <span style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+              <strong style={{cursor: "pointer"}} onClick={() => history.push("/profile/" + message.data.senderWalletAddress)}>
+                {firstName} {lastName}
+                <br />
+              </strong>
+              {String(userJid).split("/")[0] !== String(messageJid).split("/")[0] ?
+                  <IconButton
+                      aria-label="more"
+                      id="long-button"
+                      aria-controls={openMenu ? 'long-menu' : undefined}
+                      aria-expanded={openMenu ? 'true' : undefined}
+                      aria-haspopup="true"
+                      onClick={handleClickMenu}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+              :null
+              }
+            </span>
         )}
 
         {message.data.isMediafile && message.data.mimetype.split("/")[0] === "image"?
@@ -153,6 +174,24 @@ export const Message: React.FC<IMessage> = ({
              })}
             </div>
           : null}
+    <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={() => setAnchorEl(null)}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+    >
+      <MenuItem onClick={() => setAnchorEl(null)}>Transfer coins</MenuItem>
+      <MenuItem onClick={() => setAnchorEl(null)}>Direct message</MenuItem>
+      <MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>
+    </Menu>
+
     <Dialog
         fullScreen={fullScreen}
         open={openDialog}
