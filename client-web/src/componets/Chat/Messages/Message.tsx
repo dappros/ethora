@@ -9,7 +9,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle, IconButton, Menu, MenuItem, useMediaQuery,
+  DialogTitle, IconButton, Menu, MenuItem, TextField, useMediaQuery,
   useTheme
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -33,6 +33,8 @@ export interface IButtons {
   value: string
 }
 
+type IDialog = "transfer" | "direct" | "ban";
+
 export const Message: React.FC<IMessage> = ({
   message,
   userJid,
@@ -48,11 +50,18 @@ export const Message: React.FC<IMessage> = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [dialogMenuType, setDialogMenuType] = useState<IDialog>("transfer");
   const openMenu = Boolean(anchorEl);
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const [coinAmount, setCoinAmount] = useState("");
 
+  const openDialogMenu = (type: IDialog) => {
+    setAnchorEl(null)
+    setOpenDialog(true);
+    setDialogMenuType(type);
+  }
 
   useEffect(() => {
     if(message.data.quickReplies){
@@ -187,7 +196,7 @@ export const Message: React.FC<IMessage> = ({
           horizontal: 'center',
         }}
     >
-      <MenuItem onClick={() => setAnchorEl(null)}>Transfer coins</MenuItem>
+      <MenuItem onClick={() => openDialogMenu("transfer")}>Transfer coins</MenuItem>
       <MenuItem onClick={() => setAnchorEl(null)}>Direct message</MenuItem>
       <MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>
     </Menu>
@@ -198,13 +207,14 @@ export const Message: React.FC<IMessage> = ({
         onClose={() => setOpenDialog(true)}
         aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">
-        Message menu
-      </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          choose you button
-        </DialogContentText>
+        {dialogMenuType === "transfer" ?
+            <div style={{display: "flex", flexDirection: "column"}}>
+              <TextField id="outlined-basic" label="Outlined" type={"number"} variant="outlined" value={coinAmount} onChange={event => setCoinAmount(event.target.value)} />
+              <Button>Send</Button>
+            </div>
+        :null
+        }
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpenDialog(false)} autoFocus>
