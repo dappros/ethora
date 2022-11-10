@@ -69,6 +69,6 @@ export const filterNftBalances = (item) => {
   return (
     (item.tokenType === "NFT" || item.tokenType === "NFMT") &&
     (item.balance > 0 ||
-      (item.balances.length && item.balances.some((item) => +item > 0)))
+      (item.balances?.length && item?.balances?.some((item) => +item > 0)))
   );
 };
