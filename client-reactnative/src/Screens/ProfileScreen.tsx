@@ -402,9 +402,7 @@ export const ProfileScreen = observer((props: any) => {
               </Animated.Text>
             </TouchableOpacity> */}
             {itemsTransfersAllowed && walletStore.collections.length > 0 && (
-              <TouchableOpacity
-                onPress={() => setActiveAssetTab(1)}
-                style={{marginRight: 20}}>
+              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
                 <Animated.Text
                   style={[
                     styles.tabText,
@@ -419,8 +417,8 @@ export const ProfileScreen = observer((props: any) => {
 
             {walletStore.collections.length > 0 && (
               <TouchableOpacity
-                onPress={() => setActiveAssetTab(2)}
-                style={{marginRight: 20}}>
+                style={{marginLeft: 10}}
+                onPress={() => setActiveAssetTab(2)}>
                 <Animated.Text
                   style={[
                     styles.tabText,
@@ -435,7 +433,7 @@ export const ProfileScreen = observer((props: any) => {
             {walletStore.documents.length > 0 && (
               <TouchableOpacity
                 onPress={() => setActiveAssetTab(3)}
-                style={{marginRight: 20}}>
+                style={{marginLeft: 10}}>
                 <Animated.Text
                   style={[
                     styles.tabText,

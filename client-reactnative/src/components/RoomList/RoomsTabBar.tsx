@@ -36,7 +36,11 @@ export const RoomsTabBar = observer(() => {
       const rooms = chatStore.roomList?.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
-        if (item.participants < 3 && !defaultChats[splitedJid]) {
+        if (
+          item.participants < 3 &&
+          !defaultChats[splitedJid] &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           return item;
         }
       });
@@ -62,7 +66,11 @@ export const RoomsTabBar = observer(() => {
       const rooms = chatStore.roomList.filter((item: any) => {
         const splitedJid = item?.jid?.split('@')[0];
 
-        if (item.participants > 2 && !defaultChats[splitedJid]) {
+        if (
+          item.participants > 2 &&
+          !defaultChats[splitedJid] &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite
+        ) {
           return item;
         }
       });
@@ -76,7 +84,11 @@ export const RoomsTabBar = observer(() => {
   }, [chatStore.roomList]);
   const roomList = useMemo(
     () => filterRooms(),
-    [chatStore.roomList, chatStore.activeChats],
+    [
+      chatStore.roomList,
+      chatStore.activeChats,
+      chatStore.roomsInfoMap.isUpdated,
+    ],
   );
 
   return <RoomList roomsList={roomList} />;

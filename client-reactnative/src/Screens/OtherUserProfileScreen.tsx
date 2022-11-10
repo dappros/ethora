@@ -290,9 +290,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
 
-  const onTransactionNumberPress = () => {
-    setActiveTab(1);
-  };
+
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
@@ -314,7 +312,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
             {itemsTransfersAllowed && collections.length > 0 && (
               <TouchableOpacity
                 onPress={() => setActiveAssetTab(1)}
-                style={{marginRight: 20}}>
+                style={{marginLeft: 10}}>
                 <Text
                   style={[
                     styles.tabText,
@@ -327,7 +325,9 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               </TouchableOpacity>
             )}
             {collections.length > 0 && (
-              <TouchableOpacity onPress={() => setActiveAssetTab(2)}>
+              <TouchableOpacity
+                style={{marginLeft: 10}}
+                onPress={() => setActiveAssetTab(2)}>
                 <Text
                   style={[
                     styles.tabText,
@@ -446,6 +446,10 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
     }
   };
 
+  const onTransactionNumberPress = () => {
+    setActiveTab(1);
+  };
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
@@ -505,7 +509,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                   {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
                 ]}
                 isLoading={isLoadingVCard}>
-                <HStack alignItems={'center'}>
+                <HStack>
                   <Text
                     style={{
                       fontSize: hp('2.216%'),
@@ -532,7 +536,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                           color: commonColors.primaryColor,
                           textDecorationLine: 'underline',
                         }}>
-                        {anotherUserTransaction.length}
+                        {transactionCount}
                       </Text>
                       )
                     </Text>
@@ -585,8 +589,8 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                   layout={[
                     {width: wp('90%'), height: hp('2.216%'), marginBottom: 6},
                   ]}>
-                  {/* <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity
+                  <View style={{flexDirection: 'row'}}>
+                    {/* <TouchableOpacity
                       onPress={() => {
                         setActiveTab(0);
                         underlineOffset.value = 0;
@@ -601,9 +605,9 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                         Assets ({itemsBalance === 0 ? assetCount : itemsBalance}
                         )
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                       style={{marginLeft: 20}}
                       onPress={() => {
                         setActiveTab(1);
@@ -618,8 +622,8 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                         ]}>
                         Transactions ({transactionCount})
                       </Text>
-                    </TouchableOpacity>
-                  </View> */}
+                    </TouchableOpacity> */}
+                  </View>
                 </SkeletonContent>
 
                 {/* {isLoading ? null : (
