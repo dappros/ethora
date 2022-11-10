@@ -466,7 +466,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
               isLoading={isLoadingVCard}>
-              {loginStore.anotherUserAvatar ? (
+              {loginStore.anotherUserAvatar!=='none' ? (
                 <Image
                   source={{uri: loginStore.anotherUserAvatar}}
                   style={{

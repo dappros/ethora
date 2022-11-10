@@ -879,7 +879,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     <>
       <ImageBackground
         style={{width: '100%', height: '100%', zIndex: 0}}
-        source={{uri: room.roomBackground ? room.roomBackground : null}}>
+        source={{uri: room?.roomBackground ? room.roomBackground : null}}>
         <SecondaryHeader
           title={chatStore.roomsInfoMap[chatJid]?.name}
           isQR={true}
