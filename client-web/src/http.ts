@@ -549,3 +549,16 @@ export function updateProfile(fd: FormData, id?: string) {
     headers: { Authorization: user.token },
   });
 }
+
+export function transferCoin(
+    tokenId: string,
+    tokenName: string,
+    amount: number,
+    toWallet: string
+) {
+  const path = "tokens/transfer";
+  const user = useStoreState.getState().user;
+  return http.post(path, {tokenId, tokenName, amount, toWallet}, {
+    headers: { Authorization: user.token },
+  });
+}
