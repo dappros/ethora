@@ -1,6 +1,7 @@
 import * as React from "react";
 import Container from "@mui/material/Container";
 import UsersTable from "../Owner/Users";
+import Box from "@mui/material/Box";
 
 export default function UsersPage() {
   return (
@@ -10,9 +11,9 @@ export default function UsersPage() {
         height: "calc(100vh - 68px)",
       }}
     >
-      <div>
+      <Box style={{ marginTop: "20px" }}>
         <UsersTable></UsersTable>
-      </div>
+      </Box>
     </Container>
   );
 }

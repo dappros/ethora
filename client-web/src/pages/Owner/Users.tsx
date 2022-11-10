@@ -44,12 +44,14 @@ export default function UsersTable() {
     modalOpen: false,
     userId: "",
   });
+  const ACL = useStoreState((state) => state.ACL);
 
   const [pagination, setPagination] = React.useState<{
     total: number;
     limit: number;
     offset: number;
   }>();
+
   const getUsers = async (
     appId: string | null,
     limit: number = 10,
@@ -57,6 +59,7 @@ export default function UsersTable() {
   ) => {
     try {
       if (appId) {
+        console.log(appId);
         const getUsersResp = await http.getAppUsers(appId, limit, offset);
         const { data } = getUsersResp;
         setPagination({
@@ -84,8 +87,7 @@ export default function UsersTable() {
   React.useEffect(() => {
     if (!ownerAccess) {
       setCurrentApp(user.appId);
-      getUsers(currentApp).then((users) => {
-        console.log("users ", users);
+      getUsers(user.appId).then((users) => {
         setUsers(users);
       });
     }
@@ -132,7 +134,7 @@ export default function UsersTable() {
         <Typography variant="h6" style={{ margin: "16px" }}>
           Users
         </Typography>
-        {currentApp ? (
+        {currentApp && ownerAccess ? (
           <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id="demo-simple-select-label">App</InputLabel>
             <Select
@@ -153,9 +155,11 @@ export default function UsersTable() {
           </FormControl>
         ) : null}
 
-        <IconButton onClick={() => setShowNewUser(true)} size="large">
-          <AddCircleIcon fontSize="large"></AddCircleIcon>
-        </IconButton>
+        {(ownerAccess || ACL.result.application.appUsers.create) && (
+          <IconButton onClick={() => setShowNewUser(true)} size="large">
+            <AddCircleIcon fontSize="large"></AddCircleIcon>
+          </IconButton>
+        )}
       </Box>
       {users.length === 0 && (
         <Box
@@ -203,7 +207,10 @@ export default function UsersTable() {
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>
-                    <Typography>Edit</Typography>
+                    {ACL.result.application.appUsers.update && (
+                      <Typography>Edit</Typography>
+                    )}
+
                     <Typography
                       style={{ cursor: "pointer", textDecoration: "underline" }}
                       onClick={() => handleAclEditOpen(user._id)}
@@ -227,7 +234,11 @@ export default function UsersTable() {
           </TableBody>
         </Table>
       )}
-      <NewUserModal open={showNewUser} setOpen={setShowNewUser} />
+      <NewUserModal
+        open={showNewUser}
+        setUsers={setUsers}
+        setOpen={setShowNewUser}
+      />
       <Modal
         open={aclEditData.modalOpen}
         onClose={handleAclEditClose}

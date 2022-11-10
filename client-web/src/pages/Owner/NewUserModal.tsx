@@ -20,11 +20,12 @@ import { NativeSelect } from "@mui/material";
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setUsers: React.Dispatch<React.SetStateAction<any>>;
 };
 
-export default function NewUserModal({ open, setOpen }: TProps) {
+export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
   const apps = useStoreState((state) => state.apps);
-  const addAppUsers = useStoreState((state) => state.addAppUsers)
+  const addAppUsers = useStoreState((state) => state.addAppUsers);
   const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
@@ -33,7 +34,7 @@ export default function NewUserModal({ open, setOpen }: TProps) {
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]?._id
+      appId: apps[0]?._id,
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -56,14 +57,23 @@ export default function NewUserModal({ open, setOpen }: TProps) {
 
       return errors;
     },
-    onSubmit: ({username, firstName, lastName, password, appId}) => {
+    onSubmit: ({ username, firstName, lastName, password, appId }) => {
       setLoading(true);
-      const app = apps.find((el) => el._id === appId)
-      http.registerUsername(username, password, firstName, lastName, app?.appToken)
+      const app = apps.find((el) => el._id === appId);
+      http
+        .registerUsername(
+          username,
+          password,
+          firstName,
+          lastName,
+          app?.appToken
+        )
         .then((result) => {
-          addAppUsers([result.data.user])
-          setOpen(false)
-        })
+          setUsers((old) => {
+            return [...old, result.data.user];
+          });
+          setOpen(false);
+        });
     },
   });
 
@@ -96,7 +106,7 @@ export default function NewUserModal({ open, setOpen }: TProps) {
 
   return (
     <Dialog onClose={() => {}} open={open}>
-      <Box style={{width: '400px'}}>
+      <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}
         >
@@ -135,7 +145,9 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.firstName && formik.errors.firstName ? true : false
+                  formik.touched.firstName && formik.errors.firstName
+                    ? true
+                    : false
                 }
                 helperText={
                   formik.touched.firstName && formik.errors.firstName
@@ -153,7 +165,9 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.lastName && formik.errors.lastName ? true : false
+                  formik.touched.lastName && formik.errors.lastName
+                    ? true
+                    : false
                 }
                 helperText={
                   formik.touched.lastName && formik.errors.lastName
@@ -171,7 +185,9 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.lastName && formik.errors.username ? true : false
+                  formik.touched.lastName && formik.errors.username
+                    ? true
+                    : false
                 }
                 helperText={
                   formik.touched.username && formik.errors.username
@@ -189,7 +205,9 @@ export default function NewUserModal({ open, setOpen }: TProps) {
               <TextField
                 fullWidth
                 error={
-                  formik.touched.password && formik.errors.password ? true : false
+                  formik.touched.password && formik.errors.password
+                    ? true
+                    : false
                 }
                 helperText={
                   formik.touched.password && formik.errors.password
@@ -205,7 +223,13 @@ export default function NewUserModal({ open, setOpen }: TProps) {
                 value={formik.values.password}
               />
             </Box>
-            <Box style={{ display: "inline-flex", margin: "0 auto", flexDirection: "column" }}>
+            <Box
+              style={{
+                display: "inline-flex",
+                margin: "0 auto",
+                flexDirection: "column",
+              }}
+            >
               <LoadingButton
                 loading={loading}
                 variant="contained"
