@@ -82,7 +82,6 @@ export const Routes = () => {
         return;
       }
       const res = await getMyAcl();
-      console.log("res getMyAcl", res);
       setACL({ result: res.data.result[0] });
     } catch (error) {
       console.log(error);
@@ -126,14 +125,9 @@ export const Routes = () => {
         <Route path="/" exact>
           <Signon />
         </Route>
-        <Route path="/chat-in-room">
-          <ChatInRoom />
-        </Route>
+        <AuthRoute path="/chat-in-room" component={ChatInRoom} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
-        <Route path="/owner/create-app">
-          <CreateApp />
-        </Route>
         <Route path="/profile/:wallet">
           <Profile />
         </Route>
@@ -145,7 +139,6 @@ export const Routes = () => {
         />
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
         <Route path={"/provenance"} component={Provenance} exact />
-
         <Route
           path={"/explorer/transactions/:txId"}
           component={TransactionDetails}
