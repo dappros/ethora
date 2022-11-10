@@ -9,6 +9,7 @@ import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
 import { Provenance } from "./Transactions/Provenance";
+import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
@@ -115,7 +116,7 @@ export const Routes = () => {
     if (userId) {
       checkNotificationsStatus();
       getAcl();
-      getDocuments(user.walletAddress)
+      getDocuments(user.walletAddress);
     }
   }, [userId]);
 
@@ -128,12 +129,8 @@ export const Routes = () => {
         <Route path="/chat-in-room">
           <ChatInRoom />
         </Route>
-        <Route path="/owner">
-          <Owner />
-        </Route>
-        <Route path="/users">
-          <UsersPage />
-        </Route>
+        <AuthRoute path="/owner" component={Owner} />
+        <AuthRoute path="/users" component={UsersPage} />
         <Route path="/owner/create-app">
           <CreateApp />
         </Route>
