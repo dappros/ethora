@@ -1,8 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Message as KitMessage, MessageModel, Button, MessageSeparator } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import { TMessageHistory } from "../../../store";
 import {useHistory} from "react-router";
+import {
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle, Menu, MenuItem, useMediaQuery,
+  useTheme
+} from "@mui/material";
+import Box from "@mui/material/Box";
 
 export interface IMessage {
   message: TMessageHistory;
@@ -33,6 +43,10 @@ export const Message: React.FC<IMessage> = ({
   const messageJid = message.data.senderJID;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const [openDialog, setOpenDialog] = useState(false);
+
 
   useEffect(() => {
     if(message.data.quickReplies){
@@ -139,6 +153,26 @@ export const Message: React.FC<IMessage> = ({
              })}
             </div>
           : null}
+    <Dialog
+        fullScreen={fullScreen}
+        open={openDialog}
+        onClose={() => setOpenDialog(true)}
+        aria-labelledby="responsive-dialog-title"
+    >
+      <DialogTitle id="responsive-dialog-title">
+        Message menu
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          choose you button
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setOpenDialog(false)} autoFocus>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   </div>
   );
 };
