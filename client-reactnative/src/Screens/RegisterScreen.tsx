@@ -232,10 +232,17 @@ export const RegisterScreen = ({navigation, route}) => {
                       color: commonColors.primaryDarkColor,
                     }}
                   />
-                  <Text>I agree to </Text>
+                  <Text
+                  style={{
+                    fontFamily:textStyles.boldFont,
+                    color:"black"
+                  }}
+                  >I agree to </Text>
                   <TouchableOpacity>
                     <Text
                       style={{
+                        fontFamily:textStyles.boldFont,
+                        color:"black",
                         textDecorationLine: 'underline',
                       }}>
                       Terms and conditions

@@ -79,6 +79,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
                 roomJid,
                 currentRoomDetail.roomThumbnail?currentRoomDetail.roomThumbnail:'none',
                 defaultChatBackgroundTheme[chatStore.selectedBackgroundIndex].value,
+                'background',
                 chatStore.xmpp
             );
         }
@@ -97,6 +98,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
                 roomJid,
                 currentRoomDetail.roomThumbnail?currentRoomDetail.roomThumbnail:'none',
                 file.location,
+                'background',
                 chatStore.xmpp
             );
             chatStore.updateRoomInfo(roomJID,{

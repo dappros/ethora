@@ -23,6 +23,7 @@ import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getBlackList,
+  getRoomInfo,
   getUserRoomsStanza,
   presenceStanza,
   subscribeStanza,
@@ -380,11 +381,24 @@ export class ChatStore {
     this.xmpp.on('stanza', async (stanza: any) => {
       //capture room info
       if (stanza.attrs.id === 'roomInfo') {
+        const featureList = stanza.children[0].children.find(item => item.attrs.xmlns === 'jabber:x:data')
+        this.updateRoomInfo(stanza.attrs.from,{roomDescription:featureList.children.find(item => item.attrs.var === "muc#roominfo_description").children[0].children[0]})
         runInAction(() => {
           this.chatLinkInfo[stanza.attrs.from] =
             stanza.children[0].children[0].attrs.name;
         });
       }
+
+      if(stanza.attrs.id === XMPP_TYPES.changeRoomDescription){
+        const walletAddress = stanza.attrs.to.split('@')[0]
+        getRoomInfo(
+          walletAddress,
+          stanza.attrs.from,
+          this.xmpp
+        )
+        showToast('success','Success','Description changed', 'top')
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.setRoomImage) {
         console.log(
           stanza.children[0].attrs,
@@ -395,11 +409,26 @@ export class ChatStore {
         showToast(
           'success',
           'Success',
-          'Chat background set successfully',
-          'top',
+          'Chat icon set successfully',
+          'bottom',
         );
-        // showToast('success', 'Info', 'Link copied', 'top')
       }
+
+      if (stanza.attrs.id === XMPP_TYPES.setRoomBackgroundImage) {
+        console.log(
+          stanza.children[0].attrs,
+          stanza.children[0].children,
+          stanza,
+        );
+        getUserRoomsStanza(xmppUsername, this.xmpp);
+        showToast(
+          'success',
+          'Success',
+          'Chat background set successfully',
+          'bottom',
+        );
+      }
+
       this.stores.debugStore.addLogsXmpp(stanza);
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
         let anotherUserAvatar = '';
@@ -494,12 +523,27 @@ export class ChatStore {
         });
       }
 
+      // if(stanza.attrs.id === XMPP_TYPES.getBannedUserListOfRoom){
+      //   console.log(stanza.children[0].children, 'banned user list of a room')
+      // }
+
+      if(stanza.attrs.id === XMPP_TYPES.ban){
+        console.log(stanza.children[0].children,"dfsdsdsdsd")
+        if(stanza.children[0].children[0].attrs.status === 'success'){
+          showToast('success','Success','User banned!','top')
+        }
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
 
       if (stanza.attrs.id === 'activity') {
         console.log(stanza.children[0].children, 'activityyyy');
+      }
+
+      if(stanza.attrs.id === XMPP_TYPES.roomConfig){
+        // console.log(stanza,"roooooom config")
       }
 
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {

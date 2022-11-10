@@ -37,6 +37,7 @@ const options = {
 const NewChatScreen = (props: NewChatScreenProps) => {
   const [chatAvatar, setChatAvatar] = useState('');
   const [chatName, setChatName] = useState('');
+  const [chatDescription, setChatDescription] = useState('');
 
   const {loginStore, chatStore, apiStore} = useStores();
 
@@ -78,7 +79,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         roomConfig(
           manipulatedWalletAddress,
           roomHash,
-          {roomName: chatName},
+          {roomName: chatName, roomDescription:chatDescription},
           chatStore.xmpp,
         );
         
@@ -156,6 +157,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         <TextArea
           scrollEnabled
           placeholder="Short description about the chat"
+          onChangeText={desc => setChatDescription(desc)}
           placeholderTextColor={commonColors.primaryColor}
           multiline
           color={'black'}
