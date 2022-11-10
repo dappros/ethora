@@ -310,7 +310,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
             {itemsTransfersAllowed && collections.length > 0 && (
               <TouchableOpacity
                 onPress={() => setActiveAssetTab(1)}
-                style={{marginRight: 20}}>
+                style={{marginLeft: 10}}>
                 <Text
                   style={[
                     styles.tabText,
@@ -323,7 +323,9 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               </TouchableOpacity>
             )}
             {collections.length > 0 && (
-              <TouchableOpacity onPress={() => setActiveAssetTab(2)}>
+              <TouchableOpacity
+                style={{marginLeft: 10}}
+                onPress={() => setActiveAssetTab(2)}>
                 <Text
                   style={[
                     styles.tabText,
@@ -500,38 +502,38 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
                   {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
                 ]}
                 isLoading={isLoadingVCard}>
-                  <HStack>
-                <Text
-                  style={{
-                    fontSize: hp('2.216%'),
-                    fontFamily: textStyles.mediumFont,
-                    color: '#000000',
-                  }}>
-                  {loginStore.anotherUserFirstname}{' '}
-                  {loginStore.anotherUserLastname}
-                </Text>
-                <TouchableOpacity
-                  onPress={onTransactionNumberPress}
-                  style={{marginLeft: 5}}>
+                <HStack>
                   <Text
                     style={{
                       fontSize: hp('2.216%'),
                       fontFamily: textStyles.mediumFont,
-                      color: commonColors.primaryColor,
+                      color: '#000000',
                     }}>
-                    (
+                    {loginStore.anotherUserFirstname}{' '}
+                    {loginStore.anotherUserLastname}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={onTransactionNumberPress}
+                    style={{marginLeft: 5}}>
                     <Text
                       style={{
                         fontSize: hp('2.216%'),
                         fontFamily: textStyles.mediumFont,
                         color: commonColors.primaryColor,
-                        textDecorationLine: 'underline',
                       }}>
-                      {transactionCount}
+                      (
+                      <Text
+                        style={{
+                          fontSize: hp('2.216%'),
+                          fontFamily: textStyles.mediumFont,
+                          color: commonColors.primaryColor,
+                          textDecorationLine: 'underline',
+                        }}>
+                        {transactionCount}
+                      </Text>
+                      )
                     </Text>
-                    )
-                  </Text>
-                </TouchableOpacity>
+                  </TouchableOpacity>
                 </HStack>
               </SkeletonContent>
               <View
