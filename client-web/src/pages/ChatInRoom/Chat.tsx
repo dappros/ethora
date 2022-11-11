@@ -361,6 +361,7 @@ export function ChatInRoom() {
                           message={message}
                           userJid={xmpp.client?.jid?.toString()}
                           buttonSender={sendMessage}
+                          chooseDirectRoom={chooseRoom}
                       />
                   );
                 }else{
