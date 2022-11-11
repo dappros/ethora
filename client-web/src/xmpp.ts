@@ -649,7 +649,7 @@ class XmppClass {
     this.client.send(message);
   };
 
-  roomConfig (to: string, data: {roomName: string, roomDescription: string}) {
+  roomConfig (to: string, data: {roomName: string, roomDescription?: string}) {
     const message = xml(
         'iq',
         {
@@ -707,7 +707,7 @@ class XmppClass {
     this.client.send(stanza);
   };
 
-  setOwner (from, to) {
+  setOwner (to) {
     const message = xml(
         'iq',
         {
