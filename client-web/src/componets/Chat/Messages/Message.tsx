@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 import {getPublicProfile, transferCoin} from "../../../http";
 import xmpp from "../../../xmpp";
 import {TProfile} from "../../../pages/Profile/types";
+import {createPrivateChat} from "../../../helpers/chat/createPrivateChat";
 
 export interface IMessage {
   message: TMessageHistory;
@@ -91,6 +92,19 @@ export const Message: React.FC<IMessage> = ({
       console.log(error);
       setDialogText("An error occurred during the coin transfer.");
       setDialogMenuType("error");
+    })
+  }
+
+  const openPrivateRoom = () => {
+    createPrivateChat(
+        user.walletAddress,
+        message.data.senderWalletAddress,
+        user.firstName,
+        message.data.senderFirstName,
+        '@conference.dev.dxmpp.com').then(result => {
+          console.log(result);
+    }).catch(error => {
+      console.log("openPrivateRoom Error: ", error);
     })
   }
 
@@ -231,7 +245,7 @@ export const Message: React.FC<IMessage> = ({
         }}
     >
       <MenuItem onClick={() => openDialogMenu("transfer")}>Transfer coins</MenuItem>
-      <MenuItem onClick={() => setAnchorEl(null)}>Direct message</MenuItem>
+      <MenuItem onClick={openPrivateRoom}>Direct message</MenuItem>
       <MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>
     </Menu>
 
