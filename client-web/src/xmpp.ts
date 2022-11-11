@@ -636,6 +636,19 @@ class XmppClass {
     this.client.send(message);
   };
 
+  createNewRoom (to: string) {
+    const message = xml(
+        'presence',
+        {
+          id: 'createRoom',
+          from: this.client.jid?.toString(),
+          to: to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString(),
+        },
+        xml('x', 'http://jabber.org/protocol/muc'),
+    );
+    this.client.send(message);
+  };
+
   getRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
