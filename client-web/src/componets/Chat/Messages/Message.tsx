@@ -36,7 +36,7 @@ export interface IButtons {
   value: string
 }
 
-type IDialog = "transfer" | "direct" | "ban";
+type IDialog = "transfer" | "direct" | "ban" | "error";
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -54,6 +54,7 @@ export const Message: React.FC<IMessage> = ({
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [dialogMenuType, setDialogMenuType] = useState<IDialog>("transfer");
+  const [dialogText, setDialogText] = useState("");
   const openMenu = Boolean(anchorEl);
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -72,7 +73,7 @@ export const Message: React.FC<IMessage> = ({
 
   const sendCoins = () => {
     // @ts-ignore
-    transferCoin(coinData[0].tokenSymbol, coinData[0].tokenName, Number(coinAmount), message.data.senderWalletAddress).then(result => {
+    transferCoin(coinData[0].tokenSymbol, coinData[0].tokenName, Number(coinAmount), message.data.senderWalletAddress).then(() => {
       const textMessage = user.firstName + " " + user.lastName + " -> " + coinAmount + " " + coinData[0].tokenName + " -> " + message.data.senderFirstName + " " + message.data.senderLastName;
 
       xmpp.sendSystemMessage(
@@ -87,7 +88,9 @@ export const Message: React.FC<IMessage> = ({
 
       setOpenDialog(false);
     }).catch(error => {
-      console.log(error)
+      console.log(error);
+      setDialogText("An error occurred during the coin transfer.");
+      setDialogMenuType("error");
     })
   }
 
@@ -239,6 +242,13 @@ export const Message: React.FC<IMessage> = ({
         aria-labelledby="responsive-dialog-title"
     >
       <DialogContent>
+        {dialogMenuType === "error" ?
+            <div>
+              {dialogText}
+            </div>
+            :null
+        }
+
         {dialogMenuType === "transfer" ?
             <div style={{display: "flex", flexDirection: "column"}}>
               Rewards <strong>{coinData[0].tokenName}</strong> with coins
