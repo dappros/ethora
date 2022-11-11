@@ -535,6 +535,38 @@ class XmppClass {
     this.client.send(message);
   }
 
+  sendSystemMessage(
+      roomJID: string,
+      firstName: string,
+      lastName: string,
+      walletAddress: string,
+      userMessage: string,
+      amount: number,
+      receiverMessageId: number
+  ) {
+    const message = xml(
+        "message",
+        {
+          to: roomJID,
+          type: "groupchat",
+          id: "sendMessage",
+        },
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          senderFirstName: firstName,
+          senderLastName: lastName,
+          senderJID: this.client.jid?.toString(),
+          senderWalletAddress: walletAddress,
+          roomJid: roomJID,
+          isSystemMessage: true,
+          tokenAmount: amount,
+          receiverMessageId: receiverMessageId
+        }),
+        xml("body", {}, userMessage)
+    );
+    this.client.send(message);
+  }
+
   sendMediaMessageStanza (
       roomJID: string,
       data: any
