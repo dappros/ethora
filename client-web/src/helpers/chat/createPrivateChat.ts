@@ -33,6 +33,7 @@ export const createPrivateChat = async (
 
     setTimeout(() => {
         xmpp.sendInvite(
+            underscoreManipulation(myWalletAddress),
             roomJid.toLowerCase(),
             underscoreManipulation(otherUserWalletAddress),
         );
