@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { Button, IconButton, Modal, Typography } from "@mui/material";
+import { IconButton, Modal, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -33,6 +33,19 @@ const boxStyle = {
   p: 4,
 };
 
+function hasACLAdmin(acl: http.IUserAcl): boolean {
+  const appKeys = Object.keys(acl.result.application);
+  let hasAdmin = false;
+  for (let i = 0; i < appKeys.length; i++) {
+    if (acl.result.application[appKeys[i]].admin === true) {
+      hasAdmin = true;
+      break;
+    }
+  }
+
+  return hasAdmin;
+}
+
 export default function UsersTable() {
   const apps = useStoreState((state) => state.apps);
   const ownerAccess = useStoreState((state) => state.user.ACL.ownerAccess);
@@ -44,7 +57,12 @@ export default function UsersTable() {
     modalOpen: false,
     userId: "",
   });
+  const [hasAdmin, setHasAdmin] = React.useState(false);
   const ACL = useStoreState((state) => state.ACL);
+
+  React.useEffect(() => {
+    setHasAdmin(hasACLAdmin(ACL));
+  }, [ACL]);
 
   const [pagination, setPagination] = React.useState<{
     total: number;
@@ -93,6 +111,10 @@ export default function UsersTable() {
     }
   }, []);
 
+  React.useEffect(() => {
+    console.log("Users mount");
+  }, []);
+
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
     getUsers(e.target.value).then((users) => {
@@ -113,8 +135,10 @@ export default function UsersTable() {
       (users) => setUsers(users)
     );
   };
+
   const handleAclEditOpen = (userId: string) =>
     setAclEditData({ modalOpen: true, userId: userId });
+
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
 
@@ -128,6 +152,7 @@ export default function UsersTable() {
     oldUsers[indexToUpdate]._id = user.result.userId;
     setUsers(oldUsers);
   };
+
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
@@ -211,12 +236,17 @@ export default function UsersTable() {
                       <Typography>Edit</Typography>
                     )}
 
-                    <Typography
-                      style={{ cursor: "pointer", textDecoration: "underline" }}
-                      onClick={() => handleAclEditOpen(user._id)}
-                    >
-                      Edit ACL
-                    </Typography>
+                    {hasAdmin && (
+                      <Typography
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                        onClick={() => handleAclEditOpen(user._id)}
+                      >
+                        Edit ACL
+                      </Typography>
+                    )}
                   </Box>
                 </TableCell>
               </TableRow>
