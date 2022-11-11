@@ -28,7 +28,8 @@ export interface IMessage {
     separator?: string;
   };
   is?: string;
-  buttonSender: any
+  buttonSender: any;
+  chooseDirectRoom: any;
 }
 
 export interface IButtons {
@@ -43,7 +44,8 @@ export const Message: React.FC<IMessage> = ({
   message,
   userJid,
   position,
-  buttonSender
+  buttonSender,
+  chooseDirectRoom
 }) => {
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
@@ -65,6 +67,7 @@ export const Message: React.FC<IMessage> = ({
   const coinData = balance.filter(el => !el.tokenType && el.contractAddress.length > 10)
   const [profile, setProfile] = useState<TProfile>();
   const user = useStoreState((store) => store.user);
+  const loaderArchive = useStoreState((store) => store.loaderArchive);
 
   const openDialogMenu = (type: IDialog) => {
     setAnchorEl(null)
@@ -103,6 +106,12 @@ export const Message: React.FC<IMessage> = ({
         message.data.senderFirstName,
         '@conference.dev.dxmpp.com').then(result => {
           console.log(result);
+
+          xmpp.getRooms();
+          if(!loaderArchive){
+            chooseDirectRoom(result.roomJid)
+          }
+
     }).catch(error => {
       console.log("openPrivateRoom Error: ", error);
     })
