@@ -73,23 +73,19 @@ export const Message: React.FC<IMessage> = ({
   const sendCoins = () => {
     // @ts-ignore
     transferCoin(coinData[0].tokenSymbol, coinData[0].tokenName, Number(coinAmount), message.data.senderWalletAddress).then(result => {
-      console.log('Transfer success => ', result)
+      const textMessage = user.firstName + " " + user.lastName + " -> " + coinAmount + " " + coinData[0].tokenName + " -> " + message.data.senderFirstName + " " + message.data.senderLastName;
 
-      let userAvatar = "";
-      if (profile?.profileImage) {
-        userAvatar = profile?.profileImage;
-      }
-
-      xmpp.sendMessage(
+      xmpp.sendSystemMessage(
           message.roomJID,
           user.firstName,
           user.lastName,
-          userAvatar,
           user.walletAddress,
-          "",
-          null
+          textMessage,
+          null,
+          message.id
       );
 
+      setOpenDialog(false);
     }).catch(error => {
       console.log(error)
     })
