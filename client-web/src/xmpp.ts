@@ -686,6 +686,27 @@ class XmppClass {
     this.client.send(message);
   };
 
+  sendInvite (
+      to: string,
+      otherUserId: string,
+  ) {
+    const stanza = xml(
+        'message',
+        {from: this.client.jid?.toString(), to: to},
+        xml(
+            'x',
+            'http://jabber.org/protocol/muc#user',
+            xml(
+                'invite',
+                {to: otherUserId + '@' + 'dev.dxmpp.com'},
+                xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
+            ),
+        ),
+    );
+
+    this.client.send(stanza);
+  };
+
   getRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
