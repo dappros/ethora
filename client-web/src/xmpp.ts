@@ -165,27 +165,23 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
       useStoreState.getState().clearUserChatRooms();
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
-      stanza.getChild("query")?.children.forEach((result: Object) => {
-        // @ts-ignore
-        if (result?.attrs.name) {
-          // @ts-ignore
+      const currentChatRooms = useStoreState.getState().userChatRooms;
+
+      stanza.getChild("query")?.children.forEach((result: any) => {
+        if (result?.attrs.name && currentChatRooms.filter(el => el.jid === result?.attrs.jid).length === 0) {
+
           roomJID = result.attrs.jid;
           xmpp.presenceInRoom(roomJID);
 
           const roomData = {
             jid: roomJID,
-            // @ts-ignore
             name: result?.attrs.name,
-            // @ts-ignore
             room_background: result?.attrs.room_background,
-            // @ts-ignore
             room_thumbnail: result?.attrs.room_thumbnail,
-            // @ts-ignore
             users_cnt: result?.attrs.users_cnt,
             unreadMessages: 0,
             composing: "",
           };
-          // @ts-ignore
           useStoreState.getState().setNewUserChatRoom(roomData);
 
           //get message history in the room
@@ -250,6 +246,17 @@ const getListOfRooms = (xmpp: any) => {
   useStoreState.getState().clearMessageHistory();
 };
 
+const onInvite = (stanza: Element) => {
+    if(stanza.getChild('x')){
+      if(stanza.getChild('x').getChild('invite')){
+        console.log('invite work', (stanza.getChild('x')))
+      }else{
+      }
+    }else{
+    }
+
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
   "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
@@ -279,7 +286,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-
+    this.client.on("stanza", (stanza) => onInvite(stanza));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -687,12 +694,16 @@ class XmppClass {
   };
 
   sendInvite (
+      from: string,
       to: string,
       otherUserId: string,
   ) {
     const stanza = xml(
         'message',
-        {from: this.client.jid?.toString(), to: to},
+        {
+          from: from + '@' + 'dev.dxmpp.com',
+          to: to
+        },
         xml(
             'x',
             'http://jabber.org/protocol/muc#user',
@@ -703,7 +714,6 @@ class XmppClass {
             ),
         ),
     );
-
     this.client.send(stanza);
   };
 
