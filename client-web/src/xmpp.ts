@@ -649,6 +649,43 @@ class XmppClass {
     this.client.send(message);
   };
 
+  roomConfig (to: string, data: {roomName: string, roomDescription: string}) {
+    const message = xml(
+        'iq',
+        {
+          from: this.client.jid?.toString(),
+          id: 'roomConfig',
+          to: to + '@conference.dev.dxmpp.com',
+          type: 'set',
+        },
+        xml(
+            'query',
+            {xmlns: 'http://jabber.org/protocol/muc#owner'},
+            xml(
+                'x',
+                {xmlns: 'jabber:x:data', type: 'submit'},
+                xml(
+                    'field',
+                    {var: 'FORM_TYPE'},
+                    xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
+                ),
+                xml(
+                    'field',
+                    {var: 'muc#roomconfig_roomname'},
+                    xml('value', {}, data.roomName),
+                ),
+                xml(
+                    'field',
+                    {var: 'muc#roomconfig_roomdesc'},
+                    xml('value', {}, data.roomDescription),
+                ),
+            ),
+        ),
+    );
+
+    this.client.send(message);
+  };
+
   getRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
