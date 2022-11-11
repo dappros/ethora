@@ -72,7 +72,7 @@ export const Message: React.FC<IMessage> = ({
 
   const sendCoins = () => {
     // @ts-ignore
-    transferCoin(coinData[0].tokenName, coinData[0].tokenSymbol, Number(coinAmount), message.data.senderWalletAddress).then(result => {
+    transferCoin(coinData[0].tokenSymbol, coinData[0].tokenName, Number(coinAmount), message.data.senderWalletAddress).then(result => {
       console.log('Transfer success => ', result)
 
       let userAvatar = "";
