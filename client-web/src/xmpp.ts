@@ -707,6 +707,21 @@ class XmppClass {
     this.client.send(stanza);
   };
 
+  setOwner (from, to) {
+    const message = xml(
+        'iq',
+        {
+          to: to + '@conference.dev.dxmpp.com',
+          from: this.client.jid?.toString(),
+          id: 'setOwner',
+          type: 'get',
+        },
+        xml('query', {xmlns: 'http://jabber.org/protocol/muc#owner'}),
+    );
+
+    this.client.send(message);
+  };
+
   getRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
