@@ -5,7 +5,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {commonColors, defaultBotsList, textStyles} from '../../docs/config';
+import {
+  commonColors,
+  defaultBotsList,
+  metaRooms,
+  textStyles,
+} from '../../docs/config';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {sha256} from 'react-native-sha256';
@@ -22,7 +27,9 @@ import {
 } from '../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
-import { CONFERENCEDOMAIN } from '../xmpp/xmppConstants';
+import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
+import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
+import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 
 interface NewChatScreenProps {}
 
@@ -38,7 +45,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const [chatAvatar, setChatAvatar] = useState('');
   const [chatName, setChatName] = useState('');
   const [chatDescription, setChatDescription] = useState('');
-
+  const params = props.route.params;
   const {loginStore, chatStore, apiStore} = useStores();
 
   const {walletAddress} = loginStore.initialData;
@@ -66,23 +73,22 @@ const NewChatScreen = (props: NewChatScreenProps) => {
 
   const handleCreateNewChat = () => {
     let roomHash = '';
-    sha256(chatName).then(hash => {
+    sha256(chatName).then(async hash => {
       roomHash = hash;
 
       if (chatName === '') {
         alert('Please fill Chat Name');
       } else {
         createNewRoom(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-         
+
         setOwner(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-        
+
         roomConfig(
           manipulatedWalletAddress,
           roomHash,
-          {roomName: chatName, roomDescription:chatDescription},
+          {roomName: chatName, roomDescription: chatDescription},
           chatStore.xmpp,
         );
-        
 
         subscribeToRoom(
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
@@ -92,11 +98,32 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         defaultBotsList.forEach(bot => {
           sendInvite(
             manipulatedWalletAddress,
-            roomHash + CONFERENCEDOMAIN,
+            roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
             bot.jid,
             chatStore.xmpp,
           );
         });
+        if (params.metaDirection) {
+          const metaRoom = {
+            name: chatName,
+            description: chatDescription,
+            idAddress: roomHash,
+            meta: true,
+            linkN: '',
+            linkS: params.metaRoom.idAddress,
+            linkW: '',
+            linkE: '',
+          };
+          const cachedMetaRooms = await asyncStorageGetItem('metaRooms');
+          const metaRoomsList = cachedMetaRooms || metaRooms;
+          const linkedRoom = metaRoomsList.find(
+            item => item.idAddress === params.metaRoom.idAddress,
+          );
+          linkedRoom['link' + params.metaDirection] = roomHash;
+          metaRoomsList.push(metaRoom);
+          console.log(metaRoomsList, 'akkjalfjsd');
+          await asyncStorageSetItem('metaRooms', metaRoomsList);
+        }
 
         navigation.navigate(ROUTES.ROOMSLIST);
       }

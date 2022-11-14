@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {HStack, Image} from 'native-base';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,16 +15,18 @@ import {
   coinImagePath,
   commonColors,
   IMetaRoom,
-  metaRooms,
   ROOM_KEYS,
   textStyles,
 } from '../../../docs/config';
 import {ROUTES} from '../../constants/routes';
+import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {useStores} from '../../stores/context';
 import {CONFERENCEDOMAIN} from '../../xmpp/xmppConstants';
 import {MainHeader} from '../MainHeader/MainHeader';
 import {CreateNewChatButton} from './CreateNewChatButton';
-
+import {metaRooms as predefinedMeta} from '../../../docs/config';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {sendMessageStanza} from '../../xmpp/stanzas';
 export interface IMetaNavigation {
   chatId: string;
   open: boolean;
@@ -45,58 +47,98 @@ const CompassItem = ({
   room,
   name,
   chatId,
+  setDirection,
 }: {
   room: IMetaRoom | null;
   name: string;
   chatId: string;
+  setDirection: () => void;
 }) => {
   const navigation = useNavigation();
   const {apiStore} = useStores();
   if (!room) {
     return (
-      <HStack justifyContent={'center'} alignItems={'center'}>
+      <HStack
+        justifyContent={'center'}
+        alignItems={'center'}
+        style={{paddingVertical: 10}}>
         <TouchableOpacity
           disabled={!chatId}
-          onPress={() =>
+          onPress={() => {
+            setDirection();
             navigation.navigate(ROUTES.CHAT, {
               chatJid: '',
-            })
-          }>
-          <Text style={{color: 'black'}}>{'Empty'}</Text>
+            });
+          }}>
+          <Text
+            style={{
+              color: 'black',
+              textAlign: 'center',
+              fontFamily: textStyles.mediumFont,
+              fontSize: 16,
+            }}>
+            {'Empty'}
+          </Text>
         </TouchableOpacity>
       </HStack>
     );
   }
   return (
-    <HStack justifyContent={'center'} alignItems={'center'}>
+    <HStack
+      justifyContent={'center'}
+      alignItems={'center'}
+      style={{paddingVertical: 10}}>
       <TouchableOpacity
-        onPress={() =>
+        onPress={() => {
+          setDirection();
+
           navigation.navigate(ROUTES.CHAT, {
             chatJid: room.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
-          })
-        }>
-        <Text style={{color: 'black', textAlign: 'center'}}>{name}</Text>
+          });
+        }}>
+        <Text
+          style={{
+            color: 'black',
+            textAlign: 'center',
+            fontFamily: textStyles.mediumFont,
+            fontSize: 16,
+          }}>
+          {name}
+        </Text>
       </TouchableOpacity>
     </HStack>
   );
 };
 
-const MetaHeader = ({room}: {room: IMetaRoom | undefined}) => {
+const MetaHeader = ({
+  room,
+  direction,
+  previousRoom,
+}: {
+  room: IMetaRoom | undefined;
+  direction: string;
+  previousRoom: IMetaRoom | undefined;
+}) => {
   const navigation = useNavigation();
   if (!room) {
     return (
       <View style={[styles.top, styles.innerContainer]}>
-          <Text style={{fontFamily: textStyles.semiBoldFont, color: 'black'}}>
-            This space is empty. You can build your own room here for 120{' '}
-            <Image
-              alt="Coin Image"
-              source={coinImagePath}
-              h={hp('3%')}
-              w={hp('3%')}
-            />
-          </Text>
+        <Text style={{fontFamily: textStyles.semiBoldFont, color: 'black'}}>
+          This space is empty. You can build your own room here for 120{' '}
+          <Image
+            alt="Coin Image"
+            source={coinImagePath}
+            h={hp('3%')}
+            w={hp('3%')}
+          />
+        </Text>
         <CreateNewChatButton
-          onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
+          onPress={() =>
+            navigation.navigate(ROUTES.NEWCHAT, {
+              metaDirection: direction,
+              metaRoom: previousRoom,
+            })
+          }
         />
       </View>
     );
@@ -114,23 +156,129 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
   open,
   onClose,
 }) => {
+  const [direction, setDirection] = useState('');
+  const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
   const metaRoom = metaRooms.find(item => item.idAddress === chatId);
+  const [previousRoom, setPreviuosRoom] = useState<IMetaRoom | undefined>();
+  const {loginStore, chatStore, apiStore} = useStores();
+  const getMetaRooms = async () => {
+    const rooms = await asyncStorageGetItem('metaRooms');
+    setMetaRooms(rooms || predefinedMeta);
+  };
+  useEffect(() => {
+    getMetaRooms();
+  }, []);
+  const checkEmptyDirections = () => {
+    return (
+      !findRoom(metaRoom?.linkW, metaRooms)?.name &&
+      !findRoom(metaRoom?.linkS, metaRooms)?.name &&
+      !findRoom(metaRoom?.linkE, metaRooms)?.name &&
+      !findRoom(metaRoom?.linkN, metaRooms)?.name
+    );
+  };
+  const sendMessage = (chatName: string, jid: string, isPrevious: boolean) => {
+    const manipulatedWalletAddress = underscoreManipulation(
+      loginStore.initialData.walletAddress,
+    );
+    const textEnter =
+      loginStore.initialData.firstName +
+      ' ' +
+      loginStore.initialData.lastName +
+      ' ' +
+      'has joined' +
+      ' ' +
+      '<-';
+    const textLeave =
+      loginStore.initialData.firstName +
+      ' ' +
+      loginStore.initialData.lastName +
+      ' ' +
+      'has left' +
+      ' ' +
+      '->';
+    const data = {
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+      senderWalletAddress: loginStore.initialData.walletAddress,
+      isSystemMessage: true,
+      tokenAmount: 0,
+      receiverMessageId: '',
+      mucname: chatName,
+      photoURL: loginStore.userAvatar,
+      roomJid: jid,
+      isReply: false,
+      mainMessageText: '',
+      mainMessageId: '',
+      mainMessageUserName: '',
+    };
+
+    sendMessageStanza(
+      manipulatedWalletAddress,
+      jid,
+      isPrevious ? textLeave : textEnter,
+      data,
+      chatStore.xmpp,
+    );
+  };
+
+  useEffect(() => {
+    if (previousRoom) {
+      sendMessage(
+        previousRoom.name,
+        previousRoom.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        true,
+      );
+    }
+  }, [previousRoom]);
+  useEffect(() => {
+    if (metaRoom) {
+      sendMessage(
+        metaRoom.name,
+        metaRoom.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        false,
+      );
+    }
+  }, [metaRoom]);
   return (
     <Modal isVisible={open} onBackdropPress={onClose}>
       <View style={styles.container}>
-        <MetaHeader room={metaRoom} />
+        <MetaHeader
+          room={metaRoom}
+          direction={direction}
+          previousRoom={previousRoom}
+        />
         <View style={[styles.bottom, styles.innerContainer]}>
-          <CompassItem
-            name={'N:' + findRoom(metaRoom?.linkN, metaRooms)?.name}
-            chatId={chatId}
-            room={findRoom(metaRoom?.linkN, metaRooms)}
-          />
+          {checkEmptyDirections() ? (
+            <CompassItem
+              name={'N:' + metaRooms[0]?.name}
+              chatId={chatId}
+              room={metaRooms[0]}
+              setDirection={() => {
+                setDirection('N');
+                setPreviuosRoom(metaRooms[0]);
+              }}
+            />
+          ) : (
+            <CompassItem
+              name={'N:' + findRoom(metaRoom?.linkN, metaRooms)?.name}
+              chatId={chatId}
+              room={findRoom(metaRoom?.linkN, metaRooms)}
+              setDirection={() => {
+                setDirection('N');
+                setPreviuosRoom(metaRoom);
+              }}
+            />
+          )}
           <HStack justifyContent={'space-between'} alignItems={'center'}>
             <View style={{width: '30%'}}>
               <CompassItem
                 name={'W:' + findRoom(metaRoom?.linkW, metaRooms)?.name}
                 chatId={chatId}
                 room={findRoom(metaRoom?.linkW, metaRooms)}
+                setDirection={() => {
+                  setDirection('W');
+                  setPreviuosRoom(metaRoom);
+                }}
               />
             </View>
             <View
@@ -141,7 +289,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
               }}>
               <Ionicons
                 name={'compass'}
-                size={100}
+                size={70}
                 color={commonColors.primaryDarkColor}
               />
             </View>
@@ -150,6 +298,10 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
                 name={'E:' + findRoom(metaRoom?.linkE, metaRooms)?.name}
                 chatId={chatId}
                 room={findRoom(metaRoom?.linkE, metaRooms)}
+                setDirection={() => {
+                  setDirection('E');
+                  setPreviuosRoom(metaRoom);
+                }}
               />
             </View>
           </HStack>
@@ -157,6 +309,10 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
             name={'S:' + findRoom(metaRoom?.linkS, metaRooms)?.name}
             chatId={chatId}
             room={findRoom(metaRoom?.linkS, metaRooms)}
+            setDirection={() => {
+              setDirection('S');
+              setPreviuosRoom(metaRoom);
+            }}
           />
         </View>
       </View>

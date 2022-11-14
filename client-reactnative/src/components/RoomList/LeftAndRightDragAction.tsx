@@ -16,6 +16,8 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
+import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 
 interface LeftActionsProps {
   toggleNotification: any;
@@ -36,7 +38,15 @@ export const LeftActions = (props: LeftActionsProps) => {
           swipeRef.current.close();
         }}>
         <View style={[styles.swipeActionItem, {backgroundColor: 'grey'}]}>
-          <IonIcon name={chatStore.roomsInfoMap[jid]?.muted ? 'notifications-off' :  "notifications"} size={hp('3%')} color={'white'} />
+          <IonIcon
+            name={
+              chatStore.roomsInfoMap[jid]?.muted
+                ? 'notifications-off'
+                : 'notifications'
+            }
+            size={hp('3%')}
+            color={'white'}
+          />
         </View>
       </TouchableOpacity>
       {chatStore.roomRoles[jid] !== 'participant' && (
@@ -67,14 +77,36 @@ interface RightActionsProps {
 export const RightActions = (props: RightActionsProps) => {
   const {jid, leaveChat, swipeRef} = props;
   const jidWithoutConference = jid?.split('@')[0];
+  const onSwipeRight = async () => {
+    leaveChat(jid);
+    swipeRef.current.close();
+    const rooms = await asyncStorageGetItem('metaRooms');
+    if (rooms) {
+      const room = rooms.find(item => item.idAddress === jid.split('@')[0]);
+      const clearedMetaRooms = rooms
+        .filter(item => item.idAddress !== room.idAddress)
+        .map(item => {
+          if (item.linkS === room.idAddress) {
+            item.linkS = '';
+          }
+          if (item.linkN === room.idAddress) {
+            item.linkN = '';
+          }
+          if (item.linkW === room.idAddress) {
+            item.linkW = '';
+          }
+          if (item.linkE === room.idAddress) {
+            item.linkE = '';
+          }
+          return item;
+        });
+      await asyncStorageSetItem('metaRooms', clearedMetaRooms);
+    }
+  };
   return (
     <>
       {!defaultChats[jidWithoutConference] && (
-        <TouchableOpacity
-          onPress={() => {
-            leaveChat(jid);
-            swipeRef.current.close();
-          }}>
+        <TouchableOpacity onPress={onSwipeRight}>
           <View style={[styles.swipeActionItem, {backgroundColor: 'red'}]}>
             <AntIcon color={'white'} size={hp('3%')} name={'delete'} />
           </View>

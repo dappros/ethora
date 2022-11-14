@@ -1,7 +1,7 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
 import {makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChatBackgroundTheme, defaultChats} from '../../docs/config';
+import {defaultChatBackgroundTheme, defaultChats, IMetaRoom} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -118,6 +118,7 @@ export class ChatStore {
   chatLinkInfo: any = {};
   blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
+  metaRooms: IMetaRoom[] = [];
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
     message_id: '',
