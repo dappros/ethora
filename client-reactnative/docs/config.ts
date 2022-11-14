@@ -46,46 +46,54 @@ const textStyles = {
 
 const defaultChatBackgroundTheme = [
   {
-    value:'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
-    isSelected:false,
-    alt:'Default'
+    value:
+      'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
+    isSelected: false,
+    alt: 'Default',
   },
   {
-    value:'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
-    isSelected:false,
-    alt:'#00C49F'
+    value:
+      'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
+    isSelected: false,
+    alt: '#00C49F',
   },
   {
-    value:'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
-    isSelected:false,
-    alt:'#85BACD'
+    value:
+      'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
+    isSelected: false,
+    alt: '#85BACD',
   },
   {
-    value:'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
-    isSelected:false,
-    alt:'#D6A4A6'
+    value:
+      'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
+    isSelected: false,
+    alt: '#D6A4A6',
   },
   {
-    value:'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
-    isSelected:false,
-    alt:'Colourful'
+    value:
+      'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
+    isSelected: false,
+    alt: 'Colourful',
   },
   {
-    value:'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
-    isSelected:false,
-    alt:'Pattern'
+    value:
+      'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
+    isSelected: false,
+    alt: 'Pattern',
   },
   {
-    value:'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
-    isSelected:false,
-    alt:'Pillars of creation'
+    value:
+      'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
+    isSelected: false,
+    alt: 'Pillars of creation',
   },
   {
-    value:'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
-    isSelected:false,
-    alt:'Tech Doodle'
+    value:
+      'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
+    isSelected: false,
+    alt: 'Tech Doodle',
   },
-]
+];
 
 /* TUTORIAL */
 // If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
@@ -141,6 +149,53 @@ const defaultChats = {
     removable: false,
   },
 };
+
+export interface IMetaRoom {
+  name: string;
+  description: string;
+  meta: boolean;
+  idAddress: string;
+  linkN: string;
+  linkS: string;
+  linkW: string;
+  linkE: string;
+}
+
+export const metaRooms: IMetaRoom[] = [
+  {
+    name: 'Agora (Start here) 🇬🇧🏛️👋💬',
+    description: 'Central Place',
+    idAddress:
+      '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    meta: true,
+    linkN: 'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22',
+    linkS: 'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
+    description: 'Central Place',
+    idAddress:
+      'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: 'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e',
+    linkE: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+  },
+  {
+    name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
+    description: 'Central Place',
+    idAddress:
+      'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e',
+    meta: true,
+    linkN: '',
+    linkS: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    linkW: '',
+    linkE: 'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22',
+  },
+];
 
 /* TOKEN ECONOMY */
 // Coins image path
@@ -217,7 +272,7 @@ export const ROOM_KEYS: Record<string, string> = {
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle: boolean = false;
-export const appWallets = ['0xB91F341f948469D77D607E36E5264aB0e0479c9C']
+export const appWallets = ['0xB91F341f948469D77D607E36E5264aB0e0479c9C'];
 // Login screen
 const googleSignIn = true;
 const appleSignIn = true;
@@ -269,5 +324,5 @@ export {
   facebookSignIn,
   regularLoginEmail,
   regularLogin,
-  defaultChatBackgroundTheme
+  defaultChatBackgroundTheme,
 };
