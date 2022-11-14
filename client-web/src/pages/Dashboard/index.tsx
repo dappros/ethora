@@ -4,6 +4,9 @@ import UsersGraph from "./UsersGraph";
 import AppsSelect from "./AppsSelect";
 import { useStoreState } from "../../store";
 import TokensGraph from "./TokensGraph";
+import TransactionsGraph from "./TransactionsGraph";
+
+import "./Graph.scss";
 
 type Props = {};
 
@@ -31,6 +34,7 @@ function Dashboard({}: Props) {
             currentAppIndex={currentAppIndex}
           ></UsersGraph>
           <TokensGraph></TokensGraph>
+          <TransactionsGraph apps={apps} currentAppIndex={currentAppIndex} />
         </div>
       </Container>
     </div>
