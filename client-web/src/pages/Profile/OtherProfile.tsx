@@ -64,14 +64,13 @@ export function OtherProfile(props: TProps) {
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box>
-        {!!profile && (
+        {!!profile.firstName && (
           <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>
             <UserCard profile={profile} />
           </Box>
         )}
         {!!balances.filter(filterNftBalances).length && (
           <>
-            {" "}
             <Typography variant="h6" style={{ margin: "16px" }}>
               Items
             </Typography>
