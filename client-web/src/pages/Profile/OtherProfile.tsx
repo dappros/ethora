@@ -47,9 +47,8 @@ export function OtherProfile(props: TProps) {
   useEffect(() => {
     setLoading(true);
     getPublicProfile(props.walletAddress).then((result) => {
-      console.log("getPublicProfile ", result.data.documents);
       setProfile(result.data);
-      setBalances(result.data.balances);
+      setBalances(result.data.balances.balance);
       getDocuments(result.data.documents);
     });
     // .finally(() => setLoading(false));
