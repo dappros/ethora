@@ -165,27 +165,23 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
       useStoreState.getState().clearUserChatRooms();
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
-      stanza.getChild("query")?.children.forEach((result: Object) => {
-        // @ts-ignore
-        if (result?.attrs.name) {
-          // @ts-ignore
+      const currentChatRooms = useStoreState.getState().userChatRooms;
+
+      stanza.getChild("query")?.children.forEach((result: any) => {
+        if (result?.attrs.name && currentChatRooms.filter(el => el.jid === result?.attrs.jid).length === 0) {
+
           roomJID = result.attrs.jid;
           xmpp.presenceInRoom(roomJID);
 
           const roomData = {
             jid: roomJID,
-            // @ts-ignore
             name: result?.attrs.name,
-            // @ts-ignore
             room_background: result?.attrs.room_background,
-            // @ts-ignore
             room_thumbnail: result?.attrs.room_thumbnail,
-            // @ts-ignore
             users_cnt: result?.attrs.users_cnt,
             unreadMessages: 0,
             composing: "",
           };
-          // @ts-ignore
           useStoreState.getState().setNewUserChatRoom(roomData);
 
           //get message history in the room
@@ -250,6 +246,17 @@ const getListOfRooms = (xmpp: any) => {
   useStoreState.getState().clearMessageHistory();
 };
 
+const onInvite = (stanza: Element) => {
+    if(stanza.getChild('x')){
+      if(stanza.getChild('x').getChild('invite')){
+        console.log('invite work', (stanza.getChild('x')))
+      }else{
+      }
+    }else{
+    }
+
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
   "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
@@ -279,7 +286,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-
+    this.client.on("stanza", (stanza) => onInvite(stanza));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -535,6 +542,38 @@ class XmppClass {
     this.client.send(message);
   }
 
+  sendSystemMessage(
+      roomJID: string,
+      firstName: string,
+      lastName: string,
+      walletAddress: string,
+      userMessage: string,
+      amount: number,
+      receiverMessageId: number
+  ) {
+    const message = xml(
+        "message",
+        {
+          to: roomJID,
+          type: "groupchat",
+          id: "sendMessage",
+        },
+        xml("data", {
+          xmlns: "wss://dev.dxmpp.com:5443/ws",
+          senderFirstName: firstName,
+          senderLastName: lastName,
+          senderJID: this.client.jid?.toString(),
+          senderWalletAddress: walletAddress,
+          roomJid: roomJID,
+          isSystemMessage: true,
+          tokenAmount: amount,
+          receiverMessageId: receiverMessageId
+        }),
+        xml("body", {}, userMessage)
+    );
+    this.client.send(message);
+  }
+
   sendMediaMessageStanza (
       roomJID: string,
       data: any
@@ -599,6 +638,95 @@ class XmppClass {
           mainMessageRoomJid: data?.mainMessageRoomJid,
           showInChannel: data?.showInChannel,
         }),
+    );
+
+    this.client.send(message);
+  };
+
+  createNewRoom (to: string) {
+    const message = xml(
+        'presence',
+        {
+          id: 'createRoom',
+          from: this.client.jid?.toString(),
+          to: to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString(),
+        },
+        xml('x', 'http://jabber.org/protocol/muc'),
+    );
+    this.client.send(message);
+  };
+
+  roomConfig (to: string, data: {roomName: string, roomDescription?: string}) {
+    const message = xml(
+        'iq',
+        {
+          from: this.client.jid?.toString(),
+          id: 'roomConfig',
+          to: to + '@conference.dev.dxmpp.com',
+          type: 'set',
+        },
+        xml(
+            'query',
+            {xmlns: 'http://jabber.org/protocol/muc#owner'},
+            xml(
+                'x',
+                {xmlns: 'jabber:x:data', type: 'submit'},
+                xml(
+                    'field',
+                    {var: 'FORM_TYPE'},
+                    xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
+                ),
+                xml(
+                    'field',
+                    {var: 'muc#roomconfig_roomname'},
+                    xml('value', {}, data.roomName),
+                ),
+                xml(
+                    'field',
+                    {var: 'muc#roomconfig_roomdesc'},
+                    xml('value', {}, data.roomDescription),
+                ),
+            ),
+        ),
+    );
+
+    this.client.send(message);
+  };
+
+  sendInvite (
+      from: string,
+      to: string,
+      otherUserId: string,
+  ) {
+    const stanza = xml(
+        'message',
+        {
+          from: from + '@' + 'dev.dxmpp.com',
+          to: to
+        },
+        xml(
+            'x',
+            'http://jabber.org/protocol/muc#user',
+            xml(
+                'invite',
+                {to: otherUserId + '@' + 'dev.dxmpp.com'},
+                xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
+            ),
+        ),
+    );
+    this.client.send(stanza);
+  };
+
+  setOwner (to) {
+    const message = xml(
+        'iq',
+        {
+          to: to + '@conference.dev.dxmpp.com',
+          from: this.client.jid?.toString(),
+          id: 'setOwner',
+          type: 'get',
+        },
+        xml('query', {xmlns: 'http://jabber.org/protocol/muc#owner'}),
     );
 
     this.client.send(message);

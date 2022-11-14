@@ -624,15 +624,11 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
         )
         .then((result) => {
           const data = result.data;
-          const owner = {
-            token: data.token,
-            firstName: data.user.firstName,
-            lastName: data.user.lastName,
-            _id: data.user._id,
-            walletAddress: data.user.defaultWallet.walletAddress,
-          };
 
-          setOwner(owner);
+          setOwner({
+            ...data.user,
+            token: data.token,
+          });
           history.push("/owner");
           setOpen(false);
         })

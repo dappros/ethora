@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Route, Switch } from "react-router";
-import CreateApp from "./CreateApp";
 import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
 import { TransactionDetails } from "./Explorer/TransactionDetails";
 import { Blocks } from "./Explorer/Blocks";
@@ -9,7 +8,9 @@ import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
 import { Provenance } from "./Transactions/Provenance";
+import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
+import Dashboard from "./Dashboard";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -67,6 +68,7 @@ const mockAcl = {
     },
   },
 };
+
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
@@ -81,7 +83,6 @@ export const Routes = () => {
         return;
       }
       const res = await getMyAcl();
-      console.log("res getMyAcl", res);
       setACL({ result: res.data.result[0] });
     } catch (error) {
       console.log(error);
@@ -115,7 +116,7 @@ export const Routes = () => {
     if (userId) {
       checkNotificationsStatus();
       getAcl();
-      getDocuments(user.walletAddress)
+      getDocuments(user.walletAddress);
     }
   }, [userId]);
 
@@ -125,18 +126,10 @@ export const Routes = () => {
         <Route path="/" exact>
           <Signon />
         </Route>
-        <Route path="/chat-in-room">
-          <ChatInRoom />
-        </Route>
-        <Route path="/owner">
-          <Owner />
-        </Route>
-        <Route path="/users">
-          <UsersPage />
-        </Route>
-        <Route path="/owner/create-app">
-          <CreateApp />
-        </Route>
+        <AuthRoute path="/chat-in-room" component={ChatInRoom} />
+        <AuthRoute path="/owner" component={Owner} />
+        <AuthRoute path="/users" component={UsersPage} />
+        <AuthRoute path="/dashboard" component={Dashboard} />
         <Route path="/profile/:wallet">
           <Profile />
         </Route>
@@ -148,7 +141,6 @@ export const Routes = () => {
         />
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
         <Route path={"/provenance"} component={Provenance} exact />
-
         <Route
           path={"/explorer/transactions/:txId"}
           component={TransactionDetails}
