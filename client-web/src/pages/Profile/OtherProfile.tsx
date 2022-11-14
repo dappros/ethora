@@ -3,13 +3,20 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
-import { getPublicProfile, getTransactions, getBalance } from "../../http";
+import {
+  getPublicProfile,
+  getTransactions,
+  getBalance,
+  IDocument,
+} from "../../http";
 import { Transactions } from "../Transactions/Transactions";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import ItemsTable from "./ItemsTable";
 import { filterNftBalances } from "../../utils";
 import { TBalance } from "../../store";
 import { Typography } from "@mui/material";
+import DocumentsTable from "./DocumentsTable";
+import * as http from "../../http";
 
 type TProps = {
   walletAddress: string;
@@ -21,7 +28,29 @@ export function OtherProfile(props: TProps) {
   const [transactions, setTransactions] =
     useState<ExplorerRespose<ITransaction[]>>();
   const [balances, setBalances] = useState<TBalance[]>([]);
+  const [documents, setDocuments] = useState<IDocument[]>([]);
+  const getDocuments = async (walletAddress: string) => {
+    try {
+      const docs = await http.httpWithAuth().get(`/docs/${walletAddress}`);
 
+      const documents = docs.data.results;
+      const mappedDocuments = [];
+      for (const item of documents) {
+        try {
+          const { data: file } = await http
+            .httpWithAuth()
+            .get<http.IDocument[]>("/files/" + item.files[0]);
+          item.file = file;
+          mappedDocuments.push(item);
+        } catch (error) {
+          console.log(item.files[0], "sdjfkls");
+        }
+      }
+      setDocuments(mappedDocuments);
+    } catch (error) {
+      console.log(error, "404");
+    }
+  };
   useEffect(() => {
     setLoading(true);
     getPublicProfile(props.walletAddress).then((result) => {
@@ -33,7 +62,7 @@ export function OtherProfile(props: TProps) {
     getTransactions(props.walletAddress).then((result) => {
       setTransactions(result.data);
     });
-
+    getDocuments(props.walletAddress);
     getBalance(props.walletAddress).then((result) => {
       console.log("balance ", result.data);
 
@@ -44,7 +73,6 @@ export function OtherProfile(props: TProps) {
   if (loading) {
     return <FullPageSpinner />;
   }
-  console.log(balances)
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box>
@@ -66,7 +94,17 @@ export function OtherProfile(props: TProps) {
           </>
         )}
       </Box>
-
+      {!!documents.length && (
+        <>
+          <Typography variant="h6" style={{ margin: "16px" }}>
+            Documents
+          </Typography>
+          <DocumentsTable
+            walletAddress={props.walletAddress}
+            documents={documents}
+          />
+        </>
+      )}
       {!!transactions && (
         <>
           <Typography variant="h6" style={{ margin: "16px" }}>
