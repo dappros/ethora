@@ -100,6 +100,11 @@ export const httpWithAuth = () => {
   http.defaults.headers.common["Authorization"] = user.token;
   return http;
 };
+
+export const httpWithToken = (token: string) => {
+  http.defaults.headers.common["Authorization"] = token;
+  return http;
+};
 export interface IFile {
   _id: string;
   createdAt: string;
@@ -551,14 +556,18 @@ export function updateProfile(fd: FormData, id?: string) {
 }
 
 export function transferCoin(
-    tokenId: string,
-    tokenName: string,
-    amount: number,
-    toWallet: string
+  tokenId: string,
+  tokenName: string,
+  amount: number,
+  toWallet: string
 ) {
   const path = "tokens/transfer";
   const user = useStoreState.getState().user;
-  return http.post(path, {tokenId, tokenName, amount, toWallet}, {
-    headers: { Authorization: user.token },
-  });
+  return http.post(
+    path,
+    { tokenId, tokenName, amount, toWallet },
+    {
+      headers: { Authorization: user.token },
+    }
+  );
 }
