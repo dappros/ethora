@@ -11,7 +11,7 @@ import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
-
+import DocumentsCreateModal from "./DocumentsCreateModal";
 
 export function MyProfile() {
   const [loading, setLoading] = useState(false);
@@ -20,6 +20,7 @@ export function MyProfile() {
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
+  const [showCreateDocument, setShowCreateDocument] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -39,13 +40,41 @@ export function MyProfile() {
       <Typography variant="h6" style={{ margin: "16px" }}>
         Items
       </Typography>
-      <ItemsTable balance={items.filter(filterNftBalances)} walletAddress={user.walletAddress} />
+      <ItemsTable
+        balance={items.filter(filterNftBalances)}
+        walletAddress={user.walletAddress}
+      />
       {!!documents.length && (
         <>
-          <Typography variant="h6" style={{ margin: "16px" }}>
-            Documents
+          <Typography
+            variant="h6"
+            style={{
+              margin: "16px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span>Documents</span>
+            <a
+              href="/"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+                fontSize: "14px",
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowCreateDocument(true);
+              }}
+            >
+              Create New Document
+            </a>
           </Typography>
-          <DocumentsTable walletAddress={user.walletAddress} documents={documents} />
+          <DocumentsTable
+            walletAddress={user.walletAddress}
+            documents={documents}
+          />
         </>
       )}
 
@@ -57,6 +86,12 @@ export function MyProfile() {
           <Transactions transactions={transactions.items} />
         </Box>
       )}
+
+      <DocumentsCreateModal
+        open={showCreateDocument}
+        setOpen={setShowCreateDocument}
+        setDocuments={() => {}}
+      />
     </Container>
   );
 }
