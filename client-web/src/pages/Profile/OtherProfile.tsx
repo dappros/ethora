@@ -64,7 +64,7 @@ export function OtherProfile(props: TProps) {
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box>
-        {!!profile.firstName && (
+        {!!profile?.firstName && (
           <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>
             <UserCard profile={profile} />
           </Box>
