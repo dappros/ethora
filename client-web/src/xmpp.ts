@@ -167,6 +167,7 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
       let roomJID: string = "";
       const currentChatRooms = useStoreState.getState().userChatRooms;
 
+      console.log("ROOMS ", stanza.getChild("query")?.children)
       stanza.getChild("query")?.children.forEach((result: any) => {
         if (result?.attrs.name && currentChatRooms.filter(el => el.jid === result?.attrs.jid).length === 0) {
 
@@ -239,6 +240,8 @@ const onComposing = (stanza: Element) => {
 };
 
 const getListOfRooms = (xmpp: any) => {
+  xmpp.client.send(xml('presence'));
+  xmpp.getArchive(xmpp.client?.jid?.toString());
   defaultRooms.map((roomJID) => {
     xmpp.presenceInRoom(roomJID);
   });
@@ -246,10 +249,20 @@ const getListOfRooms = (xmpp: any) => {
   useStoreState.getState().clearMessageHistory();
 };
 
-const onInvite = (stanza: Element) => {
-    if(stanza.getChild('x')){
-      if(stanza.getChild('x').getChild('invite')){
-        console.log('invite work', (stanza.getChild('x')))
+const onInvite = (stanza: Element, xmpp: any) => {
+    if(stanza.is("message")){
+      const isArchiveInvite = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('x')?.getChild('invite');
+      if(
+          stanza.getChild('x')?.getChild('invite') ||
+          isArchiveInvite
+      ){
+        let jid = stanza.attrs.from;
+        if(isArchiveInvite){
+          jid = stanza.getChild('result')?.getChild('forwarded')?.getChild('message').attrs.from;
+        }
+        xmpp.subsribe(jid);
+        xmpp.presenceInRoom(jid);
+        xmpp.getRooms();
       }else{
       }
     }else{
@@ -286,7 +299,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-    this.client.on("stanza", (stanza) => onInvite(stanza));
+    this.client.on("stanza", (stanza) => onInvite(stanza, this));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -649,10 +662,11 @@ class XmppClass {
         {
           id: 'createRoom',
           from: this.client.jid?.toString(),
-          to: to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString(),
+          to: to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString().split("@")[0],
         },
         xml('x', 'http://jabber.org/protocol/muc'),
     );
+    console.log("CREATE ", to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString().split("@")[0])
     this.client.send(message);
   };
 
@@ -693,6 +707,19 @@ class XmppClass {
     this.client.send(message);
   };
 
+  getArchive = (userJID: string) => {
+    let message = xml(
+        "iq",
+        { type: "set", id: userJID },
+        xml(
+            "query",
+            { xmlns: "urn:xmpp:mam:2", queryid: "userArchive" },
+            xml("set", { xmlns: "http://jabber.org/protocol/rsm" }, xml("before"))
+        )
+    );
+    this.client.send(message);
+  };
+
   sendInvite (
       from: string,
       to: string,
@@ -701,7 +728,7 @@ class XmppClass {
     const stanza = xml(
         'message',
         {
-          from: from + '@' + 'dev.dxmpp.com',
+          from: this.client.jid?.toString().split("/")[0],
           to: to
         },
         xml(
@@ -709,7 +736,7 @@ class XmppClass {
             'http://jabber.org/protocol/muc#user',
             xml(
                 'invite',
-                {to: otherUserId + '@' + 'dev.dxmpp.com'},
+                {to: otherUserId},
                 xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
             ),
         ),
