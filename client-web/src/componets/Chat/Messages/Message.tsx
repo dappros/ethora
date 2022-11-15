@@ -104,14 +104,13 @@ export const Message: React.FC<IMessage> = ({
         message.data.senderWalletAddress,
         user.firstName,
         message.data.senderFirstName,
-        '@conference.dev.dxmpp.com').then(result => {
-          console.log(result);
-
+        '@conference.dev.dxmpp.com',
+        message.data.senderJID
+    ).then(result => {
           xmpp.getRooms();
           if(!loaderArchive){
             chooseDirectRoom(result.roomJid)
           }
-
     }).catch(error => {
       console.log("openPrivateRoom Error: ", error);
     })

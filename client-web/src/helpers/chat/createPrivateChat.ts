@@ -13,11 +13,12 @@ export const createPrivateChat = async (
     otherUserWalletAddress: string,
     myFirstName: string,
     otherFirstName: string,
-    CONFERENCEDOMAIN: string
+    CONFERENCEDOMAIN: string,
+    userJID?: string
 ) => {
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
         .sort()
-        .join('_');
+        .join('.');
 
     const roomJid = combinedWalletAddress.toLowerCase() + CONFERENCEDOMAIN;
     const combinedUsersName = [myFirstName, otherFirstName].sort().join(' and ');
@@ -35,7 +36,7 @@ export const createPrivateChat = async (
         xmpp.sendInvite(
             underscoreManipulation(myWalletAddress),
             roomJid.toLowerCase(),
-            underscoreManipulation(otherUserWalletAddress),
+            userJID
         );
     }, 1000);
     return {roomJid, roomName: combinedUsersName};
