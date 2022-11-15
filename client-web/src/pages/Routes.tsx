@@ -10,6 +10,7 @@ import { checkNotificationsStatus } from "../utils";
 import { Provenance } from "./Transactions/Provenance";
 import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
+import Dashboard from "./Dashboard";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -67,6 +68,7 @@ const mockAcl = {
     },
   },
 };
+
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
@@ -127,6 +129,7 @@ export const Routes = () => {
         <AuthRoute path="/chat-in-room" component={ChatInRoom} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
+        <AuthRoute path="/dashboard" component={Dashboard} />
         <Route path="/profile/:wallet">
           <Profile />
         </Route>
