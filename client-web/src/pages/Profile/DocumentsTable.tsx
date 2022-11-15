@@ -39,7 +39,7 @@ const DocumentItem = ({
         <ListItemAvatar>
           <Avatar
             style={{ backgroundColor: theme.palette.primary.main }}
-            src={item.file.locationPreview}
+            src={item.location}
           />
         </ListItemAvatar>
         <ListItemText

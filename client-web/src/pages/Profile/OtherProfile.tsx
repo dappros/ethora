@@ -33,10 +33,11 @@ export function OtherProfile(props: TProps) {
     const mappedDocuments = [];
     for (const item of documents) {
       try {
-        const { data: file } = await http
-          .httpWithAuth()
-          .get<http.IFile>("/files/" + item.files[0]);
-        item.file = file;
+        // const { data: file } = await http
+        //   .httpWithAuth()
+        //   .get<http.IFile>("/files/" + item.files[0]);
+        // item.file = file;
+        item.location = item.locations[0]
         mappedDocuments.push(item);
       } catch (error) {
         console.log( item.files[0],"sdjfkls");
