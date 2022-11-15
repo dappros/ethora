@@ -1,22 +1,11 @@
-import * as React from "react";
-import GavelIcon from "@mui/icons-material/Gavel";
-import * as http from "../../http";
+import React from "react";
+import BezierCurve from "../../componets/icons/BezierCurve";
 
 type Props = {
-  apps: any[];
-  currentAppIndex: number;
+  blockchain: any;
 };
 
-export default function Contracts({ apps, currentAppIndex }: Props) {
-  const [count, setCount] = React.useState(0);
-  React.useEffect(() => {
-    http
-      .httpWithToken(apps[currentAppIndex].appToken)
-      .get("/explorer/count/contract")
-      .then((response) => {
-        setCount(response.data.count);
-      });
-  }, [apps, currentAppIndex]);
+export default function Peers({ blockchain }: Props) {
   return (
     <div
       className="dashboard-graph"
@@ -39,10 +28,7 @@ export default function Contracts({ apps, currentAppIndex }: Props) {
             height: "100%",
           }}
         >
-          <GavelIcon
-            style={{ fontSize: "90px", color: "#604020" }}
-            color="inherit"
-          ></GavelIcon>
+          <BezierCurve color="#0071e6" width="100px"></BezierCurve>
           <div
             style={{
               display: "flex",
@@ -50,8 +36,8 @@ export default function Contracts({ apps, currentAppIndex }: Props) {
               alignItems: "center",
             }}
           >
-            <span>{count}</span>
-            <span>Contracts</span>
+            <span>{blockchain.peerCount}</span>
+            <span>Peers</span>
           </div>
         </div>
       </div>

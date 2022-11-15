@@ -49,7 +49,7 @@ export default function TransactionsGraph({ apps, currentAppIndex }: Props) {
       });
   }, [apps, currentAppIndex]);
   return (
-    <div className="dashboard-graph">
+    <div className="dashboard-graph" style={{ marginRight: "10px" }}>
       <a className="title" onClick={(e) => e.preventDefault()} href="/">
         Transactions
       </a>
