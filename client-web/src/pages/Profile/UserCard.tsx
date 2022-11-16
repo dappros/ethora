@@ -6,14 +6,35 @@ import { TProfile } from "./types";
 import defUserImage from "../../assets/images/def-ava.png";
 import { useStoreState } from "../../store";
 import EditProfileModal from "./EditProfileModal";
+import {Button} from "@mui/material";
+import {createPrivateChat} from "../../helpers/chat/createPrivateChat";
+import xmpp from "../../xmpp";
+import {useHistory} from "react-router-dom";
 
 type TProps = {
   profile?: TProfile;
+  walletAddress?: string
 };
 
-export default function UserCard({ profile }: TProps) {
+export default function UserCard({ profile, walletAddress }: TProps) {
   const [edit, setEdit] = React.useState(false);
   const user = useStoreState((state) => state.user);
+    const history = useHistory();
+    const openDirectChat = () => {
+      createPrivateChat(
+          user.walletAddress,
+          walletAddress,
+          user.firstName,
+          profile.firstName,
+          '@conference.dev.dxmpp.com',
+      ).then(result => {
+          xmpp.getRooms();
+          useStoreState.getState().setCurrentUntrackedChatRoom(result.roomJid);
+          history.push("/chat");
+      }).catch(error => {
+          console.log("openPrivateRoom Error: ", error);
+      })
+  }
   if (profile) {
     return (
       <Box style={{ marginTop: "10px", marginRight: "10px" }}>
@@ -42,6 +63,7 @@ export default function UserCard({ profile }: TProps) {
             {profile?.description && (
               <Box>Description: {profile?.description}</Box>
             )}
+            <Button onClick={openDirectChat} variant="contained" size="small">Direct message</Button>
           </Box>
         </Card>
       </Box>

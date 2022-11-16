@@ -138,6 +138,8 @@ export interface IDocument {
   updatedAt: Date;
   userId: string;
   file: IFile;
+  location: string;
+  locations: Array<string>
 }
 export function refresh() {
   return new Promise((resolve, reject) => {
