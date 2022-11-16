@@ -10,7 +10,10 @@ import { checkNotificationsStatus } from "../utils";
 import { Provenance } from "./Transactions/Provenance";
 import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
+import { useQuery, useSubscription } from "@apollo/client";
 import Dashboard from "./Dashboard";
+import { HELLO } from "../apollo/hello";
+import { COUNT } from "../apollo/subscription/count";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -119,6 +122,14 @@ export const Routes = () => {
       getDocuments(user.walletAddress);
     }
   }, [userId]);
+
+  const { loading, error, data } = useSubscription(COUNT);
+
+  console.log({ loading, error, data });
+
+  useEffect(() => {
+    console.log("subscription data ", data);
+  }, [data, loading, error]);
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
