@@ -30,7 +30,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
       ).then(result => {
           xmpp.getRooms();
           useStoreState.getState().setCurrentUntrackedChatRoom(result.roomJid);
-          history.push("/chat-in-room");
+          history.push("/chat");
       }).catch(error => {
           console.log("openPrivateRoom Error: ", error);
       })

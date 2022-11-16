@@ -126,7 +126,7 @@ export const Routes = () => {
         <Route path="/" exact>
           <Signon />
         </Route>
-        <AuthRoute path="/chat-in-room" component={ChatInRoom} />
+        <AuthRoute path="/chat" component={ChatInRoom} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
         <AuthRoute path="/dashboard" component={Dashboard} />

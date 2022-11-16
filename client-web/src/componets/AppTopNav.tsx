@@ -28,7 +28,7 @@ function firstLetersFromName(fN: string, lN: string) {
 }
 
 const initMenuItems = [
-  { name: "Chat", id: "chat-in-room" },
+  { name: "Chat", id: "chat" },
   { name: "Explorer", id: "explorer" },
 ];
 
