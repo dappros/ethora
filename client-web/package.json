@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.7.1",
+    "@apollo/react-hooks": "^4.0.0",
     "@chatscope/chat-ui-kit-react": "^1.9.7",
     "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@emotion/react": "^11.10.4",
@@ -47,6 +48,7 @@
     "recharts": "^2.1.14",
     "sass": "^1.54.9",
     "simple-zustand-devtools": "^1.1.0",
+    "subscriptions-transport-ws": "^0.11.0",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4",
     "web3": "^1.8.0",
