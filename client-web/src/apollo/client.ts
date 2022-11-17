@@ -1,17 +1,17 @@
 import { ApolloClient, InMemoryCache, split, HttpLink } from "@apollo/client";
-import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 const httpLink = new HttpLink({
-  uri: "https://app-dev.dappros.com/graphql",
+  uri: process.env.REACT_APP_GRAPHQL_HTTP,
 });
 
-const wsLink = new WebSocketLink({
-  uri: "wss://app-dev.dappros.com/graphql",
-  options: {
-    reconnect: true,
-  },
-});
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: process.env.REACT_APP_GRAPHQL_WS,
+  })
+);
 
 const splitLink = split(
   ({ query }) => {
