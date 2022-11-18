@@ -13,6 +13,7 @@ import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
 import DocumentsCreateModal from "./DocumentsCreateModal";
 import NewItemModal from "./NewItemModal";
+import Subscription from "../../componets/Subscription";
 
 const styles = {
   craeteNewLink: {
@@ -44,6 +45,7 @@ export function MyProfile() {
   if (loading) return <FullPageSpinner />;
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
+      <Subscription></Subscription>
       <Box sx={{ margin: "auto", width: "200px" }}>
         <UserCard />
       </Box>

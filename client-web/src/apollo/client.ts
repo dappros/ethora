@@ -10,6 +10,9 @@ const httpLink = new HttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: process.env.REACT_APP_GRAPHQL_WS,
+    connectionParams: {
+      authToken: "USER.TOKEN",
+    },
   })
 );
 
