@@ -447,7 +447,7 @@ export const ProfileScreen = observer((props: any) => {
             )}
           </HStack>
 
-          <View style={{marginBottom: hp('24%')}}>
+          <View style={{marginBottom: hp('34%'), backgroundColor: 'white'}}>
             {activeAssetTab === 1 &&
               walletStore.nftItems.length === 0 &&
               walletStore.documents.length === 0 && (
