@@ -31,5 +31,7 @@ export const ROUTES = {
   THREADS: 'ThreadScreen',
   SWIPERCHAT: 'SwiperChatScreen',
   DOCUMENTHISTORY: 'DocumentHistoryScreen',
-  CHANGEBACKGROUNDSCREEN: 'ChangeBackgroundScreen'
+  CHANGEBACKGROUNDSCREEN: 'ChangeBackgroundScreen',
+  UPLOADDOCUMENTSSCREEN: 'UploadDocumentsScreen'
+
 };
