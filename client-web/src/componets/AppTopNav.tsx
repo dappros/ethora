@@ -12,21 +12,21 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useHistory } from "react-router-dom";
-import { getBalance } from "../http";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
 
-import { useStoreState } from "../store";
-import coinImg from "../assets/images/coin.png";
+import { getBalance } from "../http";
 import xmpp from "../xmpp";
+import { useStoreState } from "../store";
+
+import coinImg from "../assets/images/coin.png";
 
 const pages = ["Products", "Pricing", "Blog"];
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
-
 
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();
@@ -36,9 +36,13 @@ const AppTopNav = () => {
   const setBalance = useStoreState((state) => state.setBalance);
   const ACL = useStoreState((state) => state.ACL);
   const history = useHistory();
-  const currentUntrackedChatRoom = useStoreState((store) => store.currentUntrackedChatRoom);
+  const currentUntrackedChatRoom = useStoreState(
+    (store) => store.currentUntrackedChatRoom
+  );
 
-  const chatUrl = currentUntrackedChatRoom ? String(currentUntrackedChatRoom.split("@")[0]) : "none"
+  const chatUrl = currentUntrackedChatRoom
+    ? String(currentUntrackedChatRoom.split("@")[0])
+    : "none";
   const initMenuItems = [
     { name: "Chat", id: "chat/" + chatUrl },
     { name: "Explorer", id: "explorer" },
@@ -50,11 +54,9 @@ const AppTopNav = () => {
   );
 
   useEffect(() => {
-    console.log("on mount ", ACL);
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
-    xmpp.init(user.walletAddress, user?.xmppPassword as string);
 
     if (ACL?.result?.application?.appUsers?.read) {
       setMenuItems((items) => {
