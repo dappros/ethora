@@ -294,7 +294,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('1%')}}>
+        <View style={{marginTop: hp('1%'),backgroundColor: 'white'}}>
           <HStack paddingX={wp('4%')}>
             {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}

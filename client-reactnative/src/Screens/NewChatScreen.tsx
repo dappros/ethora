@@ -41,6 +41,17 @@ const options = {
   },
 };
 
+const OPOSITE_DIRECTIONS: Record<string, string> = {
+  W: 'E',
+  E: 'W',
+  S: 'N',
+  N: 'S',
+};
+
+const getOpositeDirection = (direction: string) => {
+  return OPOSITE_DIRECTIONS[direction];
+};
+
 const NewChatScreen = (props: NewChatScreenProps) => {
   const [chatAvatar, setChatAvatar] = useState('');
   const [chatName, setChatName] = useState('');
@@ -110,7 +121,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             idAddress: roomHash,
             meta: true,
             linkN: '',
-            linkS: params.metaRoom.idAddress,
+            linkS: '',
             linkW: '',
             linkE: '',
           };
@@ -120,6 +131,8 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             item => item.idAddress === params.metaRoom.idAddress,
           );
           linkedRoom['link' + params.metaDirection] = roomHash;
+          metaRoom['link' + getOpositeDirection(params.metaDirection)] =
+            params.metaRoom.idAddress;
           metaRoomsList.push(metaRoom);
           console.log(metaRoomsList, 'akkjalfjsd');
           await asyncStorageSetItem('metaRooms', metaRoomsList);

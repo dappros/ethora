@@ -27,11 +27,31 @@ import {CreateNewChatButton} from './CreateNewChatButton';
 import {metaRooms as predefinedMeta} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {sendMessageStanza} from '../../xmpp/stanzas';
+
+import Share from 'react-native-share';
+
 export interface IMetaNavigation {
   chatId: string;
   open: boolean;
   onClose: () => void;
 }
+const DIRECTIONS = {
+  NORTH: 'N',
+  WEST: 'W',
+  SOUTH: 'S',
+  EAST: 'E',
+};
+
+const OPOSITE_DIRECTIONS: Record<string, string> = {
+  [DIRECTIONS.WEST]: DIRECTIONS.EAST,
+  [DIRECTIONS.EAST]: DIRECTIONS.WEST,
+  [DIRECTIONS.SOUTH]: DIRECTIONS.NORTH,
+  [DIRECTIONS.NORTH]: DIRECTIONS.SOUTH,
+};
+
+const getOpositeDirection = (direction: string) => {
+  return OPOSITE_DIRECTIONS[direction];
+};
 
 const findRoom = (id: string | undefined, arr: IMetaRoom[]) => {
   if (!id) {
@@ -49,7 +69,7 @@ const CompassItem = ({
   chatId,
   setDirection,
 }: {
-  room: IMetaRoom | null;
+  room: IMetaRoom | undefined;
   name: string;
   chatId: string;
   setDirection: () => void;
@@ -146,6 +166,9 @@ const MetaHeader = ({
   return (
     <View style={[styles.top, styles.innerContainer]}>
       <Text style={{fontFamily: textStyles.semiBoldFont, color: 'black'}}>
+        {room.name}
+      </Text>
+      <Text style={{fontFamily: textStyles.semiBoldFont, color: 'black'}}>
         {room.description}
       </Text>
     </View>
@@ -156,7 +179,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
   open,
   onClose,
 }) => {
-  const [direction, setDirection] = useState('');
+  const [previousDirection, setPreviousDirection] = useState('');
   const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
   const metaRoom = metaRooms.find(item => item.idAddress === chatId);
   const [previousRoom, setPreviuosRoom] = useState<IMetaRoom | undefined>();
@@ -176,6 +199,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       !findRoom(metaRoom?.linkN, metaRooms)?.name
     );
   };
+
   const sendMessage = (chatName: string, jid: string, isPrevious: boolean) => {
     const manipulatedWalletAddress = underscoreManipulation(
       loginStore.initialData.walletAddress,
@@ -221,6 +245,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     );
   };
 
+
   useEffect(() => {
     if (previousRoom) {
       sendMessage(
@@ -239,47 +264,62 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       );
     }
   }, [metaRoom]);
+
+  const exportRooms = async () => {
+    try {
+      const res = await Share.open({
+        message: JSON.stringify(metaRooms),
+        title: 'Cached rooms',
+      });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const renderDirections = (direction: string) => {
+    const oppositePreviousDirection = getOpositeDirection(previousDirection);
+    if (checkEmptyDirections() && direction === oppositePreviousDirection) {
+      return (
+        <CompassItem
+          name={oppositePreviousDirection + ':' + previousRoom?.name}
+          chatId={chatId}
+          room={previousRoom}
+          setDirection={() => {
+            setPreviousDirection(oppositePreviousDirection);
+            setPreviuosRoom(previousRoom);
+          }}
+        />
+      );
+    }
+    return (
+      <CompassItem
+        name={
+          direction +
+          ':' +
+          findRoom(metaRoom?.['link' + direction], metaRooms)?.name
+        }
+        chatId={chatId}
+        room={findRoom(metaRoom?.['link' + direction], metaRooms)}
+        setDirection={() => {
+          setPreviousDirection(direction);
+          setPreviuosRoom(metaRoom);
+        }}
+      />
+    );
+  };
   return (
     <Modal isVisible={open} onBackdropPress={onClose}>
       <View style={styles.container}>
         <MetaHeader
           room={metaRoom}
-          direction={direction}
+          direction={previousDirection}
           previousRoom={previousRoom}
         />
         <View style={[styles.bottom, styles.innerContainer]}>
-          {checkEmptyDirections() ? (
-            <CompassItem
-              name={'N:' + metaRooms[0]?.name}
-              chatId={chatId}
-              room={metaRooms[0]}
-              setDirection={() => {
-                setDirection('N');
-                setPreviuosRoom(metaRooms[0]);
-              }}
-            />
-          ) : (
-            <CompassItem
-              name={'N:' + findRoom(metaRoom?.linkN, metaRooms)?.name}
-              chatId={chatId}
-              room={findRoom(metaRoom?.linkN, metaRooms)}
-              setDirection={() => {
-                setDirection('N');
-                setPreviuosRoom(metaRoom);
-              }}
-            />
-          )}
+          {renderDirections(DIRECTIONS.NORTH)}
           <HStack justifyContent={'space-between'} alignItems={'center'}>
             <View style={{width: '30%'}}>
-              <CompassItem
-                name={'W:' + findRoom(metaRoom?.linkW, metaRooms)?.name}
-                chatId={chatId}
-                room={findRoom(metaRoom?.linkW, metaRooms)}
-                setDirection={() => {
-                  setDirection('W');
-                  setPreviuosRoom(metaRoom);
-                }}
-              />
+              {renderDirections(DIRECTIONS.WEST)}
             </View>
             <View
               style={{
@@ -287,33 +327,19 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Ionicons
-                name={'compass'}
-                size={70}
-                color={commonColors.primaryDarkColor}
-              />
+              <TouchableOpacity onPress={exportRooms} activeOpacity={0.9}>
+                <Ionicons
+                  name={'compass'}
+                  size={70}
+                  color={commonColors.primaryDarkColor}
+                />
+              </TouchableOpacity>
             </View>
             <View style={{width: '30%'}}>
-              <CompassItem
-                name={'E:' + findRoom(metaRoom?.linkE, metaRooms)?.name}
-                chatId={chatId}
-                room={findRoom(metaRoom?.linkE, metaRooms)}
-                setDirection={() => {
-                  setDirection('E');
-                  setPreviuosRoom(metaRoom);
-                }}
-              />
+              {renderDirections(DIRECTIONS.EAST)}
             </View>
           </HStack>
-          <CompassItem
-            name={'S:' + findRoom(metaRoom?.linkS, metaRooms)?.name}
-            chatId={chatId}
-            room={findRoom(metaRoom?.linkS, metaRooms)}
-            setDirection={() => {
-              setDirection('S');
-              setPreviuosRoom(metaRoom);
-            }}
-          />
+          {renderDirections(DIRECTIONS.SOUTH)}
         </View>
       </View>
     </Modal>

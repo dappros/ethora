@@ -386,7 +386,7 @@ export const ProfileScreen = observer((props: any) => {
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('1%')}}>
+        <View style={{marginTop: hp('1%'),backgroundColor: 'white'}}>
           <HStack paddingX={wp('4%')}>
             {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
@@ -447,7 +447,7 @@ export const ProfileScreen = observer((props: any) => {
             )}
           </HStack>
 
-          <View style={{marginBottom: hp('24%')}}>
+          <View style={{marginBottom: hp('34%')}}>
             {activeAssetTab === 1 &&
               walletStore.nftItems.length === 0 &&
               walletStore.documents.length === 0 && (
