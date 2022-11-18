@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { useStoreState } from "../../store";
-import { useHistory } from "react-router-dom";
 import { ChatInRoom } from "./Chat";
 
 export default function Chat() {
