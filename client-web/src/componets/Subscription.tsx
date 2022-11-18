@@ -3,10 +3,7 @@ import { useSubscription } from "@apollo/client";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { useStoreState } from "../store";
 
-import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {};
 

@@ -15,12 +15,16 @@ import { useHistory } from "react-router-dom";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
+import { useSubscription } from "@apollo/client";
+import Snackbar from "@mui/material/Snackbar";
+import Web3 from "web3";
 
 import { getBalance } from "../http";
 import xmpp from "../xmpp";
 import { useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
+import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 
 const pages = ["Products", "Pricing", "Blog"];
 
@@ -29,17 +33,9 @@ function firstLetersFromName(fN: string, lN: string) {
 }
 
 const AppTopNav = () => {
-  const { active, deactivate } = useWeb3React();
-  const user = useStoreState((state) => state.user);
-  const balances = useStoreState((state) => state.balance);
-  const clearUser = useStoreState((state) => state.clearUser);
-  const setBalance = useStoreState((state) => state.setBalance);
-  const ACL = useStoreState((state) => state.ACL);
-  const history = useHistory();
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
   );
-
   const chatUrl = currentUntrackedChatRoom
     ? String(currentUntrackedChatRoom.split("@")[0])
     : "none";
@@ -48,10 +44,32 @@ const AppTopNav = () => {
     { name: "Explorer", id: "explorer" },
   ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
-
-  const mainCoinBalance = balances.find(
-    (el) => el.tokenName === "Dappros Platform Token"
+  const [showMainBalanceNotification, setShowMainBalanceNotification] =
+    useState(false);
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
   );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const history = useHistory();
+  const { active, deactivate } = useWeb3React();
+  const user = useStoreState((state) => state.user);
+  const balance = useStoreState((state) => state.balance);
+  const mainCoinBalance = useStoreState((state) =>
+    state.balance.find((el) => el.tokenName === "Dappros Platform Token")
+  );
+  const clearUser = useStoreState((state) => state.clearUser);
+  const setBalance = useStoreState((state) => state.setBalance);
+  const ACL = useStoreState((state) => state.ACL);
+  const { data, loading } = useSubscription(TRRANSFER_TO_SUBSCRIPTION, {
+    variables: {
+      walletAddress: user.walletAddress,
+      contractAddress: mainCoinBalance ? mainCoinBalance.contractAddress : "",
+    },
+    skip: mainCoinBalance ? false : true,
+  });
 
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
@@ -65,22 +83,36 @@ const AppTopNav = () => {
     }
   }, []);
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
+  useEffect(() => {
+    if (data) {
+      const ethersAmounnt = Web3.utils.fromWei(data.transferTo.amount);
+      const newMainBalance = {
+        ...mainCoinBalance,
+        balance: Number(mainCoinBalance.balance) + Number(ethersAmounnt),
+      };
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
+      const newBalance = balance.map((el) => {
+        if (el.tokenName === "Dappros Platform Token") {
+          return newMainBalance;
+        }
+
+        return el;
+      });
+
+      setBalance(newBalance);
+      setShowMainBalanceNotification(true);
+      setTimeout(() => {
+        setShowMainBalanceNotification(false);
+      }, 4000);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    xmpp.init(user.walletAddress, user?.xmppPassword as string);
+  }, []);
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -93,7 +125,7 @@ const AppTopNav = () => {
 
   const onLogout = () => {
     clearUser();
-    xmpp.client.stop();
+    xmpp.stop();
     if (active) {
       deactivate();
     }
@@ -184,6 +216,16 @@ const AppTopNav = () => {
           </Box>
         </Toolbar>
       </Container>
+      {showMainBalanceNotification && (
+        <Snackbar
+          open={true}
+          message={`You get ${Web3.utils.fromWei(
+            data.transferTo.amount
+          )} coins from ${data.transferTo.senderFirstName} ${
+            data.transferTo.senderLastName
+          }`}
+        />
+      )}
     </AppBar>
   );
 };
