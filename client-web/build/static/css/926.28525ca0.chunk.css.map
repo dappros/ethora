@@ -1,1 +1,0 @@
-{"version":3,"file":"static/css/926.28525ca0.chunk.css","mappings":"AAAA,WACE,8FACA,sBACA","sources":["componets/NoDataImage.scss"],"sourcesContent":[".noDataImg {\n  background: url('../assets/empty_dashboard.svg') no-repeat -204px -550px;\n  height: 98px!important;\n  width: 142px;\n}"],"names":[],"sourceRoot":""}
