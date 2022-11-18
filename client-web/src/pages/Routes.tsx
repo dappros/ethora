@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Switch } from "react-router";
+import { useSubscription } from "@apollo/client";
+
 import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
 import { TransactionDetails } from "./Explorer/TransactionDetails";
 import { Blocks } from "./Explorer/Blocks";
@@ -11,6 +13,7 @@ import { Provenance } from "./Transactions/Provenance";
 import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
 import Dashboard from "./Dashboard";
+import { COUNT } from "../apollo/subscription/count";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -76,6 +79,12 @@ export const Routes = () => {
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
 
+  useSubscription(COUNT, {
+    onSubscriptionData: (data) => {
+      console.log("subsciption ", data);
+    },
+  });
+
   const getAcl = async () => {
     try {
       if (user?.ACL?.ownerAccess) {
@@ -126,7 +135,7 @@ export const Routes = () => {
         <Route path="/" exact>
           <Signon />
         </Route>
-        <AuthRoute path="/chat-in-room" component={ChatInRoom} />
+        <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
         <AuthRoute path="/dashboard" component={Dashboard} />

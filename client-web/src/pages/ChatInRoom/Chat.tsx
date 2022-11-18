@@ -34,6 +34,7 @@ import {
   useMediaQuery,
   useTheme
 } from "@mui/material";
+import {useParams, useHistory} from "react-router-dom";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -114,6 +115,9 @@ export function ChatInRoom() {
   const [openDialog, setOpenDialog] = useState(false);
   const [showDialogTxt, setShowDialogTxt] = useState(false);
   const [dialogTxt, setDialogTxt] = useState<{headline: string, description: string}>({headline: "", description: ""});
+  // @ts-ignore
+  const { roomJID } = useParams();
+  const history = useHistory()
 
   const onYReachStart = () => {
     if (loaderArchive) {
@@ -133,6 +137,7 @@ export function ChatInRoom() {
   }, []);
 
   const chooseRoom = (jid: string) => {
+    history.push('/chat/'+jid.split("@")[0])
     setCurrentRoom(jid);
     setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
     useStoreState.getState().clearCounterChatRoom(jid);
@@ -260,7 +265,15 @@ export function ChatInRoom() {
 
   useEffect(() => {
     if(currentUntrackedChatRoom){
-      chooseRoom(currentUntrackedChatRoom);
+      if(!roomJID || roomJID === "none" || currentUntrackedChatRoom.split("@")[0] === roomJID){
+        chooseRoom(currentUntrackedChatRoom);
+      }
+    }
+
+    if(currentUntrackedChatRoom.split("@")[0] !== roomJID && roomJID !== "none"){
+      const conferenceRoomJID = roomJID+"@conference.dev.dxmpp.com";
+      useStoreState.getState().setCurrentUntrackedChatRoom(conferenceRoomJID);
+      chooseRoom(conferenceRoomJID);
     }
 
     window.onblur = () => {

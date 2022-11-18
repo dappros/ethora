@@ -67,7 +67,7 @@ export function OtherProfile(props: TProps) {
       <Box>
         {!!profile?.firstName && (
           <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>
-            <UserCard profile={profile} />
+            <UserCard profile={profile} walletAddress={props.walletAddress} />
           </Box>
         )}
         {!!balances.filter(filterNftBalances).length && (

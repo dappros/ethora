@@ -36,7 +36,7 @@ export const createPrivateChat = async (
         xmpp.sendInvite(
             underscoreManipulation(myWalletAddress),
             roomJid.toLowerCase(),
-            userJID
+            underscoreManipulation(otherUserWalletAddress),
         );
     }, 1000);
     return {roomJid, roomName: combinedUsersName};

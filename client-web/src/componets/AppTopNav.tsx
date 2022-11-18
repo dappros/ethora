@@ -27,10 +27,6 @@ function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
 
-const initMenuItems = [
-  { name: "Chat", id: "chat-in-room" },
-  { name: "Explorer", id: "explorer" },
-];
 
 const AppTopNav = () => {
   const { active, deactivate } = useWeb3React();
@@ -40,6 +36,13 @@ const AppTopNav = () => {
   const setBalance = useStoreState((state) => state.setBalance);
   const ACL = useStoreState((state) => state.ACL);
   const history = useHistory();
+  const currentUntrackedChatRoom = useStoreState((store) => store.currentUntrackedChatRoom);
+
+  const chatUrl = currentUntrackedChatRoom ? String(currentUntrackedChatRoom.split("@")[0]) : "none"
+  const initMenuItems = [
+    { name: "Chat", id: "chat/" + chatUrl },
+    { name: "Explorer", id: "explorer" },
+  ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
 
   const mainCoinBalance = balances.find(
