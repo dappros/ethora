@@ -38,7 +38,7 @@ function Subscription({}: Props) {
       {open && (
         <Snackbar
           open={true}
-          message={`You get coinst ${data.transferTo.amount}`}
+          message={`You get coins ${data.transferTo.amount}`}
         />
       )}
       ;
