@@ -411,6 +411,7 @@ export function ChatInRoom() {
                 } else {
                   return (
                     <SystemMessage
+                      key={message.id}
                       is={"Message"}
                       message={message}
                       userJid={xmpp.client?.jid?.toString()}
