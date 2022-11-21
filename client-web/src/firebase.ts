@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken } from "firebase/messaging";
+import { FirebaseApp, initializeApp } from "firebase/app";
+import { getMessaging, getToken as _getToken } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQdkvvxKKx4-WrjLQoYf08GFARgi_qO4g",
@@ -11,30 +11,12 @@ const firebaseConfig = {
   measurementId: "G-WHM7XRZ4C8",
 };
 
-const app = initializeApp(firebaseConfig);
+export const firebaseApp = initializeApp(firebaseConfig);
 
-// function requestPermission() {
-//   Notification.requestPermission().then((permission) => {
-//     if (permission === "granted") {
-//       console.log("granted !!!");
-//       const messaging = getMessaging(app);
-//       console.log({ messaging });
-//       getToken(messaging, {
-//         vapidKey:
-//           "BCzcT7yzF8F188maOgPAISXqWCTDavGzWW0SWLOBx9vX2mYFjBXMaTMBDR3HXlmXOduyE253sblF9HP6aEBbx38",
-//       })
-//         .then((currentToken) => {
-//           if (currentToken) {
-//             console.log({ currentToken });
-//           } else {
-//             console.log({ currentToken });
-//           }
-//         })
-//         .catch((error) => console.log({ error }));
-//     } else {
-//       console.log("does not granted");
-//     }
-//   });
-// }
-
-// export { app as default, requestPermission };
+export function getToken() {
+  const messaging = getMessaging(firebaseApp);
+  return _getToken(messaging, {
+    vapidKey:
+      "BCzcT7yzF8F188maOgPAISXqWCTDavGzWW0SWLOBx9vX2mYFjBXMaTMBDR3HXlmXOduyE253sblF9HP6aEBbx38",
+  });
+}
