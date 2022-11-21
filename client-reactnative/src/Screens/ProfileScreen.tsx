@@ -647,7 +647,7 @@ export const ProfileScreen = observer((props: any) => {
                       color: commonColors.primaryColor,
                       textDecorationLine: 'underline',
                     }}>
-                    {transactions.length}
+                    {walletStore.total}
                   </Text>
                   )
                 </Text>
