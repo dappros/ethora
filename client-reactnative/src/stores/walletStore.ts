@@ -557,10 +557,11 @@ export class WalletStore {
       const response = await httpGet(url, null);
       if (response.data.items) {
         this.stores.debugStore.addLogsApi(response.data);
-        this.offset = this.offset + response.data.limit;
-        this.total = response.data.total;
+        
 
         runInAction(() => {
+          this.offset = this.offset + response.data.limit;
+        this.total = response.data.total;
           this.anotherUserTransaction = [
             ...this.anotherUserTransaction,
             ...response.data.items,

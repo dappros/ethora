@@ -26,11 +26,17 @@ import { useStoreState } from "../store";
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 
-const pages = ["Products", "Pricing", "Blog"];
-
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
+const menuActionsSection = {
+  name: "Actions",
+  items: [
+    { name: "Mint NFT", id: "/mint" },
+    { name: "Upload Document", id: "/documents/upload" },
+    { name: "Sign out", id: "logout" },
+  ],
+};
 
 const AppTopNav = () => {
   const currentUntrackedChatRoom = useStoreState(
@@ -39,23 +45,34 @@ const AppTopNav = () => {
   const chatUrl = currentUntrackedChatRoom
     ? String(currentUntrackedChatRoom.split("@")[0])
     : "none";
+  const user = useStoreState((state) => state.user);
+
+  const menuAccountSection = {
+    name: "Account",
+    items: [
+      { name: "My Profile", id: "/profile/" + user.walletAddress },
+      { name: "Explorer", id: "/explorer" },
+      { name: "Transactions", id: "/explorer/address/" + user.walletAddress },
+    ],
+  };
   const initMenuItems = [
-    { name: "Chat", id: "chat/" + chatUrl },
-    { name: "Explorer", id: "explorer" },
+    {
+      name: "",
+      items: [{ name: "Chat", id: "/chat/" + chatUrl }],
+    },
+    menuAccountSection,
+    menuActionsSection,
   ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
   const [showMainBalanceNotification, setShowMainBalanceNotification] =
     useState(false);
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
 
   const history = useHistory();
   const { active, deactivate } = useWeb3React();
-  const user = useStoreState((state) => state.user);
   const balance = useStoreState((state) => state.balance);
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === "Dappros Platform Token")
@@ -78,7 +95,10 @@ const AppTopNav = () => {
 
     if (ACL?.result?.application?.appUsers?.read) {
       setMenuItems((items) => {
-        return [...items, { name: "Users", id: "users" }];
+        return [
+          ...items,
+          { name: "Users", items: [{ name: "Users", id: "/users" }] },
+        ];
       });
     }
   }, []);
@@ -118,8 +138,15 @@ const AppTopNav = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const onMenuItemClick = (id: string) => {
-    history.push("/" + id);
+  const onMenuItemClick = (id: string, type: string) => {
+    if (id === "logout") {
+      onLogout();
+      handleCloseUserMenu();
+      return;
+    }
+
+    history.push(id);
+
     handleCloseUserMenu();
   };
 
@@ -174,7 +201,7 @@ const AppTopNav = () => {
                   alt=""
                   style={{ width: "20px", height: "20px" }}
                   src={coinImg}
-                ></img>
+                />
                 {mainCoinBalance?.balance}
               </ButtonUnstyled>
             ) : null}
@@ -199,19 +226,35 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {menuItems.map((item) => {
+              {menuItems.map((el) => {
+                console.log(el.name);
                 return (
-                  <MenuItem
-                    onClick={() => onMenuItemClick(item.id)}
-                    key={item.id}
-                  >
-                    <Typography textAlign="center">{item.name}</Typography>
-                  </MenuItem>
+                  <Box key={el.name}>
+                    <Typography
+                      sx={{
+                        marginLeft: "5px",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        marginY: "5px",
+                      }}
+                    >
+                      {el.name}
+                    </Typography>
+                    {el.items.map((item) => {
+                      return (
+                        <MenuItem
+                          onClick={() => onMenuItemClick(item.id, el.name)}
+                          key={item.id + item.name}
+                        >
+                          <Typography textAlign="center">
+                            {item.name}
+                          </Typography>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
                 );
               })}
-              <MenuItem onClick={onLogout}>
-                <Typography textAlign="center">Logout</Typography>
-              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
