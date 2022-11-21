@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch } from "react-router";
+import { Route, Router, Switch } from "react-router";
 
 import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
 import { TransactionDetails } from "./Explorer/TransactionDetails";
@@ -12,6 +12,9 @@ import { Provenance } from "./Transactions/Provenance";
 import AuthRoute from "../componets/AuthRoute";
 import * as http from "../http";
 import Dashboard from "./Dashboard";
+import { MintNft } from "./MintNft/MintNft";
+import { UploadDocument } from "./UploadDocument/UploadDocument";
+import { BrowserRouter } from "react-router-dom";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -142,6 +145,9 @@ export const Routes = () => {
         />
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
         <Route path={"/provenance"} component={Provenance} exact />
+        <Route path={"/mint"} component={MintNft} exact />
+        <Route path={"/documents/upload"} component={UploadDocument} exact />
+
         <Route
           path={"/explorer/transactions/:txId"}
           component={TransactionDetails}
