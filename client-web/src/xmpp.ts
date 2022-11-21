@@ -165,8 +165,6 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
       const currentChatRooms = useStoreState.getState().userChatRooms;
-
-      console.log("ROOMS ", stanza.getChild("query")?.children);
       stanza.getChild("query")?.children.forEach((result: any) => {
         if (
           result?.attrs.name &&
