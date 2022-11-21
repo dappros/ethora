@@ -227,6 +227,7 @@ const AppTopNav = () => {
               onClose={handleCloseUserMenu}
             >
               {menuItems.map((el) => {
+                console.log(el.name);
                 return (
                   <Box key={el.name}>
                     <Typography
@@ -241,16 +242,14 @@ const AppTopNav = () => {
                     </Typography>
                     {el.items.map((item) => {
                       return (
-                        <>
-                          <MenuItem
-                            onClick={() => onMenuItemClick(item.id, el.name)}
-                            key={item.id}
-                          >
-                            <Typography textAlign="center">
-                              {item.name}
-                            </Typography>
-                          </MenuItem>
-                        </>
+                        <MenuItem
+                          onClick={() => onMenuItemClick(item.id, el.name)}
+                          key={item.id + item.name}
+                        >
+                          <Typography textAlign="center">
+                            {item.name}
+                          </Typography>
+                        </MenuItem>
                       );
                     })}
                   </Box>
