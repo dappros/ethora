@@ -280,6 +280,16 @@ export function ChatInRoom() {
     );
   };
 
+  const handlePaste = event => {
+    // @ts-ignore
+    let item = Array.from(event.clipboardData.items).find(x => /^image\//.test(x.type));
+    if(item){
+      // @ts-ignore
+      let blob = item.getAsFile();
+      sendFile(blob)
+    }
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       xmpp.pausedComposing(user.walletAddress, roomData.jid);
@@ -462,6 +472,7 @@ export function ChatInRoom() {
           {!!roomData.name && (
             <div is={"MessageInput"}>
               <MessageInput
+                onPaste={handlePaste}
                 placeholder="Type message here"
                 onChange={setMessage}
                 onSend={sendMessage}
