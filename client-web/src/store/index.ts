@@ -323,7 +323,9 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              state.userChatRooms[currentIndex].unreadMessages++;
+              if(state.userChatRooms[currentIndex]){
+                state.userChatRooms[currentIndex].unreadMessages++;
+              }
             }),
           clearCounterChatRoom: (roomJID: string) =>
             set((state) => {
