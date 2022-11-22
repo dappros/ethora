@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
@@ -168,55 +168,20 @@ const AppTopNav = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Typography
-            variant="h4"
-            noWrap
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            <NavLink style={{ color: "white" }} to="/">
-              Ethora
-            </NavLink>
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              marginLeft: "auto",
             }}
           >
-            {mainCoinBalance ? (
-              <ButtonUnstyled
-                style={{
-                  marginRight: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  alt=""
-                  style={{ width: "20px", height: "20px" }}
-                  src={coinImg}
-                />
-                {mainCoinBalance?.balance}
-              </ButtonUnstyled>
-            ) : null}
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar>
-                {firstLetersFromName(user.firstName, user.lastName)}
-              </Avatar>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 0, color: "white", marginRight: "20px" }}
+            >
+              <MenuIcon />
             </IconButton>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: "20px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -262,6 +227,51 @@ const AppTopNav = () => {
                 );
               })}
             </Menu>
+            {!!mainCoinBalance && (
+              <Link to={'/'} style={{textDecoration: 'none'}}>
+              <Box
+                sx={{
+                  marginRight: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "pointer",
+                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  color: 'black',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingX: '5px',
+                  borderRadius: '5px',
+                }}
+                
+              >
+                <img
+                  alt=""
+                  style={{ width: "20px", height: "20px" }}
+                  src={coinImg}
+                />
+                {mainCoinBalance?.balance}
+              </Box>
+              </Link>
+            ) }
+          </Box>
+          <Box style={{ marginLeft: "auto" }}>
+            <Typography
+              variant="h4"
+              noWrap
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <NavLink style={{ color: "white" }} to="/">
+                Ethora
+              </NavLink>
+            </Typography>
           </Box>
         </Toolbar>
       </Container>

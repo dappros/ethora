@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
@@ -6,35 +6,43 @@ import { TProfile } from "./types";
 import defUserImage from "../../assets/images/def-ava.png";
 import { useStoreState } from "../../store";
 import EditProfileModal from "./EditProfileModal";
-import {Button} from "@mui/material";
-import {createPrivateChat} from "../../helpers/chat/createPrivateChat";
-import xmpp from "../../xmpp";
-import {useHistory} from "react-router-dom";
+import { Button, IconButton } from "@mui/material";
+import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
+import xmpp, { walletToUsername } from "../../xmpp";
+import { useHistory } from "react-router-dom";
+import { CONFERENCEDOMAIN } from "../../constants";
+import { generateProfileLink } from "../../utils";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { QrModal } from "./QrModal";
 
 type TProps = {
   profile?: TProfile;
-  walletAddress?: string
+  walletAddress?: string;
 };
 
 export default function UserCard({ profile, walletAddress }: TProps) {
-  const [edit, setEdit] = React.useState(false);
+  const [edit, setEdit] = useState(false);
   const user = useStoreState((state) => state.user);
-    const history = useHistory();
-    const openDirectChat = () => {
-      createPrivateChat(
-          user.walletAddress,
-          walletAddress,
-          user.firstName,
-          profile.firstName,
-          '@conference.dev.dxmpp.com',
-      ).then(result => {
-          xmpp.getRooms();
-          useStoreState.getState().setCurrentUntrackedChatRoom(result.roomJid);
-          history.push("/chat/"+result.roomJid);
-      }).catch(error => {
-          console.log("openPrivateRoom Error: ", error);
+  const [showQrModal, setShowQrModal] = useState(false);
+
+  const history = useHistory();
+  const openDirectChat = () => {
+    createPrivateChat(
+      user.walletAddress,
+      walletAddress,
+      user.firstName,
+      profile.firstName,
+      CONFERENCEDOMAIN
+    )
+      .then((result) => {
+        xmpp.getRooms();
+        useStoreState.getState().setCurrentUntrackedChatRoom(result.roomJid);
+        history.push("/chat/" + result.roomJid);
       })
-  }
+      .catch((error) => {
+        console.log("openPrivateRoom Error: ", error);
+      });
+  };
   if (profile) {
     return (
       <Box style={{ marginTop: "10px", marginRight: "10px" }}>
@@ -63,7 +71,9 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             {profile?.description && (
               <Box>Description: {profile?.description}</Box>
             )}
-            <Button onClick={openDirectChat} variant="contained" size="small">Direct message</Button>
+            <Button onClick={openDirectChat} variant="contained" size="small">
+              Direct message
+            </Button>
           </Box>
         </Card>
       </Box>
@@ -90,26 +100,41 @@ export default function UserCard({ profile, walletAddress }: TProps) {
         <Box>
           {!!user.firstName && (
             <>
-              <Box sx={{ fontWeight: "bold" }}>
+              <Box sx={{ fontWeight: "bold", display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 {user?.firstName} {user?.lastName}
+                <IconButton
+                  sx={{ color: "black" }}
+                  onClick={() => setShowQrModal(true)}
+                >
+                  <QrCodeIcon />
+                </IconButton>
               </Box>
               {user?.description && <Box>Description: {user?.description}</Box>}
             </>
           )}
         </Box>
+
         {user.firstName && (
-          <a
-            href="/"
+          <Button
             onClick={(e) => {
-              e.preventDefault();
               setEdit(true);
             }}
           >
             Edit
-          </a>
+          </Button>
         )}
       </Card>
       {edit && <EditProfileModal open={edit} setOpen={setEdit} user={user} />}
+      <QrModal
+        open={showQrModal}
+        link={generateProfileLink({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          walletAddress: user.walletAddress,
+          xmppId: walletToUsername(user.walletAddress) + CONFERENCEDOMAIN,
+        })}
+        onClose={() => setShowQrModal(false)}
+      />
     </Box>
   );
 }

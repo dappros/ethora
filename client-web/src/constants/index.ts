@@ -12,3 +12,6 @@ export const NFMT_TRAITS: Record<string, { color: string }> = {
   Rare: { color: "lightgreen" },
   "Unique!": { color: "black" },
 };
+
+export const CONFERENCEDOMAIN = '@dev.dxmpp.com'
+export const mobileEthoraBaseUrl = 'https://www.eto.li/go?c=';

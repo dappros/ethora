@@ -3,7 +3,7 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
-import { getPublicProfile, getTransactions, getBalance } from "../../http";
+import {  getTransactions, getBalance } from "../../http";
 import { useStoreState } from "../../store";
 import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
@@ -11,8 +11,6 @@ import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
-import DocumentsCreateModal from "./DocumentsCreateModal";
-import NewItemModal from "./NewItemModal";
 import { getToken } from "../../firebase";
 
 const styles = {
@@ -30,8 +28,7 @@ export function MyProfile() {
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
-  const [showCreateDocument, setShowCreateDocument] = useState(false);
-  const [showCreateNewItem, setShowCreateNewItem] = useState(false);
+
 
   useEffect(() => {
     console.log("MyProfile init");
@@ -81,16 +78,7 @@ export function MyProfile() {
         }}
       >
         <span>Items</span>
-        <a
-          href="/"
-          style={styles.craeteNewLink}
-          onClick={(e) => {
-            e.preventDefault();
-            setShowCreateNewItem(true);
-          }}
-        >
-          Create New Item
-        </a>
+       
       </Typography>
       <ItemsTable
         balance={items.filter(filterNftBalances)}
@@ -108,16 +96,7 @@ export function MyProfile() {
             }}
           >
             <span>Documents</span>
-            <a
-              href="/"
-              style={styles.craeteNewLink}
-              onClick={(e) => {
-                e.preventDefault();
-                setShowCreateDocument(true);
-              }}
-            >
-              Create New Document
-            </a>
+           
           </Typography>
           <DocumentsTable
             walletAddress={user.walletAddress}
@@ -135,17 +114,10 @@ export function MyProfile() {
         </Box>
       )}
 
-      {showCreateDocument && (
-        <DocumentsCreateModal
-          open={showCreateDocument}
-          setOpen={setShowCreateDocument}
-          setDocuments={() => {}}
-        />
-      )}
+     
 
-      {showCreateNewItem && (
-        <NewItemModal open={showCreateNewItem} setOpen={setShowCreateNewItem} />
-      )}
+      
+     
     </Container>
   );
 }
