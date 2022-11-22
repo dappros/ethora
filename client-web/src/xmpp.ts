@@ -114,7 +114,8 @@ const onMessageHistory = async (stanza: Element) => {
     if (
       stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
       stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
-      !isGettingFirstMessages
+      !isGettingFirstMessages &&
+      data.attrs.roomJid
     ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
       sendBrowserNotification(msg.body, () => {});
