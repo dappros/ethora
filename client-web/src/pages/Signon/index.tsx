@@ -239,7 +239,7 @@ export default function Signon() {
           buttonText="Sign In with Google"
           onSuccess={onGoogleClickSuccess}
           onFailure={onFailure}
-          cookiePolicy={"signle_host_origin"}
+          cookiePolicy={"single_host_origin"}
           render={(props) => (
             <Button
               {...props}

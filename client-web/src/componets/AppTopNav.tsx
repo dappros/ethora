@@ -25,6 +25,7 @@ import { useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
+import { Divider } from "@mui/material";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -37,7 +38,10 @@ const menuActionsSection = {
     { name: "Sign out", id: "logout" },
   ],
 };
-
+const idActionsSection = {
+  name: "Id",
+  items: [{ name: "Sign out", id: "logout" }],
+};
 const AppTopNav = () => {
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
@@ -62,6 +66,7 @@ const AppTopNav = () => {
     },
     menuAccountSection,
     menuActionsSection,
+    idActionsSection,
   ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
   const [showMainBalanceNotification, setShowMainBalanceNotification] =
@@ -226,16 +231,17 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {menuItems.map((el) => {
-                console.log(el.name);
+              {menuItems.map((el, i) => {
                 return (
                   <Box key={el.name}>
+                    {i !== 0 && <Divider />}
+
                     <Typography
                       sx={{
-                        marginLeft: "5px",
-                        fontWeight: "bold",
+                        marginLeft: "7px",
+                        fontWeight: "500",
                         textTransform: "uppercase",
-                        marginY: "5px",
+                        marginY: "7px",
                       }}
                     >
                       {el.name}
