@@ -114,7 +114,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             chatStore.xmpp,
           );
         });
-        if (params.metaDirection) {
+        if (params?.metaDirection) {
           const metaRoom = {
             name: chatName,
             description: chatDescription,
@@ -138,7 +138,9 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           await asyncStorageSetItem('metaRooms', metaRoomsList);
         }
 
-        navigation.navigate(ROUTES.ROOMSLIST);
+        navigation.navigate(ROUTES.CHAT, {
+          chatJid: roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        });
       }
     });
   };
