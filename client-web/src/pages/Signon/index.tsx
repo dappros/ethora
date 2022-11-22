@@ -14,8 +14,6 @@ import { useStoreState } from "../../store";
 import { useQuery } from "../../utils";
 import { EmailModal } from "./EmailModal";
 import { MetamaskModal } from "./MetamaskModal";
-import OwnerLogin from "./OwnerLogin";
-import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
@@ -30,8 +28,6 @@ export default function Signon() {
   const [openEmail, setOpenEmail] = useState(false);
   const [openUsername, setOpenUsername] = useState(false);
   const [showMetamask, setShowMetamask] = useState(false);
-  const [ownerRegistration, setOwnerRegistration] = useState(false);
-  const [ownerLogin, setOwnerLogin] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -213,16 +209,6 @@ export default function Signon() {
           justifyContent: "center",
         }}
       >
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          onClick={() => onMetamaskLogin()}
-          startIcon={<DiamondIcon />}
-          style={{ backgroundColor: "#d9711a" }}
-        >
-          Continue with Metamask
-        </Button>
         <FacebookLogin
           appId="1172938123281314"
           autoLoad={false}
@@ -232,25 +218,28 @@ export default function Signon() {
           icon={<FacebookIcon style={{ marginRight: 10 }} />}
           buttonStyle={{
             display: "flex",
-            justifyContent: "space-around",
+            justifyContent: "flex-start",
             alignItems: "center",
-            fontSize: 14,
+            fontSize: 16,
             padding: 5,
             borderRadius: 4,
             width: "100%",
             margin: "3px 0",
             fontFamily: "Roboto,Helvetica,Arial,sans-serif",
             fontWeight: 500,
+            textTransform: "none",
+            paddingLeft: 20,
+            
           }}
-          textButton={"Continue with facebook"}
+          textButton={"Sign In with facebook"}
           containerStyle={{ padding: 0, width: "100%" }}
         />
         <GoogleLogin
           clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
-          buttonText="Continue with Google"
+          buttonText="Sign In with Google"
           onSuccess={onGoogleClickSuccess}
           onFailure={onFailure}
-          cookiePolicy={"single_host_origin"}
+          cookiePolicy={"signle_host_origin"}
           render={(props) => (
             <Button
               {...props}
@@ -258,9 +247,14 @@ export default function Signon() {
               fullWidth
               variant="contained"
               startIcon={<GoogleIcon />}
-              style={{ backgroundColor: "white", color: "rgba(0,0,0,0.6)" }}
+              style={{
+                backgroundColor: "white",
+                color: "rgba(0,0,0,0.6)",
+                textTransform: "none",
+                fontSize: '16px'
+              }}
             >
-              Continue with Google
+              Sign In with Google
             </Button>
           )}
         />
@@ -268,47 +262,25 @@ export default function Signon() {
           sx={{ margin: 1 }}
           fullWidth
           variant="contained"
-          onClick={() => setOpenEmail(true)}
+          onClick={() => onMetamaskLogin()}
+          startIcon={<DiamondIcon />}
+          style={{ backgroundColor: "#d9711a", textTransform: "none" ,fontSize: '16px'}}
         >
-          Continue with e-mail
+          Sign In with Metamask
         </Button>
         <Button
           sx={{ margin: 1 }}
           fullWidth
-          variant="contained"
-          onClick={() => setOpenUsername(true)}
+          variant="text"
+          onClick={() => history.push("/regularSignIn")}
         >
-          Continue with username
-        </Button>
-
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          color="success"
-          onClick={() => setOwnerRegistration(true)}
-        >
-          Owner Registration
-        </Button>
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          color="success"
-          onClick={() => setOwnerLogin(true)}
-        >
-          Owner Login
+          Login with credentials
         </Button>
       </Box>
 
       <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />
       <EmailModal open={openEmail} setOpen={setOpenEmail} />
       <UsernameModal open={openUsername} setOpen={setOpenUsername} />
-      <OwnerRegistration
-        open={ownerRegistration}
-        setOpen={setOwnerRegistration}
-      />
-      <OwnerLogin open={ownerLogin} setOpen={setOwnerLogin} />
     </Container>
   );
 }
