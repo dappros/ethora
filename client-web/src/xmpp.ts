@@ -3,6 +3,7 @@ import { Client } from "@xmpp/client";
 import { Element } from "ltx";
 import { TMessageHistory, useStoreState } from "./store";
 import { sendBrowserNotification } from "./utils";
+import { history } from "./utils/history";
 
 let lastMsgId: string = "";
 let temporaryMessages: TMessageHistory[] = [];
@@ -117,7 +118,9 @@ const onMessageHistory = async (stanza: Element) => {
       !isGettingFirstMessages
     ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-      sendBrowserNotification(msg.body, () => {});
+      sendBrowserNotification(msg.body, () => {
+        history.push("/chat/" + msg.roomJID.split("@")[0]);
+      });
     }
   }
 };
