@@ -16,7 +16,7 @@ export const QrModal: React.FC<IQrModal> = ({ open, link, onClose }) => {
       <Box sx={{ padding: "20px" }}>
         <QRCode
           size={256}
-          style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+          style={{ height: '60vh', maxWidth: "100%", width: "100%" }}
           value={link}
           viewBox={`0 0 256 256`}
         />
