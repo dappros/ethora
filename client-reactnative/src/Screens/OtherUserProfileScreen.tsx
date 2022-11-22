@@ -153,7 +153,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
   const linkToken = route.params?.linkToken;
   const anotherUserTransaction = walletStore.anotherUserTransaction;
-  const transactionCount = anotherUserTransaction.length;
+  const transactionCount = walletStore.total;
 
   const underlineOffset = useSharedValue(0);
 

@@ -22,29 +22,29 @@ export function usernameToWallet(str: string) {
 
 const onMessage = async (stanza: Element) => {
   if (stanza.is("message") && stanza.attrs.id === "sendMessage") {
-      const body = stanza.getChild("body");
-      const data = stanza.getChild("data");
-      if (!data || !body) {
-        return;
-      }
-
-      if (!data.attrs.senderFirstName || !data.attrs.senderLastName) {
-        return;
-      }
-
-      const msg = {
-        body: body.getText(),
-        firsName: data.attrs.senderFirstName,
-        lastName: data.attrs.senderLastName,
-        wallet: data.attrs.senderWalletAddress,
-        from: stanza.attrs.from,
-        room: stanza.attrs.from.toString().split("/")[0],
-      };
-
-      console.log("+++++ ", msg);
-
-      useStoreState.getState().setNewMessage(msg);
+    const body = stanza.getChild("body");
+    const data = stanza.getChild("data");
+    if (!data || !body) {
+      return;
     }
+
+    if (!data.attrs.senderFirstName || !data.attrs.senderLastName) {
+      return;
+    }
+
+    const msg = {
+      body: body.getText(),
+      firsName: data.attrs.senderFirstName,
+      lastName: data.attrs.senderLastName,
+      wallet: data.attrs.senderWalletAddress,
+      from: stanza.attrs.from,
+      room: stanza.attrs.from.toString().split("/")[0],
+    };
+
+    console.log("+++++ ", msg);
+
+    useStoreState.getState().setNewMessage(msg);
+  }
 };
 
 const onMessageHistory = async (stanza: Element) => {
@@ -108,7 +108,6 @@ const onMessageHistory = async (stanza: Element) => {
     if (!isGettingMessages) {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
-
     }
 
     const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
@@ -118,7 +117,7 @@ const onMessageHistory = async (stanza: Element) => {
       !isGettingFirstMessages
     ) {
       useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-      sendBrowserNotification(msg.body, () => {})
+      sendBrowserNotification(msg.body, () => {});
     }
   }
 };
@@ -166,10 +165,12 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
       const currentChatRooms = useStoreState.getState().userChatRooms;
-
       stanza.getChild("query")?.children.forEach((result: any) => {
-        if (result?.attrs.name && currentChatRooms.filter(el => el.jid === result?.attrs.jid).length === 0) {
-
+        if (
+          result?.attrs.name &&
+          currentChatRooms.filter((el) => el.jid === result?.attrs.jid)
+            .length === 0
+        ) {
           roomJID = result.attrs.jid;
           xmpp.presenceInRoom(roomJID);
 
@@ -239,6 +240,8 @@ const onComposing = (stanza: Element) => {
 };
 
 const getListOfRooms = (xmpp: any) => {
+  xmpp.client.send(xml("presence"));
+  xmpp.getArchive(xmpp.client?.jid?.toString());
   defaultRooms.map((roomJID) => {
     xmpp.presenceInRoom(roomJID);
   });
@@ -246,16 +249,30 @@ const getListOfRooms = (xmpp: any) => {
   useStoreState.getState().clearMessageHistory();
 };
 
-const onInvite = (stanza: Element) => {
-    if(stanza.getChild('x')){
-      if(stanza.getChild('x').getChild('invite')){
-        console.log('invite work', (stanza.getChild('x')))
-      }else{
+const onInvite = (stanza: Element, xmpp: any) => {
+  if (stanza.is("message")) {
+    const isArchiveInvite = stanza
+      .getChild("result")
+      ?.getChild("forwarded")
+      ?.getChild("message")
+      ?.getChild("x")
+      ?.getChild("invite");
+    if (stanza.getChild("x")?.getChild("invite") || isArchiveInvite) {
+      let jid = stanza.attrs.from;
+      if (isArchiveInvite) {
+        jid = stanza
+          .getChild("result")
+          ?.getChild("forwarded")
+          ?.getChild("message").attrs.from;
       }
-    }else{
+      xmpp.subsribe(jid);
+      xmpp.presenceInRoom(jid);
+      xmpp.getRooms();
+    } else {
     }
-
-}
+  } else {
+  }
+};
 
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
@@ -267,10 +284,14 @@ class XmppClass {
   public client!: Client;
 
   init(walletAddress: string, password: string) {
-    console.log("init ", walletAddress, password);
     if (!password) {
       return;
     }
+
+    if (this.client) {
+      return;
+    }
+
     this.client = xmpp.client({
       service: "wss://dev.dxmpp.com:5443/ws",
       username: walletToUsername(walletAddress),
@@ -286,13 +307,20 @@ class XmppClass {
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
-    this.client.on("stanza", (stanza) => onInvite(stanza));
+    this.client.on("stanza", (stanza) => onInvite(stanza, this));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
-      this.client.stop();
-      alert("xmmpp error, terminating collection");
+      this.stop();
+      console.log("xmmpp error, terminating collection");
     });
+  }
+
+  stop() {
+    if (this.client) {
+      this.client.stop();
+      return;
+    }
   }
 
   subsribe(address: string) {
@@ -543,194 +571,211 @@ class XmppClass {
   }
 
   sendSystemMessage(
-      roomJID: string,
-      firstName: string,
-      lastName: string,
-      walletAddress: string,
-      userMessage: string,
-      amount: number,
-      receiverMessageId: number
+    roomJID: string,
+    firstName: string,
+    lastName: string,
+    walletAddress: string,
+    userMessage: string,
+    amount: number,
+    receiverMessageId: number
   ) {
     const message = xml(
-        "message",
-        {
-          to: roomJID,
-          type: "groupchat",
-          id: "sendMessage",
-        },
-        xml("data", {
-          xmlns: "wss://dev.dxmpp.com:5443/ws",
-          senderFirstName: firstName,
-          senderLastName: lastName,
-          senderJID: this.client.jid?.toString(),
-          senderWalletAddress: walletAddress,
-          roomJid: roomJID,
-          isSystemMessage: true,
-          tokenAmount: amount,
-          receiverMessageId: receiverMessageId
-        }),
-        xml("body", {}, userMessage)
+      "message",
+      {
+        to: roomJID,
+        type: "groupchat",
+        id: "sendMessage",
+      },
+      xml("data", {
+        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        senderFirstName: firstName,
+        senderLastName: lastName,
+        senderJID: this.client.jid?.toString(),
+        senderWalletAddress: walletAddress,
+        roomJid: roomJID,
+        isSystemMessage: true,
+        tokenAmount: amount,
+        receiverMessageId: receiverMessageId,
+      }),
+      xml("body", {}, userMessage)
     );
     this.client.send(message);
   }
 
-  sendMediaMessageStanza (
-      roomJID: string,
-      data: any
-  ) {
+  sendMediaMessageStanza(roomJID: string, data: any) {
     const message = xml(
-        'message',
-        {
-          id: "sendMessage",
-          type: "groupchat",
-          from: this.client.jid?.toString(),
-          to: roomJID,
-        },
-        xml('body', {}, 'media'),
-        xml('store', {xmlns: 'urn:xmpp:hints'}),
-        xml('data', {
-          xmlns: "wss://dev.dxmpp.com:5443/ws",
-          senderJID: this.client.jid?.toString(),
-          senderFirstName: data.firstName,
-          senderLastName: data.lastName,
-          senderWalletAddress: data.walletAddress,
-          isSystemMessage: false,
-          tokenAmount: '0',
-          receiverMessageId: '0',
-          mucname: data.chatName,
-          photoURL: data.userAvatar ? data.userAvatar : '',
-          isMediafile: true,
-          createdAt: data.createdAt,
-          expiresAt: data.expiresAt,
-          fileName: data.fileName,
-          isVisible: data.isVisible,
-          location: data.location,
-          locationPreview: data.locationPreview,
-          mimetype: data.mimetype,
-          originalName: data.originalName,
-          ownerKey: data.ownerKey,
-          size: data.size,
-          duration: data?.duration,
-          updatedAt: data.updatedAt,
-          userId: data.userId,
-          waveForm: data.waveForm,
-          attachmentId: data?.attachmentId,
-          wrappable: data?.wrappable,
-          nftId: data?.nftId,
-          isReply: data?.isReply,
-          mainMessageText: data?.mainMessageText,
-          mainMessageId: data?.mainMessageId,
-          mainMessageUserName: data?.mainMessageUserName,
-          mainMessageCreatedAt: data?.mainMessageCreatedAt,
-          mainMessageFileName: data?.mainMessageFileName,
-          mainMessageImageLocation: data?.mainMessageImageLocation,
-          mainMessageImagePreview: data?.mainMessageImagePreview,
-          mainMessageMimeType: data?.mainMessageMimeType,
-          mainMessageOriginalName: data?.mainMessageOriginalName,
-          mainMessageSize: data?.mainMessageSize,
-          mainMessageDuration: data?.mainMessageDuration,
-          mainMessageWaveForm: data?.mainMessageWaveForm,
-          mainMessageAttachmentId: data?.mainMessageAttachmentId,
-          mainMessageWrappable: data?.mainMessageWrappable,
-          mainMessageNftId: data?.mainMessageNftId,
-          mainMessageNftActionType: data?.mainMessageNftActionType,
-          mainMessageContractAddress: data?.mainMessageContractAddress,
-          mainMessageRoomJid: data?.mainMessageRoomJid,
-          showInChannel: data?.showInChannel,
-        }),
+      "message",
+      {
+        id: "sendMessage",
+        type: "groupchat",
+        from: this.client.jid?.toString(),
+        to: roomJID,
+      },
+      xml("body", {}, "media"),
+      xml("store", { xmlns: "urn:xmpp:hints" }),
+      xml("data", {
+        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        senderJID: this.client.jid?.toString(),
+        senderFirstName: data.firstName,
+        senderLastName: data.lastName,
+        senderWalletAddress: data.walletAddress,
+        isSystemMessage: false,
+        tokenAmount: "0",
+        receiverMessageId: "0",
+        mucname: data.chatName,
+        photoURL: data.userAvatar ? data.userAvatar : "",
+        isMediafile: true,
+        createdAt: data.createdAt,
+        expiresAt: data.expiresAt,
+        fileName: data.fileName,
+        isVisible: data.isVisible,
+        location: data.location,
+        locationPreview: data.locationPreview,
+        mimetype: data.mimetype,
+        originalName: data.originalName,
+        ownerKey: data.ownerKey,
+        size: data.size,
+        duration: data?.duration,
+        updatedAt: data.updatedAt,
+        userId: data.userId,
+        waveForm: data.waveForm,
+        attachmentId: data?.attachmentId,
+        wrappable: data?.wrappable,
+        nftId: data?.nftId,
+        isReply: data?.isReply,
+        mainMessageText: data?.mainMessageText,
+        mainMessageId: data?.mainMessageId,
+        mainMessageUserName: data?.mainMessageUserName,
+        mainMessageCreatedAt: data?.mainMessageCreatedAt,
+        mainMessageFileName: data?.mainMessageFileName,
+        mainMessageImageLocation: data?.mainMessageImageLocation,
+        mainMessageImagePreview: data?.mainMessageImagePreview,
+        mainMessageMimeType: data?.mainMessageMimeType,
+        mainMessageOriginalName: data?.mainMessageOriginalName,
+        mainMessageSize: data?.mainMessageSize,
+        mainMessageDuration: data?.mainMessageDuration,
+        mainMessageWaveForm: data?.mainMessageWaveForm,
+        mainMessageAttachmentId: data?.mainMessageAttachmentId,
+        mainMessageWrappable: data?.mainMessageWrappable,
+        mainMessageNftId: data?.mainMessageNftId,
+        mainMessageNftActionType: data?.mainMessageNftActionType,
+        mainMessageContractAddress: data?.mainMessageContractAddress,
+        mainMessageRoomJid: data?.mainMessageRoomJid,
+        showInChannel: data?.showInChannel,
+      })
     );
 
     this.client.send(message);
-  };
+  }
 
-  createNewRoom (to: string) {
+  createNewRoom(to: string) {
     const message = xml(
-        'presence',
-        {
-          id: 'createRoom',
-          from: this.client.jid?.toString(),
-          to: to + '@conference.dev.dxmpp.com' + '/' + this.client.jid?.toString(),
-        },
-        xml('x', 'http://jabber.org/protocol/muc'),
+      "presence",
+      {
+        id: "createRoom",
+        from: this.client.jid?.toString(),
+        to:
+          to +
+          "@conference.dev.dxmpp.com" +
+          "/" +
+          this.client.jid?.toString().split("@")[0],
+      },
+      xml("x", "http://jabber.org/protocol/muc")
+    );
+    console.log(
+      "CREATE ",
+      to +
+        "@conference.dev.dxmpp.com" +
+        "/" +
+        this.client.jid?.toString().split("@")[0]
     );
     this.client.send(message);
-  };
+  }
 
-  roomConfig (to: string, data: {roomName: string, roomDescription?: string}) {
+  roomConfig(to: string, data: { roomName: string; roomDescription?: string }) {
     const message = xml(
-        'iq',
-        {
-          from: this.client.jid?.toString(),
-          id: 'roomConfig',
-          to: to + '@conference.dev.dxmpp.com',
-          type: 'set',
-        },
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: "roomConfig",
+        to: to + "@conference.dev.dxmpp.com",
+        type: "set",
+      },
+      xml(
+        "query",
+        { xmlns: "http://jabber.org/protocol/muc#owner" },
         xml(
-            'query',
-            {xmlns: 'http://jabber.org/protocol/muc#owner'},
-            xml(
-                'x',
-                {xmlns: 'jabber:x:data', type: 'submit'},
-                xml(
-                    'field',
-                    {var: 'FORM_TYPE'},
-                    xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
-                ),
-                xml(
-                    'field',
-                    {var: 'muc#roomconfig_roomname'},
-                    xml('value', {}, data.roomName),
-                ),
-                xml(
-                    'field',
-                    {var: 'muc#roomconfig_roomdesc'},
-                    xml('value', {}, data.roomDescription),
-                ),
-            ),
-        ),
+          "x",
+          { xmlns: "jabber:x:data", type: "submit" },
+          xml(
+            "field",
+            { var: "FORM_TYPE" },
+            xml("value", {}, "http://jabber.org/protocol/muc#roomconfig")
+          ),
+          xml(
+            "field",
+            { var: "muc#roomconfig_roomname" },
+            xml("value", {}, data.roomName)
+          ),
+          xml(
+            "field",
+            { var: "muc#roomconfig_roomdesc" },
+            xml("value", {}, data.roomDescription)
+          )
+        )
+      )
     );
 
     this.client.send(message);
+  }
+
+  getArchive = (userJID: string) => {
+    let message = xml(
+      "iq",
+      { type: "set", id: userJID },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2", queryid: "userArchive" },
+        xml("set", { xmlns: "http://jabber.org/protocol/rsm" }, xml("before"))
+      )
+    );
+    this.client.send(message);
   };
 
-  sendInvite (
-      from: string,
-      to: string,
-      otherUserId: string,
-  ) {
+  sendInvite(from: string, to: string, otherUserId: string) {
     const stanza = xml(
-        'message',
-        {
-          from: from + '@' + 'dev.dxmpp.com',
-          to: to
-        },
+      "message",
+      {
+        from: this.client.jid?.toString().split("/")[0],
+        to: to,
+      },
+      xml(
+        "x",
+        "http://jabber.org/protocol/muc#user",
         xml(
-            'x',
-            'http://jabber.org/protocol/muc#user',
-            xml(
-                'invite',
-                {to: otherUserId + '@' + 'dev.dxmpp.com'},
-                xml('reason', {}, 'Hey, this is the place with amazing cookies!'),
-            ),
-        ),
+          "invite",
+          { to: otherUserId },
+          xml("reason", {}, "Hey, this is the place with amazing cookies!")
+        )
+      )
     );
     this.client.send(stanza);
-  };
+  }
 
-  setOwner (to) {
+  setOwner(to) {
     const message = xml(
-        'iq',
-        {
-          to: to + '@conference.dev.dxmpp.com',
-          from: this.client.jid?.toString(),
-          id: 'setOwner',
-          type: 'get',
-        },
-        xml('query', {xmlns: 'http://jabber.org/protocol/muc#owner'}),
+      "iq",
+      {
+        to: to + "@conference.dev.dxmpp.com",
+        from: this.client.jid?.toString(),
+        id: "setOwner",
+        type: "get",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
     );
 
     this.client.send(message);
-  };
+  }
 
   getRoomInfo = (roomJID: string) => {
     const message = xml(

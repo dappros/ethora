@@ -313,7 +313,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* {userAclNetworkKeys.map((row) => {
+            {userAclNetworkKeys.map((row) => {
               const network = userAcl!.result.network.netStats;
               const myNetworkAcl = myAcl!.result.network.netStats;
 
@@ -327,7 +327,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
                   key={row}
                 />
               );
-            })} */}
+            })}
           </TableBody>
         </Table>
       </TableContainer>

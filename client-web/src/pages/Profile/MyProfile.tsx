@@ -11,7 +11,17 @@ import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
+import DocumentsCreateModal from "./DocumentsCreateModal";
+import NewItemModal from "./NewItemModal";
+import { getToken } from "../../firebase";
 
+const styles = {
+  craeteNewLink: {
+    textDecoration: "none",
+    color: "inherit",
+    fontSize: "14px",
+  },
+};
 
 export function MyProfile() {
   const [loading, setLoading] = useState(false);
@@ -20,14 +30,39 @@ export function MyProfile() {
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
+  const [showCreateDocument, setShowCreateDocument] = useState(false);
+  const [showCreateNewItem, setShowCreateNewItem] = useState(false);
 
   useEffect(() => {
+    console.log("MyProfile init");
     setLoading(true);
     getTransactions(user.walletAddress)
       .then((result) => {
         setTransactions(result.data);
       })
       .finally(() => setLoading(false));
+
+    if (Notification.permission === "denied") {
+      alert("Please enable notifications for this app in your browser");
+    } else {
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            console.log("geting token");
+            getToken().then((token) => {
+              console.log("my fb token ", token);
+            });
+            return;
+          }
+        });
+      } else {
+        console.log("geting token");
+        getToken().then((token) => {
+          console.log("my fb token ", token);
+        });
+        return;
+      }
+    }
   }, []);
 
   if (loading) return <FullPageSpinner />;
@@ -36,16 +71,58 @@ export function MyProfile() {
       <Box sx={{ margin: "auto", width: "200px" }}>
         <UserCard />
       </Box>
-      <Typography variant="h6" style={{ margin: "16px" }}>
-        Items
+      <Typography
+        variant="h6"
+        style={{
+          margin: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span>Items</span>
+        <a
+          href="/"
+          style={styles.craeteNewLink}
+          onClick={(e) => {
+            e.preventDefault();
+            setShowCreateNewItem(true);
+          }}
+        >
+          Create New Item
+        </a>
       </Typography>
-      <ItemsTable balance={items.filter(filterNftBalances)} walletAddress={user.walletAddress} />
+      <ItemsTable
+        balance={items.filter(filterNftBalances)}
+        walletAddress={user.walletAddress}
+      />
       {!!documents.length && (
         <>
-          <Typography variant="h6" style={{ margin: "16px" }}>
-            Documents
+          <Typography
+            variant="h6"
+            style={{
+              margin: "16px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span>Documents</span>
+            <a
+              href="/"
+              style={styles.craeteNewLink}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowCreateDocument(true);
+              }}
+            >
+              Create New Document
+            </a>
           </Typography>
-          <DocumentsTable walletAddress={user.walletAddress} documents={documents} />
+          <DocumentsTable
+            walletAddress={user.walletAddress}
+            documents={documents}
+          />
         </>
       )}
 
@@ -56,6 +133,18 @@ export function MyProfile() {
           </Typography>
           <Transactions transactions={transactions.items} />
         </Box>
+      )}
+
+      {showCreateDocument && (
+        <DocumentsCreateModal
+          open={showCreateDocument}
+          setOpen={setShowCreateDocument}
+          setDocuments={() => {}}
+        />
+      )}
+
+      {showCreateNewItem && (
+        <NewItemModal open={showCreateNewItem} setOpen={setShowCreateNewItem} />
       )}
     </Container>
   );

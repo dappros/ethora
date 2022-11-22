@@ -2,8 +2,6 @@ import * as React from "react";
 import Plot from "react-plotly.js";
 import * as http from "../../http";
 
-import "./UsersGraph.scss";
-
 type Props = {
   apps: any[];
   currentAppIndex: number;
@@ -26,10 +24,6 @@ export default function UsersGraph({ apps, currentAppIndex }: Props) {
   });
 
   React.useEffect(() => {
-    console.log(
-      "apps[currentAppIndex].appToken ",
-      apps[currentAppIndex].appToken
-    );
     http
       .httpWithToken(apps[currentAppIndex].appToken)
       .get("users/count")
@@ -53,13 +47,11 @@ export default function UsersGraph({ apps, currentAppIndex }: Props) {
             data: [data],
           };
         });
-
-        console.log(response.data);
       });
   }, [apps, currentAppIndex]);
 
   return (
-    <div className="users-graph">
+    <div className="dashboard-graph" style={{ marginRight: "10px" }}>
       <a className="title" onClick={(e) => e.preventDefault()} href="/">
         Users {userCount}
       </a>

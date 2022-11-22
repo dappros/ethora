@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Web3ReactProvider } from "@web3-react/core";
 import { providers } from "ethers";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -36,6 +37,8 @@ if (process.env.REACT_APP_DISABLE_STRICT) {
     </Web3ReactProvider>
   );
 }
+
+serviceWorkerRegistration.register();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

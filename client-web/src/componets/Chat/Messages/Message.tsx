@@ -1,22 +1,18 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Message as KitMessage, MessageModel, Button, MessageSeparator } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
 import {TMessageHistory, useStoreState} from "../../../store";
 import {useHistory} from "react-router";
 import {
-  CircularProgress,
+  Card, CardActionArea, CardMedia,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle, IconButton, Menu, MenuItem, TextField, useMediaQuery,
-  useTheme
+  IconButton, Menu, MenuItem, TextField,
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Box from "@mui/material/Box";
-import {getPublicProfile, transferCoin} from "../../../http";
+import {transferCoin} from "../../../http";
 import xmpp from "../../../xmpp";
-import {TProfile} from "../../../pages/Profile/types";
 import {createPrivateChat} from "../../../helpers/chat/createPrivateChat";
 
 export interface IMessage {
@@ -38,7 +34,7 @@ export interface IButtons {
   value: string
 }
 
-type IDialog = "transfer" | "direct" | "ban" | "error";
+type IDialog = "transfer" | "image" | "ban" | "error";
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -52,8 +48,6 @@ export const Message: React.FC<IMessage> = ({
   const messageJid = message.data.senderJID;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [dialogMenuType, setDialogMenuType] = useState<IDialog>("transfer");
@@ -65,7 +59,6 @@ export const Message: React.FC<IMessage> = ({
   const [coinAmount, setCoinAmount] = useState("");
   const balance = useStoreState((store) => store.balance);
   const coinData = balance.filter(el => !el.tokenType && el.contractAddress.length > 10)
-  const [profile, setProfile] = useState<TProfile>();
   const user = useStoreState((store) => store.user);
   const loaderArchive = useStoreState((store) => store.loaderArchive);
 
@@ -104,26 +97,27 @@ export const Message: React.FC<IMessage> = ({
         message.data.senderWalletAddress,
         user.firstName,
         message.data.senderFirstName,
-        '@conference.dev.dxmpp.com').then(result => {
-          console.log(result);
-
+        '@conference.dev.dxmpp.com',
+        message.data.senderJID
+    ).then(result => {
           xmpp.getRooms();
           if(!loaderArchive){
             chooseDirectRoom(result.roomJid)
           }
-
     }).catch(error => {
       console.log("openPrivateRoom Error: ", error);
     })
+  }
+
+  const fullViewImage = () => {
+    setOpenDialog(true);
+    setDialogMenuType("image");
   }
 
   useEffect(() => {
     if(message.data.quickReplies){
       setButtons(JSON.parse(message.data.quickReplies));
     }
-    getPublicProfile(user.walletAddress).then((result) => {
-      setProfile(result.data.result);
-    });
   }, [])
 
   return (
@@ -188,7 +182,17 @@ export const Message: React.FC<IMessage> = ({
         )}
 
         {message.data.isMediafile && message.data.mimetype.split("/")[0] === "image"?
-           <KitMessage.ImageContent src={message.data.location} alt={message.data.originalName} width={200} />
+            <Card sx={{ maxWidth: 200 }}>
+              <CardActionArea onClick={fullViewImage}>
+                <CardMedia
+                    style={{height: 150, objectFit: "cover", objectPosition: "left"}}
+                    component="img"
+                    height="150"
+                    image={message.data.location}
+                    alt={message.data.originalName}
+                />
+              </CardActionArea>
+            </Card>
             :null
         }
 
@@ -259,9 +263,9 @@ export const Message: React.FC<IMessage> = ({
     </Menu>
 
     <Dialog
-        fullScreen={fullScreen}
         open={openDialog}
         onClose={() => setOpenDialog(true)}
+        maxWidth={"xl"}
         aria-labelledby="responsive-dialog-title"
     >
       <DialogContent>
@@ -280,6 +284,14 @@ export const Message: React.FC<IMessage> = ({
             </div>
         :null
         }
+
+        {dialogMenuType === "image" ?
+            <div>
+              <img src={message.data.location} alt={message.data.originalName} style={{maxWidth: "100%"}} />
+            </div>
+        :null
+        }
+
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpenDialog(false)} autoFocus>

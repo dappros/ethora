@@ -29,6 +29,7 @@ import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
 import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
 import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
 import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
+import UploadDocumentsScreen from '../Screens/UploadDocumentsScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -238,6 +239,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.MINT}
         component={MintScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+        <HomeStack.Screen
+        name={ROUTES.UPLOADDOCUMENTSSCREEN}
+        component={UploadDocumentsScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

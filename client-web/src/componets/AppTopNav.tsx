@@ -12,83 +12,147 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { useHistory } from "react-router-dom";
-import { getBalance } from "../http";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
+import { useSubscription } from "@apollo/client";
+import Snackbar from "@mui/material/Snackbar";
+import Web3 from "web3";
 
-import { useStoreState } from "../store";
-import coinImg from "../assets/images/coin.png";
+import { getBalance } from "../http";
 import xmpp from "../xmpp";
+import { useStoreState } from "../store";
 
-const pages = ["Products", "Pricing", "Blog"];
+import coinImg from "../assets/images/coin.png";
+import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
-
-const initMenuItems = [
-  { name: "Chat", id: "chat-in-room" },
-  { name: "Explorer", id: "explorer" },
-];
+const menuActionsSection = {
+  name: "Actions",
+  items: [
+    { name: "Mint NFT", id: "/mint" },
+    { name: "Upload Document", id: "/documents/upload" },
+    { name: "Sign out", id: "logout" },
+  ],
+};
 
 const AppTopNav = () => {
-  const { active, deactivate } = useWeb3React();
+  const currentUntrackedChatRoom = useStoreState(
+    (store) => store.currentUntrackedChatRoom
+  );
+  const chatUrl = currentUntrackedChatRoom
+    ? String(currentUntrackedChatRoom.split("@")[0])
+    : "none";
   const user = useStoreState((state) => state.user);
-  const balances = useStoreState((state) => state.balance);
-  const clearUser = useStoreState((state) => state.clearUser);
-  const setBalance = useStoreState((state) => state.setBalance);
-  const ACL = useStoreState((state) => state.ACL);
-  const history = useHistory();
+
+  const menuAccountSection = {
+    name: "Account",
+    items: [
+      { name: "My Profile", id: "/profile/" + user.walletAddress },
+      { name: "Explorer", id: "/explorer" },
+      { name: "Transactions", id: "/explorer/address/" + user.walletAddress },
+    ],
+  };
+  const initMenuItems = [
+    {
+      name: "",
+      items: [{ name: "Chat", id: "/chat/" + chatUrl }],
+    },
+    menuAccountSection,
+    menuActionsSection,
+  ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
+  const [showMainBalanceNotification, setShowMainBalanceNotification] =
+    useState(false);
 
-  const mainCoinBalance = balances.find(
-    (el) => el.tokenName === "Dappros Platform Token"
-  );
-
-  useEffect(() => {
-    console.log("on mount ", ACL);
-    getBalance(user.walletAddress).then((resp) => {
-      setBalance(resp.data.balance);
-    });
-    xmpp.init(user.walletAddress, user?.xmppPassword as string);
-
-    if (ACL?.result?.application?.appUsers?.read) {
-      setMenuItems((items) => {
-        return [...items, { name: "Users", id: "users" }];
-      });
-    }
-  }, []);
-
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  const history = useHistory();
+  const { active, deactivate } = useWeb3React();
+  const balance = useStoreState((state) => state.balance);
+  const mainCoinBalance = useStoreState((state) =>
+    state.balance.find((el) => el.tokenName === "Dappros Platform Token")
+  );
+  const clearUser = useStoreState((state) => state.clearUser);
+  const setBalance = useStoreState((state) => state.setBalance);
+  const ACL = useStoreState((state) => state.ACL);
+  const { data, loading } = useSubscription(TRRANSFER_TO_SUBSCRIPTION, {
+    variables: {
+      walletAddress: user.walletAddress,
+      contractAddress: mainCoinBalance ? mainCoinBalance.contractAddress : "",
+    },
+    skip: mainCoinBalance ? false : true,
+  });
+
+  useEffect(() => {
+    getBalance(user.walletAddress).then((resp) => {
+      setBalance(resp.data.balance);
+    });
+
+    if (ACL?.result?.application?.appUsers?.read) {
+      setMenuItems((items) => {
+        return [
+          ...items,
+          { name: "Users", items: [{ name: "Users", id: "/users" }] },
+        ];
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      const ethersAmounnt = Web3.utils.fromWei(data.transferTo.amount);
+      const newMainBalance = {
+        ...mainCoinBalance,
+        balance: Number(mainCoinBalance.balance) + Number(ethersAmounnt),
+      };
+
+      const newBalance = balance.map((el) => {
+        if (el.tokenName === "Dappros Platform Token") {
+          return newMainBalance;
+        }
+
+        return el;
+      });
+
+      setBalance(newBalance);
+      setShowMainBalanceNotification(true);
+      setTimeout(() => {
+        setShowMainBalanceNotification(false);
+      }, 4000);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    xmpp.init(user.walletAddress, user?.xmppPassword as string);
+  }, []);
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const onMenuItemClick = (id: string) => {
-    history.push("/" + id);
+  const onMenuItemClick = (id: string, type: string) => {
+    if (id === "logout") {
+      onLogout();
+      handleCloseUserMenu();
+      return;
+    }
+
+    history.push(id);
+
     handleCloseUserMenu();
   };
 
   const onLogout = () => {
     clearUser();
-    xmpp.client.stop();
+    xmpp.stop();
     if (active) {
       deactivate();
     }
@@ -137,7 +201,7 @@ const AppTopNav = () => {
                   alt=""
                   style={{ width: "20px", height: "20px" }}
                   src={coinImg}
-                ></img>
+                />
                 {mainCoinBalance?.balance}
               </ButtonUnstyled>
             ) : null}
@@ -162,23 +226,49 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {menuItems.map((item) => {
+              {menuItems.map((el) => {
+                console.log(el.name);
                 return (
-                  <MenuItem
-                    onClick={() => onMenuItemClick(item.id)}
-                    key={item.id}
-                  >
-                    <Typography textAlign="center">{item.name}</Typography>
-                  </MenuItem>
+                  <Box key={el.name}>
+                    <Typography
+                      sx={{
+                        marginLeft: "5px",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        marginY: "5px",
+                      }}
+                    >
+                      {el.name}
+                    </Typography>
+                    {el.items.map((item) => {
+                      return (
+                        <MenuItem
+                          onClick={() => onMenuItemClick(item.id, el.name)}
+                          key={item.id + item.name}
+                        >
+                          <Typography textAlign="center">
+                            {item.name}
+                          </Typography>
+                        </MenuItem>
+                      );
+                    })}
+                  </Box>
                 );
               })}
-              <MenuItem onClick={onLogout}>
-                <Typography textAlign="center">Logout</Typography>
-              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
       </Container>
+      {showMainBalanceNotification && (
+        <Snackbar
+          open={true}
+          message={`You get ${Web3.utils.fromWei(
+            data.transferTo.amount
+          )} coins from ${data.transferTo.senderFirstName} ${
+            data.transferTo.senderLastName
+          }`}
+        />
+      )}
     </AppBar>
   );
 };

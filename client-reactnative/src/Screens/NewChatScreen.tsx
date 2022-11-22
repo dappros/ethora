@@ -177,7 +177,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           </View>
           <Input
             _input={{
-              maxLength: 20,
+              maxLength: 50,
             }}
             onChangeText={chatName => setChatName(chatName)}
             placeholder="Chat name"

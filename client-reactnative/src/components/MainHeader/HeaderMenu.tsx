@@ -25,23 +25,26 @@ export const HeaderMenu = () => {
   const AccountMenuItems = [
     {value: ROUTES.PROFILE, label: 'My profile', visible: true},
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-    {value: ROUTES.ACCOUNT, label: 'Account', visible: true},
-    {value: ROUTES.INVITEFRIENDS, label: 'Enter code', visible: true},
-    {value: ROUTES.SWIPERCHAT, label: 'Swiper', visible: true},
-
+    {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
+    {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
   ];
 
   const ActionsMenuItems = [
-    {value: ROUTES.NEWCHAT, label: 'New chat', visible: true},
-    {value: ROUTES.SCAN, label: 'Scan', visible: true},
+    {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
+    {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
     {value: ROUTES.MINT, label: 'Mint items', visible: itemsMintingAllowed},
+    {
+      value: ROUTES.UPLOADDOCUMENTSSCREEN,
+      label: 'Upload Document',
+      visible: true,
+    },
   ];
 
   const SystemMenuItems = [
     // {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
 
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
-    {value: ROUTES.LOGOUT, label: 'Logout', visible: true},
+    {value: ROUTES.LOGOUT, label: 'Sign out', visible: true},
   ];
 
   const toggleMenu = () => {
@@ -91,7 +94,7 @@ export const HeaderMenu = () => {
         />
         <Divider />
         <SubMenu
-          title="SYSTEM"
+          title="ID"
           menuItems={SystemMenuItems}
           onMenuItemPress={onMenuItemPress}
         />
