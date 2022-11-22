@@ -34,29 +34,35 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {observer} from 'mobx-react-lite';
 import {ROUTES} from '../../constants/routes';
-import { alpha } from '../../helpers/aplha';
-
-const buttons = [
-  {
-    key: ROOM_KEYS.official,
-    icon: 'star',
-  },
-  {
-    key: ROOM_KEYS.private,
-    icon: 'people',
-  },
-  {
-    key: ROOM_KEYS.groups,
-    icon: 'compass',
-  },
-];
+import {alpha} from '../../helpers/aplha';
 
 export const MainHeader = observer(() => {
   const {chatStore} = useStores();
   const navigation = useNavigation();
   const route = useRoute();
-
+  const buttons = [
+    {
+      key: ROOM_KEYS.official,
+      icon: 'star',
+      show: true,
+    },
+    {
+      key: ROOM_KEYS.private,
+      icon: 'people',
+      show: true,
+    },
+    {
+      key: ROOM_KEYS.groups,
+      icon: 'compass',
+      show: route.name === ROUTES.CHAT,
+    },
+  ];
   const onTabPress = (key: string) => {
+    if (key === ROOM_KEYS.groups) {
+      chatStore.toggleMetaNavigation(true);
+
+      return;
+    }
     chatStore.changeActiveChats(key);
     navigation.navigate(ROUTES.ROOMSLIST);
   };
@@ -76,13 +82,16 @@ export const MainHeader = observer(() => {
           </HStack>
         </VStack>
         {buttons.map(item => {
+          if (!item.show) return null;
           return (
             <VStack key={item.key}>
               <TouchableOpacity onPress={() => onTabPress(item.key)}>
                 <Ionicons
                   name={item.icon}
                   size={30}
-                  color={!highlightIcon(item.key) ? 'rgba(255,255,255,0.6)' : 'white'}
+                  color={
+                    !highlightIcon(item.key) ? 'rgba(255,255,255,0.6)' : 'white'
+                  }
                 />
               </TouchableOpacity>
               {!!chatStore.unreadMessagesForGroups[item.key] && (

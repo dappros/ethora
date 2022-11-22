@@ -58,6 +58,7 @@ import {
   defaultBotsList,
   IMetaRoom,
   metaRooms as predefinedMeta,
+  ROOM_KEYS,
   textStyles,
 } from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -992,7 +993,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
         <Actionsheet
           isOpen={isOpen}
           onClose={() => {
-            onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
+            onClose();
+            setIsShowDeleteOption(true);
+            setShowReplyOption(true);
           }}>
           <Actionsheet.Content>
             {showReplyOption ? (
@@ -1010,8 +1013,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
         </Actionsheet>
         <MetaNavigation
           chatId={chatJid.split('@')[0]}
-          open={showMetaNavigation}
-          onClose={() => setShowMetaNavigation(false)}
+          open={showMetaNavigation || chatStore.showMetaNavigation}
+          onClose={() => {
+            setShowMetaNavigation(false);
+            chatStore.toggleMetaNavigation(false);
+          }}
         />
         <ChatMediaModal
           url={mediaModal.url}

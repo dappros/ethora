@@ -1,7 +1,12 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
 import {makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChatBackgroundTheme, defaultChats, IMetaRoom} from '../../docs/config';
+import {
+  defaultChatBackgroundTheme,
+  defaultChats,
+  IMetaRoom,
+  metaRooms,
+} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -130,6 +135,8 @@ export class ChatStore {
   shouldCount: boolean = true;
   roomRoles = {};
   isOnline = false;
+  showMetaNavigation = false;
+
   isLoadingEarlierMessages = false;
   activeChats = ROOM_KEYS.official;
   isComposing: isComposingProps = {
@@ -156,6 +163,11 @@ export class ChatStore {
   toggleShouldCount = (value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
+    });
+  };
+  toggleMetaNavigation = (value: boolean) => {
+    runInAction(() => {
+      this.showMetaNavigation = value;
     });
   };
 
@@ -422,7 +434,21 @@ export class ChatStore {
       subscribeToRoom(jid, manipulatedWalletAddress, this.xmpp);
     });
   };
-
+  subscribeToMetaRooms = async () => {
+    const cachedRooms = await asyncStorageGetItem('metaRooms');
+    const allRooms = cachedRooms || metaRooms;
+    if (allRooms) {
+      allRooms.forEach(room => {
+        subscribeToRoom(
+          room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
+          underscoreManipulation(
+            this.stores.loginStore.initialData.walletAddress,
+          ),
+          this.xmpp,
+        );
+      });
+    }
+  };
   xmppListener = async () => {
     let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(
@@ -858,10 +884,11 @@ export class ChatStore {
       runInAction(() => {
         this.isOnline = true;
       });
-      getUserRoomsStanza(xmppUsername, this.xmpp);
+      this.subscribeToMetaRooms();
       getBlackList(xmppUsername, this.xmpp);
       updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
+      getUserRoomsStanza(xmppUsername, this.xmpp);
     });
   };
 }
