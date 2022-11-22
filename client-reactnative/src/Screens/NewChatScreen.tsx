@@ -22,7 +22,6 @@ import {
 } from '../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
-import { CONFERENCEDOMAIN } from '../xmpp/xmppConstants';
 
 interface NewChatScreenProps {}
 
@@ -73,16 +72,15 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         alert('Please fill Chat Name');
       } else {
         createNewRoom(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-         
+
         setOwner(manipulatedWalletAddress, roomHash, chatStore.xmpp);
-        
+
         roomConfig(
           manipulatedWalletAddress,
           roomHash,
-          {roomName: chatName, roomDescription:chatDescription},
+          {roomName: chatName, roomDescription: chatDescription},
           chatStore.xmpp,
         );
-        
 
         subscribeToRoom(
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
@@ -92,7 +90,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         defaultBotsList.forEach(bot => {
           sendInvite(
             manipulatedWalletAddress,
-            roomHash + CONFERENCEDOMAIN,
+            roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
             bot.jid,
             chatStore.xmpp,
           );
@@ -137,7 +135,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           </View>
           <Input
             _input={{
-              maxLength: 20,
+              maxLength: 50,
             }}
             onChangeText={chatName => setChatName(chatName)}
             placeholder="Chat name"
