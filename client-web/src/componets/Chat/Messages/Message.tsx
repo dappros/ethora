@@ -100,8 +100,23 @@ export const Message: React.FC<IMessage> = ({
         '@conference.dev.dxmpp.com',
         message.data.senderJID
     ).then(result => {
-          xmpp.getRooms();
-          if(!loaderArchive){
+          if(result.isNewRoom){
+            useStoreState.getState().setLoaderArchive(true);
+            const temporaryRoomData = {
+              jid: result.roomJid,
+              name: result.roomName,
+              room_background: "none",
+              room_thumbnail: "none",
+              users_cnt: "2",
+              unreadMessages: 0,
+              composing: "",
+              toUpdate: true
+            }
+            useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
+            console.log("SAVE ROOM TO LIST => ", useStoreState.getState().userChatRooms)
+            chooseDirectRoom(result.roomJid)
+            xmpp.getRooms();
+          }else{
             chooseDirectRoom(result.roomJid)
           }
     }).catch(error => {
