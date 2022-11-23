@@ -43,7 +43,7 @@ const ChangeUserDescriptionModal = (props: ChangeUserDescriptionModalProps) => {
             onPress={()=>changeDescription(newDescription)}
             bg={commonColors.primaryDarkColor}
             h={hp('5%')}
-            w="md"
+            w={wp('25%')}
             >
                 <Text
                 fontFamily={textStyles.boldFont}

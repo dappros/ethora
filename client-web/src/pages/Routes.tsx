@@ -15,6 +15,7 @@ import Dashboard from "./Dashboard";
 import { MintNft } from "./MintNft/MintNft";
 import { UploadDocument } from "./UploadDocument/UploadDocument";
 import { BrowserRouter } from "react-router-dom";
+import { RegularSignIn } from "./Signon/RegularSignIn";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -130,6 +131,8 @@ export const Routes = () => {
         <Route path="/" exact>
           <Signon />
         </Route>
+        <Route path="/regularSignIn" component={RegularSignIn} />
+
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />

@@ -4,7 +4,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import { useStoreState } from "../../store";
@@ -92,22 +92,19 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
           <Box style={{ display: "flex" }}>
             <Box
               sx={{ marginRight: "10px" }}
-              style={{ display: "flex", flexDirection: "column" }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                cursor: "pointer",
+              }}
             >
-              <img
-                style={{ width: "150px", borderRadius: "10px" }}
-                alt=""
-                src={user.profileImage ? user.profileImage : defUserImage}
-              />
-              <a
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setChange(true);
-                }}
-              >
-                change image
-              </a>
+              <div onClick={() => setChange(true)}>
+                <img
+                  style={{ width: "150px", borderRadius: "10px" }}
+                  alt=""
+                  src={user.profileImage ? user.profileImage : defUserImage}
+                />
+              </div>
             </Box>
             <Box>
               <form
@@ -161,32 +158,53 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   onBlur={formik.handleBlur}
                   value={formik.values.description}
                 />
-                <FormControlLabel
-                  checked={formik.values.isProfileOpen}
-                  name="isProfileOpen"
-                  control={
-                    <Checkbox
-                      onChange={(e) => {
-                        formik.setFieldValue("isProfileOpen", e.target.checked);
-                      }}
-                    />
+                <Tooltip
+                  placement={"top"}
+                  title={
+                    "When enabled, your profile and documents will be visible by all visitors. When disabled, your profile will only be seen by those who received a direct sharing link from you."
                   }
-                  label="Is Profile Open"
-                  labelPlacement="end"
-                />
-                <FormControlLabel
-                  checked={formik.values.isAssetsOpen}
-                  name="isAssetsOpen"
-                  control={
-                    <Checkbox
-                      onChange={(e) => {
-                        formik.setFieldValue("isAssetsOpen", e.target.checked);
-                      }}
-                    />
+                >
+                  <FormControlLabel
+                    checked={formik.values.isProfileOpen}
+                    name="isProfileOpen"
+                    control={
+                      <Checkbox
+                        onChange={(e) => {
+                          formik.setFieldValue(
+                            "isProfileOpen",
+                            e.target.checked
+                          );
+                        }}
+                      />
+                    }
+                    label="Profile is public"
+                    labelPlacement="end"
+                  />
+                </Tooltip>
+                <Tooltip
+                  placement={"bottom"}
+                  title={
+                    "When this is enabled, all of your documents will be visible to those who have access to your profile. When this is disabled, you will need to share your documents individually so others can see them."
                   }
-                  label="Is Assets Open"
-                  labelPlacement="end"
-                />
+                >
+                  <FormControlLabel
+                    checked={formik.values.isAssetsOpen || formik.values.isProfileOpen}
+                    name="isAssetsOpen"
+                    control={
+                      <Checkbox
+                        disabled={formik.values.isProfileOpen}
+                        onChange={(e) => {
+                          formik.setFieldValue(
+                            "isAssetsOpen",
+                            e.target.checked
+                          );
+                        }}
+                      />
+                    }
+                    label="Documents are public"
+                    labelPlacement="end"
+                  />
+                </Tooltip>
                 <LoadingButton
                   type="submit"
                   loading={loading}

@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
@@ -25,6 +25,7 @@ import { useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
+import { Divider } from "@mui/material";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -34,10 +35,12 @@ const menuActionsSection = {
   items: [
     { name: "Mint NFT", id: "/mint" },
     { name: "Upload Document", id: "/documents/upload" },
-    { name: "Sign out", id: "logout" },
   ],
 };
-
+const idActionsSection = {
+  name: "Id",
+  items: [{ name: "Sign out", id: "logout" }],
+};
 const AppTopNav = () => {
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
@@ -56,12 +59,13 @@ const AppTopNav = () => {
     ],
   };
   const initMenuItems = [
-    {
-      name: "",
-      items: [{ name: "Chat", id: "/chat/" + chatUrl }],
-    },
     menuAccountSection,
+    {
+      name: "Messaging",
+      items: [{ name: "Chats", id: "/chat/" + chatUrl }],
+    },
     menuActionsSection,
+    idActionsSection,
   ];
   const [menuItems, setMenuItems] = useState(initMenuItems);
   const [showMainBalanceNotification, setShowMainBalanceNotification] =
@@ -163,55 +167,20 @@ const AppTopNav = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Typography
-            variant="h4"
-            noWrap
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            <NavLink style={{ color: "white" }} to="/">
-              Ethora
-            </NavLink>
-          </Typography>
-
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              marginLeft: "auto",
             }}
           >
-            {mainCoinBalance ? (
-              <ButtonUnstyled
-                style={{
-                  marginRight: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  alt=""
-                  style={{ width: "20px", height: "20px" }}
-                  src={coinImg}
-                />
-                {mainCoinBalance?.balance}
-              </ButtonUnstyled>
-            ) : null}
-            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar>
-                {firstLetersFromName(user.firstName, user.lastName)}
-              </Avatar>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 0, color: "white", marginRight: "20px" }}
+            >
+              <MenuIcon />
             </IconButton>
             <Menu
-              sx={{ mt: "45px" }}
+              sx={{ mt: "20px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
@@ -226,16 +195,17 @@ const AppTopNav = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {menuItems.map((el) => {
-                console.log(el.name);
+              {menuItems.map((el, i) => {
                 return (
                   <Box key={el.name}>
+                    {i !== 0 && <Divider />}
+
                     <Typography
                       sx={{
-                        marginLeft: "5px",
-                        fontWeight: "bold",
+                        marginLeft: "7px",
+                        fontWeight: "500",
                         textTransform: "uppercase",
-                        marginY: "5px",
+                        marginY: "7px",
                       }}
                     >
                       {el.name}
@@ -256,6 +226,51 @@ const AppTopNav = () => {
                 );
               })}
             </Menu>
+            {!!mainCoinBalance && (
+              <Link to={'/'} style={{textDecoration: 'none'}}>
+              <Box
+                sx={{
+                  marginRight: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "pointer",
+                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  color: 'black',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingX: '5px',
+                  borderRadius: '5px',
+                }}
+                
+              >
+                <img
+                  alt=""
+                  style={{ width: "20px", height: "20px" }}
+                  src={coinImg}
+                />
+                {mainCoinBalance?.balance}
+              </Box>
+              </Link>
+            ) }
+          </Box>
+          <Box style={{ marginLeft: "auto" }}>
+            <Typography
+              variant="h4"
+              noWrap
+              sx={{
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              <NavLink style={{ color: "white" }} to="/">
+                Ethora
+              </NavLink>
+            </Typography>
           </Box>
         </Toolbar>
       </Container>

@@ -244,9 +244,11 @@ export class ChatStore {
   };
 
   addMessage = (message: any) => {
-    runInAction(() => {
-      this.messages.push(message);
-    });
+    if(!this.messages.some(msg => msg._id === message._id)){
+      runInAction(() => {
+        this.messages.push(message);
+      });
+    }
   };
 
   addThreadMessage = (message: any) => {
@@ -519,8 +521,20 @@ export class ChatStore {
         stanza.children.filter(item => {
           if (item.name === 'error') {
             console.log(item.children, 'stanza error==============');
+            item.children.filter(subItem => {
+              if(subItem.name === 'text'){
+                console.log(subItem.children[0])
+                if(subItem.children[0] === 'You are banned in this room!'){
+                  showToast('error', 'Banned!', 'You have been banned from this room.','top')
+                }
+                if(subItem.children[0] === 'Traffic rate limit is exceeded'){
+                  showToast('error', 'Too much traffic!', 'Traffic rate limit is exceeded','top')
+                }
+              }
+            })
           }
         });
+
       }
 
       // if(stanza.attrs.id === XMPP_TYPES.getBannedUserListOfRoom){
@@ -571,7 +585,6 @@ export class ChatStore {
           };
 
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-
           getChatRoom(item.attrs.jid).then(cachedChat => {
             if (!cachedChat) {
               addChatRoom(rosterObject);
@@ -617,7 +630,7 @@ export class ChatStore {
         getBlackList(xmppUsername, this.xmpp);
       }
       if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
-        console.log(stanza, '1');
+        console.log(stanza.children, '1');
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
@@ -769,7 +782,7 @@ export class ChatStore {
             );
             await updateNumberOfReplies(message.mainMessageId);
           }
-          insertMessages(message);
+          await insertMessages(message);
         }
 
         //capture message composing

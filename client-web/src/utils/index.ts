@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import logo from "../assets/images/dpp.png";
+import { mobileEthoraBaseUrl } from "../constants";
 
 export function useQuery() {
   const { search } = useLocation();
@@ -71,4 +72,24 @@ export const filterNftBalances = (item) => {
     (item.balance > 0 ||
       (item.balances?.length && item?.balances?.some((item) => +item > 0)))
   );
+};
+
+interface ILink {
+  firstName: string;
+  lastName: string;
+  walletAddress: string;
+  xmppId: string;
+  linkToken?: string;
+}
+
+export const generateProfileLink = ({
+  firstName,
+  lastName,
+  walletAddress,
+  xmppId,
+  linkToken,
+}: ILink) => {
+  return `${mobileEthoraBaseUrl}=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
+    linkToken ?? ''
+  }`;
 };

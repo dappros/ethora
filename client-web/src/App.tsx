@@ -9,7 +9,8 @@ import client from "./apollo/client";
 
 import "./pages/ChatInRoom/theme/default/main.scss";
 import { Routes } from "./pages/Routes";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
+import { history } from "./utils/history";
 
 const darkTheme = createTheme({
   palette: {
@@ -27,7 +28,7 @@ function App() {
   const user = useStoreState((state) => state.user);
 
   return (
-    <BrowserRouter>
+    <Router history={history}>
     <ThemeProvider theme={viewMode === "light" ? lightTheme : darkTheme}>
       <ApolloProvider client={client}>
         <div className="app-root">
@@ -38,7 +39,7 @@ function App() {
         </div>
       </ApolloProvider>
     </ThemeProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
 
