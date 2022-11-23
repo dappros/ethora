@@ -173,7 +173,6 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
         if (result?.attrs.name) {
           const currentSavedChatRoom = currentChatRooms.filter((el) => el.jid === result?.attrs.jid);
           if(currentSavedChatRoom.length === 0 || currentSavedChatRoom[0].toUpdate){
-            console.log("FIND NEW ROOM => ", result?.attrs.jid)
             roomJID = result.attrs.jid;
             xmpp.presenceInRoom(roomJID);
             const roomData = {
@@ -186,12 +185,9 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
               composing: "",
               toUpdate: false
             };
-            console.log("BEFORE UPDATE => ",currentSavedChatRoom)
             if(currentSavedChatRoom.length > 0 && currentSavedChatRoom[0].toUpdate){
-              console.log("TO UPDATE")
               useStoreState.getState().updateUserChatRoom(roomData);
             }else{
-              console.log("NO UPDATE")
               useStoreState.getState().setNewUserChatRoom(roomData);
             }
             //get message history in the room
