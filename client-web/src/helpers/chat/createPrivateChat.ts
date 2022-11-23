@@ -1,4 +1,5 @@
 import xmpp from "../../xmpp";
+import {useStoreState} from "../../store";
 
 export const underscoreManipulation = (str:string) => {
     if(str){
@@ -23,21 +24,28 @@ export const createPrivateChat = async (
     const roomJid = combinedWalletAddress.toLowerCase() + CONFERENCEDOMAIN;
     const combinedUsersName = [myFirstName, otherFirstName].sort().join(' and ');
 
-    xmpp.createNewRoom(combinedWalletAddress.toLowerCase());
-    xmpp.setOwner(combinedWalletAddress.toLowerCase());
-    xmpp.roomConfig(
-        combinedWalletAddress.toLowerCase(),
-        {roomName: combinedUsersName},
-    );
-    xmpp.subsribe(roomJid);
-    xmpp.presenceInRoom(roomJid);
+    const currentChatRooms = useStoreState.getState().userChatRooms;
 
-    setTimeout(() => {
-        xmpp.sendInvite(
-            underscoreManipulation(myWalletAddress),
-            roomJid.toLowerCase(),
-            underscoreManipulation(otherUserWalletAddress),
+    let isNewRoom = false;
+    if(currentChatRooms.filter((el) => el.jid === roomJid).length === 0){
+        isNewRoom = true;
+        xmpp.createNewRoom(combinedWalletAddress.toLowerCase());
+        xmpp.setOwner(combinedWalletAddress.toLowerCase());
+        xmpp.roomConfig(
+            combinedWalletAddress.toLowerCase(),
+            {roomName: combinedUsersName},
         );
-    }, 1000);
-    return {roomJid, roomName: combinedUsersName};
+        xmpp.subsribe(roomJid);
+        xmpp.presenceInRoom(roomJid);
+
+        setTimeout(() => {
+            xmpp.sendInvite(
+                underscoreManipulation(myWalletAddress),
+                roomJid.toLowerCase(),
+                underscoreManipulation(otherUserWalletAddress),
+            );
+        }, 1000);
+    }
+
+    return {roomJid, roomName: combinedUsersName, isNewRoom};
 };
