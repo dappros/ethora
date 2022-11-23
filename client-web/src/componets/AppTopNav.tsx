@@ -35,7 +35,6 @@ const menuActionsSection = {
   items: [
     { name: "Mint NFT", id: "/mint" },
     { name: "Upload Document", id: "/documents/upload" },
-    { name: "Sign out", id: "logout" },
   ],
 };
 const idActionsSection = {
@@ -60,11 +59,11 @@ const AppTopNav = () => {
     ],
   };
   const initMenuItems = [
-    {
-      name: "",
-      items: [{ name: "Chat", id: "/chat/" + chatUrl }],
-    },
     menuAccountSection,
+    {
+      name: "Messaging",
+      items: [{ name: "Chats", id: "/chat/" + chatUrl }],
+    },
     menuActionsSection,
     idActionsSection,
   ];
