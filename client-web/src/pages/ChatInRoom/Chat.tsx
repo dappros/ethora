@@ -147,7 +147,8 @@ export function ChatInRoom() {
   const chooseRoom = (jid: string) => {
     history.push("/chat/" + jid.split("@")[0]);
     setCurrentRoom(jid);
-    setRoomData(useChatRooms.filter((e) => e.jid === jid)[0]);
+    const currentRoomData = useChatRooms.filter((e) => e.jid === jid)[0];
+    setRoomData(currentRoomData);
     useStoreState.getState().clearCounterChatRoom(jid);
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
 
@@ -358,7 +359,7 @@ export function ChatInRoom() {
         </Sidebar>
 
         <ChatContainer>
-          {!!roomData.name && (
+          {!!roomData && (
             <ConversationHeader>
               <ConversationHeader.Back />
               {messages.filter((item: any) => item.roomJID === currentRoom)
@@ -469,7 +470,7 @@ export function ChatInRoom() {
                 </MessageList.Content>
               )}
           </MessageList>
-          {!!roomData.name && (
+          {!!roomData && (
             <div is={"MessageInput"}>
               <MessageInput
                 onPaste={handlePaste}
