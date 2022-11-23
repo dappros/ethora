@@ -162,34 +162,40 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "getUserRooms") {
     if (stanza.getChild("query")?.children) {
       isGettingFirstMessages = true;
-      useStoreState.getState().clearUserChatRooms();
       useStoreState.getState().setLoaderArchive(true);
       let roomJID: string = "";
-      const currentChatRooms = useStoreState.getState().userChatRooms;
       stanza.getChild("query")?.children.forEach((result: any) => {
-        if (
-          result?.attrs.name &&
-          currentChatRooms.filter((el) => el.jid === result?.attrs.jid)
-            .length === 0
-        ) {
-          roomJID = result.attrs.jid;
-          xmpp.presenceInRoom(roomJID);
+        const currentChatRooms = useStoreState.getState().userChatRooms;
 
-          const roomData = {
-            jid: roomJID,
-            name: result?.attrs.name,
-            room_background: result?.attrs.room_background,
-            room_thumbnail: result?.attrs.room_thumbnail,
-            users_cnt: result?.attrs.users_cnt,
-            unreadMessages: 0,
-            composing: "",
-          };
-          useStoreState.getState().setNewUserChatRoom(roomData);
-
-          //get message history in the room
-          xmpp.getRoomArchiveStanza(roomJID, 1);
+        if (result?.attrs.name) {
+          const currentSavedChatRoom = currentChatRooms.filter((el) => el.jid === result?.attrs.jid);
+          if(currentSavedChatRoom.length === 0 || currentSavedChatRoom[0].toUpdate){
+            console.log("FIND NEW ROOM => ", result?.attrs.jid)
+            roomJID = result.attrs.jid;
+            xmpp.presenceInRoom(roomJID);
+            const roomData = {
+              jid: roomJID,
+              name: result?.attrs.name,
+              room_background: result?.attrs.room_background,
+              room_thumbnail: result?.attrs.room_thumbnail,
+              users_cnt: result?.attrs.users_cnt,
+              unreadMessages: 0,
+              composing: "",
+              toUpdate: false
+            };
+            console.log("BEFORE UPDATE => ",currentSavedChatRoom)
+            if(currentSavedChatRoom.length > 0 && currentSavedChatRoom[0].toUpdate){
+              console.log("TO UPDATE")
+              useStoreState.getState().updateUserChatRoom(roomData);
+            }else{
+              console.log("NO UPDATE")
+              useStoreState.getState().setNewUserChatRoom(roomData);
+            }
+            //get message history in the room
+            xmpp.getRoomArchiveStanza(roomJID, 1);
+            lastRomJIDLoading = roomJID;
+          }
         }
-        lastRomJIDLoading = roomJID;
       });
     }
   }
@@ -241,6 +247,9 @@ const onComposing = (stanza: Element) => {
 };
 
 const getListOfRooms = (xmpp: any) => {
+  useStoreState.getState().clearUserChatRooms();
+  useStoreState.getState().setCurrentUntrackedChatRoom("");
+
   xmpp.client.send(xml("presence"));
   xmpp.getArchive(xmpp.client?.jid?.toString());
   defaultRooms.map((roomJID) => {
@@ -266,9 +275,13 @@ const onInvite = (stanza: Element, xmpp: any) => {
           ?.getChild("forwarded")
           ?.getChild("message").attrs.from;
       }
-      xmpp.subsribe(jid);
-      xmpp.presenceInRoom(jid);
-      xmpp.getRooms();
+      const currentChatRooms = useStoreState.getState().userChatRooms;
+      if(currentChatRooms.filter((el) => el.jid === jid)
+          .length === 0){
+        xmpp.subsribe(jid);
+        xmpp.presenceInRoom(jid);
+        xmpp.getRooms();
+      }
     } else {
     }
   } else {
