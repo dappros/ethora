@@ -86,6 +86,7 @@ export type TUserChatRooms = {
   users_cnt: string;
   unreadMessages: number;
   composing: string;
+  toUpdate: boolean;
 };
 
 type TApp = {
@@ -145,6 +146,7 @@ interface IStore {
   sortMessageHistory: () => void;
   userChatRooms: TUserChatRooms[];
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
+  updateUserChatRoom: (data: TUserChatRooms) => void;
   updateCounterChatRoom: (roomJID: string) => void;
   clearCounterChatRoom: (roomJID: string) => void;
   updateComposingChatRoom: (
@@ -325,6 +327,18 @@ const _useStore = create<IStore>()(
               );
               if(state.userChatRooms[currentIndex]){
                 state.userChatRooms[currentIndex].unreadMessages++;
+              }
+            }),
+          updateUserChatRoom: (data: TUserChatRooms) =>
+            set((state) => {
+              const currentIndex = state.userChatRooms.findIndex(
+                (el) => el.jid === data.jid
+              );
+              if(state.userChatRooms[currentIndex]){
+                state.userChatRooms[currentIndex].room_background = data.room_background;
+                state.userChatRooms[currentIndex].room_thumbnail = data.room_thumbnail;
+                state.userChatRooms[currentIndex].users_cnt = data.users_cnt;
+                state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>
