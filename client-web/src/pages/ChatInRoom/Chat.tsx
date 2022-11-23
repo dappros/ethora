@@ -156,6 +156,7 @@ export function ChatInRoom() {
     const filteredMessages = messages.filter(
       (item: any) => item.roomJID === jid
     );
+    setFirstLoadMessages(true)
 
     if (
       !loaderArchive &&
