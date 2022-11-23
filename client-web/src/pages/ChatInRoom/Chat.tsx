@@ -335,9 +335,13 @@ export function ChatInRoom() {
     if(!loaderArchive && messages.length > 0 && currentRoom && firstLoadMessages){
       const filteredMessages = messages.filter((item: any) => item.roomJID === currentRoom);
       const lastUpFilteredMessage = filteredMessages[0];
+
       if(filteredMessages.length >= 10 && filteredMessages.length < 15 && lastUpFilteredMessage.data.isSystemMessage){
         setFirstLoadMessages(false);
         xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 5);
+      }else if(filteredMessages.length === 1){
+        setFirstLoadMessages(false);
+        xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 15);
       }
     }
   }, [messages])
