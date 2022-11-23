@@ -682,7 +682,7 @@ export const deleteMessageStanza = (
   from: string,
   roomJid: string,
   messageId: string,
-  xmpp,
+  xmpp:any,
 ) => {
   // <message
   //   from="olek@localhost"
@@ -906,7 +906,7 @@ export const banUserr = (
         user:banUserId,
         type:"room",
         room:roomJid,
-        time:"3",
+        time:"2592000",
         comment:"Ban"
       }
     )

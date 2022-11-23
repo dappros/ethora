@@ -29,7 +29,7 @@ import {useStores} from '../stores/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {reverseUnderScoreManipulation, underscoreManipulation} from '../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
-import ChangeRoomDesctionModal from '../components/Modals/Chat/changeRoomDescriptionModal';
+import ChangeRoomDescriptionModal from '../components/Modals/Chat/changeRoomDescriptionModal';
 import {
   assignModerator,
   banUserr,
@@ -222,6 +222,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   }
 
   const handleLongTapMenu = (type:number) => {
+
     if(type===0){
       if(longTapUser.ban_status === 'clear'){
         banUserr(
@@ -238,6 +239,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
           chatStore.xmpp
         )
       }
+      getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
+      onClose()
     }
 
     if(type===1){
@@ -467,6 +470,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
               </TouchableOpacity>
             </View>
 
+            {chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
+            chatStore.roomRoles[currentRoomDetail.jid] === 'admin'?
             <View paddingRight={2} alignItems={'flex-end'} flex={0.3}>
               <Menu
                 w="190"
@@ -521,7 +526,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                   </>
                 )}
               </Menu>
-            </View>
+            </View>:null}
           </View>
         </HStack>
       </Box>
@@ -572,7 +577,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             </Text>
             }
           </Box>
-          <Box flex={0.7}>
+          <HStack flex={0.7}>
             <Text
               fontFamily={textStyles.boldFont}
               fontWeight="bold"
@@ -580,7 +585,18 @@ const ChatDetailsScreen = observer(({route}: any) => {
               fontSize={hp('1.8%')}>
               {item.name ? item.name : null}
             </Text>
-          </Box>
+          </HStack>
+
+          {item.ban_status !== 'clear'?
+            <Box
+            borderWidth={1}
+            rounded="full"
+            justifyContent={'center'}
+            alignItems={'center'}
+            flex={0.2}
+              >Banned
+            </Box>: null
+          }
 
           {item.role !== 'none'?
             <Box
@@ -742,6 +758,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   return (
     <View bg={"white"} flex={1}>
+      
       <View justifyContent={'flex-start'}>{chatDetailsNavBar()}</View>
       <View flex={0.4} justifyContent={'center'}>
         <RoomDetails room={currentRoomDetail} />
@@ -775,7 +792,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         </Actionsheet.Content>
       </Actionsheet>
 
-      <ChangeRoomDesctionModal
+      <ChangeRoomDescriptionModal
       modalVisible={descriptionModalVisible}
       setModalVisible={setDescriptionModalVisible}
       currentDescription={chatStore.roomsInfoMap[roomJID].roomDescription}
