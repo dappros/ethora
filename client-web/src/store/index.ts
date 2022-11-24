@@ -298,10 +298,12 @@ const _useStore = create<IStore>()(
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
               state.historyMessages.unshift(historyMessages);
+              state.historyMessages = state.historyMessages.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
             }),
           updateMessageHistory: (messages: TMessageHistory[]) =>
             set((state) => {
               state.historyMessages = [...state.historyMessages, ...messages];
+              state.historyMessages = state.historyMessages.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
           setLoaderArchive: (status: boolean) =>
