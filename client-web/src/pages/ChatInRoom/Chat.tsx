@@ -131,7 +131,7 @@ export function ChatInRoom() {
 
   const onDrop = useCallback(acceptedFiles => {
     sendFile(acceptedFiles[0]);
-  }, []);
+  }, [roomData]);
 
   const {
     getRootProps
