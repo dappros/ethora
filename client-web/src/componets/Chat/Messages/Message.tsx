@@ -143,7 +143,6 @@ export const Message: React.FC<IMessage> = ({
       </MessageSeparator> : null
     }
     <KitMessage
-      key={message.key}
       model={{
         sender: firstName + " " + lastName,
         direction: String(userJid).split("/")[0] === String(messageJid).split("/")[0] ? "outgoing" : "incoming",
