@@ -157,7 +157,7 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
       xmpp.getLastMessageArchive(data.attrs.by);
       return;
     }
-    return onMessage(stanza);
+    return onMessageHistory(stanza);
   }
 };
 
