@@ -162,7 +162,7 @@ export const Message: React.FC<IMessage> = ({
           }}
           onClick={() => history.push("/profile/"+message.data.senderWalletAddress)}
           is={"Avatar"}
-          src={message.data.photoURL}
+          src={message.data.photoURL ? message.data.photoURL : "https://icotar.com/initials/" + firstName + " " + lastName}
           onError={({ currentTarget }) => {
             currentTarget.onerror = null;
             currentTarget.src =
