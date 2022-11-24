@@ -38,6 +38,7 @@
     "react": "^18.2.0",
     "react-content-loader": "^6.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.2.3",
     "react-facebook-login": "^4.1.1",
     "react-google-login": "^5.2.2",
     "react-hook-form": "^7.36.0",
