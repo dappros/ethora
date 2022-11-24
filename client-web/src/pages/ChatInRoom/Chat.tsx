@@ -140,14 +140,15 @@ export function ChatInRoom() {
     noClick: true,
     maxFiles: 1
   });
-
   const onYReachStart = () => {
+    const filteredMessages = messages.filter(
+        (item: any) => item.roomJID === currentRoom
+    );
+
     if (loaderArchive) {
       return;
     } else {
-      const lastMessageID = messages.filter(
-        (item: any) => item.roomJID === currentRoom
-      )[0].id;
+      const lastMessageID = filteredMessages[0].id;
       xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
     }
   };
@@ -177,7 +178,7 @@ export function ChatInRoom() {
       filteredMessages.length > 0
     ) {
       const lastMessageID = filteredMessages[0].id;
-      xmpp.getPaginatedArchive(jid, String(lastMessageID), 10);
+      xmpp.getPaginatedArchive(jid, String(lastMessageID), 50);
     }
   };
 
@@ -348,8 +349,11 @@ export function ChatInRoom() {
   }, [currentRoom]);
 
   useEffect(() => {
-    if(!loaderArchive && messages.length > 0 && currentRoom && firstLoadMessages){
-      const filteredMessages = messages.filter((item: any) => item.roomJID === currentRoom);
+    const filteredMessages = messages.filter(
+        (item: any) => item.roomJID === currentRoom
+    );
+
+    if(!loaderArchive && filteredMessages.length > 0 && filteredMessages.length <= 51 && currentRoom && firstLoadMessages){
       const lastUpFilteredMessage = filteredMessages[0];
 
       if(filteredMessages.length >= 10 && filteredMessages.length < 15 && lastUpFilteredMessage.data.isSystemMessage){
@@ -357,7 +361,7 @@ export function ChatInRoom() {
         xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 5);
       }else if(filteredMessages.length === 1){
         setFirstLoadMessages(false);
-        xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 15);
+        xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 50);
       }
     }
   }, [messages])
@@ -424,6 +428,7 @@ export function ChatInRoom() {
           <MessageList
             loadingMore={loaderArchive}
             onYReachStart={onYReachStart}
+            disableOnYReachWhenNoScroll={true}
             typingIndicator={
               !!useChatRooms.filter((e) => e.jid === currentRoom)[0]
                 ?.composing && (
