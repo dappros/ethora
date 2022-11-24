@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import { TMessageHistory, useStoreState } from "../../store";
@@ -35,6 +35,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
+import { useDropzone } from 'react-dropzone';
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -127,6 +128,18 @@ export function ChatInRoom() {
   const { roomJID } = useParams();
   const history = useHistory();
   const [firstLoadMessages, setFirstLoadMessages] = useState(true);
+
+  const onDrop = useCallback(acceptedFiles => {
+    sendFile(acceptedFiles[0]);
+  }, []);
+
+  const {
+    getRootProps
+  } = useDropzone({
+    onDrop,
+    noClick: true,
+    maxFiles: 1
+  });
 
   const onYReachStart = () => {
     if (loaderArchive) {
@@ -271,7 +284,9 @@ export function ChatInRoom() {
         });
         setShowDialogTxt(true);
       });
-    fileRef.current.value = "";
+    if(fileRef.current){
+      fileRef.current.value = "";
+    }
   };
 
   const setMessage = (value) => {
@@ -375,7 +390,8 @@ export function ChatInRoom() {
           </ConversationList>
         </Sidebar>
 
-        <ChatContainer>
+        <div {...getRootProps()} style={{width: "100%", height: "100%"}}>
+        <ChatContainer >
           {!!roomData && (
             <ConversationHeader>
               <ConversationHeader.Back />
@@ -507,6 +523,7 @@ export function ChatInRoom() {
             </div>
           )}
         </ChatContainer>
+        </div>
       </MainContainer>
 
       <Dialog
