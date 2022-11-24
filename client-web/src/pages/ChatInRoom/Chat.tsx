@@ -363,7 +363,7 @@ export function ChatInRoom() {
   }, [messages])
 
   return (
-    <Box style={{ height: "500px" }}>
+    <Box style={{paddingBlock: "20px"}}>
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
