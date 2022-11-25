@@ -767,7 +767,7 @@ class XmppClass {
         "http://jabber.org/protocol/muc#user",
         xml(
           "invite",
-          { to: otherUserId },
+          { to: otherUserId+"@dev.dxmpp.com" },
           xml("reason", {}, "Hey, this is the place with amazing cookies!")
         )
       )
