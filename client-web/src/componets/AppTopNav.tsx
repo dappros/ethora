@@ -63,11 +63,11 @@ const AppTopNav = () => {
         id: "/profile/" + user.walletAddress,
         visible: true,
       },
-      { name: "Explorer", id: "/explorer", visible: true },
+      { name: "Explorer", id: "/explorer", visible: false },
       {
         name: "Transactions",
         id: "/explorer/address/" + user.walletAddress,
-        visible: true,
+        visible: false,
       },
     ],
   };
@@ -245,34 +245,9 @@ const AppTopNav = () => {
                 );
               })}
             </Menu>
-            {!!mainCoinBalance && (
-              <Link to={"/"} style={{ textDecoration: "none" }}>
-                <Box
-                  sx={{
-                    marginRight: "10px",
-                    display: "flex",
-                    flexDirection: "column",
-                    cursor: "pointer",
-                    backgroundColor: "rgba(255,255,255,0.8)",
-                    color: "black",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingX: "5px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <img
-                    alt=""
-                    style={{ width: "20px", height: "20px" }}
-                    src={coinImg}
-                  />
-                  {mainCoinBalance?.balance}
-                </Box>
-              </Link>
-            )}
           </Box>
           <Box style={{ marginLeft: "auto" }}>
-            <Typography
+            {/* <Typography
               variant="h4"
               noWrap
               sx={{
@@ -288,7 +263,33 @@ const AppTopNav = () => {
               <NavLink style={{ color: "white" }} to="/">
                 Ethora
               </NavLink>
-            </Typography>
+            </Typography> */}
+                        {!!mainCoinBalance && (
+              <Link to={'/'} style={{textDecoration: 'none'}}>
+              <Box
+                sx={{
+                  marginRight: "10px",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "pointer",
+                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  color: 'black',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingX: '5px',
+                  borderRadius: '5px',
+                }}
+                
+              >
+                <img
+                  alt=""
+                  style={{ width: "20px", height: "20px" }}
+                  src={coinImg}
+                />
+                {mainCoinBalance?.balance}
+              </Box>
+              </Link>
+            ) }
           </Box>
         </Toolbar>
       </Container>
