@@ -226,7 +226,7 @@ export const Message: React.FC<IMessage> = ({
         }
 
         {!message.data.isMediafile ?
-            <span dangerouslySetInnerHTML={{ __html: message.body }}></span>
+            <span>{message.body}</span>
             : null
         }
       </KitMessage.CustomContent>
