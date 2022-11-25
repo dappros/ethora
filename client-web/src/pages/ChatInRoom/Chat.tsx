@@ -321,6 +321,7 @@ export function ChatInRoom() {
       if (
         !roomJID ||
         roomJID === "none" ||
+        roomJID === "" ||
         currentUntrackedChatRoom.split("@")[0] === roomJID
       ) {
         chooseRoom(currentUntrackedChatRoom);
@@ -328,12 +329,12 @@ export function ChatInRoom() {
     }
 
     if (
-      currentUntrackedChatRoom.split("@")[0] !== roomJID &&
-      roomJID !== "none"
+        currentUntrackedChatRoom.split("@")[0] !== roomJID &&
+        roomJID !== "none" &&
+        roomJID !== ""
     ) {
-      const conferenceRoomJID = roomJID + "@conference.dev.dxmpp.com";
-      useStoreState.getState().setCurrentUntrackedChatRoom(conferenceRoomJID);
-      chooseRoom(conferenceRoomJID);
+      useStoreState.getState().setCurrentUntrackedChatRoom(roomJID);
+      chooseRoom(roomJID);
     }
 
     window.onblur = () => {
