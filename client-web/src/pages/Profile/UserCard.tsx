@@ -32,12 +32,28 @@ export default function UserCard({ profile, walletAddress }: TProps) {
       walletAddress,
       user.firstName,
       profile.firstName,
-      CONFERENCEDOMAIN
+        '@conference.dev.dxmpp.com'
     )
       .then((result) => {
-        xmpp.getRooms();
-        useStoreState.getState().setCurrentUntrackedChatRoom(result.roomJid);
-        history.push("/chat/" + result.roomJid);
+          if(result.isNewRoom){
+              useStoreState.getState().setLoaderArchive(true);
+              const temporaryRoomData = {
+                  jid: result.roomJid,
+                  name: result.roomName,
+                  room_background: "none",
+                  room_thumbnail: "none",
+                  users_cnt: "2",
+                  unreadMessages: 0,
+                  composing: "",
+                  toUpdate: true
+              }
+              useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
+              console.log("SAVE ROOM TO LIST => ", useStoreState.getState().userChatRooms)
+              history.push("/chat/" + result.roomJid);
+              xmpp.getRooms();
+          }else{
+              history.push("/chat/" + result.roomJid);
+          }
       })
       .catch((error) => {
         console.log("openPrivateRoom Error: ", error);
