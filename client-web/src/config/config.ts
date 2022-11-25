@@ -59,8 +59,8 @@ export const appleSignIn = true; // social sign on with existing Apple account
 export const facebookSignIn = true; // social sign on with existing Facebook account
 export const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
 export const regularLogin = true; // custom login+password - users have to register first
-export const regularLoginEmail = false; // custom login using e-mail address for login - users have to register first
-export const regularLoginUsername = false;
+export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
+export const regularLoginUsername = true;
 
 // TO BE DEPRECATED
 
