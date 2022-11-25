@@ -264,32 +264,31 @@ const AppTopNav = () => {
                 Ethora
               </NavLink>
             </Typography> */}
-                        {!!mainCoinBalance && (
-              <Link to={'/'} style={{textDecoration: 'none'}}>
-              <Box
-                sx={{
-                  marginRight: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                  backgroundColor: 'rgba(255,255,255,0.8)',
-                  color: 'black',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingX: '5px',
-                  borderRadius: '5px',
-                }}
-                
-              >
-                <img
-                  alt=""
-                  style={{ width: "20px", height: "20px" }}
-                  src={coinImg}
-                />
-                {mainCoinBalance?.balance}
-              </Box>
+            {!!mainCoinBalance && (
+              <Link to={"/"} style={{ textDecoration: "none" }}>
+                <Box
+                  sx={{
+                    marginRight: "10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    cursor: "pointer",
+                    backgroundColor: "rgba(255,255,255,0.8)",
+                    color: "black",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingX: "5px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <img
+                    alt=""
+                    style={{ width: "20px", height: "20px" }}
+                    src={coinImg}
+                  />
+                  {mainCoinBalance?.balance}
+                </Box>
               </Link>
-            ) }
+            )}
           </Box>
         </Toolbar>
       </Container>
