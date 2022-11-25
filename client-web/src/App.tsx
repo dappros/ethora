@@ -11,6 +11,11 @@ import "./pages/ChatInRoom/theme/default/main.scss";
 import { Routes } from "./pages/Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
+import {
+  SnackbarContextProvider,
+
+} from "./context/SnackbarContext";
+
 
 const darkTheme = createTheme({
   palette: {
@@ -26,19 +31,21 @@ const lightTheme = createTheme({
 function App() {
   const viewMode = useStoreState((state) => state.viewMode);
   const user = useStoreState((state) => state.user);
-
   return (
     <Router history={history}>
-    <ThemeProvider theme={viewMode === "light" ? lightTheme : darkTheme}>
-      <ApolloProvider client={client}>
-        <div className="app-root">
-          {!user.firstName && <AppTopNavAuth />}
-          {user.firstName && !user.ACL?.ownerAccess && <AppTopNav />}
-          {user.ACL?.ownerAccess && <AppTopNavOwner />}
-          <Routes />
-        </div>
-      </ApolloProvider>
-    </ThemeProvider>
+      <SnackbarContextProvider>
+        <ThemeProvider theme={viewMode === "light" ? lightTheme : darkTheme}>
+          <ApolloProvider client={client}>
+            <div className="app-root">
+              {!user.firstName && <AppTopNavAuth />}
+              {user.firstName && !user.ACL?.ownerAccess && <AppTopNav />}
+              {user.ACL?.ownerAccess && <AppTopNavOwner />}
+              <Routes />
+            </div>
+          </ApolloProvider>
+        </ThemeProvider>
+      </SnackbarContextProvider>
+     
     </Router>
   );
 }
