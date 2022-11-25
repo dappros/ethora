@@ -216,21 +216,43 @@ export function ChatInRoom() {
     }
   };
 
-  const sendMessage = (button: any) => {
-    let userAvatar = "";
-    if (profile?.profileImage) {
-      userAvatar = profile?.profileImage;
+  const stripHtml = (html: string) => {
+    let doc: any;
+    let str = html;
+
+    str=str.replace(/<br>/gi, "\n");
+    str=str.replace(/<p.*>/gi, "\n");
+    str=str.replace(/<(?:.|\s)*?>/g, "");
+
+    if(str.trim().length === 0){
+      doc = new DOMParser().parseFromString(html, 'text/html');
+    }else{
+      doc = new DOMParser().parseFromString(str, 'text/html');
     }
-    const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
-    xmpp.sendMessage(
-      currentRoom,
-      user.firstName,
-      user.lastName,
-      userAvatar,
-      user.walletAddress,
-      typeof button === "object" ? button.value : clearMessageFromHtml,
-      typeof button === "object" ? button.notDisplayedValue : null
-    );
+    return doc.body.textContent || "";
+  }
+
+  const sendMessage = (button: any) => {
+    if (myMessage.trim().length > 0) {
+      let userAvatar = "";
+      if (profile?.profileImage) {
+        userAvatar = profile?.profileImage;
+      }
+      const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
+      const finalMessageTxt = stripHtml(clearMessageFromHtml);
+
+      if(finalMessageTxt.trim().length > 0){
+        xmpp.sendMessage(
+            currentRoom,
+            user.firstName,
+            user.lastName,
+            userAvatar,
+            user.walletAddress,
+            typeof button === "object" ? button.value : finalMessageTxt,
+            typeof button === "object" ? button.notDisplayedValue : null
+        );
+      }
+    }
   };
 
   const sendFile = (file: File) => {
