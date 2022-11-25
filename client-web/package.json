@@ -84,6 +84,7 @@
     ]
   },
   "devDependencies": {
+    "@types/dompurify": "^2.4.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/xmpp__client": "^0.13.0"
   }
