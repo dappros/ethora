@@ -6,6 +6,7 @@ import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
+import * as DOMPurify from "dompurify";
 
 import {
   MainContainer,
@@ -220,14 +221,14 @@ export function ChatInRoom() {
     if (profile?.profileImage) {
       userAvatar = profile?.profileImage;
     }
-
+    const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
     xmpp.sendMessage(
       currentRoom,
       user.firstName,
       user.lastName,
       userAvatar,
       user.walletAddress,
-      typeof button === "object" ? button.value : myMessage.split('<br>').join('\n'),
+      typeof button === "object" ? button.value : clearMessageFromHtml,
       typeof button === "object" ? button.notDisplayedValue : null
     );
   };
