@@ -47,8 +47,8 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
         errors.documentName = "Required";
       }
 
-      if (!values.file) {
-        errors.file = "Required";
+      if (!uploadedFile) {
+        errors.file = "File required";
       }
 
       return errors;
@@ -56,14 +56,11 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        console.log(values);
-
         const fileLocation = uploadedFile.location;
         const documentUploadRest = await http.httpWithAuth().post("/docs", {
           documentName: values.documentName,
           files: [fileLocation],
         });
-        console.log(documentUploadRest);
         setLoading(false);
       } catch (e) {
         console.log(e);
@@ -80,12 +77,13 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
       fd.append("files", e.target.files[0]);
       const fileUploadResp = await http.httpWithAuth().post("/files", fd);
       setUploadedFile(fileUploadResp.data.results[0]);
+      formik.setValues(fileUploadResp.data.results[0])
+
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
   };
-
   return (
     <Box>
       <Box sx={{ width: "100%" }}>
@@ -110,9 +108,9 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
                   : "1px solid gray",
                 borderRadius: "10px",
                 height: "300px",
-                backgroundImage: uploadedFile.locationPreview
-                  ? `url(${uploadedFile.locationPreview})`
-                  : "none",
+                // backgroundImage: uploadedFile.locationPreview
+                //   ? `url(${uploadedFile.locationPreview})`
+                //   : "none",
                 backgroundSize: "contain",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
