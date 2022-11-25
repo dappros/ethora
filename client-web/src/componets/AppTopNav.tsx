@@ -26,7 +26,7 @@ import { useStoreState } from "../store";
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Divider } from "@mui/material";
-import { configDocuments } from "../config/config";
+import { configDocuments, configNFT } from "../config/config";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -34,7 +34,7 @@ function firstLetersFromName(fN: string, lN: string) {
 const menuActionsSection = {
   name: "Actions",
   items: [
-    { name: "Mint NFT", id: "/mint", visible: true },
+    { name: "Mint NFT", id: "/mint", visible: configNFT },
     {
       name: "Upload Document",
       id: "/documents/upload",
