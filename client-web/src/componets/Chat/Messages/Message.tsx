@@ -272,7 +272,7 @@ export const Message: React.FC<IMessage> = ({
     >
       <MenuItem onClick={() => openDialogMenu("transfer")}>Transfer coins</MenuItem>
       <MenuItem onClick={openPrivateRoom}>Direct message</MenuItem>
-      <MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>
+      {/*<MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>*/}
     </Menu>
 
     <Dialog
