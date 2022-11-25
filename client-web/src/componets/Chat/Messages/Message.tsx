@@ -226,7 +226,7 @@ export const Message: React.FC<IMessage> = ({
         }
 
         {!message.data.isMediafile ?
-            <span>{message.body}</span>
+            <span dangerouslySetInnerHTML={{__html: message.body.replace(/\b(https?\:\/\/\S+)/mg, '<a href="$1">$1</a>')}}></span>
             : null
         }
       </KitMessage.CustomContent>
