@@ -227,7 +227,7 @@ export function ChatInRoom() {
       user.lastName,
       userAvatar,
       user.walletAddress,
-      typeof button === "object" ? button.value : myMessage,
+      typeof button === "object" ? button.value : myMessage.split('<br>').join('\n'),
       typeof button === "object" ? button.notDisplayedValue : null
     );
   };
