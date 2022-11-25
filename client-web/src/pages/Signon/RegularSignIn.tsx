@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Button, Container,Box } from "@mui/material";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { Button, Container, Box } from "@mui/material";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useHistory } from "react-router";
 import { EmailModal } from "./EmailModal";
 import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
 import OwnerLogin from "./OwnerLogin";
+import { regularLoginEmail, regularLoginUsername } from "../../config/config";
 
 export interface IRegularSignIn {}
 
@@ -15,7 +16,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
 
   const [ownerRegistration, setOwnerRegistration] = useState(false);
   const [ownerLogin, setOwnerLogin] = useState(false);
-const history = useHistory()
+  const history = useHistory();
   return (
     <Container
       maxWidth="xl"
@@ -36,27 +37,29 @@ const history = useHistory()
           justifyContent: "center",
         }}
       >
-        <Button
-          sx={{ margin: 1, textTransform: 'none', fontSize: '16px' }}
-          fullWidth
-          variant="contained"
-          onClick={() => setOpenEmail(true)}
-        >
-          Sign In with E-mail
-        </Button>
-        <Button
-                 sx={{ margin: 1, textTransform: 'none', fontSize: '16px' }}
+        {regularLoginEmail && (
+          <Button
+            sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
+            fullWidth
+            variant="contained"
+            onClick={() => setOpenEmail(true)}
+          >
+            Sign In with E-mail
+          </Button>
+        )}
+        {regularLoginUsername && (
+          <Button
+            sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
+            fullWidth
+            variant="contained"
+            onClick={() => setOpenUsername(true)}
+          >
+            Sign In with username
+          </Button>
+        )}
 
-          fullWidth
-          variant="contained"
-          onClick={() => setOpenUsername(true)}
-        >
-          Sign In with username
-        </Button>
-
         <Button
-          sx={{ margin: 1, textTransform: 'none', fontSize: '16px' }}
-
+          sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth
           variant="contained"
           color="success"
@@ -65,8 +68,7 @@ const history = useHistory()
           Owner Registration
         </Button>
         <Button
-                 sx={{ margin: 1, textTransform: 'none', fontSize: '16px' }}
-
+          sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth
           variant="contained"
           color="success"
@@ -78,8 +80,8 @@ const history = useHistory()
           sx={{ margin: 1 }}
           fullWidth
           variant="text"
-          onClick={() => history.push('/')}
-          startIcon={<ArrowBackIosIcon/>}
+          onClick={() => history.push("/")}
+          startIcon={<ArrowBackIosIcon />}
         >
           Back
         </Button>

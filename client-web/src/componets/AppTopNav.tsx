@@ -26,6 +26,7 @@ import { useStoreState } from "../store";
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Divider } from "@mui/material";
+import { configDocuments } from "../config/config";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -33,13 +34,17 @@ function firstLetersFromName(fN: string, lN: string) {
 const menuActionsSection = {
   name: "Actions",
   items: [
-    { name: "Mint NFT", id: "/mint" },
-    { name: "Upload Document", id: "/documents/upload" },
+    { name: "Mint NFT", id: "/mint", visible: true },
+    {
+      name: "Upload Document",
+      id: "/documents/upload",
+      visible: configDocuments,
+    },
   ],
 };
 const idActionsSection = {
   name: "Id",
-  items: [{ name: "Sign out", id: "logout" }],
+  items: [{ name: "Sign out", id: "logout", visible: true }],
 };
 const AppTopNav = () => {
   const currentUntrackedChatRoom = useStoreState(
@@ -53,16 +58,24 @@ const AppTopNav = () => {
   const menuAccountSection = {
     name: "Account",
     items: [
-      { name: "My Profile", id: "/profile/" + user.walletAddress },
-      { name: "Explorer", id: "/explorer" },
-      { name: "Transactions", id: "/explorer/address/" + user.walletAddress },
+      {
+        name: "My Profile",
+        id: "/profile/" + user.walletAddress,
+        visible: true,
+      },
+      { name: "Explorer", id: "/explorer", visible: true },
+      {
+        name: "Transactions",
+        id: "/explorer/address/" + user.walletAddress,
+        visible: true,
+      },
     ],
   };
   const initMenuItems = [
     menuAccountSection,
     {
       name: "Messaging",
-      items: [{ name: "Chats", id: "/chat/" + chatUrl }],
+      items: [{ name: "Chats", id: "/chat/" + chatUrl, visible: true }],
     },
     menuActionsSection,
     idActionsSection,
@@ -101,7 +114,10 @@ const AppTopNav = () => {
       setMenuItems((items) => {
         return [
           ...items,
-          { name: "Users", items: [{ name: "Users", id: "/users" }] },
+          {
+            name: "Users",
+            items: [{ name: "Users", id: "/users", visible: true }],
+          },
         ];
       });
     }
@@ -211,6 +227,9 @@ const AppTopNav = () => {
                       {el.name}
                     </Typography>
                     {el.items.map((item) => {
+                      if (!item.visible) {
+                        return null;
+                      }
                       return (
                         <MenuItem
                           onClick={() => onMenuItemClick(item.id, el.name)}
@@ -227,31 +246,30 @@ const AppTopNav = () => {
               })}
             </Menu>
             {!!mainCoinBalance && (
-              <Link to={'/'} style={{textDecoration: 'none'}}>
-              <Box
-                sx={{
-                  marginRight: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  cursor: "pointer",
-                  backgroundColor: 'rgba(255,255,255,0.8)',
-                  color: 'black',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingX: '5px',
-                  borderRadius: '5px',
-                }}
-                
-              >
-                <img
-                  alt=""
-                  style={{ width: "20px", height: "20px" }}
-                  src={coinImg}
-                />
-                {mainCoinBalance?.balance}
-              </Box>
+              <Link to={"/"} style={{ textDecoration: "none" }}>
+                <Box
+                  sx={{
+                    marginRight: "10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    cursor: "pointer",
+                    backgroundColor: "rgba(255,255,255,0.8)",
+                    color: "black",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    paddingX: "5px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <img
+                    alt=""
+                    style={{ width: "20px", height: "20px" }}
+                    src={coinImg}
+                  />
+                  {mainCoinBalance?.balance}
+                </Box>
               </Link>
-            ) }
+            )}
           </Box>
           <Box style={{ marginLeft: "auto" }}>
             <Typography

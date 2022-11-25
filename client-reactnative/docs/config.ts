@@ -1,3 +1,54 @@
+// Master switches
+
+/*
+START SCREEN switch.
+This specifies which screen is going to be the default one for Users. See options below.
+(A) Starred rooms. In social-focused applications which is also default for Ethora, this is ’roomsStarred’ which means user will first see the messaging interface with ‘starred’ tab selected.
+(B) Own Profile screen. In business-focused applications you may prefer to have ‘profileOwn’ be the start screen. That’s where User can view their own profile, see their documents / assets and share their information via QR and links.
+(C) Chat Bot. In some business and social applications, User needs to be greeted by a chat bot. It may be the case that most of the interaction will happen in one Room via a conversational interface. In such case, specify ‘roomBot’. This means that the app will send a “hi” message to your default chat bot and the User will be redirected to their individual Room with the bot, as their start screen experience. The default chat bot will prompt the User for further actions from there.
+(D) Metaverse mode. If you prefer a gamified / metaverse experience, however, you may want to start from ‘roomsNav’ option which prompts the User to start ‘walking’ around Rooms in a metaverse presence mode.
+*/
+
+const configStartScreenOptions = {
+  roomsStarred: 'roomsStarred',
+  profileOwn: 'profileOwn',
+  roomBot: 'roomBot',
+  roomsNav: 'roomsNav',
+};
+export const configStartScreen = configStartScreenOptions.roomsStarred; // default option (A) - start with the starred or default chat Rooms
+// const configStartScreen = 'profileOwn'; // option (B) - users start from own Profile
+// const configStartScreen = 'roomBot'; // option (C) - User starts in a room guided by your default Chat Bot
+// const configStartScreen = 'roomsNav'; // option (D) - User starts in a ‘metaverse’ mode
+
+/*
+META / NAV master switch.
+When enabled, this means that your Users can use the “metaverse” navigation mode to move between Rooms.
+In this mode, Users can also create their own Rooms next to existing ones, collaboratively building a social metaspace.
+If disabled, all rooms will be static and no navigation UI will be shown.
+*/
+
+export const configMetaNav = true; // most business apps would prefer this disabled
+
+/*
+ITEMS / NFT master switch.
+When this setting is enabled, your Users can mint and trade NFTs a.k.a Items.
+Business applications may prefer this disabled and use Documents asset type instead.
+
+Developers notes:
+(1) We hide “Mint NFT” from Actions menu when this is enabled.
+(2) In Profile, we already hide types of assets that User doesn’t have, however we should also check this switch to make sure we don’t display contextual NFT related UI in apps where this is disabled.
+*/
+
+export const configNFT = true;
+
+/*
+DOCUMENTS master switch.
+When this setting is enabled, your Users can create and share Documents asset type.
+Most business applications would prefer this enabled.
+*/
+
+export const configDocuments = true;
+
 // TITLE
 // App title / name shown in Login screen and top nav bar
 const appTitle = 'Ethora'; //done
@@ -46,46 +97,54 @@ const textStyles = {
 
 const defaultChatBackgroundTheme = [
   {
-    value:'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
-    isSelected:false,
-    alt:'Default'
+    value:
+      'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
+    isSelected: false,
+    alt: 'Default',
   },
   {
-    value:'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
-    isSelected:false,
-    alt:'#00C49F'
+    value:
+      'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
+    isSelected: false,
+    alt: '#00C49F',
   },
   {
-    value:'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
-    isSelected:false,
-    alt:'#85BACD'
+    value:
+      'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
+    isSelected: false,
+    alt: '#85BACD',
   },
   {
-    value:'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
-    isSelected:false,
-    alt:'#D6A4A6'
+    value:
+      'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
+    isSelected: false,
+    alt: '#D6A4A6',
   },
   {
-    value:'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
-    isSelected:false,
-    alt:'Colourful'
+    value:
+      'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
+    isSelected: false,
+    alt: 'Colourful',
   },
   {
-    value:'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
-    isSelected:false,
-    alt:'Pattern'
+    value:
+      'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
+    isSelected: false,
+    alt: 'Pattern',
   },
   {
-    value:'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
-    isSelected:false,
-    alt:'Pillars of creation'
+    value:
+      'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
+    isSelected: false,
+    alt: 'Pillars of creation',
   },
   {
-    value:'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
-    isSelected:false,
-    alt:'Tech Doodle'
+    value:
+      'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
+    isSelected: false,
+    alt: 'Tech Doodle',
   },
-]
+];
 
 /* TUTORIAL */
 // If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
@@ -217,14 +276,27 @@ export const ROOM_KEYS: Record<string, string> = {
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
 const isLogoTitle: boolean = false;
-export const appWallets = ['0xB91F341f948469D77D607E36E5264aB0e0479c9C']
-// Login screen
-const googleSignIn = true;
-const appleSignIn = true;
-const facebookSignIn = true;
-const regularLogin = true;
-const regularLoginEmail = false;
+export const appWallets = ['0xB91F341f948469D77D607E36E5264aB0e0479c9C'];
+
+// LOGIN SCREEN
+
+// Enable or disable options below to control which login options your Users should have.
+
+const googleSignIn = true; // social sign on with existing Gmail account
+const appleSignIn = true; // social sign on with existing Apple account
+const facebookSignIn = true; // social sign on with existing Facebook account
+const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
+const regularLogin = true; // custom login+password - users have to register first
+const regularLoginEmail = false; // custom login using e-mail address for login - users have to register first
 const regularLoginUsername = false;
+
+// TO BE DEPRECATED
+
+// images for tutorial screens
+// TUTORIAL
+// EMAIL MANAGEMENT
+// PREMIUM MEMBER CHECK
+
 export {
   appTitle,
   logoPath,
@@ -269,5 +341,7 @@ export {
   facebookSignIn,
   regularLoginEmail,
   regularLogin,
-  defaultChatBackgroundTheme
+  metamaskSignIn,
+  regularLoginUsername,
+  defaultChatBackgroundTheme,
 };

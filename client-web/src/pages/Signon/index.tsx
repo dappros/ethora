@@ -18,6 +18,12 @@ import { UsernameModal } from "./UsernameModal";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
 import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import {
+  facebookSignIn,
+  googleSignIn,
+  metamaskSignIn,
+  regularLogin,
+} from "../../config/config";
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -209,73 +215,84 @@ export default function Signon() {
           justifyContent: "center",
         }}
       >
-        <FacebookLogin
-          appId="1172938123281314"
-          autoLoad={false}
-          fields="name,email,picture"
-          onClick={() => {}}
-          callback={onFacebookClick}
-          icon={<FacebookIcon style={{ marginRight: 10 }} />}
-          buttonStyle={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            fontSize: 16,
-            padding: 5,
-            borderRadius: 4,
-            width: "100%",
-            margin: "3px 0",
-            fontFamily: "Roboto,Helvetica,Arial,sans-serif",
-            fontWeight: 500,
-            textTransform: "none",
-            paddingLeft: 20,
-            
-          }}
-          textButton={"Sign In with facebook"}
-          containerStyle={{ padding: 0, width: "100%" }}
-        />
-        <GoogleLogin
-          clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
-          buttonText="Sign In with Google"
-          onSuccess={onGoogleClickSuccess}
-          onFailure={onFailure}
-          cookiePolicy={"single_host_origin"}
-          render={(props) => (
-            <Button
-              {...props}
-              sx={{ margin: 1 }}
-              fullWidth
-              variant="contained"
-              startIcon={<GoogleIcon />}
-              style={{
-                backgroundColor: "white",
-                color: "rgba(0,0,0,0.6)",
-                textTransform: "none",
-                fontSize: '16px'
-              }}
-            >
-              Sign In with Google
-            </Button>
-          )}
-        />
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="contained"
-          onClick={() => onMetamaskLogin()}
-          startIcon={<DiamondIcon />}
-          style={{ backgroundColor: "#d9711a", textTransform: "none" ,fontSize: '16px'}}
-        >
-          Sign In with Metamask
-        </Button>
-        <Button
-          sx={{ margin: 1 }}
-          fullWidth
-          variant="text"
-          onClick={() => history.push("/regularSignIn")}
-        >
-          Login with credentials
-        </Button>
+        {facebookSignIn && (
+          <FacebookLogin
+            appId="1172938123281314"
+            autoLoad={false}
+            fields="name,email,picture"
+            onClick={() => {}}
+            callback={onFacebookClick}
+            icon={<FacebookIcon style={{ marginRight: 10 }} />}
+            buttonStyle={{
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              fontSize: 16,
+              padding: 5,
+              borderRadius: 4,
+              width: "100%",
+              margin: "3px 0",
+              fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+              fontWeight: 500,
+              textTransform: "none",
+              paddingLeft: 20,
+            }}
+            textButton={"Sign In with facebook"}
+            containerStyle={{ padding: 0, width: "100%" }}
+          />
+        )}
+        {googleSignIn && (
+          <GoogleLogin
+            clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
+            buttonText="Sign In with Google"
+            onSuccess={onGoogleClickSuccess}
+            onFailure={onFailure}
+            cookiePolicy={"single_host_origin"}
+            render={(props) => (
+              <Button
+                {...props}
+                sx={{ margin: 1 }}
+                fullWidth
+                variant="contained"
+                startIcon={<GoogleIcon />}
+                style={{
+                  backgroundColor: "white",
+                  color: "rgba(0,0,0,0.6)",
+                  textTransform: "none",
+                  fontSize: "16px",
+                }}
+              >
+                Sign In with Google
+              </Button>
+            )}
+          />
+        )}
+        {metamaskSignIn && (
+          <Button
+            sx={{ margin: 1 }}
+            fullWidth
+            variant="contained"
+            onClick={() => onMetamaskLogin()}
+            startIcon={<DiamondIcon />}
+            style={{
+              backgroundColor: "#d9711a",
+              textTransform: "none",
+              fontSize: "16px",
+            }}
+          >
+            Sign In with Metamask
+          </Button>
+        )}
+        {regularLogin && (
+          <Button
+            sx={{ margin: 1 }}
+            fullWidth
+            variant="text"
+            onClick={() => history.push("/regularSignIn")}
+          >
+            Login with credentials
+          </Button>
+        )}
       </Box>
 
       <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />

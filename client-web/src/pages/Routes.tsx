@@ -16,6 +16,7 @@ import { MintNft } from "./MintNft/MintNft";
 import { UploadDocument } from "./UploadDocument/UploadDocument";
 import { BrowserRouter } from "react-router-dom";
 import { RegularSignIn } from "./Signon/RegularSignIn";
+import { configDocuments } from "../config/config";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -149,7 +150,7 @@ export const Routes = () => {
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
         <Route path={"/provenance"} component={Provenance} exact />
         <Route path={"/mint"} component={MintNft} exact />
-        <Route path={"/documents/upload"} component={UploadDocument} exact />
+        {configDocuments && <Route path={"/documents/upload"} component={UploadDocument} exact />}
 
         <Route
           path={"/explorer/transactions/:txId"}
