@@ -205,15 +205,17 @@ export function ChatInRoom() {
       return "";
     }
 
-    if (differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1) {
-      return format(new Date(messagesInRoom[0].date), "hh:mm");
-    } else {
-      return formatDistance(
-        subDays(new Date(messagesInRoom[0].date), 0),
-        new Date(),
-        { addSuffix: true }
-      );
-    }
+    return format(new Date(messagesInRoom[0].date), "H:mm");
+
+    // if (differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1) {
+    //   return format(new Date(messagesInRoom[0].date), "hh:mm");
+    // } else {
+    //   return formatDistance(
+    //     subDays(new Date(messagesInRoom[0].date), 0),
+    //     new Date(),
+    //     { addSuffix: true }
+    //   );
+    // }
   };
 
   const stripHtml = (html: string) => {
