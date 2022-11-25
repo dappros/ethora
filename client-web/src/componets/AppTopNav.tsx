@@ -247,23 +247,6 @@ const AppTopNav = () => {
             </Menu>
           </Box>
           <Box style={{ marginLeft: "auto" }}>
-            {/* <Typography
-              variant="h4"
-              noWrap
-              sx={{
-                mr: 2,
-                display: { xs: "none", md: "flex" },
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              <NavLink style={{ color: "white" }} to="/">
-                Ethora
-              </NavLink>
-            </Typography> */}
             {!!mainCoinBalance && (
               <Link to={"/"} style={{ textDecoration: "none" }}>
                 <Box

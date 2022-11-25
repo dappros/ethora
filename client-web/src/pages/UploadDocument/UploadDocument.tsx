@@ -12,13 +12,14 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as http from "../../http";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface IUploadDocument {}
 
 export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
+  const { showSnackbar } = useSnackbar();
   const [uploadedFile, setUploadedFile] = useState({
     _id: "",
     createdAt: "",
@@ -47,8 +48,8 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
         errors.documentName = "Required";
       }
 
-      if (!values.file) {
-        errors.file = "Required";
+      if (!uploadedFile) {
+        errors.file = "File required";
       }
 
       return errors;
@@ -56,17 +57,18 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        console.log(values);
-
         const fileLocation = uploadedFile.location;
         const documentUploadRest = await http.httpWithAuth().post("/docs", {
           documentName: values.documentName,
           files: [fileLocation],
         });
-        console.log(documentUploadRest);
+        showSnackbar("success", "Document uploaded successfully");
+
         setLoading(false);
       } catch (e) {
         console.log(e);
+        showSnackbar("error", "Uploading failed");
+
         setLoading(false);
       }
     },
@@ -74,18 +76,18 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
-    console.log(e)
+    console.log(e);
     try {
       const fd = new FormData();
       fd.append("files", e.target.files[0]);
       const fileUploadResp = await http.httpWithAuth().post("/files", fd);
       setUploadedFile(fileUploadResp.data.results[0]);
+      formik.setValues(fileUploadResp.data.results[0]);
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
   };
-
   return (
     <Box>
       <Box sx={{ width: "100%" }}>
@@ -104,21 +106,20 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent:uploadedFile.locationPreview ? 'end' : "center",
+                justifyContent: uploadedFile.locationPreview ? "end" : "center",
                 border: uploadedFile.locationPreview
                   ? "none"
                   : "1px solid gray",
                 borderRadius: "10px",
                 height: "300px",
-                backgroundImage: uploadedFile.locationPreview
-                  ? `url(${uploadedFile.locationPreview})`
-                  : "none",
+                // backgroundImage: uploadedFile.locationPreview
+                //   ? `url(${uploadedFile.locationPreview})`
+                //   : "none",
                 backgroundSize: "contain",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
               }}
             >
-              
               <input
                 onChange={onFileChange}
                 ref={fileRef}
@@ -129,7 +130,7 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
                 disabled={loading}
                 color="secondary"
                 variant="contained"
-                onClick={() =>fileRef?.current?.click()}
+                onClick={() => fileRef?.current?.click()}
               >
                 Upload File
               </Button>

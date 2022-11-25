@@ -28,11 +28,14 @@ export function MyProfile() {
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
-
+  const setBalance = useStoreState(state => state.setBalance)
 
   useEffect(() => {
     console.log("MyProfile init");
     setLoading(true);
+    getBalance(user.walletAddress).then((resp) => {
+      setBalance(resp.data.balance);
+    });
     getTransactions(user.walletAddress)
       .then((result) => {
         setTransactions(result.data);

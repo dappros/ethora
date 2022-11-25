@@ -17,6 +17,8 @@ import { UploadDocument } from "./UploadDocument/UploadDocument";
 import { BrowserRouter } from "react-router-dom";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
+import { Alert, Snackbar } from "@mui/material";
+import { useSnackbar } from "../context/SnackbarContext";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -81,6 +83,7 @@ export const Routes = () => {
 
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
+  const { snackbar, closeSnackbar } = useSnackbar();
 
   const getAcl = async () => {
     try {
@@ -163,6 +166,19 @@ export const Routes = () => {
           exact
         />
       </Switch>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+      >
+        <Alert
+          onClose={closeSnackbar}
+          severity={snackbar.action}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </React.Suspense>
   );
 };

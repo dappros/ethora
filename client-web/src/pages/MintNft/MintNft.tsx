@@ -11,6 +11,7 @@ import React from "react";
 import { useStoreState } from "../../store";
 import * as http from "../../http";
 import { useFormik } from "formik";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface IMintNft {}
 
@@ -22,7 +23,7 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
 
   const setBalance = useStoreState((state) => state.setBalance);
   const user = useStoreState((state) => state.user);
-
+  const { showSnackbar } = useSnackbar();
   const fileRef = React.useRef<HTMLInputElement>(null);
 
   const onImage = (event: any) => {
@@ -78,6 +79,13 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
           );
           const balanceResp = await http.getBalance(user.walletAddress);
           setBalance(balanceResp.data.balance);
+          showSnackbar(
+            "success",
+            "Item minted successfully, it will appear in few seconds"
+          );
+        })
+        .catch((e) => {
+          showSnackbar("error", "Minting failed");
         })
         .finally(() => setLoading(false));
     },
@@ -85,14 +93,13 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
 
   return (
     <Box>
-      <Box style={{ width: '100%' }}>
-       
+      <Box style={{ width: "100%" }}>
         <Box
           sx={{
             width: "50%",
             typography: "body1",
             padding: 1,
-            margin: 'auto'
+            margin: "auto",
             // display: "flex",
           }}
         >
@@ -104,7 +111,7 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "end",
-                border: preview ? 'none' : "1px solid gray",
+                border: preview ? "none" : "1px solid gray",
                 borderRadius: "10px",
                 height: "300px",
                 backgroundImage: preview ? `url(${preview})` : "none",
