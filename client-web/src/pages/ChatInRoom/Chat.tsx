@@ -457,6 +457,7 @@ export function ChatInRoom() {
               !!useChatRooms.filter((e) => e.jid === currentRoom)[0]
                 ?.composing && (
                 <TypingIndicator
+                  style={{opacity: ".6"}}
                   content={
                     useChatRooms.filter((e) => e.jid === currentRoom)[0]
                       ?.composing
