@@ -60,7 +60,6 @@ export const Message: React.FC<IMessage> = ({
   const balance = useStoreState((store) => store.balance);
   const coinData = balance.filter(el => !el.tokenType && el.contractAddress.length > 10)
   const user = useStoreState((store) => store.user);
-  const loaderArchive = useStoreState((store) => store.loaderArchive);
 
   const openDialogMenu = (type: IDialog) => {
     setAnchorEl(null)
@@ -227,7 +226,7 @@ export const Message: React.FC<IMessage> = ({
         }
 
         {!message.data.isMediafile ?
-            message.body
+            <span dangerouslySetInnerHTML={{ __html: message.body }}></span>
             : null
         }
       </KitMessage.CustomContent>
