@@ -138,7 +138,6 @@ export const Message: React.FC<IMessage> = ({
     )
       .then((result) => {
         if (result.isNewRoom) {
-          useStoreState.getState().setLoaderArchive(true);
           const temporaryRoomData = {
             jid: result.roomJid,
             name: result.roomName,
@@ -150,12 +149,7 @@ export const Message: React.FC<IMessage> = ({
             toUpdate: true,
           };
           useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
-          console.log(
-            "SAVE ROOM TO LIST => ",
-            useStoreState.getState().userChatRooms
-          );
           chooseDirectRoom(result.roomJid);
-          xmpp.getRooms();
         } else {
           chooseDirectRoom(result.roomJid);
         }

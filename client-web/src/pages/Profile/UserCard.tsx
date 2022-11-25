@@ -36,7 +36,6 @@ export default function UserCard({ profile, walletAddress }: TProps) {
     )
       .then((result) => {
           if(result.isNewRoom){
-              useStoreState.getState().setLoaderArchive(true);
               const temporaryRoomData = {
                   jid: result.roomJid,
                   name: result.roomName,
@@ -48,9 +47,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
                   toUpdate: true
               }
               useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
-              console.log("SAVE ROOM TO LIST => ", useStoreState.getState().userChatRooms)
               history.push("/chat/" + result.roomJid);
-              xmpp.getRooms();
           }else{
               history.push("/chat/" + result.roomJid);
           }
