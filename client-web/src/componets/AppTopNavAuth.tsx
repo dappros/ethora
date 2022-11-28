@@ -26,7 +26,7 @@ const AppTopNavAuth = () => {
               textDecoration: "none",
             }}
           >
-            <NavLink style={{color: "white"}}  to="/">Ethora</NavLink>
+            {/* <NavLink style={{color: "white"}}  to="/">Ethora</NavLink> */}
           </Typography>
         </Toolbar>
       </Container>
