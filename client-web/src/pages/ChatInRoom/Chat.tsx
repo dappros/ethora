@@ -5,7 +5,7 @@ import { TMessageHistory, useStoreState } from "../../store";
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
-import { differenceInHours, format, formatDistance, subDays } from "date-fns";
+import { format, formatDistance, subDays } from "date-fns";
 import * as DOMPurify from "dompurify";
 
 import {
@@ -347,9 +347,13 @@ export function ChatInRoom() {
         !roomJID ||
         roomJID === "none" ||
         roomJID === "" ||
-        currentUntrackedChatRoom.split("@")[0] === roomJID
+          currentUntrackedChatRoom.split("@")[0] === roomJID
       ) {
-        chooseRoom(currentUntrackedChatRoom);
+        if(currentUntrackedChatRoom.split("@")[1]){
+          chooseRoom(currentUntrackedChatRoom);
+        }else{
+          chooseRoom(currentUntrackedChatRoom+"@conference.dev.dxmpp.com");
+        }
       }
     }
 
