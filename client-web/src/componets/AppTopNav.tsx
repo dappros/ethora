@@ -75,7 +75,7 @@ const AppTopNav = () => {
     menuAccountSection,
     {
       name: "Messaging",
-      items: [{ name: "Chats", id: "/chat/" + chatUrl, visible: true }],
+      items: [{ name: "Chats", id: "/chat/none", visible: true }],
     },
     menuActionsSection,
     idActionsSection,
