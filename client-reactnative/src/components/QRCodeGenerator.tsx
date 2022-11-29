@@ -33,9 +33,10 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
 
   let link = '';
 
-  if (shareKey.includes('profileLink')) {
+  if (shareKey.includes('profileLink')||shareKey.includes('doclink')) {
     link = shareKey;
-  } else {
+  }
+  else {
     link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, '');
   }
   const createShareLink = () => {
@@ -58,8 +59,12 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
   };
 
   const copyToClipboard = () => {
+    if(props.removeBaseUrl){
+      Clipboard.setString(shareKey);
+    }else{
     const shareLink = `${unv_url}${link}`;
     Clipboard.setString(shareLink);
+    }
     showToast('success', 'Info', 'Link copied', 'top');
     // showInfo('Info', 'Link copied.')
   };
@@ -71,7 +76,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
       <QRCode
         getRef={svg}
         //QR code value
-        value={qrlink}
+        value={qrlink?qrlink:undefined}
         //size of QR Code
         size={hp('20%')}
         //Color of the QR Code (Optional)

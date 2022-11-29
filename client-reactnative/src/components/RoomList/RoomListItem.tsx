@@ -9,28 +9,22 @@ import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {RoomListItemIcon} from './RoomListItemIcon';
 import {ROUTES} from '../../constants/routes';
-import {Box, HStack, Text, View, VStack} from 'native-base';
+import {Box, HStack, Pressable, Text, View, VStack} from 'native-base';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {observer} from 'mobx-react-lite';
-import {Animated, Easing, TouchableOpacity} from 'react-native';
-import {Swipeable} from 'react-native-gesture-handler';
-
-import {LeftActions, RightActions} from './LeftAndRightDragAction';
+import {TouchableOpacity} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import { useStores } from '../../stores/context';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 interface RoomListProps {
-  isActive: boolean;
   jid: string;
   name: string;
   counter: number;
   participants: string;
-  drag: any;
-  renameChat: any;
-  leaveChat: any;
-  toggleNotification: any;
-  movingActive: boolean;
+  index:number;
+  length:number
 }
 
 export const RoomListItem = observer(
@@ -38,16 +32,15 @@ export const RoomListItem = observer(
     jid,
     name,
     participants,
-    drag,
-    renameChat,
-    toggleNotification,
-    leaveChat,
-    movingActive,
+    index,
+    length
   }: RoomListProps) => {
-    const [animation, setAnimation] = useState(new Animated.Value(0));
     const {chatStore} = useStores()
     const room = chatStore.roomsInfoMap[jid]
     const navigation = useNavigation();
+
+    const [createChatButtonPressed, setCreateChatButtonPressed] =
+    useState<boolean>(false);
 
     const defaultText = 'Tap to view and join the conversation.';
 
@@ -55,71 +48,9 @@ export const RoomListItem = observer(
       chatStore.updateBadgeCounter(jid, 'CLEAR');
       navigation.navigate(ROUTES.CHAT, {chatJid: jid, chatName: name});
     };
-
-    const swipeRef = useRef();
-
-    const stopAnimation = () => {
-      // Animated.sequence(animation).stop();
-      animation.stopAnimation();
-      animation.setValue(0);
-    };
-    const startShake = () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(animation, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          }),
-          Animated.timing(animation, {
-            toValue: -1,
-            duration: 100,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          }),
-          Animated.timing(animation, {
-            toValue: 1,
-            duration: 100,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          }),
-          Animated.timing(animation, {
-            toValue: 0,
-            duration: 100,
-            useNativeDriver: true,
-            easing: Easing.linear,
-          }),
-        ]),
-      ).start();
-    };
-
-    useEffect(() => {
-      if (movingActive) {
-        startShake();
-      } else {
-        stopAnimation();
-      }
-    }, [movingActive]);
     return (
-      <Swipeable
-        enabled={movingActive}
-        ref={swipeRef}
-        renderLeftActions={() => (
-          <LeftActions
-            jid={jid}
-            name={name}
-            renameChat={renameChat}
-            swipeRef={swipeRef}
-            toggleNotification={toggleNotification}
-          />
-        )}
-        renderRightActions={() => (
-          <RightActions jid={jid} leaveChat={leaveChat} swipeRef={swipeRef} />
-        )}>
-        <Animated.View
+        <View
           style={[
-            {transform: [{translateX: animation}]},
             {backgroundColor: 'white'},
           ]}>
           <Box
@@ -132,7 +63,6 @@ export const RoomListItem = observer(
             pr="5"
             py="2">
             <TouchableOpacity
-              onLongPress={() => movingActive && drag()}
               onPress={navigateToChat}>
               <HStack justifyContent="space-between">
                 <View justifyContent={'center'} flex={0.1}>
@@ -225,8 +155,51 @@ export const RoomListItem = observer(
               </HStack>
             </TouchableOpacity>
           </Box>
-        </Animated.View>
-      </Swipeable>
+          {
+            index == length-1?(
+            <Pressable
+              onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
+              bg={createChatButtonPressed ? 'coolGray.200' : 'white'}
+              padding={'2'}
+              paddingLeft={'4'}
+              onPressIn={() => setCreateChatButtonPressed(true)}
+              onPressOut={() => setCreateChatButtonPressed(false)}>
+              <HStack alignItems={'center'}>
+                <Box
+                  w={hp('5.5%')}
+                  h={hp('5.5%')}
+                  bg={'#64BF7C'}
+                  rounded="full"
+                  justifyContent={'center'}
+                  alignItems="center"
+                  marginRight={2}>
+                  <AntDesign name="plus" color={'#FFF'} size={hp('4.3%')} />
+                </Box>
+                <View>
+                  <Text
+                    fontSize={hp('2%')}
+                    fontFamily={textStyles.boldFont}
+                    _dark={{
+                      color: 'warmGray.50',
+                    }}
+                    color="coolGray.800">
+                    Create a new room
+                  </Text>
+                  <Text
+                    fontFamily={textStyles.regularFont}
+                    fontSize={hp('1.5%')}
+                    color="coolGray.600"
+                    _dark={{
+                      color: 'warmGray.100',
+                    }}>
+                    Your own room, share with anyone you like
+                  </Text>
+                </View>
+              </HStack>
+            </Pressable>
+            ):null
+          }
+        </View>
     );
   },
 );

@@ -6,8 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useMemo, useState} from 'react';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import React, { useState} from 'react';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -19,20 +18,16 @@ import {
   subscribeToRoom,
   unsubscribeFromChatXmpp,
 } from '../../xmpp/stanzas';
-import {FloatingActionButton} from './FloatingActionButton';
 import {RoomListItem} from './RoomListItem';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
-import {Pressable, HStack, Input, Text, View, Box} from 'native-base';
+import {Input, Text, View} from 'native-base';
 import {commonColors, textStyles} from '../../../docs/config';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
 
@@ -42,8 +37,6 @@ export const RoomList = observer(({roomsList}: any) => {
   const [pickedChatJid, setPickedChatJid] = useState<string>('');
   const [newChatName, setNewChatName] = useState<string>('');
   const [movingActive, setMovingActive] = useState<boolean>(false);
-  const [createChatButtonPressed, setCreateChatButtonPressed] =
-    useState<boolean>(false);
 
   const navigation = useNavigation();
 
@@ -179,83 +172,30 @@ export const RoomList = observer(({roomsList}: any) => {
           </TouchableOpacity>
         </View>
       </Modal>
-      <FloatingActionButton
-        style={{position: 'absolute', bottom: 10, right: 10}}
-        action={toggleMovingChats}>
-        {movingActive ? (
-          <AntIcon color={'white'} size={hp('3%')} name={'check'} />
-        ) : (
-          <Entypo color={'white'} size={hp('3%')} name={'list'} />
-        )}
-      </FloatingActionButton>
       <View
       bg={"#e9f1fd"}
       shadow="2"
-       style={{maxHeight:hp("60%")}}>
-      <DraggableFlatList
+       style={{maxHeight:hp("75%")}}
+       >
+      <FlatList
         nestedScrollEnabled={true}
         data={sortedRoomsList}
-        onDragEnd={({data}) => onDragEnd(data)}
-        keyExtractor={(item: any) => `draggable-item-${item.jid}`}
-        renderItem={({item, drag, isActive}) => {
+        keyExtractor={(item: any) => `${item.jid}`}
+        renderItem={({item, index}) => {
           return (
             <RoomListItem
+              index={index}
+              length={sortedRoomsList.length}
               counter={item.counter}
-              drag={drag}
-              isActive={isActive}
               jid={item.jid}
               name={item.name}
               participants={item.participants}
               key={item.jid}
-              renameChat={renameChat}
-              leaveChat={leaveTheRoom}
-              toggleNotification={toggleNotification}
-              movingActive={movingActive}
             />
           );
         }}
       />
       </View>
-      <Pressable
-        onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
-        bg={createChatButtonPressed ? 'coolGray.200' : 'transparent'}
-        padding={'2'}
-        paddingLeft={'4'}
-        onPressIn={() => setCreateChatButtonPressed(true)}
-        onPressOut={() => setCreateChatButtonPressed(false)}>
-        <HStack alignItems={'center'}>
-          <Box
-            w={hp('5.5%')}
-            h={hp('5.5%')}
-            bg={'#64BF7C'}
-            rounded="full"
-            justifyContent={'center'}
-            alignItems="center"
-            marginRight={2}>
-            <AntDesign name="plus" color={'#FFF'} size={hp('4.3%')} />
-          </Box>
-          <View>
-            <Text
-              fontSize={hp('2%')}
-              fontFamily={textStyles.boldFont}
-              _dark={{
-                color: 'warmGray.50',
-              }}
-              color="coolGray.800">
-              Create a new room
-            </Text>
-            <Text
-              fontFamily={textStyles.regularFont}
-              fontSize={hp('1.5%')}
-              color="coolGray.600"
-              _dark={{
-                color: 'warmGray.100',
-              }}>
-              Your own room, share with anyone you like
-            </Text>
-          </View>
-        </HStack>
-      </Pressable>
     </>
   );
   // });

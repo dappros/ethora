@@ -6,17 +6,18 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {useState} from 'react';
-import {commonColors, textStyles, unv_url} from '../../../docs/config';
+import {appLinkingUrl, commonColors, textStyles, unv_url} from '../../../docs/config';
 import ParsedText from 'react-native-parsed-text';
 import {Linking, StyleSheet, TouchableOpacity} from 'react-native';
 import Communications from 'react-native-communications';
 import {getYoutubeMetadata} from '../../helpers/getYoutubeMetadata';
-import {getRoomInfo} from '../../xmpp/stanzas';
+import {getRoomInfo, retrieveOtherUserVcard} from '../../xmpp/stanzas';
 import {useStores} from '../../stores/context';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
 import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
+import { ROUTES } from '../../constants/routes';
 
 const DEFAULT_OPTION_TITLES = ['Call', 'Text', 'Cancel'];
 const ytubeLinkRegEx =
@@ -174,7 +175,9 @@ export const MessageText = observer((props: any) => {
         </View>
       </TouchableOpacity>
     );
-  } else if (props.currentMessage.text.includes(unv_url) && !props.currentMessage.text.includes('profileLink')) {
+  } else if (props.currentMessage.text.includes(unv_url) && props.currentMessage.text.match(
+    /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+  ) && !props.currentMessage.text.includes('https://app-dev.dappros.com/v1/docs/share/')) {
     const chatLink = props.currentMessage.text.match(
       /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
     )[0];
@@ -213,7 +216,98 @@ export const MessageText = observer((props: any) => {
         fontFamily={textStyles.lightFont}>(tap to go to this room)</Text>
       </Button>
     );
-  } else {
+  }
+  else if(props.currentMessage.text.includes('https://app-dev.dappros.com/v1/docs/share/')){
+    const doclink = props.currentMessage.text
+    return(
+      <View
+      margin={3}
+      >
+        <Text
+        color={"white"}
+        fontWeight={"bold"}
+        fontFamily={textStyles.boldFont}
+        >
+          Document
+        </Text>
+        <Text
+        fontFamily={textStyles.regularFont}
+        >{props.currentMessage.text}</Text>
+        <ParsedText
+        style={[
+          styles[props.position].text,
+          props.textStyle && props.textStyle[props.position],
+          props.customTextStyle,
+        ]}
+        parse={[
+          ...props.parsePatterns(linkStyle),
+          {type: 'url', style: linkStyle, onPress: onUrlPress},
+          {type: 'phone', style: linkStyle, onPress: onPhonePress},
+          {type: 'email', style: linkStyle, onPress: onEmailPress},
+        ]}
+        childrenProps={{...props.textProps}}>
+        {doclink}
+      </ParsedText>
+      </View>
+    )
+  }
+  else if(props.currentMessage.text.includes(unv_url) && props.currentMessage.text.includes('profileLink')){
+    const params = props.currentMessage.text.split(appLinkingUrl)[1];
+    const queryParams = new URLSearchParams(params);
+    const firstName: string = queryParams.get('firstName');
+    const lastName: string = queryParams.get('lastName');
+    const xmppId: string = queryParams.get('xmppId');
+    const walletAddressFromLink: string =
+      queryParams.get('walletAddress');
+    const linkToken = queryParams.get('linkToken');
+
+    const handleProfileOpen = () => {
+      if (loginStore.initialData.walletAddress === walletAddressFromLink) {
+        navigation.navigate(ROUTES.PROFILE);
+      } else {
+        setTimeout(() => {
+          retrieveOtherUserVcard(
+            loginStore.initialData.xmppUsername,
+            xmppId,
+            chatStore.xmpp,
+          );
+  
+          loginStore.setOtherUserDetails({
+            anotherUserFirstname: firstName,
+            anotherUserLastname: lastName,
+            anotherUserLastSeen: {},
+            anotherUserWalletAddress: walletAddressFromLink,
+          });
+        }, 2000);
+        navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN, {
+          linkToken: linkToken,
+        });
+      }
+    }
+    
+    return(
+      <Button
+        alignItems={"center"}
+        onPress={handleProfileOpen}
+        shadow={2}
+        margin={3}
+        backgroundColor={commonColors.primaryColor}>
+        <Text
+        textAlign={"center"}
+        // textDecorationLine={"underline"}
+        color={"white"}
+        fontSize={hp('2%')}
+        fontFamily={textStyles.boldFont}
+        >🚪➡️{firstName + " " + lastName}</Text>
+        <Text
+        textAlign={"center"}
+        color={"white"}
+        fontSize={hp('1.3%')}
+        fontFamily={textStyles.lightFont}>(tap to view this profile)</Text>
+      </Button>
+    )
+  }
+  else {
     return (
       <ParsedText
         style={[
