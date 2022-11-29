@@ -66,12 +66,10 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 
         return document;
       });
-
       setItemTransactions(
         allTransactions.sort(
           (a: any, b: any) =>
-            new Date(a.createdAt).toUTCString() -
-            new Date(b.createdAt).toUTCString(),
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         ),
       );
     });
@@ -116,13 +114,18 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
       {/* <ScrollView style={styles.container}> */}
       <View style={{...styles.contentContainer, margin: 0}}>
         <VStack paddingTop={5} paddingX={5}>
-          <VStack justifyContent={'center'} alignItems={'center'} marginBottom={3}>
-            <Text fontFamily={textStyles.boldFont} fontSize={16}>{item.documentName}</Text>
+          <VStack
+            justifyContent={'center'}
+            alignItems={'center'}
+            marginBottom={3}>
+            <Text fontFamily={textStyles.boldFont} fontSize={16}>
+              {item.documentName}
+            </Text>
           </VStack>
           <HStack justifyContent={'flex-start'}>
             <TouchableOpacity
               onPress={onPreviewClick}
-              style={{alignItems: 'center',}}>
+              style={{alignItems: 'center'}}>
               {(!!imageMimetypes[item.file.mimetype] ||
                 !!pdfMimemtype[item.file.mimetype]) && (
                 <FastImage

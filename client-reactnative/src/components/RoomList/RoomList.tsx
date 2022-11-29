@@ -29,12 +29,18 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import {Pressable, HStack, Input, Text, View, Box} from 'native-base';
-import {commonColors, textStyles} from '../../../docs/config';
+import {
+  commonColors,
+  defaultChats,
+  ROOM_KEYS,
+  textStyles,
+} from '../../../docs/config';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
+import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
@@ -44,7 +50,6 @@ export const RoomList = observer(({roomsList}: any) => {
   const [movingActive, setMovingActive] = useState<boolean>(false);
   const [createChatButtonPressed, setCreateChatButtonPressed] =
     useState<boolean>(false);
-
   const navigation = useNavigation();
 
   const manipulatedWalletAddress = underscoreManipulation(
@@ -188,74 +193,37 @@ export const RoomList = observer(({roomsList}: any) => {
           <Entypo color={'white'} size={hp('3%')} name={'list'} />
         )}
       </FloatingActionButton>
-      <View
-      bg={"#e9f1fd"}
-      shadow="2"
-       style={{maxHeight:hp("60%")}}>
-      <DraggableFlatList
-        nestedScrollEnabled={true}
-        data={sortedRoomsList}
-        onDragEnd={({data}) => onDragEnd(data)}
-        keyExtractor={(item: any) => `draggable-item-${item.jid}`}
-        renderItem={({item, drag, isActive}) => {
-          return (
-            <RoomListItem
-              counter={item.counter}
-              drag={drag}
-              isActive={isActive}
-              jid={item.jid}
-              name={item.name}
-              participants={item.participants}
-              key={item.jid}
-              renameChat={renameChat}
-              leaveChat={leaveTheRoom}
-              toggleNotification={toggleNotification}
-              movingActive={movingActive}
-            />
-          );
-        }}
-      />
+      <View bg={'#e9f1fd'} shadow="2" style={{maxHeight: hp('60%')}}>
+        <DraggableFlatList
+          nestedScrollEnabled={true}
+          data={sortedRoomsList}
+          onDragEnd={({data}) => onDragEnd(data)}
+          keyExtractor={(item: any) => `draggable-item-${item.jid}`}
+          renderItem={({item, drag, isActive}) => {
+            return (
+              <RoomListItem
+                counter={item.counter}
+                drag={drag}
+                isActive={isActive}
+                jid={item.jid}
+                name={item.name}
+                participants={item.participants}
+                key={item.jid}
+                renameChat={renameChat}
+                leaveChat={leaveTheRoom}
+                toggleNotification={toggleNotification}
+                movingActive={movingActive}
+              />
+            );
+          }}
+        />
       </View>
-      <Pressable
+      <CreateNewChatButton
         onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
-        bg={createChatButtonPressed ? 'coolGray.200' : 'transparent'}
-        padding={'2'}
-        paddingLeft={'4'}
+        onPressOut={() => setCreateChatButtonPressed(false)}
         onPressIn={() => setCreateChatButtonPressed(true)}
-        onPressOut={() => setCreateChatButtonPressed(false)}>
-        <HStack alignItems={'center'}>
-          <Box
-            w={hp('5.5%')}
-            h={hp('5.5%')}
-            bg={'#64BF7C'}
-            rounded="full"
-            justifyContent={'center'}
-            alignItems="center"
-            marginRight={2}>
-            <AntDesign name="plus" color={'#FFF'} size={hp('4.3%')} />
-          </Box>
-          <View>
-            <Text
-              fontSize={hp('2%')}
-              fontFamily={textStyles.boldFont}
-              _dark={{
-                color: 'warmGray.50',
-              }}
-              color="coolGray.800">
-              Create a new room
-            </Text>
-            <Text
-              fontFamily={textStyles.regularFont}
-              fontSize={hp('1.5%')}
-              color="coolGray.600"
-              _dark={{
-                color: 'warmGray.100',
-              }}>
-              Your own room, share with anyone you like
-            </Text>
-          </View>
-        </HStack>
-      </Pressable>
+        isPressed={createChatButtonPressed}
+      />
     </>
   );
   // });
