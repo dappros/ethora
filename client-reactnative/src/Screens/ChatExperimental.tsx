@@ -56,6 +56,9 @@ import {
   allowIsTyping,
   commonColors,
   defaultBotsList,
+  IMetaRoom,
+  metaRooms as predefinedMeta,
+  ROOM_KEYS,
   textStyles,
 } from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -95,6 +98,8 @@ import {
 import matchAll from 'string.prototype.matchall';
 import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {MetaNavigation} from '../components/Chat/MetaNavigation';
+import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -128,9 +133,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
   const [isReply, setIsReply] = useState(false);
+  const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const {isOpen, onOpen, onClose} = useDisclose();
+  const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
 
+  const getMetaRooms = async () => {
+    const rooms = await asyncStorageGetItem('metaRooms');
+    setMetaRooms(rooms || predefinedMeta);
+  };
   const giftedRef = useRef(null);
 
   const path = Platform.select({
@@ -145,7 +156,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
     type: '',
     message: {},
   });
-
   const room = chatStore.roomList.find(item => item.jid === chatJid);
 
   const messages = chatStore.messages
@@ -177,6 +187,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
       getRoomArchiveStanza(chatJid, chatStore.xmpp);
     }
+    getMetaRooms();
   }, [chatJid]);
 
   useEffect(() => {
@@ -1000,6 +1011,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
             ) : null}
           </Actionsheet.Content>
         </Actionsheet>
+        <MetaNavigation
+          chatId={chatJid.split('@')[0]}
+          open={showMetaNavigation || chatStore.showMetaNavigation}
+          onClose={() => {
+            setShowMetaNavigation(false);
+            chatStore.toggleMetaNavigation(false);
+          }}
+        />
         <ChatMediaModal
           url={mediaModal.url}
           type={mediaModal.type}

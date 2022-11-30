@@ -289,10 +289,12 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   useEffect(() => {
     getBalances();
   }, [loginStore.anotherUserWalletAddress]);
+
+
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('1%')}}>
+        <View style={{marginTop: hp('1%'),backgroundColor: 'white'}}>
           <HStack paddingX={wp('4%')}>
             {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
@@ -425,7 +427,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
 
     if (activeTab === 1) {
       return (
-        <View style={{paddingBottom: hp('63%')}}>
+        <View style={{paddingBottom: hp('57%')}}>
           <TransactionListTab
             transactions={anotherUserTransaction}
             walletAddress={loginStore.anotherUserWalletAddress}
@@ -451,7 +453,12 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-        <SecondaryHeader title={"User's profile"} />
+        <SecondaryHeader
+          title={"User's profile"}
+          onBackPress={() =>
+            activeTab === 1 ? setActiveTab(0) : navigation.goBack()
+          }
+        />
 
         <View style={{zIndex: +1, alignItems: 'center'}}>
           <HStack
@@ -466,7 +473,7 @@ const OtherUserProfileScreen = observer(({navigation, route}) => {
               containerStyle={{alignItems: 'center'}}
               layout={firstLayout}
               isLoading={isLoadingVCard}>
-              {loginStore.anotherUserAvatar!=='none' ? (
+              {loginStore.anotherUserAvatar !== 'none' ? (
                 <Image
                   source={{uri: loginStore.anotherUserAvatar}}
                   style={{
