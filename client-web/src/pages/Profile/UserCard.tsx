@@ -84,9 +84,9 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             {profile?.description && (
               <Box>Description: {profile?.description}</Box>
             )}
-            <Button onClick={openDirectChat} variant="contained" size="small">
+           {!!user.walletAddress && <Button onClick={openDirectChat} variant="contained" size="small">
               Direct message
-            </Button>
+            </Button>}
           </Box>
         </Card>
       </Box>

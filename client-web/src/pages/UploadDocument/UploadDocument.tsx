@@ -112,9 +112,9 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
                   : "1px solid gray",
                 borderRadius: "10px",
                 height: "300px",
-                // backgroundImage: uploadedFile.locationPreview
-                //   ? `url(${uploadedFile.locationPreview})`
-                //   : "none",
+                backgroundImage: uploadedFile.locationPreview
+                  ? `url(${uploadedFile.locationPreview})`
+                  : "none",
                 backgroundSize: "contain",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",

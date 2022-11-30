@@ -20,35 +20,40 @@ const state: Record<string, boolean> = {
 };
 
 export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
-  const [visibilityValue, setVisibilityValue] = useState('open');
-  const [assetsValue, setAssetsValue] = useState('full');
   const {apiStore, loginStore} = useStores();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<'assets' | 'profile' | null>(null);
+  const [visibilityValue, setVisibilityValue] = useState(
+    loginStore.initialData.isProfileOpen ? 'open' : 'restricted',
+  );
+  const [assetsValue, setAssetsValue] = useState(
+    loginStore.initialData.isAssetsOpen ? 'full' : 'individual',
+  );
 
-  const updateProfileVisibility = async () => {
-    const profileState = state[visibilityValue];
-    setLoading(true);
+  const updateProfileVisibility = async (value: string) => {
+    const profileState = state[value];
+    setLoading('profile');
 
     try {
       const formData = new FormData();
       formData.append('isProfileOpen', profileState);
-      await httpUploadPut(
+      const {data} = await httpUploadPut(
         apiStore.defaultUrl + changeUserData,
         formData,
         loginStore.userToken,
         console.log,
       );
+
       showSuccess('Success', 'Profile permissions updated');
+      loginStore.updateCurrentUser(data.user);
+      setVisibilityValue(value);
     } catch (error) {
       console.log(error);
     }
-    changeScreen(1);
-    setLoading(false);
+    setLoading(null);
   };
-  const updateAssetsVisibility = async () => {
-    setLoading(true);
-    const assetsState = state[assetsValue];
-    console.log(assetsState);
+  const updateAssetsVisibility = async (value: string) => {
+    setLoading('assets');
+    const assetsState = state[value];
     try {
       const formData = new FormData();
       formData.append('isAssetsOpen', assetsState);
@@ -59,13 +64,13 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
         console.log,
       );
       showSuccess('Success', 'Assets permissions updated');
-      console.log(data);
+      loginStore.updateCurrentUser(data.user);
+      setAssetsValue(value);
     } catch (error) {
       console.log(error);
     }
-    changeScreen(2);
 
-    setLoading(false);
+    setLoading(null);
   };
   return (
     <VStack paddingX={10}>
@@ -76,9 +81,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             name="myRadioGroup"
             accessibilityLabel="favorite number"
             value={visibilityValue}
-            onChange={nextValue => {
-              setVisibilityValue(nextValue);
-            }}>
+            onChange={updateProfileVisibility}>
             <View paddingY={5}>
               <Radio
                 value="open"
@@ -118,8 +121,8 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
           <View mt={5}>
             <Button
               title="Manage profile shares"
-              onPress={updateProfileVisibility}
-              loading={loading}
+              onPress={() => changeScreen(1)}
+              loading={loading === 'profile'}
             />
           </View>
         </VStack>
@@ -131,9 +134,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             name="myRadioGroup"
             accessibilityLabel="favorite number"
             value={assetsValue}
-            onChange={nextValue => {
-              setAssetsValue(nextValue);
-            }}>
+            onChange={updateAssetsVisibility}>
             <View paddingY={5}>
               <Radio
                 value="full"
@@ -174,9 +175,9 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
           </Radio.Group>
           <View mt={1}>
             <Button
-              loading={loading}
+              loading={loading === 'assets'}
               title="Manage documents shares"
-              onPress={updateAssetsVisibility}
+              onPress={() => changeScreen(2)}
             />
           </View>
         </VStack>

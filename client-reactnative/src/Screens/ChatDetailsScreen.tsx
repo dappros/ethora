@@ -369,7 +369,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 fontSize={hp('6%')}
                 fontFamily={textStyles.semiBoldFont}
                 color={'white'}>
-                {roomName[0]}
+                {roomName?roomName[0]:'No name'}
               </Text>
             )}
           </Box>
@@ -377,7 +377,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         <Text
         color={"black"}
         fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
-          {roomName}
+          {roomName?roomName:'No name'}
         </Text>
         
         <Text

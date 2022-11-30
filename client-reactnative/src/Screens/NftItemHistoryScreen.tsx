@@ -48,8 +48,8 @@ const NftItemHistoryScreen = (props: any) => {
       setItemTransactions(
         allTransactions.sort((a: any, b: any) => {
           return (
-            new Date(a.createdAt).toUTCString() -
-            new Date(b.createdAt).toUTCString()
+            new Date(b.createdAt).getTime() -
+            new Date(a.createdAt).getTime()
           );
         }),
       );

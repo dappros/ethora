@@ -982,7 +982,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
         <Actionsheet
           isOpen={isOpen}
           onClose={() => {
-            onClose(), setIsShowDeleteOption(true), setShowReplyOption(true);
+            onClose();
+            setIsShowDeleteOption(true);
+            setShowReplyOption(true);
           }}>
           <Actionsheet.Content>
             {showReplyOption ? (

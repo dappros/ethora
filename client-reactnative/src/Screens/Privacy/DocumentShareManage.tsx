@@ -20,6 +20,8 @@ import {showSuccess} from '../../components/Toast/toast';
 import QRCodeGenerator from '../../components/QRCodeGenerator';
 import Modal from 'react-native-modal';
 import {generateDocumentLink} from '../../helpers/generateDocumentLink';
+import QrModal from '../../components/Modals/TransactionModal/TransactionModal';
+import { modalTypes } from '../../constants/modalTypes';
 
 export interface IDocumentShareManage {
   onAddPress: Dispatch<SetStateAction<number>>;
@@ -181,6 +183,14 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
           close={() => {}}
         />
       </Modal>
+
+      {/* <QrModal
+        type={modalTypes.GENERATEQR}
+        closeModal={() => setModalData({visible: false, link: ''})}
+        extraData={{link:modalData.link, removeBaseUrl:true}}
+        isVisible={modalData.visible}
+      /> */}
+      
     </VStack>
   );
 };

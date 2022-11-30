@@ -27,6 +27,8 @@ export interface InitialDataProps {
   xmppUsername: string;
   _id: string;
   referrerId: string;
+  isProfileOpen: boolean;
+  isAssetsOpen: boolean;
 }
 export class LoginStore {
   isFetching: boolean = false;
@@ -45,6 +47,8 @@ export class LoginStore {
     xmppUsername: '',
     _id: '',
     referrerId: '',
+    isProfileOpen: false,
+    isAssetsOpen: false,
   };
   userDescription: string = '';
   userAvatar: string = '';
@@ -298,7 +302,42 @@ export class LoginStore {
       referrerId: response.data.referrerId || '',
       isProfileOpen: isProfileOpen,
       isAssetsOpen: isAssetsOpen,
-      desc:''
+      desc: '',
+    };
+    await asyncStorageSetItem('initialLoginData', dataForStorage);
+    runInAction(() => {
+      this.initialData = dataForStorage;
+      this.isFetching = false;
+    });
+  };
+
+  updateCurrentUser = async (user: any) => {
+    let {
+      firstName,
+      lastName,
+      username,
+      password,
+      xmppPassword,
+      _id,
+      isProfileOpen,
+      isAssetsOpen,
+    } = user;
+    const {walletAddress} = user.defaultWallet;
+    const xmppUsername = underscoreManipulation(walletAddress);
+
+    // save user login details received after login
+    const dataForStorage = {
+      ...this.initialData,
+      firstName,
+      lastName,
+      walletAddress,
+      username,
+      password,
+      xmppPassword,
+      xmppUsername,
+      _id,
+      isProfileOpen: isProfileOpen,
+      isAssetsOpen: isAssetsOpen,
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
@@ -436,7 +475,7 @@ export class LoginStore {
     firstName: string;
     lastName: string;
   }) => {
-    const url = this.stores.apiStore.defaultUrl + registerUserURL; 
+    const url = this.stores.apiStore.defaultUrl + registerUserURL;
     const response: any = await httpPut(url, bodyData, this.userToken);
     if (response.data.success) {
       const updatedData = {
