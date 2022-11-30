@@ -708,6 +708,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             </HStack>
             <View style={{flex: 1}}>
               <QRCodeGenerator
+                removeBaseUrl={extraData.removeBaseUrl?extraData.removeBaseUrl:false}
                 close={() => clearState()}
                 shareKey={extraData.link}
               />

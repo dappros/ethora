@@ -3,5 +3,5 @@ interface ILink {
 }
 
 export const generateDocumentLink = ({linkToken}: ILink) => {
-  return ` https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
+  return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
 };

@@ -6,8 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useMemo, useState} from 'react';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import React, { useState} from 'react';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -19,25 +18,21 @@ import {
   subscribeToRoom,
   unsubscribeFromChatXmpp,
 } from '../../xmpp/stanzas';
-import {FloatingActionButton} from './FloatingActionButton';
 import {RoomListItem} from './RoomListItem';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
-import {Pressable, HStack, Input, Text, View, Box} from 'native-base';
+import {Input, Text, View} from 'native-base';
 import {
   commonColors,
   defaultChats,
   ROOM_KEYS,
   textStyles,
 } from '../../../docs/config';
-import {StyleSheet, TouchableOpacity} from 'react-native';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
 import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
@@ -184,46 +179,29 @@ export const RoomList = observer(({roomsList}: any) => {
           </TouchableOpacity>
         </View>
       </Modal>
-      <FloatingActionButton
-        style={{position: 'absolute', bottom: 10, right: 10}}
-        action={toggleMovingChats}>
-        {movingActive ? (
-          <AntIcon color={'white'} size={hp('3%')} name={'check'} />
-        ) : (
-          <Entypo color={'white'} size={hp('3%')} name={'list'} />
-        )}
-      </FloatingActionButton>
-      <View bg={'#e9f1fd'} shadow="2" style={{maxHeight: hp('60%')}}>
-        <DraggableFlatList
-          nestedScrollEnabled={true}
-          data={sortedRoomsList}
-          onDragEnd={({data}) => onDragEnd(data)}
-          keyExtractor={(item: any) => `draggable-item-${item.jid}`}
-          renderItem={({item, drag, isActive}) => {
-            return (
-              <RoomListItem
-                counter={item.counter}
-                drag={drag}
-                isActive={isActive}
-                jid={item.jid}
-                name={item.name}
-                participants={item.participants}
-                key={item.jid}
-                renameChat={renameChat}
-                leaveChat={leaveTheRoom}
-                toggleNotification={toggleNotification}
-                movingActive={movingActive}
-              />
-            );
-          }}
-        />
-      </View>
-      <CreateNewChatButton
-        onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
-        onPressOut={() => setCreateChatButtonPressed(false)}
-        onPressIn={() => setCreateChatButtonPressed(true)}
-        isPressed={createChatButtonPressed}
+      <View
+      bg={"#e9f1fd"}
+      shadow="2"
+       >
+      <FlatList
+        nestedScrollEnabled={true}
+        data={sortedRoomsList}
+        keyExtractor={(item: any) => `${item.jid}`}
+        renderItem={({item, index}) => {
+          return (
+            <RoomListItem
+              index={index}
+              length={sortedRoomsList.length}
+              counter={item.counter}
+              jid={item.jid}
+              name={item.name}
+              participants={item.participants}
+              key={item.jid}
+            />
+          );
+        }}
       />
+      </View>
     </>
   );
   // });
