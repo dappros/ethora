@@ -304,7 +304,7 @@ export const Message: React.FC<IMessage> = ({
           <KitMessage.Footer
             sentTime={
               differenceInHours(new Date(), new Date(message.date)) > 5
-                ? format(new Date(message.date), "h:mm:ss a")
+                ? format(new Date(message.date), "h:mm a")
                 : formatDistance(
                     subDays(new Date(message.date), 0),
                     new Date(),
