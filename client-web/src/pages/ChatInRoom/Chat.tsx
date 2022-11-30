@@ -539,7 +539,7 @@ export function ChatInRoom() {
                 </MessageList.Content>
               )}
           </MessageList>
-          {!!roomData && (
+          {!!roomData?.name && (
             <div is={"MessageInput"}>
               <MessageInput
                 onPaste={handlePaste}
