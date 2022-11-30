@@ -25,11 +25,17 @@ import {
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 import {Input, Text, View} from 'native-base';
-import {commonColors, textStyles} from '../../../docs/config';
+import {
+  commonColors,
+  defaultChats,
+  ROOM_KEYS,
+  textStyles,
+} from '../../../docs/config';
 import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {deleteChatRoom} from '../realmModels/chatList';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
+import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore, loginStore} = useStores();
@@ -37,7 +43,8 @@ export const RoomList = observer(({roomsList}: any) => {
   const [pickedChatJid, setPickedChatJid] = useState<string>('');
   const [newChatName, setNewChatName] = useState<string>('');
   const [movingActive, setMovingActive] = useState<boolean>(false);
-
+  const [createChatButtonPressed, setCreateChatButtonPressed] =
+    useState<boolean>(false);
   const navigation = useNavigation();
 
   const manipulatedWalletAddress = underscoreManipulation(
@@ -175,7 +182,6 @@ export const RoomList = observer(({roomsList}: any) => {
       <View
       bg={"#e9f1fd"}
       shadow="2"
-       style={{maxHeight:hp("75%")}}
        >
       <FlatList
         nestedScrollEnabled={true}

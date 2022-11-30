@@ -1,7 +1,12 @@
 import {client, xml} from '@xmpp/client';
 import {format} from 'date-fns';
 import {makeAutoObservable, runInAction, toJS} from 'mobx';
-import {defaultChatBackgroundTheme, defaultChats} from '../../docs/config';
+import {
+  defaultChatBackgroundTheme,
+  defaultChats,
+  IMetaRoom,
+  metaRooms,
+} from '../../docs/config';
 import {
   addChatRoom,
   getChatRoom,
@@ -33,6 +38,11 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
+const ROOM_KEYS = {
+  official: 'official',
+  private: 'private',
+  groups: 'groups',
+};
 
 interface recentRealtimeChatProps {
   avatar?: string;
@@ -113,6 +123,7 @@ export class ChatStore {
   chatLinkInfo: any = {};
   blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
+  metaRooms: IMetaRoom[] = [];
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
     message_id: '',
@@ -124,7 +135,10 @@ export class ChatStore {
   shouldCount: boolean = true;
   roomRoles = {};
   isOnline = false;
+  showMetaNavigation = false;
+
   isLoadingEarlierMessages = false;
+  activeChats = ROOM_KEYS.official;
   isComposing: isComposingProps = {
     state: false,
     username: '',
@@ -133,6 +147,11 @@ export class ChatStore {
   };
   listOfThreads = [];
   roomMemberInfo = [];
+  unreadMessagesForGroups = {
+    [ROOM_KEYS.official]: 0,
+    [ROOM_KEYS.private]: 0,
+    [ROOM_KEYS.groups]: 0,
+  };
   backgroundTheme = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
 
@@ -144,6 +163,11 @@ export class ChatStore {
   toggleShouldCount = (value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
+    });
+  };
+  toggleMetaNavigation = (value: boolean) => {
+    runInAction(() => {
+      this.showMetaNavigation = value;
     });
   };
 
@@ -229,11 +253,44 @@ export class ChatStore {
     }
   };
 
+  setUnreadMessages = (unreadMessagesObject: any) => {
+    runInAction(() => {
+      this.unreadMessagesForGroups = unreadMessagesObject;
+    });
+  };
+
+  updateCounter = () => {
+    const notificationsCount: Record<string, number> = {
+      official: 0,
+      private: 0,
+      groups: 0,
+    };
+    this.roomList?.forEach(item => {
+      const splitedJid = item?.jid?.split('@')[0];
+      if (item.participants < 3 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.private] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+
+      if (
+        defaultChats[splitedJid] ||
+        this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
+        notificationsCount[ROOM_KEYS.official] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+
+      if (item.participants > 2 && !defaultChats[splitedJid]) {
+        notificationsCount[ROOM_KEYS.groups] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+    });
+    this.setUnreadMessages(notificationsCount);
+  };
   updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
       this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
       if (data?.isFavourite !== undefined) {
-
         this.roomsInfoMap.isUpdated += 1;
       }
     });
@@ -241,6 +298,11 @@ export class ChatStore {
       asyncStorageConstants.roomsListHashMap,
       this.roomsInfoMap,
     );
+  };
+  changeActiveChats = (type: string) => {
+    runInAction(() => {
+      this.activeChats = type;
+    });
   };
 
   addMessage = (message: any) => {
@@ -317,6 +379,7 @@ export class ChatStore {
         }
       }
     });
+    this.updateCounter();
   };
 
   updateMessageComposingState = (props: isComposingProps) => {
@@ -373,7 +436,21 @@ export class ChatStore {
       subscribeToRoom(jid, manipulatedWalletAddress, this.xmpp);
     });
   };
-
+  subscribeToMetaRooms = async () => {
+    const cachedRooms = await asyncStorageGetItem('metaRooms');
+    const allRooms = cachedRooms || metaRooms;
+    if (allRooms) {
+      allRooms.forEach(room => {
+        subscribeToRoom(
+          room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
+          underscoreManipulation(
+            this.stores.loginStore.initialData.walletAddress,
+          ),
+          this.xmpp,
+        );
+      });
+    }
+  };
   xmppListener = async () => {
     let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(
@@ -383,22 +460,24 @@ export class ChatStore {
     this.xmpp.on('stanza', async (stanza: any) => {
       //capture room info
       if (stanza.attrs.id === 'roomInfo') {
-        const featureList = stanza.children[0].children.find(item => item.attrs.xmlns === 'jabber:x:data')
-        this.updateRoomInfo(stanza.attrs.from,{roomDescription:featureList.children.find(item => item.attrs.var === "muc#roominfo_description").children[0].children[0]})
+        const featureList = stanza.children[0].children.find(
+          item => item.attrs.xmlns === 'jabber:x:data',
+        );
+        this.updateRoomInfo(stanza.attrs.from, {
+          roomDescription: featureList.children.find(
+            item => item.attrs.var === 'muc#roominfo_description',
+          ).children[0].children[0],
+        });
         runInAction(() => {
           this.chatLinkInfo[stanza.attrs.from] =
             stanza.children[0].children[0].attrs.name;
         });
       }
 
-      if(stanza.attrs.id === XMPP_TYPES.changeRoomDescription){
-        const walletAddress = stanza.attrs.to.split('@')[0]
-        getRoomInfo(
-          walletAddress,
-          stanza.attrs.from,
-          this.xmpp
-        )
-        showToast('success','Success','Description changed', 'top')
+      if (stanza.attrs.id === XMPP_TYPES.changeRoomDescription) {
+        const walletAddress = stanza.attrs.to.split('@')[0];
+        getRoomInfo(walletAddress, stanza.attrs.from, this.xmpp);
+        showToast('success', 'Success', 'Description changed', 'top');
       }
 
       if (stanza.attrs.id === XMPP_TYPES.setRoomImage) {
@@ -408,12 +487,7 @@ export class ChatStore {
           stanza,
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
-        showToast(
-          'success',
-          'Success',
-          'Chat icon set successfully',
-          'bottom',
-        );
+        showToast('success', 'Success', 'Chat icon set successfully', 'bottom');
       }
 
       if (stanza.attrs.id === XMPP_TYPES.setRoomBackgroundImage) {
@@ -541,10 +615,10 @@ export class ChatStore {
       //   console.log(stanza.children[0].children, 'banned user list of a room')
       // }
 
-      if(stanza.attrs.id === XMPP_TYPES.ban){
-        console.log(stanza.children[0].children,"dfsdsdsdsd")
-        if(stanza.children[0].children[0].attrs.status === 'success'){
-          showToast('success','Success','User banned!','top')
+      if (stanza.attrs.id === XMPP_TYPES.ban) {
+        console.log(stanza.children[0].children, 'dfsdsdsdsd');
+        if (stanza.children[0].children[0].attrs.status === 'success') {
+          showToast('success', 'Success', 'User banned!', 'top');
         }
       }
 
@@ -556,7 +630,7 @@ export class ChatStore {
         console.log(stanza.children[0].children, 'activityyyy');
       }
 
-      if(stanza.attrs.id === XMPP_TYPES.roomConfig){
+      if (stanza.attrs.id === XMPP_TYPES.roomConfig) {
         // console.log(stanza,"roooooom config")
       }
 
@@ -823,10 +897,11 @@ export class ChatStore {
       runInAction(() => {
         this.isOnline = true;
       });
-      getUserRoomsStanza(xmppUsername, this.xmpp);
+      this.subscribeToMetaRooms();
       getBlackList(xmppUsername, this.xmpp);
       updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
+      getUserRoomsStanza(xmppUsername, this.xmpp);
     });
   };
 }
