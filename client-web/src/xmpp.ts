@@ -12,7 +12,10 @@ let isGettingFirstMessages: boolean = false;
 let lastRomJIDLoading: string = "";
 
 export function walletToUsername(str: string) {
-  return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  if(str){
+    return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  }
+  return "";
 }
 
 export function usernameToWallet(str: string) {
