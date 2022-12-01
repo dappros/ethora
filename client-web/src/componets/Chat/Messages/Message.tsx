@@ -48,7 +48,7 @@ export interface IButtons {
   value: string;
 }
 
-type IDialog = "transfer" | "dialog" | "image" | "ban" | "error";
+type IDialog = "dialog" | "image" | "error";
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -67,9 +67,6 @@ export const Message: React.FC<IMessage> = ({
   const [dialogMenuType, setDialogMenuType] = useState<IDialog>("dialog");
   const [dialogText, setDialogText] = useState("");
   const openMenu = Boolean(anchorEl);
-  const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
   const [coinAmount, setCoinAmount] = useState(1);
   const balance = useStoreState((store) => store.balance);
   const coinData = balance.filter(
@@ -341,25 +338,6 @@ export const Message: React.FC<IMessage> = ({
         </div>
       </Box>
       ) : null}
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={openMenu}
-        onClose={() => setAnchorEl(null)}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center",
-        }}
-      >
-        <MenuItem onClick={() => openDialogMenu("dialog")}>
-          Transfer coins
-        </MenuItem>
-        <MenuItem onClick={openPrivateRoom}>Direct message</MenuItem>
-        {/*<MenuItem onClick={() => setAnchorEl(null)}>Ban this user</MenuItem>*/}
-      </Menu>
 
       <Dialog
         open={openDialog}
@@ -414,7 +392,7 @@ export const Message: React.FC<IMessage> = ({
                     Send coins
                 </Button>
               <Divider style={{margin: "10px"}} />
-                <Button variant="outlined" startIcon={<SendIcon />}>
+                <Button onClick={openPrivateRoom} variant="outlined" startIcon={<SendIcon />}>
                     Direct message
                 </Button>
                 <Divider style={{margin: "10px"}} />
