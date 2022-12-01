@@ -294,6 +294,14 @@ export const Message: React.FC<IMessage> = ({
             </video>
           ) : null}
 
+          {message.data.isMediafile &&
+          message.data.mimetype.split("/")[0] === "audio" ? (
+              <audio controls>
+                  <source src={message.data.location} type={message.data.mimetype} />
+                    Your browser does not support the audio element.
+              </audio>
+          ) : null}
+
         {!message.data.isMediafile ?
             <span dangerouslySetInnerHTML={{__html: message.body.replace(/\b(https?\:\/\/\S+)/mg, '<a href="$1">$1</a>')}}></span>
             : null
