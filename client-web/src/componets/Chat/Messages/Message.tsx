@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Message as KitMessage,
   MessageModel,
-  Button,
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
@@ -14,15 +13,11 @@ import {
   CardMedia,
   Dialog,
   DialogActions,
-  DialogContent,
-  FormControl,
+  DialogContent, Divider, Button,
   IconButton,
-  InputLabel,
   Menu,
   MenuItem,
-  Select,
   Slider,
-  TextField,
   Typography,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -325,6 +320,7 @@ export const Message: React.FC<IMessage> = ({
         )}
       </KitMessage>
       {buttons ? (
+      <Box sx={{ '& button': { m: 0.5 } }}>
         <div
           style={{
             display: "flex",
@@ -335,12 +331,13 @@ export const Message: React.FC<IMessage> = ({
         >
           {buttons.map((button, index) => {
             return (
-              <Button onClick={() => buttonSender(button)} key={index} border>
+              <Button variant="outlined" size="small" onClick={() => buttonSender(button)} key={index} >
                 {button.name}
               </Button>
             );
           })}
         </div>
+      </Box>
       ) : null}
       <Menu
         id="basic-menu"
@@ -412,6 +409,7 @@ export const Message: React.FC<IMessage> = ({
                   alt={"coin"}
                 />
               </Box>
+              <Divider style={{margin: "10px"}} />
             </div>
           ) : null}
 
