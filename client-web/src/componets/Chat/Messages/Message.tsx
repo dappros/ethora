@@ -26,6 +26,8 @@ import xmpp from "../../../xmpp";
 import { createPrivateChat } from "../../../helpers/chat/createPrivateChat";
 import coin from "../../../assets/images/coin.png";
 import { Box } from "@mui/system";
+import SendIcon from '@mui/icons-material/Send';
+import BlockIcon from '@mui/icons-material/Block';
 
 export interface IMessage {
   message: TMessageHistory;
@@ -46,7 +48,7 @@ export interface IButtons {
   value: string;
 }
 
-type IDialog = "transfer" | "image" | "ban" | "error";
+type IDialog = "transfer" | "dialog" | "image" | "ban" | "error";
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -62,7 +64,7 @@ export const Message: React.FC<IMessage> = ({
   const [buttons, setButtons] = useState<IButtons[]>();
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [dialogMenuType, setDialogMenuType] = useState<IDialog>("transfer");
+  const [dialogMenuType, setDialogMenuType] = useState<IDialog>("dialog");
   const [dialogText, setDialogText] = useState("");
   const openMenu = Boolean(anchorEl);
   const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -238,7 +240,7 @@ export const Message: React.FC<IMessage> = ({
                   aria-controls={openMenu ? "long-menu" : undefined}
                   aria-expanded={openMenu ? "true" : undefined}
                   aria-haspopup="true"
-                  onClick={handleClickMenu}
+                  onClick={() => openDialogMenu("dialog")}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -352,7 +354,7 @@ export const Message: React.FC<IMessage> = ({
           horizontal: "center",
         }}
       >
-        <MenuItem onClick={() => openDialogMenu("transfer")}>
+        <MenuItem onClick={() => openDialogMenu("dialog")}>
           Transfer coins
         </MenuItem>
         <MenuItem onClick={openPrivateRoom}>Direct message</MenuItem>
@@ -361,14 +363,13 @@ export const Message: React.FC<IMessage> = ({
 
       <Dialog
         open={openDialog}
-        onClose={() => setOpenDialog(true)}
+        onClose={() => setOpenDialog(false)}
         maxWidth={"xl"}
-        aria-labelledby="responsive-dialog-title"
       >
         <DialogContent>
           {dialogMenuType === "error" ? <div>{dialogText}</div> : null}
 
-          {dialogMenuType === "transfer" ? (
+          {dialogMenuType === "dialog" ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div>
                 Reward{" "}
@@ -409,7 +410,20 @@ export const Message: React.FC<IMessage> = ({
                   alt={"coin"}
                 />
               </Box>
+                <Button onClick={sendCoins} variant="outlined" size="small">
+                    Send coins
+                </Button>
               <Divider style={{margin: "10px"}} />
+                <Button variant="outlined" startIcon={<SendIcon />}>
+                    Direct message
+                </Button>
+                <Divider style={{margin: "10px"}} />
+                <Button variant="contained" startIcon={<BlockIcon />}>
+                    Block this user
+                </Button>
+                <Typography style={{textAlign: "center"}} variant="caption" display="block" gutterBottom>
+                    Stop seeing this user.
+                </Typography>
             </div>
           ) : null}
 
@@ -423,14 +437,6 @@ export const Message: React.FC<IMessage> = ({
             </div>
           ) : null}
         </DialogContent>
-        <DialogActions>
-          {dialogMenuType === "transfer" && (
-            <Button onClick={sendCoins}>Send</Button>
-          )}
-          <Button onClick={() => setOpenDialog(false)} autoFocus>
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     </div>
   );
