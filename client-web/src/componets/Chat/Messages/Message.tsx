@@ -12,11 +12,8 @@ import {
   CardActionArea,
   CardMedia,
   Dialog,
-  DialogActions,
   DialogContent, Divider, Button,
   IconButton,
-  Menu,
-  MenuItem,
   Slider,
   Typography,
 } from "@mui/material";
