@@ -144,6 +144,7 @@ interface IStore {
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
   updateMessageHistory: (messages: TMessageHistory[]) => void;
+  removeAllInMessageHistory: (userJID: string) => void;
   updateCoinsInMessageHistory: (id: number, userJID: string, amount: number) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
@@ -315,6 +316,10 @@ const _useStore = create<IStore>()(
               if(messageIndex > -1){
                 state.historyMessages[messageIndex].coinsInMessage += amount;
               }
+            }),
+          removeAllInMessageHistory: (userJID: string) =>
+            set((state) => {
+              state.historyMessages = state.historyMessages.filter(item => item.data.senderJID !== userJID)
             }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
