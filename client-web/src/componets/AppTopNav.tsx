@@ -18,15 +18,17 @@ import { NavLink } from "react-router-dom";
 import { useSubscription } from "@apollo/client";
 import Snackbar from "@mui/material/Snackbar";
 import Web3 from "web3";
-
+import ExploreIcon from "@mui/icons-material/Explore";
+import GroupIcon from "@mui/icons-material/Group";
+import StarRateIcon from "@mui/icons-material/StarRate";
 import { getBalance } from "../http";
 import xmpp from "../xmpp";
 import { useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
-import { Divider } from "@mui/material";
-import { configDocuments, configNFT } from "../config/config";
+import { Badge, Divider } from "@mui/material";
+import { configDocuments, configNFT, defaultChats } from "../config/config";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -96,6 +98,15 @@ const AppTopNav = () => {
   );
   const clearUser = useStoreState((state) => state.clearUser);
   const setBalance = useStoreState((state) => state.setBalance);
+  const rooms = useStoreState((state) => state.userChatRooms);
+  const messages = useStoreState((state) => state.messages);
+
+  const [unreadMessagesCounts, setUnreadMessagesCounts] = useState({
+    official: 0,
+    groups: 0,
+    private: 0,
+  });
+
   const ACL = useStoreState((state) => state.ACL);
   const { data, loading } = useSubscription(TRRANSFER_TO_SUBSCRIPTION, {
     variables: {
@@ -178,7 +189,30 @@ const AppTopNav = () => {
     }
     history.push("/");
   };
+  const getCounter = () => {
+    const counts = {
+      official: 0,
+      groups: 0,
+      private: 0,
+    };
+    rooms.forEach((item) => {
+      const splitedJid = item.jid.split("@")[0];
+      if (defaultChats[splitedJid]) {
+        counts.official += item.unreadMessages;
+      }
+      if (!defaultChats[splitedJid] && +item.users_cnt < 3) {
+        counts.private += item.unreadMessages;
+      }
+      if (!defaultChats[splitedJid] && +item.users_cnt >= 3) {
+        counts.groups += item.unreadMessages;
+      }
+    });
 
+   setUnreadMessagesCounts(counts)
+  };
+  useEffect(() => {
+    getCounter()
+  }, [rooms])
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -245,6 +279,24 @@ const AppTopNav = () => {
                 );
               })}
             </Menu>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <Badge badgeContent={unreadMessagesCounts.official} color="secondary">
+                <StarRateIcon />
+              </Badge>
+              <Badge badgeContent={unreadMessagesCounts.private} color="secondary">
+                <GroupIcon />
+              </Badge>
+              <Badge badgeContent={unreadMessagesCounts.groups} color="secondary">
+                <ExploreIcon />
+              </Badge>
+            </Box>
           </Box>
           <Box style={{ marginLeft: "auto" }}>
             {!!mainCoinBalance && (
