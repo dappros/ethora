@@ -860,6 +860,25 @@ class XmppClass {
     );
     this.client.send(message);
   };
+
+  blacklistUser = (
+      userJIDToBlacklist: string,
+  ) => {
+    const stanza = xml(
+        'iq',
+        {
+          from: this.client.jid?.toString(),
+
+          type: 'set',
+          id: "addToBlackList",
+        },
+        xml('query', {
+          xmlns: 'ns:deepx:muc:user:block',
+          user: userJIDToBlacklist,
+        }),
+    );
+    this.client.send(stanza);
+  };
 }
 
 export default new XmppClass();
