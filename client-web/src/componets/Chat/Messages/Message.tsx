@@ -157,6 +157,11 @@ export const Message: React.FC<IMessage> = ({
     setDialogMenuType("image");
   };
 
+  const rightClick = (event) => {
+    event.preventDefault()
+    openDialogMenu("dialog")
+  }
+
   useEffect(() => {
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
@@ -171,6 +176,7 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       ) : null}
       <KitMessage
+        onContextMenu={messageDirection === "incoming" ? rightClick : null}
         style={{
           marginBottom: position.type === "last" || position.type === "single" ? 15 : null
         }}
