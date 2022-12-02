@@ -171,6 +171,9 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       ) : null}
       <KitMessage
+        style={{
+          marginBottom: position.type === "last" || position.type === "single" ? 15 : null
+        }}
         model={{
           sender: firstName + " " + lastName,
           direction: messageDirection,
