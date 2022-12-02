@@ -105,7 +105,7 @@ export const Message: React.FC<IMessage> = ({
           user.lastName,
           user.walletAddress,
           textMessage,
-          null,
+          coinAmount,
           message.id
         );
 
@@ -294,26 +294,64 @@ export const Message: React.FC<IMessage> = ({
           ) : null}
 
         {!message.data.isMediafile ?
-            <span dangerouslySetInnerHTML={{__html: message.body.replace(/\b(https?\:\/\/\S+)/mg, '<a href="$1">$1</a>')}}></span>
-            : null
-        }
-      </KitMessage.CustomContent>
+            <div>
+              <span dangerouslySetInnerHTML={{__html: message.body.replace(/\b(https?\:\/\/\S+)/mg, '<a href="$1">$1</a>')}}></span>
+              {/*FOOTER */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 5,
+                minWidth: 200,
+                color: String(userJid).split("/")[0] !== String(messageJid).split("/")[0] ? "rgb(110, 169, 215)" : "#c6e3fa",
+                flexDirection: String(userJid).split("/")[0] === String(messageJid).split("/")[0] ? "row-reverse" : "row"
+              }}>
 
-        {(position.type === "last" || position.type === "single") && (
-          <KitMessage.Footer
-            sentTime={
-              differenceInHours(new Date(), new Date(message.date)) > 5
-                ? format(new Date(message.date), "h:mm a")
-                : formatDistance(
+                <div style={{
+                  fontSize: 12,
+                }}>
+                  {
+                    differenceInHours(new Date(), new Date(message.date)) > 5
+                    ? format(new Date(message.date), "h:mm a")
+                    : formatDistance(
                     subDays(new Date(message.date), 0),
                     new Date(),
                     {
                       addSuffix: true,
-                    }
-                  )
-            }
-          />
-        )}
+                    })
+                  }
+                </div>
+                {message.coinsInMessage > 0 ?
+                  <div style={{display: "flex", alignItems: "center"}}>
+                    <div style={{fontSize: 12}}>{message?.coinsInMessage}</div>
+                    <img
+                        src={coin}
+                        style={{ width: 25, height: 25 }}
+                        alt={"coin"}
+                    />
+                  </div>
+                : null}
+              </div>
+            </div>
+            : null
+        }
+      </KitMessage.CustomContent>
+
+        {/*{(position.type === "last" || position.type === "single") && (*/}
+        {/*  <KitMessage.Footer*/}
+        {/*    sentTime={*/}
+        {/*      differenceInHours(new Date(), new Date(message.date)) > 5*/}
+        {/*        ? format(new Date(message.date), "h:mm a")*/}
+        {/*        : formatDistance(*/}
+        {/*            subDays(new Date(message.date), 0),*/}
+        {/*            new Date(),*/}
+        {/*            {*/}
+        {/*              addSuffix: true,*/}
+        {/*            }*/}
+        {/*          )*/}
+        {/*    }*/}
+        {/*  />*/}
+        {/*)}*/}
       </KitMessage>
       {buttons ? (
       <Box sx={{ '& button': { m: 0.5 } }}>
