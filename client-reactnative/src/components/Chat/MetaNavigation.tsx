@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {HStack, Image} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -29,6 +30,39 @@ import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {sendMessageStanza} from '../../xmpp/stanzas';
 
 import Share from 'react-native-share';
+import {httpGet, httpPost} from '../../config/apiService';
+
+type IRoom = {
+  _id: string;
+  contractAddress: string;
+  createdAt: string;
+  description: string;
+  name: string;
+  ownerId: string;
+};
+
+export interface IApiMetaRoom {
+  _id: string;
+  contractAddress: string;
+  createdAt: Date;
+  description: string;
+  name: string;
+  ownerId: string;
+  ownerNavLinks: {
+    east: IRoom | null;
+    north: IRoom | null;
+    south: IRoom | null;
+    west: IRoom | null;
+  };
+  roomJid: string;
+  updatedAt: Date;
+  userNavLinks: {
+    east: IRoom | null;
+    north: IRoom | null;
+    south: IRoom | null;
+    west: IRoom | null;
+  };
+}
 
 export interface IMetaNavigation {
   chatId: string;
@@ -36,10 +70,16 @@ export interface IMetaNavigation {
   onClose: () => void;
 }
 const DIRECTIONS = {
-  NORTH: 'N',
-  WEST: 'W',
-  SOUTH: 'S',
-  EAST: 'E',
+  NORTH: 'north',
+  WEST: 'west',
+  SOUTH: 'south',
+  EAST: 'east',
+};
+const SHORT_DIRECTIONS: Record<string, string> = {
+  north: 'n',
+  west: 'w',
+  south: 's',
+  east: 'e',
 };
 
 const OPOSITE_DIRECTIONS: Record<string, string> = {
@@ -69,7 +109,7 @@ const CompassItem = ({
   chatId,
   setDirection,
 }: {
-  room: IMetaRoom | undefined;
+  room: IApiMetaRoom | undefined;
   name: string;
   chatId: string;
   setDirection: () => void;
@@ -113,7 +153,7 @@ const CompassItem = ({
           setDirection();
 
           navigation.navigate(ROUTES.CHAT, {
-            chatJid: room.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
+            chatJid: room.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
           });
         }}>
         <Text
@@ -135,12 +175,12 @@ const MetaHeader = ({
   direction,
   previousRoom,
 }: {
-  room: IMetaRoom | undefined;
+  room: IApiMetaRoom | undefined;
   direction: string;
-  previousRoom: IMetaRoom | undefined;
+  previousRoom: IApiMetaRoom | undefined;
 }) => {
   const navigation = useNavigation();
-  if (!room) {
+  if (!room?.name) {
     return (
       <View style={[styles.top, styles.innerContainer]}>
         <Text style={{fontFamily: textStyles.semiBoldFont, color: 'black'}}>
@@ -174,29 +214,73 @@ const MetaHeader = ({
     </View>
   );
 };
+const emptyMetaRoom = {
+  name: '',
+  description: '',
+  ownerNavLinks: {west: null, east: null, north: null, south: null},
+  ownerId: '',
+  contractAddress: '',
+  createdAt: new Date(),
+  _id: '',
+  roomJid: '',
+  updatedAt: new Date(),
+  userNavLinks: {west: null, east: null, north: null, south: null},
+};
+const roomRoute = '/room';
 export const MetaNavigation: React.FC<IMetaNavigation> = ({
   chatId,
   open,
   onClose,
 }) => {
   const [previousDirection, setPreviousDirection] = useState('');
-  const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
-  const metaRoom = metaRooms.find(item => item.idAddress === chatId);
-  const [previousRoom, setPreviuosRoom] = useState<IMetaRoom | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  const [metaRooms, setMetaRooms] = useState<IApiMetaRoom[]>([]);
+  const [previousRoom, setPreviuosRoom] = useState<IApiMetaRoom | undefined>();
   const {loginStore, chatStore, apiStore} = useStores();
+  const [currentMetaRoom, setCurrentMetaRoom] =
+    useState<IApiMetaRoom>(emptyMetaRoom);
   const getMetaRooms = async () => {
     const rooms = await asyncStorageGetItem('metaRooms');
     setMetaRooms(rooms || predefinedMeta);
   };
+
+  const getCurrentRoom = async () => {
+    setLoading(true);
+    try {
+      const res = await httpGet(
+        apiStore.defaultUrl + roomRoute + '/getRoom/' + chatId,
+        loginStore.userToken,
+      );
+      setCurrentMetaRoom(res.data.result);
+      console.log(res.data.result.userNavLinks);
+    } catch (error) {
+      setCurrentMetaRoom(emptyMetaRoom);
+      console.log(error);
+    }
+    setLoading(false);
+  };
   useEffect(() => {
     getMetaRooms();
   }, []);
+  useEffect(() => {
+    if (!chatId) {
+      setCurrentMetaRoom(emptyMetaRoom);
+    }
+    if (chatId) {
+      getCurrentRoom();
+    }
+  }, [chatId]);
   const checkEmptyDirections = () => {
     return (
-      !findRoom(metaRoom?.linkW, metaRooms)?.name &&
-      !findRoom(metaRoom?.linkS, metaRooms)?.name &&
-      !findRoom(metaRoom?.linkE, metaRooms)?.name &&
-      !findRoom(metaRoom?.linkN, metaRooms)?.name
+      !currentMetaRoom?.ownerNavLinks?.south &&
+      !currentMetaRoom?.ownerNavLinks?.east &&
+      !currentMetaRoom?.ownerNavLinks?.west &&
+      !currentMetaRoom?.ownerNavLinks?.north &&
+      !currentMetaRoom?.userNavLinks?.south &&
+      !currentMetaRoom?.userNavLinks?.east &&
+      !currentMetaRoom?.userNavLinks?.west &&
+      !currentMetaRoom?.userNavLinks?.north
     );
   };
 
@@ -244,26 +328,37 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       chatStore.xmpp,
     );
   };
-
-
+  const sendRoomJoin = async () => {
+    try {
+      const res = await httpPost(
+        apiStore.defaultUrl + roomRoute + '/join/' + chatId,
+        {},
+        loginStore.userToken,
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    if (previousRoom) {
+    if (previousRoom?.name) {
       sendMessage(
         previousRoom.name,
-        previousRoom.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        previousRoom.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
         true,
       );
     }
   }, [previousRoom]);
   useEffect(() => {
-    if (metaRoom) {
+    if (currentMetaRoom.name) {
       sendMessage(
-        metaRoom.name,
-        metaRoom.idAddress + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        currentMetaRoom.name,
+        currentMetaRoom.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
         false,
       );
+      sendRoomJoin();
     }
-  }, [metaRoom]);
+  }, [currentMetaRoom]);
 
   const exportRooms = async () => {
     try {
@@ -276,6 +371,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       console.log(error);
     }
   };
+
   const renderDirections = (direction: string) => {
     const oppositePreviousDirection = getOpositeDirection(previousDirection);
     if (checkEmptyDirections() && direction === oppositePreviousDirection) {
@@ -294,54 +390,62 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     return (
       <CompassItem
         name={
-          direction +
+          SHORT_DIRECTIONS[direction] +
           ':' +
-          findRoom(metaRoom?.['link' + direction], metaRooms)?.name
+          (currentMetaRoom.ownerNavLinks[direction]?.name ||
+            currentMetaRoom.userNavLinks[direction]?.name)
         }
         chatId={chatId}
-        room={findRoom(metaRoom?.['link' + direction], metaRooms)}
+        room={
+          currentMetaRoom?.ownerNavLinks?.[direction] ||
+          currentMetaRoom?.userNavLinks?.[direction]
+        }
         setDirection={() => {
           setPreviousDirection(direction);
-          setPreviuosRoom(metaRoom);
+          setPreviuosRoom(currentMetaRoom);
         }}
       />
     );
   };
   return (
     <Modal isVisible={open} onBackdropPress={onClose}>
-      <View style={styles.container}>
-        <MetaHeader
-          room={metaRoom}
-          direction={previousDirection}
-          previousRoom={previousRoom}
-        />
-        <View style={[styles.bottom, styles.innerContainer]}>
-          {renderDirections(DIRECTIONS.NORTH)}
-          <HStack justifyContent={'space-between'} alignItems={'center'}>
-            <View style={{width: '30%'}}>
-              {renderDirections(DIRECTIONS.WEST)}
-            </View>
-            <View
-              style={{
-                width: '30%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TouchableOpacity onPress={exportRooms} activeOpacity={0.9}>
-                <Ionicons
-                  name={'compass'}
-                  size={70}
-                  color={commonColors.primaryDarkColor}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={{width: '30%'}}>
-              {renderDirections(DIRECTIONS.EAST)}
-            </View>
-          </HStack>
-          {renderDirections(DIRECTIONS.SOUTH)}
+      {loading ? (
+        <ActivityIndicator color={commonColors.primaryColor} size={50} />
+      ) : (
+        <View style={styles.container}>
+          <MetaHeader
+            room={currentMetaRoom}
+            direction={previousDirection}
+            previousRoom={previousRoom}
+          />
+          <View style={[styles.bottom, styles.innerContainer]}>
+            {renderDirections(DIRECTIONS.NORTH)}
+            <HStack justifyContent={'space-between'} alignItems={'center'}>
+              <View style={{width: '30%'}}>
+                {renderDirections(DIRECTIONS.WEST)}
+              </View>
+              <View
+                style={{
+                  width: '30%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <TouchableOpacity onPress={exportRooms} activeOpacity={0.9}>
+                  <Ionicons
+                    name={'compass'}
+                    size={70}
+                    color={commonColors.primaryDarkColor}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={{width: '30%'}}>
+                {renderDirections(DIRECTIONS.EAST)}
+              </View>
+            </HStack>
+            {renderDirections(DIRECTIONS.SOUTH)}
+          </View>
         </View>
-      </View>
+      )}
     </Modal>
   );
 };

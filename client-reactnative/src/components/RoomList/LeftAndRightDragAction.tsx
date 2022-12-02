@@ -18,6 +18,7 @@ import {
 } from 'react-native-responsive-screen';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
+import {httpDelete} from '../../config/apiService';
 
 interface LeftActionsProps {
   toggleNotification: any;
@@ -77,31 +78,20 @@ interface RightActionsProps {
 export const RightActions = (props: RightActionsProps) => {
   const {jid, leaveChat, swipeRef} = props;
   const jidWithoutConference = jid?.split('@')[0];
+  const {loginStore, apiStore} = useStores();
+  const deleteMetaRoom = async () => {
+    try {
+      const res = await httpDelete(
+        apiStore.defaultUrl + '/room' + jidWithoutConference,
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const onSwipeRight = async () => {
     leaveChat(jid);
     swipeRef.current.close();
-    const rooms = await asyncStorageGetItem('metaRooms');
-    if (rooms) {
-      const room = rooms.find(item => item.idAddress === jid.split('@')[0]);
-      const clearedMetaRooms = rooms
-        .filter(item => item.idAddress !== room.idAddress)
-        .map(item => {
-          if (item.linkS === room.idAddress) {
-            item.linkS = '';
-          }
-          if (item.linkN === room.idAddress) {
-            item.linkN = '';
-          }
-          if (item.linkW === room.idAddress) {
-            item.linkW = '';
-          }
-          if (item.linkE === room.idAddress) {
-            item.linkE = '';
-          }
-          return item;
-        });
-      await asyncStorageSetItem('metaRooms', clearedMetaRooms);
-    }
+    await deleteMetaRoom();
   };
   return (
     <>

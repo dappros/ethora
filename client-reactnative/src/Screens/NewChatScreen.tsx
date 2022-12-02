@@ -30,6 +30,7 @@ import {ROUTES} from '../constants/routes';
 import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import {httpPost} from '../config/apiService';
 
 interface NewChatScreenProps {}
 
@@ -115,27 +116,20 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           );
         });
         if (params?.metaDirection) {
-          const metaRoom = {
+          const body = {
             name: chatName,
-            description: chatDescription,
-            idAddress: roomHash,
-            meta: true,
-            linkN: '',
-            linkS: '',
-            linkW: '',
-            linkE: '',
+            roomJid: roomHash,
+            from: {
+              direction: params.metaDirection,
+              roomJid: params.metaRoom.roomJid,
+            },
           };
-          const cachedMetaRooms = await asyncStorageGetItem('metaRooms');
-          const metaRoomsList = cachedMetaRooms || metaRooms;
-          const linkedRoom = metaRoomsList.find(
-            item => item.idAddress === params.metaRoom.idAddress,
+          const res = await httpPost(
+            apiStore.defaultUrl + '/room',
+            body,
+            loginStore.userToken,
           );
-          linkedRoom['link' + params.metaDirection] = roomHash;
-          metaRoom['link' + getOpositeDirection(params.metaDirection)] =
-            params.metaRoom.idAddress;
-          metaRoomsList.push(metaRoom);
-          console.log(metaRoomsList, 'akkjalfjsd');
-          await asyncStorageSetItem('metaRooms', metaRoomsList);
+          console.log(res?.data);
         }
 
         navigation.navigate(ROUTES.CHAT, {
