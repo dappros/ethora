@@ -83,7 +83,7 @@ const getPosition = (
     return result;
   }
 
-  if (previousJID === currentJID && nextJID !== currentJID && !arr[index - 1]?.data.isSystemMessage) {
+  if (previousJID === currentJID && nextJID !== currentJID && arr[index - 1]?.data.isSystemMessage === "false") {
     result.position = "single";
     result.type = "last";
     return result;
