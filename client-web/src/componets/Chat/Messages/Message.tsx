@@ -45,7 +45,7 @@ export interface IButtons {
   value: string;
 }
 
-type IDialog = "dialog" | "image" | "error";
+type IDialog = "dialog" | "image" | "error" | "clarification";
 type IDirection = "outgoing" | "incoming";
 
 export const Message: React.FC<IMessage> = ({
@@ -160,6 +160,19 @@ export const Message: React.FC<IMessage> = ({
   const rightClick = (event) => {
     event.preventDefault()
     openDialogMenu("dialog")
+  }
+
+  const userToBlackList = (step: "clarify" | "block") => {
+    if(step === "clarify"){
+      setDialogText("Are you sure you want to block the user?");
+      setDialogMenuType("clarification");
+    }
+
+    if(step === "block"){
+      xmpp.blacklistUser(message.data.senderJID);
+      useStoreState.getState().removeAllInMessageHistory(message.data.senderJID);
+      setOpenDialog(false);
+    }
   }
 
   useEffect(() => {
@@ -393,6 +406,15 @@ export const Message: React.FC<IMessage> = ({
         <DialogContent>
           {dialogMenuType === "error" ? <div>{dialogText}</div> : null}
 
+          {dialogMenuType === "clarification" ?
+              <div style={{display: "flex", flexDirection: "column"}}>
+                {dialogText}
+                <Button onClick={() => userToBlackList("block")} variant="outlined" size="small">
+                  To block list
+                </Button>
+              </div>
+              : null}
+
           {dialogMenuType === "dialog" ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div>
@@ -442,7 +464,7 @@ export const Message: React.FC<IMessage> = ({
                     Direct message
                 </Button>
                 <Divider style={{margin: "10px"}} />
-                <Button variant="contained" startIcon={<BlockIcon />}>
+                <Button onClick={() => userToBlackList("clarify")} variant="contained" startIcon={<BlockIcon />}>
                     Block this user
                 </Button>
                 <Typography style={{textAlign: "center"}} variant="caption" display="block" gutterBottom>
