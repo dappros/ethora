@@ -46,6 +46,7 @@ export interface IButtons {
 }
 
 type IDialog = "dialog" | "image" | "error";
+type IDirection = "outgoing" | "incoming";
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -70,6 +71,7 @@ export const Message: React.FC<IMessage> = ({
     (el) => !el.tokenType && el.contractAddress.length > 10
   );
   const user = useStoreState((store) => store.user);
+  const [messageDirection, setMessageDirection] = useState<IDirection>("incoming")
 
   const openDialogMenu = (type: IDialog) => {
     setAnchorEl(null);
@@ -159,6 +161,9 @@ export const Message: React.FC<IMessage> = ({
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
     }
+    setMessageDirection(String(userJid).split("/")[0] === String(messageJid).split("/")[0]
+        ? "outgoing"
+        : "incoming")
   }, []);
   return (
     <div is={"Message"}>
@@ -168,10 +173,7 @@ export const Message: React.FC<IMessage> = ({
       <KitMessage
         model={{
           sender: firstName + " " + lastName,
-          direction:
-            String(userJid).split("/")[0] === String(messageJid).split("/")[0]
-              ? "outgoing"
-              : "incoming",
+          direction: messageDirection,
           position: position.position,
         }}
         avatarPosition={
@@ -303,8 +305,8 @@ export const Message: React.FC<IMessage> = ({
                 alignItems: "center",
                 marginTop: 5,
                 minWidth: 200,
-                color: String(userJid).split("/")[0] !== String(messageJid).split("/")[0] ? "rgb(110, 169, 215)" : "#c6e3fa",
-                flexDirection: String(userJid).split("/")[0] === String(messageJid).split("/")[0] ? "row-reverse" : "row"
+                color: messageDirection === "incoming" ? "rgb(110, 169, 215)" : "#c6e3fa",
+                flexDirection: messageDirection === "incoming" ? "row" : "row-reverse"
               }}>
 
                 <div style={{
