@@ -62,6 +62,27 @@ export const regularLogin = true; // custom login+password - users have to regis
 export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
 export const regularLoginUsername = true;
 
+
+export const defaultChats = {
+    '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc': {
+      name: 'Agora (Start here) 🇬🇧🏛️👋💬',
+      premiumOnly: true,
+      stickyOrder: false,
+      removable: false,
+    },
+    d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22: {
+      name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
+      premiumOnly: true,
+      stickyOrder: false,
+      removable: false,
+    },
+    fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e: {
+      name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
+      premiumOnly: true,
+      stickyOrder: false,
+      removable: false,
+    },
+  };
 // TO BE DEPRECATED
 
 // images for tutorial screens

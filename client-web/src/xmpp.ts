@@ -12,7 +12,10 @@ let isGettingFirstMessages: boolean = false;
 let lastRomJIDLoading: string = "";
 
 export function walletToUsername(str: string) {
-  return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  if(str){
+    return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  }
+  return "";
 }
 
 export function usernameToWallet(str: string) {
@@ -85,11 +88,12 @@ const onMessageHistory = async (stanza: Element) => {
         photoURL: data.attrs.photoURL,
         quickReplies: data.attrs.quickReplies,
         roomJid: data.attrs.roomJid,
+        receiverMessageId: data.attrs?.receiverMessageId,
         senderFirstName: data.attrs.senderFirstName,
         senderJID: data.attrs.senderJID,
         senderLastName: data.attrs.senderLastName,
         senderWalletAddress: data.attrs.senderWalletAddress,
-        tokenAmount: data.attrs.tokenAmount,
+        tokenAmount: Number(data.attrs.tokenAmount),
         isMediafile: data.attrs?.isMediafile,
         originalName: data.attrs?.originalName,
         location: data.attrs?.location,
@@ -100,6 +104,7 @@ const onMessageHistory = async (stanza: Element) => {
       roomJID: stanza.attrs.from,
       date: delay.attrs.stamp,
       key: Date.now() + Number(id),
+      coinsInMessage: 0
     };
 
     // console.log('TEST ', data.attrs)
@@ -137,6 +142,17 @@ const onLastMessageArchive = (stanza: Element, xmpp: any) => {
     if (isGettingMessages) {
       useStoreState.getState().updateMessageHistory(temporaryMessages);
       isGettingMessages = false;
+
+      temporaryMessages.forEach((item) => {
+        if(item.data.isSystemMessage && item.data.tokenAmount > 0){
+          useStoreState.getState().updateCoinsInMessageHistory(
+              Number(item.data.receiverMessageId),
+              String(item.data.senderJID),
+              Number(item.data.tokenAmount)
+          );
+        }
+      })
+
       useStoreState.getState().setLoaderArchive(false);
       temporaryMessages = [];
       isGettingFirstMessages = false;
@@ -314,7 +330,7 @@ class XmppClass {
     this.client.start();
 
     this.client.on("online", (jid) => getListOfRooms(this));
-
+    // this.client.on("stanza", (stanza) => console.log(stanza));
     this.client.on("stanza", onMessageHistory);
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
@@ -843,6 +859,25 @@ class XmppClass {
       })
     );
     this.client.send(message);
+  };
+
+  blacklistUser = (
+      userJIDToBlacklist: string,
+  ) => {
+    const stanza = xml(
+        'iq',
+        {
+          from: this.client.jid?.toString(),
+
+          type: 'set',
+          id: "addToBlackList",
+        },
+        xml('query', {
+          xmlns: 'ns:deepx:muc:user:block',
+          user: userJIDToBlacklist,
+        }),
+    );
+    this.client.send(stanza);
   };
 }
 

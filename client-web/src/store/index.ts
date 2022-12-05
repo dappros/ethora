@@ -61,11 +61,12 @@ export type TMessageHistory = {
     photoURL: string;
     quickReplies: string;
     roomJid: string;
+    receiverMessageId?: number;
     senderFirstName: string;
     senderJID: string;
     senderLastName: string;
     senderWalletAddress: string;
-    tokenAmount: string;
+    tokenAmount: number;
     isMediafile?: boolean;
     originalName?: string;
     location?: string;
@@ -76,6 +77,7 @@ export type TMessageHistory = {
   roomJID: string;
   date: string;
   key: number;
+  coinsInMessage: number;
 };
 
 export type TUserChatRooms = {
@@ -142,6 +144,8 @@ interface IStore {
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
   updateMessageHistory: (messages: TMessageHistory[]) => void;
+  removeAllInMessageHistory: (userJID: string) => void;
+  updateCoinsInMessageHistory: (id: number, userJID: string, amount: number) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
   userChatRooms: TUserChatRooms[];
@@ -305,6 +309,17 @@ const _useStore = create<IStore>()(
               state.historyMessages = [...state.historyMessages, ...messages];
               state.historyMessages = state.historyMessages.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
+            }),
+          updateCoinsInMessageHistory: (id: number, userJID: string, amount: number) =>
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex(t => t.id === id);
+              if(messageIndex > -1){
+                state.historyMessages[messageIndex].coinsInMessage += amount;
+              }
+            }),
+          removeAllInMessageHistory: (userJID: string) =>
+            set((state) => {
+              state.historyMessages = state.historyMessages.filter(item => item.data.senderJID !== userJID)
             }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
