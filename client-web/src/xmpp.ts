@@ -108,10 +108,12 @@ const onMessageHistory = async (stanza: Element) => {
     };
 
     // console.log('TEST ', data.attrs)
-    if (isGettingMessages) {
+    const blackList = useStoreState.getState().blackList.find(item => item.user === msg.data.senderJID);
+
+    if (isGettingMessages && !blackList) {
       temporaryMessages.push(msg);
     }
-    if (!isGettingMessages) {
+    if (!isGettingMessages && !blackList) {
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
     }
@@ -264,6 +266,7 @@ const onComposing = (stanza: Element) => {
 const getListOfRooms = (xmpp: any) => {
   useStoreState.getState().clearUserChatRooms();
   useStoreState.getState().setCurrentUntrackedChatRoom("");
+  useStoreState.getState().clearBlackList();
 
   xmpp.client.send(xml("presence"));
   xmpp.getArchive(xmpp.client?.jid?.toString());
@@ -271,6 +274,7 @@ const getListOfRooms = (xmpp: any) => {
     xmpp.presenceInRoom(roomJID);
   });
   xmpp.getRooms();
+  xmpp.getBlackList();
   useStoreState.getState().clearMessageHistory();
 };
 
@@ -302,6 +306,19 @@ const onInvite = (stanza: Element, xmpp: any) => {
   } else {
   }
 };
+
+const onBlackList = (stanza: Element, xmpp: any) => {
+  if (stanza.attrs.id === "blackList") {
+    stanza?.getChild("query").children.forEach((item: any) => {
+      let listData = {
+        date: Number(item.attrs.date),
+        fullName: item.attrs.fullname,
+        user: item.attrs.user
+      }
+      useStoreState.getState().saveInBlackList(listData)
+    })
+  }
+}
 
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
@@ -337,6 +354,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => onComposing(stanza));
     this.client.on("stanza", (stanza) => onInvite(stanza, this));
+    this.client.on("stanza", (stanza) => onBlackList(stanza, this));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -879,7 +897,7 @@ class XmppClass {
     );
     this.client.send(stanza);
   };
-  getBlackList = (manipulatedWalletAddress: string) => {
+  getBlackList = () => {
     const stanza = xml(
         'iq',
         {
