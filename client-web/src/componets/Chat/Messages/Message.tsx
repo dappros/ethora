@@ -15,7 +15,7 @@ import {
   DialogContent, Divider, Button,
   IconButton,
   Slider,
-  Typography,
+  Typography, TextField,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { transferCoin } from "../../../http";
@@ -45,7 +45,7 @@ export interface IButtons {
   value: string;
 }
 
-type IDialog = "dialog" | "image" | "error" | "clarification";
+type IDialog = "dialog" | "image" | "error" | "clarification" | "transfer";
 type IDirection = "outgoing" | "incoming";
 
 export const Message: React.FC<IMessage> = ({
@@ -79,12 +79,14 @@ export const Message: React.FC<IMessage> = ({
     setDialogMenuType(type);
   };
 
-  const sendCoins = () => {
-    // @ts-ignore
+  const sendCoins = (amount?: number) => {
+    const currentCoinAmount = amount ? Number(amount) : Number(coinAmount)
+
+        // @ts-ignore
     transferCoin(
       "DPT",
       coinData[0].tokenName,
-      Number(coinAmount),
+      currentCoinAmount,
       message.data.senderWalletAddress
     )
       .then(() => {
@@ -93,7 +95,7 @@ export const Message: React.FC<IMessage> = ({
           " " +
           user.lastName +
           " -> " +
-          coinAmount +
+          currentCoinAmount +
           " " +
           coinData[0].tokenName +
           " -> " +
@@ -107,7 +109,7 @@ export const Message: React.FC<IMessage> = ({
           user.lastName,
           user.walletAddress,
           textMessage,
-          coinAmount,
+          currentCoinAmount,
           message.id
         );
 
@@ -415,7 +417,7 @@ export const Message: React.FC<IMessage> = ({
               </div>
               : null}
 
-          {dialogMenuType === "dialog" ? (
+          {dialogMenuType === "dialog" ?
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div>
                 Reward{" "}
@@ -426,39 +428,31 @@ export const Message: React.FC<IMessage> = ({
                 </strong>{" "}
                 with coins
               </div>
-              <Slider
-                aria-label="Coin amount"
-                defaultValue={1}
-                valueLabelDisplay="auto"
-                step={2}
-                marks
-                min={1}
-                max={7}
-                value={coinAmount}
-                onChange={(e, newValue) =>
-                  setCoinAmount(newValue || newValue[0])
-                }
-                sx={{marginTop: '10px'}}
-              />
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ fontWeight: "bold" }}>
-                  {coinAmount}
-                </Typography>
-                <img
-                  src={coin}
-                  style={{ width: 30, height: 30 }}
-                  alt={"coin"}
-                />
-              </Box>
-                <Button onClick={sendCoins} variant="outlined" size="small">
-                    Send coins
-                </Button>
+
+                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0px 10px 0px"}}>
+                  {
+                    [1, 3, 5, 'x'].map((item) => (
+                        <div
+                            key={item}
+                            style={{textAlign: "center", cursor: "pointer"}}
+                            onClick={() => {
+                              typeof(item) === "number" ?
+                                  sendCoins(item): setDialogMenuType("transfer")
+                            }
+                            }
+                        >
+                          <img
+                              src={coin}
+                              style={{ width: 25, height: 25 }}
+                              alt={"coin"}
+                          />
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {item}
+                          </Typography>
+                        </div>
+                    ))
+                  }
+                </div>
               <Divider style={{margin: "10px"}} />
                 <Button onClick={openPrivateRoom} variant="outlined" startIcon={<SendIcon />}>
                     Direct message
@@ -471,7 +465,18 @@ export const Message: React.FC<IMessage> = ({
                     Stop seeing this user.
                 </Typography>
             </div>
-          ) : null}
+           : null}
+
+          {dialogMenuType === "transfer" ?
+              <div style={{display: "flex", flexDirection: "column"}}>
+                <TextField id="standard-basic" type={"number"} label="Standard" variant="standard"
+                           onChange={event => setCoinAmount(Number(event.target.value))}/>
+                <Button style={{marginTop: 10}} onClick={() => sendCoins()} variant="outlined" size="small">
+                  Send coins
+                </Button>
+              </div>
+              : null
+          }
 
           {dialogMenuType === "image" ? (
             <div>
