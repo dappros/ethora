@@ -879,6 +879,20 @@ class XmppClass {
     );
     this.client.send(stanza);
   };
+  getBlackList = (manipulatedWalletAddress: string) => {
+    const stanza = xml(
+        'iq',
+        {
+          from: this.client.jid?.toString(),
+          type: 'get',
+          id: 'blackList',
+        },
+        xml('query', {
+          xmlns: 'ns:deepx:muc:user:blocklist',
+        }),
+    );
+    this.client.send(stanza);
+  };
 }
 
 export default new XmppClass();
