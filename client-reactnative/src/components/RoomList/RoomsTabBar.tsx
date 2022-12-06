@@ -13,7 +13,9 @@ import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
 import {commonColors, defaultChats, textStyles} from '../../../docs/config';
 import {Badge, Text} from 'native-base';
-
+import {useRoute} from '@react-navigation/native';
+import {ROUTES} from '../../constants/routes';
+import _ from 'lodash';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -21,22 +23,16 @@ const ROOM_KEYS = {
 };
 
 export const RoomsTabBar = observer(() => {
-  const [routeIndex, setRouteIndex] = useState(0);
-  const routes = [
-    {key: ROOM_KEYS.official, title: 'Official'},
-    {key: ROOM_KEYS.private, title: 'Private'},
-    {key: ROOM_KEYS.groups, title: 'Groups'},
-  ];
-
   const {chatStore} = useStores();
-  // const roomsList = chatStore.roomList;
+  const route = useRoute();
   const privateRooms = chatStore.roomList?.filter((item: any) => {
     const splitedJid = item?.jid?.split('@')[0];
 
     if (
       item.participants < 3 &&
       !defaultChats[splitedJid] &&
-      !chatStore.roomsInfoMap[item.jid]?.isFavourite
+      !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
+      !item.meta
     ) {
       return item;
     }
@@ -56,63 +52,30 @@ export const RoomsTabBar = observer(() => {
     if (
       item.participants > 2 &&
       !defaultChats[splitedJid] &&
-      !chatStore.roomsInfoMap[item.jid]?.isFavourite
+      !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
+      !item.meta
     ) {
       return item;
     }
   });
 
-  const filterRooms = () => {
-    if (chatStore.activeChats === ROOM_KEYS.private) {
-      const rooms = chatStore.roomList?.filter((item: any) => {
-        const splitedJid = item?.jid?.split('@')[0];
-
-        if (
-          item.participants < 3 &&
-          !defaultChats[splitedJid] &&
-          !chatStore.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          return item;
-        }
-      });
-
-      return rooms;
-    }
-
-    if (chatStore.activeChats === ROOM_KEYS.official) {
-      const rooms = chatStore.roomList.filter(item => {
-        const splitedJid = item?.jid?.split('@')[0];
-        if (
-          defaultChats[splitedJid] ||
-          chatStore.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          return item;
-        }
-      });
-
-      return rooms;
-    }
-
-    if (chatStore.activeChats === ROOM_KEYS.groups) {
-      const rooms = chatStore.roomList.filter((item: any) => {
-        const splitedJid = item?.jid?.split('@')[0];
-
-        if (
-          item.participants > 2 &&
-          !defaultChats[splitedJid] &&
-          !chatStore.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          return item;
-        }
-      });
-      return rooms;
-    }
-  };
   const getRooms = useCallback(() => {
     if (chatStore.activeChats === ROOM_KEYS.official) {
       return official;
     }
-    return privateRooms.concat(groups);
+    const roomsWithDate = privateRooms
+      .concat(groups)
+      .filter(item => chatStore.roomsInfoMap[item.jid]?.lastMessageTime);
+
+    const roomsWithoutDate = privateRooms
+      .concat(groups)
+      .filter(item => !chatStore.roomsInfoMap[item.jid]?.lastMessageTime);
+
+    return _.orderBy(
+      roomsWithDate,
+      el => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
+      'desc',
+    ).concat(roomsWithoutDate);
   }, [
     chatStore.roomList,
     chatStore.activeChats,
@@ -124,6 +87,7 @@ export const RoomsTabBar = observer(() => {
       chatStore.updateCounter();
     }
   }, [chatStore.roomList]);
+
   // const roomList = useMemo(
   //   () => filterRooms(),
   //   [

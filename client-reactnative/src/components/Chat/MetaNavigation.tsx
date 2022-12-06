@@ -372,6 +372,10 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     }
   };
 
+  if (!currentMetaRoom.roomJid) {
+    return null;
+  }
+
   const renderDirections = (direction: string) => {
     const oppositePreviousDirection = getOpositeDirection(previousDirection);
     if (checkEmptyDirections() && direction === oppositePreviousDirection) {

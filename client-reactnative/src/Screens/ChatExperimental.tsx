@@ -896,6 +896,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
           isQR={true}
           onQRPressed={QRPressed}
           isChatRoomDetail={true}
+          onBackPress={() => {
+            navigation.goBack();
+            chatStore.activeChats === ROOM_KEYS.groups &&
+              chatStore.changeActiveChats(ROOM_KEYS.official);
+          }}
         />
         {audioMimetypes[mediaModal.type] && (
           <AudioPlayer audioUrl={mediaModal.url} />

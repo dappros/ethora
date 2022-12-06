@@ -22,6 +22,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   coinsMainName,
   commonColors,
+  defaultMetaRoom,
   navbarLogoShow,
   ROOM_KEYS,
 } from '../../../docs/config';
@@ -35,9 +36,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {observer} from 'mobx-react-lite';
 import {ROUTES} from '../../constants/routes';
 import {alpha} from '../../helpers/aplha';
+import {httpGet} from '../../config/apiService';
+import {showError} from '../Toast/toast';
 
 export const MainHeader = observer(() => {
-  const {chatStore} = useStores();
+  const {chatStore, apiStore, loginStore} = useStores();
   const navigation = useNavigation();
   const route = useRoute();
   const buttons = [
@@ -51,19 +54,57 @@ export const MainHeader = observer(() => {
       icon: 'people',
       show: true,
     },
-    // {
-    //   key: ROOM_KEYS.groups,
-    //   icon: 'compass',
-    //   show: route.name === ROUTES.CHAT,
-    // },
+    {
+      key: ROOM_KEYS.groups,
+      icon: 'compass',
+      show: true,
+    },
   ];
-  const onTabPress = (key: string) => {
-    if (key === ROOM_KEYS.groups) {
+
+  const navigateToLatestMetaRoom = async () => {
+    try {
+      const res = await httpGet(
+        apiStore.defaultUrl + '/room/currentRoom',
+        loginStore.userToken,
+      );
+      navigation.navigate(ROUTES.CHAT, {
+        chatJid:
+          res.data.result.roomId.roomJid +
+          apiStore.xmppDomains.CONFERENCEDOMAIN,
+      });
+    } catch (error) {
+      navigation.navigate(ROUTES.CHAT, {
+        chatJid:
+          defaultMetaRoom.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
+      });
+      // showError('Error', 'Cannot fetch latest meta room');
+    }
+  };
+
+  const onTabPress = async (key: string) => {
+    if (route.name === ROUTES.CHAT && key === ROOM_KEYS.groups) {
       chatStore.toggleMetaNavigation(true);
+      chatStore.changeActiveChats(key);
+
+      if (
+        !chatStore.roomList.find(item => item.jid === route.params?.chatJid)
+          ?.meta
+      ) {
+        await navigateToLatestMetaRoom();
+        chatStore.changeActiveChats(key);
+      }
+      return;
+    }
+
+    if (key === ROOM_KEYS.groups) {
+      chatStore.changeActiveChats(key);
+
+      await navigateToLatestMetaRoom();
 
       return;
     }
     chatStore.changeActiveChats(key);
+
     navigation.navigate(ROUTES.ROOMSLIST);
   };
 
@@ -85,7 +126,8 @@ export const MainHeader = observer(() => {
           if (!item.show) return null;
           return (
             <VStack key={item.key}>
-              <TouchableOpacity onPress={() => onTabPress(item.key)}>
+              <TouchableOpacity
+                onPress={async () => await onTabPress(item.key)}>
                 <Ionicons
                   name={item.icon}
                   size={30}

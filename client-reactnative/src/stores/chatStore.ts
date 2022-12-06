@@ -20,6 +20,7 @@ import {
   updateTokenAmount,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
+import {httpPost} from '../config/apiService';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
@@ -306,7 +307,7 @@ export class ChatStore {
   };
 
   addMessage = (message: any) => {
-    if(!this.messages.some(msg => msg._id === message._id)){
+    if (!this.messages.some(msg => msg._id === message._id)) {
       runInAction(() => {
         this.messages.push(message);
       });
@@ -406,8 +407,7 @@ export class ChatStore {
           lastUserText: latestMessage?.text,
           muted: this.roomsInfoMap[item.jid]?.muted,
 
-          lastMessageTime:
-            latestMessage.createdAt && format(latestMessage.createdAt, 'hh:mm'),
+          lastMessageTime: latestMessage.createdAt,
         };
       }
       if (!latestMessage) {
@@ -449,6 +449,29 @@ export class ChatStore {
           this.xmpp,
         );
       });
+    }
+  };
+  checkMetaRooms = async () => {
+    if (this.roomList.length) {
+      const roomJids = this.roomList.map(item => item.jid.split('@')[0]);
+      try {
+        const body = {jids: roomJids};
+        const res = await httpPost(
+          this.stores.apiStore.defaultUrl + '/room/check-for-meta-room',
+          body,
+          this.stores.loginStore.userToken,
+        );
+        for (const item of res.data.results) {
+          const roomIndex = this.roomList.findIndex(
+            r => r.jid.split('@')[0] === item,
+          );
+          if (roomIndex !== -1) {
+            runInAction(() => {
+              this.roomList[roomIndex].meta = true;
+            });
+          }
+        }
+      } catch (error) {}
     }
   };
   xmppListener = async () => {
@@ -596,19 +619,28 @@ export class ChatStore {
           if (item.name === 'error') {
             console.log(item.children, 'stanza error==============');
             item.children.filter(subItem => {
-              if(subItem.name === 'text'){
-                console.log(subItem.children[0])
-                if(subItem.children[0] === 'You are banned in this room!'){
-                  showToast('error', 'Banned!', 'You have been banned from this room.','top')
+              if (subItem.name === 'text') {
+                console.log(subItem.children[0]);
+                if (subItem.children[0] === 'You are banned in this room!') {
+                  showToast(
+                    'error',
+                    'Banned!',
+                    'You have been banned from this room.',
+                    'top',
+                  );
                 }
-                if(subItem.children[0] === 'Traffic rate limit is exceeded'){
-                  showToast('error', 'Too much traffic!', 'Traffic rate limit is exceeded','top')
+                if (subItem.children[0] === 'Traffic rate limit is exceeded') {
+                  showToast(
+                    'error',
+                    'Too much traffic!',
+                    'Traffic rate limit is exceeded',
+                    'top',
+                  );
                 }
               }
-            })
+            });
           }
         });
-
       }
 
       // if(stanza.attrs.id === XMPP_TYPES.getBannedUserListOfRoom){
@@ -822,8 +854,7 @@ export class ChatStore {
           this.updateRoomInfo(message.roomJid, {
             lastUserText: message?.text,
             lastUserName: message?.user?.name,
-            messageTime:
-              message?.createdAt && format(message?.createdAt, 'hh:mm'),
+            lastMessageTime: message?.createdAt,
           });
           if (message.system) {
             if (message?.contractAddress) {
