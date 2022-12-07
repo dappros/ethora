@@ -469,7 +469,7 @@ export const Message: React.FC<IMessage> = ({
 
           {dialogMenuType === "transfer" ?
               <div style={{display: "flex", flexDirection: "column"}}>
-                <TextField id="standard-basic" type={"number"} label="Standard" variant="standard"
+                <TextField id="standard-basic" type={"number"} label="Enter transfer amount" variant="standard"
                            onChange={event => setCoinAmount(Number(event.target.value))}/>
                 <Button style={{marginTop: 10}} onClick={() => sendCoins()} variant="outlined" size="small">
                   Send coins
