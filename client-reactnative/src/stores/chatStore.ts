@@ -632,7 +632,7 @@ export class ChatStore {
                 if (subItem.children[0] === 'Traffic rate limit is exceeded') {
                   showToast(
                     'error',
-                    'Too much traffic!',
+                    'XMPP: Too much traffic!',
                     'Traffic rate limit is exceeded',
                     'top',
                   );
