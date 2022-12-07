@@ -62,6 +62,11 @@ export const regularLogin = true; // custom login+password - users have to regis
 export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
 export const regularLoginUsername = true;
 
+export const coinsMainSymbol = 'DPT'; //done
+export const coinsMainName = 'Dappros Platform Token'; //done
+export const coinReplacedSymbol = 'ETO'; //done
+export const coinReplacedName = 'Ethora Coin'; //done
+
 
 export const defaultChats = {
     '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc': {

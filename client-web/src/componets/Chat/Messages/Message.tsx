@@ -12,10 +12,13 @@ import {
   CardActionArea,
   CardMedia,
   Dialog,
-  DialogContent, Divider, Button,
+  DialogContent,
+  Divider,
+  Button,
   IconButton,
   Slider,
-  Typography, TextField,
+  Typography,
+  TextField,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { transferCoin } from "../../../http";
@@ -23,8 +26,9 @@ import xmpp from "../../../xmpp";
 import { createPrivateChat } from "../../../helpers/chat/createPrivateChat";
 import coin from "../../../assets/images/coin.png";
 import { Box } from "@mui/system";
-import SendIcon from '@mui/icons-material/Send';
-import BlockIcon from '@mui/icons-material/Block';
+import SendIcon from "@mui/icons-material/Send";
+import BlockIcon from "@mui/icons-material/Block";
+import { coinReplacedName, coinsMainName } from "../../../config/config";
 
 export interface IMessage {
   message: TMessageHistory;
@@ -71,7 +75,8 @@ export const Message: React.FC<IMessage> = ({
     (el) => !el.tokenType && el.contractAddress.length > 10
   );
   const user = useStoreState((store) => store.user);
-  const [messageDirection, setMessageDirection] = useState<IDirection>("incoming")
+  const [messageDirection, setMessageDirection] =
+    useState<IDirection>("incoming");
 
   const openDialogMenu = (type: IDialog) => {
     setAnchorEl(null);
@@ -80,29 +85,24 @@ export const Message: React.FC<IMessage> = ({
   };
 
   const sendCoins = (amount?: number) => {
-    const currentCoinAmount = amount ? Number(amount) : Number(coinAmount)
+    const currentCoinAmount = amount ? Number(amount) : Number(coinAmount);
 
-        // @ts-ignore
+    // @ts-ignore
     transferCoin(
       "DPT",
       coinData[0].tokenName,
       currentCoinAmount,
       message.data.senderWalletAddress
     )
-      .then(() => {
-        const textMessage =
-          user.firstName +
-          " " +
-          user.lastName +
-          " -> " +
-          currentCoinAmount +
-          " " +
-          coinData[0].tokenName +
-          " -> " +
-          message.data.senderFirstName +
-          " " +
-          message.data.senderLastName;
-
+      .then((res) => {
+        const coinName =
+          coinData[0].tokenName === coinsMainName
+            ? coinReplacedName
+            : coinData[0].tokenName;
+        const sender = user.firstName + " " + user.lastName;
+        const receiver =
+          message.data.senderFirstName + " " + message.data.senderLastName;
+        const textMessage = `${sender} -> ${coinAmount} ${coinName} -> ${receiver}`;
         xmpp.sendSystemMessage(
           message.roomJID,
           user.firstName,
@@ -160,30 +160,34 @@ export const Message: React.FC<IMessage> = ({
   };
 
   const rightClick = (event) => {
-    event.preventDefault()
-    openDialogMenu("dialog")
-  }
+    event.preventDefault();
+    openDialogMenu("dialog");
+  };
 
   const userToBlackList = (step: "clarify" | "block") => {
-    if(step === "clarify"){
+    if (step === "clarify") {
       setDialogText("Are you sure you want to block the user?");
       setDialogMenuType("clarification");
     }
 
-    if(step === "block"){
+    if (step === "block") {
       xmpp.blacklistUser(message.data.senderJID);
-      useStoreState.getState().removeAllInMessageHistory(message.data.senderJID);
+      useStoreState
+        .getState()
+        .removeAllInMessageHistory(message.data.senderJID);
       setOpenDialog(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
     }
-    setMessageDirection(String(userJid).split("/")[0] === String(messageJid).split("/")[0]
+    setMessageDirection(
+      String(userJid).split("/")[0] === String(messageJid).split("/")[0]
         ? "outgoing"
-        : "incoming")
+        : "incoming"
+    );
   }, []);
   return (
     <div is={"Message"}>
@@ -193,7 +197,8 @@ export const Message: React.FC<IMessage> = ({
       <KitMessage
         onContextMenu={messageDirection === "incoming" ? rightClick : null}
         style={{
-          marginBottom: position.type === "last" || position.type === "single" ? 15 : null
+          marginBottom:
+            position.type === "last" || position.type === "single" ? 15 : null,
         }}
         model={{
           sender: firstName + " " + lastName,
@@ -313,55 +318,72 @@ export const Message: React.FC<IMessage> = ({
 
           {message.data.isMediafile &&
           message.data.mimetype.split("/")[0] === "audio" ? (
-              <audio controls>
-                  <source src={message.data.location} type={message.data.mimetype} />
-                    Your browser does not support the audio element.
-              </audio>
+            <audio controls>
+              <source
+                src={message.data.location}
+                type={message.data.mimetype}
+              />
+              Your browser does not support the audio element.
+            </audio>
           ) : null}
 
-        {!message.data.isMediafile ?
+          {!message.data.isMediafile ? (
             <div>
-              <span dangerouslySetInnerHTML={{__html: message.body.replace(/\b(https?\:\/\/\S+)/mg, '<a href="$1">$1</a>')}}></span>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: message.body.replace(
+                    /\b(https?\:\/\/\S+)/gm,
+                    '<a href="$1">$1</a>'
+                  ),
+                }}
+              ></span>
               {/*FOOTER */}
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 5,
-                minWidth: 200,
-                color: messageDirection === "incoming" ? "rgb(110, 169, 215)" : "#c6e3fa",
-                flexDirection: messageDirection === "incoming" ? "row" : "row-reverse"
-              }}>
-
-                <div style={{
-                  fontSize: 12,
-                }}>
-                  {
-                    differenceInHours(new Date(), new Date(message.date)) > 5
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: 5,
+                  minWidth: 200,
+                  color:
+                    messageDirection === "incoming"
+                      ? "rgb(110, 169, 215)"
+                      : "#c6e3fa",
+                  flexDirection:
+                    messageDirection === "incoming" ? "row" : "row-reverse",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 12,
+                  }}
+                >
+                  {differenceInHours(new Date(), new Date(message.date)) > 5
                     ? format(new Date(message.date), "h:mm a")
                     : formatDistance(
-                    subDays(new Date(message.date), 0),
-                    new Date(),
-                    {
-                      addSuffix: true,
-                    })
-                  }
+                        subDays(new Date(message.date), 0),
+                        new Date(),
+                        {
+                          addSuffix: true,
+                        }
+                      )}
                 </div>
-                {message.coinsInMessage > 0 ?
-                  <div style={{display: "flex", alignItems: "center"}}>
-                    <div style={{fontSize: 12}}>{message?.coinsInMessage}</div>
+                {message.coinsInMessage > 0 ? (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ fontSize: 12 }}>
+                      {message?.coinsInMessage}
+                    </div>
                     <img
-                        src={coin}
-                        style={{ width: 25, height: 25 }}
-                        alt={"coin"}
+                      src={coin}
+                      style={{ width: 25, height: 25 }}
+                      alt={"coin"}
                     />
                   </div>
-                : null}
+                ) : null}
               </div>
             </div>
-            : null
-        }
-      </KitMessage.CustomContent>
+          ) : null}
+        </KitMessage.CustomContent>
 
         {/*{(position.type === "last" || position.type === "single") && (*/}
         {/*  <KitMessage.Footer*/}
@@ -380,24 +402,29 @@ export const Message: React.FC<IMessage> = ({
         {/*)}*/}
       </KitMessage>
       {buttons ? (
-      <Box sx={{ '& button': { m: 0.5 } }}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "max-content",
-            marginLeft: "45px",
-          }}
-        >
-          {buttons.map((button, index) => {
-            return (
-              <Button variant="outlined" size="small" onClick={() => buttonSender(button)} key={index} >
-                {button.name}
-              </Button>
-            );
-          })}
-        </div>
-      </Box>
+        <Box sx={{ "& button": { m: 0.5 } }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "max-content",
+              marginLeft: "45px",
+            }}
+          >
+            {buttons.map((button, index) => {
+              return (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => buttonSender(button)}
+                  key={index}
+                >
+                  {button.name}
+                </Button>
+              );
+            })}
+          </div>
+        </Box>
       ) : null}
 
       <Dialog
@@ -408,16 +435,20 @@ export const Message: React.FC<IMessage> = ({
         <DialogContent>
           {dialogMenuType === "error" ? <div>{dialogText}</div> : null}
 
-          {dialogMenuType === "clarification" ?
-              <div style={{display: "flex", flexDirection: "column"}}>
-                {dialogText}
-                <Button onClick={() => userToBlackList("block")} variant="outlined" size="small">
-                  To block list
-                </Button>
-              </div>
-              : null}
+          {dialogMenuType === "clarification" ? (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {dialogText}
+              <Button
+                onClick={() => userToBlackList("block")}
+                variant="outlined"
+                size="small"
+              >
+                To block list
+              </Button>
+            </div>
+          ) : null}
 
-          {dialogMenuType === "dialog" ?
+          {dialogMenuType === "dialog" ? (
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div>
                 Reward{" "}
@@ -429,54 +460,79 @@ export const Message: React.FC<IMessage> = ({
                 with coins
               </div>
 
-                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", margin: "10px 0px 10px 0px"}}>
-                  {
-                    [1, 3, 5, 'x'].map((item) => (
-                        <div
-                            key={item}
-                            style={{textAlign: "center", cursor: "pointer"}}
-                            onClick={() => {
-                              typeof(item) === "number" ?
-                                  sendCoins(item): setDialogMenuType("transfer")
-                            }
-                            }
-                        >
-                          <img
-                              src={coin}
-                              style={{ width: 25, height: 25 }}
-                              alt={"coin"}
-                          />
-                          <Typography sx={{ fontWeight: "bold" }}>
-                            {item}
-                          </Typography>
-                        </div>
-                    ))
-                  }
-                </div>
-              <Divider style={{margin: "10px"}} />
-                <Button onClick={openPrivateRoom} variant="outlined" startIcon={<SendIcon />}>
-                    Direct message
-                </Button>
-                <Divider style={{margin: "10px"}} />
-                <Button onClick={() => userToBlackList("clarify")} variant="contained" startIcon={<BlockIcon />}>
-                    Block this user
-                </Button>
-                <Typography style={{textAlign: "center"}} variant="caption" display="block" gutterBottom>
-                    Stop seeing this user.
-                </Typography>
-            </div>
-           : null}
-
-          {dialogMenuType === "transfer" ?
-              <div style={{display: "flex", flexDirection: "column"}}>
-                <TextField id="standard-basic" type={"number"} label="Enter transfer amount" variant="standard"
-                           onChange={event => setCoinAmount(Number(event.target.value))}/>
-                <Button style={{marginTop: 10}} onClick={() => sendCoins()} variant="outlined" size="small">
-                  Send coins
-                </Button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  margin: "10px 0px 10px 0px",
+                }}
+              >
+                {[1, 3, 5, "x"].map((item) => (
+                  <div
+                    key={item}
+                    style={{ textAlign: "center", cursor: "pointer" }}
+                    onClick={() => {
+                      typeof item === "number"
+                        ? sendCoins(item)
+                        : setDialogMenuType("transfer");
+                    }}
+                  >
+                    <img
+                      src={coin}
+                      style={{ width: 25, height: 25 }}
+                      alt={"coin"}
+                    />
+                    <Typography sx={{ fontWeight: "bold" }}>{item}</Typography>
+                  </div>
+                ))}
               </div>
-              : null
-          }
+              <Divider style={{ margin: "10px" }} />
+              <Button
+                onClick={openPrivateRoom}
+                variant="outlined"
+                startIcon={<SendIcon />}
+              >
+                Direct message
+              </Button>
+              <Divider style={{ margin: "10px" }} />
+              <Button
+                onClick={() => userToBlackList("clarify")}
+                variant="contained"
+                startIcon={<BlockIcon />}
+              >
+                Block this user
+              </Button>
+              <Typography
+                style={{ textAlign: "center" }}
+                variant="caption"
+                display="block"
+                gutterBottom
+              >
+                Stop seeing this user.
+              </Typography>
+            </div>
+          ) : null}
+
+          {dialogMenuType === "transfer" ? (
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <TextField
+                id="standard-basic"
+                type={"number"}
+                label="Enter transfer amount"
+                variant="standard"
+                onChange={(event) => setCoinAmount(Number(event.target.value))}
+              />
+              <Button
+                style={{ marginTop: 10 }}
+                onClick={() => sendCoins()}
+                variant="outlined"
+                size="small"
+              >
+                Send coins
+              </Button>
+            </div>
+          ) : null}
 
           {dialogMenuType === "image" ? (
             <div>
