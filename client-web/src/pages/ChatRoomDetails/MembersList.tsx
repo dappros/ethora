@@ -114,8 +114,8 @@ export default function MembersList (){
                         return(
                             <ListItem dense onClick={()=>handleOnMemberPress(member)} style={{flexDirection:"row", alignItems:"center"}} >
                                 <Box
-                                // alignItems="center"
-                                // justifyContent="center" 
+                                alignItems="center"
+                                justifyContent="center" 
                                 style={{
                                     background:"#003E9C",
                                     width:'40px',
