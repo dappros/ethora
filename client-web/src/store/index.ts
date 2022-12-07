@@ -80,6 +80,12 @@ export type TMessageHistory = {
   coinsInMessage: number;
 };
 
+type TUserBlackList = {
+  date: number,
+  fullName: string,
+  user: string
+}
+
 export type TUserChatRooms = {
   jid: string;
   name: string;
@@ -169,6 +175,9 @@ interface IStore {
   setACL: (acl: http.IUserAcl) => void;
   currentUntrackedChatRoom: string;
   setCurrentUntrackedChatRoom: (roomJID: string) => void;
+  blackList: TUserBlackList[];
+  saveInBlackList: (msg: TUserBlackList) => void;
+  clearBlackList: () => void;
 }
 
 const _useStore = create<IStore>()(
@@ -220,6 +229,7 @@ const _useStore = create<IStore>()(
           userChatRooms: [],
           appUsers: [],
           documents: [],
+          blackList: [],
           setDocuments: (documents: http.IDocument[]) =>
             set((state) => {
               state.documents = documents;
@@ -397,6 +407,14 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.currentUntrackedChatRoom = roomJID;
             }),
+          saveInBlackList: (items: TUserBlackList) =>
+              set((state) => {
+                state.blackList.unshift(items);
+              }),
+          clearBlackList: () =>
+              set((state) => {
+                state.blackList = [];
+              }),
         };
       })
     )
