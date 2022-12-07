@@ -95,6 +95,7 @@ import {
 import matchAll from 'string.prototype.matchall';
 import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
+import RenderDay from '../components/Chat/RenderDay';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -895,6 +896,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           </View>
         )}
         <GiftedChat
+          renderDay={(props)=><RenderDay currentMessage={props.currentMessage} previousMessage={props.previousMessage} />}
           ref={giftedRef}
           renderSend={renderSend}
           renderActions={renderAttachment}

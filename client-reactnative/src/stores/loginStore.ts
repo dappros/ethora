@@ -459,9 +459,6 @@ export class LoginStore {
         this.loginHandler(response, '');
       }
     } catch (error: any) {
-      console.log(error.response, 'sdjfklsdjfjlsdkfj');
-
-      console.log(error.response.data.errors, 'sdjfklsdjfjlsdkfj');
       runInAction(() => {
         this.isFetching = false;
         this.error = true;

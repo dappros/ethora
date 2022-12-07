@@ -44,7 +44,8 @@ export default function UserCard({ profile, walletAddress }: TProps) {
                   users_cnt: "2",
                   unreadMessages: 0,
                   composing: "",
-                  toUpdate: true
+                  toUpdate: true,
+                  description:""
               }
               useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
               history.push("/chat/" + result.roomJid);

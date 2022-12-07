@@ -21,6 +21,7 @@ import { Alert, Snackbar } from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
+const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
 const Owner = React.lazy(() => import("./Owner"));
@@ -138,6 +139,7 @@ export const Routes = () => {
         <Route path="/regularSignIn" component={RegularSignIn} />
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
+        <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
         <AuthRoute path="/dashboard" component={Dashboard} />

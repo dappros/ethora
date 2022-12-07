@@ -334,6 +334,10 @@ export function ChatInRoom() {
     }
   };
 
+  const handleChatDetailClick = () => {
+    history.push("/chatDetails/"+ currentUntrackedChatRoom)
+  }
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       xmpp.pausedComposing(user.walletAddress, roomData.jid);
@@ -427,7 +431,7 @@ export function ChatInRoom() {
         <div {...getRootProps()} style={{width: "100%", height: "100%"}}>
         <ChatContainer >
           {!!roomData && (
-            <ConversationHeader>
+            <ConversationHeader onClick={()=>handleChatDetailClick()}>
               <ConversationHeader.Back />
               {messages.filter((item: any) => item.roomJID === currentRoom)
                 .length > 0 && (

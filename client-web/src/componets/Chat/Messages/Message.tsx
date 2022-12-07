@@ -142,6 +142,7 @@ export const Message: React.FC<IMessage> = ({
             unreadMessages: 0,
             composing: "",
             toUpdate: true,
+            description: ""
           };
           useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
           chooseDirectRoom(result.roomJid);

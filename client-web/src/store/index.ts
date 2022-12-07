@@ -95,6 +95,7 @@ export type TUserChatRooms = {
   unreadMessages: number;
   composing: string;
   toUpdate: boolean;
+  description: string;
 };
 
 type TApp = {
@@ -124,6 +125,20 @@ type TAppUser = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type TMemberInfo={
+  ban_status:string,
+  jid:string,
+  last_active:string,
+  name:string,
+  profile:string,
+  role:string
+}
+
+export type TRoomRoles = {
+  roomJID:string,
+  role:string,
+}
 
 interface IStore {
   user: TUser;
@@ -178,6 +193,10 @@ interface IStore {
   blackList: TUserBlackList[];
   saveInBlackList: (msg: TUserBlackList) => void;
   clearBlackList: () => void;
+  roomMemberInfo: TMemberInfo[];
+  setRoomMemberInfo:(data: TMemberInfo[]) => void;
+  roomRoles : TRoomRoles[];
+  setRoomRoles: (data:TRoomRoles) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -227,6 +246,8 @@ const _useStore = create<IStore>()(
           loaderArchive: false,
           currentUntrackedChatRoom: "",
           userChatRooms: [],
+          roomMemberInfo: [],
+          roomRoles: [],
           appUsers: [],
           documents: [],
           blackList: [],
@@ -347,6 +368,23 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
             }),
+          setRoomMemberInfo: (memberInfo:TMemberInfo[]) =>{
+            set((state)=> {
+              state.roomMemberInfo=memberInfo;
+            })
+          },
+          setRoomRoles: (data:TRoomRoles) => {
+            set((state)=> {
+              const currentIndex = state.roomRoles.findIndex(
+                (el) => el.roomJID === data.roomJID
+              )
+              if(state.roomRoles[currentIndex]){
+                state.roomRoles[currentIndex].role = data.role;
+              }else{
+                state.roomRoles.unshift(data);
+              }
+            })
+          },
           updateCounterChatRoom: (roomJID: string) =>
             set((state) => {
               const currentIndex = state.userChatRooms.findIndex(
@@ -366,6 +404,7 @@ const _useStore = create<IStore>()(
                 state.userChatRooms[currentIndex].room_thumbnail = data.room_thumbnail;
                 state.userChatRooms[currentIndex].users_cnt = data.users_cnt;
                 state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
+                state.userChatRooms[currentIndex].description = data.description;
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>

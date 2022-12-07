@@ -43,9 +43,6 @@ export const RoomList = observer(({roomsList}: any) => {
   const [pickedChatJid, setPickedChatJid] = useState<string>('');
   const [newChatName, setNewChatName] = useState<string>('');
   const [movingActive, setMovingActive] = useState<boolean>(false);
-  const [createChatButtonPressed, setCreateChatButtonPressed] =
-    useState<boolean>(false);
-  const navigation = useNavigation();
 
   const manipulatedWalletAddress = underscoreManipulation(
     loginStore.initialData.walletAddress,

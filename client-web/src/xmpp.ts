@@ -1,7 +1,7 @@
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
-import { TMessageHistory, useStoreState } from "./store";
+import { TMessageHistory, TRoomRoles, useStoreState } from "./store";
 import { sendBrowserNotification } from "./utils";
 import { history } from "./utils/history";
 
@@ -19,7 +19,7 @@ export function walletToUsername(str: string) {
 }
 
 export function usernameToWallet(str: string) {
-  str.replace(/_([a-z])/gm, (m1: string, m2: string) => {
+  return str.replace(/_([a-z])/gm, (m1: string, m2: string) => {
     return m2.toUpperCase();
   });
 }
@@ -179,6 +179,58 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
   }
 };
 
+const onGetRoomInfo = (stanza: Element, xmpp:any) => {
+  const userChatRooms = useStoreState.getState().userChatRooms;
+  const currentRoomData = userChatRooms.filter((e) => e.jid === stanza.attrs.from)[0];
+  if(stanza.attrs.id === 'roomInfo'){
+    const featureList = stanza.children[0].children.find(
+      item => item.attrs.xmlns === 'jabber:x:data',
+    );
+    const roomDescription = featureList.children.find(
+      item => item.attrs.var === 'muc#roominfo_description',
+    ).children[0]?.children[0]
+    console.log(roomDescription)
+    const roomData = {
+      jid: currentRoomData.jid,
+      name: currentRoomData.name,
+      room_background: currentRoomData.room_background,
+      room_thumbnail: currentRoomData.room_thumbnail,
+      users_cnt: currentRoomData.users_cnt,
+      unreadMessages: currentRoomData.unreadMessages,
+      composing: currentRoomData.composing,
+      toUpdate: currentRoomData.toUpdate,
+      description: roomDescription
+    };
+    useStoreState.getState().updateUserChatRoom(roomData);
+  }
+}
+
+const onGetRoomMemberInfo = (stanza: Element) => {
+  if(stanza.attrs.id === 'roomMemberInfo'){
+    if (stanza.children[0].children.length) {
+      const info = stanza.children[0].children.map(
+        item => item.attrs,
+      )
+      useStoreState.getState().setRoomMemberInfo(info);
+    }
+  }
+}
+
+const onChangeDescription = (stanza: Element) => {
+  if(stanza.attrs.id === "changeRoomDescription"){
+    console.log(stanza)
+  }
+}
+
+const onPresenceInRoom = (stanza: Element) => {
+  if(stanza.attrs.id === 'presenceInRoom'){
+    const roomJID:string = stanza.attrs.from.split('/')[0];
+    const role:string = stanza.children[1].children[0].attrs.role;
+    const elementObject:TRoomRoles = {roomJID:roomJID, role:role}
+    useStoreState.getState().setRoomRoles(elementObject);
+  }
+}
+
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "getUserRooms") {
     if (stanza.getChild("query")?.children) {
@@ -201,7 +253,8 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
               users_cnt: result?.attrs.users_cnt,
               unreadMessages: 0,
               composing: "",
-              toUpdate: false
+              toUpdate: false,
+              description: ""
             };
             if(currentSavedChatRoom.length > 0 && currentSavedChatRoom[0].toUpdate){
               useStoreState.getState().updateUserChatRoom(roomData);
@@ -320,6 +373,12 @@ const onBlackList = (stanza: Element, xmpp: any) => {
   }
 }
 
+const onBan = (stanza: Element) => {
+  if(stanza.attrs.id === "ban"){
+    console.log(stanza,"ban stanza")
+  }
+}
+
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
   "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
@@ -355,6 +414,11 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onComposing(stanza));
     this.client.on("stanza", (stanza) => onInvite(stanza, this));
     this.client.on("stanza", (stanza) => onBlackList(stanza, this));
+    this.client.on("stanza", (stanza) => onGetRoomInfo(stanza, this));
+    this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
+    this.client.on("stanza", (stanza) => onChangeDescription(stanza));
+    this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
+    this.client.on('stanza', (stanza) => onBan(stanza));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -500,6 +564,7 @@ class XmppClass {
       {
         from: this.client.jid?.toString(),
         to: room + "/" + this.client.jid?.getLocal(),
+        id: 'presenceInRoom'
       },
       xml("x", "http://jabber.org/protocol/muc")
     );
@@ -911,6 +976,111 @@ class XmppClass {
     );
     this.client.send(stanza);
   };
+
+  getRoomMemberInfo = (roomJID) => {
+    const stanza = xml(
+      'iq',
+      {
+        from: this.client.jid?.toString(),
+        type: 'get',
+        id: 'roomMemberInfo',
+      },
+      xml('query', {
+        xmlns: 'ns:room:last',
+        room: roomJID,
+      }),
+    );
+    this.client.send(stanza);
+  }
+
+  changeRoomDescription = (
+    roomJID:string,
+    newDescription:string,
+  ) => {
+    const stanza = xml(
+      'iq',
+      {
+        from: this.client.jid?.toString(),
+        id: 'changeRoomDescription',
+        to: roomJID,
+        type: 'set',
+      },
+      xml(
+        'query',
+        {xmlns: 'http://jabber.org/protocol/muc#owner'},
+        xml(
+          'x',
+          {xmlns: 'jabber:x:data', type: 'submit'},
+          xml(
+            'field',
+            {var: 'FORM_TYPE'},
+            xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
+          ),
+          xml(
+            'field',
+            {var: 'muc#roomconfig_roomdesc'},
+            xml('value', {}, newDescription),
+          ),
+        ),
+      ),
+    );
+  
+    this.client.send(stanza);
+  }
+
+  banUserStanza = (
+    banUserId:string,
+    roomJID:string
+  ) => {
+    const stanza = xml(
+      'iq',
+      {
+        from: this.client.jid?.toString(),
+        type: 'set',
+        id: 'ban'
+      },
+      xml(
+        'query',
+        {
+          xmlns:"ns:deepx:muc:user:ban",
+          action:"ban",
+          user:banUserId,
+          type:"room",
+          room:roomJID,
+          time:"2592000",
+          comment:"Ban"
+        }
+      )
+    )
+
+    this.client.send(stanza);
+  }
+
+  unbanUserStanza = (
+    unbanUserId:string,
+    roomJID:string,
+  ) => {
+    const stanza = xml(
+      'iq',
+      {
+        from: this.client.jid?.toString(),
+        type: 'set',
+        id: 'unBan'
+      },
+      xml(
+        'query',
+        {
+          xmlns:"ns:deepx:muc:user:ban",
+          action:"unban",
+          user:unbanUserId,
+          type:'room',
+          room:roomJID
+        }
+      )
+    )
+  
+    this.client.send(stanza);
+  }
 }
 
 export default new XmppClass();

@@ -256,7 +256,7 @@ export const getPaginatedArchive = (
         {xmlns: 'http://jabber.org/protocol/rsm'},
         xml('max', {}, 25),
         xml('before', {}, firstUserMessageID),
-      ),
+      )
     ),
   );
   xmpp.send(message);

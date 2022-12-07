@@ -80,7 +80,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const [open, setOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
-  const [longTapUser, setLongTapUser] = useState<longTapUserProps>({})
+  const [longTapUser, setLongTapUser] = useState<longTapUserProps|{}>({})
   const [descriptionModalVisible, setDescriptionModalVisible] = useState<boolean>(false)
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
