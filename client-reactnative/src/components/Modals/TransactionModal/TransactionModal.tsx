@@ -650,7 +650,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                 )}
               </>
             )}
-            <View style={{width: wp('70%'), alignItems: 'center'}}>
+           {!allowedEnterCustomAmount && <View style={{width: wp('70%'), alignItems: 'center'}}>
               <Seperator />
               <ReportAndBlockButton
                 onPress={onBlackListPress}
@@ -669,7 +669,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                 }}>
                 Stop seeing this user.
               </Text>
-            </View>
+            </View>}
           </View>
         </Modal>
       );
