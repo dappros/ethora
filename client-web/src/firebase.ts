@@ -1,5 +1,6 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getMessaging, getToken as _getToken } from "firebase/messaging";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQdkvvxKKx4-WrjLQoYf08GFARgi_qO4g",
@@ -12,6 +13,7 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(firebaseApp);
 
 export function getToken() {
   const messaging = getMessaging(firebaseApp);

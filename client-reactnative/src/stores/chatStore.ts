@@ -921,7 +921,6 @@ export class ChatStore {
     });
 
     this.xmpp.on('online', async address => {
-      const {firstName, lastName, photo} = this.stores.loginStore.initialData;
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
@@ -930,7 +929,6 @@ export class ChatStore {
       });
       this.subscribeToMetaRooms();
       getBlackList(xmppUsername, this.xmpp);
-      updateVCard(photo, null, firstName + ' ' + lastName, this.xmpp);
       vcardRetrievalRequest(xmppUsername, this.xmpp);
       getUserRoomsStanza(xmppUsername, this.xmpp);
     });

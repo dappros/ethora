@@ -18,6 +18,7 @@ import {textStyles} from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {format} from 'date-fns';
+import dayjs from 'dayjs';
 
 interface RoomListProps {
   jid: string;
@@ -32,7 +33,17 @@ const getTime = (time: Date | undefined) => {
     return null;
   }
   try {
+    const oneday = 60 * 60 * 24 * 1000;
+    const now = Date.now();
+    const isMoreThanADay = now-time > oneday;
+    console.log(time,"Adgsbbdfdvsdfd", isMoreThanADay);
+    if(isMoreThanADay){
+      return dayjs(time)
+      .locale('en')
+      .format('MMM D')
+    }else{
     return format(new Date(time), 'hh:mm');
+    }
   } catch (error) {
     return null;
   }
@@ -42,7 +53,6 @@ export const RoomListItem = observer(
     const {chatStore} = useStores();
     const room = chatStore.roomsInfoMap[jid];
     const navigation = useNavigation();
-
     const [createChatButtonPressed, setCreateChatButtonPressed] =
       useState<boolean>(false);
 
@@ -65,7 +75,7 @@ export const RoomListItem = observer(
           py="2">
           <TouchableOpacity onPress={navigateToChat}>
             <HStack justifyContent="space-between">
-              <View justifyContent={'center'} flex={0.1}>
+              <View justifyContent={'center'} flex={0.15}>
                 <RoomListItemIcon
                   name={name}
                   jid={jid}
@@ -124,7 +134,7 @@ export const RoomListItem = observer(
                 )}
               </VStack>
 
-              <VStack justifyContent={'center'} flex={0.12}>
+              <VStack justifyContent={'center'} flex={0.15}>
                 <HStack justifyContent={'flex-end'} alignItems={'center'}>
                   <MaterialIcon
                     name="group"
@@ -152,7 +162,7 @@ export const RoomListItem = observer(
                     }}
                     fontFamily={textStyles.mediumFont}
                     color="black">
-                    {getTime(new Date(room?.lastMessageTime))}
+                    {getTime(room?.lastMessageTime)}
                   </Text>
                 </Box>
               </VStack>
