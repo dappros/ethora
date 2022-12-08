@@ -101,6 +101,7 @@ const groupDataForHandler = (xmpp, stanza, connectData) => {
         message,
         roomJID: stanza.attrs.from.substring(0, stanza.attrs.from.lastIndexOf('/') + 1).slice(0, -1),
         userJID: stanza.attrs.from.split("/").pop() + '@' + connectData.botAddress,
+        botJID: connectData.botName + '@' + connectData.botAddress,
         userStep: 0,
         receiverData: stanza.getChild('data') ? stanza.getChild('data').attrs : null,
         receiverMessageId: stanza.getChild('stanza-id') ? stanza.getChild('stanza-id').attrs.id : 0,
