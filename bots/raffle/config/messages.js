@@ -1,0 +1,34 @@
+const messages = () => {
+    return {
+        general: {
+            welcomeMessage: 'Raffle bot launched!',
+        },
+        exampleBotMessage: {
+            helloPresence: 'Hello! I am the raffler',
+            leaveMessage: 'You have exited to the main menu, all steps have been updated.',
+            helpMessage: 'Hello!\n\nI\'m a simple bot template that you can create!',
+            tnxForTransaction: 'Thanks for your coins!',
+            userLimit: 'Hello, this message confirms that the number of users in the room is correct.',
+        },
+        testMessage: 'test answer',
+        errors: {
+            requestError: 'An error occurred during the request, please try again later.',
+        },
+        raffleBotReplies: {
+            initiateBot: 'Do you want to raffle? This works simple:\n\n send me an Item and specify the duration.\n All users who write something into chat before the timer runs out will participate in the raffle.\n\n I will randomly pick the winner and send the Item to them! \n\nOne more thing - please transfer 7 Coins towards my costs and we will proceed.',
+            durationToParticipate: 'Thank you! Now, what should be the duration?',
+            sendPrizeItem: 'Perfect, just send me the prize item now and we are good to go!',
+            durationCancel: 'Raffle was cancelled, try again next time',
+            raffleRegistrationOn: 'Thank you. I am pleased to announce that the raffle registration is now on!',
+            countAsParticipant: 'all users who write a message during next 10 minutes will all be counted as participants!',
+            remindRaffle: 'To remind everyone, the raffle is on and the prize is...',
+            beCountedIn: 'Just write a message to be counted in!',
+            oneMinuteLeft: 'There is just 1 minute left until the winner of the raffle is announced!\n You can still participate by writing any message here. Quick!',
+            raffleComplete: 'TA-DA!!! The raffle is now officially complete!',
+            winnerIs: 'And the winner is...',
+            congratsPrize: 'Congratulations, , here is your prize!',
+        },
+    }
+}
+
+export default messages();
