@@ -5,7 +5,7 @@ export const getRandomNFT = (itemsList) => {
             return [];
         }
         const randomIndex = Math.floor(Math.random() * filteredItems.length);
-        return filteredItems[randomIndex];
+        return [filteredItems[randomIndex]];
     } else {
         return [];
     }
