@@ -4,6 +4,7 @@ import messages from "./config/messages.js";
 import botOptions from "./config/config.js";
 import {helpHandler} from "./handlers/help.js";
 import { botInitiate } from "./handlers/botInitiate.js";
+import {transferItemHandler} from "./handlers/transferItemHandler.js";
 
 const router = (handlerData) => {
     handlerData.userStep = userSteps('getStep', handlerData.userJID);
@@ -26,7 +27,10 @@ const router = (handlerData) => {
                 return botInitiate(handlerData);
             }
     }
-    
+
+    if(messageCheck(handlerData.message, 'item')){
+        return transferItemHandler(handlerData);
+    }
 
     if (handlerData.receiverData.isSystemMessage && handlerData.receiverData.tokenAmount > 0) {
         if (messageCheck(handlerData.message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
