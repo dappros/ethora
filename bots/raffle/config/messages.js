@@ -27,6 +27,7 @@ const messages = () => {
             raffleComplete: 'TA-DA!!! The raffle is now officially complete!',
             winnerIs: 'And the winner is...',
             congratsPrize: 'Congratulations, , here is your prize!',
+            notEnoughCoins: 'You have not sent enough coins, you need to send:'
         },
         menu: {
             mainMenu: [
@@ -62,7 +63,8 @@ const messages = () => {
                 },
                 {
                     name: 'Cancel',
-                    value: 'Cancel'
+                    value: 'Cancel',
+                    notDisplayedValue: "close"
                 }
             ]
         }
