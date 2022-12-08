@@ -5,6 +5,7 @@ import botOptions from "./config/config.js";
 import {helpHandler} from "./handlers/help.js";
 import { botInitiate } from "./handlers/botInitiate.js";
 import {transferItemHandler} from "./handlers/transferItemHandler.js";
+import {getBalanceHandler} from "./handlers/getBalanceHandler.js";
 
 const router = (handlerData) => {
     handlerData.userStep = userSteps('getStep', handlerData.userJID);
@@ -30,6 +31,10 @@ const router = (handlerData) => {
 
     if(messageCheck(handlerData.message, 'item')){
         return transferItemHandler(handlerData);
+    }
+
+    if(messageCheck(handlerData.message, 'balance')){
+        return getBalanceHandler(handlerData);
     }
 
     if (handlerData.receiverData.isSystemMessage && handlerData.receiverData.tokenAmount > 0) {
