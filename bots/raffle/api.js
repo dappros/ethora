@@ -101,7 +101,21 @@ export const transferItem = async (nftId, receiverWallet, amount) => {
         console.log('requestTransferItem Success: ', request.data)
         return true;
     } catch (error) {
-        console.log(error)
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
+export const getBalance = async () => {
+    try {
+        let request = await http.get('wallets/balance', {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        return request.data;
+    } catch (error) {
         JSON.stringify(error)
         throw error;
     }
