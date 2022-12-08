@@ -184,4 +184,12 @@ export const getUserRooms = (xmpp, botJID) => {
     ));
 }
 
+export const logCurrentHandler = (handler, userJID, userMessage) => {
+    let message = '> no message';
+    if(userMessage){
+        message = userMessage;
+    }
+    console.log('🟢 ('+botOptions.botData.firstName+') => '+handler+' | userJID: '+userJID+' | Message: '+message);
+}
+
 export {sendMessage, connectRoom, messageCheck, userSteps};
