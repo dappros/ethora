@@ -1,4 +1,4 @@
-import {Button, HStack, Icon, Image, Input, TextArea, View} from 'native-base';
+import {Button, HStack, Icon, Input, TextArea, View} from 'native-base';
 import React, {useState} from 'react';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {
@@ -22,15 +22,20 @@ import {
   roomConfig,
   sendInvite,
   setOwner,
+  setRoomImage,
   subscribeStanza,
   subscribeToRoom,
 } from '../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../constants/routes';
-import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
+import {CONFERENCEDOMAIN, DOMAIN} from '../xmpp/xmppConstants';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {httpPost} from '../config/apiService';
+import { Image } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { uploadFiles } from '../helpers/uploadFiles';
+import { fileUpload } from '../config/routesConstants';
 
 interface NewChatScreenProps {}
 
@@ -54,9 +59,10 @@ const getOpositeDirection = (direction: string) => {
 };
 
 const NewChatScreen = (props: NewChatScreenProps) => {
-  const [chatAvatar, setChatAvatar] = useState('');
+  const [chatAvatar, setChatAvatar] = useState();
   const [chatName, setChatName] = useState('');
   const [chatDescription, setChatDescription] = useState('');
+  const [loading, setLoading] = useState(false);
   const params = props.route.params;
   const {loginStore, chatStore, apiStore} = useStores();
 
@@ -64,6 +70,19 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
   const navigation = useNavigation();
+
+  const sendFiles = async (data: any) => {
+    setLoading(true);
+    try {
+      const url = apiStore.defaultUrl + fileUpload;
+      const response = await uploadFiles(data, loginStore.userToken, url);
+      console.log(JSON.stringify(response), 'sdfasdfadf');
+      setLoading(false);
+      setChatAvatar(response.results[0].location);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChatAvatar = () => {
     launchImageLibrary(options, response => {
@@ -74,11 +93,16 @@ const NewChatScreen = (props: NewChatScreenProps) => {
       } else if (response.errorMessage) {
         alert('ImagePicker Error: ', response.errorMessage);
       } else {
-        const source = {uri: response.uri};
-
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-        setChatAvatar(source);
+        const data = new FormData();
+        data.append('files', {
+          name: response.assets[0].fileName,
+          type: response.assets[0].type,
+          uri: response.assets[0].uri,
+        });
+        sendFiles(data)
+
       }
     });
   };
@@ -100,6 +124,15 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           roomHash,
           {roomName: chatName, roomDescription: chatDescription},
           chatStore.xmpp,
+        );
+
+        setRoomImage(
+          manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
+          roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
+          chatAvatar,
+          '',
+          'icon',
+          chatStore.xmpp
         );
 
         subscribeToRoom(
@@ -155,11 +188,13 @@ const NewChatScreen = (props: NewChatScreenProps) => {
               alignItems={'center'}
               onPress={handleChatAvatar}>
               {chatAvatar ? (
-                <Image
-                  source={chatAvatar}
-                  w={wp('15%')}
-                  h={wp('15%')}
-                  borderRadius={wp('15%') / 2}
+                <FastImage
+                source={{uri:chatAvatar}}
+                  style={{
+                    width:wp('15%'),
+                    height:wp('15%'),
+                    borderRadius:wp('15%') / 2
+                  }}
                 />
               ) : (
                 <Icon
