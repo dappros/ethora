@@ -28,6 +28,44 @@ const messages = () => {
             winnerIs: 'And the winner is...',
             congratsPrize: 'Congratulations, , here is your prize!',
         },
+        menu: {
+            mainMenu: [
+                {
+                name: '3 Minutes',
+                value: '3 Minutes',
+                notDisplayedValue: "00:03:00"
+                },
+                {
+                    name: '5 Minutes',
+                    value: '5 Minutes',
+                    notDisplayedValue: "00:05:00"
+                },
+                {
+                    name: '10 Minutes',
+                    value: '10 Minutes',
+                    notDisplayedValue: "00:10:00"
+                },
+                {
+                    name: '30 Minutes',
+                    value: '30 Minutes',
+                    notDisplayedValue: "00:30:00"
+                },
+                {
+                    name: '1 Hour',
+                    value: '1 Hour',
+                    notDisplayedValue: "01:00:00"
+                },
+                {
+                    name: '1 Day',
+                    value: '1 Day',
+                    notDisplayedValue: "1d"
+                },
+                {
+                    name: 'Cancel',
+                    value: 'Cancel'
+                }
+            ]
+        }
     }
 }
 
