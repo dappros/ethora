@@ -20,22 +20,50 @@ const router = (handlerData) => {
         return helpHandler(handlerData);
     }
 
-    if(handlerData.receiverData.isSystemMessage === false){
         if (messageCheck(handlerData.message, 'Raffle bot'))
             {
                 return botInitiate(handlerData);
             }
-    }
+    
     
 
-    if (handlerData.receiverData.isSystemMessage && handlerData.receiverData.tokenAmount > 0) {
+    if (handlerData.receiverData.isSystemMessage && handlerData.receiverData.tokenAmount == 7) {
         if (messageCheck(handlerData.message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
             return sendMessage(
                 handlerData,
-                messages.exampleBotMessage.tnxForTransaction,
+                messages.raffleBotReplies.durationToParticipate,
                 'message',
                 false,
                 0,
+                [{
+                    name: '3 Minutes',
+                    value: '3 Minutes'
+                },
+                {
+                    name: '5 Minutes',
+                    value: '5 Minutes'
+                },
+                {
+                    name: '10 Minutes',
+                    value: '10 Minutes'
+                },
+                {
+                    name: '30 Minutes',
+                    value: '30 Minutes'
+                },
+                {
+                    name: '1 Hour',
+                    value: '1 Hour'
+                },
+                {
+                    name: '1 Day',
+                    value: '1 Day'
+                },
+                {
+                    name: 'Cancel',
+                    value: 'Cancel'
+                }
+                ]
             );
         }
     }
