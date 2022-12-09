@@ -207,7 +207,7 @@ const onGetRoomInfo = (stanza: Element, xmpp:any) => {
 
 const onGetRoomMemberInfo = (stanza: Element) => {
   if(stanza.attrs.id === 'roomMemberInfo'){
-    if (stanza.children[0].children.length) {
+    if (stanza.children.length) {
       const info = stanza.children[0].children.map(
         item => item.attrs,
       )

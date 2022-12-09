@@ -36,7 +36,6 @@ const getTime = (time: Date | undefined) => {
     const oneday = 60 * 60 * 24 * 1000;
     const now = Date.now();
     const isMoreThanADay = now-time > oneday;
-    console.log(time,"Adgsbbdfdvsdfd", isMoreThanADay);
     if(isMoreThanADay){
       return dayjs(time)
       .locale('en')
