@@ -1,5 +1,5 @@
-import {VStack} from 'native-base';
-import React from 'react';
+import {AlertDialog, Center, VStack, Button as NativeButton} from 'native-base';
+import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import {Button} from '../../components/Button';
@@ -8,11 +8,62 @@ import {httpDelete} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
 
+const DeleteDialog = ({
+  open,
+  onClose,
+  onDeletePress,
+  loading,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onDeletePress: () => void;
+  loading: boolean;
+}) => {
+  const cancelRef = React.useRef(null);
+  return (
+    <Center>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={open}
+        onClose={onClose}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>Delete Account</AlertDialog.Header>
+          <AlertDialog.Body>
+            This will remove all related data. This action cannot be reversed.
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <NativeButton.Group space={2}>
+              <NativeButton
+                variant="unstyled"
+                colorScheme="coolGray"
+                onPress={onClose}
+                ref={cancelRef}>
+                Cancel
+              </NativeButton>
+              <Button
+                title={'Delete'}
+                style={{backgroundColor: 'red'}}
+                loading={loading}
+                onPress={onDeletePress}
+              />
+            </NativeButton.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
+    </Center>
+  );
+};
+
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
   const {loginStore, apiStore} = useStores();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const deleteAccount = async () => {
+    setLoading(true);
     try {
       await httpDelete(
         apiStore.defaultUrl + changeUserData,
@@ -21,9 +72,12 @@ export const ManageData: React.FC<IManageData> = ({}) => {
       showSuccess('Success', 'Account deleted successfully');
       loginStore.logOut();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       showError('Error', 'Something went wrong');
     }
+    setLoading(false);
+
+    setDeleteDialogOpen(false);
   };
   return (
     <VStack paddingX={5} marginTop={5}>
@@ -65,11 +119,17 @@ export const ManageData: React.FC<IManageData> = ({}) => {
             <Button
               style={{backgroundColor: 'red', width: '60%'}}
               title="Delete my account"
-              onPress={deleteAccount}
+              onPress={() => setDeleteDialogOpen(true)}
             />
           </View>
         </VStack>
       </VStack>
+      <DeleteDialog
+        loading={loading}
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onDeletePress={deleteAccount}
+      />
     </VStack>
   );
 };

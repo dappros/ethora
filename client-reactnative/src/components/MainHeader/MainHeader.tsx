@@ -67,16 +67,20 @@ export const MainHeader = observer(() => {
         apiStore.defaultUrl + '/room/currentRoom',
         loginStore.userToken,
       );
+      if (!res.data.result) {
+        navigation.navigate(ROUTES.CHAT, {
+          chatJid: defaultMetaRoom.jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
+        });
+        return;
+      }
       navigation.navigate(ROUTES.CHAT, {
         chatJid:
           res.data.result.roomId.roomJid +
           apiStore.xmppDomains.CONFERENCEDOMAIN,
       });
     } catch (error) {
-      navigation.navigate(ROUTES.CHAT, {
-        chatJid:
-          defaultMetaRoom.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
-      });
+      console.log(error, 'adflkjsdf');
+
       // showError('Error', 'Cannot fetch latest meta room');
     }
   };
