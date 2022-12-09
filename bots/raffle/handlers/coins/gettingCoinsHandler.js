@@ -11,6 +11,17 @@ export const gettingCoinsHandler = (data) => {
     logCurrentHandler('gettingCoinsHandler', data.userJID, data.message);
     const coinAmount = 7;
 
+    if(data.userStep !== 1){
+        return sendMessage(
+            data,
+            messages.exampleBotMessage.tnxForTransaction,
+            'message',
+            false,
+            0,
+            []
+        );
+    }
+
     if (messageCheck(data.message, botOptions.botData.firstName + ' ' + botOptions.botData.lastName)) {
         const filterData = {
             where: {
