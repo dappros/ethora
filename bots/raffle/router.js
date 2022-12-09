@@ -7,7 +7,10 @@ import {gettingCoinsHandler} from "./handlers/coins/gettingCoinsHandler.js";
 const router = (handlerData) => {
     handlerData.userStep = userSteps('getStep', handlerData.userJID);
 
-    if (handlerData.receiverData.isSystemMessage && handlerData.receiverData.tokenAmount > 0) {
+    if (handlerData.receiverData.isSystemMessage &&
+        handlerData.receiverData.tokenAmount > 0 &&
+        handlerData.receiverData.receiverMessageId !== '0'
+    ) {
         return gettingCoinsHandler(handlerData);
     }
 
@@ -28,8 +31,8 @@ const router = (handlerData) => {
         return botInitiate(handlerData);
     }
 
-    if(handlerData.userStep === 2){
-    //    next step...
+    if (handlerData.userStep === 2) {
+        //    next step...
     }
 
 }
