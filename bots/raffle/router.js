@@ -1,4 +1,4 @@
-import {messageCheck, userSteps} from "./actions.js";
+import {messageCheck, sendMessage, userSteps} from "./actions.js";
 import {leaveHandler} from "./handlers/leave.js";
 import {helpHandler} from "./handlers/help.js";
 import {botInitiate} from "./handlers/botInitiate.js";
@@ -7,11 +7,27 @@ import {gettingCoinsHandler} from "./handlers/coins/gettingCoinsHandler.js";
 const router = (handlerData) => {
     handlerData.userStep = userSteps('getStep', handlerData.userJID);
 
+    //If the user sent coins
     if (handlerData.receiverData.isSystemMessage &&
         handlerData.receiverData.tokenAmount > 0 &&
         handlerData.receiverData.receiverMessageId !== '0'
     ) {
         return gettingCoinsHandler(handlerData);
+    }
+
+    //If the user sent items
+    if (handlerData.receiverData.isSystemMessage &&
+        handlerData.receiverData.tokenAmount > 0 &&
+        handlerData.receiverData.receiverMessageId === '0'
+    ) {
+        return sendMessage(
+            handlerData,
+            "I received your item, thanks!",
+            'message',
+            false,
+            0,
+            []
+        );
     }
 
     if (messageCheck(handlerData.message, 'close') || messageCheck(handlerData.message, 'leave')) {
@@ -31,7 +47,7 @@ const router = (handlerData) => {
         return botInitiate(handlerData);
     }
 
-    if (handlerData.userStep === 2) {
+    if (handlerData.userStep.step === 2) {
         //    next step...
     }
 
