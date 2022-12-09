@@ -179,7 +179,7 @@ const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
   }
 };
 
-const onGetRoomInfo = (stanza: Element, xmpp:any) => {
+const onGetRoomInfo = (stanza: Element|any) => {
   const userChatRooms = useStoreState.getState().userChatRooms;
   const currentRoomData = userChatRooms.filter((e) => e.jid === stanza.attrs.from)[0];
   if(stanza.attrs.id === 'roomInfo'){
@@ -205,7 +205,7 @@ const onGetRoomInfo = (stanza: Element, xmpp:any) => {
   }
 }
 
-const onGetRoomMemberInfo = (stanza: Element) => {
+const onGetRoomMemberInfo = (stanza: Element|any) => {
   if(stanza.attrs.id === 'roomMemberInfo'){
     if (stanza.children.length) {
       const info = stanza.children[0].children.map(
@@ -216,13 +216,14 @@ const onGetRoomMemberInfo = (stanza: Element) => {
   }
 }
 
-const onChangeDescription = (stanza: Element) => {
+const onChangeDescription = (stanza: Element, xmpp:any) => {
   if(stanza.attrs.id === "changeRoomDescription"){
-    console.log(stanza)
+    // console.log(stanza)
+    xmpp.getRoomInfo(stanza.attrs.from);
   }
 }
 
-const onPresenceInRoom = (stanza: Element) => {
+const onPresenceInRoom = (stanza: Element | any) => {
   if(stanza.attrs.id === 'presenceInRoom'){
     const roomJID:string = stanza.attrs.from.split('/')[0];
     const role:string = stanza.children[1].children[0].attrs.role;
@@ -232,6 +233,7 @@ const onPresenceInRoom = (stanza: Element) => {
 }
 
 const connectToUserRooms = (stanza: Element, xmpp: any) => {
+  
   if (stanza.attrs.id === "getUserRooms") {
     if (stanza.getChild("query")?.children) {
       isGettingFirstMessages = true;
@@ -414,9 +416,9 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onComposing(stanza));
     this.client.on("stanza", (stanza) => onInvite(stanza, this));
     this.client.on("stanza", (stanza) => onBlackList(stanza, this));
-    this.client.on("stanza", (stanza) => onGetRoomInfo(stanza, this));
+    this.client.on("stanza", (stanza) => onGetRoomInfo(stanza));
     this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
-    this.client.on("stanza", (stanza) => onChangeDescription(stanza));
+    this.client.on("stanza", (stanza) => onChangeDescription(stanza, this));
     this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
     this.client.on('stanza', (stanza) => onBan(stanza));
     this.client.on("offline", () => console.log("offline"));

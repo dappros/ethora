@@ -6,13 +6,10 @@ import xmpp from "../../xmpp";
 import EditIcon from "@mui/icons-material/Edit";
 
 export default function ChatDetailCard (){
-    const userChatRooms = useStoreState((store) => store.userChatRooms)
     const {roomJID}:any = useParams()
     const [newDescription, setNewDescription] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
-    xmpp.getRoomInfo(roomJID);
-    const currentRoomData = userChatRooms.filter((e) => e.jid === roomJID)[0];
-
+    const currentRoomData = useStoreState((store) => store.userChatRooms).filter((e) => e.jid === roomJID)[0];
     const handleChangeDescription = (newDescription:string) => {
         xmpp.changeRoomDescription(
             roomJID,
@@ -32,7 +29,7 @@ export default function ChatDetailCard (){
             display:"flex"
             }}
         >
-            {currentRoomData.room_thumbnail&&currentRoomData.room_thumbnail!=='none'?
+            {currentRoomData?.room_thumbnail&&currentRoomData?.room_thumbnail!=='none'?
             <Avatar
             sx={{
                 width: 300,
@@ -45,7 +42,7 @@ export default function ChatDetailCard (){
             color={"white"}
             fontSize={'120px'}
             >
-                {currentRoomData.name[0]}
+                {currentRoomData?.name[0]}
             </Typography>
             }
         </Box>
@@ -53,11 +50,11 @@ export default function ChatDetailCard (){
         fontSize={"20px"}
         fontWeight={"bold"}
         >
-            {currentRoomData.name}
+            {currentRoomData?.name}
         </Typography>
         <Container style={{flexDirection:"row", justifyContent:"center", alignItems:"center", display:"flex"}}>
             <Typography fontSize={"20px"}>
-                {currentRoomData.description?currentRoomData.description:"No description set"}
+                {currentRoomData?.description?currentRoomData.description:"No description set"}
             </Typography>
             <IconButton 
             onClick={()=>setShowModal(true)}
