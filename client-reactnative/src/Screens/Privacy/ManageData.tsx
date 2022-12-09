@@ -30,7 +30,7 @@ const DeleteDialog = ({
           <AlertDialog.CloseButton />
           <AlertDialog.Header>Delete Account</AlertDialog.Header>
           <AlertDialog.Body>
-            This will remove all related data. This action cannot be reversed.
+          Are you sure you want to delete your account? If you delete your account, you will permanently lose all data.
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <NativeButton.Group space={2}>
@@ -42,7 +42,7 @@ const DeleteDialog = ({
                 Cancel
               </NativeButton>
               <Button
-                title={'Delete'}
+                title={'Delete Account'}
                 style={{backgroundColor: 'red'}}
                 loading={loading}
                 onPress={onDeletePress}
