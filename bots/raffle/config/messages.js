@@ -34,32 +34,32 @@ const messages = () => {
                 {
                 name: '3 Minutes',
                 value: '3 Minutes',
-                notDisplayedValue: "00:03:00"
+                notDisplayedValue: "3:m"
                 },
                 {
                     name: '5 Minutes',
                     value: '5 Minutes',
-                    notDisplayedValue: "00:05:00"
+                    notDisplayedValue: "5:m"
                 },
                 {
                     name: '10 Minutes',
                     value: '10 Minutes',
-                    notDisplayedValue: "00:10:00"
+                    notDisplayedValue: "10:m"
                 },
                 {
                     name: '30 Minutes',
                     value: '30 Minutes',
-                    notDisplayedValue: "00:30:00"
+                    notDisplayedValue: "30:m"
                 },
                 {
                     name: '1 Hour',
                     value: '1 Hour',
-                    notDisplayedValue: "01:00:00"
+                    notDisplayedValue: "1:h"
                 },
                 {
                     name: '1 Day',
                     value: '1 Day',
-                    notDisplayedValue: "1d"
+                    notDisplayedValue: "1:d"
                 },
                 {
                     name: 'Cancel',
