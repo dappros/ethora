@@ -1,6 +1,4 @@
-
-
-// Master switches 
+// Master switches
 
 /*
 START SCREEN switch.
@@ -11,12 +9,16 @@ This specifies which screen is going to be the default one for Users. See option
 (D) Metaverse mode. If you prefer a gamified / metaverse experience, however, you may want to start from ‘roomsNav’ option which prompts the User to start ‘walking’ around Rooms in a metaverse presence mode.
 */
 
-const configStartScreenOptions = {roomsStarred: 'roomsStarred', profileOwn: 'profileOwn', roomBot: 'roomBot', roomsNav: 'roomsNav'}
+const configStartScreenOptions = {
+  roomsStarred: "roomsStarred",
+  profileOwn: "profileOwn",
+  roomBot: "roomBot",
+  roomsNav: "roomsNav",
+};
 export const configStartScreen = configStartScreenOptions.roomsStarred; // default option (A) - start with the starred or default chat Rooms
 // const configStartScreen = 'profileOwn'; // option (B) - users start from own Profile
 // const configStartScreen = 'roomBot'; // option (C) - User starts in a room guided by your default Chat Bot
 // const configStartScreen = 'roomsNav'; // option (D) - User starts in a ‘metaverse’ mode
-
 
 /*
 META / NAV master switch.
@@ -39,8 +41,6 @@ Developers notes:
 
 export const configNFT = true;
 
-
-
 /*
 DOCUMENTS master switch.
 When this setting is enabled, your Users can create and share Documents asset type.
@@ -48,7 +48,6 @@ Most business applications would prefer this enabled.
 */
 
 export const configDocuments = true;
-
 
 // LOGIN SCREEN
 
@@ -62,36 +61,40 @@ export const regularLogin = true; // custom login+password - users have to regis
 export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
 export const regularLoginUsername = true;
 
-export const coinsMainSymbol = 'DPT'; //done
-export const coinsMainName = 'Dappros Platform Token'; //done
-export const coinReplacedSymbol = 'ETO'; //done
-export const coinReplacedName = 'Ethora Coin'; //done
-
+export const coinsMainSymbol = "DPT"; //done
+export const coinsMainName = "Dappros Platform Token"; //done
+export const coinReplacedSymbol = "ETO"; //done
+export const coinReplacedName = "Ethora Coin"; //done
 
 export const defaultChats = {
-    '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc': {
-      name: 'Agora (Start here) 🇬🇧🏛️👋💬',
-      premiumOnly: true,
-      stickyOrder: false,
-      removable: false,
-    },
-    d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22: {
-      name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
-      premiumOnly: true,
-      stickyOrder: false,
-      removable: false,
-    },
-    fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e: {
-      name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
-      premiumOnly: true,
-      stickyOrder: false,
-      removable: false,
-    },
-  };
+  '5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d': {
+    name: 'Random talks',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+  cc39004bf432f6dc34b47cd64251236c9ae65eadd890daef3ff7dbc94c3caecb: {
+    name: 'Technical support',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
+};
+
+export const defaultMetaRoom = {
+  name: 'Agora (Start here) 🇬🇧🏛️👋💬',
+  jid: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+};
+
+
+export const ROOMS_FILTERS = {
+  official: 'official',
+  private: 'private',
+  meta: 'meta'
+}
 // TO BE DEPRECATED
 
 // images for tutorial screens
 // TUTORIAL
 // EMAIL MANAGEMENT
 // PREMIUM MEMBER CHECK
-

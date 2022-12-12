@@ -13,5 +13,7 @@ export const NFMT_TRAITS: Record<string, { color: string }> = {
   "Unique!": { color: "black" },
 };
 
-export const CONFERENCEDOMAIN = '@dev.dxmpp.com'
+export const CONFERENCEDOMAIN = '@conference.dev.dxmpp.com'
+export const DOMAIN = '@dev.dxmpp.com'
+
 export const mobileEthoraBaseUrl = 'https://www.eto.li/go?c=';

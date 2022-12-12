@@ -1,7 +1,12 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
-import { TMessageHistory, useStoreState } from "../../store";
+import {
+  TActiveRoomFilter,
+  TMessageHistory,
+  TUserChatRooms,
+  useStoreState,
+} from "../../store";
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
@@ -36,7 +41,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from "react-dropzone";
+import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
+import { defaultChats, ROOMS_FILTERS } from "../../config/config";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -83,7 +90,11 @@ const getPosition = (
     return result;
   }
 
-  if (previousJID === currentJID && nextJID !== currentJID && arr[index - 1]?.data.isSystemMessage === "false") {
+  if (
+    previousJID === currentJID &&
+    nextJID !== currentJID &&
+    arr[index - 1]?.data.isSystemMessage === "false"
+  ) {
     result.position = "single";
     result.type = "last";
     return result;
@@ -92,16 +103,31 @@ const getPosition = (
   return result;
 };
 
+const filterChatRooms = (
+  rooms: TUserChatRooms[],
+  filter: TActiveRoomFilter
+) => {
+  if (filter === ROOMS_FILTERS.official) {
+    return rooms.filter((item) => {
+      const splitedJid = item?.jid?.split("@")[0];
+      return defaultChats[splitedJid];
+    });
+  }
+  return rooms;
+};
+
 export function ChatInRoom() {
   const messages = useStoreState((state) => state.historyMessages);
   const user = useStoreState((store) => store.user);
-  const useChatRooms = useStoreState((store) => store.userChatRooms);
+  const userChatRooms = useStoreState((store) => store.userChatRooms);
   const loaderArchive = useStoreState((store) => store.loaderArchive);
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
   );
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
+  const [showMetaNavigation, setShowMetaNavigation] = useState(true);
+
   const [currentRoom, setCurrentRoom] = useState("");
   const [roomData, setRoomData] = useState<{
     jid: string;
@@ -129,21 +155,27 @@ export function ChatInRoom() {
   const { roomJID } = useParams();
   const history = useHistory();
   const [firstLoadMessages, setFirstLoadMessages] = useState(true);
+  const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
+  const setActiveRoomFilter = useStoreState(
+    (state) => state.setActiveRoomFilter
+  );
+  const openLastMetaRoom = activeRoomFilter === ROOMS_FILTERS.meta;
 
-  const onDrop = useCallback(acceptedFiles => {
-    sendFile(acceptedFiles[0]);
-  }, [roomData]);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      sendFile(acceptedFiles[0]);
+    },
+    [roomData]
+  );
 
-  const {
-    getRootProps
-  } = useDropzone({
+  const { getRootProps } = useDropzone({
     onDrop,
     noClick: true,
-    maxFiles: 1
+    maxFiles: 1,
   });
   const onYReachStart = () => {
     const filteredMessages = messages.filter(
-        (item: any) => item.roomJID === currentRoom
+      (item: any) => item.roomJID === currentRoom
     );
 
     if (loaderArchive) {
@@ -155,6 +187,13 @@ export function ChatInRoom() {
   };
 
   useEffect(() => {
+    if (roomJID) {
+      loadMessages(roomJID);
+      setShowMetaNavigation(true);
+    }
+  }, [roomJID]);
+
+  useEffect(() => {
     getPublicProfile(user.walletAddress).then((result) => {
       setProfile(result.data.result);
     });
@@ -162,8 +201,12 @@ export function ChatInRoom() {
 
   const chooseRoom = (jid: string) => {
     history.push("/chat/" + jid.split("@")[0]);
+    loadMessages(jid);
+  };
+
+  const loadMessages = (jid: string) => {
     setCurrentRoom(jid);
-    const currentRoomData = useChatRooms.filter((e) => e.jid === jid)[0];
+    const currentRoomData = userChatRooms.filter((e) => e.jid === jid)[0];
     setRoomData(currentRoomData);
     useStoreState.getState().clearCounterChatRoom(jid);
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
@@ -171,7 +214,7 @@ export function ChatInRoom() {
     const filteredMessages = messages.filter(
       (item: any) => item.roomJID === jid
     );
-    setFirstLoadMessages(true)
+    setFirstLoadMessages(true);
 
     if (
       !loaderArchive &&
@@ -222,17 +265,17 @@ export function ChatInRoom() {
     let doc: any;
     let str = html;
 
-    str=str.replace(/<br>/gi, "\n");
-    str=str.replace(/<p.*>/gi, "\n");
-    str=str.replace(/<(?:.|\s)*?>/g, "");
+    str = str.replace(/<br>/gi, "\n");
+    str = str.replace(/<p.*>/gi, "\n");
+    str = str.replace(/<(?:.|\s)*?>/g, "");
 
-    if(str.trim().length === 0){
-      doc = new DOMParser().parseFromString(html, 'text/html');
-    }else{
-      doc = new DOMParser().parseFromString(str, 'text/html');
+    if (str.trim().length === 0) {
+      doc = new DOMParser().parseFromString(html, "text/html");
+    } else {
+      doc = new DOMParser().parseFromString(str, "text/html");
     }
     return doc.body.textContent || "";
-  }
+  };
 
   const sendMessage = (button: any) => {
     if (myMessage.trim().length > 0) {
@@ -243,15 +286,15 @@ export function ChatInRoom() {
       const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
 
-      if(finalMessageTxt.trim().length > 0){
+      if (finalMessageTxt.trim().length > 0) {
         xmpp.sendMessage(
-            currentRoom,
-            user.firstName,
-            user.lastName,
-            userAvatar,
-            user.walletAddress,
-            typeof button === "object" ? button.value : finalMessageTxt,
-            typeof button === "object" ? button.notDisplayedValue : null
+          currentRoom,
+          user.firstName,
+          user.lastName,
+          userAvatar,
+          user.walletAddress,
+          typeof button === "object" ? button.value : finalMessageTxt,
+          typeof button === "object" ? button.notDisplayedValue : null
         );
       }
     }
@@ -310,7 +353,7 @@ export function ChatInRoom() {
         });
         setShowDialogTxt(true);
       });
-    if(fileRef.current){
+    if (fileRef.current) {
       fileRef.current.value = "";
     }
   };
@@ -324,19 +367,21 @@ export function ChatInRoom() {
     );
   };
 
-  const handlePaste = event => {
+  const handlePaste = (event) => {
     // @ts-ignore
-    let item = Array.from(event.clipboardData.items).find(x => /^image\//.test(x.type));
-    if(item){
+    let item = Array.from(event.clipboardData.items).find((x: any) =>
+      /^image\//.test(x.type)
+    );
+    if (item) {
       // @ts-ignore
       let blob = item.getAsFile();
-      sendFile(blob)
+      sendFile(blob);
     }
   };
 
   const handleChatDetailClick = () => {
-    history.push("/chatDetails/"+ currentUntrackedChatRoom)
-  }
+    history.push("/chatDetails/" + currentUntrackedChatRoom);
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -351,20 +396,20 @@ export function ChatInRoom() {
         !roomJID ||
         roomJID === "none" ||
         roomJID === "" ||
-          currentUntrackedChatRoom.split("@")[0] === roomJID
+        currentUntrackedChatRoom.split("@")[0] === roomJID
       ) {
-        if(currentUntrackedChatRoom.split("@")[1]){
+        if (currentUntrackedChatRoom.split("@")[1]) {
           chooseRoom(currentUntrackedChatRoom);
-        }else{
-          chooseRoom(currentUntrackedChatRoom+"@conference.dev.dxmpp.com");
+        } else {
+          chooseRoom(currentUntrackedChatRoom + "@conference.dev.dxmpp.com");
         }
       }
     }
 
     if (
-        currentUntrackedChatRoom.split("@")[0] !== roomJID &&
-        roomJID !== "none" &&
-        roomJID !== ""
+      currentUntrackedChatRoom.split("@")[0] !== roomJID &&
+      roomJID !== "none" &&
+      roomJID !== ""
     ) {
       useStoreState.getState().setCurrentUntrackedChatRoom(roomJID);
       chooseRoom(roomJID);
@@ -384,29 +429,47 @@ export function ChatInRoom() {
 
   useEffect(() => {
     const filteredMessages = messages.filter(
-        (item: any) => item.roomJID === currentRoom
+      (item: any) => item.roomJID === currentRoom
     );
 
-    if(!loaderArchive && filteredMessages.length > 0 && filteredMessages.length <= 51 && currentRoom && firstLoadMessages){
+    if (
+      !loaderArchive &&
+      filteredMessages.length > 0 &&
+      filteredMessages.length <= 51 &&
+      currentRoom &&
+      firstLoadMessages
+    ) {
       const lastUpFilteredMessage = filteredMessages[0];
 
-      if(filteredMessages.length >= 10 && filteredMessages.length < 15 && lastUpFilteredMessage.data.isSystemMessage){
+      if (
+        filteredMessages.length >= 10 &&
+        filteredMessages.length < 15 &&
+        lastUpFilteredMessage.data.isSystemMessage
+      ) {
         setFirstLoadMessages(false);
-        xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 5);
-      }else if(filteredMessages.length === 1){
+        xmpp.getPaginatedArchive(
+          currentRoom,
+          String(lastUpFilteredMessage.id),
+          5
+        );
+      } else if (filteredMessages.length === 1) {
         setFirstLoadMessages(false);
-        xmpp.getPaginatedArchive(currentRoom, String(lastUpFilteredMessage.id), 50);
+        xmpp.getPaginatedArchive(
+          currentRoom,
+          String(lastUpFilteredMessage.id),
+          50
+        );
       }
     }
-  }, [messages])
+  }, [messages]);
 
   return (
-    <Box style={{paddingBlock: "20px", height: "100%"}}>
+    <Box style={{ paddingBlock: "20px", height: "100%" }}>
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
           <ConversationList loading={loaderArchive}>
-            {useChatRooms.map((room) => (
+            {filterChatRooms(userChatRooms, activeRoomFilter).map((room) => (
               <Conversation
                 active={room.jid === currentRoom}
                 key={room.jid}
@@ -428,141 +491,143 @@ export function ChatInRoom() {
           </ConversationList>
         </Sidebar>
 
-        <div {...getRootProps()} style={{width: "100%", height: "100%"}}>
-        <ChatContainer >
-          {!!roomData && (
-            <ConversationHeader onClick={()=>handleChatDetailClick()}>
-              <ConversationHeader.Back />
-              {messages.filter((item: any) => item.roomJID === currentRoom)
-                .length > 0 && (
-                <ConversationHeader.Content
-                  userName={roomData.name}
-                  info={
-                    "Active " +
-                    formatDistance(
-                      subDays(
-                        new Date(
-                          messages
-                            .filter((item: any) => item.roomJID === currentRoom)
-                            .slice(-1)[0].date
+        <div {...getRootProps()} style={{ width: "100%", height: "100%" }}>
+          <ChatContainer>
+            {!!roomData && (
+              <ConversationHeader onClick={() => handleChatDetailClick()}>
+                <ConversationHeader.Back />
+                {messages.filter((item: any) => item.roomJID === currentRoom)
+                  .length > 0 && (
+                  <ConversationHeader.Content
+                    userName={roomData.name}
+                    info={
+                      "Active " +
+                      formatDistance(
+                        subDays(
+                          new Date(
+                            messages
+                              .filter(
+                                (item: any) => item.roomJID === currentRoom
+                              )
+                              .slice(-1)[0].date
+                          ),
+                          0
                         ),
-                        0
-                      ),
-                      new Date(),
-                      { addSuffix: true }
-                    )
+                        new Date(),
+                        { addSuffix: true }
+                      )
+                    }
+                  />
+                )}
+                <ConversationHeader.Actions>
+                  <BookmarkRemoveIcon />
+                </ConversationHeader.Actions>
+              </ConversationHeader>
+            )}
+            <MessageList
+              loadingMore={loaderArchive}
+              onYReachStart={onYReachStart}
+              disableOnYReachWhenNoScroll={true}
+              typingIndicator={
+                !!userChatRooms.filter((e) => e.jid === currentRoom)[0]
+                  ?.composing && (
+                  <TypingIndicator
+                    style={{ opacity: ".6" }}
+                    content={
+                      userChatRooms.filter((e) => e.jid === currentRoom)[0]
+                        ?.composing
+                    }
+                  />
+                )
+              }
+            >
+              {messages
+                .filter((item: any) => item.roomJID === currentRoom)
+                .map((message, index, arr) => {
+                  const position = getPosition(arr, message, index);
+                  if (message.data.isSystemMessage === "false") {
+                    return (
+                      <Message
+                        key={message.id}
+                        is={"Message"}
+                        position={position}
+                        message={message}
+                        userJid={xmpp.client?.jid?.toString()}
+                        buttonSender={sendMessage}
+                        chooseDirectRoom={chooseRoom}
+                      />
+                    );
+                  } else {
+                    return (
+                      <SystemMessage
+                        key={message.id}
+                        is={"Message"}
+                        message={message}
+                        userJid={xmpp.client?.jid?.toString()}
+                      />
+                    );
                   }
+                })}
+              {messages.length <= 0 ||
+                (!currentRoom && (
+                  <MessageList.Content
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      height: "100%",
+                      textAlign: "center",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    {!loaderArchive ? (
+                      <span>
+                        {!currentRoom &&
+                          "To get started, please select a chat room."}
+                      </span>
+                    ) : (
+                      "Loading..."
+                    )}
+                  </MessageList.Content>
+                ))}
+              {!loaderArchive &&
+                currentRoom &&
+                messages.filter((item: any) => item.roomJID === currentRoom)
+                  .length <= 0 && (
+                  <MessageList.Content
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      height: "100%",
+                      textAlign: "center",
+                      fontSize: "1.2em",
+                    }}
+                  >
+                    Message list is empty
+                  </MessageList.Content>
+                )}
+            </MessageList>
+            {!!roomData?.name && (
+              <div is={"MessageInput"}>
+                <MessageInput
+                  onPaste={handlePaste}
+                  placeholder="Type message here"
+                  onChange={setMessage}
+                  onSend={sendMessage}
+                  onAttachClick={() => fileRef.current.click()}
                 />
-              )}
-              <ConversationHeader.Actions>
-                <BookmarkRemoveIcon />
-              </ConversationHeader.Actions>
-            </ConversationHeader>
-          )}
-          <MessageList
-            loadingMore={loaderArchive}
-            onYReachStart={onYReachStart}
-            disableOnYReachWhenNoScroll={true}
-            typingIndicator={
-              !!useChatRooms.filter((e) => e.jid === currentRoom)[0]
-                ?.composing && (
-                <TypingIndicator
-                  style={{opacity: ".6"}}
-                  content={
-                    useChatRooms.filter((e) => e.jid === currentRoom)[0]
-                      ?.composing
-                  }
+                <input
+                  type="file"
+                  name="file"
+                  id="file"
+                  onChange={(event) => sendFile(event.target.files[0])}
+                  ref={fileRef}
+                  style={{ display: "none" }}
                 />
-              )
-            }
-          >
-            {messages
-              .filter((item: any) => item.roomJID === currentRoom)
-              .map((message, index, arr) => {
-                const position = getPosition(arr, message, index);
-                if (message.data.isSystemMessage === "false") {
-                  return (
-                    <Message
-                      key={message.id}
-                      is={"Message"}
-                      position={position}
-                      message={message}
-                      userJid={xmpp.client?.jid?.toString()}
-                      buttonSender={sendMessage}
-                      chooseDirectRoom={chooseRoom}
-                    />
-                  );
-                } else {
-                  return (
-                    <SystemMessage
-                      key={message.id}
-                      is={"Message"}
-                      message={message}
-                      userJid={xmpp.client?.jid?.toString()}
-                    />
-                  );
-                }
-              })}
-            {messages.length <= 0 ||
-              (!currentRoom && (
-                <MessageList.Content
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100%",
-                    textAlign: "center",
-                    fontSize: "1.2em",
-                  }}
-                >
-                  {!loaderArchive ? (
-                    <span>
-                      {!currentRoom &&
-                        "To get started, please select a chat room."}
-                    </span>
-                  ) : (
-                    "Loading..."
-                  )}
-                </MessageList.Content>
-              ))}
-            {!loaderArchive &&
-              currentRoom &&
-              messages.filter((item: any) => item.roomJID === currentRoom)
-                .length <= 0 && (
-                <MessageList.Content
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    height: "100%",
-                    textAlign: "center",
-                    fontSize: "1.2em",
-                  }}
-                >
-                  Message list is empty
-                </MessageList.Content>
-              )}
-          </MessageList>
-          {!!roomData?.name && (
-            <div is={"MessageInput"}>
-              <MessageInput
-                onPaste={handlePaste}
-                placeholder="Type message here"
-                onChange={setMessage}
-                onSend={sendMessage}
-                onAttachClick={() => fileRef.current.click()}
-              />
-              <input
-                type="file"
-                name="file"
-                id="file"
-                onChange={(event) => sendFile(event.target.files[0])}
-                ref={fileRef}
-                style={{ display: "none" }}
-              />
-            </div>
-          )}
-        </ChatContainer>
+              </div>
+            )}
+          </ChatContainer>
         </div>
       </MainContainer>
 
@@ -592,6 +657,15 @@ export function ChatInRoom() {
           </DialogActions>
         ) : null}
       </Dialog>
+      <MetaNavigation
+        open={showMetaNavigation || openLastMetaRoom}
+        chatId={currentRoom.split("@")[0]}
+        onClose={() => {
+          setShowMetaNavigation(false);
+
+          openLastMetaRoom && setActiveRoomFilter("");
+        }}
+      />
     </Box>
   );
 }

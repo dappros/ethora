@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
@@ -21,18 +21,30 @@ import Web3 from "web3";
 import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
-import { getBalance } from "../http";
+import { getBalance, httpWithAuth } from "../http";
 import xmpp from "../xmpp";
-import { useStoreState } from "../store";
+import { TActiveRoomFilter, useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Badge, Divider } from "@mui/material";
-import { configDocuments, configNFT, defaultChats } from "../config/config";
+import {
+  configDocuments,
+  configNFT,
+  defaultChats,
+  defaultMetaRoom,
+  ROOMS_FILTERS,
+} from "../config/config";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
+
+const roomFilters = [
+  { name: ROOMS_FILTERS.official, Icon: StarRateIcon },
+  { name: ROOMS_FILTERS.private, Icon: GroupIcon },
+  { name: ROOMS_FILTERS.meta, Icon: ExploreIcon },
+];
 const menuActionsSection = {
   name: "Actions",
   items: [
@@ -91,6 +103,7 @@ const AppTopNav = () => {
   );
 
   const history = useHistory();
+  const location = useLocation();
   const { active, deactivate } = useWeb3React();
   const balance = useStoreState((state) => state.balance);
   const mainCoinBalance = useStoreState((state) =>
@@ -99,11 +112,13 @@ const AppTopNav = () => {
   const clearUser = useStoreState((state) => state.clearUser);
   const setBalance = useStoreState((state) => state.setBalance);
   const rooms = useStoreState((state) => state.userChatRooms);
-  const messages = useStoreState((state) => state.messages);
+  const setActiveRoomFilter = useStoreState(
+    (state) => state.setActiveRoomFilter
+  );
 
   const [unreadMessagesCounts, setUnreadMessagesCounts] = useState({
     official: 0,
-    groups: 0,
+    meta: 0,
     private: 0,
   });
 
@@ -181,6 +196,22 @@ const AppTopNav = () => {
     handleCloseUserMenu();
   };
 
+  const navigateToLatestMetaRoom = async () => {
+    try {
+      const res = await httpWithAuth().get("/room/currentRoom");
+      if (!res.data.result) {
+        history.push("/chat/" + defaultMetaRoom.jid);
+
+        return;
+      }
+      history.push("/chat/" + res.data.result.roomId.roomJid);
+    } catch (error) {
+      console.log(error, "cannot navigate to room");
+
+      // showError('Error', 'Cannot fetch latest meta room');
+    }
+  };
+
   const onLogout = () => {
     clearUser();
     xmpp.stop();
@@ -192,7 +223,7 @@ const AppTopNav = () => {
   const getCounter = () => {
     const counts = {
       official: 0,
-      groups: 0,
+      meta: 0,
       private: 0,
     };
     rooms.forEach((item) => {
@@ -204,15 +235,26 @@ const AppTopNav = () => {
         counts.private += item.unreadMessages;
       }
       if (!defaultChats[splitedJid] && +item.users_cnt >= 3) {
-        counts.groups += item.unreadMessages;
+        counts.meta += item.unreadMessages;
       }
     });
 
-   setUnreadMessagesCounts(counts)
+    setUnreadMessagesCounts(counts);
   };
+  const onRoomFilterClick = async (filter: TActiveRoomFilter) => {
+    setActiveRoomFilter(filter);
+    if (filter === ROOMS_FILTERS.meta) {
+      await navigateToLatestMetaRoom();
+      return;
+    }
+    if (!location.pathname.includes("chat")) {
+      history.push("/chat/none");
+    }
+  };
+
   useEffect(() => {
-    getCounter()
-  }, [rooms])
+    getCounter();
+  }, [rooms]);
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -287,15 +329,24 @@ const AppTopNav = () => {
                 gap: "10px",
               }}
             >
-              <Badge badgeContent={unreadMessagesCounts.official} color="secondary">
-                <StarRateIcon />
-              </Badge>
-              <Badge badgeContent={unreadMessagesCounts.private} color="secondary">
-                <GroupIcon />
-              </Badge>
-              <Badge badgeContent={unreadMessagesCounts.groups} color="secondary">
-                <ExploreIcon />
-              </Badge>
+              {roomFilters.map((item) => {
+                return (
+                  <Badge
+                    key={item.name}
+                    badgeContent={unreadMessagesCounts[item.name]}
+                    color="secondary"
+                  >
+                    <IconButton
+                      onClick={() =>
+                        onRoomFilterClick(item.name as TActiveRoomFilter)
+                      }
+                      sx={{ color: "white" }}
+                    >
+                      <item.Icon />
+                    </IconButton>
+                  </Badge>
+                );
+              })}
             </Box>
           </Box>
           <Box style={{ marginLeft: "auto" }}>

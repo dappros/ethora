@@ -81,10 +81,10 @@ export type TMessageHistory = {
 };
 
 type TUserBlackList = {
-  date: number,
-  fullName: string,
-  user: string
-}
+  date: number;
+  fullName: string;
+  user: string;
+};
 
 export type TUserChatRooms = {
   jid: string;
@@ -126,19 +126,21 @@ type TAppUser = {
   updatedAt: string;
 };
 
-export type TMemberInfo={
-  ban_status:string,
-  jid:string,
-  last_active:string,
-  name:string,
-  profile:string,
-  role:string
-}
+export type TMemberInfo = {
+  ban_status: string;
+  jid: string;
+  last_active: string;
+  name: string;
+  profile: string;
+  role: string;
+};
 
 export type TRoomRoles = {
-  roomJID:string,
-  role:string,
-}
+  roomJID: string;
+  role: string;
+};
+
+export type TActiveRoomFilter = "official" | "meta" | "groups" | "";
 
 interface IStore {
   user: TUser;
@@ -166,7 +168,11 @@ interface IStore {
   setNewMessageHistory: (msg: TMessageHistory) => void;
   updateMessageHistory: (messages: TMessageHistory[]) => void;
   removeAllInMessageHistory: (userJID: string) => void;
-  updateCoinsInMessageHistory: (id: number, userJID: string, amount: number) => void;
+  updateCoinsInMessageHistory: (
+    id: number,
+    userJID: string,
+    amount: number
+  ) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
   userChatRooms: TUserChatRooms[];
@@ -194,9 +200,11 @@ interface IStore {
   saveInBlackList: (msg: TUserBlackList) => void;
   clearBlackList: () => void;
   roomMemberInfo: TMemberInfo[];
-  setRoomMemberInfo:(data: TMemberInfo[]) => void;
-  roomRoles : TRoomRoles[];
-  setRoomRoles: (data:TRoomRoles) => void;
+  setRoomMemberInfo: (data: TMemberInfo[]) => void;
+  roomRoles: TRoomRoles[];
+  setRoomRoles: (data: TRoomRoles) => void;
+  activeRoomFilter: TActiveRoomFilter;
+  setActiveRoomFilter: (filter: TActiveRoomFilter) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -251,9 +259,14 @@ const _useStore = create<IStore>()(
           appUsers: [],
           documents: [],
           blackList: [],
+          activeRoomFilter: "",
           setDocuments: (documents: http.IDocument[]) =>
             set((state) => {
               state.documents = documents;
+            }),
+          setActiveRoomFilter: (filter: TActiveRoomFilter) =>
+            set((state) => {
+              state.activeRoomFilter = filter;
             }),
           setACL: (acl: http.IUserAcl) =>
             set((state) => {
@@ -333,24 +346,36 @@ const _useStore = create<IStore>()(
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
               state.historyMessages.unshift(historyMessages);
-              state.historyMessages = state.historyMessages.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
+              state.historyMessages = state.historyMessages.filter(
+                (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+              );
             }),
           updateMessageHistory: (messages: TMessageHistory[]) =>
             set((state) => {
               state.historyMessages = [...state.historyMessages, ...messages];
-              state.historyMessages = state.historyMessages.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i);
+              state.historyMessages = state.historyMessages.filter(
+                (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+              );
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
-          updateCoinsInMessageHistory: (id: number, userJID: string, amount: number) =>
+          updateCoinsInMessageHistory: (
+            id: number,
+            userJID: string,
+            amount: number
+          ) =>
             set((state) => {
-              const messageIndex = state.historyMessages.findIndex(t => t.id === id);
-              if(messageIndex > -1){
+              const messageIndex = state.historyMessages.findIndex(
+                (t) => t.id === id
+              );
+              if (messageIndex > -1) {
                 state.historyMessages[messageIndex].coinsInMessage += amount;
               }
             }),
           removeAllInMessageHistory: (userJID: string) =>
             set((state) => {
-              state.historyMessages = state.historyMessages.filter(item => item.data.senderJID !== userJID)
+              state.historyMessages = state.historyMessages.filter(
+                (item) => item.data.senderJID !== userJID
+              );
             }),
           setLoaderArchive: (status: boolean) =>
             set((state) => {
@@ -368,29 +393,29 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
             }),
-          setRoomMemberInfo: (memberInfo:TMemberInfo[]) =>{
-            set((state)=> {
-              state.roomMemberInfo=memberInfo;
-            })
+          setRoomMemberInfo: (memberInfo: TMemberInfo[]) => {
+            set((state) => {
+              state.roomMemberInfo = memberInfo;
+            });
           },
-          setRoomRoles: (data:TRoomRoles) => {
-            set((state)=> {
+          setRoomRoles: (data: TRoomRoles) => {
+            set((state) => {
               const currentIndex = state.roomRoles.findIndex(
                 (el) => el.roomJID === data.roomJID
-              )
-              if(state.roomRoles[currentIndex]){
+              );
+              if (state.roomRoles[currentIndex]) {
                 state.roomRoles[currentIndex].role = data.role;
-              }else{
+              } else {
                 state.roomRoles.unshift(data);
               }
-            })
+            });
           },
           updateCounterChatRoom: (roomJID: string) =>
             set((state) => {
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === roomJID
               );
-              if(state.userChatRooms[currentIndex]){
+              if (state.userChatRooms[currentIndex]) {
                 state.userChatRooms[currentIndex].unreadMessages++;
               }
             }),
@@ -399,12 +424,15 @@ const _useStore = create<IStore>()(
               const currentIndex = state.userChatRooms.findIndex(
                 (el) => el.jid === data.jid
               );
-              if(state.userChatRooms[currentIndex]){
-                state.userChatRooms[currentIndex].room_background = data.room_background;
-                state.userChatRooms[currentIndex].room_thumbnail = data.room_thumbnail;
+              if (state.userChatRooms[currentIndex]) {
+                state.userChatRooms[currentIndex].room_background =
+                  data.room_background;
+                state.userChatRooms[currentIndex].room_thumbnail =
+                  data.room_thumbnail;
                 state.userChatRooms[currentIndex].users_cnt = data.users_cnt;
                 state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
-                state.userChatRooms[currentIndex].description = data.description;
+                state.userChatRooms[currentIndex].description =
+                  data.description;
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>
@@ -447,13 +475,13 @@ const _useStore = create<IStore>()(
               state.currentUntrackedChatRoom = roomJID;
             }),
           saveInBlackList: (items: TUserBlackList) =>
-              set((state) => {
-                state.blackList.unshift(items);
-              }),
+            set((state) => {
+              state.blackList.unshift(items);
+            }),
           clearBlackList: () =>
-              set((state) => {
-                state.blackList = [];
-              }),
+            set((state) => {
+              state.blackList = [];
+            }),
         };
       })
     )
