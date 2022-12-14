@@ -61,7 +61,7 @@ export const messagingTimeout = (data, timeToAdd) => {
             userSteps('setStep', data.userJID, 1);
             sendMessage(
                 data,
-                "TA-DA!!! The raffle is now officially complete! Announcing the winners in \n1..\n2..\n3.. \nAnd the winner is.. "+victoryUserName+" \nCongratulations, here is your prize!",
+                "TA-DA!!! The raffle is now officially complete! Announcing the winners in \n3..\n2..\n1.. \nAnd the winner is.. '" +victoryUserName+ "' \nCongratulations, here is your prize!",
                 'message',
                 false,
                 0,
