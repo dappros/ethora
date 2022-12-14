@@ -73,15 +73,18 @@ export const messagingTimeout = (data, timeToAdd) => {
                 true
             );
 
-            sendMessage(
-                data,
-                generateSystemMessage(botOptions, data, currentItem.nftName, victoryUserName, 1),
-                'message',
-                true,
-                0,
-                [],
-                true
-            )
+            setTimeout(() => {
+                sendMessage(
+                    data,
+                    generateSystemMessage(botOptions, data, currentItem.nftName, victoryUserName, 1),
+                    'message',
+                    true,
+                    0,
+                    [],
+                    true
+                )
+            }, 5000);
+
         }).catch(error => {
             requestError(data, 'transferItem', error)
         })
@@ -95,7 +98,7 @@ const addingTime = (data, time) => {
 
     sendMessage(
         data,
-        "Thank you. I am pleased to announce that the raffle registration is now on!\nThe time now is " + currentTime.toLocaleTimeString() + " GMT, all users who write a message during next "+ time[0]+ " minutes will all be counted as participants!",
+        "Thank you. I am pleased to announce that the raffle registration is now on!\n\nThe time now is " + currentTime.toLocaleTimeString() + " GMT, all users who write a message during next "+ time[0]+ " minutes will all be counted as participants!",
         'message',
         false,
         0,
