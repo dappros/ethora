@@ -54,13 +54,17 @@ const router = (handlerData) => {
         messageCheck(handlerData.message, 'bots help') ||
         messageCheck(handlerData.message, 'bot info') ||
         messageCheck(handlerData.message, 'bots info')) {
-        return helpHandler(handlerData);
+        if(handlerData.userStep.step === 1){
+            return helpHandler(handlerData);
+        }
     }
 
     if (messageCheck(handlerData.message, 'Raffle bot') ||
         messageCheck(handlerData.message, 'raffle')
     ) {
-        return botInitiate(handlerData);
+        if(handlerData.userStep.step === 1) {
+            return botInitiate(handlerData);
+        }
     }
 
     if (handlerData.userStep.step === 2) {
