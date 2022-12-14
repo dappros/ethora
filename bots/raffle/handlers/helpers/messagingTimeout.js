@@ -69,7 +69,7 @@ export const messagingTimeout = (data, timeToAdd) => {
 
             sendMessage(
                 data,
-                generateSystemMessage(botOptions, data, currentItem.nftName, 1),
+                generateSystemMessage(botOptions, data, currentItem.nftName, victoryUserName, 1),
                 'message',
                 true,
                 0,
@@ -121,8 +121,8 @@ const getTimeout = (time) => {
     }
 }
 
-const generateSystemMessage = (botOptions, data, itemName, amount) => {
+const generateSystemMessage = (botOptions, data, itemName, victoryUserName, amount) => {
     if (botOptions && data) {
-        return botOptions.botData.firstName + ' ' + botOptions.botData.lastName + ' -> ' + amount + ' ' + itemName + ' -> ' + data.receiverData.senderFirstName + " " + data.receiverData.senderLastName;
+        return botOptions.botData.firstName + ' ' + botOptions.botData.lastName + ' -> ' + amount + ' ' + itemName + ' -> ' + " " + victoryUserName;
     }
 }
