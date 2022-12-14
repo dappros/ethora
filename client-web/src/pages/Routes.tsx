@@ -19,6 +19,7 @@ import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
 import { Alert, Snackbar } from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
+import Privacy from "./Privacy/Privacy";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
@@ -143,6 +144,7 @@ export const Routes = () => {
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
         <AuthRoute path="/dashboard" component={Dashboard} />
+        <AuthRoute path="/privacy" component={Privacy} />
         <Route path="/profile/:wallet">
           <Profile />
         </Route>

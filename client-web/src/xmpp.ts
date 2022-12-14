@@ -374,22 +374,28 @@ const onInvite = (stanza: Element, xmpp: any) => {
 
 const onBlackList = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "blackList") {
-    stanza?.getChild("query").children.forEach((item: any) => {
-      let listData = {
+    const blackList = stanza?.getChild("query").children.map((item: any) => (
+      {
         date: Number(item.attrs.date),
         fullName: item.attrs.fullname,
-        user: item.attrs.user,
-      };
-      useStoreState.getState().saveInBlackList(listData);
-    });
+        user: item.attrs.user
+      }
+    ))
+    useStoreState.getState().saveInBlackList(blackList)
   }
-};
+}
+
+const onRemoveFromBlackList = (stanza:Element, xmpp:any) => {
+  if(stanza.attrs.id === 'removeFromBlackList'){
+    console.log(stanza)
+  }
+}
 
 const onBan = (stanza: Element) => {
-  if (stanza.attrs.id === "ban") {
-    console.log(stanza, "ban stanza");
+  if(stanza.attrs.id === "ban"){
+    console.log(stanza,"ban stanza")
   }
-};
+}
 
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
@@ -430,6 +436,8 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
     this.client.on("stanza", (stanza) => onChangeDescription(stanza, this));
     this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
+    this.client.on('stanza', (stanza) => onBan(stanza));
+    this.client.on('stanza', (stanza) => onRemoveFromBlackList(stanza, this))
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -1098,6 +1106,25 @@ class XmppClass {
       })
     );
 
+    this.client.send(stanza);
+  }
+
+  removeUserFromBlackList = (
+    userAddressToRemoveFromBlacklist: string
+  ) => {
+    const stanza = xml(
+      'iq',
+      {
+        from: this.client.jid?.toString(),
+        type: 'set',
+        id: 'removeFromBlackList',
+      },
+      xml('query', {
+        xmlns: 'ns:deepx:muc:user:unblock',
+        user: userAddressToRemoveFromBlacklist,
+      }),
+    );
+  
     this.client.send(stanza);
   };
 }

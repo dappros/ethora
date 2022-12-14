@@ -74,7 +74,7 @@ export const filterNftBalances = (item) => {
   );
 };
 
-interface ILink {
+interface IProfileLink {
   firstName: string;
   lastName: string;
   walletAddress: string;
@@ -88,8 +88,16 @@ export const generateProfileLink = ({
   walletAddress,
   xmppId,
   linkToken,
-}: ILink) => {
+}: IProfileLink) => {
   return `${mobileEthoraBaseUrl}=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
     linkToken ?? ''
   }`;
+};
+
+interface IDocLink {
+  linkToken: string;
+}
+
+export const generateDocumentLink = ({linkToken}: IDocLink) => {
+  return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
 };

@@ -173,6 +173,7 @@ export const Message: React.FC<IMessage> = ({
 
     if (step === "block") {
       xmpp.blacklistUser(message.data.senderJID);
+      xmpp.getBlackList();
       useStoreState
         .getState()
         .removeAllInMessageHistory(message.data.senderJID);

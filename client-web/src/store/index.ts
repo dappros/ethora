@@ -3,7 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
 
-type TUser = {
+export type TUser = {
   firstName: string;
   lastName: string;
   description?: string;
@@ -80,7 +80,7 @@ export type TMessageHistory = {
   coinsInMessage: number;
 };
 
-type TUserBlackList = {
+export type TUserBlackList = {
   date: number;
   fullName: string;
   user: string;
@@ -157,6 +157,8 @@ interface IStore {
   documents: http.IDocument[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
+  updateUserProfilePermission:(value: boolean) => void;
+  updateUserDocumentsPermission:(value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
 
   setOwner: (owner: TUser) => void;
@@ -197,7 +199,7 @@ interface IStore {
   currentUntrackedChatRoom: string;
   setCurrentUntrackedChatRoom: (roomJID: string) => void;
   blackList: TUserBlackList[];
-  saveInBlackList: (msg: TUserBlackList) => void;
+  saveInBlackList: (msg: TUserBlackList[]) => void;
   clearBlackList: () => void;
   roomMemberInfo: TMemberInfo[];
   setRoomMemberInfo: (data: TMemberInfo[]) => void;
@@ -280,6 +282,14 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.user = user;
             }),
+          updateUserProfilePermission: (value: boolean) =>
+          set((state)=>{
+            state.user.isProfileOpen = value
+          }),
+          updateUserDocumentsPermission: (value: boolean) =>
+          set((state)=>{
+            state.user.isAssetsOpen = value
+          }),
           setOwner: (user: TUser) =>
             set((state) => {
               state.user = user;
@@ -474,10 +484,10 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.currentUntrackedChatRoom = roomJID;
             }),
-          saveInBlackList: (items: TUserBlackList) =>
-            set((state) => {
-              state.blackList.unshift(items);
-            }),
+          saveInBlackList: (list: TUserBlackList[]) =>
+              set((state) => {
+                state.blackList = list;
+              }),
           clearBlackList: () =>
             set((state) => {
               state.blackList = [];

@@ -573,3 +573,78 @@ export function transferCoin(
     }
   );
 }
+
+export function changeUserData(
+  data: FormData
+  ){
+  const user = useStoreState.getState().user;
+  return http.put(
+    '/users/',
+    data,
+    {
+      headers: {
+        Accept: 'application/json',
+        'Accept-Encoding': 'gzip, deflate, br',
+
+        'Content-Type': 'multipart/form-data',
+        Authorization: user.token,
+      }
+    },
+  )
+}
+
+export function getSharedLinksService(
+){
+  const user = useStoreState.getState().user;
+  return http.get('/shareLink/', {
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Authorization: user.token,
+    },
+  });
+}
+
+export function deleteSharedLink(linkToken:string){
+  const user = useStoreState.getState().user;
+  return http.delete(`/shareLink/${linkToken}`,{
+    headers: {
+      Authorization: user.token,
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+export function createSharedLink(data:any){
+  const user = useStoreState.getState().user;
+  return http.post('/shareLink/',data,{
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Authorization: user.token,
+    },
+  })
+}
+
+export function deleteAccountService(){
+  const user = useStoreState.getState().user;
+  return http.delete('/users/',{
+    headers: {
+      Authorization: user.token,
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
+export function getDocuments(){
+  const user = useStoreState.getState().user;
+  return http.get(`/docs/${user.walletAddress}`, {
+    headers: {
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Content-Type': 'application/json',
+      Authorization: user.token,
+    },
+  });
+}

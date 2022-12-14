@@ -58,7 +58,10 @@ const menuActionsSection = {
 };
 const idActionsSection = {
   name: "Id",
-  items: [{ name: "Sign out", id: "logout", visible: true }],
+  items: [
+    { name: "Privacy and Data", id:"/privacy", visible:true},
+    { name: "Sign out", id: "logout", visible: true },
+  ],
 };
 const AppTopNav = () => {
   const currentUntrackedChatRoom = useStoreState(
