@@ -3,10 +3,29 @@ import {leaveHandler} from "./handlers/leave.js";
 import {helpHandler} from "./handlers/help.js";
 import {botInitiate} from "./handlers/botInitiate.js";
 import {gettingCoinsHandler} from "./handlers/coins/gettingCoinsHandler.js";
-import { requestItem } from "./handlers/requestItem.js";
-import { registrationActive } from "./handlers/registrationActive.js";
+import {requestItem} from "./handlers/requestItem.js";
+import {registrationActive} from "./handlers/registrationActive.js";
+
+export let currentItem = {
+    nftId: "",
+    nftName: "",
+    ownerWallet: "",
+    ownerName: "",
+    status: ""
+}
+export let participants = [];
 
 const router = (handlerData) => {
+
+    if(currentItem.status === "work"){
+        userSteps('setStep', handlerData.userJID, 4);
+    }
+    if(currentItem.status === "stop"){
+        userSteps('setStep', handlerData.userJID, 1);
+        participants = [];
+        currentItem.status = "";
+    }
+
     handlerData.userStep = userSteps('getStep', handlerData.userJID);
 
     //If the user sent coins
@@ -15,6 +34,16 @@ const router = (handlerData) => {
         handlerData.receiverData.receiverMessageId !== '0'
     ) {
         return gettingCoinsHandler(handlerData);
+    }
+
+    //If the user sent items
+    if (handlerData.receiverData.isSystemMessage &&
+        handlerData.receiverData.tokenAmount > 0 &&
+        handlerData.receiverData.receiverMessageId === '0'
+        &&
+        handlerData.userStep.step === 3
+    ) {
+        return registrationActive(handlerData);
     }
 
     if (messageCheck(handlerData.message, 'close') || messageCheck(handlerData.message, 'leave')) {
@@ -38,22 +67,23 @@ const router = (handlerData) => {
         return requestItem(handlerData);
     }
 
-    //If the user sent items
-    if (handlerData.receiverData.isSystemMessage &&
-        handlerData.receiverData.tokenAmount > 0 &&
-        handlerData.receiverData.receiverMessageId === '0' &&
-        handlerData.userStep.step === 3
-    ) {
-        sendMessage(
-            handlerData,
-            "I received your item, thanks!",
-            'message',
-            false,
-            0,
-            []
-        );
+    if (handlerData.userStep.step === 4) {
+        if(handlerData.receiverData.senderWalletAddress !== currentItem.ownerWallet &&
+        participants.filter(item => item.wallet === handlerData.receiverData.senderWalletAddress).length === 0){
 
-        return registrationActive(handlerData);
+            participants.push({
+                name: handlerData.receiverData.senderFirstName + " " + handlerData.receiverData.senderLastName,
+                wallet: handlerData.receiverData.senderWalletAddress
+            });
+            return sendMessage(
+                handlerData,
+                handlerData.receiverData.senderFirstName + ", you’re in!",
+                'message',
+                false,
+                0,
+            );
+        }
+
     }
 
 }

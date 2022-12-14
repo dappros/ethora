@@ -1,6 +1,13 @@
-const dates = (timeToAdd) => {
+import {sendMessage, userSteps} from "../../actions.js";
+import {currentItem, participants} from "../../router.js";
+import {transferItem} from "../../api.js";
+import botOptions from "../../config/config.js";
+import {requestError} from "../errors.js";
+
+export const messagingTimeout = (data, timeToAdd) => {
+    console.log("START TIMEOUT ", timeToAdd)
     const timeData = timeToAdd.split(":");
-    const addedTime = addingTime(timeData);
+    const addedTime = addingTime(data, timeData);
 
     const oneTh = Number(timeData[0]) / 3 * 1;
     const twoTh = Number(timeData[0]) / 3 * 2;
@@ -14,25 +21,78 @@ const dates = (timeToAdd) => {
         let differenceUnMinutes = (timeDifference / 1000) / 60;
 
         if (differenceUnMinutes > oneTh && differenceUnMinutes < twoTh && senderCounter === 0) {
-            //SEND MESSAGE
+            sendMessage(
+                data,
+                "To remind everyone, the raffle is on the and the prize is "+currentItem.nftName+" \nThe raffle will end in "+differenceUnMinutes.toFixed()+" minutes.\nJust write a message to be counted in!",
+                'message',
+                false,
+                0,
+            );
             senderCounter += 1;
         }
 
         if (differenceUnMinutes < oneTh && differenceUnMinutes < twoTh && senderCounter === 1) {
-            //SEND MESSAGE
+            sendMessage(
+                data,
+                "To remind everyone, the raffle is on the and the prize is "+currentItem.nftName+" \nThe raffle will end in "+differenceUnMinutes.toFixed()+" minutes.\nJust write a message to be counted in!",
+                'message',
+                false,
+                0,
+            );
             senderCounter += 1;
         }
     }, 2000);
 
     setTimeout(() => {
         clearInterval(timerId);
-    //    SEND ITEM TO USER
+
+        let victoryUserWallet = currentItem.ownerWallet;
+        let victoryUserName = currentItem.ownerName
+        if(participants.length > 0){
+            const randomIndex = Math.floor(Math.random() * participants.length);
+            victoryUserWallet = participants[randomIndex].wallet;
+            victoryUserName =  participants[randomIndex].name
+        }else{
+            console.log("NO USERS IN RAFFLE == ")
+        }
+
+        transferItem(currentItem.nftId, victoryUserWallet, 1).then(() => {
+            currentItem.status = "stop";
+            userSteps('setStep', data.userJID, 1);
+            sendMessage(
+                data,
+                "TA-DA!!! The raffle is now officially complete! Announcing the winners in \n1..\n2..\n3.. \nAnd the winner is.. "+victoryUserName+" \nCongratulations, here is your prize!",
+                'message',
+                false,
+                0,
+            );
+
+            sendMessage(
+                data,
+                generateSystemMessage(botOptions, data, currentItem.nftName, 1),
+                'message',
+                true,
+                0,
+            )
+        }).catch(error => {
+            requestError(data, 'transferItem', error)
+        })
+
     }, getTimeout(timeData));
 }
 
 
-const addingTime = (time) => {
+const addingTime = (data, time) => {
     let currentTime = new Date();
+
+    sendMessage(
+        data,
+        "Thank you. I am pleased to announce that the raffle registration is now on!\nThe time now is " + currentTime.toLocaleTimeString() + " GMT, all users who write a message during next "+ time[0]+ " minutes will all be counted as participants!",
+        'message',
+        false,
+        0,
+    )
+
     if (time[1] === "m") {
         currentTime.setMinutes(currentTime.getMinutes() + Number(time[0]));
     }
@@ -61,4 +121,8 @@ const getTimeout = (time) => {
     }
 }
 
-console.log(dates("3:m"))
+const generateSystemMessage = (botOptions, data, itemName, amount) => {
+    if (botOptions && data) {
+        return botOptions.botData.firstName + ' ' + botOptions.botData.lastName + ' -> ' + amount + ' ' + itemName + ' -> ' + data.receiverData.senderFirstName + " " + data.receiverData.senderLastName;
+    }
+}

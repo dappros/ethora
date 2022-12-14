@@ -1,9 +1,17 @@
-import {sendMessage, userSteps} from "../actions.js";
+import {logCurrentHandler, sendMessage, userSteps} from "../actions.js";
 import messages from "../config/messages.js";
+import {currentItem} from "../router.js";
 
 export const requestItem = (data) => {
-    console.log('=> requestItem || Message received from ', data.userJID, data.message);
-    userSteps('setStep', data.userJID, 3);
+    logCurrentHandler('requestItem', data.userJID, data.message);
+
+    const allUserStepData = userSteps('getStep', data.userJID);
+    allUserStepData.data.raffleTimer = data.receiverData.notDisplayedValue;
+    currentItem.ownerWallet = data.receiverData.senderWalletAddress;
+    currentItem.ownerName = data.receiverData.senderFirstName;
+
+    userSteps('setStep', data.userJID, 3, allUserStepData.data);
+    console.log("STEP DATA ", allUserStepData)
 
     return sendMessage(
         data,
