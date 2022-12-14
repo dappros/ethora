@@ -5,19 +5,19 @@ import botOptions from "./config/config.js";
 let userStepsList = [];
 // Sending a message in person or in a chat room.
 // For a private send, the "type" attribute must change to "message". To send to the chat room "groupchat"
-const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons) => {
+const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons, noName) => {
     //Send Typing if it's not a system message
     if (isSystemMessage) {
-        xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons)
+        xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons, noName)
     } else {
         sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing');
         //Set a timeout depending on the number of characters in the message.
-        setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message));
+        setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons, noName), getWritingTime(message));
 
     }
 }
 
-const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) => {
+const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons, noName) => {
     sendTyping(data.xmpp, data.connectData, data.roomJID, 'pausedComposing').then(() => {
         data.xmpp.send(xml('message', {
             to: data.roomJID,
@@ -35,7 +35,7 @@ const xmppSender = (data, message, type, isSystemMessage, tokenAmount, buttons) 
             receiverMessageId: data.receiverMessageId,
             roomJid: data.receiverData ? data.receiverData.roomJid : '',
             quickReplies: buttons ? JSON.stringify(buttons) : [],
-        }), xml('body', {}, generateMessage(data, message, isSystemMessage))));
+        }), xml('body', {}, generateMessage(data, message, isSystemMessage, noName))));
     })
 }
 
@@ -58,7 +58,7 @@ export const sendTyping = (xmpp, connectData, chat_jid, type) => {
 }
 
 //If it's not a system message, append the username to it
-const generateMessage = (data, message, isSystemMessage) => {
+const generateMessage = (data, message, isSystemMessage, noName) => {
     let userName;
     let finalMessage;
 
@@ -72,7 +72,7 @@ const generateMessage = (data, message, isSystemMessage) => {
     }
 
     //Collecting a message
-    if (isSystemMessage) {
+    if (isSystemMessage || noName === true) {
         finalMessage = message;
     } else {
         if (userName) {
