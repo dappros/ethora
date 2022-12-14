@@ -27,6 +27,8 @@ export const messagingTimeout = (data, timeToAdd) => {
                 'message',
                 false,
                 0,
+                [],
+                true
             );
             senderCounter += 1;
         }
@@ -38,6 +40,8 @@ export const messagingTimeout = (data, timeToAdd) => {
                 'message',
                 false,
                 0,
+                [],
+                true
             );
             senderCounter += 1;
         }
@@ -65,6 +69,8 @@ export const messagingTimeout = (data, timeToAdd) => {
                 'message',
                 false,
                 0,
+                [],
+                true
             );
 
             sendMessage(
@@ -73,6 +79,8 @@ export const messagingTimeout = (data, timeToAdd) => {
                 'message',
                 true,
                 0,
+                [],
+                true
             )
         }).catch(error => {
             requestError(data, 'transferItem', error)
