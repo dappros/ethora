@@ -1,0 +1,96 @@
+@import "../variables";
+
+$avatar-width-short-factor: 0.618;
+
+.#{$prefix}-avatar-group {
+  $class-name: &;
+  
+  @include flex-row-reverse;
+  overflow:visible;
+  position:relative;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  min-width: $avatar-group-md-min-width;
+  align-content: flex-start;
+  justify-content: flex-end;
+  
+  .#{$prefix}-avatar--active {
+    z-index:1;
+  }
+
+  .#{$prefix}-avatar--active-on-hover:hover {
+    z-index:2;
+  }
+  
+  &--xs {
+    
+    $xs-padding: $avatar-xs-width - $avatar-xs-width * $avatar-width-short-factor;
+    padding-left: $xs-padding;
+    padding-top: $xs-padding;
+    
+      .#{$prefix}-avatar {
+        margin-top: - $xs-padding;
+        margin-left:- $xs-padding;
+        width: $avatar-xs-width;
+        height: $avatar-xs-width;
+        min-width: $avatar-xs-width;
+        min-height: $avatar-xs-width;
+        border: none;
+        border-right: 1px solid rgb(242, 242, 242);
+      }
+    
+  }
+  
+  &--sm {
+    
+    $sm-padding: $avatar-sm-width - $avatar-sm-width * $avatar-width-short-factor;
+    padding-left: $sm-padding;
+    padding-top: $sm-padding;     
+    
+      .#{$prefix}-avatar {
+        margin-top: - $sm-padding;
+        margin-left:- $sm-padding;
+        width: $avatar-sm-width;
+        height: $avatar-sm-width;
+        min-width: $avatar-sm-width;
+        min-height: $avatar-sm-width;
+      }
+  }
+
+  &--md {
+    
+    $md-padding: $avatar-md-width - $avatar-md-width * $avatar-width-short-factor;
+    padding-left: $md-padding;
+    padding-top: $md-padding;
+    
+      .#{$prefix}-avatar {
+        margin-top: - $md-padding;
+        margin-left:- $md-padding;
+        width: $avatar-md-width;
+        height: $avatar-md-width;
+        min-width: $avatar-md-width;
+        min-height: $avatar-md-width;
+        border: 2px solid rgb(242, 242, 242);
+      }
+        
+  }
+  
+  &--lg {
+    
+    $lg-padding:  $avatar-lg-width - $avatar-lg-width * $avatar-width-short-factor;
+    padding-left: $lg-padding;
+    padding-top: $lg-padding;
+    
+    .#{$prefix}-avatar {
+      margin-top: - $lg-padding;
+      margin-left:- $lg-padding;
+      width: $avatar-lg-width;
+      height: $avatar-lg-width;
+      min-width: $avatar-lg-width;
+      min-height: $avatar-lg-width;
+      border: 2px solid rgb(242, 242, 242);
+    }
+    
+  }
+  
+}

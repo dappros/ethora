@@ -1,0 +1,115 @@
+@mixin reset-spacing {
+  margin: 0;
+  padding: 0;
+}
+
+@mixin reset-button {
+  @include reset-spacing;
+  background: none;
+  border: none;
+}
+
+@mixin reset-list {
+  @include reset-spacing;
+  list-style-type: none;
+}
+
+@mixin flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin flex-row-reverse {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Mixins for status size
+// 
+
+$bullet-class: #{$prefix}-status__bullet;
+
+@mixin status-xs {
+  font-size: $status-xs-fontsize;
+  width: $status-xs-width;
+  height: $status-xs-width;
+  .#{$bullet-class} {
+    width: $status-xs-width;
+    height: $status-xs-width;
+  }
+}
+
+@mixin status-sm {
+  font-size: $status-sm-fontsize;
+  .#{$bullet-class} {
+    width: $status-sm-width;
+    height: $status-sm-width;
+  }
+}
+
+@mixin status-md {
+  font-size: $status-md-fontsize;
+  width: $status-md-width;
+  height: $status-md-width;
+  .#{$bullet-class} {
+    width: $status-md-width;
+    height: $status-md-width;
+  }
+}
+
+@mixin status-lg {
+  font-size: $status-lg-fontsize;
+  width: $status-lg-width;
+  height: $status-lg-width;
+  .#{$bullet-class} {
+    width: $status-lg-width;
+    height: $status-lg-width;
+  }
+}
+
+// Tablica z rozmiarami klucz wartość
+$status-sizes: (
+        "xs": $status-xs-width,
+        "sm": $status-sm-width,
+        "md": $status-md-width,
+        "lg": $status-lg-width
+);
+
+$status-font-sizes: (
+        "xs": $status-xs-fontsize,
+        "sm": $status-sm-fontsize,
+        "md": $status-md-fontsize,
+        "lg": $status-lg-fontsize
+);
+
+@mixin status-size($size, $border-width:0, $named:false) {
+  $element-width: map_get($status-sizes, $size) + 2*$border-width;
+  $bullet-width: $element-width - 2*$border-width;
+  font-size: map_get($status-font-sizes, $size);
+  
+  @if ( $named == false ) {
+    width: $element-width;
+    height: $element-width;
+  } @else {
+    width: auto;
+    height: auto;
+  } 
+  
+  .#{$bullet-class} {
+    width: $bullet-width;
+    min-width: $bullet-width;
+    height: $bullet-width;
+  }
+  
+}

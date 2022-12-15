@@ -1,0 +1,17 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-input-toolbox {
+  box-sizing: border-box;
+  @include flex-row;
+  justify-content: flex-end;
+  margin: $input-toolbox-margin;
+  padding: $input-toolbox-padding;
+
+  & .#{$prefix}-button {
+    @include reset-button;
+    margin: $input-toolbox-btn-margin;
+    font-size: $input-toolbox-btn-font-size;
+  }
+  
+}

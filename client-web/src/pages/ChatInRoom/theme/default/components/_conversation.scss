@@ -1,0 +1,306 @@
+@use "sass:math";
+@import "../variables";
+@import "../helpers/mixins";
+@import "../helpers/functions";
+
+// Positions
+$_conversation-unread-top: 0.3em;
+$_conversation-unread-right: 0.8em;
+
+.#{$prefix}-conversation {
+
+  $class-name: &;
+  
+  @include flex-row;
+  box-sizing: border-box;
+  position: relative;
+  font-family: $conversation-font-family;
+  padding:  math.div($conversation-unread-font-size,2) + $_conversation-unread-top 0.8em math.div($conversation-unread-font-size,2) + $_conversation-unread-top 0.8em;
+  cursor: pointer;
+  justify-content: flex-start;
+  color: $conversation-color;
+  background-color: $conversation-bg-color;
+  user-select: none;
+  border-top: $conversation-border-top;
+  border-right: $conversation-border-right;
+  border-bottom: $conversation-border-bottom;
+  border-left: $conversation-border-left;
+
+  &:hover {
+    background-color: $conversation-hover-bg-color;
+    
+    > .#{$prefix}-avatar {
+      > .#{$prefix}-status {
+        > .#{$prefix}-status__bullet {
+          border-color: $conversation-hover-bg-color;
+        }
+      }
+    }
+
+    // Reset avatar brightness on hover
+    & > .#{$prefix}-avatar > img {
+      filter: none;
+    }
+    
+  }
+  
+  &#{&}:active {
+    
+    color: $conversation-active-color;
+    background-color: $conversation-active-bg-color;
+    border-top: $conversation-active-border-top;
+    border-right: $conversation-active-border-right;
+    border-bottom: $conversation-active-border-bottom;
+    border-left: $conversation-active-border-left;
+    
+    > .#{$prefix}-avatar {
+      > .#{$prefix}-status {
+        > .#{$prefix}-status__bullet {
+          border-color: $conversation-active-bg-color;
+        }
+      }
+    }
+    
+  }
+
+  &#{&}--active {
+    
+    color: $conversation-name-activated-color;
+    background-color: $conversation-activated-bg-color;
+    font-weight: $conversation-activated-font-weight;
+    border-top: $conversation-activated-border-top;
+    border-right: $conversation-activated-border-right;
+    border-bottom: $conversation-activated-border-bottom;
+    border-left: $conversation-activated-border-left;
+    
+    > .#{$prefix}-avatar {
+      > .#{$prefix}-status {
+        > .#{$prefix}-status__bullet {
+          border-color: $conversation-activated-bg-color;
+        }
+      }
+    }
+
+    #{$class-name}__name {
+      color: $conversation-name-activated-color;
+      font-weight: $conversation-name-activated-font-weight;
+    }
+    
+    #{$class-name}__info {
+      color: $conversation-info-activated-color;
+      font-weight: $conversation-info-activated-font-weight;
+    }
+    
+  }
+  
+  > .#{$prefix}-avatar {
+    width: $avatar-md-width + 0.1px;
+    height: $avatar-md-width + 0.1px;
+    margin-right: 1em;
+    
+    > .#{$prefix}-status {
+      
+      border-color: $conversation-bg-color;
+      
+    }
+    
+  }
+
+  > .#{$prefix}-avatar-group {
+    width: $avatar-md-width + 0.1px;
+    height: $avatar-md-width + 0.1px;
+    min-width: $avatar-md-width + 0.1px;
+    min-height: $avatar-md-width + 0.1px;
+    padding-right:0 !important;
+    margin-right: 1em;
+  }
+
+  &__content {
+    box-sizing: border-box;
+    @include flex-column;
+    overflow: hidden;
+    margin-right: 1.1em;
+    flex-grow:1;
+  }
+  
+  &__operations {
+    box-sizing: border-box;
+    @include flex-row;
+    align-items: center;
+    margin: $conversation-operations-margin;
+    color: lighten($color-text, 70);
+    visibility: hidden;
+  }
+
+  &__operations--visible {
+    visibility: visible;
+  }
+  
+  &__operations:hover {
+    color: lighten($color-text, 40);
+  }
+
+  &:hover &__operations {
+    visibility: visible;
+  }
+
+  &__name {
+    box-sizing: border-box;
+    color: $conversation-name-color;
+    font-size: 1em;
+    @include text-truncate;
+  }
+
+  &__info {
+    box-sizing: border-box;
+    color: $conversation-info-color;
+    font-size: 0.8em;
+    @include text-truncate;
+  }
+
+  &__last-sender {
+    box-sizing: border-box;
+    display:inline;
+    font-weight: $conversation-last-sender-name-font-weight;
+  }
+
+  &__info-content {
+    box-sizing: border-box;
+    display:inline;
+    font-weight: $conversation-info-content-font-weight;
+  }
+
+  &__last-activity-time {
+    box-sizing: border-box;
+    margin: $conversation-last-activity-time-margin;
+    font-size: 0.8em;
+    @include flex-row;
+    align-items: center;
+  }
+  
+  &__last-activity-time + &__operations {
+    margin-left:0.5em;
+  }
+  
+  &__unread-dot {
+    box-sizing: content-box;
+    @include flex-row;
+    align-items: center;
+    margin-right: 0.5em;
+    align-self: center;
+
+    border-radius: 50%;
+    width: $conversation-unread-dot-width;
+    min-width: $conversation-unread-dot-width;
+    height: $conversation-unread-dot-width;
+    box-shadow: 1px 1px 1px 0px rgba(179, 179, 179, 1);
+    perspective: 200px;
+    perspective-origin: 50% 50%;
+
+    background: radial-gradient(
+                    circle at 3px 3px,
+                    lighten($conversation-unread-dot-color, 17),
+                    $conversation-unread-dot-color
+    );
+    
+  }
+
+  &__unread-dot {
+    
+    &:hover::before {
+      content: "";
+      position: absolute;
+      top: 1%;
+      left: 5%;
+      border-radius: 50%;
+      z-index: 2;
+
+      filter: blur(0);
+      height: 80%;
+      width: 40%;
+      background: radial-gradient(
+                      circle at 130% 130%,
+                      rgba(255, 255, 255, 0) 0,
+                      rgba(255, 255, 255, 0) 46%,
+                      rgba(255, 255, 255, 0.8) 50%,
+                      rgba(255, 255, 255, 0.8) 58%,
+                      rgba(255, 255, 255, 0) 60%,
+                      rgba(255, 255, 255, 0) 100%
+      );
+
+      transform: translateX(131%) translateY(58%) rotateZ(168deg) rotateX(10deg);
+    }
+    
+    &:hover::after {
+      content: "";
+      position: absolute;
+      top: 5%;
+      left: 10%;
+      width: 80%;
+      height: 80%;
+      border-radius: 100%;
+      filter: blur(1px);
+      z-index: 2;
+      transform: rotateZ(-30deg);
+
+      display: block;
+      background: radial-gradient(
+                      circle at 50% 80%,
+                      rgba(255, 255, 255, 0),
+                      rgba(255, 255, 255, 0) 74%,
+                      white 80%,
+                      white 84%,
+                      rgba(255, 255, 255, 0) 100%
+      );
+
+
+      animation: #{$prefix}-unread-anim 2s ease-out infinite;
+    }
+    
+  }
+  
+  // Without max width text will not be truncated
+  &__unread {
+    box-sizing: border-box;
+    position: absolute;
+    right: $_conversation-unread-right;
+    top: $_conversation-unread-top;
+    padding: 0.01em 0.3em;
+    border-radius: 0.3em;
+    font-size: $conversation-unread-font-size;
+    font-weight: 600;
+    color: $conversation-unread-color;
+    background-color: $conversation-unread-bg-color;
+    max-width: 40 * $conversation-unread-font-size;
+    @include text-truncate;
+    z-index:100; /* For grouped Avatar */
+    
+  }
+
+  &__unread:hover::before {
+    
+  }
+  
+  @keyframes #{$prefix}-unread-anim {
+    0% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scaleY(0.95) scaleX(1.05);
+    }
+    48% {
+      transform: scaleY(1.1) scaleX(0.9);
+    }
+    68% {
+      transform: scaleY(0.98) scaleX(1.02);
+    }
+    80% {
+      transform: scaleY(1.02) scaleX(0.98);
+    }
+    97%,
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+}

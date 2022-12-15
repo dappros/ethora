@@ -1,0 +1,89 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-status-list {
+  
+  $status-class: #{$prefix}-status;
+
+  box-sizing: border-box;
+  list-style-type: none;
+  margin: $status-list-margin;
+  padding: $status-list-padding;
+  color: $status-list-color;
+  background-color: $status-list-bg-color;
+  
+  > li {
+    box-sizing: border-box;
+    cursor:pointer;
+    user-select: none;
+
+    > .#{$status-class} {
+
+      margin: $status-list-item-margin;
+      padding: $status-list-item-padding;
+      width:auto;
+      height:auto;
+
+    }
+
+    .#{$status-class}--selected {
+      color: $status-list-item-selected-color;
+      background-color: $status-list-item-selected-bg-color;
+
+      .#{$status-class}__name {
+        color: $status-list-item-selected-color;
+        background-color: $status-list-item-selected-bg-color;
+      }
+      
+    }
+  
+    &:hover {
+      color: $status-list-item-hover-color;
+      background-color: $status-list-item-hover-bg-color;  
+    }
+    
+    &:focus {
+      color: $status-list-item-focus-color;
+      background-color: $status-list-item-focus-bg-color;
+    }
+    
+    &:active {
+      color: $status-list-item-active-color;
+      background-color: $status-list-item-active-bg-color;
+    }
+  }
+  
+  &--xs {
+    >  li  {
+      > .#{$status-class} {
+        @include status-size("xs", $named: true);
+      }
+    }
+  }
+  
+  &--sm {
+    >  li  {
+      > .#{$status-class} {
+        @include status-size("sm", $named: true);
+      }
+    }
+  }
+
+  &--md {
+    >  li  {
+      > .#{$status-class} {
+        @include status-size("md", $named: true);
+      }
+    }
+  }
+  
+  
+  &--lg {
+    >  li  {
+      > .#{$status-class} {
+        @include status-size("lg", $named: true);
+      }
+    }
+  }
+  
+}
