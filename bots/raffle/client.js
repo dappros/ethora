@@ -6,7 +6,10 @@ import 'dotenv/config';
 import {connectToDb} from "./database/dataBase.js";
 import {welcomePresence} from "./presence.js";
 import {userLimitHandler} from "./handlers/userLimit.js";
+import {getFilteredApiData} from "./api.js";
+import {userSteps} from "./actions.js";
 
+let isFirstLaunch = true;
 let connectData, handlerData;
 //Check if all the data is filled in .env, connect to the API, get the connection data and save this data.
 await getConnectData().then((result) => {
@@ -50,7 +53,7 @@ xmpp.on("stanza", async stanza => {
             const body = stanza.getChild('body');
             //Form an object with data from the stanza, which is necessary for working with handlers
             handlerData = groupDataForHandler(xmpp, stanza, connectData);
-
+            // checkCurrentRaffle(handlerData);
             // Processing an incoming chat room invitation
             if (body && stanza.getChild('x') && stanza.getChild('x').getChild('invite') && process.env.INVITATION === 'true' && connectData.dataBaseStatus) {
                 return connectingToNewRoom(xmpp, body.parent.attrs.from, connectData);
@@ -101,9 +104,37 @@ const groupDataForHandler = (xmpp, stanza, connectData) => {
         message,
         roomJID: stanza.attrs.from.substring(0, stanza.attrs.from.lastIndexOf('/') + 1).slice(0, -1),
         userJID: stanza.attrs.from.split("/").pop() + '@' + connectData.botAddress,
+        botJID: connectData.botName + '@' + connectData.botAddress,
         userStep: 0,
         receiverData: stanza.getChild('data') ? stanza.getChild('data').attrs : null,
         receiverMessageId: stanza.getChild('stanza-id') ? stanza.getChild('stanza-id').attrs.id : 0,
         connectData
     }
+}
+
+const checkCurrentRaffle = (data) => {
+    console.log("GET FILTERED DATA FIRST")
+    if(isFirstLaunch){
+        const filterData = {
+            where: {
+                creator_jid: data.botJID,
+                type: 'participants',
+                user_type: "owner",
+                status: 'process',
+            }
+        }
+
+        getFilteredApiData(filterData).then(result => {
+            const allUserStepData = userSteps('getStep', data.userJID);
+            allUserStepData.data.raffleOwnerJID = result.user_jid
+            allUserStepData.data.raffleTimer = result.timer
+            isFirstLaunch = false;
+            if (result.total > 0) {
+                userSteps('setStep', data.userJID, 4, allUserStepData.data);
+            }
+        }).catch(error => {
+            console.log('==> Error getFilteredApiData ', error);
+        })
+    }
+
 }

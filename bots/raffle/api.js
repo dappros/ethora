@@ -86,6 +86,41 @@ export const transferToken = async (tokenId, tokenName, amount, wallet) => {
     }
 }
 
+export const transferItem = async (nftId, receiverWallet, amount) => {
+    try {
+        let request = await http.post('tokens/transfer/items', {
+            nftId,
+            receiverWallet,
+            amount
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        console.log('requestTransferItem Success: ', request.data)
+        return true;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
+export const getBalance = async () => {
+    try {
+        let request = await http.get('wallets/balance', {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: loginData.token,
+            },
+        });
+        return request.data;
+    } catch (error) {
+        JSON.stringify(error)
+        throw error;
+    }
+}
+
 export const mintNft = async (contractAddress, slot, amount, walletAddress) => {
     try {
         let test = await http.post('tokens/items/nfmt/mint', {
