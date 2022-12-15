@@ -1,6 +1,7 @@
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
+import { CONFERENCEDOMAIN, DOMAIN } from "./constants";
 import { TMessageHistory, TRoomRoles, useStoreState } from "./store";
 import { sendBrowserNotification } from "./utils";
 import { history } from "./utils/history";
@@ -374,28 +375,26 @@ const onInvite = (stanza: Element, xmpp: any) => {
 
 const onBlackList = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "blackList") {
-    const blackList = stanza?.getChild("query").children.map((item: any) => (
-      {
-        date: Number(item.attrs.date),
-        fullName: item.attrs.fullname,
-        user: item.attrs.user
-      }
-    ))
-    useStoreState.getState().saveInBlackList(blackList)
+    const blackList = stanza?.getChild("query").children.map((item: any) => ({
+      date: Number(item.attrs.date),
+      fullName: item.attrs.fullname,
+      user: item.attrs.user,
+    }));
+    useStoreState.getState().saveInBlackList(blackList);
   }
-}
+};
 
-const onRemoveFromBlackList = (stanza:Element, xmpp:any) => {
-  if(stanza.attrs.id === 'removeFromBlackList'){
-    console.log(stanza)
+const onRemoveFromBlackList = (stanza: Element, xmpp: any) => {
+  if (stanza.attrs.id === "removeFromBlackList") {
+    console.log(stanza);
   }
-}
+};
 
 const onBan = (stanza: Element) => {
-  if(stanza.attrs.id === "ban"){
-    console.log(stanza,"ban stanza")
+  if (stanza.attrs.id === "ban") {
+    console.log(stanza, "ban stanza");
   }
-}
+};
 
 const defaultRooms = [
   "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
@@ -436,8 +435,8 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
     this.client.on("stanza", (stanza) => onChangeDescription(stanza, this));
     this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
-    this.client.on('stanza', (stanza) => onBan(stanza));
-    this.client.on('stanza', (stanza) => onRemoveFromBlackList(stanza, this))
+    this.client.on("stanza", (stanza) => onBan(stanza));
+    this.client.on("stanza", (stanza) => onRemoveFromBlackList(stanza, this));
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -453,7 +452,28 @@ class XmppClass {
       return;
     }
   }
-
+  setRoomImage = (
+    roomAddress: string,
+    roomThumbnail: string,
+    roomBackground: string,
+    type: string,
+  ) => {
+    const message = xml(
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: type === "icon" ? "setRoomImage" : "setRoomBackground",
+        type: "set",
+      },
+      xml("query", {
+        xmlns: "ns:getrooms:setprofile",
+        room_thumbnail: roomThumbnail,
+        room_background: roomBackground,
+        room: roomAddress + CONFERENCEDOMAIN,
+      })
+    );
+    this.client.send(message);
+  };
   subsribe(address: string) {
     const message = xml(
       "iq",
@@ -705,7 +725,7 @@ class XmppClass {
     from: string,
     to: string,
     messageText: string,
-    data: any,
+    data: any
   ) => {
     const message = xml(
       "message",
@@ -824,27 +844,18 @@ class XmppClass {
     this.client.send(message);
   }
 
-  createNewRoom(to: string) {
-    const message = xml(
+  createNewRoom( to: string) {
+    let message = xml(
       "presence",
       {
         id: "createRoom",
         from: this.client.jid?.toString(),
-        to:
-          to +
-          "@conference.dev.dxmpp.com" +
-          "/" +
-          this.client.jid?.toString().split("@")[0],
+
+        to: to + CONFERENCEDOMAIN + "/" + this.client.jid?.toString().split("@")[0],
       },
       xml("x", "http://jabber.org/protocol/muc")
     );
-    console.log(
-      "CREATE ",
-      to +
-        "@conference.dev.dxmpp.com" +
-        "/" +
-        this.client.jid?.toString().split("@")[0]
-    );
+    // console.log(message.toString());
     this.client.send(message);
   }
 
@@ -854,7 +865,7 @@ class XmppClass {
       {
         from: this.client.jid?.toString(),
         id: "roomConfig",
-        to: to + "@conference.dev.dxmpp.com",
+        to: to + CONFERENCEDOMAIN,
         type: "set",
       },
       xml(
@@ -918,11 +929,11 @@ class XmppClass {
     this.client.send(stanza);
   }
 
-  setOwner(to) {
+  setOwner(to: string) {
     const message = xml(
       "iq",
       {
-        to: to + "@conference.dev.dxmpp.com",
+        to: to + CONFERENCEDOMAIN,
         from: this.client.jid?.toString(),
         id: "setOwner",
         type: "get",
@@ -1107,24 +1118,22 @@ class XmppClass {
     );
 
     this.client.send(stanza);
-  }
+  };
 
-  removeUserFromBlackList = (
-    userAddressToRemoveFromBlacklist: string
-  ) => {
+  removeUserFromBlackList = (userAddressToRemoveFromBlacklist: string) => {
     const stanza = xml(
-      'iq',
+      "iq",
       {
         from: this.client.jid?.toString(),
-        type: 'set',
-        id: 'removeFromBlackList',
+        type: "set",
+        id: "removeFromBlackList",
       },
-      xml('query', {
-        xmlns: 'ns:deepx:muc:user:unblock',
+      xml("query", {
+        xmlns: "ns:deepx:muc:user:unblock",
         user: userAddressToRemoveFromBlacklist,
-      }),
+      })
     );
-  
+
     this.client.send(stanza);
   };
 }
