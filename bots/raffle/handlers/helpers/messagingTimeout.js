@@ -65,13 +65,62 @@ export const messagingTimeout = (data, timeToAdd) => {
             userSteps('setStep', data.userJID, 1);
             sendMessage(
                 data,
-                "TA-DA!!! The raffle is now officially complete! Announcing the winners in \n3..\n2..\n1.. \nAnd the winner is.. '" +victoryUserName+ "' \nCongratulations, here is your prize!",
+                "TA-DA!!! The raffle is now officially complete!",
                 'message',
                 false,
                 0,
                 [],
                 true
             );
+
+            setTimeout(() => {
+                sendMessage(
+                    data,
+                    "Announcing the winners in 3..",
+                    'message',
+                    false,
+                    0,
+                    [],
+                    true
+                );
+            }, 3000);
+
+            setTimeout(() => {
+                sendMessage(
+                    data,
+                    "2..",
+                    'message',
+                    false,
+                    0,
+                    [],
+                    true
+                );
+            }, 6000);
+
+            setTimeout(() => {
+                sendMessage(
+                    data,
+                    "1..",
+                    'message',
+                    false,
+                    0,
+                    [],
+                    true
+                );
+            }, 9000);
+
+            setTimeout(() => {
+                sendMessage(
+                    data,
+                    "And the winner is.. '" +victoryUserName+ "' \nCongratulations, here is your prize!",
+                    'message',
+                    false,
+                    0,
+                    [],
+                    true
+                );
+            }, 12000);
+
 
             setTimeout(() => {
                 sendMessage(
@@ -83,7 +132,7 @@ export const messagingTimeout = (data, timeToAdd) => {
                     [],
                     true
                 )
-            }, 5000);
+            }, 15000);
 
         }).catch(error => {
             requestError(data, 'transferItem', error)
