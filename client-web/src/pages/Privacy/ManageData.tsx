@@ -161,7 +161,7 @@ function DeleteDialog(props:DeleteDialogProps){
                 <Divider
                 />
                 <Typography>
-                    Are you sure you want to delete your account? If you delete your account, you will permanently loose data.
+                This will result in a complete deletion of your account and assets. Are you sure you want to proceed?
                 </Typography>
                 <Divider
                 />

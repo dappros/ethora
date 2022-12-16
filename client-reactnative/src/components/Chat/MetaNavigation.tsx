@@ -318,6 +318,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
+      push: false
     };
 
     sendMessageStanza(

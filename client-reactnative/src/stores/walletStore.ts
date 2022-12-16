@@ -252,7 +252,6 @@ export class WalletStore {
   };
 
   async fetchWalletBalance(
-    walletAddress: string,
     token: string,
     isOwn: boolean,
   ) {
@@ -409,7 +408,6 @@ export class WalletStore {
       });
 
       this.fetchWalletBalance(
-        this.stores.loginStore.initialData.walletAddress,
         this.stores.loginStore.userToken,
         true,
       );
@@ -468,7 +466,6 @@ export class WalletStore {
         });
 
         this.fetchWalletBalance(
-          fromWallet,
           this.stores.loginStore.userToken,
           true,
         );
@@ -509,8 +506,10 @@ export class WalletStore {
       const response = await httpGet(url, this.stores.loginStore.userToken);
       if (response.data.items) {
         this.stores.debugStore.addLogsApi(response.data);
-        this.offset = this.offset + response.data.limit;
-        this.total = response.data.total;
+        runInAction(()=>{
+          this.offset = this.offset + response.data.limit;
+          this.total = response.data.total;
+        })
         const modifiedTransactions = response.data.items.map(item =>
           mapTransactions(item, walletAddress),
         );

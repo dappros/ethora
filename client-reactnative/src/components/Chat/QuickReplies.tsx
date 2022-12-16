@@ -39,6 +39,7 @@ export const QuickReplies = ({
       photoURL: loginStore.userAvatar,
       roomJid: roomJid,
       notDisplayedValue,
+      push:true
     };
     sendMessageStanza(
       underscoreManipulation(loginStore.initialData.walletAddress),

@@ -30,7 +30,7 @@ const DeleteDialog = ({
           <AlertDialog.CloseButton />
           <AlertDialog.Header>Delete Account</AlertDialog.Header>
           <AlertDialog.Body>
-          Are you sure you want to delete your account? If you delete your account, you will permanently lose all data.
+          This will result in a complete deletion of your account and assets. Are you sure you want to proceed?
           </AlertDialog.Body>
           <AlertDialog.Footer>
             <NativeButton.Group space={2}>
