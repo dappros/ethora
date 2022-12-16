@@ -209,7 +209,482 @@ export interface IMetaRoom {
   linkW: string;
   linkE: string;
 }
-
+export const metaRooms: IMetaRoom[] = [
+  {
+    name: 'Agora (Start here) 🇬🇧🏛️👋💬',
+    description: 'Central Place',
+    idAddress:
+      '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    meta: true,
+    linkN: 'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22',
+    linkS: 'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e',
+    linkW: 'a3d524e04e928107d73bd82b65ea3aa2d9b08849019382614e1cae81203b6816',
+    linkE: 'fc8083067e0cdc43010d04269ec262a164f72f07c54b3ba3909b072551261149',
+  },
+  {
+    name: 'Майдан (Maidan) 🇺🇦🏛️🫂💬',
+    description: 'Central Place',
+    idAddress:
+      'd0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22',
+    meta: true,
+    linkN: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    linkS: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'मैदान (Maidan) 🇮🇳🏛️🫂',
+    description: 'Central Place',
+    idAddress:
+      'fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e',
+    meta: true,
+    linkN: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Agora West 🇪🇸',
+    description: 'You speak Spanish here',
+    idAddress:
+      'a3d524e04e928107d73bd82b65ea3aa2d9b08849019382614e1cae81203b6816',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: '601dc84c0c939dc5adf2f28f01a56b0d0fe70fce056ff3b6b03500c51af72a19',
+    linkE: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+  },
+  {
+    name: 'The Street (BazaarP)',
+    description: 'Bazaar Pass',
+    idAddress:
+      '601dc84c0c939dc5adf2f28f01a56b0d0fe70fce056ff3b6b03500c51af72a19',
+    meta: true,
+    linkN: '782bef1c87061bf71be8b71b7bed20572334f873c7d04380f2285fc94036400e',
+    linkS: '6d48896c18ef0b953a69ed7aff94f549b8263f11985682d37c882103be0a0112',
+    linkW: '72e9a59f5a1d6289dbacb35df897d6c007c55a27e77018455c37e7b372668475',
+    linkE: 'a3d524e04e928107d73bd82b65ea3aa2d9b08849019382614e1cae81203b6816',
+  },
+  {
+    name: 'Bazaar Square N1',
+    description: '',
+    idAddress:
+      '782bef1c87061bf71be8b71b7bed20572334f873c7d04380f2285fc94036400e',
+    meta: true,
+    linkN: '',
+    linkS: '601dc84c0c939dc5adf2f28f01a56b0d0fe70fce056ff3b6b03500c51af72a19',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Bazaar Square S1',
+    description: '',
+    idAddress:
+      '6d48896c18ef0b953a69ed7aff94f549b8263f11985682d37c882103be0a0112',
+    meta: true,
+    linkN: '601dc84c0c939dc5adf2f28f01a56b0d0fe70fce056ff3b6b03500c51af72a19',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Port',
+    description:
+      'Sea starts to the west from here.\nYou can do export-import operations here.',
+    idAddress:
+      '72e9a59f5a1d6289dbacb35df897d6c007c55a27e77018455c37e7b372668475',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: '',
+    linkE: '601dc84c0c939dc5adf2f28f01a56b0d0fe70fce056ff3b6b03500c51af72a19',
+  },
+  {
+    name: 'Agora East 🇨🇳',
+    description: 'Chinatown',
+    idAddress:
+      'fc8083067e0cdc43010d04269ec262a164f72f07c54b3ba3909b072551261149',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
+    linkE: 'c0338e6a249360af2e5c9c2e4256b42105579bb5c286cb34d661686133e09d8a',
+  },
+  {
+    name: 'Street (Pubs Alley)',
+    description: '',
+    idAddress:
+      'c0338e6a249360af2e5c9c2e4256b42105579bb5c286cb34d661686133e09d8a',
+    meta: true,
+    linkN: '',
+    linkS: 'debdb4572f301ea313956c513bd7e3824304a881b213ffb1592e811c7c8e3291',
+    linkW: 'fc8083067e0cdc43010d04269ec262a164f72f07c54b3ba3909b072551261149',
+    linkE: '449be8664bdc4427f6a9b0845f363fd5a38429f01a3ca018b2ae2f50326b2cb7',
+  },
+  {
+    name: 'Downtown Abbey',
+    description: '',
+    idAddress:
+      'debdb4572f301ea313956c513bd7e3824304a881b213ffb1592e811c7c8e3291',
+    meta: true,
+    linkN: 'c0338e6a249360af2e5c9c2e4256b42105579bb5c286cb34d661686133e09d8a',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Downtown (Street)',
+    description: '',
+    idAddress:
+      '449be8664bdc4427f6a9b0845f363fd5a38429f01a3ca018b2ae2f50326b2cb7',
+    meta: true,
+    linkN: 'c1701b7b5e02665c89e8d578174761ac86f41384c69b6b914c737799c6ed61db',
+    linkS: '03adb005b8c2cdbba33221f5677dc07908512f36e0c47c051df6e6907eeafd13',
+    linkW: 'c0338e6a249360af2e5c9c2e4256b42105579bb5c286cb34d661686133e09d8a',
+    linkE: '',
+  },
+  {
+    name: 'Downtown North',
+    description: '',
+    idAddress:
+      'c1701b7b5e02665c89e8d578174761ac86f41384c69b6b914c737799c6ed61db',
+    meta: true,
+    linkN: 'c6ae1923457cd8147bc5da2f2842fde18371e78c4d4242a9dd1fe49217d97d7a',
+    linkS: '449be8664bdc4427f6a9b0845f363fd5a38429f01a3ca018b2ae2f50326b2cb7',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Downtown South',
+    description: '',
+    idAddress:
+      '03adb005b8c2cdbba33221f5677dc07908512f36e0c47c051df6e6907eeafd13',
+    meta: true,
+    linkN: '449be8664bdc4427f6a9b0845f363fd5a38429f01a3ca018b2ae2f50326b2cb7',
+    linkS: '81d096805567127d9cc6d2548c81e7c68d9e725a28d6421fada996c3e2cd738a',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'University N1',
+    description: '',
+    idAddress:
+      '81d096805567127d9cc6d2548c81e7c68d9e725a28d6421fada996c3e2cd738a',
+    meta: true,
+    linkN: '03adb005b8c2cdbba33221f5677dc07908512f36e0c47c051df6e6907eeafd13',
+    linkS: '9d38443e2220ded5f60ba39b85acdad3af96f810e359bb741f6d273470c7bf9b',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'University',
+    description: '',
+    idAddress:
+      '9d38443e2220ded5f60ba39b85acdad3af96f810e359bb741f6d273470c7bf9b',
+    meta: true,
+    linkN: '81d096805567127d9cc6d2548c81e7c68d9e725a28d6421fada996c3e2cd738a',
+    linkS: 'c50bb01e1ef7fd9ca0bbabce8c062d2ab88553bc59f71c6754157f94694167cc',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'University S1',
+    description: '',
+    idAddress:
+      'c50bb01e1ef7fd9ca0bbabce8c062d2ab88553bc59f71c6754157f94694167cc',
+    meta: true,
+    linkN: '9d38443e2220ded5f60ba39b85acdad3af96f810e359bb741f6d273470c7bf9b',
+    linkS: '9d3023ab0032809d9133ca90dd9771dcd8022b40e790798b484298d923695a30',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'University S2',
+    description: '',
+    idAddress:
+      '9d3023ab0032809d9133ca90dd9771dcd8022b40e790798b484298d923695a30',
+    meta: true,
+    linkN: 'c50bb01e1ef7fd9ca0bbabce8c062d2ab88553bc59f71c6754157f94694167cc',
+    linkS: '8e99e5159d9442f9221e1bb53c3b373243c1f040f89c793dbb31a004fe3ead6b',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Eastern Bridge',
+    description: '',
+    idAddress:
+      '8e99e5159d9442f9221e1bb53c3b373243c1f040f89c793dbb31a004fe3ead6b',
+    meta: true,
+    linkN: '9d3023ab0032809d9133ca90dd9771dcd8022b40e790798b484298d923695a30',
+    linkS: 'e9d7a5284b6c4db5ca999f484a1bff3944cdeb660bed2bbe0a3cc623cf076dad',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Three Perches',
+    description: '',
+    idAddress:
+      'e9d7a5284b6c4db5ca999f484a1bff3944cdeb660bed2bbe0a3cc623cf076dad',
+    meta: true,
+    linkN: '8e99e5159d9442f9221e1bb53c3b373243c1f040f89c793dbb31a004fe3ead6b',
+    linkS: '446bbafc54d1f356a8c056e119e3988539c435095fd032f475604bed935c7121',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Woodside E S1',
+    description: '',
+    idAddress:
+      '446bbafc54d1f356a8c056e119e3988539c435095fd032f475604bed935c7121',
+    meta: true,
+    linkN: 'e9d7a5284b6c4db5ca999f484a1bff3944cdeb660bed2bbe0a3cc623cf076dad',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Downtown Ave N1',
+    description: '',
+    idAddress:
+      'c6ae1923457cd8147bc5da2f2842fde18371e78c4d4242a9dd1fe49217d97d7a',
+    meta: true,
+    linkN: 'da73b7305fc21207f7585d7b360d5b24e9d28d09d343fb6194a12f33d7c97ef1',
+    linkS: 'c1701b7b5e02665c89e8d578174761ac86f41384c69b6b914c737799c6ed61db',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Downtown Ave N2',
+    description: '',
+    idAddress:
+      'da73b7305fc21207f7585d7b360d5b24e9d28d09d343fb6194a12f33d7c97ef1',
+    meta: true,
+    linkN: 'c5246e42ed9c8d578555c803b5c39718f16805d429302249c99ec765eed383e8',
+    linkS: 'c6ae1923457cd8147bc5da2f2842fde18371e78c4d4242a9dd1fe49217d97d7a',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Downtown Ave N3',
+    description: '',
+    idAddress:
+      'c5246e42ed9c8d578555c803b5c39718f16805d429302249c99ec765eed383e8',
+    meta: true,
+    linkN: '68457a4f3210ce2f23078182ef450a59f173868f0d80e24ce24cc2000aa446f5',
+    linkS: 'da73b7305fc21207f7585d7b360d5b24e9d28d09d343fb6194a12f33d7c97ef1',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Gaming Ave S3',
+    description: '',
+    idAddress:
+      '68457a4f3210ce2f23078182ef450a59f173868f0d80e24ce24cc2000aa446f5',
+    meta: true,
+    linkN: '8e40b32b2dfde2db5ad650c2f6103d8ed5ddec6b87a8f29f91abcfac0836a176',
+    linkS: 'c5246e42ed9c8d578555c803b5c39718f16805d429302249c99ec765eed383e8',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Gaming Ave S2',
+    description: '',
+    idAddress:
+      '8e40b32b2dfde2db5ad650c2f6103d8ed5ddec6b87a8f29f91abcfac0836a176',
+    meta: true,
+    linkN: 'f35f7ce8e0db16c2804b2988ed28c3cf6e115cbb520cd45e2007755a9d1028c5',
+    linkS: '68457a4f3210ce2f23078182ef450a59f173868f0d80e24ce24cc2000aa446f5',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Gaming Ave S1',
+    description: '',
+    idAddress:
+      'f35f7ce8e0db16c2804b2988ed28c3cf6e115cbb520cd45e2007755a9d1028c5',
+    meta: true,
+    linkN: 'bd594c6b94b204e50bf33f107c8b6a8d0888501b681b73910727bc6c14a2e69d',
+    linkS: '8e40b32b2dfde2db5ad650c2f6103d8ed5ddec6b87a8f29f91abcfac0836a176',
+    linkW: '',
+    linkE: '172bd6f711a0dbdd2890b9e702ff3bad6c24a624c240f91f1dca1ffeee0c4729',
+  },
+  {
+    name: 'Casino',
+    description: '',
+    idAddress:
+      '172bd6f711a0dbdd2890b9e702ff3bad6c24a624c240f91f1dca1ffeee0c4729',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: 'f35f7ce8e0db16c2804b2988ed28c3cf6e115cbb520cd45e2007755a9d1028c5',
+    linkE: '',
+  },
+  {
+    name: 'Game Theory ',
+    description: '',
+    idAddress:
+      'bd594c6b94b204e50bf33f107c8b6a8d0888501b681b73910727bc6c14a2e69d',
+    meta: true,
+    linkN: 'e576936a398333e806a5c865d2f23b274354e586816dd5a9f094942a884eedb2',
+    linkS: 'f35f7ce8e0db16c2804b2988ed28c3cf6e115cbb520cd45e2007755a9d1028c5',
+    linkW: '58e38b23800a205494489c6c56bc3eb2352fbff2adfb4ab3b99a44f4ce599871',
+    linkE: '',
+  },
+  {
+    name: 'Gaming Ave N1',
+    description: '',
+    idAddress:
+      'e576936a398333e806a5c865d2f23b274354e586816dd5a9f094942a884eedb2',
+    meta: true,
+    linkN: '',
+    linkS: 'bd594c6b94b204e50bf33f107c8b6a8d0888501b681b73910727bc6c14a2e69d',
+    linkW: '',
+    linkE: '31928208ce519bf0986c2a93a8237f45d72b9555405bb65d50aaf5e321d227b3',
+  },
+  {
+    name: 'Prison',
+    description: '',
+    idAddress:
+      '31928208ce519bf0986c2a93a8237f45d72b9555405bb65d50aaf5e321d227b3',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: 'e576936a398333e806a5c865d2f23b274354e586816dd5a9f094942a884eedb2',
+    linkE: '',
+  },
+  {
+    name: 'Gaming alley W1',
+    description: '',
+    idAddress:
+      '58e38b23800a205494489c6c56bc3eb2352fbff2adfb4ab3b99a44f4ce599871',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: 'f5b75fcb70cf6bbce6a7098b695af0fd4695e5cb297c5d7f21a9c6d17f965c8e',
+    linkE: 'bd594c6b94b204e50bf33f107c8b6a8d0888501b681b73910727bc6c14a2e69d',
+  },
+  {
+    name: 'Artists Quarter East',
+    description: '',
+    idAddress:
+      'f5b75fcb70cf6bbce6a7098b695af0fd4695e5cb297c5d7f21a9c6d17f965c8e',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: '13f5971f3f3c395a2c272dab81d016644eb5d1e7dffd562e0c0a9bef3f39a241',
+    linkE: '58e38b23800a205494489c6c56bc3eb2352fbff2adfb4ab3b99a44f4ce599871',
+  },
+  {
+    name: 'Public Gallery',
+    description: '',
+    idAddress:
+      '13f5971f3f3c395a2c272dab81d016644eb5d1e7dffd562e0c0a9bef3f39a241',
+    meta: true,
+    linkN: 'd62408ba76a951a67adeeaf42746f45bc881f38c88ea8a171f2c954ab92ec26c',
+    linkS: '81ee5b8a59042a873395fc9daa0d0066fd563e2716800148f23e59789424aea6',
+    linkW: '3c8283cab7f2fabbd89033778c76a45f88b2cf17c373b2fe75f577bf24389462',
+    linkE: 'f5b75fcb70cf6bbce6a7098b695af0fd4695e5cb297c5d7f21a9c6d17f965c8e',
+  },
+  {
+    name: 'Artists Quarter N',
+    description: '',
+    idAddress:
+      'd62408ba76a951a67adeeaf42746f45bc881f38c88ea8a171f2c954ab92ec26c',
+    meta: true,
+    linkN: '',
+    linkS: '13f5971f3f3c395a2c272dab81d016644eb5d1e7dffd562e0c0a9bef3f39a241',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Artists Quarter West',
+    description: '',
+    idAddress:
+      '3c8283cab7f2fabbd89033778c76a45f88b2cf17c373b2fe75f577bf24389462',
+    meta: true,
+    linkN: '',
+    linkS: '0d80f50cd62975998abfd7fd4cc1f0d0d9397ecf10e796cb9aae908124dea901',
+    linkW: '0495e59912dd4df1a862eed04e1a2353dc2e432299223dd14a9e9f600035e373',
+    linkE: '13f5971f3f3c395a2c272dab81d016644eb5d1e7dffd562e0c0a9bef3f39a241',
+  },
+  {
+    name: 'NFT workshop',
+    description: '',
+    idAddress:
+      '0d80f50cd62975998abfd7fd4cc1f0d0d9397ecf10e796cb9aae908124dea901',
+    meta: true,
+    linkN: '3c8283cab7f2fabbd89033778c76a45f88b2cf17c373b2fe75f577bf24389462',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Performers Quarter',
+    description: '',
+    idAddress:
+      '0495e59912dd4df1a862eed04e1a2353dc2e432299223dd14a9e9f600035e373',
+    meta: true,
+    linkN: '',
+    linkS: '',
+    linkW: '',
+    linkE: '3c8283cab7f2fabbd89033778c76a45f88b2cf17c373b2fe75f577bf24389462',
+  },
+  {
+    name: 'Artists Quarter S',
+    description: '',
+    idAddress:
+      '81ee5b8a59042a873395fc9daa0d0066fd563e2716800148f23e59789424aea6',
+    meta: true,
+    linkN: '13f5971f3f3c395a2c272dab81d016644eb5d1e7dffd562e0c0a9bef3f39a241',
+    linkS: '8ee128498369208f15ffcbf4a0294edf51f217604f12bb5caee32760c4993365',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Artists Pass S1',
+    description: '',
+    idAddress:
+      '8ee128498369208f15ffcbf4a0294edf51f217604f12bb5caee32760c4993365',
+    meta: true,
+    linkN: '81ee5b8a59042a873395fc9daa0d0066fd563e2716800148f23e59789424aea6',
+    linkS: 'f3476d5596c9cc8b4733326854c30d37c6cd09e884f4082085db00451f748cb6',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Artists Pass S2',
+    description: '',
+    idAddress:
+      'f3476d5596c9cc8b4733326854c30d37c6cd09e884f4082085db00451f748cb6',
+    meta: true,
+    linkN: '8ee128498369208f15ffcbf4a0294edf51f217604f12bb5caee32760c4993365',
+    linkS: '5c0acfbf91a392ffe8e6f6f4bf239ed55c6837b7f528a61269269fed0680ea5d',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Agoras Pass N3',
+    description: '',
+    idAddress:
+      '5c0acfbf91a392ffe8e6f6f4bf239ed55c6837b7f528a61269269fed0680ea5d',
+    meta: true,
+    linkN: 'f3476d5596c9cc8b4733326854c30d37c6cd09e884f4082085db00451f748cb6',
+    linkS: 'f5b6e88e26eff20a663b42b4620d5a54a253ecbabd1b4183eb751f807d1da9b3',
+    linkW: '',
+    linkE: '',
+  },
+  {
+    name: 'Agoras Pass N2',
+    description: '',
+    idAddress:
+      'f5b6e88e26eff20a663b42b4620d5a54a253ecbabd1b4183eb751f807d1da9b3',
+    meta: true,
+    linkN: '5c0acfbf91a392ffe8e6f6f4bf239ed55c6837b7f528a61269269fed0680ea5d',
+    linkS: '',
+    linkW: '',
+    linkE: '',
+  },
+];
 /* TOKEN ECONOMY */
 // Coins image path
 import coinImagePath from '../src/assets/coin.png'; //done
