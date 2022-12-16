@@ -324,9 +324,10 @@ export class ChatStore {
       this.roomList.push(room);
     });
   };
-  setRooms = (roomsArray: any) => {
+  setRooms = async (roomsArray: any) => {
+    const rooms = await this.checkMetaRooms(roomsArray);
     runInAction(() => {
-      this.roomList = roomsArray;
+      this.roomList = rooms;
     });
   };
 
@@ -451,27 +452,28 @@ export class ChatStore {
       });
     }
   };
-  checkMetaRooms = async () => {
-    if (this.roomList.length) {
-      const roomJids = this.roomList.map(item => item.jid.split('@')[0]);
-      try {
-        const body = {jids: roomJids};
-        const res = await httpPost(
-          this.stores.apiStore.defaultUrl + '/room/check-for-meta-room',
-          body,
-          this.stores.loginStore.userToken,
+  checkMetaRooms = async (rooms = []) => {
+    const roomsCopy = rooms;
+    const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
+    try {
+      const body = {jids: roomJids};
+      const res = await httpPost(
+        this.stores.apiStore.defaultUrl + '/room/check-for-meta-room',
+        body,
+        this.stores.loginStore.userToken,
+      );
+      for (const item of res.data.results) {
+        const roomIndex = roomsCopy.findIndex(
+          r => r.jid.split('@')[0] === item,
         );
-        for (const item of res.data.results) {
-          const roomIndex = this.roomList.findIndex(
-            r => r.jid.split('@')[0] === item,
-          );
-          if (roomIndex !== -1) {
-            runInAction(() => {
-              this.roomList[roomIndex].meta = true;
-            });
-          }
+        if (roomIndex !== -1) {
+          roomsCopy[roomIndex].meta = true;
         }
-      } catch (error) {}
+      }
+      return roomsCopy;
+    } catch (error) {
+      console.log(error);
+      return rooms;
     }
   };
   xmppListener = async () => {
@@ -716,7 +718,7 @@ export class ChatStore {
           //insert the list of rooms in realm
           // insertRosterList(rosterObject);
         });
-        this.setRooms(roomsArray);
+        await this.setRooms(roomsArray);
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {

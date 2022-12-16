@@ -74,9 +74,6 @@ export const HomeStackScreen = observer(() => {
     }
   }, [initialData.xmppPassword]);
 
-  useEffect(() => {
-    chatStore.checkMetaRooms()
-  }, [chatStore.roomList])
 
   useEffect(() => {
     //when the app opens for the first time, when clicked url from outside, this will be called

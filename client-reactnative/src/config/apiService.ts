@@ -13,7 +13,6 @@ const http = axios.create();
 
 http.interceptors.response.use(undefined, async error => {
   if (error?.response?.status === 401) {
-    await rootStore.loginStore.getRefreshToken();
 
     if (
       error?.request?.responseURL ===
@@ -22,6 +21,8 @@ http.interceptors.response.use(undefined, async error => {
       rootStore.loginStore.logOut();
       return Promise.reject(error);
     }
+    await rootStore.loginStore.getRefreshToken();
+
     if (rootStore.loginStore.userToken) {
       let request = error.config;
       const token = rootStore.loginStore.userToken;

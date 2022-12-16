@@ -302,6 +302,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
+      push: true,
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -650,6 +651,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         waveForm: JSON.stringify(waveForm),
         attachmentId: item._id,
         wrappable: true,
+        push: true,
       };
 
       sendMediaMessageStanza(
@@ -896,7 +898,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
           </View>
         )}
         <GiftedChat
-          renderDay={(props)=><RenderDay currentMessage={props.currentMessage} previousMessage={props.previousMessage} />}
+          renderDay={props => (
+            <RenderDay
+              currentMessage={props.currentMessage}
+              previousMessage={props.previousMessage}
+            />
+          )}
           ref={giftedRef}
           renderSend={renderSend}
           renderActions={renderAttachment}

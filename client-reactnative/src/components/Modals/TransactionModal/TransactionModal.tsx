@@ -242,7 +242,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     setSelectedItem({});
     closeModal();
   };
-
   const itemTransferFunc = async () => {
     clearState();
     const receiverName = extraData.name;
@@ -271,6 +270,8 @@ const TransactionModal = (props: TransactionModalProps) => {
       contractAddress: selectedItem?.contractAddress,
       isNfmt: true,
       tokenName: selectedItem.tokenName,
+      nftId: selectedItem.nftId,
+
     };
 
     if (selectedItem.balance) {

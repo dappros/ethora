@@ -13,6 +13,7 @@ interface systemMessageProps {
   tokenName: string;
   receiverMessageId: string;
   receiverName: string;
+  nftId?: string
 }
 
 export const systemMessage = (data: systemMessageProps) => {
@@ -30,6 +31,7 @@ export const systemMessage = (data: systemMessageProps) => {
       tokenAmount: data.tokenAmount,
       receiverMessageId: data.receiverMessageId,
       tokenName: token,
+      nftId: data.nftId
     },
   ];
 };

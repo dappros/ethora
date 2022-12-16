@@ -171,6 +171,7 @@ export class WalletStore {
     amount: number;
     receiverMessageId: string;
     tokenName: string;
+    nftId?: string;
   } = {
     success: false,
     senderName: '',
@@ -178,6 +179,7 @@ export class WalletStore {
     amount: 0,
     receiverMessageId: '',
     tokenName: '',
+    nftId: '',
   };
   stores: RootStore | {} = {};
   defaultUrl = '';
@@ -212,6 +214,7 @@ export class WalletStore {
         amount: 0,
         receiverMessageId: '',
         tokenName: '',
+        nftId: '',
       };
       this.defaultUrl = this.stores.apiStore.defaultUrl;
       this.coinBalance = 0;
@@ -357,6 +360,7 @@ export class WalletStore {
         amount: 0,
         receiverMessageId: '',
         tokenName: '',
+        nftId: '',
       };
     });
   };
@@ -377,9 +381,8 @@ export class WalletStore {
           item.file = file;
           mappedDocuments.push(item);
         } catch (error) {
-          console.log(item.files[0], 'sdjfkls')
+          console.log(item.files[0], 'sdjfkls');
         }
-       
       }
       this.documents = mappedDocuments;
     } catch (error) {
@@ -451,7 +454,6 @@ export class WalletStore {
         this.isFetching = false;
         this.stores.debugStore.addLogsApi(response.data);
       });
-
       if (response.data.success) {
         runInAction(() => {
           this.tokenTransferSuccess = {
@@ -461,6 +463,7 @@ export class WalletStore {
             amount: bodyData.amount,
             receiverMessageId,
             tokenName: bodyData.tokenName,
+            nftId: bodyData.nftId || '',
           };
         });
 
@@ -557,11 +560,10 @@ export class WalletStore {
       const response = await httpGet(url, null);
       if (response.data.items) {
         this.stores.debugStore.addLogsApi(response.data);
-        
 
         runInAction(() => {
           this.offset = this.offset + response.data.limit;
-        this.total = response.data.total;
+          this.total = response.data.total;
           this.anotherUserTransaction = [
             ...this.anotherUserTransaction,
             ...response.data.items,
