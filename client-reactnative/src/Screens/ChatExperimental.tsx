@@ -133,6 +133,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
   const [isReply, setIsReply] = useState(false);
+  const [showViewThread, setShowViewThread] = useState(false);
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const {isOpen, onOpen, onClose} = useDisclose();
@@ -505,6 +506,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
       setShowReplyOption(false);
     }
 
+    if(message.numberOfReplies>0){
+      setShowViewThread(true)
+    }
+
     setOnTapMessageObject(message);
     return onOpen();
   };
@@ -515,11 +520,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
     return onClose();
   };
 
-  const handleReply = (type: 'open' | 'close') => {
+  const handleReply = (message?:any) => {
+    setShowViewThread(false);
     //navigate to thread screen with current message details.
-    getOtherUserDetails(onTapMessageObject.user);
+    getOtherUserDetails(message?message.user:onTapMessageObject.user);
     navigation.navigate(ROUTES.THREADS, {
-      currentMessage: onTapMessageObject,
+      currentMessage:message?message: onTapMessageObject,
       chatJid: chatJid,
       chatName: chatName,
     });
@@ -968,6 +974,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           }}
           onLongPress={(message: any) => handleOnLongPress(message)}
           onTap={(message: any) => handleOnPress(message)}
+          handleReply={handleReply}
           // onInputTextChanged={()=>{alert('hhh')}}
           parsePatterns={linkStyle => [
             {
@@ -1002,14 +1009,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
             onClose();
             setIsShowDeleteOption(true);
             setShowReplyOption(true);
+            setShowViewThread(false);
           }}>
           <Actionsheet.Content>
             {showReplyOption ? (
-              <Actionsheet.Item onPress={() => handleReply('open')}>
+              <Actionsheet.Item onPress={() => handleReply()}>
                 Reply
               </Actionsheet.Item>
             ) : null}
             <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
+            {showViewThread?
+            <Actionsheet.Item
+            onPress={()=> handleReply()}
+            >
+              View thread
+            </Actionsheet.Item>:null
+            }
             {isShowDeleteOption ? (
               <Actionsheet.Item onPress={onClose} color="red.500">
                 Delete

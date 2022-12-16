@@ -64,6 +64,7 @@ interface BubbleProps {
   messageImageProps?:any;
   type:'main'|'thread';
   scrollToParentMessage:any;
+  handleReply:(message:any) => void
 }
 
 const Bubble = observer((props:BubbleProps)=> {
@@ -109,7 +110,8 @@ const Bubble = observer((props:BubbleProps)=> {
     usernameProps,
     messageImageProps,
     type,
-    scrollToParentMessage
+    scrollToParentMessage,
+    handleReply
   } = props
 
 
@@ -250,6 +252,8 @@ const Bubble = observer((props:BubbleProps)=> {
   }
 
   const renderReplyCount = () => {
+
+    const replyConst = currentMessage.numberOfReplies>1?'replies':'reply'
     
     if(currentMessage.numberOfReplies){
       let text = ' reply'
@@ -258,9 +262,14 @@ const Bubble = observer((props:BubbleProps)=> {
       }
       return(
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
-          <Text>
-              {currentMessage.numberOfReplies}
-          </Text>
+          <TouchableOpacity onPress={()=>handleReply(currentMessage)}>
+              <Text
+              fontFamily={textStyles.regularFont}
+              color={commonColors.primaryColor}
+              >
+                  {currentMessage.numberOfReplies} {replyConst} (tap to review)
+              </Text>
+          </TouchableOpacity>
       </HStack>
       )
     }
