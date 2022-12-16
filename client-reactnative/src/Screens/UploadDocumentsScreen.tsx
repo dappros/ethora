@@ -128,7 +128,6 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
 
       debugStore.addLogsApi(res.data);
       walletStore.fetchWalletBalance(
-        loginStore.initialData.walletAddress,
         loginStore.userToken,
         true,
       );

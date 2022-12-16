@@ -302,6 +302,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
+      push:true
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));

@@ -12,16 +12,16 @@ import {refreshTokenURL} from './routesConstants';
 const http = axios.create();
 
 http.interceptors.response.use(undefined, async error => {
-  if (error?.response?.status === 401) {
+  if (error?.response?.status === 401 && error.config && 
+    !error.config.__isRetryRequest) {
+      if (
+        error?.request?.responseURL ===
+        rootStore.apiStore.defaultUrl + refreshTokenURL
+      ) {
+        return Promise.reject(error);
+      }
     await rootStore.loginStore.getRefreshToken();
-
-    if (
-      error?.request?.responseURL ===
-      rootStore.apiStore.defaultUrl + refreshTokenURL
-    ) {
-      rootStore.loginStore.logOut();
-      return Promise.reject(error);
-    }
+    
     if (rootStore.loginStore.userToken) {
       let request = error.config;
       const token = rootStore.loginStore.userToken;

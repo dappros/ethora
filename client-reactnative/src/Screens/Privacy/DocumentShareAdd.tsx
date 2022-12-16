@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, ScrollView} from 'react-native';
 import {HStack, Input, Pressable, Text, View} from 'native-base';
 import {commonColors, textStyles, unv_url} from '../../../docs/config';
@@ -57,6 +57,11 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
   const inputRef = useRef();
 
   const {walletStore} = useStores();
+
+  useEffect(()=>{
+    walletStore.getDocuments(loginStore.initialData.walletAddress);
+  },[])
+
   const generateLink = async () => {
     const body = {
       expiration: new Date().getTime() + +expiration * 1000,

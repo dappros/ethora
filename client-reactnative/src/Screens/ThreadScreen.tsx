@@ -665,6 +665,7 @@ const ThreadScreen = observer((props: any) => {
           mainMessageContractAddress: currentMessage.contractAddress,
           mainMessageRoomJid: currentMessage.roomJid,
           showInChannel:showInChannel,
+          push:true
         };
         const text = parseValue(messageText, partTypes).plainText;
         const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));

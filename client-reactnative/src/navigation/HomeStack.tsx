@@ -52,9 +52,9 @@ export const HomeStackScreen = observer(() => {
     await chatStore.getRoomsFromCache();
     await chatStore.getCachedMessages();
     await walletStore.getCachedTransactions();
-    if (walletAddress) {
-      await walletStore.getDocuments(walletAddress);
-    }
+    // if (walletAddress) {
+    //   await walletStore.getDocuments(walletAddress);
+    // }
   };
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export const HomeStackScreen = observer(() => {
       chatStore.xmppListener();
     }
     if (walletAddress) {
-      walletStore.fetchWalletBalance(walletAddress, coinsMainName, true);
+      walletStore.fetchWalletBalance(loginStore.userToken, true);
     }
   }, [initialData.xmppPassword]);
 

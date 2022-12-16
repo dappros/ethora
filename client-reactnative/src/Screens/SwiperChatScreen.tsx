@@ -68,6 +68,7 @@ export const SwiperChatScreen: React.FC<ISwiperChatScreen> = ({navigation}) => {
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
+      push:true
     };
 
     sendMessageStanza(

@@ -76,7 +76,6 @@ const MintScreen = (props: MintScreenProps) => {
     try {
       await httpPost(url, item, loginStore.userToken);
       walletStore.fetchWalletBalance(
-        loginStore.initialData.walletAddress,
         loginStore.userToken,
         true,
       );
