@@ -9035,6 +9035,11 @@ react-native-toast-message@^2.1.5:
   resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz#550acb9c6c0f1ee49c6b57b65a56d34e297eb723"
   integrity sha512-mk3rELtBEhrhWBCN6CTaw0gypgL9ZNauX3xx1LUs4uee9vc0pVsghrKxO57vroUCcNL2hDeZSLJWdQNMCkGeaQ==
 
+react-native-tracking-transparency@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-tracking-transparency/-/react-native-tracking-transparency-0.1.2.tgz#78059ffe38079182aaced1326f590b35c7440ae6"
+  integrity sha512-oe+BFutdq+fnTgyC9pAm/NEz6nuYkEHpFQUU8swj+E5oOOPqGmrNXmseNatKob521Zh7w0ovxXkoQNTV+PKTFA==
+
 react-native-typing-animation@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/react-native-typing-animation/-/react-native-typing-animation-0.1.7.tgz#8f2cf08d9400ae543a110292eb7d71523dda5528"
