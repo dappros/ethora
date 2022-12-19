@@ -80,6 +80,8 @@
 	<string>Ethora wants to access your mic to record audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the photo library to upload photos and create NFTs</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We will use your data to give you a more personalized $(PRODUCT_NAME) experience to make our app even more amazing.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

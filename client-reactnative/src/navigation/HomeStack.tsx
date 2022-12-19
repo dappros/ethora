@@ -30,6 +30,7 @@ import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
 import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
 import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
 import UploadDocumentsScreen from '../Screens/UploadDocumentsScreen';
+import {requestTrackingPermission} from 'react-native-tracking-transparency';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -48,6 +49,11 @@ export const HomeStackScreen = observer(() => {
   }, [chatStore.roomList, chatStore.isOnline]);
 
   const getCache = async () => {
+    try {
+      const trackingStatus = await requestTrackingPermission();
+    } catch (error) {
+      console.log(error);
+    }
     await chatStore.getCachedRoomsInfo();
     await chatStore.getRoomsFromCache();
     await chatStore.getCachedMessages();
@@ -73,7 +79,6 @@ export const HomeStackScreen = observer(() => {
       walletStore.fetchWalletBalance(loginStore.userToken, true);
     }
   }, [initialData.xmppPassword]);
-
 
   useEffect(() => {
     //when the app opens for the first time, when clicked url from outside, this will be called
@@ -244,7 +249,7 @@ export const HomeStackScreen = observer(() => {
           header: ({navigation}) => <MainHeader />,
         })}
       />
-        <HomeStack.Screen
+      <HomeStack.Screen
         name={ROUTES.UPLOADDOCUMENTSSCREEN}
         component={UploadDocumentsScreen}
         options={() => ({
