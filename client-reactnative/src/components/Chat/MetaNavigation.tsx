@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   TouchableOpacityBase,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
@@ -318,7 +319,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
-      push: false
+      push: false,
     };
 
     sendMessageStanza(
@@ -373,7 +374,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     }
   };
 
-  if (!currentMetaRoom.roomJid) {
+  if (!currentMetaRoom.roomJid && !previousDirection) {
     return null;
   }
 
@@ -423,6 +424,9 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
             direction={previousDirection}
             previousRoom={previousRoom}
           />
+          <TouchableWithoutFeedback onPress={onClose}>
+            <View style={{flex: 1}} />
+          </TouchableWithoutFeedback>
           <View style={[styles.bottom, styles.innerContainer]}>
             {renderDirections(DIRECTIONS.NORTH)}
             <HStack justifyContent={'space-between'} alignItems={'center'}>
@@ -471,6 +475,7 @@ const styles = StyleSheet.create({
   top: {
     backgroundColor: 'white',
     height: '20%',
+    marginTop: 30,
   },
   bottom: {
     backgroundColor: 'white',
