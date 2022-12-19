@@ -1,6 +1,7 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { IApiMetaRoom } from "./MetaNavigation";
 import coin from "../../assets/images/coin.png";
+import { useHistory } from "react-router";
 export const MetaHeader = ({
   room,
   direction,
@@ -10,14 +11,26 @@ export const MetaHeader = ({
   direction: string;
   previousRoom: IApiMetaRoom | undefined;
 }) => {
+  const history = useHistory();
+  const onCreateClick = () => {
+    history.push("/newchat", {
+      metaDirection: direction,
+      metaRoom: previousRoom,
+    });
+  };
   if (!room?.name) {
     return (
-      <Box>
-        <Typography>
-          This space is empty. You can build your own room here for 120{" "}
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        <Box sx={{ alignItems: "center", display: "flex" }}>
+          <Typography>
+            This space is empty. You can build your own room here for{" "}
+            <b>120 </b>
+          </Typography>
           <img src={coin} style={{ width: 20, height: 20 }} alt={"coin"} />
-        </Typography>
-        {/* <CreateNewChatButton
+
+          {/* <CreateNewChatButton
             onPress={() =>
               navigation.navigate(ROUTES.NEWCHAT, {
                 metaDirection: direction,
@@ -25,6 +38,8 @@ export const MetaHeader = ({
               })
             }
           /> */}
+        </Box>
+        <Button onClick={onCreateClick}>Create Meta Room</Button>
       </Box>
     );
   }

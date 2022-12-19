@@ -212,7 +212,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     }
   }, [currentMetaRoom]);
 
-  if (!currentMetaRoom.roomJid) {
+  if (!currentMetaRoom.roomJid && !previousDirection) {
     return null;
   }
 

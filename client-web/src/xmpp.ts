@@ -231,7 +231,7 @@ const onChangeDescription = (stanza: Element, xmpp: any) => {
 const onPresenceInRoom = (stanza: Element | any) => {
   if (stanza.attrs.id === "presenceInRoom") {
     const roomJID: string = stanza.attrs.from.split("/")[0];
-    const role: string = stanza.children[1].children[0].attrs.role;
+    const role: string = stanza?.children[1]?.children[0]?.attrs.role;
     const elementObject: TRoomRoles = { roomJID: roomJID, role: role };
     useStoreState.getState().setRoomRoles(elementObject);
   }
@@ -389,6 +389,11 @@ const onRemoveFromBlackList = (stanza: Element, xmpp: any) => {
     console.log(stanza);
   }
 };
+const onNewSubscription = (stanza: Element, xmpp: XmppClass) => {
+  if (stanza.attrs.id === "newSubscription") {
+    xmpp.getRooms();
+  }
+};
 
 const onBan = (stanza: Element) => {
   if (stanza.attrs.id === "ban") {
@@ -438,6 +443,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("stanza", (stanza) => onRemoveFromBlackList(stanza, this));
     this.client.on("stanza", (stanza) => onBan(stanza));
+    this.client.on("stanza", (stanza) => onNewSubscription(stanza, this));
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
@@ -456,7 +462,7 @@ class XmppClass {
     roomAddress: string,
     roomThumbnail: string,
     roomBackground: string,
-    type: string,
+    type: string
   ) => {
     const message = xml(
       "iq",
@@ -844,14 +850,18 @@ class XmppClass {
     this.client.send(message);
   }
 
-  createNewRoom( to: string) {
+  createNewRoom(to: string) {
     let message = xml(
       "presence",
       {
         id: "createRoom",
         from: this.client.jid?.toString(),
 
-        to: to + CONFERENCEDOMAIN + "/" + this.client.jid?.toString().split("@")[0],
+        to:
+          to +
+          CONFERENCEDOMAIN +
+          "/" +
+          this.client.jid?.toString().split("@")[0],
       },
       xml("x", "http://jabber.org/protocol/muc")
     );

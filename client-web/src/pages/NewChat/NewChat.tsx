@@ -16,13 +16,15 @@ import { useStoreState } from "../../store";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { useLocation, useParams } from "react-router";
 import { httpWithAuth } from "../../http";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface INewChat {}
 
 export const NewChat: React.FC<INewChat> = ({}) => {
   const theme = useTheme();
   const user = useStoreState((state) => state.user);
-  const [chatAvatar, setChatAvatar] = useState("");
+  const { showSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false);
   const location = useLocation<{
     metaDirection?: string;
     metaRoom: { roomJid: string };
@@ -33,10 +35,11 @@ export const NewChat: React.FC<INewChat> = ({}) => {
       description: "",
       chatImage: "",
     },
-    onSubmit: async ({ chatName, description }) => {
+    onSubmit: async ({ chatName, description, chatImage }) => {
+      setLoading(true);
       const roomHash = sha256(chatName);
       const wallet = walletToUsername(user.walletAddress);
-      xmpp.createNewRoom(wallet);
+      xmpp.createNewRoom(roomHash);
 
       xmpp.setOwner(roomHash);
 
@@ -45,7 +48,7 @@ export const NewChat: React.FC<INewChat> = ({}) => {
         roomDescription: description,
       });
 
-      xmpp.setRoomImage(roomHash, chatAvatar, "", "icon");
+      xmpp.setRoomImage(roomHash, chatImage, "", "icon");
       xmpp.subsribe(roomHash + CONFERENCEDOMAIN);
       if (location.state?.metaDirection) {
         const body = {
@@ -59,8 +62,26 @@ export const NewChat: React.FC<INewChat> = ({}) => {
         const res = await httpWithAuth().post("/room", body);
         console.log(res?.data);
       }
+      setLoading(false);
+      showSnackbar("success", "Room created successfully");
     },
   });
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
+
+    try {
+      const fd = new FormData();
+      fd.append("files", e.target.files[0]);
+      const fileUploadResp = await httpWithAuth().post("/files", fd);
+      formik.setValues((prev) => ({
+        ...prev,
+        chatImage: fileUploadResp.data.results[0].location,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box
@@ -81,14 +102,25 @@ export const NewChat: React.FC<INewChat> = ({}) => {
             }}
           >
             <IconButton>
-              <Avatar
-                sx={{
-                  backgroundColor: theme.palette.primary.main,
-                  padding: "5px",
-                  width: 60,
-                  height: 60,
-                }}
-              ></Avatar>
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="raised-button-file"
+                multiple
+                type="file"
+                onChange={onFileChange}
+              />
+              <label htmlFor="raised-button-file">
+                <Avatar
+                  sx={{
+                    backgroundColor: theme.palette.primary.main,
+                    // padding: "5px",
+                    width: 60,
+                    height: 60,
+                  }}
+                  src={formik.values.chatImage}
+                ></Avatar>
+              </label>
             </IconButton>
             <TextField
               margin="dense"
@@ -117,9 +149,23 @@ export const NewChat: React.FC<INewChat> = ({}) => {
             onChange={formik.handleChange}
             value={formik.values.description}
           />
-          <Button variant={"contained"} onClick={() => formik.handleSubmit()}>
-            Sumbit
-          </Button>
+          <Box
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: '10px'
+            }}
+          >
+            <Button
+              variant={"outlined"}
+              disabled={loading}
+              onClick={() => formik.handleSubmit()}
+            >
+              Sumbit
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Container>
