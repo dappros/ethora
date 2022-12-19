@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, ScrollView} from 'react-native';
-import {HStack, Input, Pressable, Text, View} from 'native-base';
+import {HStack, Input, KeyboardAvoidingView, Pressable, Text, View} from 'native-base';
 import {commonColors, textStyles, unv_url} from '../../../docs/config';
 import {
   widthPercentageToDP as wp,
@@ -17,6 +17,7 @@ import {generateProfileLink} from '../../helpers/generateProfileLink';
 import QRCodeGenerator from '../../components/QRCodeGenerator';
 import {observer} from 'mobx-react-lite';
 import {generateDocumentLink} from '../../helpers/generateDocumentLink';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export interface IDocumentShareAdd {}
 
@@ -92,7 +93,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
     );
   }
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       style={{backgroundColor: 'white', paddingHorizontal: 20, flex: 1}}>
       <View style={{marginTop: 10}}>
         <HStack justifyContent={'space-between'}>
@@ -205,7 +206,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
           onPress={generateLink}
         />
       )}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 });
 const styles = StyleSheet.create({
