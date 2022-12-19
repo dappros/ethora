@@ -39,6 +39,7 @@ import {
   handleAppleLogin,
   handleFaceBookLogin,
   handleGoogleLogin,
+  loginOrRegisterSocialUser,
   socialLoginHandle,
 } from '../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../constants/socialLoginConstants';
@@ -85,24 +86,15 @@ const LoginScreen = observer(({navigation}) => {
       loginStore.registerUser,
       socialLoginType.APPLE,
     );
-    const url = apiStore.defaultUrl + checkEmailExist + user.email;
-    try {
-      const response = await httpGet(url, apiStore.defaultToken);
-      if (!response.data.success) {
-        console.log(user);
-        loginStore.loginUser(
-          socialLoginType.APPLE,
-          user.authToken,
-          user.uid,
-          user,
-        );
-      } else {
-        setModalOpen(true);
-        setAppleUser(user);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+
+    await loginOrRegisterSocialUser(
+      user,
+      apiStore.defaultUrl,
+      apiStore.defaultToken,
+      loginStore.loginUser,
+      loginStore.registerUser,
+      socialLoginType.APPLE,
+    );
   };
   const openModalForWallet = message => {
     setExternalWalletModalData({

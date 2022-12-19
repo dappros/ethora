@@ -41,8 +41,8 @@ export const loginOrRegisterSocialUser = async (
               password: user.uid,
               username: user.email,
               email: user.email,
-              firstName: user.firstName,
-              lastName: user.lastName,
+              firstName: user.firstName || 'Anonymous',
+              lastName: user.lastName || 'Raccoon',
             }
           : {
               firstName: user.firstName,
@@ -123,7 +123,7 @@ export const handleFaceBookLogin = async (
   );
 };
 
-const signInGoogle = (googleCredential:  any, callback:  any) => {
+const signInGoogle = (googleCredential: any, callback: any) => {
   auth()
     .signInWithCredential(googleCredential)
     .then(data => callback(data))
@@ -256,6 +256,8 @@ export const handleAppleLogin = async (
       displayName: '',
       uid: hashUID,
       email: data.additionalUserInfo.profile.email,
+      firstName: data.user.displayName,
+      lastName: data.user.displayName,
     };
     return user;
 
@@ -286,6 +288,8 @@ export const handleAppleLogin = async (
       displayName: '',
       uid: hashUID,
       email: data.additionalUserInfo.profile.email,
+      firstName: data.user.displayName,
+      lastName: data.user.displayName,
     };
     return user;
   }
