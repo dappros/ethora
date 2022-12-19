@@ -840,7 +840,6 @@ export class ChatStore {
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-
           if (
             this.blackList.find(item => item.userJid === message.user._id)
               ?.userJid

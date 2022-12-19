@@ -472,8 +472,12 @@ export class LoginStore {
     firstName: string;
     lastName: string;
   }) => {
+    const fd = new FormData();
+    fd.append('firstName', bodyData.firstName);
+    fd.append('lastName', bodyData.lastName);
+
     const url = this.stores.apiStore.defaultUrl + registerUserURL;
-    const response: any = await httpPut(url, bodyData, this.userToken);
+    const response: any = await httpPut(url, fd, this.userToken);
     if (response.data.success) {
       const updatedData = {
         ...this.initialData,
