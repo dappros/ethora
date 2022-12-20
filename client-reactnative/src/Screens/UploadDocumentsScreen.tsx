@@ -341,10 +341,10 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                           uri: uploadedFile.locationPreview,
                           priority: FastImage.priority.normal,
                         }}
-                        resizeMode={FastImage.resizeMode.cover}
+                        resizeMode={FastImage.resizeMode.contain}
                         style={{
-                          width: wp('50%'),
-                          height: wp('50%'),
+                          width: wp('40%'),
+                          height: wp('40%'),
                           borderRadius: 10,
                         }}
                       />

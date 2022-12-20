@@ -583,10 +583,17 @@ export class ChatStore {
             if (item.name === 'URL') {
               profilePhoto = item.children[0];
             }
+            if(item.name === 'FN') {
+              fullName = item.children[0]
+            }
           });
           this.stores.loginStore.updateUserPhotoAndDescription(
             profilePhoto,
             profileDescription,
+          );
+
+          this.stores.loginStore.updateUserName(
+            fullName
           );
         }
       }

@@ -126,6 +126,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           chatStore.xmpp,
         );
 
+        chatAvatar&&
         setRoomImage(
           manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,

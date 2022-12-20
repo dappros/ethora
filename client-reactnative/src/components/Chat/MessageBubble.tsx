@@ -361,7 +361,7 @@ const Bubble = observer((props:BubbleProps)=> {
         {renderMessageImageHandle()}
         {/* {this.renderMessageVideo()}
     {this.renderMessageAudio()} */}
-        {!image && renderMessageTextHandle()}
+        {!currentMessage.image && renderMessageTextHandle()}
 
         {renderCustomViewHandle()}
       </View>
@@ -371,7 +371,7 @@ const Bubble = observer((props:BubbleProps)=> {
         {renderMessageImageHandle()}
         {/* {this.renderMessageVideo()}
       {this.renderMessageAudio()} */}
-        {!image && renderMessageTextHandle()}
+        {!currentMessage.image && renderMessageTextHandle()}
       </View>
     );
   }

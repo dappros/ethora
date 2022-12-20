@@ -311,7 +311,7 @@ export const ProfileScreen = observer((props: any) => {
       updateVCard(
         userAvatarLocal,
         descriptionLocal,
-        firstName + ' ' + lastName,
+        firstNameLocal + ' ' + lastNameLocal,
         chatStore.xmpp,
       );
       updateUserDisplayName(bodyData);
@@ -350,14 +350,13 @@ export const ProfileScreen = observer((props: any) => {
       setUploadedAvatar(file);
       const formData = new FormData();
       formData.append('description', descriptionLocal);
-      formData.append('profileImage', file.location);
-      const userRes = await httpUploadPut(
-        apiStore.defaultUrl + changeUserData,
-        formData,
-        loginStore.userToken,
-        console.log,
-      );
-      console.log(userRes.data);
+      formData.append('file', file.location);
+      // const userRes = await httpUploadPut(
+      //   apiStore.defaultUrl + changeUserData,
+      //   formData,
+      //   loginStore.userToken,
+      //   console.log,
+      // );
       updateVCard(file.location, descriptionLocal, null, chatStore.xmpp);
     } catch (error) {
       console.log(error);

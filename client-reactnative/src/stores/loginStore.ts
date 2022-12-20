@@ -155,6 +155,13 @@ export class LoginStore {
     });
   }
 
+  updateUserName(name:string){
+    runInAction(()=>{
+      this.initialData.firstName = name.split(' ')[0];
+      this.initialData.lastName = name.split(' ')[1];
+    })
+  }
+
   setOtherUserVcard(data: any) {
     runInAction(() => {
       this.anotherUserAvatar = data.anotherUserAvatar;

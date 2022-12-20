@@ -281,7 +281,7 @@ export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
       ),
     ),
   );
-  xmpp.send(message);
+  xmpp?.send(message);
 };
 
 export const subscribeToRoom = (
