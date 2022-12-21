@@ -48,6 +48,8 @@ const roomFilters = [
 const menuActionsSection = {
   name: "Actions",
   items: [
+    { name: "New room", id: "/newchat", visible: true },
+
     { name: "Mint NFT", id: "/mint", visible: configNFT },
     {
       name: "Upload Document",

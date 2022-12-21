@@ -14,7 +14,7 @@ import { sha256 } from "js-sha256";
 import xmpp, { walletToUsername } from "../../xmpp";
 import { useStoreState } from "../../store";
 import { CONFERENCEDOMAIN } from "../../constants";
-import { useLocation, useParams } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import { httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
 
@@ -25,6 +25,7 @@ export const NewChat: React.FC<INewChat> = ({}) => {
   const user = useStoreState((state) => state.user);
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
+  const history = useHistory()
   const location = useLocation<{
     metaDirection?: string;
     metaRoom: { roomJid: string };
@@ -64,6 +65,7 @@ export const NewChat: React.FC<INewChat> = ({}) => {
       }
       setLoading(false);
       showSnackbar("success", "Room created successfully");
+      history.push('/chat/none')
     },
   });
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
