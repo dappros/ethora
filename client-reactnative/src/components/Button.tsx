@@ -45,19 +45,16 @@ export const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: commonColors.primaryColor,
-    // paddingVertical: 7,
-    // paddingHorizontal: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
 
-    height: hp("2.7%"),
-    width: hp('5%'),
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    // marginTop: 10,
   },
   submitButtonText: {
-    fontSize: hp('1.2%'),
+    fontSize: hp('1.5%'),
     color: '#FFFFFF',
     fontFamily: textStyles.mediumFont,
   },

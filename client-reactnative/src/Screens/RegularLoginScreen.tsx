@@ -104,11 +104,12 @@ export const RegularLoginScreen = ({navigation}) => {
                   placeholder="Enter your password"
                   placeholderTextColor={commonColors.primaryColor}
                 />
-                <View>
+                <View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                   <Button
                     title={'Login'}
                     onPress={onSubmit}
                     loading={isLoading}
+                     style={{width: '50%'}}
                   />
                 </View>
               </View>

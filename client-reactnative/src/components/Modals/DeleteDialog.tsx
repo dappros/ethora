@@ -43,7 +43,9 @@ export const DeleteDialog = ({
               </NativeButton>
               <Button
                 title={deleteButtonTitle || 'Delete'}
-                style={{backgroundColor: 'red'}}
+                style={{
+                  backgroundColor: 'red',
+                }}
                 loading={loading}
                 onPress={onDeletePress}
               />
