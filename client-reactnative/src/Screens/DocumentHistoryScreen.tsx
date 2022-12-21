@@ -17,7 +17,7 @@ import {
 } from '../constants/mimeTypes';
 import {useStores} from '../stores/context';
 import {transactionURL} from '../config/routesConstants';
-import {httpGet} from '../config/apiService';
+import {httpDelete, httpGet} from '../config/apiService';
 import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 
 import {NftMediaModal} from '../components/NftMediaModal';
@@ -25,6 +25,8 @@ import {downloadFile} from '../helpers/downloadFile';
 import {IDocument} from '../stores/walletStore';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {showError} from '../components/Toast/toast';
+import {DeleteDialog} from '../components/Modals/DeleteDialog';
 
 interface DocumentHistoryScreenProps {
   route: {params: {item: IDocument; userWalletAddress: string}};
@@ -37,11 +39,13 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 }) => {
   const {item, userWalletAddress} = route.params;
 
-  const {apiStore} = useStores();
+  const {apiStore, loginStore} = useStores();
 
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [itemTransactions, setItemTransactions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   const [modalData, setModalData] = useState<any>({
     visible: false,
     url: '',
@@ -107,9 +111,24 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
   const closeModal = () => {
     setModalData(prev => ({...prev, visible: false, url: ''}));
   };
+
+  const deleteDocument = async () => {
+    setLoading(true);
+    try {
+      const res = await httpDelete(
+        apiStore.defaultUrl + '/docs/' + item._id,
+        loginStore.userToken,
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.response);
+      showError('Error', 'Cannot delete document');
+    }
+    setLoading(false);
+  };
   return (
     <Fragment>
-      <SecondaryHeader title="Item details" />
+      <SecondaryHeader title="Document details" />
 
       {/* <ScrollView style={styles.container}> */}
       <View style={{...styles.contentContainer, margin: 0}}>
@@ -177,8 +196,10 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
               <TouchableOpacity style={styles.actionButton}>
                 <AntDesignIcons name="copy1" size={35} color={'black'} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButton}>
-                <MaterialIcons name="delete" size={35} color={'darkred'} />
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => setDeleteModalOpen(true)}>
+                <MaterialIcons name="delete" size={35} color={'red'} />
               </TouchableOpacity>
             </VStack>
           </HStack>
@@ -242,6 +263,14 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
         url={modalData.url}
         sharable
         onSharePress={() => downloadFile(modalData.url, modalData.originalName)}
+      />
+      <DeleteDialog
+        loading={loading}
+        onDeletePress={deleteDocument}
+        title={'Do you really want to delete this document'}
+        description={'You cannot discard this changes.'}
+        onClose={() => setDeleteModalOpen(false)}
+        open={deleteModalOpen}
       />
     </Fragment>
   );

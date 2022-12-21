@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
-import {Image, ScrollView, Text, View} from 'native-base';
+import {HStack, Image, ScrollView, Text, View} from 'native-base';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
@@ -18,20 +18,27 @@ import {
 } from '../constants/mimeTypes';
 import {useStores} from '../stores/context';
 import {transactionURL} from '../config/routesConstants';
-import {httpGet} from '../config/apiService';
+import {httpGet, httpPost} from '../config/apiService';
 import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
 import VideoPlayer from 'react-native-video-player';
-import { mapTransactions } from '../stores/walletStore';
-
+import {mapTransactions} from '../stores/walletStore';
+import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {DeleteDialog} from '../components/Modals/DeleteDialog';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from '../constants/routes';
+import {showError, showSuccess} from '../components/Toast/toast';
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
 
-  const {apiStore} = useStores();
+  const {apiStore, loginStore, walletStore} = useStores();
 
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [itemTransactions, setItemTransactions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [videoPaused, setVideoPaused] = useState<boolean>(true);
+  const navigation = useNavigation();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>({
     visible: false,
     url: '',
@@ -41,15 +48,14 @@ const NftItemHistoryScreen = (props: any) => {
   useEffect(() => {
     setAvatarSource({uri: item.nftFileUrl});
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
-      const allTransactions = res.data.items.map(item =>{
-
-        return mapTransactions(item, userWalletAddress)});
+      const allTransactions = res.data.items.map(item => {
+        return mapTransactions(item, userWalletAddress);
+      });
 
       setItemTransactions(
         allTransactions.sort((a: any, b: any) => {
           return (
-            new Date(b.createdAt).getTime() -
-            new Date(a.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         }),
       );
@@ -86,10 +92,61 @@ const NftItemHistoryScreen = (props: any) => {
   const closeModal = () => {
     setModalData(prev => ({...prev, visible: false, url: ''}));
   };
+  const deleteItem = async () => {
+    console.log(item);
+    setLoading(true);
+    try {
+      if (item?.isCollection) {
+        const res = await httpPost(
+          apiStore.defaultUrl +
+            '/tokens/items/nfmt/collection-destroy/' +
+            item.contractAddress,
+          {},
+          loginStore.userToken,
+        );
+        console.log(res.data);
+      }
+
+      if (item.tokenType === 'NFMT') {
+        const res = await httpPost(
+          apiStore.defaultUrl +
+            '/tokens/items/nfmt/burn/' +
+            item.contractAddress +
+            '/' +
+            item.nfmtType,
+          {amount: item.balance},
+          loginStore.userToken,
+        );
+        console.log(res.data);
+      }
+      if (item.tokenType === 'NFT') {
+        const res = await httpPost(
+          apiStore.defaultUrl + '/tokens/burn/items/',
+          {nftId: item.nftId, amount: item.balance},
+          loginStore.userToken,
+        );
+        console.log(res.data);
+      }
+      await walletStore.fetchWalletBalance(loginStore.userToken, true);
+      navigation.navigate(ROUTES.PROFILE);
+      showSuccess('Success', 'Item deleted');
+    } catch (error) {
+      showError(
+        'Error',
+        'Cant burn this collection as someone already owns NFTs in it',
+      );
+      console.log(error.response.data.errors);
+    }
+    setLoading(false);
+  };
+
+  console.log(userWalletAddress, ' a', loginStore.initialData.walletAddress);
 
   return (
     <Fragment>
-      <SecondaryHeader title="Item details" />
+      <SecondaryHeader
+        title={item.isCollection ? 'Collection details' : 'Item details'}
+      />
 
       <ScrollView style={styles.container}>
         <View style={{...styles.contentContainer, margin: 0}}>
@@ -169,6 +226,15 @@ const NftItemHistoryScreen = (props: any) => {
               </Text>
 
               <View />
+              {loginStore.initialData.walletAddress === userWalletAddress && (
+                <HStack w={'full'} justifyContent={'flex-end'} mt={1}>
+                  <TouchableOpacity
+                    onPress={() => setDeleteModalOpen(true)}
+                    style={styles.actionButton}>
+                    <MaterialIcons name="delete" size={35} color={'red'} />
+                  </TouchableOpacity>
+                </HStack>
+              )}
             </View>
           </View>
 
@@ -262,6 +328,20 @@ const NftItemHistoryScreen = (props: any) => {
           )}
         </View>
       </Modal>
+      <DeleteDialog
+        loading={loading}
+        onDeletePress={deleteItem}
+        title={
+          'Do you really want to delete \n(burn) this' + item.isCollection
+            ? 'NFT Collection?'
+            : 'NFT?'
+        }
+        description={'You cannot discard this changes.'}
+        onClose={() => setDeleteModalOpen(false)}
+        open={deleteModalOpen}
+        deleteButtonTitle={'Yes, burn 🔥'}
+        cancelButtonTitle={'No, cancel ✖️'}
+      />
     </Fragment>
   );
 };
@@ -277,6 +357,9 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 20,
     marginTop: 0,
+  },
+  actionButton: {
+    marginBottom: 5,
   },
   tokenImage: {
     width: wp('60%'),
