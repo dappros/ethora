@@ -37,6 +37,7 @@ export const HeaderMenu = () => {
   const ActionsMenuItems = [
     {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
     {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
+    // {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
     {
       value: ROUTES.MINT,
       label: 'Mint items',

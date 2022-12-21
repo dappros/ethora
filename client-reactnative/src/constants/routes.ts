@@ -32,6 +32,8 @@ export const ROUTES = {
   SWIPERCHAT: 'SwiperChatScreen',
   DOCUMENTHISTORY: 'DocumentHistoryScreen',
   CHANGEBACKGROUNDSCREEN: 'ChangeBackgroundScreen',
-  UPLOADDOCUMENTSSCREEN: 'UploadDocumentsScreen'
+  UPLOADDOCUMENTSSCREEN: 'UploadDocumentsScreen',
+  COINPURCHASESCREEN: 'COINPURCHASESCREEN',
+
 
 };

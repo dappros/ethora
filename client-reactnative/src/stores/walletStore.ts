@@ -37,6 +37,10 @@ export const NFMT_TRAITS = {
   Bronze: {color: 'chocolate'},
   Rare: {color: 'lightgreen'},
   'Unique!': {color: 'black'},
+  Diamond: {color: commonColors.primaryColor},
+  Copper: {color: 'brown'},
+  Steel: {color: 'lightgrey'},
+  Paper: {color: '#E0C9A6'}
 };
 export interface IFile {
   _id: string;
@@ -251,10 +255,7 @@ export class WalletStore {
     }
   };
 
-  async fetchWalletBalance(
-    token: string,
-    isOwn: boolean,
-  ) {
+  async fetchWalletBalance(token: string, isOwn: boolean) {
     let url = this.defaultUrl + tokenEtherBalanceURL;
     runInAction(() => {
       this.isFetching = true;
@@ -407,10 +408,7 @@ export class WalletStore {
         };
       });
 
-      this.fetchWalletBalance(
-        this.stores.loginStore.userToken,
-        true,
-      );
+      this.fetchWalletBalance(this.stores.loginStore.userToken, true);
     }
   }
   async transferTokens(
@@ -465,10 +463,7 @@ export class WalletStore {
           };
         });
 
-        this.fetchWalletBalance(
-          this.stores.loginStore.userToken,
-          true,
-        );
+        this.fetchWalletBalance(this.stores.loginStore.userToken, true);
       } else {
         runInAction(() => {
           this.error = true;
@@ -506,10 +501,10 @@ export class WalletStore {
       const response = await httpGet(url, this.stores.loginStore.userToken);
       if (response.data.items) {
         this.stores.debugStore.addLogsApi(response.data);
-        runInAction(()=>{
+        runInAction(() => {
           this.offset = this.offset + response.data.limit;
           this.total = response.data.total;
-        })
+        });
         const modifiedTransactions = response.data.items.map(item =>
           mapTransactions(item, walletAddress),
         );
