@@ -37,8 +37,9 @@ interface TransactionListProps {
   from: string;
   to: string;
   type: string;
-  nftTotal: number;
+  nftTotal: string;
   tokenName: string;
+  contractId?: string;
 }
 
 const UserBlock = ({name, balance, total}) => {
@@ -80,6 +81,7 @@ const UserBlock = ({name, balance, total}) => {
   );
 };
 
+const tokenTypes = {creation: 'Token Creation', mint: 'Mint'};
 export const NftTransactionItem = (props: TransactionListProps) => {
   const {
     transactionReceiver,
@@ -100,9 +102,61 @@ export const NftTransactionItem = (props: TransactionListProps) => {
     senderBalance,
     receiverBalance,
     nftTotal,
+    contractId,
   } = props;
   const [expanded, setExpanded] = useState(false);
 
+  const renderTokenTypeName = () => {
+    if (type === tokenTypes.mint) {
+      const allTotals = nftTotal ? nftTotal.split(',') : [];
+
+      const currentTotal = allTotals[+contractId - 1];
+      return (
+        <HStack
+          style={{width: wp('60%'), marginRight: 'auto'}}
+          justifyContent={'space-around'}
+          alignItems={'center'}>
+          <Box style={{width: wp('30%')}}>
+            <Text fontFamily={textStyles.boldFont}>
+              {value + `🖼️ (of ${currentTotal || nftTotal || ''} total)`}
+            </Text>
+          </Box>
+          <Text fontSize={hp('1.4%')}>{'NFTs minted 🔗 by'}</Text>
+        </HStack>
+      );
+    }
+    if (type === tokenTypes.creation) {
+      return (
+        <HStack
+          style={{width: wp('60%'), marginRight: 'auto'}}
+          justifyContent={'space-around'}>
+          <Text fontFamily={textStyles.boldFont}>
+            {tokenName || 'Document'}
+          </Text>
+          <Text fontSize={hp('1.4%')}>{'deployed 🔗📜 by'}</Text>
+        </HStack>
+      );
+    } else {
+      return (
+        <HStack
+          style={{width: wp('55%')}}
+          alignItems={'center'}
+          justifyContent={'space-between'}>
+          <UserBlock
+            name={senderName}
+            balance={senderBalance}
+            total={nftTotal}
+          />
+          <AntIcon
+            name={'arrowright'}
+            color={'#69CB41'}
+            size={hp('1.7%')}
+            style={{marginRight: 30}}
+          />
+        </HStack>
+      );
+    }
+  };
   return (
     <TouchableOpacity onPress={() => setExpanded(prev => !prev)}>
       {showDate && <TransactionsListitemDate date={formattedDate} />}
@@ -112,33 +166,7 @@ export const NftTransactionItem = (props: TransactionListProps) => {
           alignItems={'center'}
           width={wp('100%')}>
           <HStack justifyContent={'center'} space={1} alignItems={'center'}>
-            {type === 'Token Creation' ? (
-              <HStack
-                style={{width: wp('60%'), marginRight: 'auto'}}
-                justifyContent={'space-around'}>
-                <Text fontFamily={textStyles.boldFont}>
-                  {tokenName || 'Document'}
-                </Text>
-                <Text fontSize={hp('1.4%')}>{'Was created by'}</Text>
-              </HStack>
-            ) : (
-              <HStack
-                style={{width: wp('55%')}}
-                alignItems={'center'}
-                justifyContent={'space-between'}>
-                <UserBlock
-                  name={senderName}
-                  balance={senderBalance}
-                  total={nftTotal}
-                />
-                <AntIcon
-                  name={'arrowright'}
-                  color={'#69CB41'}
-                  size={hp('1.7%')}
-                  style={{marginRight: 30}}
-                />
-              </HStack>
-            )}
+            {renderTokenTypeName()}
             <HStack
               style={{width: wp('33%')}}
               justifyContent={'flex-start'}

@@ -13,7 +13,7 @@ import {Pressable} from 'react-native';
 import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { coinImagePath, commonColors, textStyles } from '../../../docs/config';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 
 export const HeaderBalanceButton = observer(() => {
   const {walletStore} = useStores();
@@ -23,14 +23,14 @@ export const HeaderBalanceButton = observer(() => {
   };
   return (
     <Box
-      background={"white"}
+      background={'white'}
       shadow="7"
       rounded={'sm'}
       alignItems={'center'}
       justifyContent={'center'}
       width={50}
       height={50}>
-      <Pressable onPress={onButtonPress}>
+      <Pressable style={{justifyContent: 'center', alignItems: 'center'}} onPress={onButtonPress}>
         <Box>
           <Image
             alt="coin icon"
@@ -38,15 +38,14 @@ export const HeaderBalanceButton = observer(() => {
             source={coinImagePath}
           />
         </Box>
-        <VStack alignItems="center">
-          {walletStore.coinBalance?
-            <Text
-            color={"black"}
-            fontFamily={textStyles.boldFont}>
+        <VStack alignItems="center" justifyContent={'center'}>
+          {walletStore.coinBalance ? (
+            <Text color={'black'} fontFamily={textStyles.boldFont}>
               {walletStore.coinBalance}
             </Text>
-            :<Spinner/>
-          }
+          ) : (
+            <Spinner />
+          )}
         </VStack>
       </Pressable>
     </Box>

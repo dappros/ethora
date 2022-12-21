@@ -1,59 +1,13 @@
-import {AlertDialog, Center, VStack, Button as NativeButton} from 'native-base';
 import React, {useState} from 'react';
+import {VStack} from 'native-base';
 import {StyleSheet, Text, View} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import {Button} from '../../components/Button';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {showError, showSuccess} from '../../components/Toast/toast';
 import {httpDelete} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
-
-const DeleteDialog = ({
-  open,
-  onClose,
-  onDeletePress,
-  loading,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onDeletePress: () => void;
-  loading: boolean;
-}) => {
-  const cancelRef = React.useRef(null);
-  return (
-    <Center>
-      <AlertDialog
-        leastDestructiveRef={cancelRef}
-        isOpen={open}
-        onClose={onClose}>
-        <AlertDialog.Content>
-          <AlertDialog.CloseButton />
-          <AlertDialog.Header>Delete Account</AlertDialog.Header>
-          <AlertDialog.Body>
-          This will result in a complete deletion of your account and assets. Are you sure you want to proceed?
-          </AlertDialog.Body>
-          <AlertDialog.Footer>
-            <NativeButton.Group space={2}>
-              <NativeButton
-                variant="unstyled"
-                colorScheme="coolGray"
-                onPress={onClose}
-                ref={cancelRef}>
-                Cancel
-              </NativeButton>
-              <Button
-                title={'Delete Account'}
-                style={{backgroundColor: 'red'}}
-                loading={loading}
-                onPress={onDeletePress}
-              />
-            </NativeButton.Group>
-          </AlertDialog.Footer>
-        </AlertDialog.Content>
-      </AlertDialog>
-    </Center>
-  );
-};
 
 export interface IManageData {}
 
@@ -129,6 +83,10 @@ export const ManageData: React.FC<IManageData> = ({}) => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onDeletePress={deleteAccount}
+        title={'Delete Account'}
+        description={
+          ' This will result in a complete deletion of your account and assets. Are you sure you want to proceed?'
+        }
       />
     </VStack>
   );

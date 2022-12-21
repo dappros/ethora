@@ -497,9 +497,12 @@ const RenderTransactionItem = ({
     balance,
     nftName,
     nftTotal,
+    contractId,
   } = transaction;
+  console.log(transaction)
   return (
     <NftTransactionItem
+      // historyItemTotal={}
       from={from}
       to={to}
       balance={balance}
@@ -519,6 +522,8 @@ const RenderTransactionItem = ({
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
       type={type}
       nftTotal={nftTotal}
+      value={value}
+      contractId={contractId}
     />
   );
 };
