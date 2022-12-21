@@ -40,6 +40,7 @@ import {httpGet} from '../../config/apiService';
 import {downloadFile} from '../../helpers/downloadFile';
 import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
 import {PdfViewer} from '../PdfViewer';
+import {formatBigNumber} from '../../helpers/formatBigNumber';
 const {width, height: windowHeight} = Dimensions.get('window');
 
 const ModalActionButton = ({actionTypeText, cost, action}) => {
@@ -87,7 +88,6 @@ export const ChatMediaModal = observer(
     const {chatStore, loginStore, apiStore} = useStores();
     const [buttonState, setButtonState] = useState({title: 'Wrap', cost: 100});
     const [loading, setLoading] = useState(false);
-
     const getCosts = async () => {
       try {
         const res = await httpGet(
@@ -111,8 +111,8 @@ export const ChatMediaModal = observer(
         const costs = res?.results?.costs;
         setButtonState({
           title: 'Get',
-          cost: `${Math.min(...costs)} - ${weiToNormalUnits(
-            Math.max(...costs),
+          cost: `${Math.min(...costs)} - ${formatBigNumber(
+            weiToNormalUnits(Math.max(...costs)),
           )}`,
         });
       } else {
@@ -126,9 +126,8 @@ export const ChatMediaModal = observer(
     }, [messageData]);
 
     const downloadMedia = async () => {
-      console.log(messageData)
       setLoading(true);
-      await downloadFile(messageData?.image , messageData?.originalName);
+      await downloadFile(messageData?.image, messageData?.originalName);
       setLoading(false);
     };
 
