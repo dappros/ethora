@@ -5,12 +5,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Image} from 'native-base';
+import {Box, Image, Text} from 'native-base';
 import React from 'react';
 import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { textStyles } from '../../../docs/config';
 import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 
@@ -20,6 +21,7 @@ interface ImageMessageProps {
   onLongPress?: any;
   onPress: any;
   nftId?: string;
+  nftName?: string;
 }
 
 export const ImageMessage = ({
@@ -28,9 +30,19 @@ export const ImageMessage = ({
   onLongPress,
   onPress,
   nftId,
+  nftName
 }: ImageMessageProps) => {
   const formatedSize = formatBytes(parseFloat(size), 2);
   return (
+    <>
+    {!!nftId&&
+    <Text
+    color={"white"}
+    fontWeight={"bold"}
+    fontFamily={textStyles.boldFont}
+    >
+      🔗🖼️ NFT: {nftName}
+    </Text>}
     <TouchableOpacity
       onLongPress={onLongPress}
       onPress={onPress}
@@ -58,5 +70,6 @@ export const ImageMessage = ({
         />
       </Box>
     </TouchableOpacity>
+    </>
   );
 };

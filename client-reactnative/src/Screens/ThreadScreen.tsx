@@ -853,11 +853,7 @@ const ThreadScreen = observer((props: any) => {
       <View bg={commonColors.primaryDarkColor}>
       {renderMainMessageSection()}
       </View>
-      <View margin={2}>
-        <Checkbox onChange={()=>setShowInChannel(!showInChannel)} value='show' isChecked={showInChannel} colorScheme="green">
-          Also send in Chat room?
-        </Checkbox>
-      </View>
+
         {/* <Text selectable>{currentMessage._id}</Text> */}
       <Divider/>
 
@@ -879,7 +875,10 @@ const ThreadScreen = observer((props: any) => {
       onPressAvatar={onUserAvatarPress}
       renderChatFooter={() => (
         <RenderChatFooter
+          setShowInChannel={setShowInChannel}
+          showInChannel={showInChannel}
           allowIsTyping={allowIsTyping}
+          showAlsoSendInRoom={true}
           composingUsername={composingUsername}
           fileUploadProgress={fileUploadProgress}
           isTyping={isTyping}

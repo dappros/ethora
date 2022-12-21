@@ -493,6 +493,9 @@ export class ChatStore {
             item => item.attrs.var === 'muc#roominfo_description',
           ).children[0].children[0],
         });
+      }
+
+      if(stanza.attrs.id === XMPP_TYPES.chatLinkInfo){
         runInAction(() => {
           this.chatLinkInfo[stanza.attrs.from] =
             stanza.children[0].children[0].attrs.name;

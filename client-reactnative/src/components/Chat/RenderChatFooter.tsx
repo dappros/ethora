@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, HStack, Text, View} from 'native-base';
+import {Box, Checkbox, Divider, HStack, Text, View} from 'native-base';
 import React, {useEffect} from 'react';
 import {Pressable, StyleSheet} from 'react-native';
 import Animated, {
@@ -30,6 +30,9 @@ interface RenderChatFooterProps {
   replyUserName?: string;
   replyMessage?: string;
   closeReply?: any;
+  showAlsoSendInRoom?:boolean;
+  showInChannel?:boolean;
+  setShowInChannel?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const RenderChatFooter = (props: RenderChatFooterProps) => {
@@ -44,6 +47,9 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     replyUserName,
     replyMessage,
     closeReply,
+    showInChannel,
+    showAlsoSendInRoom,
+    setShowInChannel
   } = props;
   const boxAnimation = useAnimatedStyle(() => {
     return {
@@ -68,24 +74,8 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     }
   }, 5000);
   return (
+    <>
     <Animated.View style={[boxAnimation]}>
-      {isReply ? (
-        <HStack bg={'white'} h="100%">
-          <Box flex={0.019} bg={'green.600'} width={wp('2%')}></Box>
-          <Box paddingLeft={3} flex={0.85}>
-            <Text fontSize={hp('2%')} fontFamily={textStyles.boldFont}>
-              {replyUserName}
-            </Text>
-            <Text fontFamily={textStyles.regularFont}>{replyMessage}</Text>
-          </Box>
-
-          <Box alignItems={'center'} justifyContent={'center'} flex={0.1}>
-            <Pressable onPress={() => closeReply(false)}>
-              <SimpleIcons name="close" size={hp('3%')} />
-            </Pressable>
-          </Box>
-        </HStack>
-      ) : (
         <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
           <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
             {allowIsTyping && isTyping ? (
@@ -113,8 +103,18 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
             ) : null}
           </View>
         </HStack>
-      )}
     </Animated.View>
+    {showAlsoSendInRoom&&
+    <>
+      <Divider/>
+      <View margin={2} justifyContent="center">
+        <Checkbox onChange={()=>setShowInChannel&&setShowInChannel(!showInChannel)} value='show' isChecked={showInChannel} colorScheme="green">
+          Also send to room
+        </Checkbox>
+      </View>
+    </>
+    }
+    </>
   );
 };
 

@@ -212,6 +212,7 @@ export const sendMediaMessageStanza = async (
       mainMessageContractAddress: data?.mainMessageContractAddress,
       mainMessageRoomJid: data?.mainMessageRoomJid,
       showInChannel: data?.showInChannel,
+      nftName: data?.nftName
     }),
   );
 
@@ -433,6 +434,25 @@ export const getRoomInfo = (
     {
       from: walletAddress + '@' + DOMAIN,
       id: XMPP_TYPES.roomInfo,
+      to: chat_jid,
+      type: 'get',
+    },
+    xml('query', {xmlns: 'http://jabber.org/protocol/disco#info'}),
+  );
+
+  xmpp.send(message);
+};
+
+export const getChatLinkInfo = (
+  walletAddress: string,
+  chat_jid: string,
+  xmpp: any,
+) => {
+  const message = xml(
+    'iq',
+    {
+      from: walletAddress + '@' + DOMAIN,
+      id: XMPP_TYPES.chatLinkInfo,
       to: chat_jid,
       type: 'get',
     },

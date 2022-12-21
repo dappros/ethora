@@ -11,7 +11,7 @@ import ParsedText from 'react-native-parsed-text';
 import {Linking, StyleSheet, TouchableOpacity} from 'react-native';
 import Communications from 'react-native-communications';
 import {getYoutubeMetadata} from '../../helpers/getYoutubeMetadata';
-import {getRoomInfo, retrieveOtherUserVcard} from '../../xmpp/stanzas';
+import {getChatLinkInfo, retrieveOtherUserVcard} from '../../xmpp/stanzas';
 import {useStores} from '../../stores/context';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
@@ -184,7 +184,7 @@ export const MessageText = observer((props: any) => {
     const chatJid =
       chatLink?.split('=')[1] + apiStore.xmppDomains.CONFERENCEDOMAIN;
 
-    getRoomInfo(manipulatedWalletAddress, chatJid, chatStore.xmpp);
+    getChatLinkInfo(manipulatedWalletAddress, chatJid, chatStore.xmpp);
 
     const handleChatLink = () => {
       openChatFromChatLink(
@@ -208,12 +208,12 @@ export const MessageText = observer((props: any) => {
         color={"white"}
         fontSize={hp('2%')}
         fontFamily={textStyles.boldFont}
-        >🚪➡️"{chatStore.chatLinkInfo[chatJid]}"</Text>
+        >🔗💬{chatStore.chatLinkInfo[chatJid]}</Text>
         <Text
         textAlign={"center"}
         color={"white"}
         fontSize={hp('1.3%')}
-        fontFamily={textStyles.lightFont}>(tap to go to this room)</Text>
+        fontFamily={textStyles.lightFont}>(tap to open room)</Text>
       </Button>
     );
   }
@@ -228,7 +228,14 @@ export const MessageText = observer((props: any) => {
         fontWeight={"bold"}
         fontFamily={textStyles.boldFont}
         >
-          Document
+        📄Document
+        </Text>
+        <Text
+        color={"white"}
+        fontWeight={"bold"}
+        fontFamily={textStyles.boldFont}
+        >
+        (tap to view document)
         </Text>
         <Text
         fontFamily={textStyles.regularFont}
@@ -298,12 +305,12 @@ export const MessageText = observer((props: any) => {
         color={"white"}
         fontSize={hp('2%')}
         fontFamily={textStyles.boldFont}
-        >🚪➡️{firstName + " " + lastName}</Text>
+        >🔗👤{firstName + " " + lastName}</Text>
         <Text
         textAlign={"center"}
         color={"white"}
         fontSize={hp('1.3%')}
-        fontFamily={textStyles.lightFont}>(tap to view this profile)</Text>
+        fontFamily={textStyles.lightFont}>(tap to view profile)</Text>
       </Button>
     )
   }

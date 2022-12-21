@@ -55,6 +55,7 @@ const MessageSchema = {
     attachmentId: {type: 'string', optional: true},
     wrappable: {type: 'bool', optional: true},
     nftId: {type: 'string', optional: true},
+    nftName:{type: 'string', optional:true},
     contractAddress: {type: 'string', optional: true},
     fileName: {type: 'string', optional: true},
     originalName: {type: 'string', optional: true},

@@ -380,7 +380,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const handleInputChange = t => {
     setText(t);
-    isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
+    setTimeout(()=>{
+      isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
+    },2000)
   };
 
   const renderMessageImage = (props: any) => {
@@ -397,6 +399,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       fileName,
       nftId,
       preview,
+      nftName
     } = props.currentMessage;
     let parsedWaveform = [];
     if (waveForm) {
@@ -409,6 +412,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (imageMimetypes[mimetype]) {
       return (
         <ImageMessage
+          nftName={nftName}
           nftId={nftId}
           url={image}
           size={size}
@@ -781,6 +785,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mimetype: item.nftMimetype,
       originalname: item.nftOriginalname,
       // attachmentId: item.nftId,
+      nftName: item.tokenName,
       nftId: item.nftId,
       wrappable: true,
     };

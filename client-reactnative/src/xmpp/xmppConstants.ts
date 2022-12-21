@@ -31,6 +31,7 @@ export const XMPP_TYPES = {
   roomConfig: 'roomConfig',
   botStanza: 'botStanza',
   roomInfo: 'roomInfo',
+  chatLinkInfo: 'chatLinkInfo',
   paginatedArchive: 'paginatedArchive',
   getBlackList: 'blackList',
   addToBlackList: 'addToBlackList',

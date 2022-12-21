@@ -160,8 +160,18 @@ export const NftListItem = (props: NftListItemProps) => {
             )}
           </View>
           <TouchableWithoutFeedback onPress={onClick} style={{height: '100%'}}>
-            <View>
+            <View style={{alignItems:"flex-start", paddingLeft:20}}>
               <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
+              {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+          <HStack justifyContent={'flex-end'} alignItems={'center'} marginRight={2}>
+            <Button
+              loading={false}
+              onPress={onGetCollectionPress}
+              title={'Get'}
+              // style={{height: 50}}
+            />
+          </HStack>
+        )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -175,24 +185,16 @@ export const NftListItem = (props: NftListItemProps) => {
             item.traits.map((trait, i) => {
               return <NfmtTag tag={trait} key={item} />;
             })}
+            
         </VStack>
-        {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
-          <HStack justifyContent={'flex-end'} alignItems={'center'} marginRight={2}>
-            <Button
-              loading={false}
-              onPress={onGetCollectionPress}
-              title={'Get'}
-              style={{height: 50}}
-            />
-          </HStack>
-        )}
+
         <TouchableWithoutFeedback onPress={onClick}>
           <View
             style={[
               styles.itemCount,
               {minWidth: item.isCollection ? '25%' : '12%'},
             ]}>
-            <View style={{alignItems: 'flex-start'}}>
+            <View style={{alignItems: 'flex-start', justifyContent:"center"}}>
               <Text style={{color: 'black'}}>
                 <Text
                   style={{
@@ -206,20 +208,28 @@ export const NftListItem = (props: NftListItemProps) => {
                 /{totalAssets}
               </Text>
               {item.isCollection && (
-                <Text style={{color: 'black'}}>
+                <View style={{alignItems:"center",justifyContent:"flex-start", flexDirection:"row"}}>
+                  <>
                   <Image
                     source={coinImagePath}
                     resizeMode={'contain'}
                     style={styles.tokenIconStyle}
                   />
+                  <Text style={{color:'black'}}>
                   {Math.min(...item.costs)} -{' '}
+                  </Text>
+                  </>
+                  <>
                   <Image
                     source={coinImagePath}
                     resizeMode={'contain'}
                     style={styles.tokenIconStyle}
                   />
-                  {Math.max(...item.costs)}
-                </Text>
+                  <Text style={{color:'black'}}>
+                    {Math.max(...item.costs)}
+                  </Text>
+                  </>
+                </View>
               )}
             </View>
           </View>
@@ -267,7 +277,6 @@ const styles = StyleSheet.create({
     fontFamily: textStyles.regularFont,
     fontSize: hp('2.2%'),
     color: '#000000',
-    marginLeft: 20,
     // alignSelf: 'left'
   },
   itemCount: {
