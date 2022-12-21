@@ -268,7 +268,11 @@ export class ChatStore {
     };
     this.roomList?.forEach(item => {
       const splitedJid = item?.jid?.split('@')[0];
-      if (item.participants < 3 && !defaultChats[splitedJid]) {
+      if (
+        item.participants < 3 &&
+        !defaultChats[splitedJid] &&
+        !this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
         notificationsCount[ROOM_KEYS.private] +=
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
@@ -281,7 +285,11 @@ export class ChatStore {
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
 
-      if (item.participants > 2 && !defaultChats[splitedJid]) {
+      if (
+        item.participants > 2 &&
+        !defaultChats[splitedJid] &&
+        !this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
         notificationsCount[ROOM_KEYS.groups] +=
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
@@ -495,7 +503,7 @@ export class ChatStore {
         });
       }
 
-      if(stanza.attrs.id === XMPP_TYPES.chatLinkInfo){
+      if (stanza.attrs.id === XMPP_TYPES.chatLinkInfo) {
         runInAction(() => {
           this.chatLinkInfo[stanza.attrs.from] =
             stanza.children[0].children[0].attrs.name;
@@ -586,8 +594,8 @@ export class ChatStore {
             if (item.name === 'URL') {
               profilePhoto = item.children[0];
             }
-            if(item.name === 'FN') {
-              fullName = item.children[0]
+            if (item.name === 'FN') {
+              fullName = item.children[0];
             }
           });
           this.stores.loginStore.updateUserPhotoAndDescription(
@@ -595,9 +603,7 @@ export class ChatStore {
             profileDescription,
           );
 
-          this.stores.loginStore.updateUserName(
-            fullName
-          );
+          this.stores.loginStore.updateUserName(fullName);
         }
       }
 
