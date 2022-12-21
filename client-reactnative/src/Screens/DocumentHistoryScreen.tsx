@@ -27,6 +27,7 @@ import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {showError} from '../components/Toast/toast';
 import {DeleteDialog} from '../components/Modals/DeleteDialog';
+import {ROUTES} from '../constants/routes';
 
 interface DocumentHistoryScreenProps {
   route: {params: {item: IDocument; userWalletAddress: string}};
@@ -39,7 +40,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 }) => {
   const {item, userWalletAddress} = route.params;
 
-  const {apiStore, loginStore} = useStores();
+  const {apiStore, loginStore, walletStore} = useStores();
 
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [itemTransactions, setItemTransactions] = useState<any>([]);
@@ -119,7 +120,8 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
         apiStore.defaultUrl + '/docs/' + item._id,
         loginStore.userToken,
       );
-      console.log(res.data);
+      await walletStore.getDocuments(loginStore.initialData.walletAddress);
+      navigation.navigate(ROUTES.PROFILE);
     } catch (error) {
       console.log(error.response);
       showError('Error', 'Cannot delete document');
