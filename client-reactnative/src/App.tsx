@@ -11,6 +11,7 @@ import WalletConnectProvider, {
   useWalletConnect,
 } from '@walletconnect/react-native-dapp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { withIAPContext } from 'react-native-iap';
 const App = () => {
   React.useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -42,4 +43,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default withIAPContext(App);

@@ -11,6 +11,8 @@ import {Button} from '../components/Button';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {useNavigation} from '@react-navigation/native';
 import {HStack} from 'native-base';
+import {useIAP} from 'react-native-iap';
+import * as RNIap from 'react-native-iap';
 
 const products = [
   {name: '1k', value: 1, id: 'com.1'},
@@ -40,7 +42,7 @@ const BuyCoinsItem = ({
         <Text style={{fontSize: hp('3%'), color: 'black'}}>{balance}</Text>
       </HStack>
       <Button
-        title={buttonTitle}
+        title={buttonTitle.toString()}
         style={styles.submitButton}
         onPress={onPress}
       />
@@ -52,6 +54,35 @@ export interface ICoinPurchaseScreen {}
 
 export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
   const navigation = useNavigation();
+  const {
+    connected,
+    promotedProductsIOS,
+    subscriptions,
+    purchaseHistories,
+    availablePurchases,
+    currentPurchase,
+    currentPurchaseError,
+    finishTransaction,
+    getProducts,
+    getSubscriptions,
+    getAvailablePurchases,
+    getPurchaseHistories,
+    requestPurchase,
+    initConnectionError
+  } = useIAP();
+  console.log(initConnectionError)
+  const requestCoinPurchase = async () => {
+    console.log(connected)
+    try {
+      const transaction = await requestPurchase({
+        sku: 'com.hablar.buycoins_25',
+        skus: ['com.hablar.buycoins_25']
+      });
+      console.log(transaction)
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <SafeAreaView>
       <SecondaryHeader title={'Buy Coins'} />
@@ -82,7 +113,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
             <BuyCoinsItem
               balance={item.name}
               buttonTitle={'$' + item.value}
-              onPress={() => {}}
+              onPress={requestCoinPurchase}
             />
           ))}
         </View>

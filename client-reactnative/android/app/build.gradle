@@ -146,9 +146,10 @@ packagingOptions {
         applicationId "com.ethora"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
+        versionCode 9
         versionName "22.12"
         missingDimensionStrategy 'react-native-camera', 'general'
+        missingDimensionStrategy "store", "play"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -240,10 +241,10 @@ packagingOptions {
             keyPassword 'android'
         }
          release {
-            storeFile file('release.keystore')
-            storePassword 'android'
-            keyAlias 'androidreleasekey'
-            keyPassword 'android'
+            storeFile file('ethoraAndroidKeystore.jks')
+            storePassword 'dapprosplatform'
+            keyAlias 'Ethora'
+            keyPassword 'dapprosplatform'
         }
     }
     buildTypes {
@@ -253,7 +254,7 @@ packagingOptions {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
