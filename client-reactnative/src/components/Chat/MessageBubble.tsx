@@ -422,12 +422,14 @@ const Bubble = observer((props:BubbleProps)=> {
               }}
             />:null
           }
-                <Text
+        {!currentMessage.mainMessageImagePreview&&
+        <Text
         fontSize={hp('1.5%')}
         fontFamily={textStyles.mediumFont}
         >
           {currentMessage.mainMessageText}
         </Text>
+        }
         <Text color={"blue.100"}>
           {currentMessage.showInChannel}
         </Text>
