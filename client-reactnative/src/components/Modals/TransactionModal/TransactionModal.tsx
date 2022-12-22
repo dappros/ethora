@@ -276,7 +276,7 @@ const TransactionModal = (props: TransactionModalProps) => {
 
     if (selectedItem.balance) {
       //   this.setState({tokenState: {type: 'sent', amnt: amt}});
-      setTokenState({type: 'sent', amnt: amountToSend});
+      // setTokenState({type: 'sent', amnt: amountToSend});
 
       // await this.props.transferTokens(
       //   bodyData,
@@ -494,18 +494,19 @@ const TransactionModal = (props: TransactionModalProps) => {
       return (
         <View>
           <Modal
-            onBackdropPress={() => setDisplayItems(false)}
+            onBackdropPress={() => {setDisplayItems(false) 
+              clearState()}}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
+            style={{justifyContent:"center", alignItems:"center"}}
             onBackButtonPress={closeModal}
             isVisible={displayItems}>
-            <View style={[styles.centeredView]}>
               <View
                 style={[
                   {
                     backgroundColor: 'white',
-                    height: hp('50%'),
-                    width: wp('100%'),
+                    height: hp('40%'),
+                    width: wp('90%'),
                     padding: 0,
                     margin: 0,
                     paddingTop: 7,
@@ -519,7 +520,6 @@ const TransactionModal = (props: TransactionModalProps) => {
                   {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
                 </View>
               </View>
-            </View>
           </Modal>
         </View>
       );

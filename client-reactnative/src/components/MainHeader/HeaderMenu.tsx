@@ -30,7 +30,7 @@ export const HeaderMenu = () => {
   const AccountMenuItems = [
     {value: ROUTES.PROFILE, label: 'My profile', visible: true},
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-    {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
+    // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
     {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
   ];
 

@@ -228,18 +228,18 @@ export const MessageText = observer((props: any) => {
         fontWeight={"bold"}
         fontFamily={textStyles.boldFont}
         >
-        📄Document
+        🔗📄Document
         </Text>
         <Text
         color={"white"}
-        fontWeight={"bold"}
-        fontFamily={textStyles.boldFont}
+        fontSize={hp('1.3%')}
+        fontFamily={textStyles.lightFont}
         >
         (tap to view document)
         </Text>
-        <Text
+        {/* <Text
         fontFamily={textStyles.regularFont}
-        >{props.currentMessage.text}</Text>
+        >{props.currentMessage.text}</Text> */}
         <ParsedText
         style={[
           styles[props.position].text,
