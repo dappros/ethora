@@ -269,8 +269,8 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
       <DeleteDialog
         loading={loading}
         onDeletePress={deleteDocument}
-        title={'Do you really want to delete this document'}
-        description={'You cannot discard this changes.'}
+        title={'Do you really want to delete this document?'}
+        description={'Note: this action is irreversible.'}
         onClose={() => setDeleteModalOpen(false)}
         open={deleteModalOpen}
       />

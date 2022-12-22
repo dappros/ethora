@@ -117,11 +117,11 @@ export const NftTransactionItem = (props: TransactionListProps) => {
           justifyContent={'space-around'}
           alignItems={'center'}>
           <Box style={{width: wp('30%')}}>
-            <Text fontFamily={textStyles.boldFont}>
+            <Text fontFamily={textStyles.boldFont}  fontSize={hp('1.46%')}>
               {value + `🖼️ (of ${currentTotal || nftTotal || ''} total)`}
             </Text>
           </Box>
-          <Text fontSize={hp('1.4%')}>{'NFTs minted 🔗 by'}</Text>
+          <Text fontSize={hp('1.4%')}>{'NFTs purchased 🔗 by'}</Text>
         </HStack>
       );
     }

@@ -193,6 +193,12 @@ const defaultChats = {
     stickyOrder: false,
     removable: false,
   },
+  dc635d74fb77f53701d48899d86175c3a62a3e8a2a76e9f5ea0e9a3918cf6152: {
+    name: 'NFT Factory',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  }
 };
 export const defaultMetaRoom = {
   name: 'Agora (Start here) 🇬🇧🏛️👋💬',

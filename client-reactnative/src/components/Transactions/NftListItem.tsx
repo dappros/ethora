@@ -39,6 +39,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
 import {botTypes} from '../../constants/botTypes';
 import {botStanza} from '../../xmpp/stanzas';
+import {formatBigNumber} from '../../helpers/formatBigNumber';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -160,18 +161,22 @@ export const NftListItem = (props: NftListItemProps) => {
             )}
           </View>
           <TouchableWithoutFeedback onPress={onClick} style={{height: '100%'}}>
-            <View style={{alignItems:"flex-start", paddingLeft:20}}>
+            <View style={{alignItems: 'flex-start', paddingLeft: 20}}>
               <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
-              {item.isCollection && route.name === ROUTES.OTHERUSERPROFILESCREEN && (
-          <HStack justifyContent={'flex-end'} alignItems={'center'} marginRight={2}>
-            <Button
-              loading={false}
-              onPress={onGetCollectionPress}
-              title={'Get'}
-              // style={{height: 50}}
-            />
-          </HStack>
-        )}
+              {item.isCollection &&
+                route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+                  <HStack
+                    justifyContent={'flex-end'}
+                    alignItems={'center'}
+                    marginRight={2}>
+                    <Button
+                      loading={false}
+                      onPress={onGetCollectionPress}
+                      title={'Get'}
+                      // style={{height: 50}}
+                    />
+                  </HStack>
+                )}
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -185,7 +190,6 @@ export const NftListItem = (props: NftListItemProps) => {
             item.traits.map((trait, i) => {
               return <NfmtTag tag={trait} key={item} />;
             })}
-            
         </VStack>
 
         <TouchableWithoutFeedback onPress={onClick}>
@@ -194,7 +198,7 @@ export const NftListItem = (props: NftListItemProps) => {
               styles.itemCount,
               {minWidth: item.isCollection ? '25%' : '12%'},
             ]}>
-            <View style={{alignItems: 'flex-start', justifyContent:"center"}}>
+            <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
               <Text style={{color: 'black'}}>
                 <Text
                   style={{
@@ -208,26 +212,31 @@ export const NftListItem = (props: NftListItemProps) => {
                 /{totalAssets}
               </Text>
               {item.isCollection && (
-                <View style={{alignItems:"center",justifyContent:"flex-start", flexDirection:"row"}}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    flexDirection: 'row',
+                  }}>
                   <>
-                  <Image
-                    source={coinImagePath}
-                    resizeMode={'contain'}
-                    style={styles.tokenIconStyle}
-                  />
-                  <Text style={{color:'black'}}>
-                  {Math.min(...item.costs)} -{' '}
-                  </Text>
+                    <Image
+                      source={coinImagePath}
+                      resizeMode={'contain'}
+                      style={styles.tokenIconStyle}
+                    />
+                    <Text style={{color: 'black'}}>
+                      {Math.min(...item.costs)} -{' '}
+                    </Text>
                   </>
                   <>
-                  <Image
-                    source={coinImagePath}
-                    resizeMode={'contain'}
-                    style={styles.tokenIconStyle}
-                  />
-                  <Text style={{color:'black'}}>
-                    {Math.max(...item.costs)}
-                  </Text>
+                    <Image
+                      source={coinImagePath}
+                      resizeMode={'contain'}
+                      style={styles.tokenIconStyle}
+                    />
+                    <Text style={{color: 'black'}}>
+                      {formatBigNumber(Math.max(...item.costs))}
+                    </Text>
                   </>
                 </View>
               )}
