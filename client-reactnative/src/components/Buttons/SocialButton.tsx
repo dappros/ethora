@@ -31,6 +31,7 @@ const SocialButton = (props: SocialButtonProps) => {
   return (
     <Button
       onPress={onPress}
+      style={{maxHeight: 70}}
       _pressed={_pressed}
       bg={bg ? bg : undefined}
       _text={{

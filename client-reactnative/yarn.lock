@@ -4671,7 +4671,7 @@ domutils@^3.0.1:
     domelementtype "^2.3.0"
     domhandler "^5.0.1"
 
-dooboolab-welcome@^1.3.2:
+dooboolab-welcome@1.3.2, dooboolab-welcome@^1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/dooboolab-welcome/-/dooboolab-welcome-1.3.2.tgz#4928595312f0429b4ea1b485ba8767bae6acdab7"
   integrity sha512-2NbMaIIURElxEf/UAoVUFlXrO+7n/FRhLCiQlk4fkbGRh9cJ3/f8VEMPveR9m4Ug2l2Zey+UCXjd6EcBqHJ5bw==
@@ -8821,10 +8821,12 @@ react-native-hyperlink@^0.0.19:
     linkify-it "^2.2.0"
     mdurl "^1.0.0"
 
-react-native-iap@^12.4.9:
-  version "12.4.9"
-  resolved "https://registry.yarnpkg.com/react-native-iap/-/react-native-iap-12.4.9.tgz#5dcad3a5256453d2e62fce7b2dde1ecbfab43849"
-  integrity sha512-2Qghn3UV4hN5LDWfS5E+vcCJVY0tJeLlo6PJNi/8/89mzEG+areybxZL310PKLT9qm10xtkcUZeO5W7srSZU6g==
+react-native-iap@8.0.7:
+  version "8.0.7"
+  resolved "https://registry.yarnpkg.com/react-native-iap/-/react-native-iap-8.0.7.tgz#78397ad7df2decd31240d89846ab026c8f9ec4d1"
+  integrity sha512-YVZp9g01oSIZ5sT0wxjrYw0kjLUuABH0+PTTxgSUgGQewnGlO9fUIu1fixXkC8nKFS1QhGJLlbaOzVfv+9uRqA==
+  dependencies:
+    dooboolab-welcome "1.3.2"
 
 react-native-image-picker@^4.8.2:
   version "4.10.0"

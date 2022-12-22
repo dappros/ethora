@@ -206,60 +206,84 @@ const LoginScreen = observer(({navigation}) => {
 
       <Stack margin={3} space={3}>
         {facebookSignIn && (
-          <SocialButton
-            label="Sign in with Facebook"
-            color="white"
-            fontFamily={textStyles.boldFont}
-            fontSize={hp('1.47%')}
-            leftIcon={
-              <Icon
-                color={'white'}
-                size={hp('2.2%')}
-                as={AntIcon}
-                name={'facebook-square'}
-              />
-            }
-            bg="#4D6DA4"
-            onPress={() => {
-              handleFaceBookLogin(
-                apiStore.defaultUrl,
-                apiStore.defaultToken,
-                loginStore.loginUser,
-                loginStore.registerUser,
-                socialLoginType.FACEBOOK,
-              );
-            }}
-          />
+          <View>
+            <SocialButton
+              label="Sign in with Facebook"
+              color="white"
+              fontFamily={textStyles.boldFont}
+              fontSize={hp('1.47%')}
+              leftIcon={
+                <Icon
+                  color={'white'}
+                  size={hp('2.2%')}
+                  as={AntIcon}
+                  name={'facebook-square'}
+                />
+              }
+              bg="#4D6DA4"
+              onPress={() => {
+                handleFaceBookLogin(
+                  apiStore.defaultUrl,
+                  apiStore.defaultToken,
+                  loginStore.loginUser,
+                  loginStore.registerUser,
+                  socialLoginType.FACEBOOK,
+                );
+              }}
+            />
+          </View>
         )}
         {googleSignIn && (
-          <SocialButton
-            label="Sign in with Google"
-            color="black"
-            fontFamily={textStyles.boldFont}
-            fontSize={hp('1.47%')}
-            leftIcon={
-              <Icon
-                color={'#696969'}
-                size={hp('2.2%')}
-                as={AntIcon}
-                name={'google'}
-              />
-            }
-            bg="#FFFF"
-            onPress={() =>
-              handleGoogleLogin(
-                apiStore.defaultUrl,
-                apiStore.defaultToken,
-                loginStore.loginUser,
-                loginStore.registerUser,
-                socialLoginType.GOOGLE,
-              )
-            }
-          />
+          <View>
+            <SocialButton
+              label="Sign in with Google"
+              color="black"
+              fontFamily={textStyles.boldFont}
+              fontSize={hp('1.47%')}
+              leftIcon={
+                <Icon
+                  color={'#696969'}
+                  size={hp('2.2%')}
+                  as={AntIcon}
+                  name={'google'}
+                />
+              }
+              bg="#FFFF"
+              onPress={() =>
+                handleGoogleLogin(
+                  apiStore.defaultUrl,
+                  apiStore.defaultToken,
+                  loginStore.loginUser,
+                  loginStore.registerUser,
+                  socialLoginType.GOOGLE,
+                )
+              }
+            />
+          </View>
         )}
         {appleSignIn && (
+          <View>
+            <SocialButton
+              label="Sign in with Apple"
+              color="white"
+              fontFamily={textStyles.boldFont}
+              fontSize={hp('1.47%')}
+              leftIcon={
+                <Icon
+                  color={'white'}
+                  size={hp('2.2%')}
+                  as={AntIcon}
+                  name={'apple1'}
+                />
+              }
+              bg="#000000"
+              onPress={onAppleButtonPress}
+            />
+          </View>
+        )}
+        <View>
           <SocialButton
-            label="Sign in with Apple"
+            label="Sign in with MetaMask"
             color="white"
             fontFamily={textStyles.boldFont}
             fontSize={hp('1.47%')}
@@ -268,31 +292,15 @@ const LoginScreen = observer(({navigation}) => {
                 color={'white'}
                 size={hp('2.2%')}
                 as={AntIcon}
-                name={'apple1'}
+                name={'antdesign'}
               />
             }
-            bg="#000000"
-            onPress={onAppleButtonPress}
+            bg="#cc6228"
+            onPress={() => {
+              connector.connect();
+            }}
           />
-        )}
-        <SocialButton
-          label="Sign in with MetaMask"
-          color="white"
-          fontFamily={textStyles.boldFont}
-          fontSize={hp('1.47%')}
-          leftIcon={
-            <Icon
-              color={'white'}
-              size={hp('2.2%')}
-              as={AntIcon}
-              name={'antdesign'}
-            />
-          }
-          bg="#cc6228"
-          onPress={() => {
-            connector.connect();
-          }}
-        />
+        </View>
         <HStack justifyContent={'center'}>
           {regularLogin && (
             <TouchableOpacity

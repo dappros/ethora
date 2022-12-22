@@ -32,12 +32,13 @@ export const HeaderMenu = () => {
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
     // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
     {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
+    {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
+
   ];
 
   const ActionsMenuItems = [
     {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
     {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
-    {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
     {
       value: ROUTES.MINT,
       label: 'Mint items',

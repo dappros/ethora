@@ -11,15 +11,19 @@ import {Button} from '../components/Button';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {useNavigation} from '@react-navigation/native';
 import {HStack} from 'native-base';
-import {useIAP} from 'react-native-iap';
+import {requestPurchase, useIAP} from 'react-native-iap';
 import * as RNIap from 'react-native-iap';
+import {useStores} from '../stores/context';
+import {httpPost} from '../config/apiService';
 
-const products = [
-  {name: '1k', value: 1, id: 'com.1'},
-  {name: '25k', value: 25, id: 'com.25'},
+const productsList = [
+  {name: '849 Coins', value: '0.99', id: 'com.ethora.buy_1000'},
+  {name: '8,491 Coins', value: '9.99', id: 'com.ethora.buy_10000'},
 
-  {name: '50k', value: 50, id: 'com.50'},
-  {name: '100k', value: 100, id: 'com.100'},
+  {name: '21,250 Coins', value: '24.99', id: 'com.ethora.buy_25000'},
+
+  {name: '42,500 Coins', value: '49.99', id: 'com.ethora.buy_50000'},
+  {name: '85,000 Coins', value: '99.99', id: 'com.ethora.buy_100000'},
 ];
 
 const BuyCoinsItem = ({
@@ -52,8 +56,17 @@ const BuyCoinsItem = ({
 
 export interface ICoinPurchaseScreen {}
 
+const productIds = [
+  'com.ethora.buy_1000',
+  'com.ethora.buy_25000',
+  'com.ethora.buy_50000',
+  'com.ethora.buy_100000',
+];
+
+const appleKey = '426b7e2459d74037962e34f57375dfe2';
 export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
   const navigation = useNavigation();
+  const {apiStore, loginStore, walletStore} = useStores();
   const {
     connected,
     promotedProductsIOS,
@@ -67,37 +80,53 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
     getSubscriptions,
     getAvailablePurchases,
     getPurchaseHistories,
-    requestPurchase,
-    initConnectionError
+    initConnectionError,
+    products,
   } = useIAP();
-  console.log(initConnectionError)
-  const requestCoinPurchase = async () => {
-    console.log(connected)
+  const requestCoinPurchase = async (id: string) => {
     try {
-      const transaction = await requestPurchase({
-        sku: 'com.hablar.buycoins_25',
-        skus: ['com.hablar.buycoins_25']
-      });
-      console.log(transaction)
+      const transaction = await requestPurchase(id, false);
+      const res = await httpPost(
+        apiStore.defaultUrl + '/users/payments',
+        {
+          type: 'purchase',
+          transaction: transaction,
+          platform: Platform.OS,
+          password: Platform.OS === 'ios' ? appleKey : '',
+        },
+        loginStore.userToken,
+      );
+      await finishTransaction(transaction, true);
+
+      await walletStore.fetchWalletBalance(loginStore.userToken, true);
+      console.log(res.data);
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
     }
   };
+
+  useEffect(() => {
+    if (connected) {
+      getProducts(productIds);
+    }
+  }, [connected]);
   return (
-    <SafeAreaView>
+    <View>
       <SecondaryHeader title={'Buy Coins'} />
       <View style={{paddingHorizontal: 16}}>
-        <HStack>
+        <HStack style={{marginTop: 10}}>
           <Text
             style={{
               color: 'black',
               fontSize: 16,
               fontFamily: textStyles.regularFont,
             }}>
-            Here you can purchase Coins. Use Coins to unlock features such as
-            create your own "meta rooms" or purchase NFTs. You may also use
-            Coins to reward other users (use them as "likes" in respond to
-            useful chat messages etc).
+            <Text style={{fontFamily: textStyles.boldFont}}>
+              Here you can purchase Coins.{' \n'}
+            </Text>
+            Use Coins to unlock features such as create your own "meta rooms" or
+            purchase NFTs. You may also use Coins to reward other users (use
+            them as "likes" in respond to useful chat messages etc).
           </Text>
         </HStack>
 
@@ -109,16 +138,17 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
             }}>
             Please choose how many coins you would like to purchase now:
           </Text>
-          {products.map(item => (
+          {productsList.map(item => (
             <BuyCoinsItem
+              key={item.id}
               balance={item.name}
               buttonTitle={'$' + item.value}
-              onPress={requestCoinPurchase}
+              onPress={() => requestCoinPurchase(item.id)}
             />
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
