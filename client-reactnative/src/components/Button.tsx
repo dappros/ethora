@@ -4,6 +4,7 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -17,6 +18,8 @@ interface ButtonProps {
   onPress: () => void;
   title: string;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  disabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -24,17 +27,19 @@ export const Button: React.FC<ButtonProps> = ({
   onPress,
   title,
   style,
+  textStyle,
+  disabled
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={loading}
+      disabled={loading || disabled}
       style={[styles.submitButton, style]}>
       <View
         style={{
           alignItems: 'center',
         }}>
-        <Text style={styles.submitButtonText}>
+        <Text style={[styles.submitButtonText, textStyle]}>
           {loading ? <ActivityIndicator color={'white'} size={30} /> : title}
         </Text>
       </View>

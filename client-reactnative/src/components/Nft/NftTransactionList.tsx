@@ -499,7 +499,9 @@ const RenderTransactionItem = ({
     nftTotal,
     contractId,
   } = transaction;
-  console.log(transaction)
+  const token = JSON.parse(transaction.token || '{}')
+  const trait = token?.traits?.[0]?.[+contractId - 1];
+  const cost = token?.costs?.[+contractId - 1];
   return (
     <NftTransactionItem
       // historyItemTotal={}
@@ -524,6 +526,8 @@ const RenderTransactionItem = ({
       nftTotal={nftTotal}
       value={value}
       contractId={contractId}
+      trait={trait}
+      cost={cost}
     />
   );
 };

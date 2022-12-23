@@ -37,6 +37,7 @@ const SocialButton = (props: SocialButtonProps) => {
       _text={{
         color: color ? color : 'black',
       }}
+      style={{maxHeight: 70}}
       colorScheme={'black'}
       textTransform={'uppercase'}
       fontSize={fontSize ? fontSize : undefined}
