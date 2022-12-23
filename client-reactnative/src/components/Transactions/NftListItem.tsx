@@ -63,7 +63,7 @@ function truncateString(str, num) {
   return str.slice(0, num) + '...';
 }
 
-const NfmtTag = ({tag}: {tag: string}) => {
+export const NfmtTag = ({tag}: {tag: string}) => {
   return (
     <HStack
       style={{backgroundColor: NFMT_TRAITS?.[tag]?.color || 'green'}}
@@ -72,7 +72,7 @@ const NfmtTag = ({tag}: {tag: string}) => {
       marginX={1}
       paddingY={0.5}
       marginTop={0.5}>
-      <Text style={{color: 'white'}}>{tag}</Text>
+      <Text style={{color: 'white', fontSize: hp('1.46%')}}>{tag}</Text>
     </HStack>
   );
 };

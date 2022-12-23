@@ -15,6 +15,9 @@ import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {TransactionsListitemDate} from './TransactionsListItemDate';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {NfmtTag} from './NftListItem';
+import {formatBigNumber} from '../../helpers/formatBigNumber';
+import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
 
 interface TransactionListProps {
   showDate: string;
@@ -27,7 +30,7 @@ interface TransactionListProps {
   transactionAmount: number;
   senderBalance: number;
   receiverBalance: number;
-
+  value: string;
   image: string;
   timestamp: string;
   transactionHash: string;
@@ -40,6 +43,8 @@ interface TransactionListProps {
   nftTotal: string;
   tokenName: string;
   contractId?: string;
+  trait?: string;
+  cost?: string;
 }
 
 const UserBlock = ({name, balance, total}) => {
@@ -82,46 +87,68 @@ const UserBlock = ({name, balance, total}) => {
 };
 
 const tokenTypes = {creation: 'Token Creation', mint: 'Mint'};
-export const NftTransactionItem = (props: TransactionListProps) => {
-  const {
-    transactionReceiver,
-    transactionSender,
-    transactionAmount,
-    showDate,
-    formattedDate,
-    blockNumber,
-    timestamp,
-    transactionHash,
-    senderName,
-    receiverName,
-    from,
-    to,
-    value,
-    type,
-    tokenName,
-    senderBalance,
-    receiverBalance,
-    nftTotal,
-    contractId,
-  } = props;
+export const NftTransactionItem: React.FC<TransactionListProps> = ({
+  transactionReceiver,
+  transactionSender,
+  transactionAmount,
+  showDate,
+  formattedDate,
+  blockNumber,
+  timestamp,
+  transactionHash,
+  senderName,
+  receiverName,
+  from,
+  to,
+  value,
+  type,
+  tokenName,
+  senderBalance,
+  receiverBalance,
+  nftTotal,
+  contractId,
+  trait,
+  cost,
+}) => {
   const [expanded, setExpanded] = useState(false);
-
+  // const parsedToken = JSON.parse(token);
   const renderTokenTypeName = () => {
     if (type === tokenTypes.mint) {
       const allTotals = nftTotal ? nftTotal.split(',') : [];
 
       const currentTotal = allTotals[+contractId - 1];
+
       return (
         <HStack
           style={{width: wp('60%'), marginRight: 'auto'}}
           justifyContent={'space-around'}
           alignItems={'center'}>
-          <Box style={{width: wp('30%')}}>
-            <Text fontFamily={textStyles.boldFont}  fontSize={hp('1.46%')}>
-              {value + `🖼️ (of ${currentTotal || nftTotal || ''} total)`}
+          <HStack style={{width: wp('30%')}} alignItems={'center'}>
+            <Text fontFamily={textStyles.boldFont} fontSize={hp('1.46%')}>
+              {value}
             </Text>
-          </Box>
-          <Text fontSize={hp('1.4%')}>{'NFTs purchased 🔗 by'}</Text>
+            {!!trait && <NfmtTag tag={trait} />}
+            <Text fontSize={hp('1.46%')}>
+              (of {currentTotal || nftTotal || ''} total)
+            </Text>
+          </HStack>
+          <HStack style={{width: wp('20%')}} alignItems={'center'}>
+            {cost ? (
+              <Text fontSize={hp('1.46%')}>
+                purchased for{' '}
+                {formatBigNumber(Math.round(weiToNormalUnits(+cost)))}{' '}
+                <Image
+                  alt="coin icon"
+                  style={{width: 12, height: 12}}
+                  source={coinImagePath}
+                  resizeMode={'cover'}
+                />{' '}
+                by
+              </Text>
+            ) : (
+              <Text fontSize={hp('1.46%')}>NFTs minted by</Text>
+            )}
+          </HStack>
         </HStack>
       );
     }
