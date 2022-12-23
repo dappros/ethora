@@ -32,6 +32,7 @@ import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
 import UploadDocumentsScreen from '../Screens/UploadDocumentsScreen';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
 import {CoinPurchaseScreen} from '../Screens/CoinPurchaseScreen';
+import { AuthenticationScreen } from '../Screens/Authentication';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -320,6 +321,13 @@ export const HomeStackScreen = observer(() => {
       <HomeStack.Screen
         name={ROUTES.COINPURCHASESCREEN}
         component={CoinPurchaseScreen}
+        options={() => ({
+          header: ({navigation}) => <MainHeader />,
+        })}
+      />
+        <HomeStack.Screen
+        name={ROUTES.AUTHENTICATIONSCREEN}
+        component={AuthenticationScreen}
         options={() => ({
           header: ({navigation}) => <MainHeader />,
         })}

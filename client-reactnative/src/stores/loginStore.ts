@@ -29,6 +29,7 @@ export interface InitialDataProps {
   referrerId: string;
   isProfileOpen: boolean;
   isAssetsOpen: boolean;
+  email: string;
 }
 export class LoginStore {
   isFetching: boolean = false;
@@ -49,6 +50,7 @@ export class LoginStore {
     referrerId: '',
     isProfileOpen: false,
     isAssetsOpen: false,
+    email: '',
   };
   userDescription: string = '';
   userAvatar: string = '';
@@ -108,6 +110,7 @@ export class LoginStore {
         desc: '',
         xmppPassword: '',
         xmppUsername: '',
+        email: '',
       };
       this.userDescription = '';
       this.userAvatar = '';
@@ -155,11 +158,11 @@ export class LoginStore {
     });
   }
 
-  updateUserName(name:string){
-    runInAction(()=>{
+  updateUserName(name: string) {
+    runInAction(() => {
       this.initialData.firstName = name.split(' ')[0];
       this.initialData.lastName = name.split(' ')[1];
-    })
+    });
   }
 
   setOtherUserVcard(data: any) {
@@ -286,7 +289,9 @@ export class LoginStore {
       _id,
       isProfileOpen,
       isAssetsOpen,
+      email,
     } = response.data.user;
+    console.log(email);
 
     if (!lastName) {
       lastName = firstName.split(' ')[1];
@@ -310,6 +315,7 @@ export class LoginStore {
       isProfileOpen: isProfileOpen,
       isAssetsOpen: isAssetsOpen,
       desc: '',
+      email,
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {

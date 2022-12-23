@@ -52,6 +52,7 @@ export const HeaderMenu = () => {
 
   const SystemMenuItems = [
     {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
+    {value: ROUTES.AUTHENTICATIONSCREEN, label: 'Authentication', visible: true},
 
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
     {value: ROUTES.LOGOUT, label: 'Sign out', visible: true},
