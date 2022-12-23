@@ -15,6 +15,7 @@ import {requestPurchase, useIAP} from 'react-native-iap';
 import * as RNIap from 'react-native-iap';
 import {useStores} from '../stores/context';
 import {httpPost} from '../config/apiService';
+import { showError, showSuccess } from '../components/Toast/toast';
 
 const productsList = [
   {name: '849 Coins', value: '0.99', id: 'com.ethora.buy_1000'},
@@ -86,6 +87,8 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
   const requestCoinPurchase = async (id: string) => {
     try {
       const transaction = await requestPurchase(id, false);
+     
+      await finishTransaction(transaction, true);
       const res = await httpPost(
         apiStore.defaultUrl + '/users/payments',
         {
@@ -96,11 +99,11 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
         },
         loginStore.userToken,
       );
-      await finishTransaction(transaction, true);
-
       await walletStore.fetchWalletBalance(loginStore.userToken, true);
       console.log(res.data);
+      showSuccess('Succes', 'Please, check your balance')
     } catch (err) {
+      showError('Error', 'Please try again')
       console.log(err.response);
     }
   };
