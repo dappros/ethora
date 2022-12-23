@@ -9,19 +9,20 @@ import {DeleteDialog} from '../components/Modals/DeleteDialog';
 import {ScanQrModal} from '../components/Modals/ScanQrModal';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import {showError, showSuccess} from '../components/Toast/toast';
-import {httpPost} from '../config/apiService';
+import {httpDelete, httpGet, httpPost} from '../config/apiService';
 import {isAddress} from '../helpers/isAddress';
 import {useStores} from '../stores/context';
 export interface IAuthentication {}
 
 const getMail = (email: string) => {
-  if(!email) return ''
+  if (!email) return '';
   const splittedEmail = email.split('@');
   if (splittedEmail.length) {
     return splittedEmail[1].split('.')[0];
   }
   return '';
 };
+const walletRoute = '/wallets/ext-wallet/';
 
 export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const {loginStore, apiStore} = useStores();
@@ -30,6 +31,8 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const [showRemoveAccount, setShowRemoveAccount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [account, setAccount] = useState('');
+  const [accountVerified, setAccountVerified] = useState(false);
+
   const onMetamaskPress = () => {
     connector.connect({chainId: 1});
   };
@@ -39,8 +42,27 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const onRemovePress = () => {
     setShowRemoveAccount(true);
   };
+
+  const getAddress = async () => {
+    setLoading(true);
+    try {
+      const res = await httpGet(
+        apiStore.defaultUrl +
+          walletRoute +
+          loginStore.initialData.walletAddress,
+        loginStore.userToken,
+      );
+      if (res.data.result) {
+        setAccount(res.data.result.address);
+        setAccountVerified(res.data.result?.verified);
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
+    setLoading(false);
+  };
   const onQRScan = async (e: any) => {
-    const data = e.data.split(':')[1].split('@')[0];
+    const data = e.data?.split(':')[1]?.split('@')[0];
     if (!isAddress(data)) {
       showError('Error', 'This doesnt look like a valid Ethereum address');
       setShowQrScan(false);
@@ -48,14 +70,23 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     }
     setAccount(data);
     await updateAddress(data);
-  };
 
+  };
 
   const removeAddress = async () => {
     setLoading(true);
     try {
+      const res = await httpDelete(
+        apiStore.defaultUrl + walletRoute + account,
+        loginStore.userToken,
+      );
+      console.log(res.data);
+
       showSuccess('Success', 'Your Mainnet address was successfully removed.');
+      setAccountVerified(false);
+      setAccount('');
     } catch (error) {
+      console.log(error);
       showError('Error', 'Something went wrong, please try again');
     }
     setLoading(false);
@@ -65,30 +96,33 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const updateAddress = async (address?: string) => {
     try {
       const res = await httpPost(
-        apiStore.defaultUrl + '/addAddress',
+        apiStore.defaultUrl + walletRoute,
         {
           address: address || account,
         },
         loginStore.userToken,
       );
-      showSuccess('Success', 'Address added');
+      console.log(res.data);
+      setAccount(res.data.data.address);
+
+      showSuccess('Success', 'Your address was successfully added.');
     } catch (error) {
+      console.log(error);
       showError('Error', 'Something went wrong, please try again');
     }
   };
 
   useEffect(() => {
+    getAddress();
     return () => {
-      //   connector.killSession();
+      connector.killSession();
     };
   }, []);
   useEffect(() => {
     if (connector.accounts.length) {
-      setAccount(connector.accounts[0]);
       updateAddress(connector.accounts[0]);
     }
   }, [connector.accounts]);
-
   const renderConnected = () => {
     if (account) {
       return (
@@ -118,21 +152,25 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={{marginTop: 20}}>
-            <Text style={styles.description}>
-              Use button below if you need to remove your Mainnet address
-              association from your Ethora account.
-            </Text>
-          </View>
-          <View style={styles.buttonBlock}>
-            <View style={{width: '50%'}}>
-              <Button
-                onPress={onRemovePress}
-                title="Remove"
-                style={{backgroundColor: 'red', marginBottom: 10}}
-              />
-            </View>
-          </View>
+          {!accountVerified && (
+            <>
+              <View style={{marginTop: 20}}>
+                <Text style={styles.description}>
+                  Use button below if you need to remove your Mainnet address
+                  association from your Ethora account.
+                </Text>
+              </View>
+              <View style={styles.buttonBlock}>
+                <View style={{width: '50%'}}>
+                  <Button
+                    onPress={onRemovePress}
+                    title="Remove"
+                    style={{backgroundColor: 'red', marginBottom: 10}}
+                  />
+                </View>
+              </View>
+            </>
+          )}
         </>
       );
     }
@@ -149,11 +187,13 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
         <View style={styles.buttonBlock}>
           <View style={{width: '50%'}}>
             <Button
+              loading={loading}
               onPress={onMetamaskPress}
               title="Confirm with metamask"
               style={{backgroundColor: '#cc6228', marginBottom: 10}}
             />
             <Button
+              loading={loading}
               onPress={onQRPress}
               title="QR Scan"
               style={{backgroundColor: 'lightgrey'}}

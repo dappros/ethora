@@ -19,6 +19,7 @@ interface ButtonProps {
   title: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  disabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -27,11 +28,12 @@ export const Button: React.FC<ButtonProps> = ({
   title,
   style,
   textStyle,
+  disabled
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={loading}
+      disabled={loading || disabled}
       style={[styles.submitButton, style]}>
       <View
         style={{
