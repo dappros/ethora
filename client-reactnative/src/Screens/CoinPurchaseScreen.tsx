@@ -59,6 +59,7 @@ export interface ICoinPurchaseScreen {}
 
 const productIds = [
   'com.ethora.buy_1000',
+  'com.ethora.buy_10000',
   'com.ethora.buy_25000',
   'com.ethora.buy_50000',
   'com.ethora.buy_100000',
