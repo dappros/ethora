@@ -227,7 +227,7 @@ const NftItemHistoryScreen = (props: any) => {
 
               <View />
               {loginStore.initialData.walletAddress === userWalletAddress && (
-                <HStack w={'full'} justifyContent={'flex-end'} mt={1}>
+                <HStack w={'full'} justifyContent={'center'} mt={5}>
                   <TouchableOpacity
                     onPress={() => setDeleteModalOpen(true)}
                     style={styles.actionButton}>

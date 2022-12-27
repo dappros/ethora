@@ -70,7 +70,6 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     }
     setAccount(data);
     await updateAddress(data);
-
   };
 
   const removeAddress = async () => {
@@ -189,7 +188,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
             <Button
               loading={loading}
               onPress={onMetamaskPress}
-              title="Confirm with metamask"
+              title="Read from Metamask"
               style={{backgroundColor: '#cc6228', marginBottom: 10}}
             />
             <Button
@@ -232,7 +231,11 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
             <Text style={[styles.boldFont, {textTransform: 'capitalize'}]}>
               {getMail(loginStore.initialData.email)}
             </Text>{' '}
-            ({loginStore.initialData.email ?? loginStore.initialData.username})
+            (
+            {loginStore.initialData.email ??
+              loginStore.initialData.username ??
+              loginStore.initialData.walletAddress}
+            )
           </Text>
           <View style={{marginTop: 20}}>
             <Text style={styles.description}>

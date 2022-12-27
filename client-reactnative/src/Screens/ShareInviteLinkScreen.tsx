@@ -1,12 +1,24 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity, View, Platform} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Platform,
+  Image,
+} from 'react-native';
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {coinReplacedSymbol, commonColors, textStyles} from '../../docs/config';
+import {
+  coinImagePath,
+  coinReplacedSymbol,
+  commonColors,
+  textStyles,
+} from '../../docs/config';
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
@@ -30,9 +42,12 @@ export const ShareInviteLink: React.FC<ShareInviteLinkProps> = ({
           />
         </View>
         <View style={styles.description}>
-          <Text style={{textAlign: 'center'}}>
-            Gift friends 25 {coinReplacedSymbol} and receive 25 {coinReplacedSymbol}. Send friends invite with
-            your personal invitation code
+          <Text style={{textAlign: 'center', color: 'black'}}>
+            Gift friends 25
+            <Image style={{width: 16, height: 16}} source={coinImagePath} /> and
+            receive 25
+            <Image style={{width: 16, height: 16}} source={coinImagePath} />.
+            Send friends invite with your personal invitation code
           </Text>
         </View>
 

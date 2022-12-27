@@ -73,7 +73,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Ethora wants to access your camera to scan qr codes.</string>
+	<string>Allowing access to the camera lets you take and send photos and videos and use other special features.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
