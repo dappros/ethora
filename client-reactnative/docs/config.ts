@@ -198,7 +198,7 @@ const defaultChats = {
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
-  }
+  },
 };
 export const defaultMetaRoom = {
   name: 'Agora (Start here) 🇬🇧🏛️👋💬',
@@ -739,18 +739,6 @@ const logoWidth: string = '70%'; //represents the percentage of the width of dev
 const logoHeight = 70; //represents the percetage of the height of the device
 
 const defaultBotsList = [
-  {
-    name: 'Atom Bot',
-    id: '0x5_a_f0660e5c_eff1_ce8599d_e06_c40270e36_a_b68bc4',
-    jid: '0x5_a_f0660e5c_eff1_ce8599d_e06_c40270e36_a_b68bc4',
-    walletAddress: '0x5AF0660e5cEff1Ce8599dE06C40270e36AB68bc4',
-  },
-  {
-    name: 'Atom Bot Dev',
-    jid: '0xd891a_c12_d8_b51947548844_ec4f287d_c2_b267cae6',
-    id: '0xd891a_c12_d8_b51947548844_ec4f287d_c2_b267cae6',
-    walletAddress: '0xd891aC12D8B51947548844Ec4f287dC2B267cae6',
-  },
   {
     name: 'Merchant Bot',
     id: '0x9_b8_d0cd_c_dba8ef_e145de2_e5986d1b455_c07_b78c0',
