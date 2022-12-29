@@ -15,7 +15,7 @@ import {requestPurchase, useIAP} from 'react-native-iap';
 import * as RNIap from 'react-native-iap';
 import {useStores} from '../stores/context';
 import {httpPost} from '../config/apiService';
-import { showError, showSuccess } from '../components/Toast/toast';
+import {showError, showSuccess} from '../components/Toast/toast';
 
 const productsList = [
   {name: '849 Coins', value: '0.99', id: 'com.ethora.buy_1000'},
@@ -88,7 +88,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
   const requestCoinPurchase = async (id: string) => {
     try {
       const transaction = await requestPurchase(id, false);
-     
+
       await finishTransaction(transaction, true);
       const res = await httpPost(
         apiStore.defaultUrl + '/users/payments',
@@ -102,9 +102,9 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
       );
       await walletStore.fetchWalletBalance(loginStore.userToken, true);
       console.log(res.data);
-      showSuccess('Succes', 'Please, check your balance')
+      showSuccess('Succes', 'Please, check your balance');
     } catch (err) {
-      showError('Error', 'Please try again')
+      showError('Error', 'Please try again');
       console.log(err.response);
     }
   };
@@ -130,7 +130,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
             </Text>
             Use Coins to unlock features such as create your own "meta rooms" or
             purchase NFTs. You may also use Coins to reward other users (use
-            them as "likes" in respond to useful chat messages etc).
+            them as "likes" in response to useful chat messages etc).
           </Text>
         </HStack>
 
