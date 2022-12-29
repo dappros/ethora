@@ -33,7 +33,7 @@ export const DeleteDialog = ({
           <AlertDialog.Header>{title}</AlertDialog.Header>
           <AlertDialog.Body>{description}</AlertDialog.Body>
           <AlertDialog.Footer>
-            <NativeButton.Group space={2}>
+            <NativeButton.Group space={2} justifyContent={'center'} alignItems={'center'}>
               <NativeButton
                 variant="unstyled"
                 colorScheme="coolGray"

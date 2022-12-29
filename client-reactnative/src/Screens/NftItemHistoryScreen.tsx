@@ -332,11 +332,11 @@ const NftItemHistoryScreen = (props: any) => {
         loading={loading}
         onDeletePress={deleteItem}
         title={
-          'Do you really want to delete \n(burn) this' + item.isCollection
-            ? 'NFT Collection?'
-            : 'NFT?'
+          item.isCollection
+            ? 'Do you really want to delete \n(burn) this NFT Collection?'
+            : 'Do you really want to delete \n(burn) this NFT?'
         }
-        description={'You cannot discard this changes.'}
+        description={'You will not be able to undo this.'}
         onClose={() => setDeleteModalOpen(false)}
         open={deleteModalOpen}
         deleteButtonTitle={'Yes, burn 🔥'}
