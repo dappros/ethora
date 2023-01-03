@@ -17,13 +17,12 @@ import { UploadDocument } from "./UploadDocument/UploadDocument";
 import { BrowserRouter } from "react-router-dom";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
-import { Alert, Snackbar } from "@mui/material";
-import { useSnackbar } from "../context/SnackbarContext";
 import Privacy from "./Privacy/Privacy";
 import { NewChat } from "./NewChat/NewChat";
+import { Snackbar } from "../componets/Snackbar";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
-const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
+const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
 const Owner = React.lazy(() => import("./Owner"));
@@ -86,7 +85,6 @@ export const Routes = () => {
 
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
-  const { snackbar, closeSnackbar } = useSnackbar();
 
   const getAcl = async () => {
     try {
@@ -160,7 +158,9 @@ export const Routes = () => {
         <Route path={"/explorer/blocks/"} component={Blocks} exact />
         <Route path={"/provenance"} component={Provenance} exact />
         <Route path={"/mint"} component={MintNft} exact />
-        {configDocuments && <Route path={"/documents/upload"} component={UploadDocument} exact />}
+        {configDocuments && (
+          <Route path={"/documents/upload"} component={UploadDocument} exact />
+        )}
 
         <Route
           path={"/explorer/transactions/:txId"}
@@ -173,19 +173,7 @@ export const Routes = () => {
           exact
         />
       </Switch>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={closeSnackbar}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbar.action}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      <Snackbar />
     </React.Suspense>
   );
 };

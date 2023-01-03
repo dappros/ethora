@@ -6,7 +6,6 @@ import { walletToUsername } from '../../xmpp';
 import { generateProfileLink } from '../../utils';
 import { CONFERENCEDOMAIN } from "../../constants";
 import { QrModal } from '../Profile/QrModal';
-import { CustomToast } from '../../componets/CustomToast';
 import { ManageTabPanel } from './ManageProfileTabPanel';
 import { AddTabPanel } from './AddProfileTabPanel';
 
@@ -109,12 +108,7 @@ export const ProfileShareTab = (props: ProfileShareTabProps) => {
             link={profileLink}
             onClose={handleCloseModal}
             />
-            <CustomToast
-            handleClose={handleCloseToast}
-            message={"Link deleted successfully"}
-            open={showToast}
-            type={"success"}
-            />
+           
         </Box>
     );
 };

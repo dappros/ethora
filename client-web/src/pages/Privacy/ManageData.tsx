@@ -1,206 +1,142 @@
-import { Box, Button, Container, Divider, Modal, Typography } from '@mui/material';
-import { useWeb3React } from '@web3-react/core';
-import * as React from 'react';
-import { useHistory } from 'react-router';
-import { CustomToast } from '../../componets/CustomToast';
-import { deleteAccountService } from '../../http';
-import { useStoreState } from '../../store';
-import xmpp from '../../xmpp';
+import { Box, Button, Typography } from "@mui/material";
+import { useWeb3React } from "@web3-react/core";
+import * as React from "react";
+import { useHistory } from "react-router";
+import { DeleteDialog } from "../../componets/DeleteDialog";
+import { useSnackbar } from "../../context/SnackbarContext";
+import { deleteAccountService, httpWithAuth } from "../../http";
+import { useStoreState } from "../../store";
+import xmpp from "../../xmpp";
 
 interface ManageDataProps {}
 
-interface DeleteDialogProps {
-    open:boolean;
-    handleClose:()=>void;
-    loading:boolean;
-    onDeletePress:()=>void
-}
-
 export const ManageData = (props: ManageDataProps) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const { showSnackbar } = useSnackbar();
+  const clearUser = useStoreState((state) => state.clearUser);
+  const user = useStoreState((state) => state.user);
 
-    const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
-    const [showSuccess, setShowSuccess] = React.useState(false);
-    const [showError, setShowError] = React.useState(false);
+  const history = useHistory();
+  const { active, deactivate } = useWeb3React();
+  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
 
-    const clearUser = useStoreState((state) => state.clearUser);
+  const deleteAccount = async () => {
+    setLoading(true);
+    try {
+      await deleteAccountService();
+      showSnackbar("success", "Account deleted successfully");
 
-    const handleOpenShowSuccess = () => setShowSuccess(true);
-    const handleCloseShowSuccess = () => setShowSuccess(false);
-    const handleOpenShowError = () => setShowError(true);
-    const handleCloseShowError = () => setShowError(false);
-    const handleCloseDeleteDialog = () => setDeleteDialogOpen(false)
+      onLogout();
+    } catch (error) {
+      console.log(error);
+      showSnackbar("error", "Something went wrong");
+    }
+    setLoading(false);
 
-    const history = useHistory();
-    const { active, deactivate } = useWeb3React();
+    setDeleteDialogOpen(false);
+  };
 
-    const deleteAccount = async () => {
-        setLoading(true);
-        try {
-          await deleteAccountService()
-          handleOpenShowSuccess()
-          onLogout()
-        } catch (error) {
-          console.log(error);
-         handleOpenShowError()
-        }
-        setLoading(false);
-    
-        setDeleteDialogOpen(false);
-    };
+  const onLogout = () => {
+    clearUser();
+    xmpp.stop();
+    if (active) {
+      deactivate();
+    }
+    history.push("/");
+  };
+  const downloadData = (data: unknown) => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download =
+      user.firstName + " " + user.lastName + " personal data.json";
+    link.click();
+    link.remove();
+  };
+  const exportData = async () => {
+    setLoading(true);
+    try {
+      const { data } = await httpWithAuth().get("/users/exportData");
+      downloadData(data);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
 
-    const onLogout = () => {
-        clearUser();
-        xmpp.stop();
-        if (active) {
-          deactivate();
-        }
-        history.push("/");
-    };
-    return (
-        <Box
-        style={{
-            display:'flex',
-            alignItems:'flex-start',
-            flexDirection:'column',
-            margin:'20px'
-        }}
-        >
-            <Box>
-                <Typography fontWeight={'bold'}>
-                Download your data
-                </Typography>
-                <Typography>
-                You own your data. Tap the button below to download a copy of your
-                data
-                </Typography>
-                <Button variant="contained">Download my data</Button>
-            </Box>
-
-            <Box
-            style={{
-                marginTop:'20px'
-            }}
-            >
-                <Typography fontWeight={'bold'}>
-                Delete your account
-                </Typography>
-                <Typography>
-                Use this only if you want to permanently delete your account &
-                data from our system.
-                </Typography>
-                <Typography
-                fontWeight={"light"}
-                fontStyle={'italic'}
-                fontSize={"12px"}
-                >
-                Note: due to the immutable nature of distributed ledger
-                technology, network nodes operated by the community may still
-                retain historical transactions generated by your account, however
-                your personally identifiable information such as your name,
-                e-mail, your key-value storage etc will be removed.
-                </Typography>
-
-                <Typography
-                fontWeight={"light"}
-                fontStyle={'italic'}
-                fontSize={"12px"}
-                >
-                Any of your digital assets will be lost.
-                </Typography>
-
-                <Button
-                color='error'
-                onClick={() =>setDeleteDialogOpen(true)}
-                variant="contained">Delete my account</Button>
-            </Box>
-            <CustomToast
-            message='Account deleted successfully'
-            open={showSuccess}
-            type='success'
-            handleClose={handleCloseShowSuccess}
-            />
-            <CustomToast
-            type='error'
-            open={showError}
-            message='Something went wrong'
-            handleClose={handleCloseShowError}
-            />
-            <DeleteDialog
-            onDeletePress={deleteAccount}
-            loading={loading}
-            handleClose={handleCloseDeleteDialog}
-            open={deleteDialogOpen}
-            />
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        flexDirection: "column",
+        margin: "20px",
+        width: "50vw",
+      }}
+    >
+      <Box sx={{width: '100%'}}>
+        <Typography fontWeight={"bold"}>Download your data</Typography>
+        <Typography>
+          You own your data. Tap the button below to download a copy of your
+          data
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            sx={{ margin: "0 auto" }}
+            disabled={loading}
+            onClick={exportData}
+            variant="contained"
+          >
+            Download my data
+          </Button>
         </Box>
-    );
-};
+      </Box>
 
-function DeleteDialog(props:DeleteDialogProps){
+      <Box
+        sx={{
+          marginTop: "20px",
+          width: '100%'
+        }}
+      >
+        <Typography fontWeight={"bold"}>Delete your account</Typography>
+        <Typography>
+          Use this only if you want to permanently delete your account & data
+          from our system.
+        </Typography>
+        <Typography fontWeight={"light"} fontStyle={"italic"} fontSize={"12px"}>
+          Note: due to the immutable nature of distributed ledger technology,
+          network nodes operated by the community may still retain historical
+          transactions generated by your account, however your personally
+          identifiable information such as your name, e-mail, your key-value
+          storage etc will be removed.
+        </Typography>
 
-    const {
-        open,
-        handleClose,
-        loading,
-        onDeletePress
-    } = props
-
-    return(
-        <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        >
-            <Box sx={style}>
-                <Typography
-                fontWeight={'bold'}
-                >
-                    Delete Account
-                </Typography>
-                <Divider
-                />
-                <Typography>
-                This will result in a complete deletion of your account and assets. Are you sure you want to proceed?
-                </Typography>
-                <Divider
-                />
-                <Box
-                style={{
-                    display:'flex',
-                    alignItems:'center',
-                    justifyContent:'flex-end',
-                    margin:'10px',
-                    marginTop:'20px'
-                }}
-                >
-                    <Button 
-                    onClick={handleClose}
-                    style={{
-                        color:'black'
-                    }} variant="text">Cancel</Button>
-                    <Button
-                    onClick={onDeletePress}
-                    disabled={loading}
-                    color='error' 
-                    variant="contained">
-                        Delete Account
-                    </Button>
-                </Box>
-            </Box>
-        </Modal>
-    )
-}
-
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+        <Typography fontWeight={"light"} fontStyle={"italic"} fontSize={"12px"}>
+          Any of your digital assets will be lost.
+        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            color="error"
+            onClick={() => setDeleteDialogOpen(true)}
+            variant="contained"
+          >
+            Delete my account
+          </Button>
+        </Box>
+      </Box>
+      <DeleteDialog
+        onDeletePress={deleteAccount}
+        loading={loading}
+        onClose={handleCloseDeleteDialog}
+        open={deleteDialogOpen}
+        title={"Delete Account"}
+        description={
+          "This will result in a complete deletion of your account and assets. Are you sure you want to proceed?"
+        }
+      />
+    </Box>
+  );
 };
