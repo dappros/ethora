@@ -131,13 +131,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const debouncedChatText = useDebounce(text, 500);
   const [onTapMessageObject, setOnTapMessageObject] = useState('');
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
+  const [showEditOption, setShowEditOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
-  const [isReply, setIsReply] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showViewThread, setShowViewThread] = useState(false);
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const {isOpen, onOpen, onClose} = useDisclose();
   const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
+
+
+  const handleSetIsEditing = (value:boolean) => {
+    setIsEditing(value)
+  }
 
   const getMetaRooms = async () => {
     const rooms = await asyncStorageGetItem('metaRooms');
@@ -504,6 +510,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const handleOnPress = (message: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
+      setShowEditOption(false);
     }
 
     if (message.isReply) {
@@ -523,6 +530,16 @@ const ChatScreen = observer(({route, navigation}: any) => {
     showToast('success', 'Info', 'Message copied', 'top');
     return onClose();
   };
+
+  const handleEdit = () => {
+    if(!onTapMessageObject.image || !onTapMessageObject.preview){
+      setIsEditing(true)
+      setText(onTapMessageObject.text);
+      giftedRef?.current?.textInput?.focus();
+    }
+    setShowEditOption(true);
+    onClose();
+  }
 
   const handleReply = (message?:any) => {
     setShowViewThread(false);
@@ -944,7 +961,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onPressAvatar={onUserAvatarPress}
           renderChatFooter={() => (
             <RenderChatFooter
-              isReply={isReply}
+              isEditing={isEditing}
+              setIsEditing={handleSetIsEditing}
+              onTapMessageObject={onTapMessageObject}
               closeReply={() => handleReply('close')}
               replyMessage={onTapMessageObject?.text}
               replyUserName={onTapMessageObject?.user?.name}
@@ -1030,11 +1049,16 @@ const ChatScreen = observer(({route, navigation}: any) => {
               View thread
             </Actionsheet.Item>:null
             }
-            {isShowDeleteOption ? (
+            {showEditOption&&
+              <Actionsheet.Item onPress={handleEdit}>
+                Edit
+              </Actionsheet.Item>
+            }
+            {isShowDeleteOption&&
               <Actionsheet.Item onPress={onClose} color="red.500">
                 Delete
               </Actionsheet.Item>
-            ) : null}
+            }
           </Actionsheet.Content>
         </Actionsheet>
         <MetaNavigation

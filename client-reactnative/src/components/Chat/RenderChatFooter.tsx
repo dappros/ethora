@@ -5,9 +5,9 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Checkbox, Divider, HStack, Text, View} from 'native-base';
+import {Box,Checkbox, Divider, HStack, Text, View} from 'native-base';
 import React, {useEffect} from 'react';
-import {Pressable, StyleSheet} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,21 +18,24 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {TypingAnimation} from 'react-native-typing-animation';
-import {textStyles} from '../../../docs/config';
-import SimpleIcons from 'react-native-vector-icons/SimpleLineIcons';
+import {commonColors, textStyles} from '../../../docs/config';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 interface RenderChatFooterProps {
   fileUploadProgress: number;
   setFileUploadProgress: any;
   allowIsTyping: boolean;
   isTyping: boolean;
   composingUsername: string;
-  isReply?: boolean;
+  isEditing?: boolean;
   replyUserName?: string;
   replyMessage?: string;
   closeReply?: any;
   showAlsoSendInRoom?:boolean;
   showInChannel?:boolean;
+  onTapMessageObject?:any
   setShowInChannel?: React.Dispatch<React.SetStateAction<boolean>>
+  setIsEditing: (value:boolean) => void;
 }
 
 const RenderChatFooter = (props: RenderChatFooterProps) => {
@@ -43,13 +46,12 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     allowIsTyping,
     isTyping,
     composingUsername,
-    isReply,
-    replyUserName,
-    replyMessage,
-    closeReply,
+    isEditing,
     showInChannel,
     showAlsoSendInRoom,
-    setShowInChannel
+    onTapMessageObject,
+    setShowInChannel,
+    setIsEditing
   } = props;
   const boxAnimation = useAnimatedStyle(() => {
     return {
@@ -59,20 +61,21 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
   useEffect(() => {
     if (!!isTyping || !!fileUploadProgress) {
       boxHeight.value = hp('5.5%');
-    } else if (!!isReply) {
+    } else if (!!isEditing) {
       boxHeight.value = hp('6%');
     } else {
       boxHeight.value = 0;
     }
 
     return () => {};
-  }, [isTyping, fileUploadProgress, isReply]);
+  }, [isTyping, fileUploadProgress, isEditing]);
 
   setTimeout(() => {
     if (fileUploadProgress === 100) {
       setFileUploadProgress(0);
     }
   }, 5000);
+
   return (
     <>
     <Animated.View style={[boxAnimation]}>
@@ -104,6 +107,45 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
           </View>
         </HStack>
     </Animated.View>
+    {
+    isEditing&&
+    <View
+    height={hp('6.1%')}
+    justifyContent={"center"}
+    bg={"white"}
+    width={wp('100%')}>
+      <HStack width={wp("100%")} alignItems={"center"}>
+        <Box alignItems={"center"}
+        flex={0.15}
+        >
+          <MaterialIcons color={commonColors.primaryColor} name='edit' size={hp('3%')}/>
+        </Box>
+        <Box alignItems={"flex-start"} 
+        flex={0.7}
+        >
+          <Text
+          color={commonColors.primaryColor}
+          fontFamily={textStyles.boldFont}
+          >
+          Edit Message
+          </Text>
+          <Text
+          numberOfLines={1}
+          >
+          {onTapMessageObject.text}
+          </Text>
+        </Box>
+        <View alignItems={"center"} 
+        flex={0.15}
+        >
+        <TouchableOpacity
+        onPress={()=>setIsEditing(false)}>
+          <MaterialIcons name="close" size={hp('3%')} />
+        </TouchableOpacity>
+        </View>
+      </HStack>
+    </View>
+    }
     {showAlsoSendInRoom&&
     <>
       <Divider/>

@@ -4,7 +4,7 @@ import React, {useEffect} from 'react';
 import {appLinkingUrl, coinsMainName} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
 import {ROUTES} from '../constants/routes';
-import ChatScreen from '../Screens/ChatExperimental';
+import ChatScreen from '../Screens/ChatScreen';
 import OtherUserProfileScreen from '../Screens/OtherUserProfileScreen';
 import {ProfileScreen} from '../Screens/ProfileScreen';
 import RoomListScreen from '../Screens/RoomListScreen';

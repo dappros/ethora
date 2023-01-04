@@ -46,5 +46,6 @@ export const XMPP_TYPES = {
   assignModerator: 'mod1',
   unAssignModerator: 'mod2',
   getBannedUserListOfRoom:'getBannedUserListOfRoom',
-  changeRoomDescription:'changeRoomDescription'
+  changeRoomDescription:'changeRoomDescription',
+  replaceMessage:'replaceMessage'
 };

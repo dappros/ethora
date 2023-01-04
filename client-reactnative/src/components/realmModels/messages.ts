@@ -94,6 +94,26 @@ export const updateTokenAmount = async (messageId, tokenAmount) => {
   }
 };
 
+export const updateMessageText = async (messageId, messageString) => {
+  try{
+    const realm = await Realm.open(databaseOptions);
+    let message = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId
+    );
+
+    if(message){
+      realm.write(()=>{
+        message.text = messageString
+      })
+    }else{
+      console.log("No message object");
+    }
+  }catch(error){
+    console.log(error);
+  }
+}
+
 export const updateNumberOfReplies = async (messageId) => {
   try{
     const realm = await Realm.open(databaseOptions);

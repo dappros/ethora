@@ -6,7 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {StyleSheet, ActivityIndicator, TouchableOpacity, Alert} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -379,15 +379,30 @@ const TransactionModal = (props: TransactionModalProps) => {
     );
     const roomJID = extraData.chatJid;
 
-    banUser(
-      roomJID,
-      senderWalletAddres,
-      bannedUserWalletAddres,
-      chatStore.xmpp,
-    );
+    Alert.alert('Ban', 'This will ban user', 
+    [
+      {
+        text: "Cancel",
+        onPress: () => {
+          clearState();
+          closeModal();
+        },
+        style: "cancel"
+      },
+      { text: "OK", onPress: () =>     {
+        banUser(
+        roomJID,
+        senderWalletAddres,
+        bannedUserWalletAddres,
+        chatStore.xmpp,
+        )
+        clearState();
+      }
+    }
+    ]
+    )
 
-    clearState();
-    closeModal();
+
   };
   const onBlackListPress = () => {
     const bannedUserWalletAddres = underscoreManipulation(
@@ -634,7 +649,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                     <Seperator />
                     <ReportAndBlockButton
                       onPress={handleBanUser}
-                      text={'Ban this user'}
+                      text={'Kick this user'}
                       style={{backgroundColor: '#a32f2b'}}
                     />
                     <Text
@@ -645,7 +660,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                         // marginTop: 5,
                         color: '#5A5A5A',
                       }}>
-                      Kick user from this room.
+                      Remove user from this room.
                     </Text>
                   </View>
                 )}

@@ -1,6 +1,8 @@
 import {
   Actionsheet,
+  AlertDialog,
   Box,
+  Button,
   Center,
   Divider,
   FlatList,
@@ -76,12 +78,17 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
 
-  const roomMemberInfo = chatStore.roomMemberInfo.filter(item => item.name !== 'none');
+  const roomMemberInfo = chatStore.roomMemberInfo.filter(item => item);
 
   const [open, setOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(0);
   const [longTapUser, setLongTapUser] = useState<longTapUserProps|{}>({})
+  const [kickUserItem, setKickUserItem] = useState<longTapUserProps|{}>({});
   const [descriptionModalVisible, setDescriptionModalVisible] = useState<boolean>(false)
+  const [isShowKickDialog, setIsShowKickDialog] = useState(false);
+
+  const handleCloseKickDialog = () => setIsShowKickDialog(false);
+  const cancelRef = React.useRef(null);
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
   const navigation = useNavigation();
@@ -222,7 +229,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
   }
 
   const handleLongTapMenu = (type:number) => {
-
     if(type===0){
       if(longTapUser.ban_status === 'clear'){
         banUserr(
@@ -258,6 +264,35 @@ const ChatDetailsScreen = observer(({route}: any) => {
         )
       }
     }
+  }
+
+  const handleKickDialog = (item:any) => {
+    setKickUserItem(item);
+    setIsShowKickDialog(true)
+  }
+
+  const handleKick = () => {
+    if(kickUserItem.ban_status === 'clear'){
+      banUserr(
+        manipulatedWalletAddress,
+        kickUserItem.jid,
+        currentRoomDetail.jid,
+        chatStore.xmpp
+      )
+    }else{
+      unbanUser(
+        manipulatedWalletAddress,
+        kickUserItem.jid,
+        currentRoomDetail.jid,
+        chatStore.xmpp
+      )
+    }
+    getRoomMemberInfo(
+      manipulatedWalletAddress,
+      roomJID,
+      chatStore.xmpp
+    )
+    handleCloseKickDialog()
   }
 
   const RoomDetails = ({
@@ -585,6 +620,28 @@ const ChatDetailsScreen = observer(({route}: any) => {
               fontSize={hp('1.8%')}>
               {item.name ? item.name : null}
             </Text>
+            { 
+            (chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
+            chatStore.roomRoles[currentRoomDetail.jid] === 'admin')&&!item.jid.includes(manipulatedWalletAddress)&&(item.role !== 'moderator' ||item.role !== 'admin' || item.role !== 'owner' )&&
+            <Button
+            padding={"0"}
+            width={hp('7%')}
+            height={hp('3.5%')}
+            justifyContent="center"
+            alignItems="center"
+            variant={'solid'}
+            borderColor={'red.400'}
+            bgColor={'red.400'}
+            marginLeft={2}
+             onPress={()=>handleKickDialog(item)}>
+              <Text 
+              fontSize={hp('1.5%')}
+              color={'white'}
+              fontFamily={textStyles.boldFont}>
+                {item.ban_status==='clear'?'Kick':'Un-kick'}
+              </Text>
+            </Button>
+            }
           </HStack>
 
           {item.ban_status !== 'clear'?
@@ -594,7 +651,9 @@ const ChatDetailsScreen = observer(({route}: any) => {
             justifyContent={'center'}
             alignItems={'center'}
             flex={0.2}
-              >Banned
+              >
+                {/* Banned */}
+                Kicked
             </Box>: null
           }
 
@@ -791,6 +850,37 @@ const ChatDetailsScreen = observer(({route}: any) => {
           </Actionsheet.Item>
         </Actionsheet.Content>
       </Actionsheet>
+
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isShowKickDialog} onClose={handleCloseKickDialog}>
+        <AlertDialog.Content>
+          <AlertDialog.CloseButton />
+          <AlertDialog.Header>
+            <Text fontSize={hp('2%')} fontFamily={textStyles.boldFont}>
+            {kickUserItem.ban_status ==='clear'?'Kick user':'Un-Kick user'}
+            </Text>
+          </AlertDialog.Header>
+          <AlertDialog.Body>
+            <Text fontSize={hp('1.5%')} fontFamily={textStyles.regularFont}>
+            {kickUserItem.ban_status ==='clear'?'This will block the user from sending any messages to the room. You will be able to ‘un-kick’ them later.':
+            'This will un-block the user.'}
+            </Text>
+          </AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button.Group space={2}>
+              <Button  variant="unstyled" colorScheme="coolGray" onPress={handleCloseKickDialog} ref={cancelRef}>
+                <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
+                Cancel
+                </Text>
+              </Button>
+              <Button colorScheme="danger" onPress={handleKick}>
+                <Text fontSize={hp('1.5%')} color={"white"} fontFamily={textStyles.boldFont}>
+                {kickUserItem.ban_status === 'clear'? 'Kick':'Un-kick'}
+                </Text>
+              </Button>
+            </Button.Group>
+          </AlertDialog.Footer>
+        </AlertDialog.Content>
+      </AlertDialog>
 
       <ChangeRoomDescriptionModal
       modalVisible={descriptionModalVisible}

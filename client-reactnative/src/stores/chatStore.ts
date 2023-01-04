@@ -18,6 +18,7 @@ import {
   updateMessageToWrapped,
   updateNumberOfReplies,
   updateTokenAmount,
+  updateMessageText
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
 import {httpPost} from '../config/apiService';
@@ -321,6 +322,18 @@ export class ChatStore {
       });
     }
   };
+
+  editMessage = (replaceMessageId: any, messageString) => {
+    const indexOfMessage = this.messages.findIndex(item => item._id === replaceMessageId)
+    console.log(this.messages.find(item => item._id === replaceMessageId))
+    if(indexOfMessage !== -1){
+      runInAction(() => {
+        const message = this.messages[indexOfMessage]
+        message.text = messageString;
+        this.messages[indexOfMessage] = message;
+      })
+    }
+  }
 
   addThreadMessage = (message: any) => {
     runInAction(() => {
@@ -856,6 +869,7 @@ export class ChatStore {
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
+          console.log(message,"Sdfsfsdf")
           if (
             this.blackList.find(item => item.userJid === message.user._id)
               ?.userJid
@@ -905,6 +919,24 @@ export class ChatStore {
             await updateNumberOfReplies(message.mainMessageId);
           }
           await insertMessages(message);
+        }
+
+        if(stanza.attrs.id === XMPP_TYPES.replaceMessage){
+          // <message xmlns="jabber:client" xml:lang="en" to="olek@localhost/1216574346180782548712130" from="test_olek@conference.localhost/olek" type="groupchat" id="1635229272917013">
+          //   <archived by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:mam:tmp"/>
+          //   <stanza-id by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:sid:0"/>
+          //   <replace xmlns="urn:xmpp:message-correct:0" id="1635229272917013"/>
+          //   <body>Wow</body>
+          // </message>
+          const replaceMessageId = stanza.children.find(item => item.name === 'replace').attrs.id;
+          const messageString = stanza.children.find(item => item.name === 'body').children[0]
+          console.log(stanza.children,"Asfdafaffa")
+
+          // this.editMessage(replaceMessageId,messageString)
+          // await updateMessageText(
+          //   replaceMessageId,
+          //   messageString
+          // )
         }
 
         //capture message composing

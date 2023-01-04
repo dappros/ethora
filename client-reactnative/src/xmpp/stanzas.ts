@@ -147,6 +147,45 @@ export const sendMessageStanza = (
   xmpp.send(message);
 };
 
+export const sendReplaceMessageStanza = (
+  from: string,
+  to: string,
+  replaceText: string,
+  messageId:string,
+  data:any,
+  xmpp: any
+) => {
+  //send edited message
+  // <message from="olek@localhost" id="1635229272917013" to="test_olek@conference.localhost" type="groupchat">
+  //   <body>Wow</body>
+  //   <replace id="1635229272917013" xmlns="urn:xmpp:message-correct:0"/>
+  // </message>
+  const message = xml(
+    'message',
+    {
+      from: from + '@' + DOMAIN,
+      id: XMPP_TYPES.replaceMessage,
+      type: 'groupchat',
+      to: to
+    },
+    xml('body', {}, replaceText),
+    xml(
+      'replace',
+      {
+        id:messageId,
+        xmlns:"urn:xmpp:message-correct:0"
+      }
+    ),
+    xml('data', {
+      xmlns: 'http://' + DOMAIN,
+      senderJID: from + '@' + DOMAIN,
+      ...data,
+    }),
+  )
+
+  xmpp.send(message)
+}
+
 export const sendMediaMessageStanza = async (
   from: string,
   to: string,
