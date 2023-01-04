@@ -379,7 +379,7 @@ const TransactionModal = (props: TransactionModalProps) => {
     );
     const roomJID = extraData.chatJid;
 
-    Alert.alert('Ban', 'This will ban user', 
+    Alert.alert('Kick', 'Kick User from this room?', 
     [
       {
         text: "Cancel",
