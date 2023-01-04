@@ -565,7 +565,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       )
       setIsEditing(false);
     }else{
-      // sendMessage(messageString, false);
+      sendMessage(messageString, false);
     }
   }
 

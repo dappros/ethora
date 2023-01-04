@@ -4,18 +4,33 @@ import { useParams } from "react-router";
 import { useStoreState } from "../../store";
 import xmpp from "../../xmpp";
 import EditIcon from "@mui/icons-material/Edit";
+import StarPurple500Icon from '@mui/icons-material/StarPurple500';
+import StarRateIcon from '@mui/icons-material/StarRate';
+import {ROOMS_FILTERS} from "../../config/config";
 
 export default function ChatDetailCard (){
     const {roomJID}:any = useParams()
     const [newDescription, setNewDescription] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
     const currentRoomData = useStoreState((store) => store.userChatRooms).filter((e) => e.jid === roomJID)[0];
+    const currentRoomGroup = useStoreState((store) => store.userChatRoomGroups).filter((e) => e.jid === roomJID)[0];
     const handleChangeDescription = (newDescription:string) => {
         xmpp.changeRoomDescription(
             roomJID,
             newDescription
         )
       }
+    const changeRoomType = (status) => {
+        let roomData = {
+            jid: currentRoomData.jid,
+            group: status
+        };
+        if(currentRoomGroup){
+            useStoreState.getState().updateChatRoomGroups(roomData);
+        }else{
+            useStoreState.getState().setNewChatRoomGroups(roomData);
+        }
+    }
     return(
         <Container style={{justifyContent:"center", alignItems:"center", display:"flex", flexDirection:"column"}}>
             <Box
@@ -52,16 +67,20 @@ export default function ChatDetailCard (){
         >
             {currentRoomData?.name}
         </Typography>
+            {currentRoomGroup && currentRoomGroup.group === ROOMS_FILTERS.official ?
+                <StarRateIcon onClick={() => changeRoomType("default")} style={{cursor: "pointer"}} />
+            : <StarPurple500Icon onClick={() => changeRoomType(ROOMS_FILTERS.official)} style={{cursor: "pointer"}} />
+            }
         <Container style={{flexDirection:"row", justifyContent:"center", alignItems:"center", display:"flex"}}>
             <Typography fontSize={"20px"}>
                 {currentRoomData?.description?currentRoomData.description:"No description set"}
             </Typography>
-            <IconButton 
+            <IconButton
             onClick={()=>setShowModal(true)}
             style={{
                 marginLeft:10
             }}>
-                <EditIcon 
+                <EditIcon
                 fontSize="small"/>
             </IconButton>
         </Container>

@@ -685,6 +685,10 @@ export class ChatStore {
         }
       }
 
+      if(stanza.attrs.id === 'ban_user'){
+        showToast('success', 'Success', 'User kicked!', 'top');
+      }
+
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }

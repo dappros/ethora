@@ -99,6 +99,11 @@ export type TUserChatRooms = {
   description: string;
 };
 
+export type TUserChatRoomGroups = {
+  jid: string;
+  group: string;
+}
+
 type TApp = {
   _id: string;
   appName: string;
@@ -178,6 +183,9 @@ interface IStore {
   ) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
+  userChatRoomGroups: TUserChatRoomGroups[];
+  setNewChatRoomGroups: (data: TUserChatRoomGroups) => void;
+  updateChatRoomGroups: (data: TUserChatRoomGroups) => void;
   userChatRooms: TUserChatRooms[];
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
   updateUserChatRoom: (data: TUserChatRooms) => void;
@@ -257,6 +265,7 @@ const _useStore = create<IStore>()(
           loaderArchive: false,
           currentUntrackedChatRoom: "",
           userChatRooms: [],
+          userChatRoomGroups: [],
           roomMemberInfo: [],
           roomRoles: [],
           appUsers: [],
@@ -400,6 +409,20 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
+          setNewChatRoomGroups: (userChatRooms: TUserChatRoomGroups) =>
+              set((state) => {
+                state.userChatRoomGroups.unshift(userChatRooms);
+              }),
+          updateChatRoomGroups: (data: TUserChatRoomGroups) =>
+              set((state) => {
+                const currentIndex = state.userChatRoomGroups.findIndex(
+                    (el) => el.jid === data.jid
+                );
+                if (state.userChatRoomGroups[currentIndex]) {
+                  state.userChatRoomGroups[currentIndex].group =
+                      data.group;
+                }
+              }),
           setNewUserChatRoom: (userChatRooms: TUserChatRooms) =>
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
