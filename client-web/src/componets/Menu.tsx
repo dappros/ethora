@@ -47,6 +47,7 @@ const menuActionsSection = {
     },
   ],
 };
+
 const idActionsSection = {
   name: "Id",
   items: [
@@ -55,26 +56,46 @@ const idActionsSection = {
   ],
 };
 
-const initMenuItems = (walletAddress: string) => [
-  menuAccountSection(walletAddress),
-  {
-    name: "Messaging",
-    items: [{ name: "Chats", id: "/chat/none", visible: true }],
-  },
-  menuActionsSection,
-  idActionsSection,
-];
+const initMenuItems = (user: any, ACL: any) => {
+  let items = [
+    {
+      name: "Messaging",
+      items: [{ name: "Chats", id: "/chat/none", visible: true }],
+    },
+    menuActionsSection,
+    idActionsSection,
+  ];
+
+  if (ACL?.result?.application?.appUsers?.read) {
+    items.push({
+      name: "Users",
+      items: [{ name: "Users", id: "/users", visible: true }],
+    });
+  }
+
+  if (user.ACL.masterAccess) {
+    items.push({
+      name: "Admin",
+      items: [{ name: "Statistics", id: "/statistics", visible: true }],
+    });
+  }
+
+  return items;
+};
+
 export const Menu: React.FC<IMenu> = ({}) => {
   const { active, deactivate } = useWeb3React();
   const user = useStoreState((state) => state.user);
   const history = useHistory();
-  const [menuItems, setMenuItems] = useState(initMenuItems(user.walletAddress));
   const ACL = useStoreState((state) => state.ACL);
+  const [menuItems, setMenuItems] = useState(initMenuItems(user, ACL));
 
   const clearUser = useStoreState((state) => state.clearUser);
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+
   const onLogout = () => {
     clearUser();
     xmpp.stop();
@@ -83,6 +104,7 @@ export const Menu: React.FC<IMenu> = ({}) => {
     }
     history.push("/");
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -90,6 +112,7 @@ export const Menu: React.FC<IMenu> = ({}) => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   const onMenuItemClick = (id: string, type: string) => {
     if (id === "logout") {
       onLogout();
@@ -103,18 +126,11 @@ export const Menu: React.FC<IMenu> = ({}) => {
   };
 
   useEffect(() => {
-    if (ACL?.result?.application?.appUsers?.read) {
-      setMenuItems((items) => {
-        return [
-          ...items,
-          {
-            name: "Users",
-            items: [{ name: "Users", id: "/users", visible: true }],
-          },
-        ];
-      });
+    if (user.ACL.musterAccess) {
+      alert("masterAccess");
     }
   }, []);
+
   return (
     <>
       <IconButton
