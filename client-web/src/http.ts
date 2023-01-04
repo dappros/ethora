@@ -140,8 +140,9 @@ export interface IDocument {
   userId: string;
   file: IFile;
   location: string;
-  locations: Array<string>
+  locations: Array<string>;
 }
+
 export function refresh() {
   return new Promise((resolve, reject) => {
     const state = useStoreState.getState();
@@ -197,7 +198,7 @@ http.interceptors.response.use(undefined, (error) => {
 });
 
 export const loginUsername = (username: string, password: string) => {
-  return http.post<TLoginSuccessResponse>(
+  return http.post(
     "/users/login",
     { username, password },
     { headers: { Authorization: APP_JWT } }
@@ -362,7 +363,7 @@ export function registerByEmail(
 }
 
 export function loginEmail(email: string, password: string) {
-  return http.post<TLoginSuccessResponse>(
+  return http.post(
     "/users/login",
     {
       email,
@@ -378,7 +379,7 @@ export function loginSocial(
   loginType: string,
   authToken: string = "authToken"
 ) {
-  return http.post<TLoginSuccessResponse>(
+  return http.post(
     "/users/login",
     {
       idToken,
@@ -575,76 +576,69 @@ export function transferCoin(
   );
 }
 
-export function changeUserData(
-  data: FormData
-  ){
+export function changeUserData(data: FormData) {
   const user = useStoreState.getState().user;
-  return http.put(
-    '/users/',
-    data,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Accept-Encoding': 'gzip, deflate, br',
-
-        'Content-Type': 'multipart/form-data',
-        Authorization: user.token,
-      }
-    },
-  )
-}
-
-export function getSharedLinksService(
-){
-  const user = useStoreState.getState().user;
-  return http.get('/shareLink/', {
+  return http.put("/users/", data, {
     headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Accept-Encoding": "gzip, deflate, br",
+
+      "Content-Type": "multipart/form-data",
       Authorization: user.token,
     },
   });
 }
 
-export function deleteSharedLink(linkToken:string){
+export function getSharedLinksService() {
   const user = useStoreState.getState().user;
-  return http.delete(`/shareLink/${linkToken}`,{
+  return http.get("/shareLink/", {
     headers: {
-      Authorization: user.token,
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
-    },
-  })
-}
-
-export function createSharedLink(data:any){
-  const user = useStoreState.getState().user;
-  return http.post('/shareLink/',data,{
-    headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
       Authorization: user.token,
     },
-  })
+  });
 }
 
-export function deleteAccountService(){
+export function deleteSharedLink(linkToken: string) {
   const user = useStoreState.getState().user;
-  return http.delete('/users/',{
+  return http.delete(`/shareLink/${linkToken}`, {
     headers: {
       Authorization: user.token,
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
     },
-  })
+  });
 }
 
-export function getDocuments(){
+export function createSharedLink(data: any) {
+  const user = useStoreState.getState().user;
+  return http.post("/shareLink/", data, {
+    headers: {
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
+      Authorization: user.token,
+    },
+  });
+}
+
+export function deleteAccountService() {
+  const user = useStoreState.getState().user;
+  return http.delete("/users/", {
+    headers: {
+      Authorization: user.token,
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function getDocuments() {
   const user = useStoreState.getState().user;
   return http.get(`/docs/${user.walletAddress}`, {
     headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
       Authorization: user.token,
     },
   });

@@ -16,6 +16,7 @@ export type TUser = {
   referrerId?: string;
   ACL?: {
     ownerAccess: boolean;
+    musterAccess: boolean;
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
@@ -102,7 +103,7 @@ export type TUserChatRooms = {
 export type TUserChatRoomGroups = {
   jid: string;
   group: string;
-}
+};
 
 type TApp = {
   _id: string;
@@ -163,8 +164,8 @@ interface IStore {
   documents: http.IDocument[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
-  updateUserProfilePermission:(value: boolean) => void;
-  updateUserDocumentsPermission:(value: boolean) => void;
+  updateUserProfilePermission: (value: boolean) => void;
+  updateUserDocumentsPermission: (value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
 
   setOwner: (owner: TUser) => void;
@@ -293,13 +294,13 @@ const _useStore = create<IStore>()(
               state.user = user;
             }),
           updateUserProfilePermission: (value: boolean) =>
-          set((state)=>{
-            state.user.isProfileOpen = value
-          }),
+            set((state) => {
+              state.user.isProfileOpen = value;
+            }),
           updateUserDocumentsPermission: (value: boolean) =>
-          set((state)=>{
-            state.user.isAssetsOpen = value
-          }),
+            set((state) => {
+              state.user.isAssetsOpen = value;
+            }),
           setOwner: (user: TUser) =>
             set((state) => {
               state.user = user;
@@ -410,19 +411,18 @@ const _useStore = create<IStore>()(
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
           setNewChatRoomGroups: (userChatRooms: TUserChatRoomGroups) =>
-              set((state) => {
-                state.userChatRoomGroups.unshift(userChatRooms);
-              }),
+            set((state) => {
+              state.userChatRoomGroups.unshift(userChatRooms);
+            }),
           updateChatRoomGroups: (data: TUserChatRoomGroups) =>
-              set((state) => {
-                const currentIndex = state.userChatRoomGroups.findIndex(
-                    (el) => el.jid === data.jid
-                );
-                if (state.userChatRoomGroups[currentIndex]) {
-                  state.userChatRoomGroups[currentIndex].group =
-                      data.group;
-                }
-              }),
+            set((state) => {
+              const currentIndex = state.userChatRoomGroups.findIndex(
+                (el) => el.jid === data.jid
+              );
+              if (state.userChatRoomGroups[currentIndex]) {
+                state.userChatRoomGroups[currentIndex].group = data.group;
+              }
+            }),
           setNewUserChatRoom: (userChatRooms: TUserChatRooms) =>
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
@@ -509,9 +509,9 @@ const _useStore = create<IStore>()(
               state.currentUntrackedChatRoom = roomJID;
             }),
           saveInBlackList: (list: TUserBlackList[]) =>
-              set((state) => {
-                state.blackList = list;
-              }),
+            set((state) => {
+              state.blackList = list;
+            }),
           clearBlackList: () =>
             set((state) => {
               state.blackList = [];
