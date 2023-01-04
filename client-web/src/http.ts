@@ -29,6 +29,7 @@ export type TUser = {
   profileImage: string;
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  referrerId?: string;
 };
 
 export type TLoginSuccessResponse = {
@@ -196,7 +197,7 @@ http.interceptors.response.use(undefined, (error) => {
 });
 
 export const loginUsername = (username: string, password: string) => {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     { username, password },
     { headers: { Authorization: APP_JWT } }
@@ -361,7 +362,7 @@ export function registerByEmail(
 }
 
 export function loginEmail(email: string, password: string) {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
       email,
@@ -377,7 +378,7 @@ export function loginSocial(
   loginType: string,
   authToken: string = "authToken"
 ) {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
       idToken,

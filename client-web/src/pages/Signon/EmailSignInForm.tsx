@@ -67,6 +67,7 @@ export function EmailSingInForm(props: TProps) {
             isProfileOpen: user.isProfileOpen,
             isAssetsOpen: user.isAssetsOpen,
             ACL: user.ACL,
+            referrerId: user.referrerId || "",
           });
           history.push(`/profile/${user.defaultWallet.walletAddress}`);
           props.closeModal();

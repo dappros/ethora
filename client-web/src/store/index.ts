@@ -13,6 +13,7 @@ export type TUser = {
   token: string;
   refreshToken?: string;
   profileImage?: string;
+  referrerId?: string;
   ACL?: {
     ownerAccess: boolean;
   };

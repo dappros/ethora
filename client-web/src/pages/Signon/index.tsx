@@ -117,6 +117,7 @@ export default function Signon() {
     const loginType = "google";
     const emailExist = await http.checkEmailExist(res.profileObj.email);
     setLoading(true);
+    console.log(emailExist.data.success)
     if (!emailExist.data.success) {
       const loginRes = await http.loginSocial(
         res.tokenId,
@@ -145,7 +146,7 @@ export default function Signon() {
   };
   const updateUserInfo = (
     user: http.TUser,
-    tokens: { refreshToken: string; token: string }
+    tokens: { refreshToken: string; token: string, referrerId?: string }
   ) => {
     setUser({
       _id: user._id,
@@ -160,6 +161,7 @@ export default function Signon() {
       isProfileOpen: user.isProfileOpen,
       isAssetsOpen: user.isAssetsOpen,
       ACL: user.ACL,
+      referrerId: user.referrerId || ''
     });
   };
 

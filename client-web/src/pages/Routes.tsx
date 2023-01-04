@@ -20,6 +20,7 @@ import { configDocuments } from "../config/config";
 import Privacy from "./Privacy/Privacy";
 import { NewChat } from "./NewChat/NewChat";
 import { Snackbar } from "../componets/Snackbar";
+import { Referrals } from "./Referrals/Referrals";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -145,6 +146,8 @@ export const Routes = () => {
         <AuthRoute path="/dashboard" component={Dashboard} />
         <AuthRoute path="/privacy" component={Privacy} />
         <AuthRoute path="/newchat" component={NewChat} />
+        <AuthRoute path="/referrals" component={Referrals} />
+
 
         <Route path="/profile/:wallet">
           <Profile />
