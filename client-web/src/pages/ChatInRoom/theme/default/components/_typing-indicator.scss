@@ -1,0 +1,62 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-typing-indicator {
+  box-sizing: content-box;
+  font-size: $typing-indicator-font-size;
+  font-family: $typing-indicator-font-family;
+  @include flex-row;
+  align-items: stretch;
+  
+  &__indicator {
+    box-sizing: inherit;
+    background-color: $typing-indicator-indicator-bg-color;
+    @include flex-row;
+    align-items: center;
+  }
+
+  &__dot {
+    box-sizing: inherit;
+    animation: #{$prefix}-typing-indicator__typing-animation 1.5s infinite ease-in-out;
+    border-radius: 100%;
+    display: inline-block;
+    height: $typing-indicator-dot-size;
+    width: $typing-indicator-dot-size;
+    background-color: $typing-indicator-dot-bg-color;
+  }
+
+  &__dot:not(:last-child) {
+    margin-right: $typing-indicator-dot-spacing;
+  }
+
+  &__dot:nth-child(1) {
+    box-sizing: inherit;
+  }
+  &__dot:nth-child(2) {
+    animation-delay: 300ms;
+  }
+  &__dot:nth-child(3) {
+    animation-delay: 400ms;
+  }
+
+  &__text {
+    box-sizing: inherit;
+    @include text-truncate;
+    color: $typing-indicator-text-color;
+    background-color: $typing-indicator-text-bg-color;
+    margin: $typing-indicator-text-margin;
+    user-select: none;
+  }
+
+  @keyframes #{$prefix}-typing-indicator__typing-animation {
+    0% {
+      transform: translateY(0px);
+    }
+    28% {
+      transform: translateY(-5px);
+    }
+    44% {
+      transform: translateY(0px);
+    }
+  }
+}

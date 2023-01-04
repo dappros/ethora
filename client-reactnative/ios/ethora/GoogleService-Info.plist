@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>972933470054-9p4r0768jd3dp1lova8bihkui5nft7sr.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.972933470054-9p4r0768jd3dp1lova8bihkui5nft7sr</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>972933470054-11k8h6l87ffbmbl7045325et8a0b15il.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDHOHyIVZWmL_wWlqb7BWKHb4TqwzN5I98</string>
+	<key>GCM_SENDER_ID</key>
+	<string>972933470054</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ethora</string>
+	<key>PROJECT_ID</key>
+	<string>ethora-668e9</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ethora-668e9.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:972933470054:ios:bfc62fce450211f29cdaa7</string>
+</dict>
+</plist>

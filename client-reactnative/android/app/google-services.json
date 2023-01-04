@@ -1,0 +1,70 @@
+{
+  "project_info": {
+    "project_number": "972933470054",
+    "project_id": "ethora-668e9",
+    "storage_bucket": "ethora-668e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972933470054:android:1ed7367cd699d77a9cdaa7",
+        "android_client_info": {
+          "package_name": "com.ethora"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "972933470054-11k8h6l87ffbmbl7045325et8a0b15il.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "1656ba101d65b11be93b72b4fa52a413cb35b89c"
+          }
+        },
+        {
+          "client_id": "972933470054-i5o0uqe3u7nueficqfs2e70db8lkg587.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "972933470054-tdbm78k1ch6p5ap22ttbjicinbiun4js.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ethora",
+            "certificate_hash": "4fc7e8d484a28109369ad96e62d80b719b6e6e16"
+          }
+        },
+        {
+          "client_id": "972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAubSQUJCOMpPYMdfGon86laeaRrc_AvKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "972933470054-9p4r0768jd3dp1lova8bihkui5nft7sr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ethora"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
