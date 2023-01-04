@@ -11,11 +11,7 @@ import "./pages/ChatInRoom/theme/default/main.scss";
 import { Routes } from "./pages/Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
-import {
-  SnackbarContextProvider,
-
-} from "./context/SnackbarContext";
-
+import { SnackbarContextProvider } from "./context/SnackbarContext";
 
 const darkTheme = createTheme({
   palette: {
@@ -38,14 +34,12 @@ function App() {
           <ApolloProvider client={client}>
             <div className="app-root">
               {!user.firstName && <AppTopNavAuth />}
-              {user.firstName && !user.ACL?.ownerAccess && <AppTopNav />}
-              {user.ACL?.ownerAccess && <AppTopNavOwner />}
+              {user.firstName && user.xmppPassword && <AppTopNav />}
               <Routes />
             </div>
           </ApolloProvider>
         </ThemeProvider>
       </SnackbarContextProvider>
-     
     </Router>
   );
 }

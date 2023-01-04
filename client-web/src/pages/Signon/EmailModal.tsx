@@ -7,8 +7,8 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { useQuery } from "../../utils";
-import {EmailSingInForm} from "./EmailSignInForm";
-import {EmailSignUpForm} from "./EmailSignUpForm";
+import { EmailSingInForm } from "./EmailSignInForm";
+import { EmailSignUpForm } from "./EmailSignUpForm";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -38,7 +38,7 @@ export function EmailModal({ open, setOpen }: TProps) {
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}
         >
-          Continue with Username
+          Continue with Email
           <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>

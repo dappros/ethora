@@ -3,7 +3,7 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { ExplorerRespose, ITransaction, TProfile } from "./types";
 import UserCard from "./UserCard";
-import {  getTransactions, getBalance } from "../../http";
+import { getTransactions, getBalance } from "../../http";
 import { useStoreState } from "../../store";
 import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
@@ -28,7 +28,7 @@ export function MyProfile() {
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
-  const setBalance = useStoreState(state => state.setBalance)
+  const setBalance = useStoreState((state) => state.setBalance);
 
   useEffect(() => {
     console.log("MyProfile init");
@@ -81,7 +81,6 @@ export function MyProfile() {
         }}
       >
         <span>Items</span>
-       
       </Typography>
       <ItemsTable
         balance={items.filter(filterNftBalances)}
@@ -99,7 +98,6 @@ export function MyProfile() {
             }}
           >
             <span>Documents</span>
-           
           </Typography>
           <DocumentsTable
             walletAddress={user.walletAddress}
@@ -116,11 +114,6 @@ export function MyProfile() {
           <Transactions transactions={transactions.items} />
         </Box>
       )}
-
-     
-
-      
-     
     </Container>
   );
 }
