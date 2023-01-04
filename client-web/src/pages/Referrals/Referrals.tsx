@@ -6,6 +6,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useFormik } from "formik";
 import { getBalance, httpWithAuth } from "../../http";
+import coinImg from "../../assets/images/coin.png";
 
 export interface IReferrals {}
 
@@ -67,9 +68,12 @@ export const Referrals: React.FC<IReferrals> = ({}) => {
         >
           <PersonAddAltIcon color="primary" fontSize="inherit" />
         </Box>
-        <Typography>
-          Gift friends 25 ETO and receive 25 ETO. Send friends invite with your
-          personal invitation code
+        <Typography sx={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+          Gift friends 25
+          <img alt="" style={{ width: "16px", height: "16px" }} src={coinImg} />
+          and receive 25
+          <img alt="" style={{ width: "16px", height: "16px" }} src={coinImg} />
+          . Send friends invite with your personal invitation code
         </Typography>
         <Typography
           sx={{ fontWeight: "bold", textAlign: "center", fontSize: "18px" }}
