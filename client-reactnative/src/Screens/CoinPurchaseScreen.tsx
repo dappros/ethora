@@ -1,18 +1,12 @@
 import React, {useEffect} from 'react';
-import {Alert, Image, Platform, StyleSheet, Text, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP,
-} from 'react-native-responsive-screen';
+import {Image, Platform, StyleSheet, Text, View} from 'react-native';
+
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {coinImagePath, commonColors, textStyles} from '../../docs/config';
 import {Button} from '../components/Button';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import {useNavigation} from '@react-navigation/native';
 import {HStack} from 'native-base';
 import {requestPurchase, useIAP} from 'react-native-iap';
-import * as RNIap from 'react-native-iap';
 import {useStores} from '../stores/context';
 import {httpPost} from '../config/apiService';
 import {showError, showSuccess} from '../components/Toast/toast';
@@ -67,23 +61,12 @@ const productIds = [
 
 const appleKey = '426b7e2459d74037962e34f57375dfe2';
 export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
-  const navigation = useNavigation();
   const {apiStore, loginStore, walletStore} = useStores();
   const {
     connected,
-    promotedProductsIOS,
-    subscriptions,
-    purchaseHistories,
-    availablePurchases,
-    currentPurchase,
-    currentPurchaseError,
+
     finishTransaction,
     getProducts,
-    getSubscriptions,
-    getAvailablePurchases,
-    getPurchaseHistories,
-    initConnectionError,
-    products,
   } = useIAP();
   const requestCoinPurchase = async (id: string) => {
     try {
@@ -105,7 +88,6 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
       showSuccess('Succes', 'Please, check your balance');
     } catch (err) {
       showError('Error', 'Please try again');
-      console.log(err.response);
     }
   };
 
@@ -113,6 +95,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
     if (connected) {
       getProducts(productIds);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected]);
   return (
     <View>

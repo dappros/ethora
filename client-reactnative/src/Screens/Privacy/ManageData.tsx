@@ -1,14 +1,19 @@
 import React, {useState} from 'react';
 import {VStack} from 'native-base';
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 import {textStyles} from '../../../docs/config';
 import {Button} from '../../components/Button';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {showError, showSuccess} from '../../components/Toast/toast';
-import {httpDelete} from '../../config/apiService';
+import {httpDelete, httpGet} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
-
+import {downloadFile} from '../../helpers/downloadFile';
+import Share from 'react-native-share';
+import RNFS, {
+  DocumentDirectoryPath,
+  DownloadDirectoryPath,
+} from 'react-native-fs';
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
@@ -33,6 +38,38 @@ export const ManageData: React.FC<IManageData> = ({}) => {
 
     setDeleteDialogOpen(false);
   };
+  const writeFile = async (data: string) => {
+    const aPath = Platform.select({
+      ios: DocumentDirectoryPath,
+      android: DownloadDirectoryPath,
+    });
+
+    const fPath = aPath + '/' + 'data.json';
+    try {
+      // console.log(base64)
+      await RNFS.writeFile(fPath, data, 'utf8');
+
+      Share.open({url: Platform.OS === 'android' ? 'file://' + fPath : fPath});
+    } catch (error) {
+      showError('Error', 'Cannot write file');
+    }
+  };
+  const exportData = async () => {
+    setLoading(true);
+
+    try {
+      const {data} = await httpGet(
+        apiStore.defaultUrl + '/users/exportData',
+        loginStore.userToken,
+      );
+      const dataString = JSON.stringify(data);
+      await writeFile(dataString);
+    } catch (error) {
+      showError('Error', 'Something went wrong');
+      console.log(error);
+    }
+    setLoading(false);
+  };
   return (
     <VStack paddingX={5} marginTop={5}>
       <VStack>
@@ -48,7 +85,8 @@ export const ManageData: React.FC<IManageData> = ({}) => {
           <Button
             style={{width: '60%'}}
             title="Download my data"
-            onPress={() => {}}
+            onPress={exportData}
+            loading={loading}
           />
         </View>
         <VStack marginTop={5}>
