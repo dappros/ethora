@@ -394,6 +394,14 @@ const onNewSubscription = (stanza: Element, xmpp: XmppClass) => {
     xmpp.getRooms();
   }
 };
+const onRoomDesignChange = (stanza: Element, xmpp: XmppClass) => {
+  if (
+    stanza.attrs.id === "setRoomImage" ||
+    stanza.attrs.id === "setRoomBackground"
+  ) {
+    xmpp.getRooms();
+  }
+};
 
 const onBan = (stanza: Element) => {
   if (stanza.attrs.id === "ban") {
@@ -444,6 +452,8 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onRemoveFromBlackList(stanza, this));
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("stanza", (stanza) => onNewSubscription(stanza, this));
+    this.client.on("stanza", (stanza) => onRoomDesignChange(stanza, this));
+
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);

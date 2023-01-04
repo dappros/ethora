@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import {
@@ -103,33 +109,35 @@ const getPosition = (
   return result;
 };
 
-const defaultRoomsFilter = (
-    rooms: TUserChatRooms[]
-) => {
+const defaultRoomsFilter = (rooms: TUserChatRooms[]) => {
   return rooms.filter((item) => {
     const splitedJid = item?.jid?.split("@")[0];
     return defaultChats[splitedJid];
   });
-}
+};
 
 const filterChatRooms = (
   rooms: TUserChatRooms[],
   filter: TActiveRoomFilter
 ) => {
-  if (filter === ROOMS_FILTERS.official) {
-    let defaultRooms =  defaultRoomsFilter(rooms);
+  if (filter === ROOMS_FILTERS.official || filter === ROOMS_FILTERS.favourite) {
+    let defaultRooms = defaultRoomsFilter(rooms);
 
     let roomsList = [];
     const roomsGroup = useStoreState.getState().userChatRoomGroups;
 
     for (let index = 0; index < roomsGroup.length; ++index) {
-      let groupData = roomsGroup[index]
-      let roomData = rooms.filter((item) => item.jid === groupData.jid && groupData.group === ROOMS_FILTERS.official);
-      if(roomData[0]){
-        roomsList.push(roomData[0])
+      let groupData = roomsGroup[index];
+      let roomData = rooms.filter(
+        (item) =>
+          item.jid === groupData.jid &&
+          groupData.group === ROOMS_FILTERS.official
+      );
+      if (roomData[0]) {
+        roomsList.push(roomData[0]);
       }
     }
-    let finalRooms = roomsList.concat(defaultRooms)
+    let finalRooms = roomsList.concat(defaultRooms);
     return finalRooms;
   }
   return rooms;
@@ -148,6 +156,9 @@ export function ChatInRoom() {
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const [currentRoom, setCurrentRoom] = useState("");
+  const currentPickedRoom = useMemo(() => {
+    return userChatRooms.find((item) => item.jid === currentRoom);
+  }, [userChatRooms, currentRoom]);
   const [roomData, setRoomData] = useState<{
     jid: string;
     name: string;
@@ -186,7 +197,6 @@ export function ChatInRoom() {
     },
     [roomData]
   );
-
   const { getRootProps } = useDropzone({
     onDrop,
     noClick: true,
@@ -544,6 +554,13 @@ export function ChatInRoom() {
               </ConversationHeader>
             )}
             <MessageList
+              style={{
+                backgroundImage: currentPickedRoom?.room_background
+                  ? `url(${currentPickedRoom.room_background})`
+                  : "white",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "100% 100%",
+              }}
               loadingMore={loaderArchive}
               onYReachStart={onYReachStart}
               disableOnYReachWhenNoScroll={true}

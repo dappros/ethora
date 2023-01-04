@@ -102,7 +102,7 @@ export type TUserChatRooms = {
 
 export type TUserChatRoomGroups = {
   jid: string;
-  group: string;
+  group: TActiveRoomFilter;
 };
 
 type TApp = {
@@ -147,7 +147,7 @@ export type TRoomRoles = {
   role: string;
 };
 
-export type TActiveRoomFilter = "official" | "meta" | "groups" | "";
+export type TActiveRoomFilter = "official" | "meta" | "groups" | 'favourite' |  "";
 
 interface IStore {
   user: TUser;
