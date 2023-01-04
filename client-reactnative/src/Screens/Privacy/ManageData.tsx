@@ -14,6 +14,7 @@ import RNFS, {
   DocumentDirectoryPath,
   DownloadDirectoryPath,
 } from 'react-native-fs';
+import {PERMISSIONS, request} from 'react-native-permissions'
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
@@ -39,18 +40,22 @@ export const ManageData: React.FC<IManageData> = ({}) => {
     setDeleteDialogOpen(false);
   };
   const writeFile = async (data: string) => {
+    await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE)
+    await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
+
     const aPath = Platform.select({
       ios: DocumentDirectoryPath,
       android: DownloadDirectoryPath,
     });
 
-    const fPath = aPath + '/' + 'data.json';
+    const fPath = aPath + '/data' + new Date().getTime() + '.json';
     try {
       // console.log(base64)
       await RNFS.writeFile(fPath, data, 'utf8');
 
       Share.open({url: Platform.OS === 'android' ? 'file://' + fPath : fPath});
     } catch (error) {
+      console.log(error)
       showError('Error', 'Cannot write file');
     }
   };
