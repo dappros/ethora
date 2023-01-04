@@ -10,6 +10,19 @@ import coinImg from "../../assets/images/coin.png";
 
 export interface IReferrals {}
 
+interface IValues {
+  refLink: string;
+}
+
+const validate = (values: IValues) => {
+  const errors: IValues = {refLink: ''};
+  if (!values.refLink) {
+    errors.refLink = "Link is required";
+  }
+
+  return errors;
+};
+
 export const Referrals: React.FC<IReferrals> = ({}) => {
   const link = useStoreState((state) => state.user._id);
   const walletAddress = useStoreState((state) => state.user.walletAddress);
@@ -20,6 +33,7 @@ export const Referrals: React.FC<IReferrals> = ({}) => {
   const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: { refLink: "" },
+    validate,
     onSubmit: async ({ refLink }, { setSubmitting }) => {
       if (referrerId) {
         showSnackbar("error", "You already added your referral");
@@ -68,7 +82,13 @@ export const Referrals: React.FC<IReferrals> = ({}) => {
         >
           <PersonAddAltIcon color="primary" fontSize="inherit" />
         </Box>
-        <Typography sx={{justifyContent: 'center', alignItems: 'center', display: 'flex'}}>
+        <Typography
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+          }}
+        >
           Gift friends 25
           <img alt="" style={{ width: "16px", height: "16px" }} src={coinImg} />
           and receive 25
@@ -127,6 +147,7 @@ export const Referrals: React.FC<IReferrals> = ({}) => {
             variant={"outlined"}
             onChange={formik.handleChange}
             value={formik.values.refLink}
+            error={!!formik.touched.refLink && !!formik.errors.refLink}
           />
           <Button
             disabled={formik.isSubmitting}
