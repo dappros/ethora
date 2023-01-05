@@ -190,28 +190,32 @@ const onGetRoomInfo = (stanza: Element | any) => {
     (e) => e.jid === stanza.attrs.from
   )[0];
   if (stanza.attrs.id === "roomInfo") {
-    const featureList = stanza.children[0].children.find(
-      (item) => item.attrs.xmlns === "jabber:x:data"
-    );
-    const roomDescription = featureList.children.find(
-      (item) => item.attrs.var === "muc#roominfo_description"
-    ).children[0]?.children[0];
-    const roomName = featureList.children.find(
-      (item) => item.attrs.var === "muc#roomconfig_roomname"
-    ).children[0]?.children[0];
 
-    const roomData = {
-      jid: currentRoomData.jid,
-      name: roomName,
-      room_background: currentRoomData.room_background,
-      room_thumbnail: currentRoomData.room_thumbnail,
-      users_cnt: currentRoomData.users_cnt,
-      unreadMessages: currentRoomData.unreadMessages,
-      composing: currentRoomData.composing,
-      toUpdate: currentRoomData.toUpdate,
-      description: roomDescription,
-    };
-    useStoreState.getState().updateUserChatRoom(roomData);
+    if(stanza.children[0] && currentRoomData){
+      const featureList = stanza.children[0].children.find(
+          (item) => item.attrs.xmlns === "jabber:x:data"
+      );
+      const roomDescription = featureList.children.find(
+          (item) => item.attrs.var === "muc#roominfo_description"
+      ).children[0]?.children[0];
+      const roomName = featureList.children.find(
+          (item) => item.attrs.var === "muc#roomconfig_roomname"
+      ).children[0]?.children[0];
+
+      const roomData = {
+        jid: currentRoomData.jid,
+        name: roomName,
+        room_background: currentRoomData.room_background,
+        room_thumbnail: currentRoomData.room_thumbnail,
+        users_cnt: currentRoomData.users_cnt,
+        unreadMessages: currentRoomData.unreadMessages,
+        composing: currentRoomData.composing,
+        toUpdate: currentRoomData.toUpdate,
+        description: roomDescription,
+      };
+      useStoreState.getState().updateUserChatRoom(roomData);
+    }
+
   }
 };
 
