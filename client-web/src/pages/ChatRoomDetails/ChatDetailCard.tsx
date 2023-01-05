@@ -22,9 +22,11 @@ import { DeleteDialog } from "../../componets/DeleteDialog";
 export default function ChatDetailCard() {
   const { roomJID } = useParams<{ roomJID: string }>();
   const [newDescription, setNewDescription] = useState("");
+  const [newRoomName, setNewRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false);
 
+  const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
   const currentRoomData = useStoreState((store) => store.userChatRooms).find(
     (e) => e?.jid === roomJID
   );
@@ -46,9 +48,15 @@ export default function ChatDetailCard() {
     currentRoomGroup &&
     (currentRoomGroup.group === ROOMS_FILTERS.official ||
       currentRoomGroup.group === ROOMS_FILTERS.favourite);
+
   const handleChangeDescription = (newDescription: string) => {
     xmpp.changeRoomDescription(roomJID, newDescription);
   };
+
+  const handleChangeRoomName = (newRoomName: string) => {
+    xmpp.changeRoomName(roomJID, newRoomName);
+  };
+
   const changeRoomType = (status: TActiveRoomFilter) => {
     let roomData = {
       jid: currentRoomData.jid,
@@ -104,7 +112,7 @@ export default function ChatDetailCard() {
               right: 0,
               display: "flex",
               flexDirection: "column",
-              zIndex: 99999
+              zIndex: 99999,
             }}
           >
             <IconButton
@@ -131,29 +139,37 @@ export default function ChatDetailCard() {
             )}
           </Box>
           <IconButton disableRipple onClick={goToChangeBackground}>
-          {currentRoomData?.room_thumbnail &&
-          currentRoomData?.room_thumbnail !== "none" ? (
-
-            <Avatar
-              sx={{
-                width: 100,
-                height: 100,
-              }}
-              variant="square"
-              src={currentRoomData.room_thumbnail}
-            />
-          ) : (
-            <Typography color={"white"} fontSize={"120px"}>
-              {currentRoomData?.name[0]}
-            </Typography>
-          )}
+            {currentRoomData?.room_thumbnail &&
+            currentRoomData?.room_thumbnail !== "none" ? (
+              <Avatar
+                sx={{
+                  width: 100,
+                  height: 100,
+                }}
+                variant="square"
+                src={currentRoomData.room_thumbnail}
+              />
+            ) : (
+              <Typography color={"white"} fontSize={"120px"}>
+                {currentRoomData?.name[0]}
+              </Typography>
+            )}
           </IconButton>
         </Box>
       </div>
-      <Typography fontSize={"20px"} fontWeight={"bold"}>
-        {currentRoomData?.name}
-      </Typography>
-
+      <Box flexDirection={"row"} display="flex">
+        <Typography fontSize={"20px"} fontWeight={"bold"}>
+          {currentRoomData?.name}
+        </Typography>
+        <IconButton
+          onClick={() => setShowRoomRenameModal(true)}
+          style={{
+            marginLeft: 10,
+          }}
+        >
+          <EditIcon fontSize="small" />
+        </IconButton>
+      </Box>
       <Container
         style={{
           flexDirection: "row",
@@ -197,6 +213,39 @@ export default function ChatDetailCard() {
             onClick={() => {
               setShowModal(false);
               handleChangeDescription(newDescription);
+            }}
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+            }}
+            variant="outlined"
+          >
+            <Typography id="modal-modal-description">Submit</Typography>
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={showRoomRenameModal}
+        onClose={() => setShowRoomRenameModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Set new room name
+          </Typography>
+          <TextField
+            onChange={(e) => setNewRoomName(e.target.value)}
+            margin="normal"
+            id="outlined-basic"
+            label="Room Name"
+            variant="outlined"
+          />
+          <Button
+            onClick={() => {
+              setShowRoomRenameModal(false);
+              handleChangeRoomName(newRoomName);
             }}
             style={{
               justifyContent: "center",

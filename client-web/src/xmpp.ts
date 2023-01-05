@@ -196,10 +196,13 @@ const onGetRoomInfo = (stanza: Element | any) => {
     const roomDescription = featureList.children.find(
       (item) => item.attrs.var === "muc#roominfo_description"
     ).children[0]?.children[0];
-    console.log(roomDescription);
+    const roomName = featureList.children.find(
+      (item) => item.attrs.var === "muc#roomconfig_roomname"
+    ).children[0]?.children[0];
+
     const roomData = {
       jid: currentRoomData.jid,
-      name: currentRoomData.name,
+      name: roomName,
       room_background: currentRoomData.room_background,
       room_thumbnail: currentRoomData.room_thumbnail,
       users_cnt: currentRoomData.users_cnt,
@@ -224,6 +227,12 @@ const onGetRoomMemberInfo = (stanza: Element | any) => {
 const onChangeDescription = (stanza: Element, xmpp: any) => {
   if (stanza.attrs.id === "changeRoomDescription") {
     // console.log(stanza)
+    xmpp.getRoomInfo(stanza.attrs.from);
+  }
+};
+
+const onChangeRoomName = (stanza: Element, xmpp: any) => {
+  if (stanza.attrs.id === "changeRoomName") {
     xmpp.getRoomInfo(stanza.attrs.from);
   }
 };
@@ -395,12 +404,14 @@ const onNewSubscription = (stanza: Element, xmpp: XmppClass) => {
   }
 };
 const onRoomDesignChange = (stanza: Element, xmpp: XmppClass) => {
+  if (stanza.attrs.id === "unsubscribe") {
+    xmpp.getRooms();
+  }
   if (
     stanza.attrs.id === "setRoomImage" ||
-    stanza.attrs.id === "setRoomBackground" || 
-    stanza.attrs.id === "unsubscribe"
+    stanza.attrs.id === "setRoomBackground"
   ) {
-    xmpp.getRooms();
+    xmpp.getRoomInfo(stanza.attrs.from);
   }
 };
 
@@ -448,6 +459,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onGetRoomInfo(stanza));
     this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
     this.client.on("stanza", (stanza) => onChangeDescription(stanza, this));
+    this.client.on("stanza", (stanza) => onChangeRoomName(stanza, this));
     this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("stanza", (stanza) => onRemoveFromBlackList(stanza, this));
@@ -1100,6 +1112,39 @@ class XmppClass {
             "field",
             { var: "muc#roomconfig_roomdesc" },
             xml("value", {}, newDescription)
+          )
+        )
+      )
+    );
+
+    this.client.send(stanza);
+  };
+
+  changeRoomName = (roomJID: string, newRoomName: string) => {
+    console.log(roomJID, newRoomName);
+    const stanza = xml(
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: "changeRoomName",
+        to: roomJID,
+        type: "set",
+      },
+      xml(
+        "query",
+        { xmlns: "http://jabber.org/protocol/muc#owner" },
+        xml(
+          "x",
+          { xmlns: "jabber:x:data", type: "submit" },
+          xml(
+            "field",
+            { var: "FORM_TYPE" },
+            xml("value", {}, "http://jabber.org/protocol/muc#roomconfig")
+          ),
+          xml(
+            "field",
+            { var: "muc#roomconfig_roomname" },
+            xml("value", {}, newRoomName)
           )
         )
       )
