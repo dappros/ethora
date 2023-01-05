@@ -53,6 +53,7 @@ import {NftListItem} from '../../Transactions/NftListItem';
 import Modal from 'react-native-modal';
 import {alpha} from '../../../helpers/aplha';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
+import { showToast } from '../../Toast/toast';
 
 interface TransactionModalProps {
   type: string | undefined;
@@ -370,7 +371,7 @@ const TransactionModal = (props: TransactionModalProps) => {
     clearState();
   };
 
-  const handleBanUser = () => {
+  const handleBanUser = (name:string,senderName:string) => {
     const bannedUserWalletAddres = underscoreManipulation(
       extraData?.walletFromJid,
     );
@@ -379,7 +380,7 @@ const TransactionModal = (props: TransactionModalProps) => {
     );
     const roomJID = extraData.chatJid;
 
-    Alert.alert('Kick', 'Kick User from this room?', 
+    Alert.alert('Kick', `Kick ${name} from this room?`, 
     [
       {
         text: "Cancel",
@@ -396,6 +397,7 @@ const TransactionModal = (props: TransactionModalProps) => {
         bannedUserWalletAddres,
         chatStore.xmpp,
         )
+        chatStore.setUserBanData(senderName, name);
         clearState();
       }
     }
@@ -648,7 +650,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                   <View style={{width: wp('70%'), alignItems: 'center'}}>
                     <Seperator />
                     <ReportAndBlockButton
-                      onPress={handleBanUser}
+                      onPress={()=>handleBanUser(extraData.name, extraData.senderName)}
                       text={'Kick this user'}
                       style={{backgroundColor: '#a32f2b'}}
                     />

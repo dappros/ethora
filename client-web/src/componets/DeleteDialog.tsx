@@ -10,7 +10,7 @@ interface IProps {
   open: boolean;
   onClose: () => void;
   onDeletePress: () => void;
-  loading: boolean;
+  loading?: boolean;
   title: string;
   description: string;
   deleteButtonTitle?: string;
@@ -44,7 +44,7 @@ export function DeleteDialog({
         <Button disabled={loading} onClick={onClose}>
           {cancelButtonTitle || "Cancel"}
         </Button>
-        <Button disabled={loading} onClick={onClose} autoFocus color={"error"}>
+        <Button disabled={loading} onClick={onDeletePress} autoFocus color={"error"}>
           {deleteButtonTitle || "Delete"}
         </Button>
       </DialogActions>

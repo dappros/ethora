@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import {
@@ -37,6 +43,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -44,7 +51,9 @@ import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
 import { defaultChats, ROOMS_FILTERS } from "../../config/config";
-
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { QrModal } from "../Profile/QrModal";
+import { generateChatLink } from "../../utils";
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
@@ -103,33 +112,35 @@ const getPosition = (
   return result;
 };
 
-const defaultRoomsFilter = (
-    rooms: TUserChatRooms[]
-) => {
+const defaultRoomsFilter = (rooms: TUserChatRooms[]) => {
   return rooms.filter((item) => {
     const splitedJid = item?.jid?.split("@")[0];
     return defaultChats[splitedJid];
   });
-}
+};
 
 const filterChatRooms = (
   rooms: TUserChatRooms[],
   filter: TActiveRoomFilter
 ) => {
-  if (filter === ROOMS_FILTERS.official) {
-    let defaultRooms =  defaultRoomsFilter(rooms);
+  if (filter === ROOMS_FILTERS.official || filter === ROOMS_FILTERS.favourite) {
+    let defaultRooms = defaultRoomsFilter(rooms);
 
     let roomsList = [];
     const roomsGroup = useStoreState.getState().userChatRoomGroups;
 
     for (let index = 0; index < roomsGroup.length; ++index) {
-      let groupData = roomsGroup[index]
-      let roomData = rooms.filter((item) => item.jid === groupData.jid && groupData.group === ROOMS_FILTERS.official);
-      if(roomData[0]){
-        roomsList.push(roomData[0])
+      let groupData = roomsGroup[index];
+      let roomData = rooms.filter(
+        (item) =>
+          item.jid === groupData.jid &&
+          groupData.group === ROOMS_FILTERS.official
+      );
+      if (roomData[0]) {
+        roomsList.push(roomData[0]);
       }
     }
-    let finalRooms = roomsList.concat(defaultRooms)
+    let finalRooms = roomsList.concat(defaultRooms);
     return finalRooms;
   }
   return rooms;
@@ -148,6 +159,10 @@ export function ChatInRoom() {
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const [currentRoom, setCurrentRoom] = useState("");
+  const currentPickedRoom = useMemo(() => {
+    return userChatRooms.find((item) => item.jid === currentRoom);
+  }, [userChatRooms, currentRoom]);
+
   const [roomData, setRoomData] = useState<{
     jid: string;
     name: string;
@@ -166,6 +181,8 @@ export function ChatInRoom() {
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [openDialog, setOpenDialog] = useState(false);
   const [showDialogTxt, setShowDialogTxt] = useState(false);
+  const [isQrModalVisible, setQrModalVisible] = useState(false);
+
   const [dialogTxt, setDialogTxt] = useState<{
     headline: string;
     description: string;
@@ -179,14 +196,15 @@ export function ChatInRoom() {
     (state) => state.setActiveRoomFilter
   );
   const openLastMetaRoom = activeRoomFilter === ROOMS_FILTERS.meta;
-
+  const closeQrModal = () => {
+    setQrModalVisible(false);
+  };
   const onDrop = useCallback(
     (acceptedFiles) => {
       sendFile(acceptedFiles[0]);
     },
     [roomData]
   );
-
   const { getRootProps } = useDropzone({
     onDrop,
     noClick: true,
@@ -500,8 +518,8 @@ export function ChatInRoom() {
               >
                 <Avatar
                   src={
-                    room.room_background !== "none"
-                      ? room.room_background
+                    room.room_thumbnail !== "none"
+                      ? room.room_thumbnail
                       : "https://icotar.com/initials/" + room.name
                   }
                 />
@@ -513,12 +531,13 @@ export function ChatInRoom() {
         <div {...getRootProps()} style={{ width: "100%", height: "100%" }}>
           <ChatContainer>
             {!!roomData && (
-              <ConversationHeader onClick={() => handleChatDetailClick()}>
+              <ConversationHeader>
                 <ConversationHeader.Back />
                 {messages.filter((item: any) => item.roomJID === currentRoom)
                   .length > 0 && (
                   <ConversationHeader.Content
                     userName={roomData.name}
+                    onClick={handleChatDetailClick}
                     info={
                       "Active " +
                       formatDistance(
@@ -540,10 +559,23 @@ export function ChatInRoom() {
                 )}
                 <ConversationHeader.Actions>
                   <BookmarkRemoveIcon />
+                  <IconButton
+                    sx={{ color: "black" }}
+                    onClick={() => setQrModalVisible(true)}
+                  >
+                    <QrCodeIcon />
+                  </IconButton>
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
             <MessageList
+              style={{
+                backgroundImage: currentPickedRoom?.room_background
+                  ? `url(${currentPickedRoom.room_background})`
+                  : "white",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "100% 100%",
+              }}
               loadingMore={loaderArchive}
               onYReachStart={onYReachStart}
               disableOnYReachWhenNoScroll={true}
@@ -588,7 +620,7 @@ export function ChatInRoom() {
                   }
                 })}
               {messages.length <= 0 ||
-                (!currentRoom && (
+                (!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" && (
                   <MessageList.Content
                     style={{
                       display: "flex",
@@ -601,8 +633,8 @@ export function ChatInRoom() {
                   >
                     {!loaderArchive ? (
                       <span>
-                        {!currentRoom &&
-                          "To get started, please select a chat room."}
+                        {!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" ?
+                          "Choose a chat room or create one to start a conversation." : null}
                       </span>
                     ) : (
                       "Loading..."
@@ -610,7 +642,7 @@ export function ChatInRoom() {
                   </MessageList.Content>
                 ))}
               {!loaderArchive &&
-                currentRoom &&
+                currentRoom && currentRoom !== "none@conference.dev.dxmpp.com" &&
                 messages.filter((item: any) => item.roomJID === currentRoom)
                   .length <= 0 && (
                   <MessageList.Content
@@ -623,7 +655,7 @@ export function ChatInRoom() {
                       fontSize: "1.2em",
                     }}
                   >
-                    Message list is empty
+                    Message list is empty {currentRoom}
                   </MessageList.Content>
                 )}
             </MessageList>
@@ -676,6 +708,12 @@ export function ChatInRoom() {
           </DialogActions>
         ) : null}
       </Dialog>
+      <QrModal
+        open={isQrModalVisible}
+        link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}
+        onClose={closeQrModal}
+        title={'Share Chatroom'}
+      />
       <MetaNavigation
         open={showMetaNavigation || openLastMetaRoom}
         chatId={currentRoom.split("@")[0]}

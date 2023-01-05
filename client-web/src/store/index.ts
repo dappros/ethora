@@ -16,7 +16,7 @@ export type TUser = {
   referrerId?: string;
   ACL?: {
     ownerAccess: boolean;
-    musterAccess: boolean;
+    masterAccess: boolean;
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
@@ -102,7 +102,7 @@ export type TUserChatRooms = {
 
 export type TUserChatRoomGroups = {
   jid: string;
-  group: string;
+  group: TActiveRoomFilter;
 };
 
 type TApp = {
@@ -147,7 +147,7 @@ export type TRoomRoles = {
   role: string;
 };
 
-export type TActiveRoomFilter = "official" | "meta" | "groups" | "";
+export type TActiveRoomFilter = "official" | "meta" | "groups" | 'favourite' |  "";
 
 interface IStore {
   user: TUser;
@@ -467,6 +467,7 @@ const _useStore = create<IStore>()(
                 state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
                 state.userChatRooms[currentIndex].description =
                   data.description;
+                state.userChatRooms[currentIndex].name = data.name;
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>

@@ -42,16 +42,16 @@ export const produceNfmtItems = (array = []) => {
   const uniqueTotal = 1;
 
   for (const item of array) {
-    if (item.tokenType === 'NFMT') {
+    if (item.tokenType === "NFMT") {
       for (let i = 0; i < item.balances.length; i++) {
         const tokenBalance = item.balances[i];
         const tokenType = +item.contractTokenIds[i];
         const total = item.maxSupplies.find((supply, i) => tokenType === i + 1);
-        const traits = item.traits.map(trait =>
-          trait.find((el, i) => tokenType === i + 1),
+        const traits = item.traits.map((trait) =>
+          trait.find((el, i) => tokenType === i + 1)
         );
-        total < rareTotal && traits.push('Rare');
-        total === uniqueTotal && traits.push('Unique!');
+        total < rareTotal && traits.push("Rare");
+        total === uniqueTotal && traits.push("Unique!");
         const resItem = {
           ...item,
           balance: tokenBalance,
@@ -90,14 +90,18 @@ export const generateProfileLink = ({
   linkToken,
 }: IProfileLink) => {
   return `${mobileEthoraBaseUrl}=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
-    linkToken ?? ''
+    linkToken ?? ""
   }`;
 };
-
+export const generateChatLink = ({ roomAddress }: { roomAddress: string }) => {
+  if (!roomAddress) return "";
+  const splitedAddress = roomAddress.split("@")[0];
+  return `${mobileEthoraBaseUrl}${splitedAddress}`;
+};
 interface IDocLink {
   linkToken: string;
 }
 
-export const generateDocumentLink = ({linkToken}: IDocLink) => {
+export const generateDocumentLink = ({ linkToken }: IDocLink) => {
   return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
 };

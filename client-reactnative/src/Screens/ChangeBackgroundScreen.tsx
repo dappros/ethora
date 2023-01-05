@@ -1,4 +1,4 @@
-import { Button, FlatList, HStack, ScrollView, Text, View } from 'native-base';
+import {Button, FlatList, HStack, ScrollView, Text, View} from 'native-base';
 import * as React from 'react';
 import {
   commonColors,
@@ -20,7 +20,6 @@ import {underscoreManipulation} from '../helpers/underscoreLogic';
 import DocumentPicker from 'react-native-document-picker';
 import {uploadFiles} from '../helpers/uploadFiles';
 import {fileUpload} from '../config/routesConstants';
-
 
 const renderCard = (
   index: number,
@@ -68,48 +67,51 @@ const ChangeBackgroundScreen = observer((props: any) => {
     underscoreManipulation(loginStore.initialData.walletAddress) +
     '@' +
     apiStore.xmppDomains.DOMAIN;
-    
-    const roomJid = currentRoomDetail.jid;
 
-    function onSelect(index:number){
-        chatStore.changeBackgroundTheme(index)
-        if(chatStore.selectedBackgroundIndex!=-1){
-            setRoomImage(
-                userJid,
-                roomJid,
-                currentRoomDetail.roomThumbnail?currentRoomDetail.roomThumbnail:'none',
-                defaultChatBackgroundTheme[chatStore.selectedBackgroundIndex].value,
-                'background',
-                chatStore.xmpp
-            );
-        }
-        chatStore.updateRoomInfo(roomJID,{
-            roomBackgroundIndex:chatStore.selectedBackgroundIndex
-        })
+  const roomJid = currentRoomDetail.jid;
+
+  function onSelect(index: number) {
+    chatStore.changeBackgroundTheme(index);
+    if (chatStore.selectedBackgroundIndex != -1) {
+      setRoomImage(
+        userJid,
+        roomJid,
+        currentRoomDetail.roomThumbnail
+          ? currentRoomDetail.roomThumbnail
+          : 'none',
+        defaultChatBackgroundTheme[chatStore.selectedBackgroundIndex].value,
+        'background',
+        chatStore.xmpp,
+      );
     }
+    chatStore.updateRoomInfo(roomJID, {
+      roomBackgroundIndex: chatStore.selectedBackgroundIndex,
+    });
+  }
 
-    const sendFiles = async (data: any) => {
-        try {
-            const url = apiStore.defaultUrl + fileUpload;
-            const response = await uploadFiles(data, loginStore.userToken, url);
-            const file = response.results[0];
-            setRoomImage(
-                userJid,
-                roomJid,
-                currentRoomDetail.roomThumbnail?currentRoomDetail.roomThumbnail:'none',
-                file.location,
-                'background',
-                chatStore.xmpp
-            );
-            chatStore.updateRoomInfo(roomJID,{
-                roomBackgroundIndex:-1
-            })
-            chatStore.changeBackgroundTheme(-1);
-            
-        } catch (error) {
-            console.log(error);
-        }
-    };
+  const sendFiles = async (data: any) => {
+    try {
+      const url = apiStore.defaultUrl + fileUpload;
+      const response = await uploadFiles(data, loginStore.userToken, url);
+      const file = response.results[0];
+      setRoomImage(
+        userJid,
+        roomJid,
+        currentRoomDetail.roomThumbnail
+          ? currentRoomDetail.roomThumbnail
+          : 'none',
+        file.location,
+        'background',
+        chatStore.xmpp,
+      );
+      chatStore.updateRoomInfo(roomJID, {
+        roomBackgroundIndex: -1,
+      });
+      chatStore.changeBackgroundTheme(-1);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onUploadPress = async () => {
     if (
@@ -133,25 +135,25 @@ const ChangeBackgroundScreen = observer((props: any) => {
     }
   };
 
-    return (
-        <ScrollView flex={1} padding="5">
-
-            <HStack justifyContent={"flex-start"} alignItems={"center"}>
-                <HStack justifyContent={"flex-start"} alignItems={"center"}>
-                    <Pressable onPress={()=>navigation.goBack()}>
-                        <MaterialIcons
-                        color={"black"}
-                        name='arrow-back-ios'
-                        size={hp('3%')}
-                        />
-                    </Pressable>
-                    <Text
-                    fontWeight={"bold"}
-                    fontSize={hp('2.5')}
-                    fontFamily={textStyles.boldFont}
-                    >Change Background</Text>
-                </HStack>
-            </HStack>
+  return (
+    <ScrollView flex={1} padding="5">
+      <HStack justifyContent={'flex-start'} alignItems={'center'}>
+        <HStack justifyContent={'flex-start'} alignItems={'center'}>
+          <Pressable onPress={() => navigation.goBack()}>
+            <MaterialIcons
+              color={'black'}
+              name="arrow-back-ios"
+              size={hp('3%')}
+            />
+          </Pressable>
+          <Text
+            fontWeight={'bold'}
+            fontSize={hp('2.5')}
+            fontFamily={textStyles.boldFont}>
+            Change Background
+          </Text>
+        </HStack>
+      </HStack>
 
       <Button
         bgColor={'transparent'}
@@ -167,42 +169,34 @@ const ChangeBackgroundScreen = observer((props: any) => {
         </Text>
       </Button>
 
-            {chatStore.selectedBackgroundIndex === -1?
-                <View alignItems={"flex-start"}>
-                    <Text
-                    fontSize={hp("1.8%")}
-                    fontFamily={textStyles.lightFont}
-                    >
-                        Selected custom image
-                    </Text>
+      {chatStore.selectedBackgroundIndex === -1 ? (
+        <View alignItems={'flex-start'}>
+          <Text fontSize={hp('1.8%')} fontFamily={textStyles.lightFont}>
+            Selected custom image
+          </Text>
 
-                    <ChatBackgroundCard
-                    index={chatStore.selectedBackgroundIndex}
-                    onSelect={()=>console.log("Pressed")}
-                    alt={"Custom image"}
-                    isSelected
-                    value={currentRoomDetail.roomBackground}
-                    />
-                </View>:null
+          <ChatBackgroundCard
+            index={chatStore.selectedBackgroundIndex}
+            onSelect={() => console.log('Pressed')}
+            alt={'Custom image'}
+            isSelected
+            value={currentRoomDetail.roomBackground}
+          />
+        </View>
+      ) : null}
 
-            }
+      <Text fontSize={hp('1.8%')} fontFamily={textStyles.lightFont}>
+        Select one of the backgrounds
+      </Text>
 
-            <Text
-            fontSize={hp("1.8%")}
-            fontFamily={textStyles.lightFont}
-            >
-                Select one of the backgrounds
-            </Text>
-
-            <FlatList
-            numColumns={2}
-            scrollEnabled={false}
-            data={chatStore.backgroundTheme}
-            renderItem={({index,item})=>renderCard(index,item, onSelect)}
-            />
-
-        </ScrollView>
-    );
+      <FlatList
+        numColumns={2}
+        scrollEnabled={false}
+        data={chatStore.backgroundTheme}
+        renderItem={({index, item}) => renderCard(index, item, onSelect)}
+      />
+    </ScrollView>
+  );
 });
 
 export default ChangeBackgroundScreen;

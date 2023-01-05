@@ -156,6 +156,12 @@ export class ChatStore {
   };
   backgroundTheme = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
+  userBanData={
+    success:false,
+    senderName:'',
+    name:''
+  }
+  
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -210,8 +216,34 @@ export class ChatStore {
       this.listOfThreads = [];
       this.backgroundTheme = defaultChatBackgroundTheme;
       this.selectedBackgroundIndex = 0;
+      this.userBanData={
+        success:false,
+        senderName:'',
+        name:''
+      }
     });
   };
+
+  setUserBanData = (senderName:string, name:string)=>{
+    runInAction(() => {
+      this.userBanData.name = name;
+      this.userBanData.senderName = senderName;
+    })
+  }
+
+  setUserBanSuccess = (value:boolean) => {
+    runInAction(()=>{
+      this.userBanData.success = value;
+    })
+  }
+
+  clearUserBanData = () => {
+    runInAction(()=>{
+      this.userBanData.success = false;
+      this.userBanData.name = '';
+      this.userBanData.senderName = '';
+    })
+  }
 
   setRoomRoles = (jid: string, role: string) => {
     runInAction(() => {
@@ -686,7 +718,8 @@ export class ChatStore {
       }
 
       if(stanza.attrs.id === 'ban_user'){
-        showToast('success', 'Success', 'User kicked!', 'top');
+        this.setUserBanSuccess(true);
+        showToast('success', 'Success', `${this.userBanData.name} removed by ${this.userBanData.senderName}`, 'top');
       }
 
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {

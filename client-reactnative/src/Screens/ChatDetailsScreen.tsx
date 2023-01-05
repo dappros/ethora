@@ -53,7 +53,8 @@ import {fileUpload} from '../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
 import { ROUTES } from '../constants/routes';
-
+import ChangeRoomNameModal from '../components/Modals/Chat/changeRoomNameModal';
+import {renameTheRoom} from '../helpers/RoomList/renameRoom';
 
 
 interface longTapUserProps{
@@ -69,11 +70,12 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const {chatStore, loginStore} = useStores();
   const currentRoomDetail = chatStore.roomList?.find((item: any) => {
-    if (item.name === route.params.roomName) {
+    if (item.jid === route.params.roomJID) {
       return item;
     }
   });
-  const roomJID = currentRoomDetail.jid;
+
+  const roomJID = currentRoomDetail?.jid;
   const { isOpen, onOpen, onClose } = useDisclose();
 
   const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
@@ -86,6 +88,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const [kickUserItem, setKickUserItem] = useState<longTapUserProps|{}>({});
   const [descriptionModalVisible, setDescriptionModalVisible] = useState<boolean>(false)
   const [isShowKickDialog, setIsShowKickDialog] = useState(false);
+
+  const [roomNameModalVisible, setRoomNameModalVisible] = useState<boolean>(false);
 
   const handleCloseKickDialog = () => setIsShowKickDialog(false);
   const cancelRef = React.useRef(null);
@@ -365,6 +369,18 @@ const ChatDetailsScreen = observer(({route}: any) => {
         alert('Only owners and moderators can edit room details')
       }
     }
+    
+
+    const handleRoomNameEdit = () => {
+      if (
+        chatStore.roomRoles[room.jid] === 'moderator' ||
+        chatStore.roomRoles[room.jid] === 'admin'
+      ) {
+      setRoomNameModalVisible(true)
+      }else{
+        alert('Only owners and moderators can edit room details')
+      }
+    }
 
     return (
       <View margin={10} justifyContent="center" alignItems="center">
@@ -409,11 +425,27 @@ const ChatDetailsScreen = observer(({route}: any) => {
             )}
           </Box>
         </TouchableOpacity>
+        
+        <HStack alignItems={"center"}>
         <Text
         color={"black"}
         fontSize={hp('2.5%')} fontFamily={textStyles.boldFont}>
           {roomName?roomName:'No name'}
         </Text>
+        {(chatStore.roomRoles[room.jid] === 'moderator' ||
+        chatStore.roomRoles[room.jid] === 'admin')&&
+        <Pressable
+        onPress={handleRoomNameEdit}
+        >
+        <AntIcon
+          name="edit"
+          color={chatStore.roomRoles[room.jid] === 'moderator' ||
+          chatStore.roomRoles[room.jid] === 'admin'?commonColors.primaryColor:'grey'}
+          size={hp('2%')}
+        />
+        </Pressable>
+        }
+        </HStack>
         
         <Text
         color={"black"}
@@ -422,6 +454,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
           fontFamily={textStyles.regularFont}>
             {chatStore.roomsInfoMap[roomJID].roomDescription?chatStore.roomsInfoMap[roomJID].roomDescription:'No description here'}
         </Text>
+        {(chatStore.roomRoles[room.jid] === 'moderator' ||
+        chatStore.roomRoles[room.jid] === 'admin')&&
         <Pressable
         onPress={handleEditDesriptionPress}
         >
@@ -432,6 +466,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
           size={hp('2%')}
         />
         </Pressable>
+        }
   
         <HStack marginTop={2} justifyContent={'flex-end'} alignItems="center">
               <Text
@@ -471,12 +506,12 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
           <View flex={0.4} justifyContent="flex-end" flexDirection="row">
 
-            {defaultChats[roomJID.split('@')[0]] ? (
+            {defaultChats[roomJID?.split('@')[0]] ? (
               null
             ) : (
               <View flex={0.3}>
                 <TouchableOpacity
-                  disabled={defaultChats[roomJID.split('@')[0]] ? true : false}
+                  disabled={defaultChats[roomJID?.split('@')[0]] ? true : false}
                   onPress={deleteRoomAlert}>
                   <AntIcon
                     name={'delete'}
@@ -489,12 +524,12 @@ const ChatDetailsScreen = observer(({route}: any) => {
             )}
               <View flex={0.3}>
               <TouchableOpacity
-                disabled={defaultChats[roomJID.split('@')[0]] ? true : false}
+                disabled={defaultChats[roomJID?.split('@')[0]] ? true : false}
                 onPress={toggleFavourite}>
                 <AntIcon
                   name={
                     chatStore.roomsInfoMap[roomJID]?.isFavourite ||
-                    defaultChats[roomJID.split('@')[0]]
+                    defaultChats[roomJID?.split('@')[0]]
                       ? 'star'
                       : 'staro'
                   }
@@ -505,8 +540,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
               </TouchableOpacity>
             </View>
 
-            {chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
-            chatStore.roomRoles[currentRoomDetail.jid] === 'admin'?
+            {chatStore.roomRoles[currentRoomDetail?.jid] === 'moderator' ||
+            chatStore.roomRoles[currentRoomDetail?.jid] === 'admin'?
             <View paddingRight={2} alignItems={'flex-end'} flex={0.3}>
               <Menu
                 w="190"
@@ -524,7 +559,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                     </TouchableOpacity>
                   );
                 }}>
-                {defaultChats[roomJID.split('@')[0]] ? null : (
+                {defaultChats[roomJID?.split('@')[0]] ? null : (
                   <>
                     <Menu.Item
                       onPress={toggleFavourite}
@@ -537,8 +572,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
                     <Divider />
                   </>
                 )}
-                {chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
-                chatStore.roomRoles[currentRoomDetail.jid] === 'admin'?
+                {chatStore.roomRoles[currentRoomDetail?.jid] === 'moderator' ||
+                chatStore.roomRoles[currentRoomDetail?.jid] === 'admin'?
                 <Menu.Item
                   onPress={() => navigation.navigate(ROUTES.CHANGEBACKGROUNDSCREEN,{roomJID:roomJID, roomName:route.params.roomName})}
                   _text={{
@@ -547,7 +582,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                   Change Background
                 </Menu.Item>:null
                 }
-                {defaultChats[roomJID.split('@')[0]] ? null : (
+                {defaultChats[roomJID?.split('@')[0]] ? null : (
                   <>
                     <Divider />
                     <Menu.Item
@@ -621,8 +656,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
               {item.name ? item.name : null}
             </Text>
             { 
-            (chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
-            chatStore.roomRoles[currentRoomDetail.jid] === 'admin')&&!item.jid.includes(manipulatedWalletAddress)&&(item.role !== 'moderator' ||item.role !== 'admin' || item.role !== 'owner' )&&
+            (chatStore.roomRoles[currentRoomDetail?.jid] === 'moderator' ||
+            chatStore.roomRoles[currentRoomDetail?.jid] === 'admin')&&!item.jid.includes(manipulatedWalletAddress)&&(item.role !== 'moderator' ||item.role !== 'admin' || item.role !== 'owner' )&&
             <Button
             padding={"0"}
             width={hp('7%')}
@@ -657,7 +692,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             </Box>: null
           }
 
-          {item.role !== 'none'?
+          {(item.role !== 'none'&&item.role !=='outcast')&&
             <Box
               borderWidth={item.role ? 1 : 0}
               rounded="full"
@@ -665,7 +700,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
               alignItems={'center'}
               flex={0.2}>
               {item.role}
-            </Box>:null
+            </Box>
           }
         </Pressable>
         )}
@@ -777,7 +812,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         paddingLeft={'2'}
         paddingRight={'2'}>
         <HStack>
-          {defaultChats[roomJID.split('@')[0]] ? (
+          {defaultChats[roomJID?.split('@')[0]] ? (
             <View flex={0.5}></View>
           ) : (
             <TouchableOpacity
@@ -813,6 +848,14 @@ const ChatDetailsScreen = observer(({route}: any) => {
       newDescription,
       chatStore.xmpp
     )
+  }
+
+
+  const handleChangeRoomName = (newRoomName:string) => {
+    setRoomNameModalVisible(false);
+    renameTheRoom(manipulatedWalletAddress,currentRoomDetail.jid,{
+      roomName: newRoomName,
+    },chatStore.xmpp, chatStore.updateRoomInfo)
   }
 
   return (
@@ -885,8 +928,15 @@ const ChatDetailsScreen = observer(({route}: any) => {
       <ChangeRoomDescriptionModal
       modalVisible={descriptionModalVisible}
       setModalVisible={setDescriptionModalVisible}
-      currentDescription={chatStore.roomsInfoMap[roomJID].roomDescription}
+      currentDescription={chatStore.roomsInfoMap[roomJID]?.roomDescription}
       changeDescription={handleChangeDescription}
+      />
+
+      <ChangeRoomNameModal
+      modalVisible={roomNameModalVisible}
+      setModalVisible={setRoomNameModalVisible}
+      currentRoomName={currentRoomDetail?.name}
+      changeRoomName={handleChangeRoomName}
       />
     </View>
   );
