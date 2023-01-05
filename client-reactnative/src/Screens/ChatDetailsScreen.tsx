@@ -692,7 +692,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             </Box>: null
           }
 
-          {item.role !== 'none'?
+          {(item.role !== 'none'&&item.role !=='outcast')&&
             <Box
               borderWidth={item.role ? 1 : 0}
               rounded="full"
@@ -700,7 +700,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
               alignItems={'center'}
               flex={0.2}>
               {item.role}
-            </Box>:null
+            </Box>
           }
         </Pressable>
         )}

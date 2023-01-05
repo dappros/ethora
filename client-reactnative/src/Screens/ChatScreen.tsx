@@ -44,6 +44,7 @@ import {Actionsheet, useDisclose, View} from 'native-base';
 import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
+import {banSystemMessage} from '../helpers/banSystemMessage';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import AudioRecorderPlayer, {
@@ -197,6 +198,16 @@ const ChatScreen = observer(({route, navigation}: any) => {
       walletStore.clearPreviousTransfer();
     }
   }, [tokenTransferSuccess.success]);
+
+  useEffect(()=>{
+    if(chatStore.userBanData.success){
+      const message = banSystemMessage(
+        {...chatStore.userBanData}
+      )
+      sendMessage(message, true);
+      chatStore.clearUserBanData();
+    }
+  }, [chatStore.userBanData.success])
 
   useEffect(() => {
     const lastMessage = messages?.[0];
