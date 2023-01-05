@@ -5,6 +5,7 @@ import { defaultChatBackgroundThemes } from "../../config/config";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import xmpp from "../../xmpp";
 import { useStoreState } from "../../store";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const BackgroundCard = ({
   url,
@@ -59,6 +60,7 @@ export interface IChangeBackground {}
 export const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
   const { roomJID } = useParams<{ roomJID: string }>();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const {showSnackbar} = useSnackbar()
   const currentRoom = useStoreState((state) =>
     state.userChatRooms.find((item) => item.jid === roomJID)
   );
@@ -72,6 +74,7 @@ export const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
       background.value,
       "background"
     );
+    showSnackbar('success', 'Success! The chat background was set.')
   };
 
   return (
