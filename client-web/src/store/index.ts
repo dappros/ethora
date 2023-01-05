@@ -16,7 +16,7 @@ export type TUser = {
   referrerId?: string;
   ACL?: {
     ownerAccess: boolean;
-    musterAccess: boolean;
+    masterAccess: boolean;
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;

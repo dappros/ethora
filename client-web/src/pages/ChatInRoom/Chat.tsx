@@ -43,6 +43,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -50,7 +51,9 @@ import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
 import { defaultChats, ROOMS_FILTERS } from "../../config/config";
-
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { QrModal } from "../Profile/QrModal";
+import { generateChatLink } from "../../utils";
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
@@ -159,6 +162,7 @@ export function ChatInRoom() {
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
+
   const [roomData, setRoomData] = useState<{
     jid: string;
     name: string;
@@ -177,6 +181,8 @@ export function ChatInRoom() {
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [openDialog, setOpenDialog] = useState(false);
   const [showDialogTxt, setShowDialogTxt] = useState(false);
+  const [isQrModalVisible, setQrModalVisible] = useState(false);
+
   const [dialogTxt, setDialogTxt] = useState<{
     headline: string;
     description: string;
@@ -190,7 +196,9 @@ export function ChatInRoom() {
     (state) => state.setActiveRoomFilter
   );
   const openLastMetaRoom = activeRoomFilter === ROOMS_FILTERS.meta;
-
+  const closeQrModal = () => {
+    setQrModalVisible(false);
+  };
   const onDrop = useCallback(
     (acceptedFiles) => {
       sendFile(acceptedFiles[0]);
@@ -523,12 +531,13 @@ export function ChatInRoom() {
         <div {...getRootProps()} style={{ width: "100%", height: "100%" }}>
           <ChatContainer>
             {!!roomData && (
-              <ConversationHeader onClick={() => handleChatDetailClick()}>
+              <ConversationHeader>
                 <ConversationHeader.Back />
                 {messages.filter((item: any) => item.roomJID === currentRoom)
                   .length > 0 && (
                   <ConversationHeader.Content
                     userName={roomData.name}
+                    onClick={handleChatDetailClick}
                     info={
                       "Active " +
                       formatDistance(
@@ -550,6 +559,12 @@ export function ChatInRoom() {
                 )}
                 <ConversationHeader.Actions>
                   <BookmarkRemoveIcon />
+                  <IconButton
+                    sx={{ color: "black" }}
+                    onClick={() => setQrModalVisible(true)}
+                  >
+                    <QrCodeIcon />
+                  </IconButton>
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
@@ -693,6 +708,12 @@ export function ChatInRoom() {
           </DialogActions>
         ) : null}
       </Dialog>
+      <QrModal
+        open={isQrModalVisible}
+        link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}
+        onClose={closeQrModal}
+        title={'Share Chatroom'}
+      />
       <MetaNavigation
         open={showMetaNavigation || openLastMetaRoom}
         chatId={currentRoom.split("@")[0]}

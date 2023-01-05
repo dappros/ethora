@@ -11,7 +11,7 @@ import { useWeb3React } from "@web3-react/core";
 import { configNFT, configDocuments } from "../config/config";
 import xmpp from "../xmpp";
 import { useHistory } from "react-router";
-import { useStoreState } from "../store";
+import { TUser, useStoreState } from "../store";
 
 export interface IMenu {}
 
@@ -56,8 +56,9 @@ const idActionsSection = {
   ],
 };
 
-const initMenuItems = (user: any, ACL: any) => {
+const initMenuItems = (user: TUser, ACL: any) => {
   let items = [
+    menuAccountSection(user.walletAddress),
     {
       name: "Messaging",
       items: [{ name: "Chats", id: "/chat/none", visible: true }],
@@ -126,7 +127,7 @@ export const Menu: React.FC<IMenu> = ({}) => {
   };
 
   useEffect(() => {
-    if (user.ACL.musterAccess) {
+    if (user.ACL.masterAccess) {
       alert("masterAccess");
     }
   }, []);
