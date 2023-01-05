@@ -56,6 +56,10 @@ export function ChangeChatImageDialog({
                         "icon"
                     );
 
+                    let newRoomData = Object.assign({}, currentRoom);
+                    newRoomData.room_thumbnail = result.data.results[0].location;
+                    useStoreState.getState().updateUserChatRoom(newRoomData);
+
                     setModalText("Success! The chat icon was set.");
                     setLoading(false)
                 })
