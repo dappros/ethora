@@ -397,7 +397,8 @@ const onNewSubscription = (stanza: Element, xmpp: XmppClass) => {
 const onRoomDesignChange = (stanza: Element, xmpp: XmppClass) => {
   if (
     stanza.attrs.id === "setRoomImage" ||
-    stanza.attrs.id === "setRoomBackground"
+    stanza.attrs.id === "setRoomBackground" || 
+    stanza.attrs.id === "unsubscribe"
   ) {
     xmpp.getRooms();
   }
@@ -612,6 +613,15 @@ class XmppClass {
       },
       xml("x", "http://jabber.org/protocol/muc")
     );
+    this.client.send(presence);
+  }
+
+  leaveTheRoom(room: string) {
+    const presence = xml("presence", {
+      from: this.client.jid?.toString(),
+      to: room + "/" + this.client.jid?.getLocal(),
+      type: "unavailable",
+    });
     this.client.send(presence);
   }
   presenceInRoom(room: string) {
