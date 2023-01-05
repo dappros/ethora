@@ -467,6 +467,7 @@ const _useStore = create<IStore>()(
                 state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
                 state.userChatRooms[currentIndex].description =
                   data.description;
+                state.userChatRooms[currentIndex].name = data.name;
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>

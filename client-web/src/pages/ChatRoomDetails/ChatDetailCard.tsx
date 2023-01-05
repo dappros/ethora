@@ -20,7 +20,9 @@ import { ROOMS_FILTERS } from "../../config/config";
 export default function ChatDetailCard() {
   const { roomJID } = useParams<{ roomJID: string }>();
   const [newDescription, setNewDescription] = useState("");
+  const [newRoomName, setNewRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
   const currentRoomData = useStoreState((store) => store.userChatRooms).filter(
     (e) => e.jid === roomJID
   )[0];
@@ -36,9 +38,15 @@ export default function ChatDetailCard() {
     currentRoomGroup &&
     (currentRoomGroup.group === ROOMS_FILTERS.official ||
       currentRoomGroup.group === ROOMS_FILTERS.favourite);
+
   const handleChangeDescription = (newDescription: string) => {
     xmpp.changeRoomDescription(roomJID, newDescription);
   };
+
+  const handleChangeRoomName = (newRoomName: string) => {
+    xmpp.changeRoomName(roomJID, newRoomName);
+  }
+
   const changeRoomType = (status: TActiveRoomFilter) => {
     let roomData = {
       jid: currentRoomData.jid,
@@ -101,10 +109,19 @@ export default function ChatDetailCard() {
         )}
       </Box>
       </div>
+      <Box flexDirection={'row'} display="flex">
       <Typography fontSize={"20px"} fontWeight={"bold"}>
         {currentRoomData?.name}
       </Typography>
-
+      <IconButton
+          onClick={() => setShowRoomRenameModal(true)}
+          style={{
+            marginLeft: 10,
+          }}
+        >
+          <EditIcon fontSize="small" />
+      </IconButton>
+      </Box>
       <Container
         style={{
           flexDirection: "row",
@@ -148,6 +165,39 @@ export default function ChatDetailCard() {
             onClick={() => {
               setShowModal(false);
               handleChangeDescription(newDescription);
+            }}
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+            }}
+            variant="outlined"
+          >
+            <Typography id="modal-modal-description">Submit</Typography>
+          </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={showRoomRenameModal}
+        onClose={() => setShowRoomRenameModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+                <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Set new room name
+          </Typography>
+          <TextField
+            onChange={(e) => setNewRoomName(e.target.value)}
+            margin="normal"
+            id="outlined-basic"
+            label="Room Name"
+            variant="outlined"
+          />
+          <Button
+            onClick={() => {
+              setShowRoomRenameModal(false);
+              handleChangeRoomName(newRoomName);
             }}
             style={{
               justifyContent: "center",
