@@ -22,6 +22,7 @@ interface SecondaryHeaderProps {
   showVersion?: boolean;
   onQRPressed?: any;
   isChatRoomDetail?: boolean;
+  roomJID?:string,
   onBackPress?: () => void;
 }
 
@@ -32,6 +33,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   showVersion,
   onQRPressed,
   isChatRoomDetail,
+  roomJID,
   onBackPress,
 }) => {
   const navigation = useNavigation();
@@ -62,7 +64,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
-            navigation.navigate(ROUTES.CHATDETAILS, {roomName: title})
+            navigation.navigate(ROUTES.CHATDETAILS, {roomName: title, roomJID:roomJID})
           }>
           <Text
             fontFamily={textStyles.semiBoldFont}

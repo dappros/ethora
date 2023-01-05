@@ -7,7 +7,7 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import { getUserRoomsStanza, roomConfigurationForm } from "../../xmpp/stanzas";
 
-export const renameTheRoom = (manipulatedWalletAddress:string, chatJid:string, roomConfig:any, xmpp:any) => {
+export const renameTheRoom = (manipulatedWalletAddress:string, chatJid:string, roomConfig:{roomName:string}, xmpp:any, updateRoomInfo:(jid: string, data: any) => Promise<void>) => {
     roomConfigurationForm(
         manipulatedWalletAddress,
         chatJid,
@@ -15,4 +15,5 @@ export const renameTheRoom = (manipulatedWalletAddress:string, chatJid:string, r
         xmpp
     )
     getUserRoomsStanza(manipulatedWalletAddress,xmpp);
+    updateRoomInfo(chatJid,{name:roomConfig.roomName});
   };
