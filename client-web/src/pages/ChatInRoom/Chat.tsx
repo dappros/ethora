@@ -620,7 +620,7 @@ export function ChatInRoom() {
                   }
                 })}
               {messages.length <= 0 ||
-                (!currentRoom && (
+                (!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" && (
                   <MessageList.Content
                     style={{
                       display: "flex",
@@ -633,8 +633,8 @@ export function ChatInRoom() {
                   >
                     {!loaderArchive ? (
                       <span>
-                        {!currentRoom &&
-                          "To get started, please select a chat room."}
+                        {!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" ?
+                          "Choose a chat room or create one to start a conversation." : null}
                       </span>
                     ) : (
                       "Loading..."
@@ -642,7 +642,7 @@ export function ChatInRoom() {
                   </MessageList.Content>
                 ))}
               {!loaderArchive &&
-                currentRoom &&
+                currentRoom && currentRoom !== "none@conference.dev.dxmpp.com" &&
                 messages.filter((item: any) => item.roomJID === currentRoom)
                   .length <= 0 && (
                   <MessageList.Content
@@ -655,7 +655,7 @@ export function ChatInRoom() {
                       fontSize: "1.2em",
                     }}
                   >
-                    Message list is empty
+                    Message list is empty {currentRoom}
                   </MessageList.Content>
                 )}
             </MessageList>
