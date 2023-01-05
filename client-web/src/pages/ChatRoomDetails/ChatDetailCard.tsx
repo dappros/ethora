@@ -17,7 +17,9 @@ import StarPurple500Icon from "@mui/icons-material/StarPurple500";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import { ROOMS_FILTERS } from "../../config/config";
 import DeleteIcon from "@mui/icons-material/Delete";
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { DeleteDialog } from "../../componets/DeleteDialog";
+import {ChangeChatImageDialog} from "../../componets/Chat/ChatDetail/ChangeChatImageDialog";
 
 export default function ChatDetailCard() {
   const { roomJID } = useParams<{ roomJID: string }>();
@@ -25,6 +27,7 @@ export default function ChatDetailCard() {
   const [newRoomName, setNewRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false);
+  const [showChatImageDialog, setShowChatImageDialog] = useState(false);
 
   const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
   const currentRoomData = useStoreState((store) => store.userChatRooms).find(
@@ -129,6 +132,14 @@ export default function ChatDetailCard() {
                 <StarPurple500Icon />
               )}
             </IconButton>
+            {currentRoomGroup?.group !== ROOMS_FILTERS.official && (
+                <IconButton
+                    sx={{ color: "white" }}
+                    onClick={() => setShowChatImageDialog(true)}
+                >
+                  <InsertPhotoIcon />
+                </IconButton>
+            )}
             {currentRoomGroup?.group !== ROOMS_FILTERS.official && (
               <IconButton
                 sx={{ color: "red" }}
@@ -264,6 +275,12 @@ export default function ChatDetailCard() {
         description={"Do you want to delete this room?"}
         onDeletePress={leaveTheRoom}
         onClose={closeRoomDeleteDialog}
+      />
+      <ChangeChatImageDialog
+          open={showChatImageDialog}
+          title={"Change Image"}
+          description={"Choose a new image from your device"}
+          onClose={() => setShowChatImageDialog(false)}
       />
     </Container>
   );
