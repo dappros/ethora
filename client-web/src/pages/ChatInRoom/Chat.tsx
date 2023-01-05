@@ -518,8 +518,8 @@ export function ChatInRoom() {
               >
                 <Avatar
                   src={
-                    room.room_background !== "none"
-                      ? room.room_background
+                    room.room_thumbnail !== "none"
+                      ? room.room_thumbnail
                       : "https://icotar.com/initials/" + room.name
                   }
                 />
