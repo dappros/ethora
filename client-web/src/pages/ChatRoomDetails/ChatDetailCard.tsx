@@ -111,7 +111,7 @@ export default function ChatDetailCard() {
       let newRoomData = Object.assign({}, currentRoomData);
       newRoomData.room_thumbnail = result.data.results[0].location;
       updateUserChatRoom(newRoomData);
-      showSnackbar("success", " The chat icon was set");
+      showSnackbar("success", "Success! The chat icon was set");
     } catch (error) {
       console.log(error);
       showSnackbar(
