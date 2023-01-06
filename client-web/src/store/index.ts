@@ -98,11 +98,7 @@ export type TUserChatRooms = {
   composing: string;
   toUpdate: boolean;
   description: string;
-};
-
-export type TUserChatRoomGroups = {
-  jid: string;
-  group: TActiveRoomFilter;
+  group?: TActiveRoomFilter;
 };
 
 type TApp = {
@@ -147,7 +143,12 @@ export type TRoomRoles = {
   role: string;
 };
 
-export type TActiveRoomFilter = "official" | "meta" | "groups" | 'favourite' |  "";
+export type TActiveRoomFilter =
+  | "official"
+  | "meta"
+  | "groups"
+  | "favourite"
+  | "";
 
 interface IStore {
   user: TUser;
@@ -184,9 +185,6 @@ interface IStore {
   ) => void;
   clearMessageHistory: () => void;
   sortMessageHistory: () => void;
-  userChatRoomGroups: TUserChatRoomGroups[];
-  setNewChatRoomGroups: (data: TUserChatRoomGroups) => void;
-  updateChatRoomGroups: (data: TUserChatRoomGroups) => void;
   userChatRooms: TUserChatRooms[];
   setNewUserChatRoom: (msg: TUserChatRooms) => void;
   updateUserChatRoom: (data: TUserChatRooms) => void;
@@ -266,7 +264,6 @@ const _useStore = create<IStore>()(
           loaderArchive: false,
           currentUntrackedChatRoom: "",
           userChatRooms: [],
-          userChatRoomGroups: [],
           roomMemberInfo: [],
           roomRoles: [],
           appUsers: [],
@@ -410,19 +407,7 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
-          setNewChatRoomGroups: (userChatRooms: TUserChatRoomGroups) =>
-            set((state) => {
-              state.userChatRoomGroups.unshift(userChatRooms);
-            }),
-          updateChatRoomGroups: (data: TUserChatRoomGroups) =>
-            set((state) => {
-              const currentIndex = state.userChatRoomGroups.findIndex(
-                (el) => el.jid === data.jid
-              );
-              if (state.userChatRoomGroups[currentIndex]) {
-                state.userChatRoomGroups[currentIndex].group = data.group;
-              }
-            }),
+
           setNewUserChatRoom: (userChatRooms: TUserChatRooms) =>
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
@@ -459,15 +444,10 @@ const _useStore = create<IStore>()(
                 (el) => el.jid === data.jid
               );
               if (state.userChatRooms[currentIndex]) {
-                state.userChatRooms[currentIndex].room_background =
-                  data.room_background;
-                state.userChatRooms[currentIndex].room_thumbnail =
-                  data.room_thumbnail;
-                state.userChatRooms[currentIndex].users_cnt = data.users_cnt;
-                state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
-                state.userChatRooms[currentIndex].description =
-                  data.description;
-                state.userChatRooms[currentIndex].name = data.name;
+                state.userChatRooms[currentIndex] = {
+                  ...state.userChatRooms[currentIndex],
+                  ...data,
+                };
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>

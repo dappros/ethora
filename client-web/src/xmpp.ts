@@ -1,8 +1,15 @@
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
+import { defaultChats } from "./config/config";
 import { CONFERENCEDOMAIN, DOMAIN } from "./constants";
-import { TMessageHistory, TRoomRoles, useStoreState } from "./store";
+import {
+  TActiveRoomFilter,
+  TMessageHistory,
+  TRoomRoles,
+  TUserChatRooms,
+  useStoreState,
+} from "./store";
 import { sendBrowserNotification } from "./utils";
 import { history } from "./utils/history";
 
@@ -50,6 +57,15 @@ const onMessage = async (stanza: Element) => {
 
     useStoreState.getState().setNewMessage(msg);
   }
+};
+
+const getRoomGroup = (jid: string, userCount: number): TActiveRoomFilter => {
+  const splittedJid = jid.split('@')[0]
+  if (defaultChats[splittedJid]) {
+    console.log()
+    return "official";
+  }
+  return "groups";
 };
 
 const onMessageHistory = async (stanza: Element) => {
@@ -190,16 +206,15 @@ const onGetRoomInfo = (stanza: Element | any) => {
     (e) => e.jid === stanza.attrs.from
   )[0];
   if (stanza.attrs.id === "roomInfo") {
-
-    if(stanza.children[0] && currentRoomData){
+    if (stanza.children[0] && currentRoomData) {
       const featureList = stanza.children[0].children.find(
-          (item) => item.attrs.xmlns === "jabber:x:data"
+        (item) => item.attrs.xmlns === "jabber:x:data"
       );
       const roomDescription = featureList.children.find(
-          (item) => item.attrs.var === "muc#roominfo_description"
+        (item) => item.attrs.var === "muc#roominfo_description"
       ).children[0]?.children[0];
       const roomName = featureList.children.find(
-          (item) => item.attrs.var === "muc#roomconfig_roomname"
+        (item) => item.attrs.var === "muc#roomconfig_roomname"
       ).children[0]?.children[0];
 
       const roomData = {
@@ -215,7 +230,6 @@ const onGetRoomInfo = (stanza: Element | any) => {
       };
       useStoreState.getState().updateUserChatRoom(roomData);
     }
-
   }
 };
 
@@ -269,7 +283,7 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
           ) {
             roomJID = result.attrs.jid;
             xmpp.presenceInRoom(roomJID);
-            const roomData = {
+            const roomData: TUserChatRooms = {
               jid: roomJID,
               name: result?.attrs.name,
               room_background: result?.attrs.room_background,
@@ -279,6 +293,7 @@ const connectToUserRooms = (stanza: Element, xmpp: any) => {
               composing: "",
               toUpdate: false,
               description: "",
+              group: getRoomGroup(roomJID, +result?.attrs.users_cnt),
             };
             if (
               currentSavedChatRoom.length > 0 &&
@@ -350,8 +365,8 @@ const getListOfRooms = (xmpp: any) => {
 
   xmpp.client.send(xml("presence"));
   xmpp.getArchive(xmpp.client?.jid?.toString());
-  defaultRooms.map((roomJID) => {
-    xmpp.presenceInRoom(roomJID);
+  Object.keys(defaultChats).forEach((roomJID) => {
+    xmpp.presenceInRoom(roomJID + CONFERENCEDOMAIN);
   });
   xmpp.getRooms();
   xmpp.getBlackList();
@@ -425,11 +440,7 @@ const onBan = (stanza: Element) => {
   }
 };
 
-const defaultRooms = [
-  "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc@conference.dev.dxmpp.com",
-  "d0df15e359b5d49aaa965bca475155b81784d9e4c5f242cebe405ae0f0046a22@conference.dev.dxmpp.com",
-  "fd6488675183a9db2005879a945bf5727c8594eaae5cdbd35cb0b02c5751760e@conference.dev.dxmpp.com",
-];
+
 
 class XmppClass {
   public client!: Client;

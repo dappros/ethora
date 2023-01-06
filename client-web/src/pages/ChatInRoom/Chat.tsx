@@ -112,38 +112,23 @@ const getPosition = (
   return result;
 };
 
-const defaultRoomsFilter = (rooms: TUserChatRooms[]) => {
-  return rooms.filter((item) => {
-    const splitedJid = item?.jid?.split("@")[0];
-    return defaultChats[splitedJid];
-  });
-};
-
 const filterChatRooms = (
   rooms: TUserChatRooms[],
   filter: TActiveRoomFilter
 ) => {
   if (filter === ROOMS_FILTERS.official || filter === ROOMS_FILTERS.favourite) {
-    let defaultRooms = defaultRoomsFilter(rooms);
-
-    let roomsList = [];
-    const roomsGroup = useStoreState.getState().userChatRoomGroups;
-
-    for (let index = 0; index < roomsGroup.length; ++index) {
-      let groupData = roomsGroup[index];
-      let roomData = rooms.filter(
-        (item) =>
-          item.jid === groupData.jid &&
-          groupData.group === ROOMS_FILTERS.official
-      );
-      if (roomData[0]) {
-        roomsList.push(roomData[0]);
-      }
-    }
-    let finalRooms = roomsList.concat(defaultRooms);
-    return finalRooms;
+    return rooms.filter(
+      (item) =>
+        item.group === ROOMS_FILTERS.official ||
+        item.group === ROOMS_FILTERS.favourite
+    );
   }
-  return rooms;
+
+  return rooms.filter(
+    (item) =>
+      item.group !== ROOMS_FILTERS.official &&
+      item.group !== ROOMS_FILTERS.favourite
+  );
 };
 
 export function ChatInRoom() {

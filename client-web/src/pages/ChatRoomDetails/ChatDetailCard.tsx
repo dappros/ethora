@@ -39,12 +39,6 @@ export default function ChatDetailCard() {
   );
   const updateUserChatRoom = useStoreState((state) => state.updateUserChatRoom);
   const roomRoles = useStoreState((state) => state.roomRoles);
-  const updateChatRoomGroups = useStoreState(
-    (state) => state.updateChatRoomGroups
-  );
-  const currentRoomGroup = useStoreState(
-    (store) => store.userChatRoomGroups
-  ).find((e) => e?.jid === roomJID);
 
   const { showSnackbar } = useSnackbar();
   const history = useHistory();
@@ -60,9 +54,9 @@ export default function ChatDetailCard() {
     currentRoomRole === "admin";
 
   const isFavouriteOrOfficialRoom =
-    currentRoomGroup &&
-    (currentRoomGroup.group === ROOMS_FILTERS.official ||
-      currentRoomGroup.group === ROOMS_FILTERS.favourite);
+  currentRoomData &&
+    (currentRoomData.group === ROOMS_FILTERS.official ||
+      currentRoomData.group === ROOMS_FILTERS.favourite);
 
   const handleChangeDescription = (newDescription: string) => {
     xmpp.changeRoomDescription(roomJID, newDescription);
@@ -73,11 +67,9 @@ export default function ChatDetailCard() {
   };
 
   const changeRoomType = (status: TActiveRoomFilter) => {
-    let roomData = {
-      jid: currentRoomData.jid,
-      group: status,
-    };
-    updateChatRoomGroups(roomData);
+    const newRoomData = Object.assign({}, currentRoomData);
+    newRoomData.group = status;
+    updateUserChatRoom(newRoomData);
   };
   const goToChangeBackground = (e: React.MouseEvent<HTMLElement>) => {
     if (isAllowedToChangeData) {
@@ -164,7 +156,7 @@ export default function ChatDetailCard() {
               onClick={() =>
                 isFavouriteOrOfficialRoom
                   ? changeRoomType("")
-                  : changeRoomType(ROOMS_FILTERS.official)
+                  : changeRoomType(ROOMS_FILTERS.favourite)
               }
             >
               {isFavouriteOrOfficialRoom ? (
