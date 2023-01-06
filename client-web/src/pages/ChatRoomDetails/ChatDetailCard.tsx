@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
   IconButton,
   Modal,
@@ -19,38 +20,44 @@ import { ROOMS_FILTERS } from "../../config/config";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { DeleteDialog } from "../../componets/DeleteDialog";
-import { ChangeChatImageDialog } from "../../componets/Chat/ChatDetail/ChangeChatImageDialog";
+import { useSnackbar } from "../../context/SnackbarContext";
+import { uploadFile } from "../../http";
 
 export default function ChatDetailCard() {
   const { roomJID } = useParams<{ roomJID: string }>();
+
   const [newDescription, setNewDescription] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false);
-  const [showChatImageDialog, setShowChatImageDialog] = useState(false);
-
   const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
+
+  const [loading, setLoading] = useState<"chatIcon" | false>(false);
+
   const currentRoomData = useStoreState((store) => store.userChatRooms).find(
     (e) => e?.jid === roomJID
   );
+  const updateUserChatRoom = useStoreState((state) => state.updateUserChatRoom);
   const roomRoles = useStoreState((state) => state.roomRoles);
-
-  const history = useHistory();
-
-  const currentRoomRole = roomRoles.find(
-    (value) => value.roomJID === currentRoomData?.jid
-  )?.role;
-  const isAllowedToChangeData =
-    currentRoomRole === "moderator" ||
-    currentRoomRole === "owner" ||
-    currentRoomRole === "admin";
-
   const updateChatRoomGroups = useStoreState(
     (state) => state.updateChatRoomGroups
   );
   const currentRoomGroup = useStoreState(
     (store) => store.userChatRoomGroups
   ).find((e) => e?.jid === roomJID);
+
+  const { showSnackbar } = useSnackbar();
+  const history = useHistory();
+  const fileRef = useRef(null);
+
+  const currentRoomRole = roomRoles.find(
+    (value) => value.roomJID === currentRoomData?.jid
+  )?.role;
+
+  const isAllowedToChangeData =
+    currentRoomRole === "moderator" ||
+    currentRoomRole === "owner" ||
+    currentRoomRole === "admin";
 
   const isFavouriteOrOfficialRoom =
     currentRoomGroup &&
@@ -85,6 +92,39 @@ export default function ChatDetailCard() {
     xmpp.unsubscribe(roomJID);
     closeRoomDeleteDialog();
     history.push("/chat/none");
+  };
+
+  const changeRoomIcon = async (file: File) => {
+    const formData = new FormData();
+    formData.append("files", file);
+    setLoading("chatIcon");
+    try {
+      const result = await uploadFile(formData);
+      const roomAddress = roomJID.split("@")[0];
+      xmpp.setRoomImage(
+        roomAddress,
+        result.data.results[0].location,
+        currentRoomData.room_background,
+        "icon"
+      );
+
+      let newRoomData = Object.assign({}, currentRoomData);
+      newRoomData.room_thumbnail = result.data.results[0].location;
+      updateUserChatRoom(newRoomData);
+      showSnackbar("success", " The chat icon was set");
+    } catch (error) {
+      console.log(error);
+      showSnackbar(
+        "error",
+        "An error occurred while loading the image. " +
+          " ( " +
+          error.message +
+          " " +
+          error.response.data +
+          " )"
+      );
+    }
+    setLoading(false);
   };
   return (
     <Container
@@ -136,12 +176,25 @@ export default function ChatDetailCard() {
             {isAllowedToChangeData && (
               <IconButton
                 sx={{ color: "white" }}
-                onClick={() => setShowChatImageDialog(true)}
+                onClick={() => fileRef.current?.click()}
               >
-                <InsertPhotoIcon />
+                <input
+                  type="file"
+                  name="file"
+                  id="file"
+                  onChange={(event) => changeRoomIcon(event.target.files[0])}
+                  ref={fileRef}
+                  style={{ display: "none" }}
+                  accept="image/*"
+                />
+                {loading === "chatIcon" ? (
+                  <CircularProgress style={{ color: "white" }} size={24} />
+                ) : (
+                  <InsertPhotoIcon />
+                )}
               </IconButton>
             )}
-            {currentRoomGroup?.group !== ROOMS_FILTERS.official && (
+            {isAllowedToChangeData && (
               <IconButton
                 sx={{ color: "red" }}
                 onClick={() => setShowDeleteRoomDialog(true)}
@@ -155,8 +208,9 @@ export default function ChatDetailCard() {
             currentRoomData?.room_thumbnail !== "none" ? (
               <Avatar
                 sx={{
-                  width: 100,
-                  height: 100,
+                  width: 200,
+                  height: 200,
+                  borderRadius: "10px",
                 }}
                 variant="square"
                 src={currentRoomData.room_thumbnail}
@@ -280,12 +334,6 @@ export default function ChatDetailCard() {
         description={"Do you want to delete this room?"}
         onDeletePress={leaveTheRoom}
         onClose={closeRoomDeleteDialog}
-      />
-      <ChangeChatImageDialog
-        open={showChatImageDialog}
-        title={"Change Image"}
-        description={"Choose a new image from your device"}
-        onClose={() => setShowChatImageDialog(false)}
       />
     </Container>
   );
