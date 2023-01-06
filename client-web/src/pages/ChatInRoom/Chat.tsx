@@ -240,7 +240,6 @@ export function ChatInRoom() {
     history.push("/chat/" + jid.split("@")[0]);
     loadMessages(jid);
   };
-
   const loadMessages = (jid: string) => {
     setCurrentRoom(jid);
     const currentRoomData = userChatRooms.filter((e) => e.jid === jid)[0];
@@ -533,30 +532,32 @@ export function ChatInRoom() {
             {!!roomData && (
               <ConversationHeader>
                 <ConversationHeader.Back />
-                {messages.filter((item: any) => item.roomJID === currentRoom)
-                  .length > 0 && (
+                {
                   <ConversationHeader.Content
                     userName={roomData.name}
                     onClick={handleChatDetailClick}
                     info={
+                      messages.filter(
+                        (item: any) => item.roomJID === currentRoom
+                      ).length > 0 &&
                       "Active " +
-                      formatDistance(
-                        subDays(
-                          new Date(
-                            messages
-                              .filter(
-                                (item: any) => item.roomJID === currentRoom
-                              )
-                              .slice(-1)[0].date
+                        formatDistance(
+                          subDays(
+                            new Date(
+                              messages
+                                .filter(
+                                  (item: any) => item.roomJID === currentRoom
+                                )
+                                .slice(-1)[0].date
+                            ),
+                            0
                           ),
-                          0
-                        ),
-                        new Date(),
-                        { addSuffix: true }
-                      )
+                          new Date(),
+                          { addSuffix: true }
+                        )
                     }
                   />
-                )}
+                }
                 <ConversationHeader.Actions>
                   <IconButton
                     sx={{ color: "black" }}
@@ -619,7 +620,8 @@ export function ChatInRoom() {
                   }
                 })}
               {messages.length <= 0 ||
-                (!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" && (
+                !currentRoom ||
+                (currentRoom === "none@conference.dev.dxmpp.com" && (
                   <MessageList.Content
                     style={{
                       display: "flex",
@@ -632,8 +634,10 @@ export function ChatInRoom() {
                   >
                     {!loaderArchive ? (
                       <span>
-                        {!currentRoom || currentRoom === "none@conference.dev.dxmpp.com" ?
-                          "Choose a chat room or create one to start a conversation." : null}
+                        {!currentRoom ||
+                        currentRoom === "none@conference.dev.dxmpp.com"
+                          ? "Choose a chat room or create one to start a conversation."
+                          : null}
                       </span>
                     ) : (
                       "Loading..."
@@ -641,7 +645,8 @@ export function ChatInRoom() {
                   </MessageList.Content>
                 ))}
               {!loaderArchive &&
-                currentRoom && currentRoom !== "none@conference.dev.dxmpp.com" &&
+                currentRoom &&
+                currentRoom !== "none@conference.dev.dxmpp.com" &&
                 messages.filter((item: any) => item.roomJID === currentRoom)
                   .length <= 0 && (
                   <MessageList.Content
@@ -654,7 +659,7 @@ export function ChatInRoom() {
                       fontSize: "1.2em",
                     }}
                   >
-                    Message list is empty {currentRoom}
+                    Message list is empty
                   </MessageList.Content>
                 )}
             </MessageList>
@@ -711,7 +716,7 @@ export function ChatInRoom() {
         open={isQrModalVisible}
         link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}
         onClose={closeQrModal}
-        title={'Share Chatroom'}
+        title={"Share Chatroom"}
       />
       <MetaNavigation
         open={showMetaNavigation || openLastMetaRoom}
