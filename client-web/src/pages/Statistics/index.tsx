@@ -21,8 +21,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import "./styles.scss";
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;

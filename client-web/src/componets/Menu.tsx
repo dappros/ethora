@@ -126,12 +126,6 @@ export const Menu: React.FC<IMenu> = ({}) => {
     handleCloseUserMenu();
   };
 
-  useEffect(() => {
-    if (user.ACL.masterAccess) {
-      alert("masterAccess");
-    }
-  }, []);
-
   return (
     <>
       <IconButton
