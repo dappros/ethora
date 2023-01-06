@@ -558,7 +558,6 @@ export function ChatInRoom() {
                   />
                 )}
                 <ConversationHeader.Actions>
-                  {/* <BookmarkRemoveIcon /> */}
                   <IconButton
                     sx={{ color: "black" }}
                     onClick={() => setQrModalVisible(true)}
