@@ -17,9 +17,9 @@ import StarPurple500Icon from "@mui/icons-material/StarPurple500";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import { ROOMS_FILTERS } from "../../config/config";
 import DeleteIcon from "@mui/icons-material/Delete";
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
 import { DeleteDialog } from "../../componets/DeleteDialog";
-import {ChangeChatImageDialog} from "../../componets/Chat/ChatDetail/ChangeChatImageDialog";
+import { ChangeChatImageDialog } from "../../componets/Chat/ChatDetail/ChangeChatImageDialog";
 
 export default function ChatDetailCard() {
   const { roomJID } = useParams<{ roomJID: string }>();
@@ -34,11 +34,16 @@ export default function ChatDetailCard() {
     (e) => e?.jid === roomJID
   );
   const roomRoles = useStoreState((state) => state.roomRoles);
+
   const history = useHistory();
 
   const currentRoomRole = roomRoles.find(
     (value) => value.roomJID === currentRoomData?.jid
   )?.role;
+  const isAllowedToChangeData =
+    currentRoomRole === "moderator" ||
+    currentRoomRole === "owner" ||
+    currentRoomRole === "admin";
 
   const updateChatRoomGroups = useStoreState(
     (state) => state.updateChatRoomGroups
@@ -68,11 +73,7 @@ export default function ChatDetailCard() {
     updateChatRoomGroups(roomData);
   };
   const goToChangeBackground = (e: React.MouseEvent<HTMLElement>) => {
-    if (
-      currentRoomRole === "moderator" ||
-      currentRoomRole === "owner" ||
-      currentRoomRole === "admin"
-    ) {
+    if (isAllowedToChangeData) {
       history.push("/changebg/" + roomJID);
     }
   };
@@ -132,13 +133,13 @@ export default function ChatDetailCard() {
                 <StarPurple500Icon />
               )}
             </IconButton>
-            {currentRoomGroup?.group !== ROOMS_FILTERS.official && (
-                <IconButton
-                    sx={{ color: "white" }}
-                    onClick={() => setShowChatImageDialog(true)}
-                >
-                  <InsertPhotoIcon />
-                </IconButton>
+            {isAllowedToChangeData && (
+              <IconButton
+                sx={{ color: "white" }}
+                onClick={() => setShowChatImageDialog(true)}
+              >
+                <InsertPhotoIcon />
+              </IconButton>
             )}
             {currentRoomGroup?.group !== ROOMS_FILTERS.official && (
               <IconButton
@@ -172,14 +173,16 @@ export default function ChatDetailCard() {
         <Typography fontSize={"20px"} fontWeight={"bold"}>
           {currentRoomData?.name}
         </Typography>
-        <IconButton
-          onClick={() => setShowRoomRenameModal(true)}
-          style={{
-            marginLeft: 10,
-          }}
-        >
-          <EditIcon fontSize="small" />
-        </IconButton>
+        {isAllowedToChangeData && (
+          <IconButton
+            onClick={() => setShowRoomRenameModal(true)}
+            style={{
+              marginLeft: 10,
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        )}
       </Box>
       <Container
         style={{
@@ -194,14 +197,16 @@ export default function ChatDetailCard() {
             ? currentRoomData.description
             : "No description"}
         </Typography>
-        <IconButton
-          onClick={() => setShowModal(true)}
-          style={{
-            marginLeft: 10,
-          }}
-        >
-          <EditIcon fontSize="small" />
-        </IconButton>
+        {isAllowedToChangeData && (
+          <IconButton
+            onClick={() => setShowModal(true)}
+            style={{
+              marginLeft: 10,
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        )}
       </Container>
       <Modal
         open={showModal}
@@ -277,10 +282,10 @@ export default function ChatDetailCard() {
         onClose={closeRoomDeleteDialog}
       />
       <ChangeChatImageDialog
-          open={showChatImageDialog}
-          title={"Change Image"}
-          description={"Choose a new image from your device"}
-          onClose={() => setShowChatImageDialog(false)}
+        open={showChatImageDialog}
+        title={"Change Image"}
+        description={"Choose a new image from your device"}
+        onClose={() => setShowChatImageDialog(false)}
       />
     </Container>
   );
