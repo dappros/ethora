@@ -159,6 +159,7 @@ export default function StatisticsPage() {
 
   const filterStats = async () => {
     await getCounts();
+    await getGraph();
   };
 
   return (
