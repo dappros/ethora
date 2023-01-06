@@ -48,12 +48,13 @@ export default function Signon() {
   });
 
   useEffect(() => {
-    if (user.firstName && !user.ACL?.ownerAccess) {
+    if (user.firstName && user.xmppPassword) {
       history.push(`/profile/${user.walletAddress}`);
+      return;
     }
-
-    if (user.ACL?.ownerAccess) {
+    if (user.firstName && !user.xmppPassword) {
       history.push("/owner");
+      return;
     }
   }, [user]);
 

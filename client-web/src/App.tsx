@@ -35,6 +35,7 @@ function App() {
             <div className="app-root">
               {!user.firstName && <AppTopNavAuth />}
               {user.firstName && user.xmppPassword && <AppTopNav />}
+              {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
               <Routes />
             </div>
           </ApolloProvider>
