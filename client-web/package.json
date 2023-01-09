@@ -36,7 +36,6 @@
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.2",
     "js-sha256": "^0.9.0",
-    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-content-loader": "^6.2.0",
     "react-dom": "^18.2.0",
@@ -50,9 +49,6 @@
     "react-router-dom": "^5.3.3",
     "react-scripts": "5.0.1",
     "recharts": "^2.1.14",
-    "sass": "^1.54.9",
-    "simple-zustand-devtools": "^1.1.0",
-    "source-map-explorer": "^2.5.3",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4",
     "web3": "^1.8.0",
@@ -86,6 +82,9 @@
   "devDependencies": {
     "@types/dompurify": "^2.4.0",
     "@types/react-router-dom": "^5.3.3",
-    "@types/xmpp__client": "^0.13.0"
+    "@types/xmpp__client": "^0.13.0",
+    "sass": "^1.57.1",
+    "simple-zustand-devtools": "^1.1.0",
+    "source-map-explorer": "^2.5.3"
   }
 }

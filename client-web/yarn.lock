@@ -5122,7 +5122,7 @@ bser@2.1.1:
 
 btoa@^1.2.1:
   version "1.2.1"
-  resolved "https://registry.npmjs.org/btoa/-/btoa-1.2.1.tgz"
+  resolved "https://registry.yarnpkg.com/btoa/-/btoa-1.2.1.tgz#01a9909f8b2c93f6bf680ba26131eb30f7fa3d73"
   integrity sha512-SB4/MIGlsiVkMcHmT+pSmIPoNDoHg+7cMzmt3Uxt628MTz2487DKSqK/fuhFBrkuqrYv5UCEnACpF4dTFNKc/g==
 
 buffer-alloc-unsafe@^1.1.0:
@@ -8071,9 +8071,9 @@ immer@^9.0.7:
   integrity sha512-qenGE7CstVm1NrHQbMh8YaSzTZTFNP3zPqr3YU0S0UY441j4bJTg4A2Hh5KAhwgaiU6ZZ1Ar6y/2f4TblnMReQ==
 
 immutable@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/immutable/-/immutable-4.1.0.tgz"
-  integrity sha512-oNkuqVTA8jqG1Q6c+UglTOD1xhC1BtjKI7XkCXRkZHrN5m18/XsnUp8Q89GkQO/z+0WjonSvl0FLhDYftp46nQ==
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.2.2.tgz#2da9ff4384a4330c36d4d1bc88e90f9e0b0ccd16"
+  integrity sha512-fTMKDwtbvO5tldky9QZ2fMX7slR0mYpY5nbnFWYp0fOzDhHqhgIw9KoYgxLWsoNTS9ZHGauHj18DTyEw6BK3Og==
 
 import-fresh@^3.0.0, import-fresh@^3.1.0, import-fresh@^3.2.1:
   version "3.3.0"
@@ -9578,11 +9578,6 @@ mock-fs@^4.1.0:
   resolved "https://registry.npmjs.org/mock-fs/-/mock-fs-4.14.0.tgz"
   integrity sha512-qYvlv/exQ4+svI3UOvPUpLDF0OMX5euvUH0Ny4N5QyRyhNdgAgUrVH3iUINSzEPLvx0kbo/Bp28GJKIqvE7URw==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
@@ -9906,7 +9901,7 @@ onetime@^5.1.2:
 
 open@^7.3.1:
   version "7.4.2"
-  resolved "https://registry.npmjs.org/open/-/open-7.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.4.2.tgz#b8147e26dcf3e426316c730089fd71edd29c2321"
   integrity sha512-MVHddDVweXZF3awtlAS+6pgKLlm/JgxZ90+/NBurBoQctVOOB/zDdVjcyPzQ+0laDGbsWgrRkflI65sQeOgT9Q==
   dependencies:
     is-docker "^2.0.0"
@@ -11581,7 +11576,7 @@ rimraf@^3.0.0, rimraf@^3.0.2:
 
 rimraf@~2.6.2:
   version "2.6.3"
-  resolved "https://registry.npmjs.org/rimraf/-/rimraf-2.6.3.tgz"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
   dependencies:
     glob "^7.1.3"
@@ -11692,10 +11687,10 @@ sass-loader@^12.3.0:
     klona "^2.0.4"
     neo-async "^2.6.2"
 
-sass@^1.54.9:
-  version "1.56.1"
-  resolved "https://registry.npmjs.org/sass/-/sass-1.56.1.tgz"
-  integrity sha512-VpEyKpyBPCxE7qGDtOcdJ6fFbcpOM+Emu7uZLxVrkX8KVU/Dp5UF7WLvzqRuUhB6mqqQt1xffLoG+AndxTZrCQ==
+sass@^1.57.1:
+  version "1.57.1"
+  resolved "https://registry.yarnpkg.com/sass/-/sass-1.57.1.tgz#dfafd46eb3ab94817145e8825208ecf7281119b5"
+  integrity sha512-O2+LwLS79op7GI0xZ8fqzF7X2m/m8WFfI02dHOdsK5R2ECeS5F62zrwg/relM1rjSLy7Vd/DiMNIvPrQGsA0jw==
   dependencies:
     chokidar ">=3.0.0 <4.0.0"
     immutable "^4.0.0"
@@ -11958,7 +11953,7 @@ simple-get@^2.7.0:
 
 simple-zustand-devtools@^1.1.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/simple-zustand-devtools/-/simple-zustand-devtools-1.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/simple-zustand-devtools/-/simple-zustand-devtools-1.1.0.tgz#bb080b30c9930d2997f33881f63d47405226fd7f"
   integrity sha512-Axfcfr9L3YL3kto7aschCQLY2VUlXXMnIVtaTe9Y0qWbNmPsX/y7KsNprmxBZoB0pww5ZGs1u/ohcrvQ3tE6jA==
 
 sisteransi@^1.0.5:
@@ -11997,7 +11992,7 @@ source-list-map@^2.0.0, source-list-map@^2.0.1:
 
 source-map-explorer@^2.5.3:
   version "2.5.3"
-  resolved "https://registry.npmjs.org/source-map-explorer/-/source-map-explorer-2.5.3.tgz"
+  resolved "https://registry.yarnpkg.com/source-map-explorer/-/source-map-explorer-2.5.3.tgz#33551b51e33b70f56d15e79083cdd4c43e583b69"
   integrity sha512-qfUGs7UHsOBE5p/lGfQdaAj/5U/GWYBw2imEpD6UQNkqElYonkow8t+HBL1qqIl3CuGZx7n8/CQo4x1HwSHhsg==
   dependencies:
     btoa "^1.2.1"
@@ -12469,7 +12464,7 @@ temp-dir@^2.0.0:
 
 temp@^0.9.4:
   version "0.9.4"
-  resolved "https://registry.npmjs.org/temp/-/temp-0.9.4.tgz"
+  resolved "https://registry.yarnpkg.com/temp/-/temp-0.9.4.tgz#cd20a8580cb63635d0e4e9d4bd989d44286e7620"
   integrity sha512-yYrrsWnrXMcdsnu/7YMYAofM1ktpL5By7vZhf15CrXijWWrEYZks5AXBudalfSWJLlnen/QUJUB5aoB0kqZUGA==
   dependencies:
     mkdirp "^0.5.1"
