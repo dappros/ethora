@@ -10,7 +10,6 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 
 import { useSubscription } from "@apollo/client";
 import Snackbar from "@mui/material/Snackbar";
-import Web3 from "web3";
 import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
@@ -23,6 +22,7 @@ import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Badge, Divider } from "@mui/material";
 import { defaultChats, defaultMetaRoom, ROOMS_FILTERS } from "../config/config";
 import { Menu } from "./Menu";
+import { ethers } from "ethers";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -82,7 +82,7 @@ const AppTopNav = () => {
 
   useEffect(() => {
     if (data) {
-      const ethersAmounnt = Web3.utils.fromWei(data.transferTo.amount);
+      const ethersAmounnt = ethers.utils.formatEther(data.transferTo.amount);
       const newMainBalance = {
         ...mainCoinBalance,
         balance: Number(mainCoinBalance.balance) + Number(ethersAmounnt),
@@ -230,7 +230,7 @@ const AppTopNav = () => {
       {showMainBalanceNotification && (
         <Snackbar
           open={true}
-          message={`You get ${Web3.utils.fromWei(
+          message={`You get ${ethers.utils.formatEther(
             data.transferTo.amount
           )} coins from ${data.transferTo.senderFirstName} ${
             data.transferTo.senderLastName

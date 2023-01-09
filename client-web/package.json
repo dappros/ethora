@@ -51,7 +51,6 @@
     "recharts": "^2.1.14",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4",
-    "web3": "^1.8.0",
     "zustand": "^4.1.1"
   },
   "scripts": {
@@ -86,6 +85,7 @@
     "@types/xmpp__client": "^0.13.0",
     "sass": "^1.57.1",
     "simple-zustand-devtools": "^1.1.0",
-    "source-map-explorer": "^2.5.3"
+    "source-map-explorer": "^2.5.3",
+    "webpack-bundle-analyzer": "^4.7.0"
   }
 }
