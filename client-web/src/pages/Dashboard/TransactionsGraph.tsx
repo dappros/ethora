@@ -1,6 +1,17 @@
-import * as React from "react";
-import Plot from "react-plotly.js";
+import React, { useEffect, useState } from "react";
 import * as http from "../../http";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { CircularProgress, useTheme } from "@mui/material";
+import { TChartData, transformDataForLineChart } from "../../utils";
 
 type Props = {
   apps: any[];
@@ -8,56 +19,72 @@ type Props = {
 };
 
 export default function TransactionsGraph({ apps, currentAppIndex }: Props) {
-  const [transactions, setTransactions] = React.useState({
-    data: [],
-    layout: {
-      width: 250,
-      height: 200,
-      title: "",
-      xaxis: { title: "Date" },
-      yaxis: { title: "Transaction Count" },
-      margin: { l: 40, r: 40, b: 60, t: 20, pad: 0 },
-    },
-    config: { displayModeBar: false },
-    style: {},
-  });
+  const [transactions, setTransactions] = useState<TChartData>([]);
+  const [loading, setLoading] = useState(false);
+  const theme = useTheme();
 
-  React.useEffect(() => {
-    http
-      .httpWithToken(apps[currentAppIndex].appToken)
-      .get("explorer/graph")
-      .then((response) => {
-        // data.x.reverse();
-        // data.y.reverse();
-        // data.type = "sctter";
-        // data.mode = "lines+markers";
-        // data.marker = { size: 10 };
-        // this.transGraph.data = [];
-        // this.transGraph.data.push(data);
-        setTransactions((oldState) => {
-          let data = response.data;
-          data.x.reverse();
-          data.y.reverse();
-          data.mode = "lines+markers";
-          data.marker = { size: 10 };
-          console.log(data);
-          return {
-            ...oldState,
-            data: [data],
-          };
-        });
-      });
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const res = await http
+        .httpWithToken(apps[currentAppIndex].appToken)
+        .get("explorer/graph");
+      setTransactions(transformDataForLineChart(res.data));
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getData();
   }, [apps, currentAppIndex]);
+
+  if (loading) {
+    return (
+      <div
+        className="dashboard-graph"
+        style={{
+          marginRight: "10px",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-graph" style={{ marginRight: "10px" }}>
       <a className="title" onClick={(e) => e.preventDefault()} href="/">
         Transactions
       </a>
-      <Plot
-        layout={transactions.layout}
-        data={transactions.data}
-        config={transactions.config}
-      ></Plot>
+      <ResponsiveContainer height={"100%"}>
+        <LineChart
+          width={500}
+          height={300}
+          data={transactions}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis dataKey={"y"} />
+          <Tooltip />
+          <Line
+            type="monotone"
+            name="Transactions"
+            dataKey="y"
+            stroke={theme.palette.primary.main}
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }

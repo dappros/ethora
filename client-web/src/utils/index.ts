@@ -1,7 +1,9 @@
+import { format } from "date-fns";
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import logo from "../assets/images/dpp.png";
 import { mobileEthoraBaseUrl } from "../constants";
+import { ILineChartData } from "../pages/Profile/types";
 
 export function useQuery() {
   const { search } = useLocation();
@@ -104,4 +106,19 @@ interface IDocLink {
 
 export const generateDocumentLink = ({ linkToken }: IDocLink) => {
   return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
+};
+
+export type TChartData = { date: string; y: number }[];
+
+export const transformDataForLineChart = (
+  data: ILineChartData,
+  dateFormat: string = "MM.dd.yyyy"
+): TChartData => {
+  const result: TChartData = [];
+  for (let index = 0; index < data.x.length; index++) {
+    const elementX = format(new Date(data.x[index]), dateFormat);
+    const elementY = data.y[index];
+    result.push({ date: elementX, y: elementY });
+  }
+  return result;
 };

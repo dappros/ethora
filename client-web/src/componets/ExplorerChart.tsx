@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { TChartData } from "../pages/Explorer/Explorer";
+import { TChartData } from "../utils";
 
 interface ExplorerChartProps {
   data: TChartData;

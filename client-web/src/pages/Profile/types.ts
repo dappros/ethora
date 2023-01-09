@@ -19,7 +19,7 @@ export interface ExplorerRespose<T> {
   items: T;
 }
 
-export interface IHistory {
+export interface ILineChartData {
   x: Date[] | string[];
   y: number[];
 }

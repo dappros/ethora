@@ -3,7 +3,7 @@ import { config } from "./config";
 import {
   ExplorerRespose,
   IBlock,
-  IHistory,
+  ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
 import { useStoreState } from "./store";
@@ -290,7 +290,7 @@ export function getProvenanceTransacitons(walletAddress: string, nftId) {
   );
 }
 export function getExplorerHistory() {
-  return http.get<IHistory>(`/explorer/history`);
+  return http.get<ILineChartData>(`/explorer/history`);
 }
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);

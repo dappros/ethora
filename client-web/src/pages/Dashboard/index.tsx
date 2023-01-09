@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import UsersGraph from "./UsersGraph";
 import AppsSelect from "./AppsSelect";
@@ -8,32 +8,55 @@ import TransactionsGraph from "./TransactionsGraph";
 import Contracts from "./Contracts";
 
 import "./Graph.scss";
-import { Contract } from "ethers";
-import NetworkHelth from "./NetworkHelth";
+import NetworkHealth from "./NetworkHealth";
 import Peers from "./Peers";
 import * as http from "../../http";
+import { Box } from "@mui/material";
 
 type Props = {};
 
-function Dashboard({}: Props) {
-  const apps = useStoreState((state) => state.apps);
-  const [currentAppIndex, setCurrentAppIndex] = React.useState(0);
+export interface IBlockChain {
+  blockTimestamp: Date | string;
+  latestBlockHash: string;
+  latestBlockNumber: number;
+  noOfTransactions: number;
+  peerCount: number;
+  pendingTransactions: number;
+  transactionDifficulty: number;
+}
 
-  React.useEffect(() => {
+function Dashboard() {
+  const apps = useStoreState((state) => state.apps);
+  const [currentAppIndex, setCurrentAppIndex] = useState(0);
+
+  const [blockchain, setBlockchain] = useState<IBlockChain>({
+    blockTimestamp: "",
+    latestBlockHash: "",
+    latestBlockNumber: 0,
+    noOfTransactions: 0,
+    peerCount: 0,
+    pendingTransactions: 0,
+    transactionDifficulty: 0,
+  });
+
+  const getBlockchainData = async () => {
+    try {
+      const res = await http
+        .httpWithToken(apps[currentAppIndex].appToken)
+        .get<IBlockChain>("/explorer/blockchain");
+      setBlockchain(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
     if (apps.length) {
       setCurrentAppIndex(0);
     }
   }, [apps]);
-
-  const [blockchain, setBlockchain] = React.useState<any>({});
-  React.useEffect(() => {
-    http
-      .httpWithToken(apps[currentAppIndex].appToken)
-      .get("/explorer/blockchain")
-      .then((response) => {
-        console.log("response", response);
-        setBlockchain(response.data);
-      });
+  useEffect(() => {
+    getBlockchainData();
   }, []);
 
   return (
@@ -41,7 +64,6 @@ function Dashboard({}: Props) {
       <Container
         maxWidth="xl"
         style={{
-          height: "calc(100vh - 68px)",
           width: "100%",
         }}
       >
@@ -49,18 +71,23 @@ function Dashboard({}: Props) {
           apps={apps}
           currentAppIndex={currentAppIndex}
           setCurrentAppIndex={setCurrentAppIndex}
-        ></AppsSelect>
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
-          <UsersGraph
-            apps={apps}
-            currentAppIndex={currentAppIndex}
-          ></UsersGraph>
-          <TokensGraph></TokensGraph>
+        />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+            gridTemplateRows: "250px 250px",
+          }}
+        >
+          <UsersGraph apps={apps} currentAppIndex={currentAppIndex} />
+          <TokensGraph />
           <TransactionsGraph apps={apps} currentAppIndex={currentAppIndex} />
-          <Contracts apps={apps} currentAppIndex={currentAppIndex}></Contracts>
-          <NetworkHelth blockchain={blockchain} />
-          <Peers blockchain={blockchain}></Peers>
-        </div>
+          <Box sx={{ display: "flex", width: "100%" }}>
+            <Contracts apps={apps} currentAppIndex={currentAppIndex} />
+            <NetworkHealth blockchain={blockchain} />
+            <Peers blockchain={blockchain} />
+          </Box>
+        </Box>
       </Container>
     </div>
   );
