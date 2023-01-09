@@ -505,10 +505,10 @@ const _useStore = create<IStore>()(
 
 declare global {
   interface Window {
-    useState: any;
+    useStoreState: any;
   }
 }
 
-window.useState = _useStore;
+window.useStoreState = _useStore;
 
 export const useStoreState = _useStore;
