@@ -229,7 +229,7 @@ const TransactionItem: React.FC<{ item: ITransaction }> = ({ item }) => {
   );
 };
 
-export const Provenance: React.FC<IProvenance> = ({}) => {
+const Provenance: React.FC<IProvenance> = ({}) => {
   const location = useLocation<{
     nftItem: TBalance & IDocument;
     walletAddress: string;
@@ -269,7 +269,11 @@ export const Provenance: React.FC<IProvenance> = ({}) => {
       >
         <img
           style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-          src={nftItem.nftFileUrl || nftItem?.file?.locationPreview || nftItem?.location}
+          src={
+            nftItem.nftFileUrl ||
+            nftItem?.file?.locationPreview ||
+            nftItem?.location
+          }
           alt="image1"
         />
         <Box sx={{ padding: "10px" }}>
@@ -291,3 +295,4 @@ export const Provenance: React.FC<IProvenance> = ({}) => {
     </Box>
   );
 };
+export default Provenance;

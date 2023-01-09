@@ -1,28 +1,16 @@
 import React, { useEffect } from "react";
 import { Route, Router, Switch } from "react-router";
 
-import { TransactionAddressDetails } from "./Explorer/TransactionAddressDetails";
-import { TransactionDetails } from "./Explorer/TransactionDetails";
-import { Blocks } from "./Explorer/Blocks";
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../componets/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
-import { Provenance } from "./Transactions/Provenance";
-import AuthRoute from "../componets/AuthRoute";
-import * as http from "../http";
-import Dashboard from "./Dashboard";
 import { MintNft } from "./MintNft/MintNft";
-import { UploadDocument } from "./UploadDocument/UploadDocument";
-import { BrowserRouter } from "react-router-dom";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
-import Privacy from "./Privacy/Privacy";
-import { NewChat } from "./NewChat/NewChat";
 import { Snackbar } from "../componets/Snackbar";
-import { Referrals } from "./Referrals/Referrals";
-import StatisticsPage from "./Statistics";
-import { ChangeBackground } from "./ChatRoomDetails/ChangeBackground";
+import AuthRoute from "../componets/AuthRoute";
+import * as http from "../http";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -32,6 +20,25 @@ const Owner = React.lazy(() => import("./Owner"));
 const BlockDetails = React.lazy(() => import("./Explorer/BlockDetails"));
 const Explorer = React.lazy(() => import("./Explorer/Explorer"));
 const UsersPage = React.lazy(() => import("./UsersPage"));
+const StatisticsPage = React.lazy(() => import("./Statistics"));
+const Dashboard = React.lazy(() => import("./Dashboard"));
+const Privacy = React.lazy(() => import("./Privacy/Privacy"));
+const TransactionAddressDetails = React.lazy(
+  () => import("./Explorer/TransactionAddressDetails")
+);
+const TransactionDetails = React.lazy(
+  () => import("./Explorer/TransactionDetails")
+);
+const Blocks = React.lazy(() => import("./Explorer/Blocks"));
+const Provenance = React.lazy(() => import("./Transactions/Provenance"));
+const UploadDocument = React.lazy(
+  () => import("./UploadDocument/UploadDocument")
+);
+const NewChat = React.lazy(() => import("./NewChat/NewChat"));
+const Referrals = React.lazy(() => import("./Referrals/Referrals"));
+const ChangeBackground = React.lazy(
+  () => import("./ChatRoomDetails/ChangeBackground")
+);
 
 const mockAcl = {
   result: {

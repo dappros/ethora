@@ -15,7 +15,7 @@ interface IValues {
 }
 
 const validate = (values: IValues) => {
-  const errors: IValues = {refLink: ''};
+  const errors: IValues = { refLink: "" };
   if (!values.refLink) {
     errors.refLink = "Link is required";
   }
@@ -23,7 +23,7 @@ const validate = (values: IValues) => {
   return errors;
 };
 
-export const Referrals: React.FC<IReferrals> = ({}) => {
+const Referrals: React.FC<IReferrals> = ({}) => {
   const link = useStoreState((state) => state.user._id);
   const walletAddress = useStoreState((state) => state.user.walletAddress);
 
@@ -161,3 +161,5 @@ export const Referrals: React.FC<IReferrals> = ({}) => {
     </Box>
   );
 };
+
+export default Referrals;

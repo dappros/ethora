@@ -8,9 +8,9 @@ import { Transactions } from "../Transactions/Transactions";
 
 interface ITransactionAddressDetailsProps {}
 
-export const TransactionAddressDetails: React.FC<
-  ITransactionAddressDetailsProps
-> = (props) => {
+const TransactionAddressDetails: React.FC<ITransactionAddressDetailsProps> = (
+  props
+) => {
   const [transactions, setTransactions] = useState<
     ExplorerRespose<ITransaction[]>
   >({ items: [], total: 0, offset: 0, limit: 0 });
@@ -48,3 +48,4 @@ export const TransactionAddressDetails: React.FC<
     </>
   );
 };
+export default TransactionAddressDetails;

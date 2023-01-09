@@ -1,11 +1,11 @@
-import { Box, Container } from "@mui/material";
 import React, { useState } from "react";
 import { useParams } from "react-router";
+import { Box, Container } from "@mui/material";
 import { defaultChatBackgroundThemes } from "../../config/config";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import xmpp from "../../xmpp";
 import { useStoreState } from "../../store";
 import { useSnackbar } from "../../context/SnackbarContext";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import xmpp from "../../xmpp";
 
 const BackgroundCard = ({
   url,
@@ -57,7 +57,7 @@ const BackgroundCard = ({
 
 export interface IChangeBackground {}
 
-export const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
+const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
   const { roomJID } = useParams<{ roomJID: string }>();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const {showSnackbar} = useSnackbar()
@@ -103,3 +103,4 @@ export const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
     </Container>
   );
 };
+export default ChangeBackground;

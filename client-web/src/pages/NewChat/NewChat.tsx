@@ -14,18 +14,18 @@ import { sha256 } from "js-sha256";
 import xmpp, { walletToUsername } from "../../xmpp";
 import { useStoreState } from "../../store";
 import { CONFERENCEDOMAIN } from "../../constants";
-import { useHistory, useLocation, useParams } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface INewChat {}
 
-export const NewChat: React.FC<INewChat> = ({}) => {
+const NewChat: React.FC<INewChat> = ({}) => {
   const theme = useTheme();
   const user = useStoreState((state) => state.user);
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
-  const history = useHistory()
+  const history = useHistory();
   const location = useLocation<{
     metaDirection?: string;
     metaRoom: { roomJid: string };
@@ -65,7 +65,7 @@ export const NewChat: React.FC<INewChat> = ({}) => {
       }
       setLoading(false);
       showSnackbar("success", "Room created successfully");
-      history.push('/chat/none')
+      history.push("/chat/none");
     },
   });
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +157,7 @@ export const NewChat: React.FC<INewChat> = ({}) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginTop: '10px'
+              marginTop: "10px",
             }}
           >
             <Button
@@ -173,3 +173,4 @@ export const NewChat: React.FC<INewChat> = ({}) => {
     </Container>
   );
 };
+export default NewChat;

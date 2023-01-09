@@ -30,7 +30,7 @@ const keysMap: Record<string, string> = {
   toFirstName: "Receiver First Name",
 };
 
-export const TransactionDetails: React.FC<ITransactionDetailsProps> = (
+const TransactionDetails: React.FC<ITransactionDetailsProps> = (
   props
 ) => {
   const [transactionDetails, setTransactionDetails] = useState<
@@ -100,3 +100,4 @@ export const TransactionDetails: React.FC<ITransactionDetailsProps> = (
     </>
   );
 };
+export default TransactionDetails;
