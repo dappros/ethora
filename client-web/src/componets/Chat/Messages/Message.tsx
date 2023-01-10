@@ -59,6 +59,7 @@ export const Message: React.FC<IMessage> = ({
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
   const messageJid = message.data.senderJID;
+  const isSameUser = userJid === messageJid;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
 
@@ -89,11 +90,7 @@ export const Message: React.FC<IMessage> = ({
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
     }
-    setMessageDirection(
-      String(userJid).split("/")[0] === String(messageJid).split("/")[0]
-        ? "outgoing"
-        : "incoming"
-    );
+    setMessageDirection(isSameUser ? "outgoing" : "incoming");
   }, []);
 
   return (
@@ -112,11 +109,7 @@ export const Message: React.FC<IMessage> = ({
           direction: messageDirection,
           position: position.position,
         }}
-        avatarPosition={
-          String(userJid).split("/")[0] === String(messageJid).split("/")[0]
-            ? "tr"
-            : "tl"
-        }
+        avatarPosition={isSameUser ? "tr" : "tl"}
         avatarSpacer={position.type !== "first" && position.type !== "single"}
       >
         {(position.type === "first" || position.type === "single") && (
@@ -163,8 +156,7 @@ export const Message: React.FC<IMessage> = ({
                 {firstName} {lastName}
                 <br />
               </strong>
-              {String(userJid).split("/")[0] !==
-                String(messageJid).split("/")[0] && (
+              {!isSameUser && (
                 <IconButton
                   aria-label="more"
                   id="long-button"

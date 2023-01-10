@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Box from "@mui/material/Box";
 import xmpp from "../../xmpp";
 import {
   TActiveRoomFilter,
@@ -15,7 +14,6 @@ import {
 } from "../../store";
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
-import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import { format, formatDistance, subDays } from "date-fns";
 import * as DOMPurify from "dompurify";
 
@@ -46,16 +44,19 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
+  Box
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
-import { defaultChats, ROOMS_FILTERS } from "../../config/config";
-import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
-import { generateChatLink } from "../../utils";
 import { ChatTransferDialog } from "../../componets/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../componets/Chat/ChatMediaModal";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { CONFERENCEDOMAIN } from "../../constants";
+import { ROOMS_FILTERS } from "../../config/config";
+import { generateChatLink } from "../../utils";
+
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
@@ -143,6 +144,7 @@ export function ChatInRoom() {
   );
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
+
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const [currentRoom, setCurrentRoom] = useState("");
@@ -441,7 +443,7 @@ export function ChatInRoom() {
         if (currentUntrackedChatRoom.split("@")[1]) {
           chooseRoom(currentUntrackedChatRoom);
         } else {
-          chooseRoom(currentUntrackedChatRoom + "@conference.dev.dxmpp.com");
+          chooseRoom(currentUntrackedChatRoom + CONFERENCEDOMAIN);
         }
       }
     }
@@ -469,9 +471,8 @@ export function ChatInRoom() {
 
   useEffect(() => {
     const filteredMessages = messages.filter(
-      (item: any) => item.roomJID === currentRoom
+      (item: TMessageHistory) => item.roomJID === currentRoom
     );
-
     if (
       !loaderArchive &&
       filteredMessages.length > 0 &&
