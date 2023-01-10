@@ -112,7 +112,6 @@ export const createMessageObject = (
       message.text = item.children[0];
     }
     if (item.name === 'archived') {
-      console.log(item.attrs.id === '1672727007956177'&&item,"thisisitem")
       message._id = item.attrs.id;
       message.roomJid = item.attrs.by;
       message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13)));

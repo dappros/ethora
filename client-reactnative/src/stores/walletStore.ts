@@ -40,7 +40,7 @@ export const NFMT_TRAITS = {
   Diamond: {color: commonColors.primaryColor},
   Copper: {color: 'brown'},
   Steel: {color: 'lightgrey'},
-  Paper: {color: '#E0C9A6'}
+  Paper: {color: '#E0C9A6'},
 };
 export interface IFile {
   _id: string;
@@ -76,7 +76,27 @@ export interface IDocument {
   userId: string;
   file: IFile;
 }
-
+export interface ITransation {
+  __v: number;
+  _id: string;
+  createdAt: string;
+  from: string;
+  hashes: Array<string>;
+  isCompleted: boolean;
+  receiverBalance: string;
+  receiverFirstName: string;
+  receiverLastName: string;
+  senderBalance: string;
+  senderFirstName: string;
+  senderLastName: string;
+  timestamp: string;
+  to: string;
+  tokenId: string;
+  tokenName: string;
+  type: string;
+  updatedAt: string;
+  value: string;
+}
 export const mapTransactions = (item, walletAddress) => {
   if (item.tokenId === 'NFT') {
     if (item.from === walletAddress && item.from !== item.to) {
@@ -176,6 +196,7 @@ export class WalletStore {
     receiverMessageId: string;
     tokenName: string;
     nftId?: string;
+    transaction: ITransation | null;
   } = {
     success: false,
     senderName: '',
@@ -184,6 +205,7 @@ export class WalletStore {
     receiverMessageId: '',
     tokenName: '',
     nftId: '',
+    transaction: null,
   };
   stores: RootStore | {} = {};
   defaultUrl = '';
@@ -219,6 +241,7 @@ export class WalletStore {
         receiverMessageId: '',
         tokenName: '',
         nftId: '',
+        transaction: null,
       };
       this.defaultUrl = this.stores.apiStore.defaultUrl;
       this.coinBalance = 0;
@@ -361,6 +384,7 @@ export class WalletStore {
         receiverMessageId: '',
         tokenName: '',
         nftId: '',
+        transaction: null,
       };
     });
   };
@@ -460,6 +484,7 @@ export class WalletStore {
             receiverMessageId,
             tokenName: bodyData.tokenName,
             nftId: bodyData.nftId || '',
+            transaction: response.data?.transaction,
           };
         });
 

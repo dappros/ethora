@@ -103,6 +103,18 @@ import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
+interface ISystemMessage {
+  _id: number;
+  text: string;
+  createdAt: Date;
+  system: true;
+  tokenAmount: number;
+  receiverMessageId: string;
+  tokenName: string;
+  nftId: string;
+  transactionId: string;
+}
+
 const ChatScreen = observer(({route, navigation}: any) => {
   const {loginStore, chatStore, walletStore, apiStore, debugStore} =
     useStores();
@@ -139,9 +151,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const {isOpen, onOpen, onClose} = useDisclose();
   const giftedRef = useRef(null);
 
-  const handleSetIsEditing = (value:boolean) => {
-    setIsEditing(value)
-  }
+  const handleSetIsEditing = (value: boolean) => {
+    setIsEditing(value);
+  };
 
   const path = Platform.select({
     ios: 'hello.m4a',
@@ -156,7 +168,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     message: {},
   });
   const room = chatStore.roomList.find(item => item.jid === chatJid);
-  
+
   const messages = chatStore.messages
     .filter((item: any) => {
       // item.roomJid === chatJid && item.isReply?item.showInChannel?true:false:true
@@ -193,21 +205,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
       const message = systemMessage({
         ...tokenTransferSuccess,
         tokenAmount: tokenTransferSuccess.amount,
+        transactionId: tokenTransferSuccess.transaction?._id,
       });
-      sendMessage(message, true);
+      sendSystemMessage(message);
       walletStore.clearPreviousTransfer();
     }
   }, [tokenTransferSuccess.success]);
 
-  useEffect(()=>{
-    if(chatStore.userBanData.success){
-      const message = banSystemMessage(
-        {...chatStore.userBanData}
-      )
+  useEffect(() => {
+    if (chatStore.userBanData.success) {
+      const message = banSystemMessage({...chatStore.userBanData});
       sendMessage(message, true);
       chatStore.clearUserBanData();
     }
-  }, [chatStore.userBanData.success])
+  }, [chatStore.userBanData.success]);
 
   useEffect(() => {
     const lastMessage = messages?.[0];
@@ -320,7 +331,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       mainMessageText: '',
       mainMessageId: '',
       mainMessageUserName: '',
-      push:true
+      push: true,
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -331,6 +342,37 @@ const ChatScreen = observer(({route, navigation}: any) => {
       manipulatedWalletAddress,
       chatJid,
       text,
+      data,
+      chatStore.xmpp,
+    );
+  };
+
+  const sendSystemMessage = (message: ISystemMessage[]) => {
+    const messageText = message[0].text;
+    const tokenAmount = message[0].tokenAmount || 0;
+    const receiverMessageId = message[0].receiverMessageId || 0;
+
+    const data = {
+      ...message[0],
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+      senderWalletAddress: loginStore.initialData.walletAddress,
+      isSystemMessage: true,
+      tokenAmount: tokenAmount,
+      receiverMessageId: receiverMessageId,
+      mucname: chatName,
+      photoURL: loginStore.userAvatar,
+      roomJid: chatJid,
+      isReply: false,
+      mainMessageText: '',
+      mainMessageId: '',
+      mainMessageUserName: '',
+      push: true,
+    };
+    sendMessageStanza(
+      manipulatedWalletAddress,
+      chatJid,
+      messageText,
       data,
       chatStore.xmpp,
     );
@@ -387,9 +429,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const handleInputChange = t => {
     setText(t);
-    setTimeout(()=>{
+    setTimeout(() => {
       isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
-    },2000)
+    }, 2000);
   };
 
   const renderMessageImage = (props: any) => {
@@ -406,7 +448,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       fileName,
       nftId,
       preview,
-      nftName
+      nftName,
     } = props.currentMessage;
     let parsedWaveform = [];
     if (waveForm) {
@@ -509,7 +551,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleOnPress = (message: any) => {
-    console.log(message)
+    console.log(message);
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
       setShowEditOption(false);
@@ -519,8 +561,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
       setShowReplyOption(false);
     }
 
-    if(message.numberOfReplies>0){
-      setShowViewThread(true)
+    if (message.numberOfReplies > 0) {
+      setShowViewThread(true);
     }
 
     setOnTapMessageObject(message);
@@ -534,18 +576,18 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleEdit = () => {
-    if(!onTapMessageObject.image || !onTapMessageObject.preview){
-      setIsEditing(true)
+    if (!onTapMessageObject.image || !onTapMessageObject.preview) {
+      setIsEditing(true);
       setText(onTapMessageObject.text);
       giftedRef?.current?.textInput?.focus();
     }
     setShowEditOption(true);
     onClose();
-  }
+  };
 
-  const handleSendMessage = (messageString:any) => {
-    console.log(isEditing,"message string")
-    if(isEditing){
+  const handleSendMessage = (messageString: any) => {
+    console.log(isEditing, 'message string');
+    if (isEditing) {
       const messageText = messageString[0].text;
       const tokenAmount = messageString[0].tokenAmount || 0;
       const receiverMessageId = messageString[0].receiverMessageId || 0;
@@ -563,7 +605,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         mainMessageText: '',
         mainMessageId: '',
         mainMessageUserName: '',
-        push:true,
+        push: true,
       };
 
       sendReplaceMessageStanza(
@@ -572,20 +614,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
         messageText,
         onTapMessageObject._id,
         data,
-        chatStore.xmpp
-      )
+        chatStore.xmpp,
+      );
       setIsEditing(false);
-    }else{
+    } else {
       sendMessage(messageString, false);
     }
-  }
+  };
 
-  const handleReply = (message?:any) => {
+  const handleReply = (message?: any) => {
     setShowViewThread(false);
     //navigate to thread screen with current message details.
-    getOtherUserDetails(message?message.user:onTapMessageObject.user);
+    getOtherUserDetails(message ? message.user : onTapMessageObject.user);
     navigation.navigate(ROUTES.THREADS, {
-      currentMessage:message?message: onTapMessageObject,
+      currentMessage: message ? message : onTapMessageObject,
       chatJid: chatJid,
       chatName: chatName,
     });
@@ -997,17 +1039,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onPressAvatar={onUserAvatarPress}
           renderChatFooter={() => (
             <RenderChatFooter
-            isEditing={isEditing}
-            setIsEditing={handleSetIsEditing}
-            onTapMessageObject={onTapMessageObject}
-            closeReply={() => handleReply('close')}
-            replyMessage={onTapMessageObject?.text}
-            replyUserName={onTapMessageObject?.user?.name}
-            allowIsTyping={allowIsTyping}
-            composingUsername={composingUsername}
-            fileUploadProgress={fileUploadProgress}
-            isTyping={isTyping}
-            setFileUploadProgress={setFileUploadProgress}
+              isEditing={isEditing}
+              setIsEditing={handleSetIsEditing}
+              onTapMessageObject={onTapMessageObject}
+              closeReply={() => handleReply('close')}
+              replyMessage={onTapMessageObject?.text}
+              replyUserName={onTapMessageObject?.user?.name}
+              allowIsTyping={allowIsTyping}
+              composingUsername={composingUsername}
+              fileUploadProgress={fileUploadProgress}
+              isTyping={isTyping}
+              setFileUploadProgress={setFileUploadProgress}
             />
           )}
           placeholder={'Type a message'}
@@ -1079,23 +1121,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
               </Actionsheet.Item>
             ) : null}
             <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
-            {showViewThread?
-            <Actionsheet.Item
-            onPress={()=> handleReply()}
-            >
-              View thread
-            </Actionsheet.Item>:null
-            }
-            {showEditOption&&
-              <Actionsheet.Item onPress={handleEdit}>
-                Edit
+            {showViewThread ? (
+              <Actionsheet.Item onPress={() => handleReply()}>
+                View thread
               </Actionsheet.Item>
-            }
-            {isShowDeleteOption&&
+            ) : null}
+            {showEditOption && (
+              <Actionsheet.Item onPress={handleEdit}>Edit</Actionsheet.Item>
+            )}
+            {isShowDeleteOption && (
               <Actionsheet.Item onPress={onClose} color="red.500">
                 Delete
               </Actionsheet.Item>
-            }
+            )}
           </Actionsheet.Content>
         </Actionsheet>
         <ChatMediaModal
