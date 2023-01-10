@@ -559,6 +559,11 @@ export function updateProfile(fd: FormData, id?: string) {
   });
 }
 
+interface ITokenTransferResponse {
+  success: boolean,
+  transaction: ITransaction
+}
+
 export function transferCoin(
   tokenId: string,
   tokenName: string,
@@ -567,7 +572,7 @@ export function transferCoin(
 ) {
   const path = "tokens/transfer";
   const user = useStoreState.getState().user;
-  return http.post(
+  return http.post<ITokenTransferResponse>(
     path,
     { tokenId, tokenName, amount, toWallet },
     {

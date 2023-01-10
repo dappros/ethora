@@ -806,7 +806,8 @@ class XmppClass {
     walletAddress: string,
     userMessage: string,
     amount: number,
-    receiverMessageId: number
+    receiverMessageId: number,
+    transactionId: string,
   ) {
     const message = xml(
       "message",
@@ -825,6 +826,7 @@ class XmppClass {
         isSystemMessage: true,
         tokenAmount: amount,
         receiverMessageId: receiverMessageId,
+        transactionId
       }),
       xml("body", {}, userMessage)
     );

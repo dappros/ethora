@@ -71,42 +71,41 @@ export function ChatTransferDialog({
     onClose();
   };
 
-  const sendCoins = (amount?: number) => {
+  const sendCoins = async (amount?: number) => {
     const currentCoinAmount = amount ? Number(amount) : Number(coinAmount);
+    try {
+      const res = await transferCoin(
+        "DPT",
+        coinData[0].tokenName,
+        currentCoinAmount,
+        message.data.senderWalletAddress
+      );
+      const coinName =
+        coinData[0].tokenName === coinsMainName
+          ? coinReplacedName
+          : coinData[0].tokenName;
+      const sender = user.firstName + " " + user.lastName;
+      const receiver =
+        message.data.senderFirstName + " " + message.data.senderLastName;
+      const textMessage = `${sender} -> ${coinAmount} ${coinName} -> ${receiver}`;
+      const transactionId = res.data.transaction._id;
+      xmpp.sendSystemMessage(
+        message.roomJID,
+        user.firstName,
+        user.lastName,
+        user.walletAddress,
+        textMessage,
+        currentCoinAmount,
+        message.id,
+        transactionId
+      );
 
-    // @ts-ignore
-    transferCoin(
-      "DPT",
-      coinData[0].tokenName,
-      currentCoinAmount,
-      message.data.senderWalletAddress
-    )
-      .then((res) => {
-        const coinName =
-          coinData[0].tokenName === coinsMainName
-            ? coinReplacedName
-            : coinData[0].tokenName;
-        const sender = user.firstName + " " + user.lastName;
-        const receiver =
-          message.data.senderFirstName + " " + message.data.senderLastName;
-        const textMessage = `${sender} -> ${coinAmount} ${coinName} -> ${receiver}`;
-        xmpp.sendSystemMessage(
-          message.roomJID,
-          user.firstName,
-          user.lastName,
-          user.walletAddress,
-          textMessage,
-          currentCoinAmount,
-          message.id
-        );
-
-        onClose();
-      })
-      .catch((error) => {
-        console.log(error);
-        showSnackbar("error", "An error occurred during the coin transfer.");
-        onClose();
-      });
+      onClose();
+    } catch (error) {
+      console.log(error);
+      showSnackbar("error", "An error occurred during the coin transfer.");
+      onClose();
+    }
   };
 
   const openPrivateRoom = () => {

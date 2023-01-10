@@ -55,7 +55,7 @@ export interface ITransaction {
   nftName?: string;
   senderBalance?: string;
   receiverBalance?: string;
-nftTotal?: string;
+  nftTotal?: string;
 }
 
 export interface IBlock {
