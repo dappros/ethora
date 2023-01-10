@@ -141,6 +141,9 @@ PODS:
     - FlipperKit/Core
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
+  - GCDWebServer (3.5.4):
+    - GCDWebServer/Core (= 3.5.4)
+  - GCDWebServer/Core (3.5.4)
   - glog (0.3.5)
   - GoogleAppMeasurement (8.15.0):
     - GoogleAppMeasurement/AdIdSupport (= 8.15.0)
@@ -540,7 +543,8 @@ PODS:
     - React-perflogger (= 0.68.1)
   - ReactNativeAudioToolkit (2.0.3):
     - React
-  - RealmJS (11.0.0-rc.0):
+  - RealmJS (10.24.0):
+    - GCDWebServer
     - React
   - RNAppleAuthentication (2.2.2):
     - React-Core
@@ -754,6 +758,7 @@ SPEC REPOS:
     - Flipper-RSocket
     - FlipperKit
     - fmt
+    - GCDWebServer
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleSignIn
@@ -944,6 +949,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: d9d9ade67cbecf6ac10730304bf5607266dd2541
   FlipperKit: cbdee19bdd4e7f05472a66ce290f1b729ba3cb86
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
+  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleAppMeasurement: 4c19f031220c72464d460c9daa1fb5d1acce958e
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
@@ -997,7 +1003,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 7285b499d0339104b2813a1f58ad1ada4adbd6c0
   ReactCommon: bf2888a826ceedf54b99ad1b6182d1bc4a8a3984
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
-  RealmJS: 6ee99e016e85a71233f92c64b8255007810b7478
+  RealmJS: 2e45ca6ed4c3732be369219b41816e890ce51024
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
   RNAudioRecorderPlayer: 308940de4f9d1448a064874fd9d83479ae47c7a7
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
@@ -1028,4 +1034,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f909417fa89282f669c689055fe6f35a5e74f9fd
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.11.2
