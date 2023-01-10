@@ -84,7 +84,7 @@ export default function UsersGraph({ apps, currentAppIndex }: Props) {
           {/* <Legend /> */}
           <Line
             type="monotone"
-            name="Transactions"
+            name="Users"
             dataKey="y"
             stroke={theme.palette.primary.main}
             activeDot={{ r: 8 }}
