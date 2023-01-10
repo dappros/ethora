@@ -2,6 +2,7 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
+import { TCombinedMimeType } from "../constants";
 
 export type TUser = {
   firstName: string;
@@ -73,7 +74,7 @@ export type TMessageHistory = {
     originalName?: string;
     location?: string;
     locationPreview?: string;
-    mimetype?: string;
+    mimetype?: TCombinedMimeType;
     xmlns: string;
   };
   roomJID: string;

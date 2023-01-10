@@ -54,6 +54,8 @@ import { defaultChats, ROOMS_FILTERS } from "../../config/config";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
 import { generateChatLink } from "../../utils";
+import { ChatTransferDialog } from "../../componets/Chat/ChatTransferDialog";
+import { ChatMediaModal } from "../../componets/Chat/ChatMediaModal";
 type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
@@ -161,20 +163,25 @@ export function ChatInRoom() {
     room_thumbnail: "",
     users_cnt: "",
   });
-  const fileRef = useRef(null);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [openDialog, setOpenDialog] = useState(false);
-  const [showDialogTxt, setShowDialogTxt] = useState(false);
+
+  const [transferDialogData, setTransferDialogData] = useState<{
+    open: boolean;
+    message: TMessageHistory | null;
+  }>({ open: false, message: null });
+
+  const [mediaDialogData, setMediaDialogData] = useState<{
+    open: boolean;
+    message: TMessageHistory | null;
+  }>({ open: false, message: null });
+
   const [isQrModalVisible, setQrModalVisible] = useState(false);
 
-  const [dialogTxt, setDialogTxt] = useState<{
+  const [uploadFileDialogData, setUploadFileDialogData] = useState<{
+    open: boolean;
     headline: string;
     description: string;
-  }>({ headline: "", description: "" });
-  // @ts-ignore
-  const { roomJID } = useParams();
-  const history = useHistory();
+  }>({ headline: "", description: "", open: false });
+
   const [firstLoadMessages, setFirstLoadMessages] = useState(true);
   const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
   const setActiveRoomFilter = useStoreState(
@@ -184,8 +191,13 @@ export function ChatInRoom() {
   const closeQrModal = () => {
     setQrModalVisible(false);
   };
+  const history = useHistory();
+  const { roomJID } = useParams<{ roomJID: string }>();
+  const fileRef = useRef(null);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    (acceptedFiles: File[]) => {
       sendFile(acceptedFiles[0]);
     },
     [roomData]
@@ -220,6 +232,19 @@ export function ChatInRoom() {
       setProfile(result.data.result);
     });
   }, []);
+
+  const toggleTransferDialog = (
+    value: boolean,
+    message: TMessageHistory = null
+  ) => {
+    setTransferDialogData({ open: value, message });
+  };
+  const toggleMediaModal = (
+    value: boolean,
+    message: TMessageHistory = null
+  ) => {
+    setMediaDialogData({ open: value, message });
+  };
 
   const chooseRoom = (jid: string) => {
     history.push("/chat/" + jid.split("@")[0]);
@@ -270,16 +295,6 @@ export function ChatInRoom() {
     }
 
     return format(new Date(messagesInRoom[0].date), "H:mm");
-
-    // if (differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1) {
-    //   return format(new Date(messagesInRoom[0].date), "hh:mm");
-    // } else {
-    //   return formatDistance(
-    //     subDays(new Date(messagesInRoom[0].date), 0),
-    //     new Date(),
-    //     { addSuffix: true }
-    //   );
-    // }
   };
 
   const stripHtml = (html: string) => {
@@ -322,11 +337,11 @@ export function ChatInRoom() {
   };
 
   const sendFile = (file: File) => {
-    setDialogTxt({
+    setUploadFileDialogData({
       headline: "File is loading, please wait...",
       description: "",
+      open: true,
     });
-    setOpenDialog(true);
 
     const formData = new FormData();
     formData.append("files", file);
@@ -363,16 +378,20 @@ export function ChatInRoom() {
             wrappable: true,
           };
           xmpp.sendMediaMessageStanza(currentRoom, data);
-          setOpenDialog(false);
+          setUploadFileDialogData({
+            open: false,
+            description: "",
+            headline: "",
+          });
         });
       })
       .catch((error) => {
         console.log(error);
-        setDialogTxt({
+        setUploadFileDialogData({
           headline: "Error",
           description: "An error occurred while uploading the file",
+          open: true,
         });
-        setShowDialogTxt(true);
       });
     if (fileRef.current) {
       fileRef.current.value = "";
@@ -578,7 +597,7 @@ export function ChatInRoom() {
               }
             >
               {messages
-                .filter((item: any) => item.roomJID === currentRoom)
+                .filter((item: TMessageHistory) => item.roomJID === currentRoom)
                 .map((message, index, arr) => {
                   const position = getPosition(arr, message, index);
                   if (message.data.isSystemMessage === "false") {
@@ -591,6 +610,8 @@ export function ChatInRoom() {
                         userJid={xmpp.client?.jid?.toString()}
                         buttonSender={sendMessage}
                         chooseDirectRoom={chooseRoom}
+                        toggleTransferDialog={toggleTransferDialog}
+                        onMediaMessageClick={toggleMediaModal}
                       />
                     );
                   } else {
@@ -671,31 +692,60 @@ export function ChatInRoom() {
         </div>
       </MainContainer>
 
+      <ChatTransferDialog
+        open={transferDialogData.open}
+        onClose={() => toggleTransferDialog(false)}
+        loading={false}
+        onPrivateRoomClick={chooseRoom}
+        message={transferDialogData.message}
+      />
+      <ChatMediaModal
+        open={mediaDialogData.open}
+        onClose={() => toggleMediaModal(false)}
+        mimetype={mediaDialogData.message?.data?.mimetype}
+        url={mediaDialogData.message?.data?.location}
+      />
+
       <Dialog
         fullScreen={fullScreen}
-        open={openDialog}
-        onClose={() => setOpenDialog(true)}
+        open={uploadFileDialogData.open}
+        onClose={() =>
+          setUploadFileDialogData({
+            open: false,
+            description: "",
+            headline: "",
+          })
+        }
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">
-          {dialogTxt.headline}
+          {uploadFileDialogData.headline}
         </DialogTitle>
         <DialogContent>
-          {showDialogTxt && dialogTxt.description.length > 0 ? (
-            <DialogContentText>{dialogTxt.description}</DialogContentText>
+          {!!uploadFileDialogData.description ? (
+            <DialogContentText>
+              {uploadFileDialogData.description}
+            </DialogContentText>
           ) : (
             <Box sx={{ display: "flex", justifyContent: "center" }}>
               <CircularProgress />
             </Box>
           )}
         </DialogContent>
-        {showDialogTxt ? (
-          <DialogActions>
-            <Button onClick={() => setOpenDialog(false)} autoFocus>
-              Close
-            </Button>
-          </DialogActions>
-        ) : null}
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setUploadFileDialogData({
+                open: false,
+                description: "",
+                headline: "",
+              })
+            }
+            autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
       <QrModal
         open={isQrModalVisible}
