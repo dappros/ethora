@@ -2331,6 +2331,20 @@
   resolved "https://registry.yarnpkg.com/@realm.io/common/-/common-0.1.4.tgz#d50ed1c91af1477695222ce04754a19a81336a54"
   integrity sha512-+nI/fOa/G9idiZ7h9DVz5NmnrvVNI3AM/I0eB7vL/PxDCF8vH3vew8ZrWOSr08GT2bDliy1wB6IYRqezQ1H/Iw==
 
+"@realm/common@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@realm/common/-/common-0.1.4.tgz#48ff628a22b27c61ba886caff395909632240927"
+  integrity sha512-bKpIRZIQ4ykribFi0igCwuvf7P4+Ex2XYKqDw1JDe6sCGAaPMwhazooyM6h32fUjtXRTbdAWH2S9JH8Xh/LrqQ==
+
+"@realm/network-transport@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@realm/network-transport/-/network-transport-0.7.2.tgz#167b85fd4744b66d9e37d096e1e9e2720d7abd26"
+  integrity sha512-IZ6yd+mGOYvSMVEVFf/v5qtZOi8bk4ZBxoj25GNQFyeFKxOs1WH+z4IDZscMC2GhQ4hdmI3Sg+RUEphimtHupQ==
+  dependencies:
+    "@realm/common" "^0.1.4"
+    abort-controller "^3.0.0"
+    node-fetch "^2.6.0"
+
 "@realm/react@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@realm/react/-/react-0.2.1.tgz#cad67c7b4eabf2db5a139ace76beaef5812da2a4"
@@ -2511,6 +2525,11 @@
   version "15.7.5"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
+
+"@types/react-native-crypto-js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native-crypto-js/-/react-native-crypto-js-1.0.0.tgz#1bbe9b469f0f97e0689eb6fb51b836cd70ea92d2"
+  integrity sha512-YqNZiTWsEoP0bqN7gQShOjskK/cJFpBhgVMMIGfUnbGeSytHT2SSrT1TVW1f9yNP5x4uSpry2Rq2BQS7qcC4fQ==
 
 "@types/react-native-vector-icons@^6.4.10":
   version "6.4.12"
@@ -8706,6 +8725,11 @@ react-native-communications@^2.2.1:
   resolved "https://registry.yarnpkg.com/react-native-communications/-/react-native-communications-2.2.1.tgz#7883b56b20a002eeb790c113f8616ea8692ca795"
   integrity sha512-5+C0X9mopI0+qxyQHzOPEi5v5rxNBQjxydPPiKMQSlX1RBIcJ8uTcqUPssQ9Mo8p6c1IKIWJUSqCj4jAmD0qVQ==
 
+react-native-crypto-js@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-crypto-js/-/react-native-crypto-js-1.0.0.tgz#e677e022e147f41b35614416c92d655f87e2450a"
+  integrity sha512-FNbLuG/HAdapQoybeZSoes1PWdOj0w242gb+e1R0hicf3Gyj/Mf8M9NaED2AnXVOX01b2FXomwUiw1xP1K+8sA==
+
 react-native-crypto@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-crypto/-/react-native-crypto-2.2.0.tgz#c999ed7c96064f830e1f958687f53d0c44025770"
@@ -8960,6 +8984,11 @@ react-native-responsive-screen@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/react-native-responsive-screen/-/react-native-responsive-screen-1.4.2.tgz#45280826d24f9accbfdf46a36cb8e6d780f76f28"
   integrity sha512-BLYz0UUpeohrib7jbz6wDmtBD5OmiuMRko4IT8kIF63taXPod/c5iZgmWnr5qOnK8hMuKiGMvsM3sC+eHX/lEQ==
+
+react-native-rsa-native@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-rsa-native/-/react-native-rsa-native-2.0.5.tgz#7db4aef49405bb5b5bcaea12b9dfd1b251c690ab"
+  integrity sha512-gwwvFSwGW5WKrpDyBQ/eTf1UrVABeAvMcT4YWemzPSUo6aHZs1kbBm2rXmwN5okhUzJsry5zjjz/qdx5GXRugQ==
 
 react-native-safe-area-context@^4.2.5:
   version "4.3.3"
@@ -9293,12 +9322,13 @@ realm@>=10:
     tar "^6.0.1"
     url-parse "^1.4.4"
 
-realm@^10.20.0-beta.5:
-  version "10.24.0"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-10.24.0.tgz#2b6eccdd2dc2492139fe7affc576c1c97b373423"
-  integrity sha512-r+WCHMyRiNszHkWwmTG7+x2rdZNgdXXcEWoivei0Fh1DtXcwIBToo/qlAktjxt/9K9aLxCU9eIOeZcbeU+Utaw==
+realm@^11.3.1:
+  version "11.3.1"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-11.3.1.tgz#45d2bf2e66570d5e00025adda09d9e6dd8845409"
+  integrity sha512-yctWhfHp4RlQSXXSCJ3+QNK5Nq8ZEiMlO9DLmtrDbSQD0CntfarTDnU55okXWuCkpzykxPO8y5zotA3QVkZcZg==
   dependencies:
-    "@realm.io/common" "^0.1.4"
+    "@realm/common" "^0.1.4"
+    "@realm/network-transport" "^0.7.2"
     bindings "^1.5.0"
     bson "4.4.1"
     command-line-args "^5.1.1"
@@ -9311,7 +9341,6 @@ realm@^10.20.0-beta.5:
     prebuild-install "^7.0.1"
     progress "^2.0.3"
     prop-types "^15.6.2"
-    realm-network-transport "^0.7.2"
     request "^2.88.0"
     stream-counter "^1.0.0"
     sync-request "^3.0.1"
