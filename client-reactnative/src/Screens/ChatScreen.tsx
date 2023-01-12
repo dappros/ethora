@@ -147,6 +147,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [showReplyOption, setShowReplyOption] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showViewThread, setShowViewThread] = useState(false);
+  const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
   const {isOpen, onOpen, onClose} = useDisclose();
   const giftedRef = useRef(null);
@@ -1136,6 +1137,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
             )}
           </Actionsheet.Content>
         </Actionsheet>
+        <MetaNavigation
+          chatId={chatJid.split('@')[0]}
+          open={showMetaNavigation || chatStore.showMetaNavigation}
+          onClose={() => {
+            setShowMetaNavigation(false);
+            chatStore.toggleMetaNavigation(false);
+          }}
+        />
         <ChatMediaModal
           url={mediaModal.url}
           type={mediaModal.type}
