@@ -5,14 +5,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Image} from 'native-base';
+import {Box} from 'native-base';
 import React from 'react';
-import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { MessageSize } from '../components/Chat/MessageSize';
-import { formatBytes } from '../helpers/chat/formatBytes';
+import {MessageSize} from './MessageSize';
+import {formatBytes} from '../../helpers/chat/formatBytes';
 
 interface PdfMessageProps {
   url: any;
@@ -52,7 +51,6 @@ export const PdfMessage = ({
           source={{
             uri: url,
           }}
-          alt={'Pdf message'}
         />
       </Box>
     </TouchableOpacity>

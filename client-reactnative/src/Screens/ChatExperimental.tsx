@@ -85,7 +85,7 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import RenderChatFooter from '../components/Chat/RenderChatFooter';
 import {AudioSendButton} from '../components/Chat/AudioSendButton';
 import {NftItemGalleryModal} from '../../NftItemGalleryModal';
-import {PdfMessage} from '../stores/PdfMessage';
+import {PdfMessage} from '../components/Chat/PdfMessage';
 import {FileMessage} from '../components/Chat/FileMessage';
 import {downloadFile} from '../helpers/downloadFile';
 import {VideoMessage} from '../components/Chat/VideoMessage';
