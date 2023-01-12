@@ -10,6 +10,7 @@ import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import {subscribePushNotification} from '../config/routesConstants';
 import {ROUTES} from '../constants/routes';
+import {playCoinSound} from './chat/playCoinSound';
 import {underscoreManipulation} from './underscoreLogic';
 
 export const subscribeForPushNotifications = async (
@@ -51,13 +52,37 @@ export const getPushToken = async (
         },
         defaultUrl,
       );
+      PushNotification.createChannel(
+        {
+          channelId: 'fcm_fallback_notification_channel', // (required)
+          channelName: 'My channel',
+          playSound: false,
+          soundName: 'default',
+          importance: 4,
+          vibrate: true,
+        },
+        created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+      );
     },
     onNotification: function (notification: any) {
       console.log('NOTIFICATION:', notification);
       const chatJID = notification.data.mucId;
-      setTimeout(() => {
-        navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
-      }, 2000);
+      // setTimeout(() => {
+      //   navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
+      // }, 2000);
+      if (notification.message.includes('transaction')) {
+        PushNotification.localNotification({
+          /* Android Only Properties */
+          channelId: 'fcm_fallback_notification_channel', // (required) channelId, if the channel doesn't exist, notification will not trigger.
+          invokeApp: true, // (optional) This enable click on actions to bring back the application to foreground or stay in background, default: true
+          /* iOS only properties */
+          subtitle: 'My Notification Subtitle', // (optional) smaller title below notification title
+          /* iOS and Android properties */
+          title: 'Transaction',
+          message: 'Received transaction',
+        });
+        playCoinSound(7);
+      }
     },
 
     onAction: function (notification: any) {
