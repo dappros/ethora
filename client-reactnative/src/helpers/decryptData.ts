@@ -1,18 +1,18 @@
 import CryptoJS from 'react-native-crypto-js';
 import {RSA} from 'react-native-rsa-native';
 
+type TEncryptedObject = Record<string, string | string[] | any>;
+
 interface IDataDecryptor {
   cryptoKey: string;
   userPassword: string;
-  decryptObject<T extends Record<string, string>>(
-    enryptedObject: T,
-  ): Promise<T>;
-  decryptArray<T extends Record<string, string>>(
+  decryptObject<T extends TEncryptedObject>(enryptedObject: T): Promise<T>;
+  decryptObjectsArray<T extends Record<string, string>>(
     encryptedArray: T[],
   ): Promise<T[] | []>;
+  decryptStringsArray(encryptedArray: string[]): Promise<string[]>;
   decryptString(message: string): Promise<string>;
 }
-
 type TUnencryptedKeys =
   | '_id'
   | 'user_jid'
@@ -44,9 +44,9 @@ export class DataDecryptor implements IDataDecryptor {
     this.userPassword = userPassword;
   }
 
-  async decryptArray<T extends Record<string, string>>(
+  async decryptObjectsArray<T extends TEncryptedObject>(
     encryptedArray: T[],
-  ): Promise<T[] | []> {
+  ): Promise<T[]> {
     const result: T[] = [];
     for (const item of encryptedArray) {
       const decryptedObject = await this.decryptObject<T>(item);
@@ -55,19 +55,45 @@ export class DataDecryptor implements IDataDecryptor {
     return result;
   }
 
-  async decryptObject<T extends Record<string, string>>(
-    enryptedObject: T,
+  async decryptStringsArray(encryptedArray: string[]): Promise<string[]> {
+    const result: string[] = [];
+    for (const item of encryptedArray) {
+      const decryptedObject = await this.decryptString(item);
+      result.push(decryptedObject);
+    }
+    return result;
+  }
+  async checkMessageType<
+    T extends string | string[] | TEncryptedObject | TEncryptedObject[],
+  >(
+    message: T,
+  ): Promise<string | string[] | TEncryptedObject | TEncryptedObject[]> {
+    if (Array.isArray(message) && typeof message[0] === 'object') {
+      return await this.decryptObjectsArray<TEncryptedObject>(
+        message as TEncryptedObject[],
+      );
+    }
+    if (Array.isArray(message)) {
+      return await this.decryptStringsArray(message);
+    }
+    if (typeof message === 'string') {
+      return await this.decryptString(message);
+    }
+    return await this.decryptObject(message);
+  }
+  async decryptObject<T extends TEncryptedObject>(
+    encryptedObject: T,
   ): Promise<T> {
-    const entries = Object.entries(enryptedObject);
-    const result: string[][] = [];
+    const entries: [string, any][] = Object.entries(encryptedObject);
+    const result = [];
     for (const item of entries) {
       if (!(item[0] in unencryptedKeys)) {
-        const decryptedMessage = await this.decryptString(item[1]);
+        const decryptedMessage = await this.checkMessageType(item[1]);
         item[1] = decryptedMessage;
       }
       result.push(item);
     }
-    return Object.fromEntries(result);
+    return Object.fromEntries(result) as T;
   }
 
   async decryptString(message: string): Promise<string> {
@@ -125,7 +151,7 @@ export async function decryptArray<T extends Record<string, string>>(
   encryptedArray: T[],
   cryptoKey: string = '',
   userPassword: string = '',
-): Promise<T[] | []> {
+): Promise<T[]> {
   const result: T[] = [];
   for (const item of encryptedArray) {
     const decryptedObject = await decryptObject<T>(
