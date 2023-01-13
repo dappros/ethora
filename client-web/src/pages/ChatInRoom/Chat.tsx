@@ -56,6 +56,7 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { ROOMS_FILTERS } from "../../config/config";
 import { generateChatLink } from "../../utils";
+import {ChatAudioMessageDialog} from "../../componets/Chat/ChatAudioRecorder";
 
 type IMessagePosition = {
   position: MessageModel["position"];
@@ -151,6 +152,8 @@ export function ChatInRoom() {
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
+
+  const [showAudioMsgDialog, setShowAudioMsgDialog] = useState(false);
 
   const [roomData, setRoomData] = useState<{
     jid: string;
@@ -564,9 +567,14 @@ export function ChatInRoom() {
                   />
                 }
                 <ConversationHeader.Actions>
+                  <ChatAudioMessageDialog
+                      profile={profile}
+                      currentRoom={currentRoom}
+                      roomData={roomData}
+                  />
                   <IconButton
-                    sx={{ color: "black" }}
-                    onClick={() => setQrModalVisible(true)}
+                      sx={{ color: "black" }}
+                      onClick={() => setQrModalVisible(true)}
                   >
                     <QrCodeIcon />
                   </IconButton>

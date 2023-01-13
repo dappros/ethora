@@ -20,7 +20,7 @@ export const mobileEthoraBaseUrl = "https://www.eto.li/go?c=";
 
 export type TImageMimeType = "image/png" | "image/jpeg" | "image/jpg";
 export type TVideoMimeType = "video/mp4";
-export type TAudioMimeType = "audio/mpeg" | "application/octet-stream" | "audio/x-m4a";
+export type TAudioMimeType = "audio/mpeg" | "application/octet-stream" | "audio/x-m4a" | "audio/webm";
 export type TPdfMimeType = "application/pdf";
 export type TCombinedMimeType =
   | TAudioMimeType
@@ -37,6 +37,7 @@ export const videoMimetypes: Record<TVideoMimeType, TVideoMimeType> = {
 };
 export const audioMimetypes: Record<TAudioMimeType, TAudioMimeType> = {
   "audio/mpeg": "audio/mpeg",
+  "audio/webm": "audio/webm",
   "application/octet-stream": "application/octet-stream",
   "audio/x-m4a": "audio/x-m4a",
 };
