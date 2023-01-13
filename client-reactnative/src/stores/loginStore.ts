@@ -30,6 +30,7 @@ export interface InitialDataProps {
   isProfileOpen: boolean;
   isAssetsOpen: boolean;
   email: string;
+  cryptoKey?: string;
 }
 export class LoginStore {
   isFetching: boolean = false;
@@ -51,6 +52,7 @@ export class LoginStore {
     isProfileOpen: false,
     isAssetsOpen: false,
     email: '',
+    cryptoKey: '',
   };
   userDescription: string = '';
   userAvatar: string = '';
@@ -111,6 +113,11 @@ export class LoginStore {
         xmppPassword: '',
         xmppUsername: '',
         email: '',
+        cryptoKey: '',
+        _id: '',
+        referrerId: '',
+        isProfileOpen: true,
+        isAssetsOpen: true,
       };
       this.userDescription = '';
       this.userAvatar = '';
@@ -184,7 +191,7 @@ export class LoginStore {
       this.anotherUserLastname = data.anotherUserLastname;
       this.anotherUserLastSeen = data.anotherUserLastSeen;
       this.anotherUserWalletAddress = data.anotherUserWalletAddress;
-      this.anotherUserAvatar = data.anotherUserAvatar;
+      this.anotherUserAvatar = data.anotherUserAvatar || '';
     });
   }
 
@@ -290,8 +297,8 @@ export class LoginStore {
       isProfileOpen,
       isAssetsOpen,
       email,
+      cryptoKey,
     } = response.data.user;
-    console.log(email);
 
     if (!lastName) {
       lastName = firstName.split(' ')[1];
@@ -316,6 +323,7 @@ export class LoginStore {
       isAssetsOpen: isAssetsOpen,
       desc: '',
       email,
+      cryptoKey,
     };
     await asyncStorageSetItem('initialLoginData', dataForStorage);
     runInAction(() => {
@@ -360,10 +368,10 @@ export class LoginStore {
   };
 
   loginExternalWallet = async (body: {
-    walletAddress;
-    signature;
-    msg;
-    loginType;
+    walletAddress: string;
+    signature: string;
+    msg: string;
+    loginType: string;
   }) => {
     const url = this.stores.apiStore.defaultUrl + loginURL;
 
@@ -378,17 +386,7 @@ export class LoginStore {
       console.log(error);
     }
   };
-  updateInitialData = async (data: {
-    firstName: string;
-    lastName: string;
-    walletAddress: string;
-    photo: string;
-    username: string;
-    password: string;
-    xmppPassword: string;
-    xmppUsername: string;
-    referrerId?: string;
-  }) => {
+  updateInitialData = async (data: InitialDataProps) => {
     try {
       await asyncStorageSetItem('initialLoginData', data);
       runInAction(() => {
@@ -457,12 +455,12 @@ export class LoginStore {
   };
 
   registerExternalWalletUser = async (body: {
-    walletAddress;
-    firstName;
-    lastName;
-    loginType;
-    msg;
-    signature;
+    walletAddress: string;
+    firstName: string;
+    lastName: string;
+    loginType: string;
+    msg: string;
+    signature: string;
   }) => {
     const token = this.stores.apiStore.defaultToken;
     try {
