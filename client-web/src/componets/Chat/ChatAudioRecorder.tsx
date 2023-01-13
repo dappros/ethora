@@ -22,12 +22,10 @@ export function ChatAudioMessageDialog({
   const [loading, setLoading] = useState(false);
   const recorderControls = useAudioRecorder();
   const { showSnackbar } = useSnackbar();
-
-  const addAudioElement = useCallback((blob: Blob) => {
+  const addAudioElement = (blob: Blob) => {
     setLoading(true);
     let formData = new FormData();
     formData.append("files", blob);
-
     uploadFile(formData)
       .then((result) => {
         let userAvatar = "";
@@ -61,13 +59,14 @@ export function ChatAudioMessageDialog({
           };
           xmpp.sendMediaMessageStanza(currentRoom, data);
         });
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error);
         showSnackbar("error", "An error occurred while loading your audio.");
       });
-  }, []);
+    setLoading(false);
+
+  };
 
   return (
     <Box>
