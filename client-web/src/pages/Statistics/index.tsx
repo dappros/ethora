@@ -162,6 +162,20 @@ export default function StatisticsPage() {
     await getGraph();
   };
 
+  const onUploadCsv = async () => {
+    let response = await http.httpWithAuth()({
+      url: `${baseUrl}/analysis/apis-csv?startDate=${startDate}&endDate=${endDate}`,
+    });
+
+    let dataUrl = "data:text/csv," + response.data
+    let filename = "api.csv"
+
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = filename;
+    link.click();
+  }
+
   return (
     <Container
       maxWidth="xl"
@@ -323,6 +337,7 @@ export default function StatisticsPage() {
               />
             </LineChart>
           </Box>
+          <Button onClick={onUploadCsv}>Upload CSV</Button>
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Box
