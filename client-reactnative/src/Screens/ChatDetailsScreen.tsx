@@ -34,7 +34,7 @@ import {
   underscoreManipulation,
 } from '../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
-import ChangeRoomDescriptionModal from '../components/Modals/Chat/ChangeRoomDescriptionModal';
+import ChangeRoomDescriptionModal from '../components/Modals/Chat/changeRoomDescriptionModal';
 import {
   assignModerator,
   banUserr,
@@ -56,7 +56,7 @@ import {fileUpload} from '../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
 import {ROUTES} from '../constants/routes';
-import ChangeRoomNameModal from '../components/Modals/Chat/ChangeRoomNameModal';
+import ChangeRoomNameModal from '../components/Modals/Chat/changeRoomNameModal';
 import {renameTheRoom} from '../helpers/RoomList/renameRoom';
 
 interface longTapUserProps {
@@ -78,8 +78,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const roomJID = currentRoomDetail?.jid;
   const {isOpen, onOpen, onClose} = useDisclose();
-
-  const isFavourite = chatStore.roomsInfoMap[roomJID]?.isFavourite;
 
   const roomMemberInfo = chatStore.roomMemberInfo.filter(item => item);
 
@@ -747,73 +745,10 @@ const ChatDetailsScreen = observer(({route}: any) => {
     </Center>
   );
 
-  const initialLayout = {
-    width: Dimensions.get('window').width,
-  };
 
-  const renderScene = SceneMap({
-    first: FirstRoute,
-    second: SecondRoute,
-    third: ThirdRoute,
-  });
-
-  const renderTabBar = props => {
-    const inputRange = props.navigationState.routes.map((x, i) => i);
-    return (
-      <Box flexDirection="row">
-        {props.navigationState.routes.map((route, i) => {
-          const opacity = props.position.interpolate({
-            inputRange,
-            outputRange: inputRange.map(inputIndex =>
-              inputIndex === i ? 1 : 0.5,
-            ),
-          });
-          const color =
-            index === i
-              ? useColorModeValue(commonColors.primaryColor, '#e5e5e5')
-              : useColorModeValue('#1f2937', '#a1a1aa');
-          const borderColor =
-            index === i
-              ? commonColors.primaryColor
-              : useColorModeValue('coolGray.200', 'gray.400');
-          return (
-            <Box
-              borderBottomWidth="3"
-              borderColor={borderColor}
-              flex={1}
-              alignItems="center"
-              p="3">
-              <Pressable
-                onPress={() => {
-                  setIndex(i);
-                }}>
-                <Animated.Text
-                  style={{
-                    color,
-                    fontFamily: textStyles.boldFont,
-                  }}>
-                  {route.title}
-                </Animated.Text>
-              </Pressable>
-            </Box>
-          );
-        })}
-      </Box>
-    );
-  };
 
   const slider = () => {
     return (
-      // <TabView
-      //   navigationState={{
-      //     index,
-      //     routes,
-      //   }}
-      //   renderScene={renderScene}
-      //   renderTabBar={renderTabBar}
-      //   onIndexChange={setIndex}
-      //   initialLayout={initialLayout}
-      // />
       <View padding={2}>
         <Box margin={2}>
           <Text
@@ -826,43 +761,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
         </Box>
         <FirstRoute />
       </View>
-    );
-  };
-
-  const footerControls = () => {
-    return (
-      <Box
-        bg={'#E5EBF5'}
-        h={hp('7%')}
-        justifyContent="center"
-        paddingLeft={'2'}
-        paddingRight={'2'}>
-        <HStack>
-          {defaultChats[roomJID?.split('@')[0]] ? (
-            <View flex={0.5}></View>
-          ) : (
-            <TouchableOpacity
-              onPress={deleteRoomAlert}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                flex: 0.5,
-              }}>
-              <MaterialIcons
-                name="exit-to-app"
-                size={hp('3%')}
-                color="#D32222"
-              />
-              <Text
-                fontFamily={textStyles.boldFont}
-                fontSize={hp('2%')}
-                color="#D32222">
-                Leave Room
-              </Text>
-            </TouchableOpacity>
-          )}
-        </HStack>
-      </Box>
     );
   };
 

@@ -19,6 +19,7 @@ import { coinReplacedName, coinsMainName } from "../../config/config";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
 import { useSnackbar } from "../../context/SnackbarContext";
+import ReplyIcon from '@mui/icons-material/Reply';
 
 const dialogItems = [1, 3, 5, "x"];
 interface IProps {
@@ -27,6 +28,8 @@ interface IProps {
   loading?: boolean;
   message: TMessageHistory | null;
   onPrivateRoomClick: (jid: string) => void;
+  setThreadView?:(value: boolean) => void;
+  setThreadViewMessage?:(threadMessage: any) => void;
 }
 type IDialog = "dialog" | "error" | "clarification" | "transfer";
 
@@ -43,6 +46,8 @@ export function ChatTransferDialog({
   loading,
   message,
   onPrivateRoomClick,
+  setThreadView,
+  setThreadViewMessage
 }: IProps) {
   const user = useStoreState((state) => state.user);
 
@@ -55,6 +60,13 @@ export function ChatTransferDialog({
   const coinData = balance.filter(
     (el) => !el.tokenType && el.contractAddress.length > 10
   );
+
+  const openThreadView = () => {
+    setThreadView(true);
+    setThreadViewMessage(message);
+    onClose()
+  }
+
   const userToBlackList = (step: "clarify" | "block") => {
     if (step === "clarify") {
       setDialogType(dialogTypes.clarification);
@@ -232,6 +244,16 @@ export function ChatTransferDialog({
             >
               Direct message
             </Button>
+            <Button
+                style={{
+                  margin: "10px 0px 0px 0px",
+                }}
+                onClick={openThreadView}
+                variant="outlined"
+                startIcon={<ReplyIcon />}
+              >
+                Reply
+              </Button>
             <Divider
               style={{
                 margin: "10px",

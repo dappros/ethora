@@ -30,13 +30,13 @@ const ChangeUserDescriptionModal = (props: ChangeUserDescriptionModalProps) => {
             fontFamily={textStyles.lightFont}
             placeholder="new description"
             clearTextOnFocus
-            h={hp('5%')}
             focusOutlineColor={commonColors.primaryDarkColor}
           />
           <Button
             margin={2}
             onPress={() => changeDescription(newDescription)}
             bg={commonColors.primaryDarkColor}
+            display={"flex"}
             h={hp('5%')}
             w={wp('25%')}>
             <Text fontFamily={textStyles.boldFont} color="white">

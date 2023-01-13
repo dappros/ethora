@@ -49,16 +49,16 @@ import {
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
-import { QrModal } from "../Profile/QrModal";
-import { ChatTransferDialog } from "../../componets/Chat/ChatTransferDialog";
-import { ChatMediaModal } from "../../componets/Chat/ChatMediaModal";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import { QrModal } from "../Profile/QrModal";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { ROOMS_FILTERS } from "../../config/config";
-import { generateChatLink } from "../../utils";
+import ThreadContainer from "../../componets/Chat/Threads/ThreadContainer";
+import { ChatTransferDialog } from "../../componets/Chat/ChatTransferDialog";
+import { ChatMediaModal } from "../../componets/Chat/ChatMediaModal";
 import {ChatAudioMessageDialog} from "../../componets/Chat/ChatAudioRecorder";
 
-type IMessagePosition = {
+export type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
   separator?: string;
@@ -139,19 +139,45 @@ export function ChatInRoom() {
   const messages = useStoreState((state) => state.historyMessages);
   const user = useStoreState((store) => store.user);
   const userChatRooms = useStoreState((store) => store.userChatRooms);
+  const currentThreadViewMessage = useStoreState((store) => store.currentThreadViewMessage);
+  const setCurrentThreadViewMessage = useStoreState((store) => store.setCurrentThreadViewMessage);
   const loaderArchive = useStoreState((store) => store.loaderArchive);
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
   );
+  // @ts-ignore
+  const { roomJID } = useParams<{ roomJID: string }>();
+
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
 
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
+  const [isThreadView, setThreadView] = useState(false);
+  const [showInChannel, setShowInChannel] = React.useState(false);
+
+  const handleSetThreadView = (value:boolean) => setThreadView(value);
+  const handleSetCurrentThreadViewMessage = (threadMessage:any) => setCurrentThreadViewMessage(threadMessage);
+  const handleShowInChannel = (event:React.ChangeEvent<HTMLInputElement>) => setShowInChannel(event.target.checked);
 
   const [currentRoom, setCurrentRoom] = useState("");
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
+
+  const mainWindowMessages = messages
+  .filter((item:TMessageHistory) => {
+    if(item.roomJID === currentRoom){
+      if(item.data.isReply){
+        if(item.data.showInChannel){
+          return item;
+        }else{
+          return false
+        }
+      }else{
+      return item;
+      }
+    }
+  })
 
   const [showAudioMsgDialog, setShowAudioMsgDialog] = useState(false);
 
@@ -197,13 +223,12 @@ export function ChatInRoom() {
     setQrModalVisible(false);
   };
   const history = useHistory();
-  const { roomJID } = useParams<{ roomJID: string }>();
   const fileRef = useRef(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      sendFile(acceptedFiles[0]);
+      sendFile(acceptedFiles[0], false);
     },
     [roomData]
   );
@@ -341,7 +366,7 @@ export function ChatInRoom() {
     }
   };
 
-  const sendFile = (file: File) => {
+  const sendFile = (file: File, isReply:boolean) => {
     setUploadFileDialogData({
       headline: "File is loading, please wait...",
       description: "",
@@ -359,7 +384,7 @@ export function ChatInRoom() {
         }
 
         result.data.results.map(async (item: any) => {
-          const data = {
+          let data = {
             firstName: user.firstName,
             lastName: user.lastName,
             walletAddress: user.walletAddress,
@@ -382,6 +407,31 @@ export function ChatInRoom() {
             attachmentId: item._id,
             wrappable: true,
           };
+
+          const additionalDataForThread = {
+            isReply: isReply,
+            mainMessageText: currentThreadViewMessage.body,
+            mainMessageId: currentThreadViewMessage.id,
+            mainMessageUserName: currentThreadViewMessage.data.senderFirstName + " " + currentThreadViewMessage.data.senderLastName,
+            mainMessageCreatedAt: currentThreadViewMessage.date,
+            mainMessageFileName: currentThreadViewMessage.data.originalName,
+            mainMessageImageLocation: currentThreadViewMessage.data.location,
+            mainMessageImagePreview: currentThreadViewMessage.data.locationPreview,
+            mainMessageMimeType: currentThreadViewMessage.data.mimetype,
+            mainMessageOriginalName: currentThreadViewMessage.data.originalName,
+            mainMessageSize: 'N/A',
+            mainMessageDuration: 'NA',
+            mainMessageWaveForm: 'N/A',
+            mainMessageAttachmentId: 'N/A',
+            mainMessageWrappable: 'N/A',
+            mainMessageNftId: 'N/A',
+            mainMessageNftActionType: 'N/A',
+            mainMessageContractAddress: 'N/A',
+            mainMessageRoomJid: currentThreadViewMessage.roomJID,
+            showInChannel:showInChannel
+          }
+
+          data = {...data, ...additionalDataForThread};
           xmpp.sendMediaMessageStanza(currentRoom, data);
           setUploadFileDialogData({
             open: false,
@@ -420,7 +470,7 @@ export function ChatInRoom() {
     if (item) {
       // @ts-ignore
       let blob = item.getAsFile();
-      sendFile(blob);
+      sendFile(blob, false);
     }
   };
 
@@ -518,7 +568,8 @@ export function ChatInRoom() {
                 active={room.jid === currentRoom}
                 key={room.jid}
                 unreadCnt={room.unreadMessages}
-                onClick={() => chooseRoom(room.jid)}
+                onClick={() => {chooseRoom(room.jid)
+                   setThreadView(false)}}
                 name={room.name}
                 info={getConversationInfo(room.jid)}
                 lastActivityTime={getLastActiveTime(room.jid)}
@@ -535,12 +586,17 @@ export function ChatInRoom() {
           </ConversationList>
         </Sidebar>
 
-        <div {...getRootProps()} style={{ width: "100%", height: "100%" }}>
+        <div {...getRootProps()} style={{ width: "100%", height: "100%", flexDirection:"row", display:'flex' }}>
           <ChatContainer>
             {!!roomData && (
-              <ConversationHeader>
+              <ConversationHeader
+              style={{
+                height:"70px"
+              }}
+              >
                 <ConversationHeader.Back />
-                {
+                {mainWindowMessages
+                  .length > 0 && (
                   <ConversationHeader.Content
                     userName={roomData.name}
                     onClick={handleChatDetailClick}
@@ -549,23 +605,20 @@ export function ChatInRoom() {
                         (item: any) => item.roomJID === currentRoom
                       ).length > 0 &&
                       "Active " +
-                        formatDistance(
-                          subDays(
-                            new Date(
-                              messages
-                                .filter(
-                                  (item: any) => item.roomJID === currentRoom
-                                )
-                                .slice(-1)[0].date
-                            ),
-                            0
+                      formatDistance(
+                        subDays(
+                          new Date(
+                            mainWindowMessages
+                              .slice(-1)[0].date
                           ),
-                          new Date(),
-                          { addSuffix: true }
-                        )
+                          0
+                        ),
+                        new Date(),
+                        { addSuffix: true }
+                      )
                     }
                   />
-                }
+                )}
                 <ConversationHeader.Actions>
                   <ChatAudioMessageDialog
                       profile={profile}
@@ -605,13 +658,14 @@ export function ChatInRoom() {
                 )
               }
             >
-              {messages
-                .filter((item: TMessageHistory) => item.roomJID === currentRoom)
+              {mainWindowMessages
                 .map((message, index, arr) => {
                   const position = getPosition(arr, message, index);
                   if (message.data.isSystemMessage === "false") {
                     return (
                       <Message
+                        setThreadView={handleSetThreadView}
+                        setThreadViewMessage={handleSetCurrentThreadViewMessage}
                         key={message.id}
                         is={"Message"}
                         position={position}
@@ -634,7 +688,7 @@ export function ChatInRoom() {
                     );
                   }
                 })}
-              {messages.length <= 0 ||
+              {mainWindowMessages.length <= 0 ||
                 !currentRoom ||
                 (currentRoom === "none@conference.dev.dxmpp.com" && (
                   <MessageList.Content
@@ -662,7 +716,7 @@ export function ChatInRoom() {
               {!loaderArchive &&
                 currentRoom &&
                 currentRoom !== "none@conference.dev.dxmpp.com" &&
-                messages.filter((item: any) => item.roomJID === currentRoom)
+                mainWindowMessages
                   .length <= 0 && (
                   <MessageList.Content
                     style={{
@@ -691,13 +745,34 @@ export function ChatInRoom() {
                   type="file"
                   name="file"
                   id="file"
-                  onChange={(event) => sendFile(event.target.files[0])}
+                  onChange={(event) => sendFile(event.target.files[0], false)}
                   ref={fileRef}
                   style={{ display: "none" }}
                 />
               </div>
             )}
           </ChatContainer>
+          {isThreadView&&
+          <ThreadContainer
+          chooseRoom={chooseRoom}
+          currentPickedRoom={currentPickedRoom}
+          currentRoom={currentRoom}
+          getPosition={getPosition}
+          handleChatDetailClick={handleChatDetailClick}
+          handlePaste={handlePaste}
+          handleSetThreadView={handleSetThreadView}
+          handleShowInChannel={handleShowInChannel}
+          isThreadView={isThreadView}
+          onYReachStart={onYReachStart}
+          profile={profile}
+          roomData={roomData}
+          roomJID={roomJID}
+          sendFile={sendFile}
+          showInChannel={showInChannel}
+          stripHtml={stripHtml}
+          toggleMediaModal={toggleMediaModal}
+          toggleTransferDialog={toggleTransferDialog}
+          />}
         </div>
       </MainContainer>
 
@@ -707,6 +782,8 @@ export function ChatInRoom() {
         loading={false}
         onPrivateRoomClick={chooseRoom}
         message={transferDialogData.message}
+        setThreadView={handleSetThreadView}
+        setThreadViewMessage={handleSetCurrentThreadViewMessage}
       />
       <ChatMediaModal
         open={mediaDialogData.open}

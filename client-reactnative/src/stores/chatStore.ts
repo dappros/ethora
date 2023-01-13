@@ -66,7 +66,7 @@ interface recentRealtimeChatProps {
   waveForm?: any;
 }
 
-interface roomListProps {
+export interface roomListProps {
   name: string;
   participants: number;
   avatar: string;
@@ -78,6 +78,9 @@ interface roomListProps {
   priority?: number;
   muted?: boolean;
   isFavourite?: boolean;
+  roomThumbnail?:string;
+  roomBackground?:string;
+  roomBackgroundIndex?:number;
 }
 
 interface isComposingProps {
@@ -119,7 +122,7 @@ export class ChatStore {
   messages: any = [];
   xmpp: any = null;
   xmppError: any = '';
-  roomList: roomListProps | [] = [];
+  roomList: roomListProps[] | [] = [];
   stores: RootStore | {} = {};
   roomsInfoMap: any = {isUpdated: 0};
   chatLinkInfo: any = {};
@@ -135,7 +138,7 @@ export class ChatStore {
     shouldUpdateChatScreen: false,
   };
   shouldCount: boolean = true;
-  roomRoles = {};
+  roomRoles:any = [];
   isOnline = false;
   showMetaNavigation = false;
 
@@ -148,7 +151,7 @@ export class ChatStore {
     chatJID: '',
   };
   listOfThreads = [];
-  roomMemberInfo = [];
+  roomMemberInfo: roomMemberInfoProps[] = [];
   unreadMessagesForGroups = {
     [ROOM_KEYS.official]: 0,
     [ROOM_KEYS.private]: 0,
@@ -206,7 +209,7 @@ export class ChatStore {
         shouldUpdateChatScreen: false,
       };
       this.shouldCount = true;
-      this.roomRoles = {};
+      this.roomRoles = [];
       this.isComposing = {
         state: false,
         username: '',
@@ -656,7 +659,7 @@ export class ChatStore {
         if (stanza.children[0].children.length) {
           runInAction(() => {
             this.roomMemberInfo = stanza.children[0].children.map(
-              item => item.attrs,
+              (item:any) => item.attrs,
             );
           });
         }

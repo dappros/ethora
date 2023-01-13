@@ -54,6 +54,7 @@ type TMessage = {
   wallet: string;
   from: string;
   room: string;
+  numberOfReplies?:number
 };
 
 export type TMessageHistory = {
@@ -76,11 +77,32 @@ export type TMessageHistory = {
     locationPreview?: string;
     mimetype?: TCombinedMimeType;
     xmlns: string;
+    isReply?:boolean;
+    mainMessageText:string;
+    mainMessageId:number;
+    mainMessageUserName:string;
+    mainMessageCreatedAt:string;
+    mainMessageFileName:string;
+    mainMessageImageLocation:string;
+    mainMessageImagePreview:string;
+    mainMessageMimeType:string;
+    mainMessageOriginalName:string;
+    mainMessageSize:string;
+    mainMessageDuration:string;
+    mainMessageWaveForm:string;
+    mainMessageAttachmentId:string;
+    mainMessageWrappable:boolean;
+    mainMessageNftId:string;
+    mainMessageNftActionType:string;
+    mainMessageContractAddress:string;
+    mainMessageRoomJid:string;
+    showInChannel:boolean;
   };
   roomJID: string;
   date: string;
   key: number;
   coinsInMessage: number;
+  numberOfReplies?: number
 };
 
 export type TUserBlackList = {
@@ -159,6 +181,7 @@ interface IStore {
   };
   ACL: http.IUserAcl;
   messages: TMessage[];
+  currentThreadViewMessage: TMessageHistory;
   viewMode: TMode;
   balance: TBalance[];
   apps: TApp[];
@@ -175,6 +198,8 @@ interface IStore {
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
   setNewMessage: (msg: TMessage) => void;
+  setNumberOfReplies: (messageId:number) => void;
+  setCurrentThreadViewMessage: (currentThreadViewMessage:TMessageHistory) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
   updateMessageHistory: (messages: TMessageHistory[]) => void;
@@ -261,6 +286,53 @@ const _useStore = create<IStore>()(
           balance: [],
           viewMode: "light",
           messages: [],
+          currentThreadViewMessage:{
+            id: 0,
+            body: "",
+            data: {
+              isSystemMessage: "",
+              photoURL: "",
+              quickReplies: "",
+              roomJid: "",
+              receiverMessageId: 0,
+              senderFirstName: "",
+              senderJID: "",
+              senderLastName: "",
+              senderWalletAddress: "",
+              tokenAmount: 0,
+              isMediafile: false,
+              originalName: "",
+              location: "",
+              locationPreview: "",
+              mimetype: null,
+              xmlns: "",
+              isReply:false,
+              mainMessageText:"",
+              mainMessageId:0,
+              mainMessageUserName:"",
+              mainMessageCreatedAt:"",
+              mainMessageFileName:"",
+              mainMessageImageLocation:"",
+              mainMessageImagePreview:"",
+              mainMessageMimeType:"",
+              mainMessageOriginalName:"",
+              mainMessageSize:"",
+              mainMessageDuration:"",
+              mainMessageWaveForm:"",
+              mainMessageAttachmentId:"",
+              mainMessageWrappable:false,
+              mainMessageNftId:"",
+              mainMessageNftActionType:"",
+              mainMessageContractAddress:"",
+              mainMessageRoomJid:"",
+              showInChannel:false,
+            },
+            roomJID: "",
+            date: "",
+            key: 0,
+            coinsInMessage: 0,
+            numberOfReplies:0
+          },
           historyMessages: [],
           loaderArchive: false,
           currentUntrackedChatRoom: "",
@@ -362,6 +434,14 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.messages.unshift(message);
             }),
+          setNumberOfReplies(messageId:number) {
+              set((state) => {
+                const messageIndex = state.historyMessages.findIndex( (i) => i.id === messageId);
+                if (messageIndex > -1) {
+                state.historyMessages[messageIndex].numberOfReplies += 1;
+                }
+              })
+          },
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
               state.historyMessages.unshift(historyMessages);
@@ -369,6 +449,10 @@ const _useStore = create<IStore>()(
                 (v, i, a) => a.findIndex((t) => t.id === v.id) === i
               );
             }),
+          setCurrentThreadViewMessage: (currentThreadViewMessage:TMessageHistory) => 
+          set((state) => {
+            state.currentThreadViewMessage = currentThreadViewMessage
+          }),
           updateMessageHistory: (messages: TMessageHistory[]) =>
             set((state) => {
               state.historyMessages = [...state.historyMessages, ...messages];

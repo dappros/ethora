@@ -178,7 +178,6 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       mainMessageUserName: "",
     };
     xmpp.sendMessageStanza(
-      manipulatedWalletAddress + DOMAIN,
       jid,
       isPrevious ? textLeave : textEnter,
       data

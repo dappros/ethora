@@ -97,6 +97,11 @@ const onMessageHistory = async (stanza: Element) => {
     ) {
       return;
     }
+
+    if(data.attrs.isReply){
+      useStoreState.getState().setNumberOfReplies(Number(data.attrs.mainMessageId))
+    }
+
     const msg = {
       id: Number(id),
       body: body.getText(),
@@ -117,12 +122,36 @@ const onMessageHistory = async (stanza: Element) => {
         locationPreview: data.attrs?.locationPreview,
         mimetype: data.attrs?.mimetype,
         xmlns: data.attrs.xmlns,
+        isReply: data.attrs.isReply === 'true' || false,
+        mainMessageText: data.attrs.mainMessageText || '',
+        mainMessageId: Number(data.attrs.mainMessageId),
+        mainMessageUserName: data.attrs.mainMessageUserName || '',
+        mainMessageCreatedAt: data.attrs.mainMessageCreatedAt,
+        mainMessageFileName: data.attrs.mainMessageFileName,
+        mainMessageImageLocation: data.attrs.mainMessageImageLocation,
+        mainMessageImagePreview: data.attrs.mainMessageImagePreview,
+        mainMessageMimeType: data.attrs.mainMessageMimeType,
+        mainMessageOriginalName: data.attrs.mainMessageOriginalName,
+        mainMessageSize: data.attrs.mainMessageSize,
+        mainMessageDuration: data.attrs?.mainMessageDuration,
+        mainMessageWaveForm: data.attrs.mainMessageWaveForm,
+        mainMessageAttachmentId: data.attrs.mainMessageAttachmentId,
+        mainMessageWrappable: data.attrs.mainMessageWrappable=== 'true' || false,
+        mainMessageNftId: data.attrs.mainMessageNftId,
+        mainMessageNftActionType: data.attrs.mainMessageNftActionType,
+        mainMessageContractAddress: data.attrs.mainMessageContractAddress,
+        mainMessageRoomJid: data.attrs.mainMessageRoomJid,
+        showInChannel:data.attrs.showInChannel === 'true' || false,
       },
       roomJID: stanza.attrs.from,
       date: delay.attrs.stamp,
       key: Date.now() + Number(id),
       coinsInMessage: 0,
+      numberOfReplies:0
     };
+
+
+
 
     // console.log('TEST ', data.attrs)
     const blackList = useStoreState
@@ -775,18 +804,18 @@ class XmppClass {
     this.client.send(message);
   }
   sendMessageStanza = (
-    from: string,
-    to: string,
+    roomJID: string,
     messageText: string,
     data: any
   ) => {
+    
     const message = xml(
       "message",
       {
         id: "sendMessage",
         type: "groupchat",
-        from: from,
-        to: to,
+        from: this.client.jid?.toString(),
+        to: roomJID,
       },
       xml("body", {}, messageText),
       xml("data", {
