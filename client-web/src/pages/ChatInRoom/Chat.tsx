@@ -56,8 +56,7 @@ import QrCodeIcon from "@mui/icons-material/QrCode";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { ROOMS_FILTERS } from "../../config/config";
 import { generateChatLink } from "../../utils";
-import {ChatAudioMessageDialog} from "../../componets/Chat/ChatAudioMessageDialog";
-import {DeleteDialog} from "../../componets/DeleteDialog";
+import {ChatAudioMessageDialog} from "../../componets/Chat/ChatAudioRecorder";
 
 type IMessagePosition = {
   position: MessageModel["position"];
