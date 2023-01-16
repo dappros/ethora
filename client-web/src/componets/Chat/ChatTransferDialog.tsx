@@ -28,8 +28,7 @@ interface IProps {
   loading?: boolean;
   message: TMessageHistory | null;
   onPrivateRoomClick: (jid: string) => void;
-  setThreadView?:(value: boolean) => void;
-  setThreadViewMessage?:(threadMessage: any) => void;
+  onThreadClick:() => void
 }
 type IDialog = "dialog" | "error" | "clarification" | "transfer";
 
@@ -46,8 +45,7 @@ export function ChatTransferDialog({
   loading,
   message,
   onPrivateRoomClick,
-  setThreadView,
-  setThreadViewMessage
+  onThreadClick
 }: IProps) {
   const user = useStoreState((state) => state.user);
 
@@ -62,8 +60,7 @@ export function ChatTransferDialog({
   );
 
   const openThreadView = () => {
-    setThreadView(true);
-    setThreadViewMessage(message);
+    onThreadClick()
     onClose()
   }
 

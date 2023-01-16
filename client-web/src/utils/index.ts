@@ -1,9 +1,11 @@
+import { MessageModel } from "@chatscope/chat-ui-kit-react";
 import { format } from "date-fns";
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import logo from "../assets/images/dpp.png";
 import { mobileEthoraBaseUrl } from "../constants";
 import { ILineChartData } from "../pages/Profile/types";
+import { TMessageHistory } from "../store";
 
 export function useQuery() {
   const { search } = useLocation();
@@ -121,4 +123,78 @@ export const transformDataForLineChart = (
     result.push({ date: elementX, y: elementY });
   }
   return result;
+};
+
+export type IMessagePosition = {
+  position: MessageModel["position"];
+  type: string;
+  separator?: string;
+};
+
+export const getPosition = (
+  arr: TMessageHistory[],
+  message: TMessageHistory,
+  index: number
+) => {
+  const previousJID = arr[index - 1]?.data.senderJID?.split("/")[0];
+  const nextJID = arr[index + 1]?.data.senderJID?.split("/")[0];
+  const currentJID = message.data.senderJID?.split("/")[0];
+
+  let result: IMessagePosition = {
+    position: "single",
+    type: "single",
+  };
+
+  if (arr[index - 1] && message) {
+    if (
+      format(new Date(arr[index - 1]?.date), "dd") !==
+      format(new Date(message.date), "dd")
+    ) {
+      result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy");
+    }
+  }
+
+  if (previousJID !== currentJID && nextJID !== currentJID) {
+    return result;
+  }
+
+  if (previousJID !== currentJID && nextJID === currentJID) {
+    result.position = "first";
+    result.type = "first";
+    return result;
+  }
+
+  if (previousJID === currentJID && nextJID === currentJID) {
+    result.position = "normal";
+    result.type = "normal";
+    return result;
+  }
+
+  if (
+    previousJID === currentJID &&
+    nextJID !== currentJID &&
+    arr[index - 1]?.data.isSystemMessage === "false"
+  ) {
+    result.position = "single";
+    result.type = "last";
+    return result;
+  }
+
+  return result;
+};
+
+export const stripHtml = (html: string) => {
+  let doc: any;
+  let str = html;
+
+  str = str.replace(/<br>/gi, "\n");
+  str = str.replace(/<p.*>/gi, "\n");
+  str = str.replace(/<(?:.|\s)*?>/g, "");
+
+  if (str.trim().length === 0) {
+    doc = new DOMParser().parseFromString(html, "text/html");
+  } else {
+    doc = new DOMParser().parseFromString(str, "text/html");
+  }
+  return doc.body.textContent || "";
 };
