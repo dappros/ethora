@@ -9,7 +9,7 @@ import ItemsTable from "./ItemsTable";
 import { Transactions } from "../Transactions/Transactions";
 import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
 import { getToken } from "../../firebase";
 

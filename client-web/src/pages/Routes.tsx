@@ -3,13 +3,13 @@ import { Route, Router, Switch } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
-import { FullPageSpinner } from "../componets/FullPageSpinner";
+import { FullPageSpinner } from "../components/FullPageSpinner";
 import { checkNotificationsStatus } from "../utils";
 import { MintNft } from "./MintNft/MintNft";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
-import { Snackbar } from "../componets/Snackbar";
-import AuthRoute from "../componets/AuthRoute";
+import { Snackbar } from "../components/Snackbar";
+import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));

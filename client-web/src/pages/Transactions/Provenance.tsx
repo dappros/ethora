@@ -15,7 +15,7 @@ import { getProvenanceTransacitons, IDocument } from "../../http";
 import { TBalance } from "../../store";
 import { ITransaction } from "../Profile/types";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 
 export interface IProvenance {}
 

@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { getTransactionDetails } from "../../http";
 import { ITransaction } from "../Profile/types";
 import { format } from "date-fns";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { Box, Typography } from "@mui/material";
 
 interface ITransactionDetailsProps {}

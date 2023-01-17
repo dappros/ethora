@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { getTransactions } from "../../http";
 import { ExplorerRespose, ITransaction } from "../Profile/types";
 import { Transactions } from "../Transactions/Transactions";

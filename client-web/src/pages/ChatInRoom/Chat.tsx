@@ -31,8 +31,8 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import { Message } from "../../componets/Chat/Messages/Message";
-import { SystemMessage } from "../../componets/Chat/Messages/SystemMessage";
+import { Message } from "../../components/Chat/Messages/Message";
+import { SystemMessage } from "../../components/Chat/Messages/SystemMessage";
 import {
   Button,
   CircularProgress,
@@ -48,15 +48,15 @@ import {
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
+import { MetaNavigation } from "../../components/MetaNavigation/MetaNavigation";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { ROOMS_FILTERS } from "../../config/config";
-import ThreadContainer from "../../componets/Chat/Threads/ThreadContainer";
-import { ChatTransferDialog } from "../../componets/Chat/ChatTransferDialog";
-import { ChatMediaModal } from "../../componets/Chat/ChatMediaModal";
-import { ChatAudioMessageDialog } from "../../componets/Chat/ChatAudioRecorder";
+import ThreadContainer from "../../components/Chat/Threads/ThreadContainer";
+import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
+import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
+import { ChatAudioMessageDialog } from "../../components/Chat/ChatAudioRecorder";
 import { generateChatLink, getPosition, stripHtml } from "../../utils";
 
 export type IMessagePosition = {

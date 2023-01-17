@@ -12,14 +12,14 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { useStoreState } from "../../store";
-import NoDataImage from "../../componets/NoDataImage";
+import NoDataImage from "../../components/NoDataImage";
 import NewUserModal from "./NewUserModal";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Pagination from "@mui/material/Pagination";
 import CloseIcon from "@mui/icons-material/Close";
 import * as http from "../../http";
-import { EditAcl } from "../../componets/EditAcl";
+import { EditAcl } from "../../components/EditAcl";
 
 const boxStyle = {
   position: "absolute" as "absolute",

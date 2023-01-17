@@ -17,7 +17,7 @@ import { MetamaskModal } from "./MetamaskModal";
 import { UsernameModal } from "./UsernameModal";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import {
   facebookSignIn,
   googleSignIn,

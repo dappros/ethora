@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useWeb3React } from "@web3-react/core";
 import * as React from "react";
 import { useHistory } from "react-router";
-import { DeleteDialog } from "../../componets/DeleteDialog";
+import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { deleteAccountService, httpWithAuth } from "../../http";
 import { useStoreState } from "../../store";

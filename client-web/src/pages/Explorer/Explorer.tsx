@@ -5,7 +5,7 @@ import {
   getTransactions,
 } from "../../http";
 import { useStoreState } from "../../store";
-import { ExplorerChart } from "../../componets/ExplorerChart";
+import { ExplorerChart } from "../../components/ExplorerChart";
 import { format } from "date-fns";
 import {
   ExplorerRespose,
@@ -13,8 +13,8 @@ import {
   ILineChartData,
   ITransaction,
 } from "../Profile/types";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
-import { ExplorerBlocks } from "../../componets/ExplorerBlocks";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
+import { ExplorerBlocks } from "../../components/ExplorerBlocks";
 import { Box, styled, Typography } from "@mui/material";
 import { Transactions } from "../Transactions/Transactions";
 import { TChartData, transformDataForLineChart } from "../../utils";
