@@ -277,7 +277,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       // enabled={ false}
     >
       <View>
-        <SecondaryHeader title="Upload files" />
+        <SecondaryHeader title="Upload file" />
       </View>
       <ScrollView style={classes.container}>
         <View style={classes.contentContainer}>

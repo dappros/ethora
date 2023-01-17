@@ -24,7 +24,7 @@ const xmppEndpoints = {
 export class ApiStore {
   modes = {
     DEV: 'https://app-dev.dappros.com/v1',
-    PROD: 'https://app.dappros.com/v1',
+    PROD: 'https://api.dappros.com/v1',
     QA: 'https://app-dev.dappros.com/v1',
   };
   tokens = {
