@@ -14,7 +14,6 @@ import {textStyles} from '../../../docs/config';
 import Bubble from './MessageBubble';
 
 const {isSameUser, isSameDay} = utils;
-let count = 0;
 export default class Message extends React.Component {
   shouldComponentUpdate(nextProps) {
     const next = nextProps.currentMessage;
@@ -24,6 +23,8 @@ export default class Message extends React.Component {
     if(next.tokenAmount !== current.tokenAmount) return true
 
     if(next.numberOfReplies !== current.numberOfReplies) return true
+    
+    if(next.text !== current.text) return true
     
     return false;
   }

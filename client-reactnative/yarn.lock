@@ -2350,10 +2350,24 @@
   dependencies:
     "@react-types/shared" "^3.16.0"
 
-"@realm.io/common@^0.1.1", "@realm.io/common@^0.1.4":
+"@realm.io/common@^0.1.1":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@realm.io/common/-/common-0.1.5.tgz#4285c8142d5024a0876318cdfd28f23ea98ebf4f"
   integrity sha512-Y+UnICLvsPFpe2WOXWIdJUaV3G2qDocN8al/Yz13mYMkjODXHL4VhyfEKR2hvcAubv+7isdegEyYNdo3zQzbFA==
+
+"@realm/common@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@realm/common/-/common-0.1.4.tgz#48ff628a22b27c61ba886caff395909632240927"
+  integrity sha512-bKpIRZIQ4ykribFi0igCwuvf7P4+Ex2XYKqDw1JDe6sCGAaPMwhazooyM6h32fUjtXRTbdAWH2S9JH8Xh/LrqQ==
+
+"@realm/network-transport@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@realm/network-transport/-/network-transport-0.7.2.tgz#167b85fd4744b66d9e37d096e1e9e2720d7abd26"
+  integrity sha512-IZ6yd+mGOYvSMVEVFf/v5qtZOi8bk4ZBxoj25GNQFyeFKxOs1WH+z4IDZscMC2GhQ4hdmI3Sg+RUEphimtHupQ==
+  dependencies:
+    "@realm/common" "^0.1.4"
+    abort-controller "^3.0.0"
+    node-fetch "^2.6.0"
 
 "@realm/react@^0.2.1":
   version "0.2.1"
@@ -2532,19 +2546,12 @@
   integrity sha512-YqNZiTWsEoP0bqN7gQShOjskK/cJFpBhgVMMIGfUnbGeSytHT2SSrT1TVW1f9yNP5x4uSpry2Rq2BQS7qcC4fQ==
 
 "@types/react-native-vector-icons@^6.4.10":
-  version "6.4.12"
-  resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.12.tgz#4b9c63bf85eb42fca7c5b0a55ec317900e4fb427"
-  integrity sha512-gSXtv3NMOsRwSXJ/gvGebm7CNjHbkeFKCse9h/Pvi+x2yjCLOkJR1FBfec06DhaFJpsK7Y8WRQpwOS0eLqx5Rg==
+  version "6.4.13"
+  resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.13.tgz#28b34d15094e040718beefb67cb3eff0c4994cb6"
+  integrity sha512-1PqFoKuXTSzMHwGMAr+REdYJBQAbe9xrww3ecZR0FsHcD1K+vGS/rxuAriL4rsI6+p69sZQjDzpEVAbDQcjSwA==
   dependencies:
     "@types/react" "*"
-    "@types/react-native" "*"
-
-"@types/react-native@*":
-  version "0.70.8"
-  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.8.tgz#3302a0f7eddcd3350448ca17a9e415d02b1efde6"
-  integrity sha512-jvs5QMOrlyi0ScfT5Brha2roDoOWtbIOadNkp0jsueVen5+pH4SQAYtzL6xu0+dIcx3J/5LtZ/JYby2C1/zUug==
-  dependencies:
-    "@types/react" "*"
+    "@types/react-native" "^0.70"
 
 "@types/react-native@^0.67.3":
   version "0.67.17"
@@ -2552,6 +2559,13 @@
   integrity sha512-HYo9XbYPwyf5L7FWhRjawbDQ4ma5k/bEzxrpDjG2olwLbXR/IR5ZghCmUUIcEtHB9KDg0QIAs+WriddtOKVmFg==
   dependencies:
     "@types/react" "^17"
+
+"@types/react-native@^0.70":
+  version "0.70.9"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.70.9.tgz#7d9d11960a4ab78c874e77af895f83d2817aac96"
+  integrity sha512-0C6sIo13ztzM2llaWdTq0Vpscx3VdU0T8F45kEurWv3l5n+BHm/Mkr8Z+N29eXDYGhTvCz5y2jegB8JyiVa5kw==
+  dependencies:
+    "@types/react" "*"
 
 "@types/react-test-renderer@^17.0.1":
   version "17.0.2"
@@ -3968,9 +3982,9 @@ camelcase@^6.0.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001400:
-  version "1.0.30001443"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001443.tgz#8fc85f912d5471c9821acacf9e715c421ca0dd1f"
-  integrity sha512-jUo8svymO8+Mkj3qbUbVjR8zv8LUGpGkUM/jKvc9SO2BvjCI980dp9fQbf/dyLs6RascPzgR4nhAKFA4OHeSaA==
+  version "1.0.30001444"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001444.tgz#c0a530776eb44d933b493de1d05346f2527b30fc"
+  integrity sha512-ecER9xgJQVMqcrxThKptsW0pPxSae8R2RB87LNa+ivW9ppNWRHEplXcDzkCOP4LYWGj8hunXLqaiC41iBATNyg==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4442,9 +4456,9 @@ dashdash@^1.12.0:
     assert-plus "^1.0.0"
 
 data-uri-to-buffer@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.0.tgz#b5db46aea50f6176428ac05b73be39a57701a64b"
-  integrity sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.1.tgz#d8feb2b2881e6a4f58c2e08acfd0e2834e26222e"
+  integrity sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==
 
 data-urls@^2.0.0:
   version "2.0.0"
@@ -8056,9 +8070,9 @@ node-environment-flags@^1.0.5:
     semver "^5.7.0"
 
 node-fetch@^2.2.0, node-fetch@^2.6.0, node-fetch@^2.6.1, node-fetch@^2.6.6:
-  version "2.6.7"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
-  integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.8.tgz#a68d30b162bc1d8fd71a367e81b997e1f4d4937e"
+  integrity sha512-RZ6dBYuj8dRSfxpUSu+NsdF1dpPpluJxwOp+6IoDp/sH2QNDSvurYsAa+F1WxY2RjA1iP93xhcsUoYbF2XBqVg==
   dependencies:
     whatwg-url "^5.0.0"
 
@@ -8188,9 +8202,9 @@ object-copy@^0.1.0:
     kind-of "^3.0.3"
 
 object-inspect@^1.12.2, object-inspect@^1.9.0:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.12.2.tgz#c0641f26394532f28ab8d796ab954e43c009a8ea"
-  integrity sha512-z+cPxW0QGUp0mcqcsgQyLVRDoXFQbXOwBaqyF7VIgI4TWNQsDHrBpUQslRmIfAoYWdYzs6UlKJtB2XJpTaNSpQ==
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.12.3.tgz#ba62dffd67ee256c8c086dfae69e016cd1f198b9"
+  integrity sha512-geUvdk7c+eizMNUDkRpW1wJwgfOiOeHbxBR/hLXK1aT6zmVSO0jsQcs7fj6MGw89jC/cjGfLcNOrtMYtGqm81g==
 
 object-is@^1.0.1:
   version "1.1.5"
@@ -8958,9 +8972,9 @@ react-native-fs@^2.20.0:
     utf8 "^3.0.0"
 
 react-native-gesture-handler@^2.4.2:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz#ef9857871c10663c95a51546225b6e00cd4740cf"
-  integrity sha512-poOSfz/w0IyD6Qwq7aaIRRfEaVTl1ecQFoyiIbpOpfNTjm2B1niY2FLrdVQIOtIOe+K9nH55Qal04nr4jGkHdQ==
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.9.0.tgz#2f63812e523c646f25b9ad660fc6f75948e51241"
+  integrity sha512-a0BcH3Qb1tgVqUutc6d3VuWQkI1AM3+fJx8dkxzZs9t06qA27QgURYFoklpabuWpsUTzuKRpxleykp25E8m7tg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -9500,11 +9514,12 @@ realm@10.20.0-beta.5:
     url-parse "^1.4.4"
 
 realm@>=10:
-  version "10.21.0"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-10.21.0.tgz#cf4d8dda7a9ec284e9595d7f87b999412f9059d9"
-  integrity sha512-Y0R6PSI4wkyiPTEg3wssRRQegsQgdbYx4+UGN9285KXbND5WWaA/7e8fu8lYVDIGrvbuaXo/Dyj7v96+nxUjUA==
+  version "11.3.1"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-11.3.1.tgz#45d2bf2e66570d5e00025adda09d9e6dd8845409"
+  integrity sha512-yctWhfHp4RlQSXXSCJ3+QNK5Nq8ZEiMlO9DLmtrDbSQD0CntfarTDnU55okXWuCkpzykxPO8y5zotA3QVkZcZg==
   dependencies:
-    "@realm.io/common" "^0.1.4"
+    "@realm/common" "^0.1.4"
+    "@realm/network-transport" "^0.7.2"
     bindings "^1.5.0"
     bson "4.4.1"
     command-line-args "^5.1.1"
@@ -9517,7 +9532,6 @@ realm@>=10:
     prebuild-install "^7.0.1"
     progress "^2.0.3"
     prop-types "^15.6.2"
-    realm-network-transport "^0.7.2"
     request "^2.88.0"
     stream-counter "^1.0.0"
     sync-request "^3.0.1"

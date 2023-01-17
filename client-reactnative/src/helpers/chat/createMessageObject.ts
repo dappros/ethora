@@ -63,6 +63,9 @@ interface createMessageObjectProps {
   numberOfReplies?: number;
   showInChannel?: boolean;
   preview?: string;
+  isReplace?:boolean;
+  replaceMessageId?:string;
+  isEdited?:boolean;
 }
 
 export const createMessageObject = (
@@ -106,6 +109,9 @@ export const createMessageObject = (
     numberOfReplies: 0,
     showInChannel: false,
     preview: '',
+    isReplace:false,
+    replaceMessageId:"",
+    isEdited:false,
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
@@ -167,6 +173,10 @@ export const createMessageObject = (
       message.showInChannel = item.attrs.showInChannel === 'true' || false;
       message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
+    }
+    if(item.name === 'replace'){
+      message.isReplace = true;
+      message.replaceMessageId = item.attrs.id
     }
   });
   return message;

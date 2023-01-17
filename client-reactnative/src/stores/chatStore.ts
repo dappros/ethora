@@ -118,16 +118,22 @@ export interface BlackListUser {
   name: string;
 }
 
+export interface replaceMessageListItemProps {
+  replaceMessageId:string;
+  replaceMessageText:string;
+}
+
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
   xmppError: any = '';
   roomList: roomListProps[] | [] = [];
-  stores: RootStore | {} = {};
+  stores: RootStore;
   roomsInfoMap: any = {isUpdated: 0};
   chatLinkInfo: any = {};
   blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
+  replaceMessageList: replaceMessageListItemProps[] = [];
   metaRooms: IMetaRoom[] = [];
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
@@ -224,8 +230,27 @@ export class ChatStore {
         senderName:'',
         name:''
       }
+      this.replaceMessageList = []
     });
   };
+
+  addToReplaceMessageList = (replaceMessageId:any, replaceMessageText:string) => {
+    const replaceMessageListItem:replaceMessageListItemProps = {
+      replaceMessageId: replaceMessageId,
+      replaceMessageText: replaceMessageText
+    }
+    runInAction(() => {
+      this.replaceMessageList.push(replaceMessageListItem);
+    })
+  }
+
+  removeFromReplaceMessageList = (replaceMessageId:string) => {
+    const messageIndex = this.replaceMessageList.findIndex(item => item.replaceMessageId === replaceMessageId)
+    if(messageIndex)
+    runInAction(() => {
+      this.replaceMessageList.splice(messageIndex, 1);
+    })
+  }
 
   setUserBanData = (senderName:string, name:string)=>{
     runInAction(() => {
@@ -358,13 +383,17 @@ export class ChatStore {
     }
   };
 
-  editMessage = (replaceMessageId: any, messageString) => {
+  editMessage = (replaceMessageId: any, messageString:string) => {
     const indexOfMessage = this.messages.findIndex(item => item._id === replaceMessageId)
-    console.log(this.messages.find(item => item._id === replaceMessageId))
     if(indexOfMessage !== -1){
+      const messages = toJS(this.messages);
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[indexOfMessage])),
+        ['text']: messageString,
+        ['isEdited'] : true
+      };
+      message.text = messageString;
       runInAction(() => {
-        const message = this.messages[indexOfMessage]
-        message.text = messageString;
         this.messages[indexOfMessage] = message;
       })
     }
@@ -375,6 +404,7 @@ export class ChatStore {
       this.listOfThreads.push(message);
     });
   };
+
   addRoom = (room: any) => {
     runInAction(() => {
       this.roomList.push(room);
@@ -696,12 +726,12 @@ export class ChatStore {
                   );
                 }
                 if (subItem.children[0] === 'Traffic rate limit is exceeded') {
-                  showToast(
-                    'error',
-                    'XMPP: Too much traffic!',
-                    'Traffic rate limit is exceeded',
-                    'top',
-                  );
+                  // showToast(
+                  //   'error',
+                  //   'XMPP: Too much traffic!',
+                  //   'Traffic rate limit is exceeded',
+                  //   'top',
+                  // );
                 }
               }
             });
@@ -846,6 +876,66 @@ export class ChatStore {
 
           const message = createMessageObject(singleMessageDetailArray);
 
+          //check if the stanza is a replace stanza
+          if(message.isReplace){
+            this.addToReplaceMessageList(message.replaceMessageId, message.text);
+          }else{
+
+            //check if the current stanza is an edited message.
+            const replaceMessageItem = this.replaceMessageList.find(item => message._id === item.replaceMessageId);
+            if(replaceMessageItem){
+              message.text = replaceMessageItem.replaceMessageText;
+              message.isEdited = true;
+              this.removeFromReplaceMessageList(replaceMessageItem.replaceMessageId);
+            }
+            // if(this.replaceMessageList.find(item => message._id === item.replaceMessageId)){
+            //     message.text = item.rep
+            // }
+            const messageAlreadyExist = this.messages.findIndex(
+              x => x._id === message._id,
+            );
+            if (messageAlreadyExist === -1) {
+              if (
+                this.blackList.find(item => item.userJid === message.user._id)
+                  ?.userJid
+              ) {
+                return;
+              }
+  
+              if (message.system) {
+                if (message?.contractAddress) {
+                  await updateMessageToWrapped(message.receiverMessageId, {
+                    nftId: message.nftId,
+                    contractAddress: message.contractAddress,
+                  });
+                }
+                await updateTokenAmount(
+                  message.receiverMessageId,
+                  message.tokenAmount,
+                );
+              }
+  
+              if (message.isReply) {
+                const threadIndex = this.listOfThreads.findIndex(
+                  item => message._id === item._id,
+                );
+                if (threadIndex === -1) {
+                  this.addThreadMessage(message);
+                }
+              }
+  
+              const threadsOfCurrentMessage = this.listOfThreads.filter(
+                (item: any) => item.mainMessageId === message._id,
+              );
+  
+              if (threadsOfCurrentMessage) {
+                message.numberOfReplies = threadsOfCurrentMessage.length;
+              }
+              await insertMessages(message);
+              this.addMessage(message);
+            }
+          }
+
           // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
           // if(threadIndex != -1){
           //   // alert(threadIndex)
@@ -861,103 +951,61 @@ export class ChatStore {
 
           // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
 
-          const messageAlreadyExist = this.messages.findIndex(
-            x => x._id === message._id,
-          );
-          if (messageAlreadyExist === -1) {
+
+        }
+
+        if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
+          const messageDetails = stanza.children;
+          const message = createMessageObject(messageDetails);
             if (
               this.blackList.find(item => item.userJid === message.user._id)
                 ?.userJid
             ) {
+              console.log('finded user');
               return;
             }
-
+            if (this.shouldCount) {
+              this.updateBadgeCounter(message.roomJid, 'UPDATE');
+            }
+            this.addMessage(message);
+  
+            this.updateRoomInfo(message.roomJid, {
+              lastUserText: message?.text,
+              lastUserName: message?.user?.name,
+              lastMessageTime: message?.createdAt,
+            });
             if (message.system) {
               if (message?.contractAddress) {
                 await updateMessageToWrapped(message.receiverMessageId, {
                   nftId: message.nftId,
                   contractAddress: message.contractAddress,
                 });
+                this.updateMessageProperty(
+                  message.receiverMessageId,
+                  'nftId',
+                  message.nftId,
+                );
               }
+              this.updateMessageProperty(
+                message.receiverMessageId,
+                'tokenAmount',
+                message.tokenAmount,
+              );
               await updateTokenAmount(
                 message.receiverMessageId,
                 message.tokenAmount,
               );
+              playCoinSound(message.tokenAmount);
             }
-
             if (message.isReply) {
-              const threadIndex = this.listOfThreads.findIndex(
-                item => message._id === item._id,
+              this.updateMessageProperty(
+                message.mainMessageId,
+                'numberOfReplies',
+                1,
               );
-              if (threadIndex === -1) {
-                this.addThreadMessage(message);
-              }
-            }
-
-            const threadsOfCurrentMessage = this.listOfThreads.filter(
-              (item: any) => item.mainMessageId === message._id,
-            );
-
-            if (threadsOfCurrentMessage) {
-              message.numberOfReplies = threadsOfCurrentMessage.length;
+              await updateNumberOfReplies(message.mainMessageId);
             }
             await insertMessages(message);
-            this.addMessage(message);
-          }
-        }
-
-        if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
-          const messageDetails = stanza.children;
-          const message = createMessageObject(messageDetails);
-          if (
-            this.blackList.find(item => item.userJid === message.user._id)
-              ?.userJid
-          ) {
-            console.log('finded user');
-            return;
-          }
-          if (this.shouldCount) {
-            this.updateBadgeCounter(message.roomJid, 'UPDATE');
-          }
-          this.addMessage(message);
-
-          this.updateRoomInfo(message.roomJid, {
-            lastUserText: message?.text,
-            lastUserName: message?.user?.name,
-            lastMessageTime: message?.createdAt,
-          });
-          if (message.system) {
-            if (message?.contractAddress) {
-              await updateMessageToWrapped(message.receiverMessageId, {
-                nftId: message.nftId,
-                contractAddress: message.contractAddress,
-              });
-              this.updateMessageProperty(
-                message.receiverMessageId,
-                'nftId',
-                message.nftId,
-              );
-            }
-            this.updateMessageProperty(
-              message.receiverMessageId,
-              'tokenAmount',
-              message.tokenAmount,
-            );
-            await updateTokenAmount(
-              message.receiverMessageId,
-              message.tokenAmount,
-            );
-            playCoinSound(message.tokenAmount);
-          }
-          if (message.isReply) {
-            this.updateMessageProperty(
-              message.mainMessageId,
-              'numberOfReplies',
-              1,
-            );
-            await updateNumberOfReplies(message.mainMessageId);
-          }
-          await insertMessages(message);
         }
 
         if(stanza.attrs.id === XMPP_TYPES.replaceMessage){
@@ -969,13 +1017,14 @@ export class ChatStore {
           // </message>
           const replaceMessageId = stanza.children.find(item => item.name === 'replace').attrs.id;
           const messageString = stanza.children.find(item => item.name === 'body').children[0]
-          console.log(stanza.children,"Asfdafaffa")
+          // this.addToReplaceMessageList(replaceMessageId, messageString);
+          
 
-          // this.editMessage(replaceMessageId,messageString)
-          // await updateMessageText(
-          //   replaceMessageId,
-          //   messageString
-          // )
+          this.editMessage(replaceMessageId,messageString)
+          await updateMessageText(
+            replaceMessageId,
+            messageString
+          )
         }
 
         //capture message composing

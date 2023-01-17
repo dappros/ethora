@@ -29,7 +29,7 @@ import {
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import { HStack, Text, View } from 'native-base';
+import { Box, HStack, Text, View } from 'native-base';
 import { observer } from 'mobx-react-lite';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
@@ -439,6 +439,22 @@ const Bubble = observer((props:BubbleProps)=> {
     )
   }
 
+  const isEditedComponent = () => {
+    return(
+      <Box
+      style={styles[position].editWraper}
+      alignItems={"flex-end"}
+      >
+      <Text 
+      fontFamily={textStyles.mediumFont}
+      fontSize={hp('1.2%')}
+      color={"gray.500"}>
+        edited
+      </Text>
+      </Box>
+    )
+  }
+
   return (
     <View
       onLayout={e => setBubbleWidth(e.nativeEvent.layout.width)}
@@ -447,6 +463,8 @@ const Bubble = observer((props:BubbleProps)=> {
         containerStyle && containerStyle[position],
         {position: 'relative'},
       ]}>
+      {!!currentMessage.isEdited&&
+      isEditedComponent()}
       <Animated.View
         style={[
           styles[position].wrapper,
@@ -520,6 +538,9 @@ const styles = {
       borderWidth:2,
       borderColor:"green",
       borderBottomWidth:0
+    },
+    editWraper:{
+      padding:2,
     },
     wrapper: {
       borderRadius: 15,

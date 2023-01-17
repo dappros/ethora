@@ -81,6 +81,7 @@ const MessageSchema = {
     numberOfReplies:{type:'int', optional: true},
     showInChannel:{type:'bool', optional:true},
     preview: {type: 'string', optional: true},
+    isEdited: {type: 'bool', optional:true}
   },
 };
 

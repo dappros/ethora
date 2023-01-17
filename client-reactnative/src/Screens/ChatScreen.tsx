@@ -100,6 +100,7 @@ import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import { toJS } from 'mobx';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -141,7 +142,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [text, setText] = useState('');
   const [selection, setSelection] = useState({start: 0, end: 0});
   const debouncedChatText = useDebounce(text, 500);
-  const [onTapMessageObject, setOnTapMessageObject] = useState('');
+  const [onTapMessageObject, setOnTapMessageObject] = useState();
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showEditOption, setShowEditOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
@@ -223,7 +224,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   useEffect(() => {
     const lastMessage = messages?.[0];
-    chatStore.updateRoomInfo(chatJid, {
+    lastMessage&&chatStore.updateRoomInfo(chatJid, {
       archiveRequested: true,
       lastUserText: lastMessage?.text,
       lastUserName: lastMessage?.user?.name,
@@ -552,18 +553,24 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleOnPress = (message: any) => {
-    console.log(message);
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
       setShowEditOption(false);
+    }else{
+      setIsShowDeleteOption(true);
+      setShowEditOption(true);
     }
 
     if (message.isReply) {
       setShowReplyOption(false);
+    }else{
+      setShowReplyOption(true)
     }
 
     if (message.numberOfReplies > 0) {
       setShowViewThread(true);
+    }else{
+      setShowViewThread(false)
     }
 
     setOnTapMessageObject(message);
@@ -587,7 +594,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleSendMessage = (messageString: any) => {
-    console.log(isEditing, 'message string');
     if (isEditing) {
       const messageText = messageString[0].text;
       const tokenAmount = messageString[0].tokenAmount || 0;
