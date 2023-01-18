@@ -123,7 +123,6 @@ export function ChatTransferDialog({
       message.data.senderWalletAddress,
       user.firstName,
       message.data.senderFirstName,
-      CONFERENCEDOMAIN,
       message.data.senderJID
     )
       .then((result) => {

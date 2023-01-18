@@ -71,7 +71,7 @@ export interface IButtons {
   value: string;
 }
 
-const NO_ROOM_PICKED = "none@conference.dev.dxmpp.com";
+const NO_ROOM_PICKED = "none" + CONFERENCEDOMAIN;
 const filterChatRooms = (
   rooms: TUserChatRooms[],
   filter: TActiveRoomFilter

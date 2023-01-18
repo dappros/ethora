@@ -95,7 +95,6 @@ export const Routes = () => {
 
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
-
   const getAcl = async () => {
     try {
       if (user?.ACL?.ownerAccess) {
@@ -131,7 +130,6 @@ export const Routes = () => {
       console.log(error, "404");
     }
   };
-
   useEffect(() => {
     if (userId) {
       checkNotificationsStatus();
