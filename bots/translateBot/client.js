@@ -71,6 +71,7 @@ xmpp.on("stanza", async stanza => {
 
 xmpp.on('online', jid => {
     //Connecting to databases and after that chat rooms.
+    xmpp.send(xml('presence'));
     if (connectData.dataBaseStatus) {
         connectToDb().then(() => {
             console.log('==> Successful database connection');
