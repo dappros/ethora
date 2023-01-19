@@ -1066,10 +1066,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
             />
           )}
           placeholder={'Type a message'}
-          // listViewProps={{
-          //   onEndReached: onLoadEarlier,
-          //   onEndReachedThreshold: 0.05,
-          // }}
+          listViewProps={{
+            onEndReached: onLoadEarlier,
+            onEndReachedThreshold: 0.05,
+          }}
           onLoadEarlier={onLoadEarlier}
           // textInputProps={{onSelectionChange: e => console.log(e)}}
           keyboardShouldPersistTaps={'handled'}

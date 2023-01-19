@@ -5,7 +5,7 @@ import {
   MessageSeparator,
 } from "@chatscope/chat-ui-kit-react";
 import { differenceInHours, format, formatDistance, subDays } from "date-fns";
-import { TMessageHistory, useStoreState } from "../../../store";
+import { TMessageHistory } from "../../../store";
 import { useHistory } from "react-router";
 import {
   Card,
@@ -58,8 +58,8 @@ export const Message: React.FC<IMessage> = ({
 }) => {
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
-  const messageJid = message.data.senderJID;
-  const userJid = useMemo(() => xmpp.client?.jid?.toString(), []);
+  const messageJid = message.data.senderJID.split('/')[0];
+  const userJid = useMemo(() => xmpp.client?.jid?.toString().split('/')[0], []);
   const isSameUser = userJid === messageJid;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
@@ -84,9 +84,9 @@ export const Message: React.FC<IMessage> = ({
   };
 
   const rightClick = (event: React.SyntheticEvent<HTMLElement>) => {
-    if (messageDirection !== "incoming") {
-      return;
-    }
+    // if (messageDirection !== "incoming") {
+    //   return;
+    // 
     event.preventDefault();
     openDialogMenu();
   };
@@ -259,7 +259,7 @@ export const Message: React.FC<IMessage> = ({
                 {firstName} {lastName}
                 <br />
               </strong>
-              {!isSameUser && !isThread && !message.data.isReply && (
+              {!isThread && !message.data.isReply && (
                 <IconButton
                   aria-label="more"
                   id="long-button"
@@ -369,6 +369,13 @@ export const Message: React.FC<IMessage> = ({
                     />
                   </div>
                 )}
+                {message.data.isEdited&&
+                <div style={{ display: "flex", alignItems: "flex-end", marginLeft:3, marginRight:3 }}>
+                  <Typography fontSize={12}>
+                    edited
+                  </Typography>
+                </div>
+                }
               </div>
             </div>
           )}
