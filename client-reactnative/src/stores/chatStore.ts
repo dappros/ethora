@@ -770,8 +770,8 @@ export class ChatStore {
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
-        console.log(rosterFromXmpp[0], 'dklasjdaksljd')
         rosterFromXmpp.forEach((item: any) => {
+          if(!item.attrs.name) return;
           const rosterObject = {
             name: item.attrs.name,
             jid: item.attrs.jid,

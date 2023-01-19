@@ -30,7 +30,10 @@ export const HeaderBalanceButton = observer(() => {
       justifyContent={'center'}
       width={50}
       height={50}>
-      <Pressable style={{justifyContent: 'center', alignItems: 'center'}} onPress={onButtonPress}>
+      <Pressable
+        accessibilityLabel="Balance"
+        style={{justifyContent: 'center', alignItems: 'center'}}
+        onPress={onButtonPress}>
         <Box>
           <Image
             alt="coin icon"

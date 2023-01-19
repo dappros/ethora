@@ -22,7 +22,7 @@ interface SecondaryHeaderProps {
   showVersion?: boolean;
   onQRPressed?: any;
   isChatRoomDetail?: boolean;
-  roomJID?:string,
+  roomJID?: string;
   onBackPress?: () => void;
 }
 
@@ -48,6 +48,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
     <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
       <HStack>
         <TouchableOpacity
+          accessibilityLabel="Back button"
           style={{flex: 0.12, justifyContent: 'center', alignItems: 'center'}}
           onPress={onArrowClick}>
           <AntIcon
@@ -61,10 +62,14 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           style={{
             flex: 0.7,
           }}
+          accessibilityLabel="Screen title"
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
-            navigation.navigate(ROUTES.CHATDETAILS, {roomName: title, roomJID:roomJID})
+            navigation.navigate(ROUTES.CHATDETAILS, {
+              roomName: title,
+              roomJID: roomJID,
+            })
           }>
           <Text
             fontFamily={textStyles.semiBoldFont}
@@ -76,7 +81,10 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
 
         <View style={{marginLeft: 'auto', flex: 0.1}}>
           {isQR && (
-            <TouchableOpacity onPress={onQRPressed} style={{marginRight: 10}}>
+            <TouchableOpacity
+              accessibilityLabel="QR button"
+              onPress={onQRPressed}
+              style={{marginRight: 10}}>
               <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />
             </TouchableOpacity>
           )}

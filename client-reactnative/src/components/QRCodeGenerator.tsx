@@ -33,10 +33,9 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
 
   let link = '';
 
-  if (shareKey.includes('profileLink')||shareKey.includes('doclink')) {
+  if (shareKey.includes('profileLink') || shareKey.includes('doclink')) {
     link = shareKey;
-  }
-  else {
+  } else {
     link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, '');
   }
   const createShareLink = () => {
@@ -59,11 +58,11 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
   };
 
   const copyToClipboard = () => {
-    if(props.removeBaseUrl){
+    if (props.removeBaseUrl) {
       Clipboard.setString(shareKey);
-    }else{
-    const shareLink = `${unv_url}${link}`;
-    Clipboard.setString(shareLink);
+    } else {
+      const shareLink = `${unv_url}${link}`;
+      Clipboard.setString(shareLink);
     }
     showToast('success', 'Info', 'Link copied', 'top');
     // showInfo('Info', 'Link copied.')
@@ -76,7 +75,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
       <QRCode
         getRef={svg}
         //QR code value
-        value={qrlink?qrlink:undefined}
+        value={qrlink ? qrlink : undefined}
         //size of QR Code
         size={hp('20%')}
         //Color of the QR Code (Optional)
@@ -113,6 +112,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         marginBottom={2}
         borderRadius={5}
         onPress={shareQR}
+        accessibilityLabel="Send your profile via QR"
         w={'80%'}>
         <Text style={styles.TextStyle}> Share QR </Text>
         <Ionicons size={hp('2%')} color={'#fff'} name="share-social" />
@@ -130,6 +130,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         marginTop={2}
         w={'80%'}
         borderRadius={5}
+        accessibilityLabel="Copy your profile hyperlink"
         onPress={copyToClipboard}>
         <View flex={0.8}>
           <Text

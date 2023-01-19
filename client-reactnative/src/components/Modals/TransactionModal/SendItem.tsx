@@ -23,7 +23,7 @@ interface SendItemProps {
 
 const SendItem = ({onPress, title}: SendItemProps) => {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} accessibilityLabel={'Tap to ' + title}>
       <View style={styles.sendItemAndDMContainer}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontistoIcon name="arrow-swap" size={15} color="black" />

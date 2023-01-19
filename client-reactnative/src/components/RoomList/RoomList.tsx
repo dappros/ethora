@@ -6,7 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {observer} from 'mobx-react-lite';
-import React, { useState} from 'react';
+import React, {useState} from 'react';
 import {asyncStorageConstants} from '../../constants/asyncStorageConstants';
 import {asyncStorageSetItem} from '../../helpers/cache/asyncStorageSetItem';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -176,28 +176,25 @@ export const RoomList = observer(({roomsList}: any) => {
           </TouchableOpacity>
         </View>
       </Modal>
-      <View
-      bg={"#e9f1fd"}
-      shadow="2"
-       >
-      <FlatList
-        nestedScrollEnabled={true}
-        data={sortedRoomsList}
-        keyExtractor={(item: any) => `${item.jid}`}
-        renderItem={({item, index}) => {
-          return (
-            <RoomListItem
-              index={index}
-              length={sortedRoomsList.length}
-              counter={item.counter}
-              jid={item.jid}
-              name={item.name}
-              participants={item.participants}
-              key={item.jid}
-            />
-          );
-        }}
-      />
+      <View bg={'#e9f1fd'} shadow="2">
+        <FlatList
+          nestedScrollEnabled={true}
+          data={sortedRoomsList}
+          keyExtractor={(item: any) => `${item.jid}`}
+          renderItem={({item, index}) => {
+            return (
+              <RoomListItem
+                index={index}
+                length={sortedRoomsList.length}
+                counter={item.counter}
+                jid={item.jid}
+                name={item.name}
+                participants={item.participants}
+                key={item.jid}
+              />
+            );
+          }}
+        />
       </View>
     </>
   );

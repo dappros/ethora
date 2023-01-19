@@ -66,6 +66,7 @@ function truncateString(str, num) {
 export const NfmtTag = ({tag}: {tag: string}) => {
   return (
     <HStack
+      accessibilityLabel="Trait"
       style={{backgroundColor: NFMT_TRAITS?.[tag]?.color || 'green'}}
       paddingX={2}
       borderRadius={5}
@@ -139,7 +140,9 @@ export const NftListItem = (props: NftListItemProps) => {
         <View style={styles.itemContainer}>
           <View style={styles.imageContainer}>
             {imageMimetypes[mimetype] || videoMimetypes[mimetype] ? (
-              <TouchableWithoutFeedback onPress={onAssetPress}>
+              <TouchableWithoutFeedback
+                accessibilityLabel="Item preview"
+                onPress={onAssetPress}>
                 <FastImage
                   style={styles.image}
                   source={{
@@ -162,7 +165,9 @@ export const NftListItem = (props: NftListItemProps) => {
           </View>
           <TouchableWithoutFeedback onPress={onClick} style={{height: '100%'}}>
             <View style={{alignItems: 'flex-start', paddingLeft: 20}}>
-              <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
+              <Text accessibilityLiveRegion="Item name" style={styles.itemName}>
+                {truncateString(name, 15)}
+              </Text>
               {item.isCollection &&
                 route.name === ROUTES.OTHERUSERPROFILESCREEN && (
                   <HStack
@@ -194,6 +199,7 @@ export const NftListItem = (props: NftListItemProps) => {
 
         <TouchableWithoutFeedback onPress={onClick}>
           <View
+            accessibilityLabel="Rarity"
             style={[
               styles.itemCount,
               {minWidth: item.isCollection ? '25%' : '12%'},

@@ -45,6 +45,7 @@ export const DocumentListItem: React.FC<IDocumentListItem> = ({
             !!pdfMimemtype[item.file.mimetype]) && (
             <TouchableWithoutFeedback onPress={onAssetPress}>
               <FastImage
+                accessibilityLabel="Document preview"
                 style={styles.image}
                 source={{
                   // @ts-ignore
@@ -67,13 +68,17 @@ export const DocumentListItem: React.FC<IDocumentListItem> = ({
         </View>
         <View style={{marginLeft: 10, justifyContent: 'center'}}>
           <TouchableOpacity onPress={onItemPress}>
-            <Text style={styles.itemName}>{item.documentName}</Text>
-            <Text>{moment(item.createdAt).format('DD.MM.YYYY')}</Text>
+            <Text accessibilityLabel="Document name" style={styles.itemName}>
+              {item.documentName}
+            </Text>
+            <Text accessibilityLabel="Date">
+              {moment(item.createdAt).format('DD.MM.YYYY')}
+            </Text>
           </TouchableOpacity>
         </View>
       </HStack>
       <View>
-        <TouchableOpacity>
+        <TouchableOpacity accessibilityLabel="Tap to share">
           <AntIcon name={'qrcode'} color={'black'} size={hp('5%')} />
         </TouchableOpacity>
       </View>

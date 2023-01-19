@@ -19,7 +19,9 @@ export const AudioSendButton = ({onPressIn, onPressOut, recording}) => {
   //     transform: [{scale: mediaButtonAnimation}],
   //   };
   return (
-    <View style={styles.recordingState}>
+    <View
+      style={styles.recordingState}
+      accessibilityLabel="Hold to record audio message">
       <TouchableWithoutFeedback onPressIn={onPressIn} onPressOut={onPressOut}>
         <Animated.View
           style={[

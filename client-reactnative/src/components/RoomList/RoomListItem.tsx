@@ -35,13 +35,11 @@ const getTime = (time: Date | undefined) => {
   try {
     const oneday = 60 * 60 * 24 * 1000;
     const now = Date.now();
-    const isMoreThanADay = now-time > oneday;
-    if(isMoreThanADay){
-      return dayjs(time)
-      .locale('en')
-      .format('MMM D')
-    }else{
-    return format(new Date(time), 'hh:mm');
+    const isMoreThanADay = now - time > oneday;
+    if (isMoreThanADay) {
+      return dayjs(time).locale('en').format('MMM D');
+    } else {
+      return format(new Date(time), 'hh:mm');
     }
   } catch (error) {
     return null;
@@ -87,6 +85,7 @@ export const RoomListItem = observer(
                   numberOfLines={1}
                   fontSize={hp('2%')}
                   fontFamily={textStyles.semiBoldFont}
+                  accessibilityLabel="Name"
                   _dark={{
                     color: 'warmGray.50',
                   }}
@@ -94,7 +93,11 @@ export const RoomListItem = observer(
                   {name}
                 </Text>
                 {name && room?.lastUserName && room?.lastUserText ? (
-                  <HStack flex={1} alignItems={'center'} space={1}>
+                  <HStack
+                    accessibilityLabel="Last message"
+                    flex={1}
+                    alignItems={'center'}
+                    space={1}>
                     <Box>
                       <Text
                         fontFamily={textStyles.semiBoldFont}
@@ -134,7 +137,10 @@ export const RoomListItem = observer(
               </VStack>
 
               <VStack justifyContent={'center'} flex={0.15}>
-                <HStack justifyContent={'flex-end'} alignItems={'center'}>
+                <HStack
+                  accessibilityLabel="Participants"
+                  justifyContent={'flex-end'}
+                  alignItems={'center'}>
                   <MaterialIcon
                     name="group"
                     color={'black'}
@@ -153,7 +159,7 @@ export const RoomListItem = observer(
                     {participants}
                   </Text>
                 </HStack>
-                <Box alignItems={'flex-end'}>
+                <Box alignItems={'flex-end'} accessibilityLabel="Updated">
                   <Text
                     fontSize="xs"
                     _dark={{

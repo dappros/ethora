@@ -33,7 +33,6 @@ export const HeaderMenu = () => {
     // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
     {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
     {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
-
   ];
 
   const ActionsMenuItems = [
@@ -53,7 +52,11 @@ export const HeaderMenu = () => {
 
   const SystemMenuItems = [
     {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
-    {value: ROUTES.AUTHENTICATIONSCREEN, label: 'Authentication', visible: true},
+    {
+      value: ROUTES.AUTHENTICATIONSCREEN,
+      label: 'Authentication',
+      visible: true,
+    },
 
     {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
     {value: ROUTES.LOGOUT, label: 'Sign out', visible: true},
@@ -78,6 +81,7 @@ export const HeaderMenu = () => {
       shadow={'9'}
       justifyContent={'center'}>
       <Menu
+        accessibilityLabel="Menu"
         w="190"
         isOpen={open}
         placement={'bottom'}

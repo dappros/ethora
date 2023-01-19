@@ -385,7 +385,7 @@ export const ProfileScreen = observer((props: any) => {
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (
-        <View style={{marginTop: hp('1%'),backgroundColor: 'white'}}>
+        <View style={{marginTop: hp('1%'), backgroundColor: 'white'}}>
           <HStack paddingX={wp('4%')}>
             {/* <TouchableOpacity
               onPress={() => setActiveAssetTab(0)}
@@ -401,7 +401,9 @@ export const ProfileScreen = observer((props: any) => {
               </Animated.Text>
             </TouchableOpacity> */}
             {itemsTransfersAllowed && walletStore.collections.length > 0 && (
-              <TouchableOpacity onPress={() => setActiveAssetTab(1)}>
+              <TouchableOpacity
+                accessibilityLabel="View your NFTs"
+                onPress={() => setActiveAssetTab(1)}>
                 <Animated.Text
                   style={[
                     styles.tabText,
@@ -416,6 +418,7 @@ export const ProfileScreen = observer((props: any) => {
 
             {walletStore.collections.length > 0 && (
               <TouchableOpacity
+                accessibilityLabel="View your NFT collections"
                 style={{marginLeft: 10}}
                 onPress={() => setActiveAssetTab(2)}>
                 <Animated.Text
@@ -431,6 +434,7 @@ export const ProfileScreen = observer((props: any) => {
             )}
             {walletStore.documents.length > 0 && (
               <TouchableOpacity
+                accessibilityLabel="View your documents"
                 onPress={() => setActiveAssetTab(3)}
                 style={{marginLeft: 10}}>
                 <Animated.Text
@@ -586,7 +590,9 @@ export const ProfileScreen = observer((props: any) => {
             alignItems={'center'}
             bgColor={primaryColor}
             borderRadius={hp('10.46%') / 2}>
-            <TouchableOpacity onPress={onAvatarPress}>
+            <TouchableOpacity
+              onPress={onAvatarPress}
+              accessibilityLabel="Photo">
               {uploadedAvatar.location || loginStore.userAvatar ? (
                 <Image
                   source={{
@@ -661,6 +667,7 @@ export const ProfileScreen = observer((props: any) => {
                   textDecorationLine: 'underline',
                 }}>
                 <Text
+                  accessibilityLabel="Bio"
                   style={{
                     fontSize: hp('2.23%'),
                     fontFamily: textStyles.regularFont,
@@ -672,6 +679,7 @@ export const ProfileScreen = observer((props: any) => {
                     : 'Add your description'}
                 </Text>
                 <TouchableOpacity
+                  accessibilityLabel="Edit bio"
                   onPress={onDescriptionPressed}
                   style={{alignItems: 'center', margin: 10}}>
                   <AntIcon

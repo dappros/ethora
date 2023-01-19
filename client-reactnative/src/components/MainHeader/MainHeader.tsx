@@ -48,16 +48,19 @@ export const MainHeader = observer(() => {
       key: ROOM_KEYS.official,
       icon: 'star',
       show: true,
+      accessibilityLabel: 'Starred chats',
     },
     {
       key: ROOM_KEYS.private,
       icon: 'people',
       show: true,
+      accessibilityLabel: 'Other chats',
     },
     {
       key: ROOM_KEYS.groups,
       icon: 'compass',
       show: true,
+      accessibilityLabel: 'Meta',
     },
   ];
 
@@ -131,6 +134,7 @@ export const MainHeader = observer(() => {
           return (
             <VStack key={item.key}>
               <TouchableOpacity
+                accessibilityLabel={item.accessibilityLabel}
                 onPress={async () => await onTabPress(item.key)}>
                 <Ionicons
                   name={item.icon}

@@ -78,6 +78,7 @@ export const RegularLoginScreen = ({navigation}) => {
               </HStack>
               <View>
                 <Input
+                  accessibilityLabel="Enter your username"
                   maxLength={30}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -93,6 +94,7 @@ export const RegularLoginScreen = ({navigation}) => {
                   placeholderTextColor={commonColors.primaryColor}
                 />
                 <Input
+                  accessibilityLabel="Enter your password"
                   maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -104,12 +106,18 @@ export const RegularLoginScreen = ({navigation}) => {
                   placeholder="Enter your password"
                   placeholderTextColor={commonColors.primaryColor}
                 />
-                <View style={{width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                <View
+                  accessibilityLabel="Login button"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
                   <Button
                     title={'Login'}
                     onPress={onSubmit}
                     loading={isLoading}
-                     style={{width: '50%'}}
+                    style={{width: '50%'}}
                   />
                 </View>
               </View>
@@ -119,6 +127,7 @@ export const RegularLoginScreen = ({navigation}) => {
                 alignItems={'center'}
                 paddingY={10}>
                 <TouchableOpacity
+                  accessibilityLabel="Create new account"
                   onPress={() => navigation.navigate(ROUTES.REGISTER)}>
                   <Text
                     style={{fontSize: 18, color: commonColors.primaryColor}}>
@@ -126,6 +135,7 @@ export const RegularLoginScreen = ({navigation}) => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  accessibilityLabel="Forgot password?"
                   onPress={() =>
                     !regularLoginEmail
                       ? setResetModalOpen(true)
@@ -136,6 +146,7 @@ export const RegularLoginScreen = ({navigation}) => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  accessibilityLabel="Back to login"
                   onPress={() => navigation.navigate(ROUTES.LOGIN)}>
                   <Text style={{fontSize: 13, color: 'black', marginTop: 15}}>
                     Back to login
@@ -167,7 +178,7 @@ export const RegularLoginScreen = ({navigation}) => {
           </View>
         </Modal>
       )}
-      </>
+    </>
   );
 };
 const styles = StyleSheet.create({

@@ -30,6 +30,7 @@ interface CoinComponentProps {
 const CoinComponent = (props: CoinComponentProps) => {
   return (
     <Pressable
+      accessibilityLabel="Tap to send coins"
       onPress={() => props.tokenTransferFunc(props.amt)}
       justifyContent="center"
       alignItems={'center'}
@@ -50,7 +51,7 @@ const TokenTransfer = ({
   name,
   tokenAmount,
   tokenTransferFunc,
-  onCustomAmountPress
+  onCustomAmountPress,
 }: TokenTransferProps) => {
   const coinsList = [1, 3, 5];
   return (

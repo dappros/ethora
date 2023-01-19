@@ -100,7 +100,7 @@ import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import { toJS } from 'mobx';
+import {toJS} from 'mobx';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -224,13 +224,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   useEffect(() => {
     const lastMessage = messages?.[0];
-    lastMessage&&chatStore.updateRoomInfo(chatJid, {
-      archiveRequested: true,
-      lastUserText: lastMessage?.text,
-      lastUserName: lastMessage?.user?.name,
-      lastMessageTime:
-        lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
-    });
+    lastMessage &&
+      chatStore.updateRoomInfo(chatJid, {
+        archiveRequested: true,
+        lastUserText: lastMessage?.text,
+        lastUserName: lastMessage?.user?.name,
+        lastMessageTime:
+          lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
+      });
   }, [!!messages]);
 
   useEffect(() => {
@@ -556,21 +557,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
       setShowEditOption(false);
-    }else{
+    } else {
       setIsShowDeleteOption(true);
       setShowEditOption(true);
     }
 
     if (message.isReply) {
       setShowReplyOption(false);
-    }else{
-      setShowReplyOption(true)
+    } else {
+      setShowReplyOption(true);
     }
 
     if (message.numberOfReplies > 0) {
       setShowViewThread(true);
-    }else{
-      setShowViewThread(false)
+    } else {
+      setShowViewThread(false);
     }
 
     setOnTapMessageObject(message);
@@ -947,7 +948,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
               justifyContent: 'center',
             }}
             icon={() => (
-              <Entypo name="attachment" color={'black'} size={hp('3%')} />
+              <Entypo
+                accessibilityLabel="Send Attachment"
+                name="attachment"
+                color={'black'}
+                size={hp('3%')}
+              />
             )}
             options={options}
             optionTintColor="#000000"

@@ -34,7 +34,7 @@ import {
   underscoreManipulation,
 } from '../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
-import ChangeRoomDescriptionModal from '../components/Modals/Chat/changeRoomDescriptionModal';
+import ChangeRoomDescriptionModal from '../components/Modals/Chat/ChangeRoomDescriptionModal';
 import {
   assignModerator,
   banUserr,
@@ -56,7 +56,7 @@ import {fileUpload} from '../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
 import {ROUTES} from '../constants/routes';
-import ChangeRoomNameModal from '../components/Modals/Chat/changeRoomNameModal';
+import ChangeRoomNameModal from '../components/Modals/Chat/ChangeRoomNameModal';
 import {renameTheRoom} from '../helpers/RoomList/renameRoom';
 
 interface longTapUserProps {

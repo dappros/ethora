@@ -188,7 +188,8 @@ const LoginScreen = observer(({navigation}) => {
       }}>
       <Box margin={3} justifyContent={'center'} alignItems={'center'}>
         <Image
-          alt="App logo Ethora"
+          alt="App logo"
+          accessibilityLabel="App logo"
           source={logoPath}
           resizeMode={'cover'}
           w={wp(logoWidth)}
@@ -206,7 +207,7 @@ const LoginScreen = observer(({navigation}) => {
 
       <Stack margin={3} space={3}>
         {facebookSignIn && (
-          <View>
+          <View accessibilityLabel="Sign in with Facebook">
             <SocialButton
               label="Sign in with Facebook"
               color="white"
@@ -234,7 +235,7 @@ const LoginScreen = observer(({navigation}) => {
           </View>
         )}
         {googleSignIn && (
-          <View>
+          <View accessibilityLabel="Sign in with Google">
             <SocialButton
               label="Sign in with Google"
               color="black"
@@ -262,7 +263,7 @@ const LoginScreen = observer(({navigation}) => {
           </View>
         )}
         {appleSignIn && (
-          <View>
+          <View accessibilityLabel="Sign in with Apple">
             <SocialButton
               label="Sign in with Apple"
               color="white"
@@ -281,7 +282,7 @@ const LoginScreen = observer(({navigation}) => {
             />
           </View>
         )}
-        <View>
+        <View accessibilityLabel="Sign in with Metamask">
           <SocialButton
             label="Sign in with MetaMask"
             color="white"
@@ -304,6 +305,7 @@ const LoginScreen = observer(({navigation}) => {
         <HStack justifyContent={'center'}>
           {regularLogin && (
             <TouchableOpacity
+              accessibilityLabel="Log in with password"
               onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
               <Text
                 style={{
@@ -323,6 +325,7 @@ const LoginScreen = observer(({navigation}) => {
       <VStack
         style={{position: 'absolute', bottom: 0}}
         justifyContent={'center'}
+        accessibilityLabel="Ethora version details"
         alignItems={'center'}>
         <Text style={styles.appVersion}>
           Version {appVersion}. Powered by Dappros Platform

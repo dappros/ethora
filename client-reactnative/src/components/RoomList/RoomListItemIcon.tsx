@@ -34,6 +34,7 @@ export const RoomListItemIcon = observer(
         alignItems={'center'}
         textAlign={'center'}
         position={'relative'}
+        accessibilityLabel={'Thumbnail'}
         borderRadius={hp('0.7%')}>
         {room.roomThumbnail ? (
           <FastImage
@@ -45,7 +46,7 @@ export const RoomListItemIcon = observer(
             style={{
               width: hp('5.54%'),
               height: hp('5.54%'),
-              borderRadius:hp('0.7%'),
+              borderRadius: hp('0.7%'),
             }}
           />
         ) : (
@@ -64,6 +65,7 @@ export const RoomListItemIcon = observer(
             width={hp('5.5%')}
             marginTop={hp('1%')}
             marginRight={hp('0.5')}
+            accessibilityLabel={counter + ' unread messages'}
             position={'absolute'}>
             <Box
               shadow={'2'}
