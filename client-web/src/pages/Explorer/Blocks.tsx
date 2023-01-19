@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { BlocksTable } from "../../componets/BlocksTable";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { BlocksTable } from "../../components/BlocksTable";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { getExplorerBlocks } from "../../http";
 import { ExplorerRespose, IBlock } from "../Profile/types";
 

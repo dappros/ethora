@@ -1,5 +1,6 @@
 import xmpp from "../../xmpp";
 import {useStoreState} from "../../store";
+import { CONFERENCEDOMAIN } from "../../constants";
 
 export const underscoreManipulation = (str:string) => {
     if(str){
@@ -14,7 +15,6 @@ export const createPrivateChat = async (
     otherUserWalletAddress: string,
     myFirstName: string,
     otherFirstName: string,
-    CONFERENCEDOMAIN: string,
     userJID?: string
 ) => {
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]

@@ -19,7 +19,7 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import { ROOMS_FILTERS } from "../../config/config";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
-import { DeleteDialog } from "../../componets/DeleteDialog";
+import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { uploadFile } from "../../http";
 

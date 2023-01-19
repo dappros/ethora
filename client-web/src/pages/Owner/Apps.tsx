@@ -10,7 +10,7 @@ import Box from "@mui/material/Box";
 import { IconButton, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useStoreState } from "../../store";
-import NoDataImage from "../../componets/NoDataImage";
+import NoDataImage from "../../components/NoDataImage";
 import NewAppModal from "./NewAppModal";
 import DeleteAppModal from './DeletAppModal';
 import EditAppModal from "./EditAppModal";

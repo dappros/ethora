@@ -58,7 +58,7 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build-prod": "set BUILD_PATH='build-prod' && react-scripts build",
+    "build-prod": "BUILD_PATH='./build-prod' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:disableSourceMaps": "GENERATE_SOURCEMAP=false react-scripts build"

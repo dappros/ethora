@@ -2,7 +2,7 @@ import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { Element } from "ltx";
 import { defaultChats } from "./config/config";
-import { CONFERENCEDOMAIN, DOMAIN } from "./constants";
+import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
 import {
   TActiveRoomFilter,
   TMessageHistory,
@@ -484,7 +484,7 @@ class XmppClass {
     }
 
     this.client = xmpp.client({
-      service: "wss://dev.dxmpp.com:5443/ws",
+      service: SERVICE,
       username: walletToUsername(walletAddress),
       password,
     });
@@ -787,7 +787,7 @@ class XmppClass {
         id: "sendMessage",
       },
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
         senderFirstName: firstName,
         senderLastName: lastName,
         photoURL: photo,
@@ -819,7 +819,7 @@ class XmppClass {
       },
       xml("body", {}, messageText),
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
 
         senderJID: this.client.jid?.toString(),
         ...data,
@@ -846,7 +846,7 @@ class XmppClass {
         id: "sendMessage",
       },
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
         senderFirstName: firstName,
         senderLastName: lastName,
         senderJID: this.client.jid?.toString(),
@@ -874,7 +874,7 @@ class XmppClass {
       xml("body", {}, "media"),
       xml("store", { xmlns: "urn:xmpp:hints" }),
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
         senderJID: this.client.jid?.toString(),
         senderFirstName: data.firstName,
         senderLastName: data.lastName,
@@ -1009,7 +1009,7 @@ class XmppClass {
         "http://jabber.org/protocol/muc#user",
         xml(
           "invite",
-          { to: otherUserId + "@dev.dxmpp.com" },
+          { to: otherUserId + DOMAIN },
           xml("reason", {}, "Hey, this is the place with amazing cookies!")
         )
       )
@@ -1059,7 +1059,7 @@ class XmppClass {
         xmlns: "http://jabber.org/protocol/chatstates",
       }),
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
         fullName: fullName,
         manipulatedWalletAddress: walletAddress,
       })
@@ -1080,7 +1080,7 @@ class XmppClass {
         xmlns: "http://jabber.org/protocol/chatstates",
       }),
       xml("data", {
-        xmlns: "wss://dev.dxmpp.com:5443/ws",
+        xmlns: SERVICE,
         manipulatedWalletAddress: walletAddress,
       })
     );

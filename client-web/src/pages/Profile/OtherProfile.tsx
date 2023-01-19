@@ -10,7 +10,7 @@ import {
   IDocument,
 } from "../../http";
 import { Transactions } from "../Transactions/Transactions";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import ItemsTable from "./ItemsTable";
 import { filterNftBalances } from "../../utils";
 import { TBalance } from "../../store";

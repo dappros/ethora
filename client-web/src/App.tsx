@@ -1,9 +1,9 @@
 import React from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useStoreState } from "./store";
-import AppTopNavAuth from "./componets/AppTopNavAuth";
-import AppTopNav from "./componets/AppTopNav";
-import AppTopNavOwner from "./componets/AppTopNavOwner";
+import AppTopNavAuth from "./components/AppTopNavAuth";
+import AppTopNav from "./components/AppTopNav";
+import AppTopNavOwner from "./components/AppTopNavOwner";
 import { ApolloProvider } from "@apollo/client";
 import client from "./apollo/client";
 
