@@ -466,6 +466,9 @@ export function ChatInRoom() {
   }, [myMessage]);
 
   useEffect(() => {
+    const filteredMessages = messages.filter(
+      (item: TMessageHistory) => item.roomJID === currentRoom
+    );
     if (currentUntrackedChatRoom) {
       if (
         !roomJID ||
@@ -500,6 +503,13 @@ export function ChatInRoom() {
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
     };
+    if(filteredMessages.length<=0 && firstLoadMessages){
+
+      xmpp.getRoomArchiveStanza(
+        currentRoom,
+        50
+      )
+    }
   }, [currentRoom]);
 
   useEffect(() => {
