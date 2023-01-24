@@ -1,7 +1,7 @@
 import {connectingToNewRoom, connectToRooms, getConnectData} from './config/connect.js'
-import {client} from "@xmpp/client"
+import {client, xml} from "@xmpp/client"
 import debug from "@xmpp/debug"
-import {router} from "./router.js";
+import {muteRoomList, router} from "./router.js";
 import 'dotenv/config';
 import {connectToDb} from "./database/dataBase.js";
 import {welcomePresence} from "./presence.js";

@@ -10,10 +10,10 @@ const sendMessage = (data, message, type, isSystemMessage, tokenAmount, buttons)
     if (isSystemMessage) {
         xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons)
     } else {
-        sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing');
-        //Set a timeout depending on the number of characters in the message.
-        setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message));
-
+        // sendTyping(data.xmpp, data.connectData, data.roomJID, 'isComposing');
+        // //Set a timeout depending on the number of characters in the message.
+        // setTimeout(() => xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons), getWritingTime(message));
+        xmppSender(data, message, type, isSystemMessage, tokenAmount, buttons)
     }
 }
 
