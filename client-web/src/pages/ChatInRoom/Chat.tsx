@@ -45,6 +45,10 @@ import {
   useMediaQuery,
   useTheme,
   Box,
+  Slide,
+  Stack,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
@@ -58,6 +62,8 @@ import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
 import { ChatAudioMessageDialog } from "../../components/Chat/ChatAudioRecorder";
 import { generateChatLink, getPosition, stripHtml } from "../../utils";
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -113,12 +119,16 @@ export function ChatInRoom() {
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
   const [isThreadView, setThreadView] = useState(false);
   const [showInChannel, setShowInChannel] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [currentEditMessage, setCurrentEditMessage] = React.useState<TMessageHistory>();
 
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
     setCurrentThreadViewMessage(threadMessage);
   const handleShowInChannel = (event: React.ChangeEvent<HTMLInputElement>) =>
     setShowInChannel(event.target.checked);
+
+  const handleCurrentEditMessage = (message:TMessageHistory) => setCurrentEditMessage(message);
 
   const [currentRoom, setCurrentRoom] = useState("");
   const currentPickedRoom = useMemo(() => {
@@ -297,15 +307,42 @@ export function ChatInRoom() {
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
 
       if (finalMessageTxt.trim().length > 0) {
-        xmpp.sendMessage(
-          currentRoom,
-          user.firstName,
-          user.lastName,
-          userAvatar,
-          user.walletAddress,
-          typeof button === "object" ? button.value : finalMessageTxt,
-          typeof button === "object" ? button.notDisplayedValue : null
-        );
+        if(isEditing){
+          const data = {
+            senderFirstName: user.firstName,
+            senderLastName: user.lastName,
+            senderWalletAddress: user.walletAddress,
+            isSystemMessage: false,
+            tokenAmount: 0,
+            receiverMessageId: currentEditMessage.data.receiverMessageId,
+            mucname: roomData.name,
+            photoURL: userAvatar,
+            roomJid: roomJID,
+            isReply: false,
+            mainMessageText: '',
+            mainMessageId: '',
+            mainMessageUserName: '',
+            push: true,
+          };
+          console.log(data)
+          xmpp.sendReplaceMessageStanza(
+            currentUntrackedChatRoom,
+            finalMessageTxt,
+            currentEditMessage.id.toString(),
+            data
+          )
+          setIsEditing(false)
+        }else{
+          xmpp.sendMessage(
+            currentRoom,
+            user.firstName,
+            user.lastName,
+            userAvatar,
+            user.walletAddress,
+            typeof button === "object" ? button.value : finalMessageTxt,
+            typeof button === "object" ? button.notDisplayedValue : null
+          );
+        }
       }
     }
   };
@@ -429,6 +466,9 @@ export function ChatInRoom() {
   }, [myMessage]);
 
   useEffect(() => {
+    const filteredMessages = messages.filter(
+      (item: TMessageHistory) => item.roomJID === currentRoom
+    );
     if (currentUntrackedChatRoom) {
       if (
         !roomJID ||
@@ -463,21 +503,14 @@ export function ChatInRoom() {
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
     };
+    if(filteredMessages.length<=0 && firstLoadMessages){
+
+      xmpp.getRoomArchiveStanza(
+        currentRoom,
+        50
+      )
+    }
   }, [currentRoom]);
-
-  const handleChatDetailClick = () => {
-    history.push("/chatDetails/" + currentUntrackedChatRoom);
-  };
-
-  const onMenuThreadClick = () => {
-    setThreadView(true);
-    handleSetCurrentThreadViewMessage(transferDialogData.message);
-  };
-
-  const onMessageThreadClick = (message: TMessageHistory) => {
-    setThreadView(true);
-    handleSetCurrentThreadViewMessage(message);
-  };
 
   useEffect(() => {
     const filteredMessages = messages.filter(
@@ -513,6 +546,27 @@ export function ChatInRoom() {
       }
     }
   }, [messages]);
+
+  const handleChatDetailClick = () => {
+    history.push("/chatDetails/" + currentUntrackedChatRoom);
+  };
+
+  const onMenuThreadClick = () => {
+    setThreadView(true);
+    handleSetCurrentThreadViewMessage(transferDialogData.message);
+  };
+
+  const onMenuEditClick = (value:boolean, message:TMessageHistory) => {
+    setIsEditing(value)
+    handleCurrentEditMessage(message)
+  };
+
+  const onMessageThreadClick = (message: TMessageHistory) => {
+    setThreadView(true);
+    handleSetCurrentThreadViewMessage(message);
+  };
+
+
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
@@ -687,6 +741,53 @@ export function ChatInRoom() {
             </MessageList>
             {!!roomData?.name && (
               <div is={"MessageInput"}>
+                {/* Edit message component */}
+                {isEditing&&<Divider/>}
+                <Slide
+                direction="up"
+                in={isEditing}
+                mountOnEnter
+                unmountOnExit
+                >
+                  <Stack display={"flex"} height={"50px"} width={"100%"} direction={"row"}>
+                    <div style={{
+                      display:"flex",
+                      flex:"0.05",
+                      justifyContent:"center",
+                      alignItems:"center",
+                    }}>
+                      <EditIcon color="info"/>
+                    </div>
+                    <div style={{
+                      display:"flex",
+                      flex:"0.90",
+                      flexDirection:"column"
+                    }}>
+                    <Typography
+                    color={"#1976d2"}
+                    fontWeight={"bold"}
+                    >
+                      Edit Message
+                    </Typography>
+                    <Typography>
+                      {currentEditMessage?.body}
+                    </Typography>
+                    </div>
+                    <div style={{
+                      display:"flex",
+                      flex:"0.05",
+                      justifyContent:"center",
+                      alignItems:"center"
+                    }}>
+                      <IconButton
+                      onClick={()=>onMenuEditClick(false,undefined)}
+                      aria-label="close">
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  </Stack>
+                </Slide>
+
                 <MessageInput
                   onPaste={handlePaste}
                   placeholder="Type message here"
@@ -732,6 +833,7 @@ export function ChatInRoom() {
         onPrivateRoomClick={chooseRoom}
         message={transferDialogData.message}
         onThreadClick={onMenuThreadClick}
+        onEditClick={onMenuEditClick}
       />
       <ChatMediaModal
         open={mediaDialogData.open}

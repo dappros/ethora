@@ -97,6 +97,7 @@ export type TMessageHistory = {
     mainMessageContractAddress:string;
     mainMessageRoomJid:string;
     showInChannel:boolean;
+    isEdited?:boolean;
   };
   roomJID: string;
   date: string;
@@ -173,6 +174,11 @@ export type TActiveRoomFilter =
   | "favourite"
   | "";
 
+export type replaceMessageListItemProps = {
+  replaceMessageId:number;
+  replaceMessageText:string;
+}
+
 interface IStore {
   user: TUser;
   oldTokens?: {
@@ -192,13 +198,13 @@ interface IStore {
   updateUserProfilePermission: (value: boolean) => void;
   updateUserDocumentsPermission: (value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
-
   setOwner: (owner: TUser) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
   setNewMessage: (msg: TMessage) => void;
   setNumberOfReplies: (messageId:number) => void;
+  replaceMessage: (messageId: number, messageText: string) => void;
   setCurrentThreadViewMessage: (currentThreadViewMessage:TMessageHistory) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
@@ -326,6 +332,7 @@ const _useStore = create<IStore>()(
               mainMessageContractAddress:"",
               mainMessageRoomJid:"",
               showInChannel:false,
+              isEdited:false
             },
             roomJID: "",
             date: "",
@@ -441,6 +448,16 @@ const _useStore = create<IStore>()(
                 state.historyMessages[messageIndex].numberOfReplies += 1;
                 }
               })
+          },
+          replaceMessage(messageId:number, messageText:string){
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex((i) => i.id === messageId);
+              console.log(state.historyMessages[messageIndex],"replacing mesage", messageId)
+              if(messageIndex > -1){
+                state.historyMessages[messageIndex].body = messageText;
+                state.historyMessages[messageIndex].data.isEdited = true;
+              }
+            })
           },
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {

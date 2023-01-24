@@ -49,7 +49,7 @@ interface BubbleProps {
   tickStyle?:any;
   renderUsername?:any;
   renderTime?:any;
-  position?:any;
+  position?:'left'|'right';
   renderCustomView?:any;
   nextMessage?:any;
   containerToNextStyle?:any;
@@ -442,13 +442,13 @@ const Bubble = observer((props:BubbleProps)=> {
   const isEditedComponent = () => {
     return(
       <Box
-      style={styles[position].editWraper}
+      style={styles[position?position:'left'].editWraper}
       alignItems={"flex-end"}
       >
       <Text 
-      fontFamily={textStyles.mediumFont}
+      fontFamily={textStyles.lightFont}
       fontSize={hp('1.2%')}
-      color={"gray.500"}>
+      color={"white"}>
         edited
       </Text>
       </Box>
@@ -463,8 +463,6 @@ const Bubble = observer((props:BubbleProps)=> {
         containerStyle && containerStyle[position],
         {position: 'relative'},
       ]}>
-      {!!currentMessage.isEdited&&
-      isEditedComponent()}
       <Animated.View
         style={[
           styles[position].wrapper,
@@ -496,6 +494,8 @@ const Bubble = observer((props:BubbleProps)=> {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
+                {!!currentMessage.isEdited&&
+                isEditedComponent()}
                 {renderTimeHandle()}
                 {renderTicksHandle()}
               </View>
@@ -540,7 +540,9 @@ const styles = {
       borderBottomWidth:0
     },
     editWraper:{
-      padding:2,
+      alignItems:"flex-end",
+      justifyContent:"center",
+      paddingBottom:5
     },
     wrapper: {
       borderRadius: 15,
@@ -588,6 +590,11 @@ const styles = {
   right: StyleSheet.create({
     container: {
       marginTop:2
+    },
+    editWraper:{
+      alignItems:"flex-start",
+      justifyContent:"center",
+      paddingBottom:5
     },
     replyWrapper:{
       borderTopLeftRadius: 15,

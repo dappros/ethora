@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   Dialog,
@@ -20,6 +20,7 @@ import { CONFERENCEDOMAIN } from "../../constants";
 import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
 import { useSnackbar } from "../../context/SnackbarContext";
 import ReplyIcon from '@mui/icons-material/Reply';
+import EditIcon from '@mui/icons-material/Edit';
 
 const dialogItems = [1, 3, 5, "x"];
 interface IProps {
@@ -28,7 +29,8 @@ interface IProps {
   loading?: boolean;
   message: TMessageHistory | null;
   onPrivateRoomClick: (jid: string) => void;
-  onThreadClick:() => void
+  onThreadClick:() => void;
+  onEditClick:(value:boolean, message:TMessageHistory) => void;
 }
 type IDialog = "dialog" | "error" | "clarification" | "transfer";
 
@@ -45,7 +47,8 @@ export function ChatTransferDialog({
   loading,
   message,
   onPrivateRoomClick,
-  onThreadClick
+  onThreadClick,
+  onEditClick
 }: IProps) {
   const user = useStoreState((state) => state.user);
 
@@ -55,12 +58,22 @@ export function ChatTransferDialog({
   const balance = useStoreState((store) => store.balance);
   const setNewUserChatRoom = useStoreState((store) => store.setNewUserChatRoom);
   const { showSnackbar } = useSnackbar();
+
+  const messageJid = message?.data?.senderJID.split('/')[0];
+  const userJid = useMemo(() => xmpp.client?.jid?.toString().split('/')[0], []);
+  const isSameUser = userJid === messageJid;
+
   const coinData = balance.filter(
     (el) => !el.tokenType && el.contractAddress.length > 10
   );
 
   const openThreadView = () => {
     onThreadClick()
+    onClose()
+  }
+  
+  const openEditView = () => {
+    onEditClick(true, message);
     onClose()
   }
 
@@ -179,7 +192,7 @@ export function ChatTransferDialog({
               flexDirection: "column",
             }}
           >
-            <div>
+            {!isSameUser&&<div>
               Reward{" "}
               <strong>
                 {message.data.senderFirstName +
@@ -187,9 +200,9 @@ export function ChatTransferDialog({
                   message.data.senderLastName}
               </strong>{" "}
               with coins
-            </div>
+            </div>}
 
-            <div
+            {!isSameUser&&<div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -227,51 +240,73 @@ export function ChatTransferDialog({
                   </Typography>
                 </div>
               ))}
-            </div>
-            <Divider
+            </div>}
+            {!isSameUser&&<Divider
               style={{
                 margin: "10px",
               }}
-            />
-            <Button
+            />}
+            {!isSameUser&&<Button
               onClick={openPrivateRoom}
               variant="outlined"
               startIcon={<SendIcon />}
             >
               Direct message
-            </Button>
+            </Button>}
             <Button
+              style={{
+                margin: "10px 0px 0px 0px",
+              }}
+              onClick={openThreadView}
+              variant="outlined"
+              startIcon={<ReplyIcon />}
+            >
+              Reply
+            </Button>
+
+            {isSameUser&&
+              <Button
                 style={{
                   margin: "10px 0px 0px 0px",
                 }}
-                onClick={openThreadView}
+                onClick={openEditView}
                 variant="outlined"
-                startIcon={<ReplyIcon />}
+                startIcon={<EditIcon />}
               >
-                Reply
+                Edit
               </Button>
-            <Divider
+            }
+              
+              {!isSameUser&&<Divider
               style={{
                 margin: "10px",
               }}
-            />
-            <Button
-              onClick={() => userToBlackList("clarify")}
-              variant="contained"
-              startIcon={<BlockIcon />}
+            />}
+            {!isSameUser&&<div
+            style={{
+              display:'flex',
+              alignItems:"center",
+              flexDirection:"column"
+            }}
             >
-              Block this user
-            </Button>
-            <Typography
-              style={{
-                textAlign: "center",
-              }}
-              variant="caption"
-              display="block"
-              gutterBottom
-            >
-              Stop seeing this user.
-            </Typography>
+              <Button
+                onClick={() => userToBlackList("clarify")}
+                variant="contained"
+                startIcon={<BlockIcon />}
+              >
+                Block this user
+              </Button>
+              <Typography
+                style={{
+                  textAlign: "center",
+                }}
+                variant="caption"
+                display="block"
+                gutterBottom
+              >
+                Stop seeing this user.
+              </Typography>
+            </div>}
           </div>
         );
       case dialogTypes.transfer:

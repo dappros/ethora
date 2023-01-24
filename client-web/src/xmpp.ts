@@ -8,6 +8,7 @@ import {
   TMessageHistory,
   TRoomRoles,
   TUserChatRooms,
+  replaceMessageListItemProps,
   useStoreState,
 } from "./store";
 import { sendBrowserNotification } from "./utils";
@@ -15,6 +16,7 @@ import { history } from "./utils/history";
 
 let lastMsgId: string = "";
 let temporaryMessages: TMessageHistory[] = [];
+let temporaryReplaceMessages: replaceMessageListItemProps[] = [];
 let isGettingMessages: boolean = false;
 let isGettingFirstMessages: boolean = false;
 let lastRomJIDLoading: string = "";
@@ -84,6 +86,12 @@ const onMessageHistory = async (stanza: Element) => {
       .getChild("result")
       ?.getChild("forwarded")
       ?.getChild("delay");
+    const replace = stanza
+    .getChild("result")
+    ?.getChild("forwarded")
+    ?.getChild("message")
+    ?.getChild("replace");
+
     const id = stanza.getChild("result")?.attrs.id;
 
     if (!data || !body || !delay || !id) {
@@ -99,10 +107,12 @@ const onMessageHistory = async (stanza: Element) => {
     }
 
     if(data.attrs.isReply){
-      useStoreState.getState().setNumberOfReplies(Number(data.attrs.mainMessageId))
+      useStoreState
+      .getState()
+      .setNumberOfReplies(Number(data.attrs.mainMessageId))
     }
 
-    const msg = {
+    let msg = {
       id: Number(id),
       body: body.getText(),
       data: {
@@ -142,6 +152,7 @@ const onMessageHistory = async (stanza: Element) => {
         mainMessageContractAddress: data.attrs.mainMessageContractAddress,
         mainMessageRoomJid: data.attrs.mainMessageRoomJid,
         showInChannel:data.attrs.showInChannel === 'true' || false,
+        isEdited:false
       },
       roomJID: stanza.attrs.from,
       date: delay.attrs.stamp,
@@ -150,18 +161,45 @@ const onMessageHistory = async (stanza: Element) => {
       numberOfReplies:0
     };
 
-
-
-
     // console.log('TEST ', data.attrs)
     const blackList = useStoreState
-      .getState()
-      .blackList.find((item) => item.user === msg.data.senderJID);
+    .getState()
+    .blackList.find((item) => item.user === msg.data.senderJID);
+    //if current stanza has replace tag
+    if(replace){
+      console.log("replace:", stanza)
+      //if message loading
+      if(isGettingMessages && !blackList){
+        const replaceItem:replaceMessageListItemProps = {
+          replaceMessageId:Number(replace.attrs.id),
+          replaceMessageText: body.getText()
+        }
+        //add the replace item, which has the id of the main message to be edited, in a temporory array
+        temporaryReplaceMessages.push(replaceItem);
+      }
+      //if message loading done
+      if(!isGettingMessages && !blackList){
+        const replaceMessageId = Number(replace.attrs.id)
+        const messageString = body.getText();
+        //replace body/text of message id in messageHistory array
+        useStoreState.getState().replaceMessage(
+          replaceMessageId,
+          messageString
+        )
+      }
+    }else
+    {
 
     if (isGettingMessages && !blackList) {
       temporaryMessages.push(msg);
     }
     if (!isGettingMessages && !blackList) {
+      //check for messages in temp Replace message array agains the current stanza message id 
+      const replaceItem = temporaryReplaceMessages.find(item => item.replaceMessageId === msg.id);
+      //if exists then replace the body with current stanza body
+      if(replaceItem){
+        msg.body = replaceItem.replaceMessageText;
+      }
       useStoreState.getState().setNewMessageHistory(msg);
       useStoreState.getState().sortMessageHistory();
     }
@@ -177,6 +215,7 @@ const onMessageHistory = async (stanza: Element) => {
       sendBrowserNotification(msg.body, () => {
         history.push("/chat/" + msg.roomJID.split("@")[0]);
       });
+    } 
     }
   }
 };
@@ -189,6 +228,7 @@ const onLastMessageArchive = (stanza: Element, xmpp: any) => {
     lastMsgId = String(
       stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
     );
+    
     if (isGettingMessages) {
       useStoreState.getState().updateMessageHistory(temporaryMessages);
       isGettingMessages = false;
@@ -204,6 +244,13 @@ const onLastMessageArchive = (stanza: Element, xmpp: any) => {
             );
         }
       });
+
+      temporaryReplaceMessages.forEach((item) => {
+        useStoreState.getState().replaceMessage(
+          item.replaceMessageId,
+          item.replaceMessageText
+        )
+      })
 
       useStoreState.getState().setLoaderArchive(false);
       temporaryMessages = [];
@@ -469,6 +516,19 @@ const onBan = (stanza: Element) => {
   }
 };
 
+//when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
+const onSendReplaceMessageStanza = (stanza:any) => {
+  if(stanza.attrs.id === "replaceMessage"){
+    const replaceMessageId = Number(stanza.children.find(item => item.name === 'replace').attrs.id);
+    const messageString = stanza.children.find(item => item.name === 'body').children[0];
+    console.log(replaceMessageId, messageString)
+    useStoreState.getState().replaceMessage(
+      replaceMessageId,
+      messageString
+    )
+  }
+}
+
 
 
 class XmppClass {
@@ -510,6 +570,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onBan(stanza));
     this.client.on("stanza", (stanza) => onNewSubscription(stanza, this));
     this.client.on("stanza", (stanza) => onRoomDesignChange(stanza, this));
+    this.client.on("stanza", (stanza) => onSendReplaceMessageStanza(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -1257,6 +1318,37 @@ class XmppClass {
 
     this.client.send(stanza);
   };
+
+  sendReplaceMessageStanza = (
+    roomJID:string, 
+    replaceText:string, 
+    messageId:string,
+    data:any
+    ) => {
+    const stanza = xml(
+      "message",
+      {
+        from: this.client.jid?.toString(),
+        id: "replaceMessage",
+        type:"groupchat",
+        to:roomJID
+      },
+      xml('body', {}, replaceText),
+      xml(
+        'replace',
+        {
+          id:messageId,
+          xmlns:"urn:xmpp:message-correct:0"
+        }
+      ),
+      xml('data', {
+        xmlns: 'http://dev.dxmpp.com',
+        senderJID: this.client.jid?.toString(),
+        ...data,
+      }),
+    )
+    this.client.send(stanza);
+  }
 }
 
 export default new XmppClass();
