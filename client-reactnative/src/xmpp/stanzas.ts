@@ -382,7 +382,7 @@ export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 20),
+        xml('max', {}, 30),
         xml('before'),
       ),
     ),

@@ -125,8 +125,7 @@ export interface replaceMessageListItemProps {
   replaceMessageId: string;
   replaceMessageText: string;
 }
-let rep = 0;
-const temporaryArchiveMessages: IMessage[] = [];
+let temporaryArchiveMessages: IMessage[] = [];
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -308,6 +307,7 @@ export class ChatStore {
   };
   getCachedMessages = async () => {
     const messages = await getAllMessages();
+    temporaryArchiveMessages = messages;
     runInAction(() => {
       this.messages = messages;
     });
@@ -442,7 +442,15 @@ export class ChatStore {
     }
   };
 
-  updateMessageProperty = (messageId, property, value) => {
+  updateMessageProperty = (
+    messageId: string | undefined,
+    property: keyof IMessage,
+    value: string | number,
+  ) => {
+    if (!messageId || !value) {
+      return;
+    }
+   
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
 
@@ -450,7 +458,7 @@ export class ChatStore {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
         [property]:
-          property === 'tokenAmount' || 'numberOfReplies'
+          property === 'tokenAmount'
             ? messages[index][property] + value
             : value,
       };
@@ -939,14 +947,18 @@ export class ChatStore {
               }
 
               if (message.isReply) {
-                const threadIndex = this.listOfThreads.findIndex(
-                  item => message._id === item._id,
+                const thread = temporaryArchiveMessages.filter(
+                  item => item.mainMessage?.id === message.mainMessage?.id,
                 );
-                if (threadIndex === -1) {
-                  this.addThreadMessage(message);
-                }
-
-                await updateNumberOfReplies(message?.mainMessage?.id);
+                this.updateMessageProperty(
+                  message.mainMessage?.id,
+                  'numberOfReplies',
+                  thread.length,
+                );
+                await updateNumberOfReplies(
+                  message?.mainMessage?.id,
+                  thread.length,
+                );
               }
 
               await insertMessages(message);
@@ -958,6 +970,7 @@ export class ChatStore {
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
+          temporaryArchiveMessages.push(message)
           if (
             this.blackList.find(item => item.userJid === message.user._id)
               ?.userJid
@@ -999,12 +1012,18 @@ export class ChatStore {
             playCoinSound(message.tokenAmount);
           }
           if (message.isReply) {
+            const thread = temporaryArchiveMessages.filter(
+              item => item.mainMessage?.id === message.mainMessage?.id,
+            );
             this.updateMessageProperty(
               message.mainMessage?.id,
               'numberOfReplies',
-              1,
+              thread.length,
             );
-            await updateNumberOfReplies(message?.mainMessage?.id);
+            await updateNumberOfReplies(
+              message?.mainMessage?.id,
+              thread.length,
+            );
           }
           await insertMessages(message);
         }

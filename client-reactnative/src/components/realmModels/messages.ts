@@ -100,7 +100,10 @@ export const updateMessageText = async (
   }
 };
 
-export const updateNumberOfReplies = async (messageId: string) => {
+export const updateNumberOfReplies = async (
+  messageId: string,
+  numberOfReplies: number,
+) => {
   try {
     const realm = await Realm.open(databaseOptions);
     let message = realm.objectForPrimaryKey(
@@ -109,7 +112,7 @@ export const updateNumberOfReplies = async (messageId: string) => {
     );
     if (message) {
       realm.write(() => {
-        message.numberOfReplies = message.numberOfReplies + 1;
+        message.numberOfReplies = numberOfReplies;
       });
     } else {
       console.log('Message object not yet created for reply');
