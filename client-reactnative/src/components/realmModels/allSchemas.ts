@@ -27,6 +27,31 @@ const QuickReplySchema = {
   },
 };
 
+const MainMessageSchema = {
+  name: 'MainMessage',
+  embeded: true,
+  properties: {
+    text: {type: 'string', optional: true},
+    id: {type: 'string', optional: true},
+    userName: {type: 'string', optional: true},
+    createdAt: {type: 'string', optional: true},
+    fileName: {type: 'string', optional: true},
+    imageLocation: {type: 'string', optional: true},
+    imagePreview: {type: 'string', optional: true},
+    mimeType: {type: 'string', optional: true},
+    originalName: {type: 'string', optional: true},
+    size: {type: 'string', optional: true},
+    duration: {type: 'string', optional: true},
+    waveForm: {type: 'string', optional: true},
+    attachmentId: {type: 'string', optional: true},
+    wrappable: {type: 'bool', optional: true},
+    nftId: {type: 'string', optional: true},
+    nftActionType: {type: 'string', optional: true},
+    contractAddress: {type: 'string', optional: true},
+    roomJid: {type: 'string', optional: true},
+  },
+};
+
 const MessageSchema = {
   name: schemaTypes.MESSAGE_SCHEMA,
   primaryKey: 'message_id',
@@ -55,33 +80,16 @@ const MessageSchema = {
     attachmentId: {type: 'string', optional: true},
     wrappable: {type: 'bool', optional: true},
     nftId: {type: 'string', optional: true},
-    nftName:{type: 'string', optional:true},
+    nftName: {type: 'string', optional: true},
     contractAddress: {type: 'string', optional: true},
     fileName: {type: 'string', optional: true},
     originalName: {type: 'string', optional: true},
     isReply: {type: 'bool', optional: true},
-    mainMessageUserName: {type: 'string', optional: true},
-    mainMessageText: {type: 'string', optional: true},
-    mainMessageId: {type: 'string', optional: true},
-    mainMessageCreatedAt:{type:'string', optional:true},
-    mainMessageFileName:{type:'string', optional:true},
-    mainMessageImageLocation:{type:'string', optional:true},
-    mainMessageImagePreview:{type:'string', optional:true},
-    mainMessageMimeType:{type:'string', optional:true},
-    mainMessageOriginalName:{type:'string', optional:true},
-    mainMessageSize:{type:'string', optional:true},
-    mainMessageDuration:{type:'string',optional:true},
-    mainMessageWaveForm:{type:'string',optional:true},
-    mainMessageAttachmentId:{type:'string',optional:true},
-    mainMessageWrappable:{type:'bool',optional:true},
-    mainMessageNftId:{type:'string',optional:true},
-    mainMessageNftActionType:{type:'string',optional:true},
-    mainMessageContractAddress:{type:'string',optional:true},
-    mainMessageRoomJid:{type:'string',optional:true},
-    numberOfReplies:{type:'int', optional: true},
-    showInChannel:{type:'bool', optional:true},
+    mainMessage: {type: 'MainMessage', optional: true},
+    numberOfReplies: {type: 'int', optional: true},
+    showInChannel: {type: 'bool', optional: true},
     preview: {type: 'string', optional: true},
-    isEdited: {type: 'bool', optional:true}
+    isEdited: {type: 'bool', optional: true},
   },
 };
 
@@ -101,7 +109,7 @@ const ChatListSchema = {
     muted: {type: 'bool', optional: true},
     roomThumbnail: {type: 'string', optional: true},
     roomBackground: {type: 'string', optional: true},
-    roomBackgroundIndex:{type:'int', optional:true}
+    roomBackgroundIndex: {type: 'int', optional: true},
   },
 };
 
@@ -139,6 +147,7 @@ export const databaseOptions = {
     TransactionSchema,
     UserSchema,
     QuickReplySchema,
+    MainMessageSchema,
   ],
   // schemaVersion: 1, //optional
 };

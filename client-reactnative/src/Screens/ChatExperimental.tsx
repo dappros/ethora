@@ -100,6 +100,7 @@ import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
+import {IMessageToSend} from '../helpers/chat/createMessageObject';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -140,10 +141,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const {isOpen, onOpen, onClose} = useDisclose();
   const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
 
-
-  const handleSetIsEditing = (value:boolean) => {
-    setIsEditing(value)
-  }
+  const handleSetIsEditing = (value: boolean) => {
+    setIsEditing(value);
+  };
 
   const getMetaRooms = async () => {
     const rooms = await asyncStorageGetItem('metaRooms');
@@ -316,10 +316,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
-      push:true
+      mainMessage: undefined,
+      push: true,
     };
     const text = parseValue(messageText, partTypes).plainText;
     const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
@@ -386,9 +384,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const handleInputChange = t => {
     setText(t);
-    setTimeout(()=>{
+    setTimeout(() => {
       isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
-    },2000)
+    }, 2000);
   };
 
   const renderMessageImage = (props: any) => {
@@ -405,7 +403,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       fileName,
       nftId,
       preview,
-      nftName
+      nftName,
     } = props.currentMessage;
     let parsedWaveform = [];
     if (waveForm) {
@@ -517,8 +515,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
       setShowReplyOption(false);
     }
 
-    if(message.numberOfReplies>0){
-      setShowViewThread(true)
+    if (message.numberOfReplies > 0) {
+      setShowViewThread(true);
     }
 
     setOnTapMessageObject(message);
@@ -532,21 +530,21 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleEdit = () => {
-    if(!onTapMessageObject.image || !onTapMessageObject.preview){
-      setIsEditing(true)
+    if (!onTapMessageObject.image || !onTapMessageObject.preview) {
+      setIsEditing(true);
       setText(onTapMessageObject.text);
       giftedRef?.current?.textInput?.focus();
     }
     setShowEditOption(true);
     onClose();
-  }
+  };
 
-  const handleReply = (message?:any) => {
+  const handleReply = (message?: any) => {
     setShowViewThread(false);
     //navigate to thread screen with current message details.
-    getOtherUserDetails(message?message.user:onTapMessageObject.user);
+    getOtherUserDetails(message ? message.user : onTapMessageObject.user);
     navigation.navigate(ROUTES.THREADS, {
-      currentMessage:message?message: onTapMessageObject,
+      currentMessage: message ? message : onTapMessageObject,
       chatJid: chatJid,
       chatName: chatName,
     });
@@ -790,21 +788,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setIsNftItemGalleryVisible(true);
   };
   const sendNftItemsFromGallery = item => {
-    const data = {
-      firstName,
-      lastName,
-      walletAddress,
-      chatName,
-      userAvatar: loginStore.userAvatar,
-      createdAt: item.createdAt,
+    const data: IMessageToSend = {
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+      senderWalletAddress: loginStore.initialData.walletAddress,
+      mucname: chatName,
+      photoURL: loginStore.userAvatar,
       location: item.nftFileUrl,
       locationPreview: item.nftFileUrl,
       mimetype: item.nftMimetype,
-      originalname: item.nftOriginalname,
-      // attachmentId: item.nftId,
+      originalName: item.nftOriginalname,
       nftName: item.tokenName,
       nftId: item.nftId,
       wrappable: true,
+      push: true,
+      roomJid: chatJid,
+      receiverMessageId: '0',
     };
 
     sendMediaMessageStanza(
@@ -903,7 +902,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
-      item => item._id === currentMessage.mainMessageId,
+      item => item._id === currentMessage?.mainMessage?.id,
     );
     console.log(
       giftedRef.current?._messageContainerRef?.current?.scrollToIndex,
@@ -1042,23 +1041,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
               </Actionsheet.Item>
             ) : null}
             <Actionsheet.Item onPress={handleCopyText}>Copy</Actionsheet.Item>
-            {showViewThread?
-            <Actionsheet.Item
-            onPress={()=> handleReply()}
-            >
-              View thread
-            </Actionsheet.Item>:null
-            }
-            {showEditOption&&
-              <Actionsheet.Item onPress={handleEdit}>
-                Edit
+            {showViewThread ? (
+              <Actionsheet.Item onPress={() => handleReply()}>
+                View thread
               </Actionsheet.Item>
-            }
-            {isShowDeleteOption&&
+            ) : null}
+            {showEditOption && (
+              <Actionsheet.Item onPress={handleEdit}>Edit</Actionsheet.Item>
+            )}
+            {isShowDeleteOption && (
               <Actionsheet.Item onPress={onClose} color="red.500">
                 Delete
               </Actionsheet.Item>
-            }
+            )}
           </Actionsheet.Content>
         </Actionsheet>
         <MetaNavigation

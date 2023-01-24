@@ -316,9 +316,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       photoURL: loginStore.userAvatar,
       roomJid: jid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
+      mainMessage: undefined,
       push: false,
     };
 

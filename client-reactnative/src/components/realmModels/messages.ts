@@ -9,33 +9,16 @@ Note: linked open-source libraries and components may be subject to their own li
 import Realm from 'realm';
 import * as schemaTypes from '../../constants/realmConstants';
 import {databaseOptions} from './allSchemas';
-//fucntion to check if the room exists
-async function checkQuery(checkType, check, callback) {
-  const realm = await Realm.open(databaseOptions);
-  let messages = realm.objects(schemaTypes.MESSAGE_SCHEMA);
 
-  if (messages.filtered(`${checkType}="${check}"`)) {
-    callback(true);
-  }
-  // const message = realm.objects(schemaTypes.MESSAGE_SCHEMA)
-}
-
-//function to check message_id exists
-async function filter(query, schema, callback) {
-  const realm = await Realm.open(databaseOptions);
-  let schemaSelected = realm.objects(schema);
-  let check = schemaSelected.filtered(query);
-  callback(Array.from(check));
-}
-export const getMessage = id =>
-  new Promise(async (resolve, reject) => {
+export const getMessage = (id: string) =>
+  new Promise(async resolve => {
     const realm = await Realm.open(databaseOptions);
     const chatList = realm.objectForPrimaryKey(schemaTypes.MESSAGE_SCHEMA, id);
     resolve(chatList);
   });
 //insert message
 export const insertMessages = (messageObject: any) =>
-  new Promise(async (resolve, reject) => {
+  new Promise(async resolve => {
     const realm = await Realm.open(databaseOptions);
     const a = {
       ...messageObject,
@@ -44,7 +27,6 @@ export const insertMessages = (messageObject: any) =>
       tokenAmount: +messageObject.tokenAmount,
       text: messageObject.text || ' ',
       preview: messageObject.imageLocationPreview,
-
     };
     getMessage(messageObject._id).then(message => {
       if (!message) {
@@ -57,8 +39,8 @@ export const insertMessages = (messageObject: any) =>
   });
 
 //fetch message object of a particular room
-export const queryRoomAllMessages = async jid =>
-  new Promise(async (resolve, reject) => {
+export const queryRoomAllMessages = async () =>
+  new Promise(async resolve => {
     const realm = await Realm.open(databaseOptions);
     let chats = realm.objects(schemaTypes.MESSAGE_SCHEMA);
     resolve(Array.from(chats));
@@ -74,7 +56,10 @@ export const getAllMessages = async () => {
   }
 };
 //update message object
-export const updateTokenAmount = async (messageId, tokenAmount) => {
+export const updateTokenAmount = async (
+  messageId: string,
+  tokenAmount: string,
+) => {
   try {
     const realm = await Realm.open(databaseOptions);
     let message = realm.objectForPrimaryKey(
@@ -82,58 +67,61 @@ export const updateTokenAmount = async (messageId, tokenAmount) => {
       messageId,
     );
 
-    if(message){
+    if (message) {
       realm.write(() => {
         message.tokenAmount = message.tokenAmount + tokenAmount;
       });
-    }else{
-      console.log("Message object not yet created for token", message)
     }
   } catch (error) {
     console.log(error);
   }
 };
 
-export const updateMessageText = async (messageId, messageString) => {
-  try{
+export const updateMessageText = async (
+  messageId: string,
+  messageString: string,
+) => {
+  try {
     const realm = await Realm.open(databaseOptions);
     let message = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
-      messageId
+      messageId,
     );
 
-    if(message){
-      realm.write(()=>{
-        message.text = messageString
-      })
-    }else{
-      console.log("No message object");
-    }
-  }catch(error){
-    console.log(error);
-  }
-}
-
-export const updateNumberOfReplies = async (messageId) => {
-  try{
-    const realm = await Realm.open(databaseOptions);
-    let message = realm.objectForPrimaryKey(
-      schemaTypes.MESSAGE_SCHEMA,
-      messageId
-    )
-
-    if(message){
+    if (message) {
       realm.write(() => {
-        message.numberOfReplies = message.numberOfReplies + 1
+        message.text = messageString;
       });
-    }else{
-      console.log("Message object not yet created for reply", message)
+    } else {
+      console.log('No message object');
     }
   } catch (error) {
     console.log(error);
   }
-}
-export const updateMessageToWrapped = async (messageId, {nftId, contractAddress}) => {
+};
+
+export const updateNumberOfReplies = async (messageId: string) => {
+  try {
+    const realm = await Realm.open(databaseOptions);
+    let message = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId,
+    );
+    if (message) {
+      realm.write(() => {
+        message.numberOfReplies = message.numberOfReplies + 1;
+      });
+    } else {
+      console.log('Message object not yet created for reply');
+    }
+  } catch (error) {
+    console.log(error, 'err', messageId);
+  }
+};
+export const updateMessageToWrapped = async (
+  messageId: string,
+  {nftId, contractAddress}: {nftId: string; contractAddress: string},
+) => {
   try {
     const realm = await Realm.open(databaseOptions);
     let message = realm.objectForPrimaryKey(
@@ -143,7 +131,7 @@ export const updateMessageToWrapped = async (messageId, {nftId, contractAddress}
 
     realm.write(() => {
       message.nftId = nftId;
-      message.contractAddress = contractAddress
+      message.contractAddress = contractAddress;
     });
   } catch (error) {
     console.log(error);

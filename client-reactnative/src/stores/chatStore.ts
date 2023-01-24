@@ -18,14 +18,17 @@ import {
   updateMessageToWrapped,
   updateNumberOfReplies,
   updateTokenAmount,
-  updateMessageText
+  updateMessageText,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
 import {httpPost} from '../config/apiService';
 import {asyncStorageConstants} from '../constants/asyncStorageConstants';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
-import {createMessageObject} from '../helpers/chat/createMessageObject';
+import {
+  createMessageObject,
+  IMessage,
+} from '../helpers/chat/createMessageObject';
 import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
 import {
@@ -78,9 +81,9 @@ export interface roomListProps {
   priority?: number;
   muted?: boolean;
   isFavourite?: boolean;
-  roomThumbnail?:string;
-  roomBackground?:string;
-  roomBackgroundIndex?:number;
+  roomThumbnail?: string;
+  roomBackground?: string;
+  roomBackgroundIndex?: number;
 }
 
 interface isComposingProps {
@@ -119,10 +122,11 @@ export interface BlackListUser {
 }
 
 export interface replaceMessageListItemProps {
-  replaceMessageId:string;
-  replaceMessageText:string;
+  replaceMessageId: string;
+  replaceMessageText: string;
 }
-
+let rep = 0;
+const temporaryArchiveMessages: IMessage[] = [];
 export class ChatStore {
   messages: any = [];
   xmpp: any = null;
@@ -144,7 +148,7 @@ export class ChatStore {
     shouldUpdateChatScreen: false,
   };
   shouldCount: boolean = true;
-  roomRoles:any = [];
+  roomRoles: any = [];
   isOnline = false;
   showMetaNavigation = false;
 
@@ -165,12 +169,11 @@ export class ChatStore {
   };
   backgroundTheme = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
-  userBanData={
-    success:false,
-    senderName:'',
-    name:''
-  }
-  
+  userBanData = {
+    success: false,
+    senderName: '',
+    name: '',
+  };
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -225,53 +228,58 @@ export class ChatStore {
       this.listOfThreads = [];
       this.backgroundTheme = defaultChatBackgroundTheme;
       this.selectedBackgroundIndex = 0;
-      this.userBanData={
-        success:false,
-        senderName:'',
-        name:''
-      }
-      this.replaceMessageList = []
+      this.userBanData = {
+        success: false,
+        senderName: '',
+        name: '',
+      };
+      this.replaceMessageList = [];
     });
   };
 
-  addToReplaceMessageList = (replaceMessageId:any, replaceMessageText:string) => {
-    const replaceMessageListItem:replaceMessageListItemProps = {
+  addToReplaceMessageList = (
+    replaceMessageId: any,
+    replaceMessageText: string,
+  ) => {
+    const replaceMessageListItem: replaceMessageListItemProps = {
       replaceMessageId: replaceMessageId,
-      replaceMessageText: replaceMessageText
-    }
+      replaceMessageText: replaceMessageText,
+    };
     runInAction(() => {
       this.replaceMessageList.push(replaceMessageListItem);
-    })
-  }
+    });
+  };
 
-  removeFromReplaceMessageList = (replaceMessageId:string) => {
-    const messageIndex = this.replaceMessageList.findIndex(item => item.replaceMessageId === replaceMessageId)
-    if(messageIndex)
-    runInAction(() => {
-      this.replaceMessageList.splice(messageIndex, 1);
-    })
-  }
+  removeFromReplaceMessageList = (replaceMessageId: string) => {
+    const messageIndex = this.replaceMessageList.findIndex(
+      item => item.replaceMessageId === replaceMessageId,
+    );
+    if (messageIndex)
+      runInAction(() => {
+        this.replaceMessageList.splice(messageIndex, 1);
+      });
+  };
 
-  setUserBanData = (senderName:string, name:string)=>{
+  setUserBanData = (senderName: string, name: string) => {
     runInAction(() => {
       this.userBanData.name = name;
       this.userBanData.senderName = senderName;
-    })
-  }
+    });
+  };
 
-  setUserBanSuccess = (value:boolean) => {
-    runInAction(()=>{
+  setUserBanSuccess = (value: boolean) => {
+    runInAction(() => {
       this.userBanData.success = value;
-    })
-  }
+    });
+  };
 
   clearUserBanData = () => {
-    runInAction(()=>{
+    runInAction(() => {
       this.userBanData.success = false;
       this.userBanData.name = '';
       this.userBanData.senderName = '';
-    })
-  }
+    });
+  };
 
   setRoomRoles = (jid: string, role: string) => {
     runInAction(() => {
@@ -383,21 +391,23 @@ export class ChatStore {
     }
   };
 
-  editMessage = (replaceMessageId: any, messageString:string) => {
-    const indexOfMessage = this.messages.findIndex(item => item._id === replaceMessageId)
-    if(indexOfMessage !== -1){
+  editMessage = (replaceMessageId: any, messageString: string) => {
+    const indexOfMessage = this.messages.findIndex(
+      item => item._id === replaceMessageId,
+    );
+    if (indexOfMessage !== -1) {
       const messages = toJS(this.messages);
       const message = {
         ...JSON.parse(JSON.stringify(messages[indexOfMessage])),
         ['text']: messageString,
-        ['isEdited'] : true
+        ['isEdited']: true,
       };
       message.text = messageString;
       runInAction(() => {
         this.messages[indexOfMessage] = message;
-      })
+      });
     }
-  }
+  };
 
   addThreadMessage = (message: any) => {
     runInAction(() => {
@@ -689,7 +699,7 @@ export class ChatStore {
         if (stanza.children[0].children.length) {
           runInAction(() => {
             this.roomMemberInfo = stanza.children[0].children.map(
-              (item:any) => item.attrs,
+              (item: any) => item.attrs,
             );
           });
         }
@@ -750,9 +760,14 @@ export class ChatStore {
         }
       }
 
-      if(stanza.attrs.id === 'ban_user'){
+      if (stanza.attrs.id === 'ban_user') {
         this.setUserBanSuccess(true);
-        showToast('success', 'Success', `${this.userBanData.name} removed by ${this.userBanData.senderName}`, 'top');
+        showToast(
+          'success',
+          'Success',
+          `${this.userBanData.name} removed by ${this.userBanData.senderName}`,
+          'top',
+        );
       }
 
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
@@ -771,7 +786,7 @@ export class ChatStore {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
         rosterFromXmpp.forEach((item: any) => {
-          if(!item.attrs.name) return;
+          if (!item.attrs.name) return;
           const rosterObject = {
             name: item.attrs.name,
             jid: item.attrs.jid,
@@ -878,16 +893,22 @@ export class ChatStore {
           const message = createMessageObject(singleMessageDetailArray);
 
           //check if the stanza is a replace stanza
-          if(message.isReplace){
-            this.addToReplaceMessageList(message.replaceMessageId, message.text);
-          }else{
-
+          if (message.isReplace) {
+            this.addToReplaceMessageList(
+              message.replaceMessageId,
+              message.text,
+            );
+          } else {
             //check if the current stanza is an edited message.
-            const replaceMessageItem = this.replaceMessageList.find(item => message._id === item.replaceMessageId);
-            if(replaceMessageItem){
+            const replaceMessageItem = this.replaceMessageList.find(
+              item => message._id === item.replaceMessageId,
+            );
+            if (replaceMessageItem) {
               message.text = replaceMessageItem.replaceMessageText;
               message.isEdited = true;
-              this.removeFromReplaceMessageList(replaceMessageItem.replaceMessageId);
+              this.removeFromReplaceMessageList(
+                replaceMessageItem.replaceMessageId,
+              );
             }
             // if(this.replaceMessageList.find(item => message._id === item.replaceMessageId)){
             //     message.text = item.rep
@@ -896,13 +917,14 @@ export class ChatStore {
               x => x._id === message._id,
             );
             if (messageAlreadyExist === -1) {
+              temporaryArchiveMessages.push(message);
               if (
                 this.blackList.find(item => item.userJid === message.user._id)
                   ?.userJid
               ) {
                 return;
               }
-  
+
               if (message.system) {
                 if (message?.contractAddress) {
                   await updateMessageToWrapped(message.receiverMessageId, {
@@ -915,7 +937,7 @@ export class ChatStore {
                   message.tokenAmount,
                 );
               }
-  
+
               if (message.isReply) {
                 const threadIndex = this.listOfThreads.findIndex(
                   item => message._id === item._id,
@@ -923,109 +945,87 @@ export class ChatStore {
                 if (threadIndex === -1) {
                   this.addThreadMessage(message);
                 }
+
+                await updateNumberOfReplies(message?.mainMessage?.id);
               }
-  
-              const threadsOfCurrentMessage = this.listOfThreads.filter(
-                (item: any) => item.mainMessageId === message._id,
-              );
-  
-              if (threadsOfCurrentMessage) {
-                message.numberOfReplies = threadsOfCurrentMessage.length;
-              }
+
               await insertMessages(message);
               this.addMessage(message);
             }
           }
-
-          // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
-          // if(threadIndex != -1){
-          //   // alert(threadIndex)
-          //   const threadMessage = {
-          //     ...JSON.parse(JSON.stringify(this.listOfThreads[threadIndex]))
-          //   };
-
-          //   this.addMessage(threadMessage);
-          //   await insertMessages(threadMessage);
-          //   this.listOfThreads.splice(threadIndex,1);
-          //   message.numberOfReplies = message.numberOfReplies + 1;
-          // }
-
-          // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
-
-
         }
 
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-            if (
-              this.blackList.find(item => item.userJid === message.user._id)
-                ?.userJid
-            ) {
-              console.log('finded user');
-              return;
-            }
-            if (this.shouldCount) {
-              this.updateBadgeCounter(message.roomJid, 'UPDATE');
-            }
-            this.addMessage(message);
-  
-            this.updateRoomInfo(message.roomJid, {
-              lastUserText: message?.text,
-              lastUserName: message?.user?.name,
-              lastMessageTime: message?.createdAt,
-            });
-            if (message.system) {
-              if (message?.contractAddress) {
-                await updateMessageToWrapped(message.receiverMessageId, {
-                  nftId: message.nftId,
-                  contractAddress: message.contractAddress,
-                });
-                this.updateMessageProperty(
-                  message.receiverMessageId,
-                  'nftId',
-                  message.nftId,
-                );
-              }
+          if (
+            this.blackList.find(item => item.userJid === message.user._id)
+              ?.userJid
+          ) {
+            console.log('finded user');
+            return;
+          }
+          if (this.shouldCount) {
+            this.updateBadgeCounter(message.roomJid, 'UPDATE');
+          }
+          this.addMessage(message);
+
+          this.updateRoomInfo(message.roomJid, {
+            lastUserText: message?.text,
+            lastUserName: message?.user?.name,
+            lastMessageTime: message?.createdAt,
+          });
+          if (message.system) {
+            if (message?.contractAddress) {
+              await updateMessageToWrapped(message.receiverMessageId, {
+                nftId: message.nftId,
+                contractAddress: message.contractAddress,
+              });
               this.updateMessageProperty(
                 message.receiverMessageId,
-                'tokenAmount',
-                message.tokenAmount,
+                'nftId',
+                message.nftId,
               );
-              await updateTokenAmount(
-                message.receiverMessageId,
-                message.tokenAmount,
-              );
-              playCoinSound(message.tokenAmount);
             }
-            if (message.isReply) {
-              this.updateMessageProperty(
-                message.mainMessageId,
-                'numberOfReplies',
-                1,
-              );
-              await updateNumberOfReplies(message.mainMessageId);
-            }
-            await insertMessages(message);
+            this.updateMessageProperty(
+              message.receiverMessageId,
+              'tokenAmount',
+              message.tokenAmount,
+            );
+            await updateTokenAmount(
+              message.receiverMessageId,
+              message.tokenAmount,
+            );
+            playCoinSound(message.tokenAmount);
+          }
+          if (message.isReply) {
+            this.updateMessageProperty(
+              message.mainMessage?.id,
+              'numberOfReplies',
+              1,
+            );
+            await updateNumberOfReplies(message?.mainMessage?.id);
+          }
+          await insertMessages(message);
         }
 
-        if(stanza.attrs.id === XMPP_TYPES.replaceMessage){
+        if (stanza.attrs.id === XMPP_TYPES.replaceMessage) {
           // <message xmlns="jabber:client" xml:lang="en" to="olek@localhost/1216574346180782548712130" from="test_olek@conference.localhost/olek" type="groupchat" id="1635229272917013">
           //   <archived by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:mam:tmp"/>
           //   <stanza-id by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:sid:0"/>
           //   <replace xmlns="urn:xmpp:message-correct:0" id="1635229272917013"/>
           //   <body>Wow</body>
           // </message>
-          const replaceMessageId = stanza.children.find(item => item.name === 'replace').attrs.id;
-          const messageString = stanza.children.find(item => item.name === 'body').children[0]
+          const replaceMessageId = stanza.children.find(
+            item => item.name === 'replace',
+          ).attrs.id;
+          const messageString = stanza.children.find(
+            item => item.name === 'body',
+          ).children[0];
           // this.addToReplaceMessageList(replaceMessageId, messageString);
-          
 
-          this.editMessage(replaceMessageId,messageString)
-          await updateMessageText(
-            replaceMessageId,
-            messageString
-          )
+          this.editMessage(replaceMessageId, messagexString);
+          await updateMessageText(replaceMessageId, messageString);
         }
 
         //capture message composing

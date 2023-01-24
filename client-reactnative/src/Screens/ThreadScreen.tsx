@@ -86,6 +86,10 @@ import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
 import {observer} from 'mobx-react-lite';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {
+  createMainMessageForThread,
+  IMessageToSend,
+} from '../helpers/chat/createMessageObject';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -133,7 +137,8 @@ const ThreadScreen = observer((props: any) => {
   const messages = chatStore.messages
     .filter(
       (item: any) =>
-        item.roomJid === chatJid && item.mainMessageId === currentMessage._id,
+        item.roomJid === chatJid &&
+        item?.mainMessage?.id === currentMessage._id,
     )
     .sort((a: any, b: any) => b._id - a._id);
 
@@ -229,51 +234,32 @@ const ThreadScreen = observer((props: any) => {
     );
     console.log(result);
   };
-
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
-      const data = {
-        firstName,
-        lastName,
-        walletAddress,
-        chatName,
-        userAvatar: loginStore.userAvatar,
-        createdAt: item.createdAt,
-        expiresAt: item.expiresAt,
+      const data: IMessageToSend = {
+        senderFirstName: loginStore.initialData.firstName,
+        senderLastName: loginStore.initialData.lastName,
+        senderWalletAddress: loginStore.initialData.walletAddress,
+        mucname: chatName,
+        photoURL: loginStore.userAvatar,
         fileName: item.filename,
         isVisible: item.isVisible,
         location: item.location,
         locationPreview: item.locationPreview,
         mimetype: item.mimetype,
         originalName: item.originalname,
-        ownerKey: item.ownerKey,
         size: item.size,
         duration: item?.duration,
-        updatedAt: item.updatedAt,
-        userId: item.userId,
         waveForm: JSON.stringify(waveForm),
         attachmentId: item._id,
         wrappable: true,
         isReply: true,
-        mainMessageText: currentMessage.text,
-        mainMessageId: currentMessage._id,
-        mainMessageUserName: currentMessage.user?.name,
-        mainMessageCreatedAt: currentMessage.createdAt,
-        mainMessageFileName: currentMessage.fileName,
-        mainMessageImageLocation: currentMessage.image,
-        mainMessageImagePreview: currentMessage.preview,
-        mainMessageMimeType: currentMessage.mimetype,
-        mainMessageOriginalName: currentMessage.originalName,
-        mainMessageSize: currentMessage.size,
-        mainMessageDuration: currentMessage?.duration,
-        mainMessageWaveForm: currentMessage.waveForm,
-        mainMessageAttachmentId: currentMessage.attachmentId,
-        mainMessageWrappable: currentMessage.wrappable,
-        mainMessageNftId: currentMessage.nftId,
-        mainMessageNftActionType: currentMessage.nftActionType,
-        mainMessageContractAddress: currentMessage.contractAddress,
-        mainMessageRoomJid: currentMessage.roomJid,
+        mainMessage: createMainMessageForThread(currentMessage),
+        push: true,
+        isSystemMessage: false,
+        roomJid: chatJid,
+        receiverMessageId: '0',
         showInChannel: showInChannel,
       };
 
@@ -680,7 +666,7 @@ const ThreadScreen = observer((props: any) => {
       loginStore.initialData.walletAddress,
     );
 
-    const data = {
+    const data: IMessageToSend = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
       senderWalletAddress: loginStore.initialData.walletAddress,
@@ -691,24 +677,8 @@ const ThreadScreen = observer((props: any) => {
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
       isReply: true,
-      mainMessageText: currentMessage.text,
-      mainMessageId: currentMessage._id,
-      mainMessageUserName: currentMessage.user?.name,
-      mainMessageCreatedAt: currentMessage.createdAt,
-      mainMessageFileName: currentMessage.fileName,
-      mainMessageImageLocation: currentMessage.image,
-      mainMessageImagePreview: currentMessage.preview,
-      mainMessageMimeType: currentMessage.mimetype,
-      mainMessageOriginalName: currentMessage.originalName,
-      mainMessageSize: currentMessage.size,
-      mainMessageDuration: currentMessage?.duration,
-      mainMessageWaveForm: currentMessage.waveForm,
-      mainMessageAttachmentId: currentMessage.attachmentId,
-      mainMessageWrappable: currentMessage.wrappable,
-      mainMessageNftId: currentMessage.nftId,
-      mainMessageNftActionType: currentMessage.nftActionType,
-      mainMessageContractAddress: currentMessage.contractAddress,
-      mainMessageRoomJid: currentMessage.roomJid,
+      mainMessage: createMainMessageForThread(currentMessage),
+
       showInChannel: showInChannel,
       push: true,
     };
@@ -743,40 +713,25 @@ const ThreadScreen = observer((props: any) => {
   };
 
   const sendNftItemsFromGallery = item => {
-    const data = {
-      firstName,
-      lastName,
-      walletAddress,
-      chatName,
-      userAvatar: loginStore.userAvatar,
-      createdAt: item.createdAt,
+    const data: IMessageToSend = {
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+      senderWalletAddress: loginStore.initialData.walletAddress,
+      mucname: chatName,
+      photoURL: loginStore.userAvatar,
       location: item.nftFileUrl,
       locationPreview: item.nftFileUrl,
       mimetype: item.nftMimetype,
-      originalname: item.nftOriginalname,
+      originalName: item.nftOriginalname,
       // attachmentId: item.nftId,
       nftId: item.nftId,
       isReply: true,
       wrappable: true,
-      mainMessageText: currentMessage.text,
-      mainMessageId: currentMessage._id,
-      mainMessageUserName: currentMessage.user?.name,
-      mainMessageCreatedAt: currentMessage.createdAt,
-      mainMessageFileName: currentMessage.fileName,
-      mainMessageImageLocation: currentMessage.image,
-      mainMessageImagePreview: currentMessage.preview,
-      mainMessageMimeType: currentMessage.mimetype,
-      mainMessageOriginalName: currentMessage.originalName,
-      mainMessageSize: currentMessage.size,
-      mainMessageDuration: currentMessage?.duration,
-      mainMessageWaveForm: currentMessage.waveForm,
-      mainMessageAttachmentId: currentMessage.attachmentId,
-      mainMessageWrappable: currentMessage.wrappable,
-      mainMessageNftId: currentMessage.nftId,
-      mainMessageNftActionType: currentMessage.nftActionType,
-      mainMessageContractAddress: currentMessage.contractAddress,
-      mainMessageRoomJid: currentMessage.roomJid,
+      push: true,
+      receiverMessageId: '0',
+      mainMessage: createMainMessageForThread(currentMessage),
       showInChannel: showInChannel,
+      roomJid: chatJid,
     };
 
     sendMediaMessageStanza(

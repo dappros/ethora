@@ -11,7 +11,11 @@ import WalletConnectProvider, {
   useWalletConnect,
 } from '@walletconnect/react-native-dapp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { withIAPContext } from 'react-native-iap';
+import {withIAPContext} from 'react-native-iap';
+
+import {LogBox} from 'react-native';
+LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+
 const App = () => {
   React.useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
