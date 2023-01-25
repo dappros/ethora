@@ -105,7 +105,7 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   p: 2,
-  outline: 'none'
+  outline: "none",
 };
 const roomRoute = "/room";
 export const MetaNavigation: React.FC<IMetaNavigation> = ({
@@ -173,15 +173,9 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       photoURL: user.profileImage,
       roomJid: jid,
       isReply: false,
-      mainMessageText: "",
-      mainMessageId: "",
-      mainMessageUserName: "",
+      mainMessage: undefined,
     };
-    xmpp.sendMessageStanza(
-      jid,
-      isPrevious ? textLeave : textEnter,
-      data
-    );
+    xmpp.sendMessageStanza(jid, isPrevious ? textLeave : textEnter, data);
   };
   const sendRoomJoin = async () => {
     try {

@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import xmpp from "../../xmpp";
+import xmpp, { createMainMessageForThread } from "../../xmpp";
 import {
   TActiveRoomFilter,
   TMessageHistory,
@@ -62,8 +62,8 @@ import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
 import { ChatAudioMessageDialog } from "../../components/Chat/ChatAudioRecorder";
 import { generateChatLink, getPosition, stripHtml } from "../../utils";
-import CloseIcon from '@mui/icons-material/Close';
-import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -120,7 +120,8 @@ export function ChatInRoom() {
   const [isThreadView, setThreadView] = useState(false);
   const [showInChannel, setShowInChannel] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
-  const [currentEditMessage, setCurrentEditMessage] = React.useState<TMessageHistory>();
+  const [currentEditMessage, setCurrentEditMessage] =
+    React.useState<TMessageHistory>();
 
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
@@ -128,7 +129,8 @@ export function ChatInRoom() {
   const handleShowInChannel = (event: React.ChangeEvent<HTMLInputElement>) =>
     setShowInChannel(event.target.checked);
 
-  const handleCurrentEditMessage = (message:TMessageHistory) => setCurrentEditMessage(message);
+  const handleCurrentEditMessage = (message: TMessageHistory) =>
+    setCurrentEditMessage(message);
 
   const [currentRoom, setCurrentRoom] = useState("");
   const currentPickedRoom = useMemo(() => {
@@ -307,7 +309,7 @@ export function ChatInRoom() {
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
 
       if (finalMessageTxt.trim().length > 0) {
-        if(isEditing){
+        if (isEditing) {
           const data = {
             senderFirstName: user.firstName,
             senderLastName: user.lastName,
@@ -319,20 +321,18 @@ export function ChatInRoom() {
             photoURL: userAvatar,
             roomJid: roomJID,
             isReply: false,
-            mainMessageText: '',
-            mainMessageId: '',
-            mainMessageUserName: '',
+            mainMessage: undefined,
             push: true,
           };
-          console.log(data)
+          console.log(data);
           xmpp.sendReplaceMessageStanza(
             currentUntrackedChatRoom,
             finalMessageTxt,
             currentEditMessage.id.toString(),
             data
-          )
-          setIsEditing(false)
-        }else{
+          );
+          setIsEditing(false);
+        } else {
           xmpp.sendMessage(
             currentRoom,
             user.firstName,
@@ -391,28 +391,7 @@ export function ChatInRoom() {
 
           const additionalDataForThread = {
             isReply: isReply,
-            mainMessageText: currentThreadViewMessage.body,
-            mainMessageId: currentThreadViewMessage.id,
-            mainMessageUserName:
-              currentThreadViewMessage.data.senderFirstName +
-              " " +
-              currentThreadViewMessage.data.senderLastName,
-            mainMessageCreatedAt: currentThreadViewMessage.date,
-            mainMessageFileName: currentThreadViewMessage.data.originalName,
-            mainMessageImageLocation: currentThreadViewMessage.data.location,
-            mainMessageImagePreview:
-              currentThreadViewMessage.data.locationPreview,
-            mainMessageMimeType: currentThreadViewMessage.data.mimetype,
-            mainMessageOriginalName: currentThreadViewMessage.data.originalName,
-            mainMessageSize: "N/A",
-            mainMessageDuration: "NA",
-            mainMessageWaveForm: "N/A",
-            mainMessageAttachmentId: "N/A",
-            mainMessageWrappable: "N/A",
-            mainMessageNftId: "N/A",
-            mainMessageNftActionType: "N/A",
-            mainMessageContractAddress: "N/A",
-            mainMessageRoomJid: currentThreadViewMessage.roomJID,
+            mainMessage: createMainMessageForThread(currentThreadViewMessage),
             showInChannel: showInChannel,
           };
 
@@ -503,12 +482,8 @@ export function ChatInRoom() {
         useStoreState.getState().clearCounterChatRoom(currentRoom);
       }
     };
-    if(filteredMessages.length<=0 && firstLoadMessages){
-
-      xmpp.getRoomArchiveStanza(
-        currentRoom,
-        50
-      )
+    if (filteredMessages.length <= 0 && firstLoadMessages) {
+      xmpp.getRoomArchiveStanza(currentRoom, 50);
     }
   }, [currentRoom]);
 
@@ -556,17 +531,15 @@ export function ChatInRoom() {
     handleSetCurrentThreadViewMessage(transferDialogData.message);
   };
 
-  const onMenuEditClick = (value:boolean, message:TMessageHistory) => {
-    setIsEditing(value)
-    handleCurrentEditMessage(message)
+  const onMenuEditClick = (value: boolean, message: TMessageHistory) => {
+    setIsEditing(value);
+    handleCurrentEditMessage(message);
   };
 
   const onMessageThreadClick = (message: TMessageHistory) => {
     setThreadView(true);
     handleSetCurrentThreadViewMessage(message);
   };
-
-
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
@@ -742,46 +715,48 @@ export function ChatInRoom() {
             {!!roomData?.name && (
               <div is={"MessageInput"}>
                 {/* Edit message component */}
-                {isEditing&&<Divider/>}
-                <Slide
-                direction="up"
-                in={isEditing}
-                mountOnEnter
-                unmountOnExit
-                >
-                  <Stack display={"flex"} height={"50px"} width={"100%"} direction={"row"}>
-                    <div style={{
-                      display:"flex",
-                      flex:"0.05",
-                      justifyContent:"center",
-                      alignItems:"center",
-                    }}>
-                      <EditIcon color="info"/>
-                    </div>
-                    <div style={{
-                      display:"flex",
-                      flex:"0.90",
-                      flexDirection:"column"
-                    }}>
-                    <Typography
-                    color={"#1976d2"}
-                    fontWeight={"bold"}
+                {isEditing && <Divider />}
+                <Slide direction="up" in={isEditing} mountOnEnter unmountOnExit>
+                  <Stack
+                    display={"flex"}
+                    height={"50px"}
+                    width={"100%"}
+                    direction={"row"}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.05",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
                     >
-                      Edit Message
-                    </Typography>
-                    <Typography>
-                      {currentEditMessage?.body}
-                    </Typography>
+                      <EditIcon color="info" />
                     </div>
-                    <div style={{
-                      display:"flex",
-                      flex:"0.05",
-                      justifyContent:"center",
-                      alignItems:"center"
-                    }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.90",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography color={"#1976d2"} fontWeight={"bold"}>
+                        Edit Message
+                      </Typography>
+                      <Typography>{currentEditMessage?.body}</Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.05",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
                       <IconButton
-                      onClick={()=>onMenuEditClick(false,undefined)}
-                      aria-label="close">
+                        onClick={() => onMenuEditClick(false, undefined)}
+                        aria-label="close"
+                      >
                         <CloseIcon />
                       </IconButton>
                     </div>
