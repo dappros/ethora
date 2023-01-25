@@ -137,21 +137,7 @@ export function ChatInRoom() {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
 
-  const mainWindowMessages = messages.filter((item: TMessageHistory) => {
-    if (item.roomJID === currentRoom) {
-      if (item.data.isReply) {
-        if (item.data.showInChannel) {
-          return item;
-        } else {
-          return false;
-        }
-      } else {
-        return item;
-      }
-    }
-  });
-
-  const [showAudioMsgDialog, setShowAudioMsgDialog] = useState(false);
+  const mainWindowMessages = messages.filter((item: TMessageHistory) => item.data.roomJid === roomJID + CONFERENCEDOMAIN && (item.data.showInChannel || !item.data.isReply) )
 
   const [roomData, setRoomData] = useState<{
     jid: string;
@@ -324,7 +310,6 @@ export function ChatInRoom() {
             mainMessage: undefined,
             push: true,
           };
-          console.log(data);
           xmpp.sendReplaceMessageStanza(
             currentUntrackedChatRoom,
             finalMessageTxt,
@@ -444,10 +429,17 @@ export function ChatInRoom() {
     return () => clearTimeout(timeoutId);
   }, [myMessage]);
 
+  const onBlur = () => {
+    useStoreState.getState().setCurrentUntrackedChatRoom("");
+  };
+  const onFocus = () => {
+    if (currentRoom) {
+      useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
+      useStoreState.getState().clearCounterChatRoom(currentRoom);
+    }
+  };
+
   useEffect(() => {
-    const filteredMessages = messages.filter(
-      (item: TMessageHistory) => item.roomJID === currentRoom
-    );
     if (currentUntrackedChatRoom) {
       if (
         !roomJID ||
@@ -472,19 +464,13 @@ export function ChatInRoom() {
       chooseRoom(roomJID);
     }
 
-    window.onblur = () => {
-      useStoreState.getState().setCurrentUntrackedChatRoom("");
-    };
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
 
-    window.onfocus = () => {
-      if (currentRoom) {
-        useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
-        useStoreState.getState().clearCounterChatRoom(currentRoom);
-      }
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
     };
-    if (filteredMessages.length <= 0 && firstLoadMessages) {
-      xmpp.getRoomArchiveStanza(currentRoom, 50);
-    }
   }, [currentRoom]);
 
   useEffect(() => {
@@ -519,6 +505,9 @@ export function ChatInRoom() {
           50
         );
       }
+    }
+    if (filteredMessages.length === 0 && firstLoadMessages) {
+      xmpp.getRoomArchiveStanza(currentRoom, 50);
     }
   }, [messages]);
 

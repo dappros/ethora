@@ -100,7 +100,6 @@ const updateTemporaryMessagesRepliesCount = (messageId: number) => {
   const messageIndex = temporaryMessages.findIndex(
     (item) => item.id === messageId
   );
-
   if (!messageId || isNaN(messageId) || messageIndex === -1) {
     return;
   }
@@ -134,33 +133,6 @@ export const createMainMessageForThread = (
     nftId: "",
   };
   return JSON.stringify(data);
-};
-
-const onMessage = async (stanza: Element) => {
-  if (stanza.is("message") && stanza.attrs.id === "sendMessage") {
-    const body = stanza.getChild("body");
-    const data = stanza.getChild("data");
-    if (!data || !body) {
-      return;
-    }
-
-    if (!data.attrs.senderFirstName || !data.attrs.senderLastName) {
-      return;
-    }
-
-    const msg = {
-      body: body.getText(),
-      firsName: data.attrs.senderFirstName,
-      lastName: data.attrs.senderLastName,
-      wallet: data.attrs.senderWalletAddress,
-      from: stanza.attrs.from,
-      room: stanza.attrs.from.toString().split("/")[0],
-    };
-
-    console.log("+++++ ", msg);
-
-    useStoreState.getState().setNewMessage(msg);
-  }
 };
 
 const getRoomGroup = (jid: string, userCount: number): TActiveRoomFilter => {
@@ -258,19 +230,17 @@ const onMessageHistory = async (stanza: any) => {
     }
 
     const msg = createMessage(data, body, id, stanza.attrs.from);
-   
 
     // console.log('TEST ', data.attrs)
     const blackList = useStoreState
       .getState()
       .blackList.find((item) => item.user === msg.data.senderJID);
 
-      if(blackList) {
-        return;
-      }
+    if (blackList) {
+      return;
+    }
     //if current stanza has replace tag
     if (replace) {
-      console.log("replace:", stanza);
       //if message loading
       if (isGettingMessages) {
         const replaceItem: replaceMessageListItemProps = {
@@ -290,9 +260,8 @@ const onMessageHistory = async (stanza: any) => {
           .replaceMessage(replaceMessageId, messageString);
       }
     } else {
-      if (isGettingMessages) {
-        temporaryMessages.push(msg);
-      }
+      temporaryMessages.push(msg);
+
       if (!isGettingMessages) {
         //check for messages in temp Replace message array agains the current stanza message id
         const replaceItem = temporaryReplaceMessages.find(
@@ -315,10 +284,11 @@ const onMessageHistory = async (stanza: any) => {
       ) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
       }
-    }
-    if (data.attrs.isReply) {
-      const messageid = msg.data.mainMessage?.id;
-      updateTemporaryMessagesRepliesCount(messageid);
+      if (data.attrs.isReply) {
+        const messageid = msg.data.mainMessage?.id;
+        useStoreState.getState().setNumberOfReplies(messageid);
+        updateTemporaryMessagesRepliesCount(messageid);
+      }
     }
   }
 };
@@ -625,7 +595,6 @@ const onSendReplaceMessageStanza = (stanza: any) => {
     );
     const messageString = stanza.children.find((item) => item.name === "body")
       .children[0];
-    console.log(replaceMessageId, messageString);
     useStoreState.getState().replaceMessage(replaceMessageId, messageString);
   }
 };
@@ -651,7 +620,6 @@ class XmppClass {
     this.client.start();
 
     this.client.on("online", (jid) => getListOfRooms(this));
-    // this.client.on("stanza", (stanza) => console.log(stanza));
     this.client.on("stanza", onMessageHistory);
     this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));

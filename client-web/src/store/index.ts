@@ -451,11 +451,6 @@ const _useStore = create<IStore>()(
               const messageIndex = state.historyMessages.findIndex(
                 (i) => i.id === messageId
               );
-              console.log(
-                state.historyMessages[messageIndex],
-                "replacing mesage",
-                messageId
-              );
               if (messageIndex > -1) {
                 state.historyMessages[messageIndex].body = messageText;
                 state.historyMessages[messageIndex].data.isEdited = true;

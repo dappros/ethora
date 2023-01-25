@@ -174,7 +174,7 @@ export const Message: React.FC<IMessage> = ({
 
           <span
             dangerouslySetInnerHTML={{
-              __html: message.data.mainMessage.text.replace(
+              __html: message.data?.mainMessage?.text.replace(
                 /\b(https?\:\/\/\S+)/gm,
                 '<a href="$1">$1</a>'
               ),
