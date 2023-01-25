@@ -73,9 +73,6 @@ export default function Explorer() {
     <Box>
       {!!user.token && (
         <Container>
-          <Box sx={{ maxWidth: 500 }}>
-            <ExplorerBlocks blocks={explorerBlocks.items} />
-          </Box>
           <Box sx={{ height: 300, width: "100%" }}>
             <ExplorerChart data={explorerHistory} />
           </Box>
