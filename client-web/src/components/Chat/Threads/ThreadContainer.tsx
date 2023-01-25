@@ -77,7 +77,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
   );
   const loaderArchive = useStoreState((store) => store.loaderArchive);
   const history = useHistory();
-  const setThreadMessage = (value) => {
+  const setThreadMessage = (value: string) => {
     setMyThreadMessage(value);
     xmpp.isComposing(
       user.walletAddress,

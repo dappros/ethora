@@ -436,18 +436,14 @@ const _useStore = create<IStore>()(
               const messageIndex = state.historyMessages.findIndex(
                 (item) => item.id === messageId
               );
-              console.log(state.historyMessages)
-
               if (!messageId || isNaN(messageId) || messageIndex === -1) {
                 return;
               }
               const threadMessages = state.historyMessages.filter(
                 (item) => item.data.mainMessage?.id === messageId
               );
-             
-            
               state.historyMessages[messageIndex].numberOfReplies =
-                threadMessages.length + 1;
+                threadMessages.length;
             });
           },
           replaceMessage(messageId: number, messageText: string) {

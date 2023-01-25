@@ -198,7 +198,9 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       )}
       <KitMessage
-        onContextMenu={!message.data.isReply && !isThread && rightClick}
+        onContextMenu={
+          !message.data.isReply && !isThread ? rightClick : () => {}
+        }
         style={{
           marginBottom:
             position.type === "last" || position.type === "single" ? 15 : null,

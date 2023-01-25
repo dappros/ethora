@@ -34,6 +34,81 @@ export function usernameToWallet(str: string) {
     return m2.toUpperCase();
   });
 }
+const createMessage = (data: any, body: any, id: string, from: string) => {
+  let msg = {
+    id: Number(id),
+    body: body.getText(),
+    data: {
+      isSystemMessage: data.attrs.isSystemMessage,
+      photoURL: data.attrs.photoURL,
+      quickReplies: data.attrs.quickReplies,
+      roomJid: data.attrs.roomJid,
+      receiverMessageId: data.attrs?.receiverMessageId,
+      senderFirstName: data.attrs.senderFirstName,
+      senderJID: data.attrs.senderJID,
+      senderLastName: data.attrs.senderLastName,
+      senderWalletAddress: data.attrs.senderWalletAddress,
+      tokenAmount: Number(data.attrs.tokenAmount),
+      isMediafile: data.attrs?.isMediafile,
+      originalName: data.attrs?.originalName,
+      location: data.attrs?.location,
+      locationPreview: data.attrs?.locationPreview,
+      mimetype: data.attrs?.mimetype,
+      xmlns: data.attrs.xmlns,
+      isReply: data.attrs.isReply === "true" || false,
+      showInChannel: data.attrs.showInChannel === "true" || false,
+      isEdited: false,
+      mainMessage: undefined,
+    },
+    roomJID: from,
+    date: new Date().toISOString(),
+    key: Date.now() + Number(id),
+    coinsInMessage: 0,
+    numberOfReplies: 0,
+  };
+  if (data.attrs.mainMessage) {
+    try {
+      const parsedMessage = JSON.parse(data.attrs.mainMessage);
+      const mainMessage: IMainMessage = {
+        text: parsedMessage.text || "",
+        id: parsedMessage?.id,
+        userName: parsedMessage.userName || "",
+        createdAt: parsedMessage.createdAt,
+        fileName: parsedMessage.fileName,
+        imageLocation: parsedMessage.imageLocation,
+        imagePreview: parsedMessage.imagePreview,
+        mimeType: parsedMessage.mimeType,
+        originalName: parsedMessage.originalName,
+        size: parsedMessage.size,
+        duration: parsedMessage.duration,
+        waveForm: parsedMessage.waveForm,
+        attachmentId: parsedMessage.attachmentId,
+        wrappable: parsedMessage.wrappable === "true" || false,
+        nftId: parsedMessage.mainMessageNftId,
+        nftActionType: parsedMessage.nftActionType,
+        contractAddress: parsedMessage.contractAddress,
+        roomJid: parsedMessage.roomJid,
+      };
+      msg.data.mainMessage = mainMessage;
+    } catch (error) {
+      console.log(error, data.attrs.mainMessage);
+    }
+  }
+  return msg;
+};
+const updateTemporaryMessagesRepliesCount = (messageId: number) => {
+  const messageIndex = temporaryMessages.findIndex(
+    (item) => item.id === messageId
+  );
+
+  if (!messageId || isNaN(messageId) || messageIndex === -1) {
+    return;
+  }
+  const threadMessages = temporaryMessages.filter(
+    (item) => item.data.mainMessage?.id === messageId
+  );
+  temporaryMessages[messageIndex].numberOfReplies = threadMessages.length;
+};
 
 export const createMainMessageForThread = (
   message: TMessageHistory
@@ -97,8 +172,58 @@ const getRoomGroup = (jid: string, userCount: number): TActiveRoomFilter => {
   return "groups";
 };
 
-const onMessageHistory = async (stanza: Element) => {
-  if (stanza.is("message")) {
+const onRealtimeMessage = async (stanza: Element) => {
+  if (stanza.attrs.id === "sendMessage") {
+    const body = stanza?.getChild("body");
+    const data = stanza?.getChild("data");
+    const replace = stanza?.getChild("replace");
+    const archived = stanza?.getChild("archived");
+
+    const id = stanza.getChild("archived")?.attrs.id;
+    if (!data || !body || !id) {
+      return;
+    }
+
+    if (
+      !data.attrs.senderFirstName ||
+      !data.attrs.senderLastName ||
+      !data.attrs.senderJID
+    ) {
+      return;
+    }
+
+    const msg = createMessage(data, body, id, stanza.attrs.from);
+    const blackList = useStoreState
+      .getState()
+      .blackList.find((item) => item.user === msg.data.senderJID);
+
+    if (blackList) {
+      return;
+    }
+
+    if (replace) {
+      const replaceMessageId = Number(replace.attrs.id);
+      const messageString = body.getText();
+      useStoreState.getState().replaceMessage(replaceMessageId, messageString);
+    }
+
+    if (data.attrs.isReply) {
+      const messageId = Number(msg.data?.mainMessage?.id);
+      useStoreState.getState().setNumberOfReplies(messageId);
+    }
+    useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+    useStoreState.getState().updateMessageHistory([msg]);
+    sendBrowserNotification(msg.body, () => {
+      history.push("/chat/" + msg.roomJID.split("@")[0]);
+    });
+  }
+};
+
+const onMessageHistory = async (stanza: any) => {
+  if (
+    stanza.is("message") &&
+    stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2"
+  ) {
     const body = stanza
       .getChild("result")
       ?.getChild("forwarded")
@@ -120,7 +245,6 @@ const onMessageHistory = async (stanza: Element) => {
       ?.getChild("replace");
 
     const id = stanza.getChild("result")?.attrs.id;
-
     if (!data || !body || !delay || !id) {
       return;
     }
@@ -133,75 +257,22 @@ const onMessageHistory = async (stanza: Element) => {
       return;
     }
 
-    let msg = {
-      id: Number(id),
-      body: body.getText(),
-      data: {
-        isSystemMessage: data.attrs.isSystemMessage,
-        photoURL: data.attrs.photoURL,
-        quickReplies: data.attrs.quickReplies,
-        roomJid: data.attrs.roomJid,
-        receiverMessageId: data.attrs?.receiverMessageId,
-        senderFirstName: data.attrs.senderFirstName,
-        senderJID: data.attrs.senderJID,
-        senderLastName: data.attrs.senderLastName,
-        senderWalletAddress: data.attrs.senderWalletAddress,
-        tokenAmount: Number(data.attrs.tokenAmount),
-        isMediafile: data.attrs?.isMediafile,
-        originalName: data.attrs?.originalName,
-        location: data.attrs?.location,
-        locationPreview: data.attrs?.locationPreview,
-        mimetype: data.attrs?.mimetype,
-        xmlns: data.attrs.xmlns,
-        isReply: data.attrs.isReply === "true" || false,
-        showInChannel: data.attrs.showInChannel === "true" || false,
-        isEdited: false,
-        mainMessage: undefined,
-      },
-      roomJID: stanza.attrs.from,
-      date: delay.attrs.stamp,
-      key: Date.now() + Number(id),
-      coinsInMessage: 0,
-      numberOfReplies: 0,
-    };
-    if (data.attrs.mainMessage) {
-      try {
-        const parsedMessage = JSON.parse(data.attrs.mainMessage);
-        const mainMessage: IMainMessage = {
-          text: parsedMessage.text || "",
-          id: parsedMessage?.id,
-          userName: parsedMessage.userName || "",
-          createdAt: parsedMessage.createdAt,
-          fileName: parsedMessage.fileName,
-          imageLocation: parsedMessage.imageLocation,
-          imagePreview: parsedMessage.imagePreview,
-          mimeType: parsedMessage.mimeType,
-          originalName: parsedMessage.originalName,
-          size: parsedMessage.size,
-          duration: parsedMessage.duration,
-          waveForm: parsedMessage.waveForm,
-          attachmentId: parsedMessage.attachmentId,
-          wrappable: parsedMessage.wrappable === "true" || false,
-          nftId: parsedMessage.mainMessageNftId,
-          nftActionType: parsedMessage.nftActionType,
-          contractAddress: parsedMessage.contractAddress,
-          roomJid: parsedMessage.roomJid,
-        };
-        msg.data.mainMessage = mainMessage;
-      } catch (error) {
-        console.log(error, data.attrs.mainMessage);
-      }
-    }
+    const msg = createMessage(data, body, id, stanza.attrs.from);
+   
 
     // console.log('TEST ', data.attrs)
     const blackList = useStoreState
       .getState()
       .blackList.find((item) => item.user === msg.data.senderJID);
+
+      if(blackList) {
+        return;
+      }
     //if current stanza has replace tag
     if (replace) {
       console.log("replace:", stanza);
       //if message loading
-      if (isGettingMessages && !blackList) {
+      if (isGettingMessages) {
         const replaceItem: replaceMessageListItemProps = {
           replaceMessageId: Number(replace.attrs.id),
           replaceMessageText: body.getText(),
@@ -210,7 +281,7 @@ const onMessageHistory = async (stanza: Element) => {
         temporaryReplaceMessages.push(replaceItem);
       }
       //if message loading done
-      if (!isGettingMessages && !blackList) {
+      if (!isGettingMessages) {
         const replaceMessageId = Number(replace.attrs.id);
         const messageString = body.getText();
         //replace body/text of message id in messageHistory array
@@ -219,10 +290,10 @@ const onMessageHistory = async (stanza: Element) => {
           .replaceMessage(replaceMessageId, messageString);
       }
     } else {
-      if (isGettingMessages && !blackList) {
+      if (isGettingMessages) {
         temporaryMessages.push(msg);
       }
-      if (!isGettingMessages && !blackList) {
+      if (!isGettingMessages) {
         //check for messages in temp Replace message array agains the current stanza message id
         const replaceItem = temporaryReplaceMessages.find(
           (item) => item.replaceMessageId === msg.id
@@ -243,20 +314,14 @@ const onMessageHistory = async (stanza: Element) => {
         data.attrs.roomJid
       ) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-        sendBrowserNotification(msg.body, () => {
-          history.push("/chat/" + msg.roomJID.split("@")[0]);
-        });
       }
     }
     if (data.attrs.isReply) {
-      
-      useStoreState
-        .getState()
-        .setNumberOfReplies(Number(msg.data?.mainMessage?.id));
+      const messageid = msg.data.mainMessage?.id;
+      updateTemporaryMessagesRepliesCount(messageid);
     }
   }
 };
-
 const onLastMessageArchive = (stanza: Element, xmpp: any) => {
   if (
     stanza.attrs.id === "paginatedArchive" ||
@@ -588,6 +653,7 @@ class XmppClass {
     this.client.on("online", (jid) => getListOfRooms(this));
     // this.client.on("stanza", (stanza) => console.log(stanza));
     this.client.on("stanza", onMessageHistory);
+    this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
     this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
     this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
     this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
