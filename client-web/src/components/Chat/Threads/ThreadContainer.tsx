@@ -10,7 +10,7 @@ import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Message } from "../Messages/Message";
 import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
-import xmpp from "../../../xmpp";
+import xmpp, { createMainMessageForThread } from "../../../xmpp";
 import * as DOMPurify from "dompurify";
 import { SystemMessage } from "../Messages/SystemMessage";
 import CustomMessageInput from "./CustomMessageInput";
@@ -70,14 +70,14 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
     (item: TMessageHistory) =>
       item.roomJID.includes(roomJID) &&
       item.data.isReply &&
-      item.data.mainMessageId === currentThreadViewMessage.id
+      item.data?.mainMessage?.id === currentThreadViewMessage.id
   );
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
   );
   const loaderArchive = useStoreState((store) => store.loaderArchive);
   const history = useHistory();
-  const setThreadMessage = (value) => {
+  const setThreadMessage = (value: string) => {
     setMyThreadMessage(value);
     xmpp.isComposing(
       user.walletAddress,
@@ -120,28 +120,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
           photoURL: user.profileImage,
           roomJid: roomData.jid,
           isReply: true,
-          mainMessageText: currentThreadViewMessage.body,
-          mainMessageId: currentThreadViewMessage.id,
-          mainMessageUserName:
-            currentThreadViewMessage.data.senderFirstName +
-            " " +
-            currentThreadViewMessage.data.senderLastName,
-          mainMessageCreatedAt: currentThreadViewMessage.date,
-          mainMessageFileName: currentThreadViewMessage.data.originalName,
-          mainMessageImageLocation: currentThreadViewMessage.data.location,
-          mainMessageImagePreview:
-            currentThreadViewMessage.data.locationPreview,
-          mainMessageMimeType: currentThreadViewMessage.data.mimetype,
-          mainMessageOriginalName: currentThreadViewMessage.data.originalName,
-          mainMessageSize: "N/A",
-          mainMessageDuration: "N/A",
-          mainMessageWaveForm: "N/A",
-          mainMessageAttachmentId: "N/A",
-          mainMessageWrappable: "N/A",
-          mainMessageNftId: "N/A",
-          mainMessageNftActionType: "N/A",
-          mainMessageContractAddress: "N/A",
-          mainMessageRoomJid: currentThreadViewMessage.data.roomJid,
+          mainMessage: createMainMessageForThread(currentThreadViewMessage),
           showInChannel: showInChannel,
           push: true,
         };

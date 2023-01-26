@@ -13,10 +13,10 @@ import { transferCoin } from "../../http";
 import coin from "../../assets/images/coin.png";
 import SendIcon from "@mui/icons-material/Send";
 import BlockIcon from "@mui/icons-material/Block";
-import xmpp from "../../xmpp";
+import xmpp, { walletToUsername } from "../../xmpp";
 import { TMessageHistory, useStoreState } from "../../store";
 import { coinReplacedName, coinsMainName } from "../../config/config";
-import { CONFERENCEDOMAIN } from "../../constants";
+import { DOMAIN } from "../../constants";
 import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
 import { useSnackbar } from "../../context/SnackbarContext";
 import ReplyIcon from '@mui/icons-material/Reply';
@@ -60,9 +60,8 @@ export function ChatTransferDialog({
   const { showSnackbar } = useSnackbar();
 
   const messageJid = message?.data?.senderJID.split('/')[0];
-  const userJid = useMemo(() => xmpp.client?.jid?.toString().split('/')[0], []);
+  const userJid = useMemo(() => walletToUsername(user.walletAddress) + DOMAIN, []);
   const isSameUser = userJid === messageJid;
-
   const coinData = balance.filter(
     (el) => !el.tokenType && el.contractAddress.length > 10
   );

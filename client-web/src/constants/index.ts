@@ -20,7 +20,6 @@ const BASEDOMAIN = config.IS_PRODUCTION ? "dxmpp.com" : "dev.dxmpp.com";
 export const CONFERENCEDOMAIN = "@conference." + BASEDOMAIN;
 export const DOMAIN = "@" + BASEDOMAIN;
 export const SERVICE = `wss://${BASEDOMAIN}:5443/ws`
-
 export const mobileEthoraBaseUrl = "https://www.eto.li/go?c=";
 
 export type TImageMimeType = "image/png" | "image/jpeg" | "image/jpg";

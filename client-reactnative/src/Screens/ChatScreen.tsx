@@ -101,6 +101,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {toJS} from 'mobx';
+import {IMessageToSend} from '../helpers/chat/createMessageObject';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -331,9 +332,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
+      mainMessage: undefined,
       push: true,
     };
     const text = parseValue(messageText, partTypes).plainText;
@@ -367,9 +366,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
       photoURL: loginStore.userAvatar,
       roomJid: chatJid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
+      mainMessage: undefined,
+
       push: true,
     };
     sendMessageStanza(
@@ -610,9 +608,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
         photoURL: loginStore.userAvatar,
         roomJid: chatJid,
         isReply: false,
-        mainMessageText: '',
-        mainMessageId: '',
-        mainMessageUserName: '',
+        mainMessage: undefined,
+
         push: true,
       };
 
@@ -755,29 +752,29 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
-      const data = {
-        firstName,
-        lastName,
-        walletAddress,
-        chatName,
-        userAvatar: loginStore.userAvatar,
-        createdAt: item.createdAt,
-        expiresAt: item.expiresAt,
-        fileName: item.filename,
-        isVisible: item.isVisible,
-        location: item.location,
-        locationPreview: item.locationPreview,
-        mimetype: item.mimetype,
-        originalName: item.originalname,
-        ownerKey: item.ownerKey,
-        size: item.size,
-        duration: item?.duration,
-        updatedAt: item.updatedAt,
-        userId: item.userId,
-        waveForm: JSON.stringify(waveForm),
-        attachmentId: item._id,
+      const data: IMessageToSend = {
+        senderFirstName: loginStore.initialData.firstName,
+        senderLastName: loginStore.initialData.lastName,
+        senderWalletAddress: loginStore.initialData.walletAddress,
+        mucname: chatName,
+        photoURL: loginStore.userAvatar,
+        location: item.nftFileUrl,
+        locationPreview: item.nftFileUrl,
+        mimetype: item.nftMimetype,
+        originalName: item.nftOriginalname,
+        nftName: item.tokenName,
+        nftId: item.nftId,
         wrappable: true,
         push: true,
+        roomJid: chatJid,
+        receiverMessageId: '0',
+        fileName: item.filename,
+        isVisible: item.isVisible,
+
+        size: item.size,
+        duration: item?.duration,
+        waveForm: JSON.stringify(waveForm),
+        attachmentId: item._id,
       };
 
       sendMediaMessageStanza(
@@ -880,21 +877,22 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setIsNftItemGalleryVisible(true);
   };
   const sendNftItemsFromGallery = item => {
-    const data = {
-      firstName,
-      lastName,
-      walletAddress,
-      chatName,
-      userAvatar: loginStore.userAvatar,
-      createdAt: item.createdAt,
+    const data: IMessageToSend = {
+      senderFirstName: loginStore.initialData.firstName,
+      senderLastName: loginStore.initialData.lastName,
+      senderWalletAddress: loginStore.initialData.walletAddress,
+      mucname: chatName,
+      photoURL: loginStore.userAvatar,
       location: item.nftFileUrl,
       locationPreview: item.nftFileUrl,
       mimetype: item.nftMimetype,
-      originalname: item.nftOriginalname,
-      // attachmentId: item.nftId,
+      originalName: item.nftOriginalname,
       nftName: item.tokenName,
       nftId: item.nftId,
       wrappable: true,
+      push: true,
+      roomJid: chatJid,
+      receiverMessageId: '0',
     };
 
     sendMediaMessageStanza(
@@ -998,7 +996,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
-      item => item._id === currentMessage.mainMessageId,
+      item => item._id === currentMessage?.mainMessage?.id,
     );
     console.log(
       giftedRef.current?._messageContainerRef?.current?.scrollToIndex,

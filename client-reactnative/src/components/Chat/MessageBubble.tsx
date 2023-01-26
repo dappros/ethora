@@ -29,45 +29,45 @@ import {
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import { Box, HStack, Text, View } from 'native-base';
-import { observer } from 'mobx-react-lite';
+import {Box, HStack, Text, View} from 'native-base';
+import {observer} from 'mobx-react-lite';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
 interface BubbleProps {
-  onLongPress:any;
-  currentMessage:any;
-  onTap:any;
-  containerStyle?:any;
-  wrapperStyle?:any;
-  messageTextStyle?:any;
-  messageTextProps?:any;
-  renderMessageText?:any;
-  renderMessageImage?:any;
-  renderTicks?:any;
-  user:any;
-  tickStyle?:any;
-  renderUsername?:any;
-  renderTime?:any;
-  position?:'left'|'right';
-  renderCustomView?:any;
-  nextMessage?:any;
-  containerToNextStyle?:any;
-  previousMessage?:any;
-  containerToPreviousStyle?:any;
-  isCustomViewBottom?:any;
-  image?:any;
-  bottomContainerStyle?:any;
-  touchableProps?:any;
-  timeProps?:any;
-  usernameProps?:any;
-  messageImageProps?:any;
-  type:'main'|'thread';
-  scrollToParentMessage:any;
-  handleReply:(message:any) => void
+  onLongPress: any;
+  currentMessage: any;
+  onTap: any;
+  containerStyle?: any;
+  wrapperStyle?: any;
+  messageTextStyle?: any;
+  messageTextProps?: any;
+  renderMessageText?: any;
+  renderMessageImage?: any;
+  renderTicks?: any;
+  user: any;
+  tickStyle?: any;
+  renderUsername?: any;
+  renderTime?: any;
+  position?: 'left' | 'right';
+  renderCustomView?: any;
+  nextMessage?: any;
+  containerToNextStyle?: any;
+  previousMessage?: any;
+  containerToPreviousStyle?: any;
+  isCustomViewBottom?: any;
+  image?: any;
+  bottomContainerStyle?: any;
+  touchableProps?: any;
+  timeProps?: any;
+  usernameProps?: any;
+  messageImageProps?: any;
+  type: 'main' | 'thread';
+  scrollToParentMessage: any;
+  handleReply: (message: any) => void;
 }
 
-const Bubble = observer((props:BubbleProps)=> {
+const Bubble = observer((props: BubbleProps) => {
   // constructor(props) {
   //   super(props);
   //   this.state = {
@@ -78,7 +78,9 @@ const Bubble = observer((props:BubbleProps)=> {
   //   this.onPressMessage = this.onPressMessage.bind(this);
   // }
 
-  const [initialAnimationValue, setInitialAnimationValue] = useState(new Animated.Value(0));
+  const [initialAnimationValue, setInitialAnimationValue] = useState(
+    new Animated.Value(0),
+  );
   const [width, setWidth] = useState(0);
 
   const {
@@ -111,21 +113,20 @@ const Bubble = observer((props:BubbleProps)=> {
     messageImageProps,
     type,
     scrollToParentMessage,
-    handleReply
-  } = props
+    handleReply,
+  } = props;
 
-
-  const onLongPressHandle= () =>{
+  const onLongPressHandle = () => {
     if (onLongPress) {
       onLongPress(currentMessage);
     }
-  }
+  };
 
   const onPressMessage = () => {
     onTap(currentMessage);
-  }
+  };
 
-  const renderMessageTextHandle = () =>{
+  const renderMessageTextHandle = () => {
     if (currentMessage.text) {
       if (renderMessageText) {
         return renderMessageText(messageTextProps);
@@ -141,13 +142,10 @@ const Bubble = observer((props:BubbleProps)=> {
       );
     }
     return null;
-  }
+  };
 
-  const renderMessageImageHandle=() =>{
-    if (
-      currentMessage.image ||
-      currentMessage.realImageUrl
-    ) {
+  const renderMessageImageHandle = () => {
+    if (currentMessage.image || currentMessage.realImageUrl) {
       if (renderMessageImage) {
         return renderMessageImage(props);
       }
@@ -159,9 +157,9 @@ const Bubble = observer((props:BubbleProps)=> {
       );
     }
     return null;
-  }
+  };
 
-  const renderTicksHandle=() =>{
+  const renderTicksHandle = () => {
     if (renderTicks) {
       return renderTicks(currentMessage);
     }
@@ -172,46 +170,38 @@ const Bubble = observer((props:BubbleProps)=> {
       return (
         <View style={[styles.headerItem, styles.tickView]}>
           {currentMessage.sent && (
-            <Text
-              style={[styles.standardFont, styles.tick, tickStyle]}>
-              ✓
-            </Text>
+            <Text style={[styles.standardFont, styles.tick, tickStyle]}>✓</Text>
           )}
           {currentMessage.received && (
-            <Text
-              style={[styles.standardFont, styles.tick, tickStyle]}>
-              ✓
-            </Text>
+            <Text style={[styles.standardFont, styles.tick, tickStyle]}>✓</Text>
           )}
         </View>
       );
     }
     return null;
-  }
+  };
 
-  const renderUsernameHandle=() =>{
+  const renderUsernameHandle = () => {
     const username = currentMessage.user.name;
     if (username) {
       if (renderUsername) {
         return renderUsername(usernameProps);
       }
       return (
-        <View
-        style={styles.content.usernameView}>
+        <View style={styles.content.usernameView}>
           <Text
-          color={"white"}
-          fontSize={hp('2%')}
-          fontFamily={textStyles.lightFont}
-          >
+            color={'white'}
+            fontSize={hp('2%')}
+            fontFamily={textStyles.lightFont}>
             {username}
           </Text>
         </View>
       );
     }
     return null;
-  }
+  };
 
-  const renderTimeHandle=() =>{
+  const renderTimeHandle = () => {
     if (currentMessage.createdAt) {
       if (renderTime) {
         return renderTime(timeProps);
@@ -225,16 +215,16 @@ const Bubble = observer((props:BubbleProps)=> {
               styles.standardFont,
               styles.headerItem,
               styles.time,
-              timeProps?.textStyle?timeProps.textStyle:null,
+              timeProps?.textStyle ? timeProps.textStyle : null,
             ],
           }}
         />
       );
     }
     return null;
-  }
+  };
 
-  const renderTokenCount=() => {
+  const renderTokenCount = () => {
     if (currentMessage.tokenAmount) {
       return (
         <View style={[styles[position].tokenContainerStyle]}>
@@ -249,38 +239,34 @@ const Bubble = observer((props:BubbleProps)=> {
         </View>
       );
     }
-  }
-
+  };
   const renderReplyCount = () => {
-
-    const replyConst = currentMessage.numberOfReplies>1?'replies':'reply'
-    
-    if(currentMessage.numberOfReplies){
-      let text = ' reply'
-      if(currentMessage.numberOfReplies > 1){
-        text = ' replies'
+    const replyConst = currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
+    if (currentMessage.numberOfReplies) {
+      let text = ' reply';
+      if (currentMessage.numberOfReplies > 1) {
+        text = ' replies';
       }
-      return(
+      return (
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
-          <TouchableOpacity onPress={()=>handleReply(currentMessage)}>
-              <Text
+          <TouchableOpacity onPress={() => handleReply(currentMessage)}>
+            <Text
               fontFamily={textStyles.regularFont}
-              color={commonColors.primaryColor}
-              >
-                  {currentMessage.numberOfReplies} {replyConst} (tap to review)
-              </Text>
+              color={commonColors.primaryColor}>
+              {currentMessage.numberOfReplies} {replyConst} (tap to review)
+            </Text>
           </TouchableOpacity>
-      </HStack>
-      )
+        </HStack>
+      );
     }
-  }
-  const renderQuickReplies=() =>{
+  };
+  const renderQuickReplies = () => {
     if (currentMessage.quickReplies && width) {
       let quickReplies = [];
       try {
-        quickReplies = JSON.parse(currentMessage.quickReplies)
+        quickReplies = JSON.parse(currentMessage.quickReplies);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
       return (
         <QuickReplies
@@ -292,16 +278,16 @@ const Bubble = observer((props:BubbleProps)=> {
         />
       );
     }
-  }
+  };
 
-  const renderCustomViewHandle=() =>{
+  const renderCustomViewHandle = () => {
     if (renderCustomView) {
       return renderCustomView(props);
     }
     return null;
-  }
+  };
 
-  const styledBubbleToNext=() =>{
+  const styledBubbleToNext = () => {
     if (
       currentMessage &&
       nextMessage &&
@@ -315,9 +301,9 @@ const Bubble = observer((props:BubbleProps)=> {
       ];
     }
     return null;
-  }
+  };
 
-  const styledBubbleToPrevious=() =>{
+  const styledBubbleToPrevious = () => {
     if (
       currentMessage &&
       previousMessage &&
@@ -331,7 +317,7 @@ const Bubble = observer((props:BubbleProps)=> {
       ];
     }
     return null;
-  }
+  };
 
   // need to work
   // renderMessageVideo() {
@@ -355,7 +341,7 @@ const Bubble = observer((props:BubbleProps)=> {
   //     return null;
   // }
 
-  const renderBubbleContent=() =>{
+  const renderBubbleContent = () => {
     return isCustomViewBottom ? (
       <View>
         {renderMessageImageHandle()}
@@ -374,86 +360,74 @@ const Bubble = observer((props:BubbleProps)=> {
         {!currentMessage.image && renderMessageTextHandle()}
       </View>
     );
-  }
-  
-  const setBubbleWidth = (width:any) => {
-    setWidth(width)
+  };
+
+  const setBubbleWidth = (width: any) => {
+    setWidth(width);
     // this.widthRef.current = width
   };
-    
+
   const AnimatedStyle = {
     backgroundColor: initialAnimationValue.interpolate({
       inputRange: [0, 100],
       outputRange: [
-        position === 'left'
-          ? colors.leftBubbleBackground
-          : colors.defaultBlue,
+        position === 'left' ? colors.leftBubbleBackground : colors.defaultBlue,
         '#F0B310',
       ],
     }),
   };
 
-    const replyComponent = () => {
-    return (
-    currentMessage.isReply?
-    <TouchableOpacity
-    onPress={()=>scrollToParentMessage(currentMessage)}
-    >
-      <HStack
-      style={styles[position].replyWrapper}
-      borderLeftColor={"green.100"}
-      minH={hp('6%')} w="100%" bg={"white"}>
-        {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
+  const replyComponent = () => {
+    return currentMessage.isReply ? (
+      <TouchableOpacity onPress={() => scrollToParentMessage(currentMessage)}>
+        <HStack
+          style={styles[position].replyWrapper}
+          borderLeftColor={'green.100'}
+          minH={hp('6%')}
+          w="100%"
+          bg={'white'}>
+          {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
 
         </Box> */}
-        <View marginLeft={4}>
-          <Text
-          
-          fontSize={hp('1.5%')}
-          fontFamily={textStyles.boldFont}
-          >{currentMessage.mainMessageUserName?currentMessage.mainMessageUserName:'N/A'}</Text>
-          {
-            currentMessage.mainMessageImagePreview?
-            <Image
-            source={{uri:currentMessage.mainMessageImagePreview}}
-              style={{
-                height:hp("10%"),
-                width:hp('10%')
-              }}
-            />:null
-          }
-        {!currentMessage.mainMessageImagePreview&&
-        <Text
-        fontSize={hp('1.5%')}
-        fontFamily={textStyles.mediumFont}
-        >
-          {currentMessage.mainMessageText}
-        </Text>
-        }
-        <Text color={"blue.100"}>
-          {currentMessage.showInChannel}
-        </Text>
-        </View>
-      </HStack>
-    </TouchableOpacity>:null
-    )
-  }
+          <View marginLeft={4}>
+            <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
+              {currentMessage.mainMessage?.userName || 'N/A'}
+            </Text>
+            {currentMessage.mainMessage?.imagePreview ? (
+              <Image
+                source={{uri: currentMessage.mainMessage.imagePreview}}
+                style={{
+                  height: hp('10%'),
+                  width: hp('10%'),
+                }}
+              />
+            ) : null}
+            {!currentMessage.mainMessage?.imagePreview && (
+              <Text fontSize={hp('1.5%')} fontFamily={textStyles.mediumFont}>
+                {currentMessage?.mainMessage?.text}
+              </Text>
+            )}
+            <Text color={'blue.100'}>{currentMessage.showInChannel}</Text>
+          </View>
+        </HStack>
+      </TouchableOpacity>
+    ) : null;
+  };
 
   const isEditedComponent = () => {
-    return(
+    return (
       <Box
-      style={styles[position?position:'left'].editWraper}
-      alignItems={"flex-end"}
-      >
-      <Text 
-      fontFamily={textStyles.lightFont}
-      fontSize={hp('1.2%')}
-      color={"white"}>
-        edited
-      </Text>
+        style={styles[position ? position : 'left'].editWraper}
+        alignItems={'flex-end'}>
+        <Text
+          fontFamily={textStyles.lightFont}
+          fontSize={hp('1.2%')}
+          color={'white'}>
+          edited
+        </Text>
       </Box>
-    )
-  }
+    );
+  };
 
   return (
     <View
@@ -472,13 +446,13 @@ const Bubble = observer((props:BubbleProps)=> {
           AnimatedStyle,
           // {maxWidth: 200}
         ]}>
-        {type==='main'? replyComponent():null}
+        {type === 'main' ? replyComponent() : null}
         {!isSameUser(currentMessage, previousMessage)
           ? renderUsernameHandle()
           : null}
         <TouchableWithoutFeedback
-          onPress={()=>onPressMessage()}
-          onLongPress={()=>onLongPressHandle()}
+          onPress={() => onPressMessage()}
+          onLongPress={() => onLongPressHandle()}
           accessibilityTraits="text"
           {...props.touchableProps}>
           <View>
@@ -494,8 +468,7 @@ const Bubble = observer((props:BubbleProps)=> {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                {!!currentMessage.isEdited&&
-                isEditedComponent()}
+                {!!currentMessage.isEdited && isEditedComponent()}
                 {renderTimeHandle()}
                 {renderTicksHandle()}
               </View>
@@ -519,7 +492,7 @@ const Bubble = observer((props:BubbleProps)=> {
       {renderReplyCount()}
     </View>
   );
-})
+});
 
 export default Bubble;
 
@@ -528,21 +501,21 @@ export default Bubble;
 const styles = {
   left: StyleSheet.create({
     container: {
-      marginTop:2
+      marginTop: 2,
     },
-    replyWrapper:{
+    replyWrapper: {
       borderTopRightRadius: 15,
-      padding:2,
-      borderLeftWidth:2,
-      borderLeftColor:"green",
-      borderWidth:2,
-      borderColor:"green",
-      borderBottomWidth:0
+      padding: 2,
+      borderLeftWidth: 2,
+      borderLeftColor: 'green',
+      borderWidth: 2,
+      borderColor: 'green',
+      borderBottomWidth: 0,
     },
-    editWraper:{
-      alignItems:"flex-end",
-      justifyContent:"center",
-      paddingBottom:5
+    editWraper: {
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      paddingBottom: 5,
     },
     wrapper: {
       borderRadius: 15,
@@ -571,10 +544,10 @@ const styles = {
       backgroundColor: 'transparent',
       textAlign: 'right',
     },
-    numberOfRepliesContainerStyle:{
-      flexDirection:'row',
+    numberOfRepliesContainerStyle: {
+      flexDirection: 'row',
       justifyContent: 'flex-start',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     containerToNext: {
       borderBottomLeftRadius: 3,
@@ -589,21 +562,21 @@ const styles = {
   }),
   right: StyleSheet.create({
     container: {
-      marginTop:2
+      marginTop: 2,
     },
-    editWraper:{
-      alignItems:"flex-start",
-      justifyContent:"center",
-      paddingBottom:5
+    editWraper: {
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      paddingBottom: 5,
     },
-    replyWrapper:{
+    replyWrapper: {
       borderTopLeftRadius: 15,
-      padding:2,
-      borderLeftWidth:2,
-      borderLeftColor:"green",
-      borderWidth:2,
-      borderColor:"green",
-      borderBottomWidth:0
+      padding: 2,
+      borderLeftWidth: 2,
+      borderLeftColor: 'green',
+      borderWidth: 2,
+      borderColor: 'green',
+      borderBottomWidth: 0,
     },
     wrapper: {
       borderRadius: 15,
@@ -635,10 +608,10 @@ const styles = {
       backgroundColor: 'transparent',
       textAlign: 'right',
     },
-    numberOfRepliesContainerStyle:{
-      flexDirection:'row',
+    numberOfRepliesContainerStyle: {
+      flexDirection: 'row',
       justifyContent: 'flex-end',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     containerToPrevious: {
       borderTopRightRadius: 3,

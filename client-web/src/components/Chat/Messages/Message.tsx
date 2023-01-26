@@ -58,8 +58,8 @@ export const Message: React.FC<IMessage> = ({
 }) => {
   const firstName = message.data.senderFirstName;
   const lastName = message.data.senderLastName;
-  const messageJid = message.data.senderJID.split('/')[0];
-  const userJid = useMemo(() => xmpp.client?.jid?.toString().split('/')[0], []);
+  const messageJid = message.data.senderJID.split("/")[0];
+  const userJid = useMemo(() => xmpp.client?.jid?.toString().split("/")[0], []);
   const isSameUser = userJid === messageJid;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
@@ -86,7 +86,7 @@ export const Message: React.FC<IMessage> = ({
   const rightClick = (event: React.SyntheticEvent<HTMLElement>) => {
     // if (messageDirection !== "incoming") {
     //   return;
-    // 
+    //
     event.preventDefault();
     openDialogMenu();
   };
@@ -115,68 +115,66 @@ export const Message: React.FC<IMessage> = ({
 
         <div>
           <strong style={{ cursor: "pointer" }}>
-            {message.data.mainMessageUserName
-              ? message.data.mainMessageUserName
-              : "N/A"}
+            {message.data.mainMessage?.userName || "N/A"}
             <br />
           </strong>
-          {message.data.mainMessageImageLocation &&
-          message.data.mainMessageMimeType.split("/")[0] === "image" ? (
-            <Card sx={{ maxWidth: 200 }}>
-              <CardActionArea onClick={fullViewImage}>
-                <CardMedia
-                  style={{
-                    height: 150,
-                    objectFit: "cover",
-                    objectPosition: "left",
-                  }}
-                  component="img"
-                  height="150"
-                  image={message.data.mainMessageImageLocation}
-                  alt={message.data.mainMessageOriginalName}
-                />
-              </CardActionArea>
-            </Card>
-          ) : null}
+          {message.data.mainMessage?.imageLocation &&
+            imageMimetypes[message.data.mainMessage.mimeType] && (
+              <Card sx={{ maxWidth: 200 }}>
+                <CardActionArea onClick={fullViewImage}>
+                  <CardMedia
+                    style={{
+                      height: 150,
+                      objectFit: "cover",
+                      objectPosition: "left",
+                    }}
+                    component="img"
+                    height="150"
+                    image={message.data.mainMessage.imageLocation}
+                    alt={message.data.mainMessage?.originalName}
+                  />
+                </CardActionArea>
+              </Card>
+            )}
 
-          {message.data.mainMessageImageLocation &&
-          message.data.mainMessageMimeType.split("/")[0] === "application" ? (
+          {/* {message.data.mainMessage.ImageLocation &&
+          message.data.mainMessage.MimeType.split("/")[0] === "application" ? (
             <a target="_blank" href={message.data.location}>
               <KitMessage.ImageContent
-                src={message.data.mainMessageImageLocation}
-                alt={message.data.mainMessageOriginalName}
+                src={message.data.mainMessage.ImageLocation}
+                alt={message.data.mainMessage.OriginalName}
                 width={150}
               />
-              {message.data.mainMessageMimeType.split("/")[1]}
+              {message.data.mainMessage.MimeType.split("/")[1]}
             </a>
-          ) : null}
+          ) : null} */}
 
-          {message.data.mainMessageImageLocation &&
-          message.data.mainMessageMimeType.split("/")[0] === "video" ? (
-            <video controls width="200px">
-              <source
-                src={message.data.mainMessageImageLocation}
-                type={message.data.mainMessageMimeType}
-                title={message.data.mainMessageOriginalName}
-              />
-              Sorry, your browser doesn't support videos.
-            </video>
-          ) : null}
+          {message.data.mainMessage?.imageLocation &&
+            videoMimetypes[message.data.mainMessage?.mimeType] && (
+              <video controls width="200px">
+                <source
+                  src={message.data.mainMessage.imageLocation}
+                  type={message.data.mainMessage.mimeType}
+                  title={message.data.mainMessage.originalName}
+                />
+                Sorry, your browser doesn't support videos.
+              </video>
+            )}
 
-          {message.data.mainMessageImageLocation &&
-          message.data.mainMessageMimeType.split("/")[0] === "audio" ? (
-            <audio controls>
-              <source
-                src={message.data.mainMessageImageLocation}
-                type={message.data.mainMessageMimeType}
-              />
-              Your browser does not support the audio element.
-            </audio>
-          ) : null}
+          {message.data.mainMessage?.imageLocation &&
+            audioMimetypes[message.data.mainMessage?.mimeType] && (
+              <audio controls>
+                <source
+                  src={message.data.mainMessage.imageLocation}
+                  type={message.data.mainMessage.mimeType}
+                />
+                Your browser does not support the audio element.
+              </audio>
+            )}
 
           <span
             dangerouslySetInnerHTML={{
-              __html: message.data.mainMessageText.replace(
+              __html: message.data?.mainMessage?.text.replace(
                 /\b(https?\:\/\/\S+)/gm,
                 '<a href="$1">$1</a>'
               ),
@@ -200,7 +198,9 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       )}
       <KitMessage
-        onContextMenu={!message.data.isReply && !isThread && rightClick}
+        onContextMenu={
+          !message.data.isReply && !isThread ? rightClick : () => {}
+        }
         style={{
           marginBottom:
             position.type === "last" || position.type === "single" ? 15 : null,
@@ -369,13 +369,18 @@ export const Message: React.FC<IMessage> = ({
                     />
                   </div>
                 )}
-                {message.data.isEdited&&
-                <div style={{ display: "flex", alignItems: "flex-end", marginLeft:3, marginRight:3 }}>
-                  <Typography fontSize={12}>
-                    edited
-                  </Typography>
-                </div>
-                }
+                {message.data.isEdited && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-end",
+                      marginLeft: 3,
+                      marginRight: 3,
+                    }}
+                  >
+                    <Typography fontSize={12}>edited</Typography>
+                  </div>
+                )}
               </div>
             </div>
           )}

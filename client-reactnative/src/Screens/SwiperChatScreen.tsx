@@ -65,10 +65,9 @@ export const SwiperChatScreen: React.FC<ISwiperChatScreen> = ({navigation}) => {
       photoURL: loginStore.userAvatar,
       roomJid: jid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
-      push:true
+      mainMessage: undefined,
+
+      push: true,
     };
 
     sendMessageStanza(

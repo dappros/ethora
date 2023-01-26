@@ -3,6 +3,7 @@ import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
 import { TCombinedMimeType } from "../constants";
+import { stat } from "fs";
 
 export type TUser = {
   firstName: string;
@@ -54,8 +55,29 @@ type TMessage = {
   wallet: string;
   from: string;
   room: string;
-  numberOfReplies?:number
+  numberOfReplies?: number;
 };
+
+export interface IMainMessage {
+  text?: string;
+  id: number;
+  userName: string;
+  createdAt?: string | number | Date;
+  fileName?: string;
+  imageLocation?: string;
+  imagePreview?: string;
+  mimeType?: string;
+  originalName?: string;
+  size?: string;
+  duration?: string;
+  waveForm?: string;
+  attachmentId?: string;
+  wrappable?: string | boolean;
+  nftId?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  roomJid?: string;
+}
 
 export type TMessageHistory = {
   id: number;
@@ -77,33 +99,16 @@ export type TMessageHistory = {
     locationPreview?: string;
     mimetype?: TCombinedMimeType;
     xmlns: string;
-    isReply?:boolean;
-    mainMessageText:string;
-    mainMessageId:number;
-    mainMessageUserName:string;
-    mainMessageCreatedAt:string;
-    mainMessageFileName:string;
-    mainMessageImageLocation:string;
-    mainMessageImagePreview:string;
-    mainMessageMimeType:string;
-    mainMessageOriginalName:string;
-    mainMessageSize:string;
-    mainMessageDuration:string;
-    mainMessageWaveForm:string;
-    mainMessageAttachmentId:string;
-    mainMessageWrappable:boolean;
-    mainMessageNftId:string;
-    mainMessageNftActionType:string;
-    mainMessageContractAddress:string;
-    mainMessageRoomJid:string;
-    showInChannel:boolean;
-    isEdited?:boolean;
+    isReply?: boolean;
+    mainMessage?: IMainMessage;
+    showInChannel: boolean;
+    isEdited?: boolean;
   };
   roomJID: string;
   date: string;
   key: number;
   coinsInMessage: number;
-  numberOfReplies?: number
+  numberOfReplies?: number;
 };
 
 export type TUserBlackList = {
@@ -175,9 +180,9 @@ export type TActiveRoomFilter =
   | "";
 
 export type replaceMessageListItemProps = {
-  replaceMessageId:number;
-  replaceMessageText:string;
-}
+  replaceMessageId: number;
+  replaceMessageText: string;
+};
 
 interface IStore {
   user: TUser;
@@ -203,9 +208,11 @@ interface IStore {
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
   setNewMessage: (msg: TMessage) => void;
-  setNumberOfReplies: (messageId:number) => void;
+  setNumberOfReplies: (messageId: number) => void;
   replaceMessage: (messageId: number, messageText: string) => void;
-  setCurrentThreadViewMessage: (currentThreadViewMessage:TMessageHistory) => void;
+  setCurrentThreadViewMessage: (
+    currentThreadViewMessage: TMessageHistory
+  ) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
   updateMessageHistory: (messages: TMessageHistory[]) => void;
@@ -292,7 +299,7 @@ const _useStore = create<IStore>()(
           balance: [],
           viewMode: "light",
           messages: [],
-          currentThreadViewMessage:{
+          currentThreadViewMessage: {
             id: 0,
             body: "",
             data: {
@@ -312,33 +319,16 @@ const _useStore = create<IStore>()(
               locationPreview: "",
               mimetype: null,
               xmlns: "",
-              isReply:false,
-              mainMessageText:"",
-              mainMessageId:0,
-              mainMessageUserName:"",
-              mainMessageCreatedAt:"",
-              mainMessageFileName:"",
-              mainMessageImageLocation:"",
-              mainMessageImagePreview:"",
-              mainMessageMimeType:"",
-              mainMessageOriginalName:"",
-              mainMessageSize:"",
-              mainMessageDuration:"",
-              mainMessageWaveForm:"",
-              mainMessageAttachmentId:"",
-              mainMessageWrappable:false,
-              mainMessageNftId:"",
-              mainMessageNftActionType:"",
-              mainMessageContractAddress:"",
-              mainMessageRoomJid:"",
-              showInChannel:false,
-              isEdited:false
+              isReply: false,
+              mainMessage: undefined,
+              showInChannel: false,
+              isEdited: false,
             },
             roomJID: "",
             date: "",
             key: 0,
             coinsInMessage: 0,
-            numberOfReplies:0
+            numberOfReplies: 0,
           },
           historyMessages: [],
           loaderArchive: false,
@@ -441,23 +431,31 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.messages.unshift(message);
             }),
-          setNumberOfReplies(messageId:number) {
-              set((state) => {
-                const messageIndex = state.historyMessages.findIndex( (i) => i.id === messageId);
-                if (messageIndex > -1) {
-                state.historyMessages[messageIndex].numberOfReplies += 1;
-                }
-              })
-          },
-          replaceMessage(messageId:number, messageText:string){
+          setNumberOfReplies(messageId: number) {
             set((state) => {
-              const messageIndex = state.historyMessages.findIndex((i) => i.id === messageId);
-              console.log(state.historyMessages[messageIndex],"replacing mesage", messageId)
-              if(messageIndex > -1){
+              const messageIndex = state.historyMessages.findIndex(
+                (item) => item.id === messageId
+              );
+              if (!messageId || isNaN(messageId) || messageIndex === -1) {
+                return;
+              }
+              const threadMessages = state.historyMessages.filter(
+                (item) => item.data.mainMessage?.id === messageId
+              );
+              state.historyMessages[messageIndex].numberOfReplies =
+                threadMessages.length;
+            });
+          },
+          replaceMessage(messageId: number, messageText: string) {
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex(
+                (i) => i.id === messageId
+              );
+              if (messageIndex > -1) {
                 state.historyMessages[messageIndex].body = messageText;
                 state.historyMessages[messageIndex].data.isEdited = true;
               }
-            })
+            });
           },
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
@@ -466,10 +464,12 @@ const _useStore = create<IStore>()(
                 (v, i, a) => a.findIndex((t) => t.id === v.id) === i
               );
             }),
-          setCurrentThreadViewMessage: (currentThreadViewMessage:TMessageHistory) => 
-          set((state) => {
-            state.currentThreadViewMessage = currentThreadViewMessage
-          }),
+          setCurrentThreadViewMessage: (
+            currentThreadViewMessage: TMessageHistory
+          ) =>
+            set((state) => {
+              state.currentThreadViewMessage = currentThreadViewMessage;
+            }),
           updateMessageHistory: (messages: TMessageHistory[]) =>
             set((state) => {
               state.historyMessages = [...state.historyMessages, ...messages];
