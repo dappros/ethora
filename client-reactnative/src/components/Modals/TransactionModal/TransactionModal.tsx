@@ -6,7 +6,12 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, ActivityIndicator, TouchableOpacity, Alert} from 'react-native';
+import {
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {modalTypes} from '../../../constants/modalTypes';
 import PrivacyPolicy from '../../PrivacyPolicy';
 import {
@@ -53,7 +58,7 @@ import {NftListItem} from '../../Transactions/NftListItem';
 import Modal from 'react-native-modal';
 import {alpha} from '../../../helpers/aplha';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
-import { showToast } from '../../Toast/toast';
+import {showToast} from '../../Toast/toast';
 
 interface TransactionModalProps {
   type: string | undefined;
@@ -272,7 +277,6 @@ const TransactionModal = (props: TransactionModalProps) => {
       isNfmt: true,
       tokenName: selectedItem.tokenName,
       nftId: selectedItem.nftId,
-
     };
 
     if (selectedItem.balance) {
@@ -371,7 +375,7 @@ const TransactionModal = (props: TransactionModalProps) => {
     clearState();
   };
 
-  const handleBanUser = (name:string,senderName:string) => {
+  const handleBanUser = (name: string, senderName: string) => {
     const bannedUserWalletAddres = underscoreManipulation(
       extraData?.walletFromJid,
     );
@@ -380,31 +384,29 @@ const TransactionModal = (props: TransactionModalProps) => {
     );
     const roomJID = extraData.chatJid;
 
-    Alert.alert('Kick', `Kick ${name} from this room?`, 
-    [
+    Alert.alert('Kick', `Kick ${name} from this room?`, [
       {
-        text: "Cancel",
+        text: 'Cancel',
         onPress: () => {
           clearState();
           closeModal();
         },
-        style: "cancel"
+        style: 'cancel',
       },
-      { text: "OK", onPress: () =>     {
-        banUser(
-        roomJID,
-        senderWalletAddres,
-        bannedUserWalletAddres,
-        chatStore.xmpp,
-        )
-        chatStore.setUserBanData(senderName, name);
-        clearState();
-      }
-    }
-    ]
-    )
-
-
+      {
+        text: 'OK',
+        onPress: () => {
+          banUser(
+            roomJID,
+            senderWalletAddres,
+            bannedUserWalletAddres,
+            chatStore.xmpp,
+          );
+          chatStore.setUserBanData(senderName, name);
+          clearState();
+        },
+      },
+    ]);
   };
   const onBlackListPress = () => {
     const bannedUserWalletAddres = underscoreManipulation(
@@ -511,32 +513,34 @@ const TransactionModal = (props: TransactionModalProps) => {
       return (
         <View>
           <Modal
-            onBackdropPress={() => {setDisplayItems(false) 
-              clearState()}}
+            onBackdropPress={() => {
+              setDisplayItems(false);
+              clearState();
+            }}
             animationIn={'slideInUp'}
             animationOut={'slideOutDown'}
-            style={{justifyContent:"center", alignItems:"center"}}
+            style={{justifyContent: 'center', alignItems: 'center'}}
             onBackButtonPress={closeModal}
             isVisible={displayItems}>
-              <View
-                style={[
-                  {
-                    backgroundColor: 'white',
-                    height: hp('40%'),
-                    width: wp('90%'),
-                    padding: 0,
-                    margin: 0,
-                    paddingTop: 7,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  },
-                ]}>
-                <View style={[styles.tokenTransferContainer]}>
-                  {renderNftItems()}
+            <View
+              style={[
+                {
+                  backgroundColor: 'white',
+                  height: hp('40%'),
+                  width: wp('90%'),
+                  padding: 0,
+                  margin: 0,
+                  paddingTop: 7,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <View style={[styles.tokenTransferContainer]}>
+                {renderNftItems()}
 
-                  {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
-                </View>
+                {<SendItem title={'Send Items'} onPress={itemTransferFunc} />}
               </View>
+            </View>
           </Modal>
         </View>
       );
@@ -650,7 +654,9 @@ const TransactionModal = (props: TransactionModalProps) => {
                   <View style={{width: wp('70%'), alignItems: 'center'}}>
                     <Seperator />
                     <ReportAndBlockButton
-                      onPress={()=>handleBanUser(extraData.name, extraData.senderName)}
+                      onPress={() =>
+                        handleBanUser(extraData.name, extraData.senderName)
+                      }
                       text={'Kick this user'}
                       style={{backgroundColor: '#a32f2b'}}
                     />
@@ -668,26 +674,28 @@ const TransactionModal = (props: TransactionModalProps) => {
                 )}
               </>
             )}
-           {!allowedEnterCustomAmount && <View style={{width: wp('70%'), alignItems: 'center'}}>
-              <Seperator />
-              <ReportAndBlockButton
-                onPress={onBlackListPress}
-                text={'Block this user'}
-                style={{backgroundColor: commonColors.primaryColor}}
-              />
+            {!allowedEnterCustomAmount && (
+              <View style={{width: wp('70%'), alignItems: 'center'}}>
+                <Seperator />
+                <ReportAndBlockButton
+                  onPress={onBlackListPress}
+                  text={'Block this user'}
+                  style={{backgroundColor: commonColors.primaryColor}}
+                />
 
-              <Text
-                style={{
-                  fontSize: 10,
-                  textAlign: 'center',
-                  lineHeight: 10,
-                  // marginTop: 5,
-                  paddingHorizontal: 1,
-                  color: '#5A5A5A',
-                }}>
-                Stop seeing this user.
-              </Text>
-            </View>}
+                <Text
+                  style={{
+                    fontSize: 10,
+                    textAlign: 'center',
+                    lineHeight: 10,
+                    // marginTop: 5,
+                    paddingHorizontal: 1,
+                    color: '#5A5A5A',
+                  }}>
+                  Stop seeing this user.
+                </Text>
+              </View>
+            )}
           </View>
         </Modal>
       );
@@ -726,7 +734,9 @@ const TransactionModal = (props: TransactionModalProps) => {
             </HStack>
             <View style={{flex: 1}}>
               <QRCodeGenerator
-                removeBaseUrl={extraData.removeBaseUrl?extraData.removeBaseUrl:false}
+                removeBaseUrl={
+                  extraData.removeBaseUrl ? extraData.removeBaseUrl : false
+                }
                 close={() => clearState()}
                 shareKey={extraData.link}
               />

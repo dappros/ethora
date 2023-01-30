@@ -37,7 +37,7 @@ export const ProfileShare = () => {
       manage: () => <ProfileShareManage onAddPress={setRouteIndex} />,
       add: () => <ProfileShareAdd />,
     });
-  }, [routeIndex]);
+  }, []);
 
   return (
     <TabView

@@ -1,23 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet, ScrollView} from 'react-native';
-import {HStack, Input, KeyboardAvoidingView, Pressable, Text, View} from 'native-base';
-import {commonColors, textStyles, unv_url} from '../../../docs/config';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useClipboard} from '@react-native-clipboard/clipboard';
+import {StyleSheet} from 'react-native';
+import {HStack, Input, Text, View} from 'native-base';
+import {commonColors, textStyles} from '../../../docs/config';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Select} from 'native-base';
 import {Button} from '../../components/Button';
 import {httpPost} from '../../config/apiService';
 import {useStores} from '../../stores/context';
 import {shareLink} from '../../config/routesConstants';
-import {generateProfileLink} from '../../helpers/generateProfileLink';
 import QRCodeGenerator from '../../components/QRCodeGenerator';
 import {observer} from 'mobx-react-lite';
 import {generateDocumentLink} from '../../helpers/generateDocumentLink';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 export interface IDocumentShareAdd {}
 
@@ -59,9 +53,9 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
 
   const {walletStore} = useStores();
 
-  useEffect(()=>{
+  useEffect(() => {
     walletStore.getDocuments(loginStore.initialData.walletAddress);
-  },[])
+  }, []);
 
   const generateLink = async () => {
     const body = {

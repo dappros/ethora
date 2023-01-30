@@ -1,13 +1,8 @@
 import React, {useRef, useState} from 'react';
 import {StyleSheet, ScrollView} from 'react-native';
-import {HStack, Input, Pressable, Text, View} from 'native-base';
-import {commonColors, textStyles, unv_url} from '../../../docs/config';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {useClipboard} from '@react-native-clipboard/clipboard';
+import {HStack, Input, Text, View} from 'native-base';
+import {commonColors, textStyles} from '../../../docs/config';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Select} from 'native-base';
 import {Button} from '../../components/Button';
 import {httpPost} from '../../config/apiService';

@@ -8,7 +8,6 @@ import {showError, showSuccess} from '../../components/Toast/toast';
 import {httpDelete, httpGet} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
-import {downloadFile} from '../../helpers/downloadFile';
 import Share from 'react-native-share';
 import RNFS, {
   DocumentDirectoryPath,
@@ -44,7 +43,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
       android: DownloadDirectoryPath,
     });
 
-    const fPath = aPath + '/' + 'data.json';
+    const fPath = aPath + '/' + 'data' + new Date().getTime() + '.json';
     try {
       // console.log(base64)
       await RNFS.writeFile(fPath, data, 'utf8');

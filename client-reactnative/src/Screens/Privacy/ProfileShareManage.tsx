@@ -41,7 +41,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
 }) => {
   const [sharedLinks, setSharedLinks] = useState<ISharedLink[]>([]);
   const {loginStore, apiStore} = useStores();
-  const [data, setClipboard] = useClipboard();
+  const [_, setClipboard] = useClipboard();
   const [modalData, setModalData] = useState({visible: false, link: ''});
   const [loading, setLoading] = useState(false);
 
@@ -60,7 +60,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
   };
   const deleteLink = async (linkToken: string) => {
     try {
-      const {data} = await httpDelete(
+      await httpDelete(
         apiStore.defaultUrl + shareLink + linkToken,
         loginStore.userToken,
       );
