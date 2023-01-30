@@ -45,7 +45,7 @@ const CoinComponent: React.FC<CoinComponentProps> = ({
   );
 };
 
-const CoinsTransferList = ({
+export const CoinsTransferList = ({
   name,
   onTokenTransferPress,
   onCustomAmountPress,
@@ -78,5 +78,3 @@ const CoinsTransferList = ({
     </Fragment>
   );
 };
-
-export default CoinsTransferList;

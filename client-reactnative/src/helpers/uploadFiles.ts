@@ -5,34 +5,23 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { showToast } from "../components/Toast/toast"
-import { httpUpload } from "../config/apiService"
+import {showToast} from '../components/Toast/toast';
+import {httpUpload} from '../config/apiService';
 
-export const uploadFiles = async (file:any, token:string|undefined, url:string) => {
-    if(file&&token){
-        try{
-            const response = await httpUpload(
-                url,
-                file,
-                token,
-                console.log
-            )
-            return response.data
-        }catch(err){
-            showToast(
-                'error',
-                'Error',
-                'Cannot upload file, try again later',
-                'top'
-            );
-            return false
-        }
-    }else{
-        showToast(
-            'error',
-            'Error',
-            'File or token error',
-            'top'
-        )
+export const uploadFiles = async (
+  file: any,
+  token: string | undefined,
+  url: string,
+) => {
+  if (file && token) {
+    try {
+      const response = await httpUpload(url, file, token, console.log);
+      return response.data;
+    } catch (err) {
+      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
+      return false;
     }
-}
+  } else {
+    showToast('error', 'Error', 'File or token error', 'top');
+  }
+};

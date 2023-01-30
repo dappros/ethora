@@ -8,7 +8,7 @@ Note: linked open-source libraries and components may be subject to their own li
 import {Box, Text} from 'native-base';
 import React from 'react';
 
-export const TransactionsListitemDate = ({date}:any) => {
+export const TransactionsListitemDate = ({date}: {date: string}) => {
   return (
     <Box
       bg={'gray.500'}

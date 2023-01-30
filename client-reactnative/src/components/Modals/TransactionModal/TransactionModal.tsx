@@ -36,7 +36,7 @@ import {
   VStack,
 } from 'native-base';
 import AssetItem from './AssetItem';
-import TokenTransfer from './TokenTransfer';
+import {CoinsTransferList} from './CoinsTransferList';
 import {useNavigation} from '@react-navigation/native';
 import {
   banUser,
@@ -599,7 +599,7 @@ const TransactionModal = (props: TransactionModalProps) => {
             ) : (
               <>
                 <View style={styles.tokenTransferContainer}>
-                  <TokenTransfer
+                  <CoinsTransferList
                     name={extraData.name}
                     onTokenTransferPress={tokenTransferFunc}
                     onCustomAmountPress={() =>

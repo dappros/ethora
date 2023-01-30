@@ -10,7 +10,7 @@ import {
 import {alpha} from '../../../helpers/aplha';
 import {useStores} from '../../../stores/context';
 import SendItem from './SendItem';
-import TokenTransfer from './TokenTransfer';
+import {CoinsTransferList} from './CoinsTransferList';
 import {TransferModalButton} from './TransferModalButton';
 import {showError} from '../../Toast/toast';
 import {
@@ -251,7 +251,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
       ) : (
         <>
           <View style={styles.tokenTransferContainer}>
-            <TokenTransfer
+            <CoinsTransferList
               name={dataForTransfer.name}
               onTokenTransferPress={transferTokens}
               onCustomAmountPress={() => setAllowedEnterCustomAmount(true)}

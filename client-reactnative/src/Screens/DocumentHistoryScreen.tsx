@@ -232,6 +232,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
             <NftTransactionListTab
               transactions={itemTransactions}
               walletAddress={userWalletAddress}
+              onEndReached={() => {}}
             />
           ) : (
             <View

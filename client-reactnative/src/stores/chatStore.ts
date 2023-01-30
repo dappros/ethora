@@ -450,7 +450,7 @@ export class ChatStore {
     if (!messageId || !value) {
       return;
     }
-   
+
     const messages = toJS(this.messages);
     const index = messages.findIndex(item => item._id === messageId);
 
@@ -970,7 +970,7 @@ export class ChatStore {
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-          temporaryArchiveMessages.push(message)
+          temporaryArchiveMessages.push(message);
           if (
             this.blackList.find(item => item.userJid === message.user._id)
               ?.userJid

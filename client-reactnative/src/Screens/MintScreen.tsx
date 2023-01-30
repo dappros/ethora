@@ -75,10 +75,7 @@ const MintScreen = (props: MintScreenProps) => {
     const url = apiStore.defaultUrl + nftTransferURL;
     try {
       await httpPost(url, item, loginStore.userToken);
-      walletStore.fetchWalletBalance(
-        loginStore.userToken,
-        true,
-      );
+      walletStore.fetchWalletBalance(loginStore.userToken, true);
     } catch (error) {
       showToast('error', 'Error', 'Cannot create item, try again later', 'top');
       console.log(error);
