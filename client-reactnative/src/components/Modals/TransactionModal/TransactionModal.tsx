@@ -76,7 +76,6 @@ export const InviteFriendsScreen = ({navigation}) => {
 const TransactionModal = (props: TransactionModalProps) => {
   const {type, extraData, closeModal, isVisible} = props;
 
-  const [tokenAmount, setTokenAmount] = useState(null);
   const [tokenState, setTokenState] = useState({type: null, amnt: null});
   const [selectedItem, setSelectedItem] = useState({});
   const [displayItems, setDisplayItems] = useState(false);
@@ -547,14 +546,6 @@ const TransactionModal = (props: TransactionModalProps) => {
     }
 
     if (type === modalTypes.TOKENTRANSFER) {
-      const modalPosition =
-        tokenState.type === 'receive' ? 'center' : 'flex-end';
-      const modalBackgroundColor =
-        tokenState.type === 'receive' ? '#ffff' : 'rgba(0,0,0,0.5)';
-      const modalViewHeight =
-        tokenState.type === 'receive' ? hp('30%') : hp('20%');
-      const modalViewBackgroundColor =
-        tokenState.type === 'receive' ? commonColors.primaryColor : 'white';
       return (
         <Modal
           onBackdropPress={clearState}
@@ -610,8 +601,7 @@ const TransactionModal = (props: TransactionModalProps) => {
                 <View style={styles.tokenTransferContainer}>
                   <TokenTransfer
                     name={extraData.name}
-                    tokenAmount={tokenAmount}
-                    tokenTransferFunc={tokenTransferFunc}
+                    onTokenTransferPress={tokenTransferFunc}
                     onCustomAmountPress={() =>
                       setAllowedEnterCustomAmount(true)
                     }

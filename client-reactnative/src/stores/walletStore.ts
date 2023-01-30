@@ -17,12 +17,12 @@ import {
   addTransaction,
   getTransaction,
   queryAllTransactions,
-  insertTransaction,
 } from '../components/realmModels/transaction';
 import {RootStore} from './context';
 import {coinsMainName, commonColors} from '../../docs/config';
 import {showToast} from '../components/Toast/toast';
 import {weiToNormalUnits} from '../helpers/weiToNormalUnits';
+import {IDocument, ITransation, TBalance} from './types';
 
 export const NFMT_TYPES = {
   '1': {type: 'free', color: 'chocolate'},
@@ -42,62 +42,8 @@ export const NFMT_TRAITS = {
   Steel: {color: 'lightgrey'},
   Paper: {color: '#E0C9A6'},
 };
-export interface IFile {
-  _id: string;
-  createdAt: string;
-  expiresAt: number;
-  filename: string;
-  isVisible: true;
-  location: string;
-  locationPreview: string;
-  mimetype: string;
-  originalname: string;
-  ownerKey: string;
-  size: number;
-  updatedAt: string;
-  userId: string;
-}
-export interface IDocument {
-  _id: string;
-  admin: string;
-  contractAddress: string;
-  createdAt: Date;
-  documentName: 'Fff';
-  files: Array<string>;
-  hashes: Array<string>;
-  isBurnable: boolean;
-  isFilesMutableByAdmin: boolean;
-  isFilesMutableByOwner: boolean;
-  isSignable: boolean;
-  isSignatureRevoсable: boolean;
-  isTransferable: boolean;
-  owner: string;
-  updatedAt: Date;
-  userId: string;
-  file: IFile;
-}
-export interface ITransation {
-  __v: number;
-  _id: string;
-  createdAt: string;
-  from: string;
-  hashes: Array<string>;
-  isCompleted: boolean;
-  receiverBalance: string;
-  receiverFirstName: string;
-  receiverLastName: string;
-  senderBalance: string;
-  senderFirstName: string;
-  senderLastName: string;
-  timestamp: string;
-  to: string;
-  tokenId: string;
-  tokenName: string;
-  type: string;
-  updatedAt: string;
-  value: string;
-}
-export const mapTransactions = (item, walletAddress) => {
+
+export const mapTransactions = (item: any, walletAddress: string) => {
   if (item.tokenId === 'NFT') {
     if (item.from === walletAddress && item.from !== item.to) {
       item.balance = item.senderBalance + '/' + item.nftTotal;
@@ -117,12 +63,16 @@ export const mapTransactions = (item, walletAddress) => {
     return item;
   }
 };
-export const filterNftBalances = item => {
+export const filterNftBalances = (item: {
+  tokenSymbol: string;
+  tokenType: string;
+  balance: number;
+}) => {
   return (
     (item.tokenType === 'NFT' || item.tokenType === 'NFMT') && item.balance > 0
   );
 };
-export const filterNfts = item => {
+export const filterNfts = (item: {tokenSymbol: string; tokenType: string}) => {
   return (
     item.tokenSymbol !== 'ETHD' &&
     item.tokenType !== 'NFT' &&
@@ -130,22 +80,30 @@ export const filterNfts = item => {
   );
 };
 
-export const produceNfmtItems = (array = []) => {
+export const produceNfmtItems = (array: any[]) => {
   const result = [];
   const rareTotal = 20;
   const uniqueTotal = 1;
 
   for (const item of array) {
-    if (item.tokenType === 'NFMT') {
+    if (
+      item.tokenType === 'NFMT' &&
+      item.balances &&
+      item.contractTokenIds &&
+      item.maxSupplies &&
+      item.traits
+    ) {
       for (let i = 0; i < item.balances.length; i++) {
         const tokenBalance = item.balances[i];
         const tokenType = +item.contractTokenIds[i];
-        const total = item.maxSupplies.find((supply, i) => tokenType === i + 1);
-        const traits = item.traits.map(trait =>
-          trait.find((el, i) => tokenType === i + 1),
+        const total = item.maxSupplies.find(
+          (supply, index) => tokenType === index + 1,
         );
-        total < rareTotal && traits.push('Rare');
-        total === uniqueTotal && traits.push('Unique!');
+        const traits = item.traits.map(trait =>
+          trait.find((el, index) => tokenType === index + 1),
+        );
+        total && total < rareTotal && traits.push('Rare');
+        total && total === uniqueTotal && traits.push('Unique!');
         const resItem = {
           ...item,
           balance: tokenBalance,
@@ -160,9 +118,14 @@ export const produceNfmtItems = (array = []) => {
   return result;
 };
 
-export const generateCollections = item => {
-  const total = item.maxSupplies.reduce((acc, item) => (acc += item));
-  const minted = item.minted.reduce((acc, item) => (acc += item));
+export const generateCollections = (item: {
+  minted: number[];
+  maxSupplies: number[];
+  costs: number[];
+  _id: string;
+}) => {
+  const total = item.maxSupplies.reduce((acc, i) => (acc += i));
+  const minted = item.minted.reduce((acc, i) => (acc += i));
   const costs = item.costs.map(cost => weiToNormalUnits(+cost));
   return {
     ...item,
@@ -185,7 +148,7 @@ export class WalletStore {
   offset = 0;
   limit = 10;
   total = 0;
-  nftItems = [];
+  nftItems: TBalance[] = [];
   collections = [];
   documents: IDocument[] = [];
   tokenTransferSuccess: {
@@ -193,7 +156,7 @@ export class WalletStore {
     senderName: string;
     receiverName: string;
     amount: number;
-    receiverMessageId: string;
+    receiverMessageId: string | null;
     tokenName: string;
     nftId?: string;
     transaction: ITransation | null;
@@ -207,7 +170,7 @@ export class WalletStore {
     nftId: '',
     transaction: null,
   };
-  stores: RootStore | {} = {};
+  stores: RootStore;
   defaultUrl = '';
   coinBalance = 0;
 
@@ -221,7 +184,7 @@ export class WalletStore {
     runInAction(() => {
       this.isFetching = false;
       this.error = false;
-      this.errorMessage = '';
+
       this.transactions = [];
       this.anotherUserTransaction = [];
       this.collections = [];
@@ -273,7 +236,6 @@ export class WalletStore {
       }
       return externalBalanceNft;
     } catch (error) {
-      console.log(error?.response, 'dskfljdsfdkslfjlsd');
       return [];
     }
   };
@@ -291,9 +253,9 @@ export class WalletStore {
       });
       this.stores.debugStore.addLogsApi(response.data);
       const extBalance = response.data?.extBalance || [];
-      const externalBalanceNft = await this.getExternalBalanceMetadata(
-        extBalance,
-      );
+      // const externalBalanceNft = await this.getExternalBalanceMetadata(
+      //   extBalance,
+      // );
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
@@ -313,7 +275,7 @@ export class WalletStore {
               if (item.tokenName === coinsMainName) {
                 return item.balance;
               }
-            });
+            })[0];
         });
       } else {
         runInAction(() => {
@@ -355,7 +317,7 @@ export class WalletStore {
         this.isFetching = false;
       });
       this.stores.debugStore.addLogsApi(response.data);
-      const extBalance = response.data?.extBalance || [];
+      // const extBalance = response.data?.extBalance || [];
 
       runInAction(() => {
         this.anotherUserBalance = response.data.balances.balance;
@@ -413,7 +375,12 @@ export class WalletStore {
       console.log(error, '404');
     }
   }
-  async transferCollection(body, senderName, receiverName, tokenName) {
+  async transferCollection(
+    body: any,
+    senderName: string,
+    receiverName: string,
+    tokenName: string,
+  ) {
     const response = await httpPost(
       this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,
       body,
@@ -427,8 +394,9 @@ export class WalletStore {
           senderName,
           receiverName,
           amount: 1,
-          receiverMessageId: null,
+          receiverMessageId: '',
           tokenName: tokenName,
+          transaction: response.data?.transaction,
         };
       });
 
@@ -441,8 +409,8 @@ export class WalletStore {
     fromWallet: string,
     senderName: string,
     receiverName: string,
-    receiverMessageId: string,
-    itemUrl: string,
+    receiverMessageId: string | null,
+    itemUrl: boolean,
   ) {
     let url = '';
     if (bodyData.isNfmt) {
@@ -454,6 +422,8 @@ export class WalletStore {
     } else {
       url = this.defaultUrl + etherTransferURL;
     }
+
+    console.log(bodyData);
 
     if (bodyData.nftId) {
       Alert.alert(

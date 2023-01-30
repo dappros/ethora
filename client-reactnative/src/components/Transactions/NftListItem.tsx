@@ -48,7 +48,6 @@ interface NftListItemProps {
   name: string;
   onClick: any;
   nftId: string;
-  index: number;
   item: any;
   mimetype: string;
   itemSelected: boolean;
@@ -86,7 +85,6 @@ export const NftListItem = (props: NftListItemProps) => {
     name,
     onClick,
     nftId,
-    index,
     item,
     mimetype,
     itemSelected,
@@ -257,7 +255,6 @@ const styles = StyleSheet.create({
   container: {
     height: hp('8.62%'),
     width: '100%',
-    // backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
     backgroundColor: '#F4F5F8',
     borderRadius: 5,
     justifyContent: 'center',

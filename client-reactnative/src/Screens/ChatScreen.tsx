@@ -102,6 +102,8 @@ import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {toJS} from 'mobx';
 import {IMessageToSend} from '../helpers/chat/createMessageObject';
+import {ChatLongTapModal} from '../components/Modals/Chat/ChatLongTapModal';
+import {IDataForTransfer} from '../components/Modals/Chat/types';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -134,7 +136,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const [modalType, setModalType] = useState(undefined);
   const [showModal, setShowModal] = useState(false);
-  const [extraData, setExtraData] = useState({});
+  const [dataForLongTapModal, setDataForLongTapModal] =
+    useState<IDataForTransfer>({
+      name: '',
+      message_id: '',
+      senderName: '',
+      walletFromJid: '',
+      chatJid: '',
+    });
   const [recording, setRecording] = useState(false);
   const [fileUploadProgress, setFileUploadProgress] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -548,7 +557,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
     setShowModal(true);
     setModalType(modalTypes.TOKENTRANSFER);
-    setExtraData(extraData);
+    setDataForLongTapModal(extraData);
   };
 
   const handleOnPress = (message: any) => {
@@ -657,7 +666,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const QRPressed = () => {
     setShowModal(true);
     setModalType(modalTypes.GENERATEQR);
-    setExtraData({link: chatJid, mode: 'chat'});
+    setDataForLongTapModal({link: chatJid, mode: 'chat'});
   };
 
   const handleChatLinks = (chatLink: string) => {
@@ -1105,12 +1114,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           ]}
         />
 
-        <TransactionModal
-          type={modalType}
-          closeModal={closeModal}
-          extraData={extraData}
-          isVisible={showModal}
-        />
+      
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
           isModalVisible={isNftItemGalleryVisible}
@@ -1161,6 +1165,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onClose={closeMediaModal}
           open={!audioMimetypes[mediaModal.type] && mediaModal.open}
           messageData={mediaModal.message}
+        />
+          {/* <TransactionModal
+          type={modalType}
+          closeModal={closeModal}
+          extraData={dataForLongTapModal}
+          isVisible={showModal}
+        /> */}
+        <ChatLongTapModal
+          open={showModal}
+          onClose={closeModal}
+          dataForTransfer={dataForLongTapModal}
         />
       </ImageBackground>
     </>

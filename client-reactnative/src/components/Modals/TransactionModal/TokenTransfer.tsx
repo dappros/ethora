@@ -8,52 +8,48 @@ Note: linked open-source libraries and components may be subject to their own li
 import React, {Fragment} from 'react';
 // import { Text, View, StyleSheet, Pressable, Image } from 'react-native';
 import {coinImagePath, textStyles} from '../../../../docs/config';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {HStack, Image, Pressable, Text, View} from 'native-base';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {HStack, Image, Pressable, Text} from 'native-base';
 
-interface TokenTransferProps {
+const coinsList = [1, 3, 5];
+
+interface CoinsTransferProps {
   name: string;
-  tokenTransferFunc: (amount: number) => void;
+  onTokenTransferPress: (amount: number) => void;
   onCustomAmountPress: () => void;
-  tokenAmount: number;
 }
 
 interface CoinComponentProps {
-  tokenTransferFunc: any;
-  tokenAmount: number;
-  amt: number;
+  onPress: () => void;
+  tokenAmount: number | string;
 }
 
-const CoinComponent = (props: CoinComponentProps) => {
+const CoinComponent: React.FC<CoinComponentProps> = ({
+  tokenAmount,
+  onPress,
+}) => {
   return (
     <Pressable
       accessibilityLabel="Tap to send coins"
-      onPress={() => props.tokenTransferFunc(props.amt)}
+      onPress={onPress}
       justifyContent="center"
-      alignItems={'center'}
-      borderWidth={props.tokenAmount === props.amt ? props.amt : null}
-      borderColor={props.tokenAmount === props.amt ? '#A1A9B4' : null}>
+      alignItems={'center'}>
       <Image
         alt="Coin Image"
         source={coinImagePath}
         h={hp('3%')}
         w={hp('3%')}
       />
-      <Text fontFamily={textStyles.boldFont}>{props.amt}</Text>
+      <Text fontFamily={textStyles.boldFont}>{tokenAmount}</Text>
     </Pressable>
   );
 };
 
-const TokenTransfer = ({
+const CoinsTransferList = ({
   name,
-  tokenAmount,
-  tokenTransferFunc,
+  onTokenTransferPress,
   onCustomAmountPress,
-}: TokenTransferProps) => {
-  const coinsList = [1, 3, 5];
+}: CoinsTransferProps) => {
   return (
     <Fragment>
       <Text
@@ -72,30 +68,15 @@ const TokenTransfer = ({
           return (
             <CoinComponent
               key={item}
-              amt={item}
-              tokenAmount={tokenAmount}
-              tokenTransferFunc={tokenTransferFunc}
+              tokenAmount={item}
+              onPress={() => onTokenTransferPress(item)}
             />
           );
         })}
-        <CoinComponent
-          amt={'X'}
-          tokenAmount={tokenAmount}
-          tokenTransferFunc={onCustomAmountPress}
-        />
+        <CoinComponent tokenAmount={'X'} onPress={onCustomAmountPress} />
       </HStack>
-
-      {/* <View style={{flexDirection:'row', justifyContent:'center', width:'100%'}}>
-        <TouchableOpacity onPress={()=>props.closeModal()} style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
-          <Text>Cancel</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={()=>props.tokenTransferFunc()} style={{flex:0.5, justifyContent:'center', alignItems:'center'}}>
-          <Text>OK</Text>
-        </TouchableOpacity>
-      </View> */}
     </Fragment>
   );
 };
 
-export default TokenTransfer;
+export default CoinsTransferList;
