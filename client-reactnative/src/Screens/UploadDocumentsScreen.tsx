@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -24,9 +24,8 @@ import {uploadFiles} from '../helpers/uploadFiles';
 import {useStores} from '../stores/context';
 import {showToast} from '../components/Toast/toast';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../constants/routes';
 import {httpPost} from '../config/apiService';
-import {docsURL, fileUpload, nftTransferURL} from '../config/routesConstants';
+import {docsURL, fileUpload} from '../config/routesConstants';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 import {
@@ -34,8 +33,6 @@ import {
   imageMimetypes,
   pdfMimemtype,
 } from '../constants/mimeTypes';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-import moment from 'moment';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 interface MintScreenProps {}
@@ -127,10 +124,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       // alert(JSON.stringify(res.data))
 
       debugStore.addLogsApi(res.data);
-      walletStore.fetchWalletBalance(
-        loginStore.userToken,
-        true,
-      );
+      walletStore.fetchWalletBalance(loginStore.userToken, true);
     } catch (error) {
       showToast('error', 'Error', 'Cannot create item, try again later', 'top');
       console.log(error.response);
@@ -138,11 +132,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     setLoading(false);
   };
 
-  const onMintClick = async () => {
-    // if (!avatarSource) {
-    //   showToast("error", "Error", "Please load the image.", "top");
-    //   return;
-    // }
+  const onUploadClick = async () => {
     if (!itemName.length) {
       showToast('error', 'Error', 'Please fill the item name.', 'top');
       return;
@@ -165,25 +155,6 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       'bottom',
     );
     clearData();
-    // Alert.alert(
-    //   "Uploading...",
-    //   "Awesome! Once uploaded, you will see this Document in your wallet and Profile screen",
-    //   [
-    //     { text: "Upload another", onPress: () => clearData() },
-    //     {
-    //       text: "My Profile",
-    //       onPress: () => {
-    //         navigation.navigate(ROUTES.PROFILE, {
-    //           screen: "Profile",
-    //           params: {
-    //             viewItems: true,
-    //           },
-    //         });
-    //         clearData();
-    //       },
-    //     },
-    //   ]
-    // );
   };
 
   const chooseImageOption = () => {
@@ -370,13 +341,12 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                 )}
               </View>
             </TouchableOpacity>
-
-          
           </View>
 
           <TouchableOpacity
             disabled={loading}
-            onPress={onMintClick}
+            onPress={onUploadClick}
+            accessibilityLabel={'Create document'}
             style={classes.createButton}>
             <View
               style={{
@@ -390,7 +360,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                   color={'white'}
                 />
               ) : (
-                <Text style={classes.createButtonText}>Upload files</Text>
+                <Text style={classes.createButtonText}>Upload file</Text>
               )}
             </View>
           </TouchableOpacity>

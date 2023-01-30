@@ -11,7 +11,7 @@ import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { textStyles } from '../../../docs/config';
+import {textStyles} from '../../../docs/config';
 import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 
@@ -30,46 +30,47 @@ export const ImageMessage = ({
   onLongPress,
   onPress,
   nftId,
-  nftName
+  nftName,
 }: ImageMessageProps) => {
   const formatedSize = formatBytes(parseFloat(size), 2);
   return (
     <>
-    {!!nftId&&
-    <Text
-    color={"white"}
-    fontWeight={"bold"}
-    fontFamily={textStyles.boldFont}
-    >
-      🔗🖼️ NFT: {nftName}
-    </Text>}
-    <TouchableOpacity
-      onLongPress={onLongPress}
-      onPress={onPress}
-      activeOpacity={0.7}
-      style={{
-        borderRadius: 5,
-        justifyContent: 'center',
-        position: 'relative',
-      }}>
-      {size && (
-        <MessageSize size={formatedSize.size + ' ' + formatedSize.unit} />
+      {!!nftId && (
+        <Text
+          color={'white'}
+          fontWeight={'bold'}
+          fontFamily={textStyles.boldFont}>
+          🔗🖼️ NFT: {nftName}
+        </Text>
       )}
-      {!!nftId && <MessageSize size={'NFT'} />}
-      <Box p={'1.5'}>
-        <FastImage
-          style={{
-            width: hp('22%'),
-            height: hp('22%'),
-            borderRadius: 10,
-            borderColor: 'white',
-            borderWidth: nftId ? 2 : 0,
-          }}
-          source={{uri: url}}
-          alt={'Image message'}
-        />
-      </Box>
-    </TouchableOpacity>
+      <TouchableOpacity
+        onLongPress={onLongPress}
+        accessibilityLabel={'Image Attachment'}
+        onPress={onPress}
+        activeOpacity={0.7}
+        style={{
+          borderRadius: 5,
+          justifyContent: 'center',
+          position: 'relative',
+        }}>
+        {size && (
+          <MessageSize size={formatedSize.size + ' ' + formatedSize.unit} />
+        )}
+        {!!nftId && <MessageSize size={'NFT'} />}
+        <Box p={'1.5'}>
+          <FastImage
+            style={{
+              width: hp('22%'),
+              height: hp('22%'),
+              borderRadius: 10,
+              borderColor: 'white',
+              borderWidth: nftId ? 2 : 0,
+            }}
+            source={{uri: url}}
+            alt={'Image message'}
+          />
+        </Box>
+      </TouchableOpacity>
     </>
   );
 };

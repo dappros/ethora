@@ -407,6 +407,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             marginBottom={4}>
             {uploadedImage.location || room.roomThumbnail ? (
               <FastImage
+                accessibilityLabel="Chat Image"
                 source={{
                   uri: uploadedImage.location || room.roomThumbnail,
                   priority: FastImage.priority.normal,
@@ -490,6 +491,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             isChecked={!chatStore.roomsInfoMap[room.jid].muted}
             onToggle={args => toggleNotification(args)}
             onTrackColor={commonColors.primaryColor}
+            accessibilityLabel={'Notifications (turn on / turn off)'}
             size={'sm'}
           />
         </HStack>
@@ -578,6 +580,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
                   {defaultChats[roomJID?.split('@')[0]] ? null : (
                     <>
                       <Menu.Item
+                        accessibilityLabel={'Add to fovourites'}
                         onPress={toggleFavourite}
                         _text={{
                           fontFamily: textStyles.lightFont,
@@ -641,6 +644,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
             h={hp('10%')}
             flexDirection={'row'}
             alignItems="center"
+            accessibilityLabel="User profile (tap to open)"
             flex={1}>
             <Box
               h={hp('6.5')}
@@ -744,8 +748,6 @@ const ChatDetailsScreen = observer(({route}: any) => {
       This is Tab 3
     </Center>
   );
-
-
 
   const slider = () => {
     return (

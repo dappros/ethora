@@ -453,7 +453,7 @@ const Bubble = observer((props: BubbleProps) => {
         <TouchableWithoutFeedback
           onPress={() => onPressMessage()}
           onLongPress={() => onLongPressHandle()}
-          accessibilityTraits="text"
+          accessibilityLabel={'Message Menu'}
           {...props.touchableProps}>
           <View>
             {renderBubbleContent()}

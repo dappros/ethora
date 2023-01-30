@@ -159,8 +159,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const path = Platform.select({
-    ios: 'hello.m4a',
-    android: `${RNFetchBlob.fs.dirs.CacheDir}/hello.mp3`,
+    ios: 'audioMessage.m4a',
+    android: `${RNFetchBlob.fs.dirs.CacheDir}/audioMessage.mp3`,
   });
 
   const {chatJid, chatName} = route.params;
@@ -435,7 +435,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }, 2000);
   };
 
-  const renderMessageImage = (props: any) => {
+  const renderMedia = (props: any) => {
     const {
       image,
       realImageURL,
@@ -742,7 +742,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const audioPath =
       url ||
       (Platform.OS === 'ios'
-        ? `${RNFetchBlob.fs.dirs.CacheDir}/hello.m4a`
+        ? `${RNFetchBlob.fs.dirs.CacheDir}/audioMessage.m4a`
         : path);
     const data = await getWaveformArray(audioPath);
     const normalizedData = normalizeData(filterData(data));
@@ -934,6 +934,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     return (
       <View style={{position: 'relative'}}>
         <View
+        accessibilityLabel='Choose attachment'
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
@@ -1043,7 +1044,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           renderUsernameOnMessage
           onInputTextChanged={handleInputChange}
           renderMessage={renderMessage}
-          renderMessageImage={props => renderMessageImage(props)}
+          renderMessageImage={props => renderMedia(props)}
           renderComposer={renderComposer}
           messages={messages}
           renderAvatarOnTop

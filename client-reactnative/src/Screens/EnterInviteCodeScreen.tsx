@@ -83,6 +83,7 @@ export const EnterInviteCode = observer(() => {
         value={code}
         placeholder="Your referral code"
         placeholderTextColor={commonColors.primaryColor}
+        accessibilityLabel={'Referrals - Enter code'}
       />
       <View
         style={{

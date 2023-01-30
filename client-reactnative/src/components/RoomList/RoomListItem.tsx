@@ -114,6 +114,7 @@ export const RoomListItem = observer(
                       <Text
                         fontFamily={textStyles.regularFont}
                         fontSize={hp('1.5%')}
+                        accessibilityLabel={'Last Message'}
                         color="coolGray.600"
                         _dark={{
                           color: 'warmGray.100',

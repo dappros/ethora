@@ -158,6 +158,7 @@ export const ChatMediaModal = observer(
         return (
           <View>
             <FastImage
+            accessibilityLabel='Image Attachment'
               style={{
                 width: '100%',
                 height:
@@ -188,6 +189,7 @@ export const ChatMediaModal = observer(
         return (
           <TouchableOpacity
             activeOpacity={1}
+            accessibilityLabel={'Video Attachment'}
             style={{height: height, width: '100%'}}>
             <VideoPlayer
               video={{

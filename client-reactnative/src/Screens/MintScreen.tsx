@@ -75,10 +75,7 @@ const MintScreen = (props: MintScreenProps) => {
     const url = apiStore.defaultUrl + nftTransferURL;
     try {
       await httpPost(url, item, loginStore.userToken);
-      walletStore.fetchWalletBalance(
-        loginStore.userToken,
-        true,
-      );
+      walletStore.fetchWalletBalance(loginStore.userToken, true);
     } catch (error) {
       showToast('error', 'Error', 'Cannot create item, try again later', 'top');
       console.log(error);
@@ -228,6 +225,7 @@ const MintScreen = (props: MintScreenProps) => {
             }}>
             <TouchableOpacity
               onPress={chooseImageOption}
+              accessibilityLabel={'Upload file'}
               style={{alignItems: 'flex-start', width: wp('50%')}}>
               <View
                 style={{
@@ -314,7 +312,9 @@ const MintScreen = (props: MintScreenProps) => {
 
               <View />
               <>
-                <TouchableOpacity onPress={toggleModal}>
+                <TouchableOpacity
+                  accessibilityLabel="Rarity"
+                  onPress={toggleModal}>
                   <AntIcon
                     // onPress={() => props.navigation.navigate('LoginComponent')}
                     color={commonColors.primaryColor}
@@ -331,6 +331,7 @@ const MintScreen = (props: MintScreenProps) => {
           <TouchableOpacity
             disabled={loading}
             onPress={onMintClick}
+            accessibilityLabel={'Mint Item'}
             style={classes.createButton}>
             <View
               style={{

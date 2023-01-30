@@ -19,6 +19,7 @@ import {HStack} from 'native-base';
 export const AudioMessage = ({onLongPress, onPress, waveform, message}) => {
   return (
     <TouchableOpacity
+      accessibilityLabel="Play Audio Message"
       onLongPress={() => onLongPress('', message.currentMessage)}
       onPress={() => onPress(message)}
       activeOpacity={0.7}

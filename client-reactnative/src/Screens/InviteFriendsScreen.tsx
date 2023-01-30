@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {Share, StyleSheet, useWindowDimensions, View} from 'react-native';
+import React, {useState} from 'react';
+import {Share, useWindowDimensions} from 'react-native';
 
-
-import {commonColors, textStyles} from '../../docs/config';
-import {showError, showSuccess} from '../components/Toast/toast';
+import {commonColors} from '../../docs/config';
+import {showError} from '../components/Toast/toast';
 
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {EnterInviteCode} from './EnterInviteCodeScreen';
@@ -12,7 +11,7 @@ import {useStores} from '../stores/context';
 import {observer} from 'mobx-react-lite';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 
-export const InviteFriendsScreen = observer(({navigation}) => {
+export const InviteFriendsScreen = observer(({}) => {
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     {key: 'refer', title: 'Refer & Earn'},
@@ -25,7 +24,7 @@ export const InviteFriendsScreen = observer(({navigation}) => {
 
   const onShare = async () => {
     try {
-      const result = await Share.share({
+      await Share.share({
         message: id,
       });
     } catch (error) {
