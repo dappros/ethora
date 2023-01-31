@@ -11,21 +11,18 @@ import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {
   imageMimetypes,
   pdfMimemtype,
+  TCombinedMimeType,
   videoMimetypes,
 } from '../../constants/mimeTypes';
 import VideoPlayer from 'react-native-video-player';
 import {
   TouchableOpacity,
-  Image as NativeImage,
   Dimensions,
   Text,
   View,
   ActivityIndicator,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
@@ -33,9 +30,8 @@ import {coinImagePath, textStyles} from '../../../docs/config';
 import {observer} from 'mobx-react-lite';
 import {useStores} from '../../stores/context';
 import {botTypes} from '../../constants/botTypes';
-import {botStanza, sendMessageStanza} from '../../xmpp/stanzas';
+import {botStanza} from '../../xmpp/stanzas';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
-import {wrapMessage} from '../../helpers/wrapMessage';
 import {httpGet} from '../../config/apiService';
 import {downloadFile} from '../../helpers/downloadFile';
 import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
@@ -43,7 +39,15 @@ import {PdfViewer} from '../PdfViewer';
 import {formatBigNumber} from '../../helpers/formatBigNumber';
 const {width, height: windowHeight} = Dimensions.get('window');
 
-const ModalActionButton = ({actionTypeText, cost, action}) => {
+const ModalActionButton = ({
+  actionTypeText,
+  cost,
+  action,
+}: {
+  actionTypeText: string;
+  cost: string | number;
+  action: () => void;
+}) => {
   return (
     <TouchableOpacity activeOpacity={0.9} onPress={action}>
       <VStack
@@ -82,11 +86,21 @@ const ModalActionButton = ({actionTypeText, cost, action}) => {
   );
 };
 
-export const ChatMediaModal = observer(
+interface IChatMediaModal {
+  open: boolean;
+  url: string;
+  type: TCombinedMimeType;
+  onClose: () => void;
+  messageData: any;
+}
+export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
   ({open, url, type, onClose, messageData}) => {
     const [height, setHeight] = useState(0);
     const {chatStore, loginStore, apiStore} = useStores();
-    const [buttonState, setButtonState] = useState({title: 'Wrap', cost: 100});
+    const [buttonState, setButtonState] = useState({
+      title: 'Wrap',
+      cost: '100',
+    });
     const [loading, setLoading] = useState(false);
     const getCosts = async () => {
       try {
@@ -102,7 +116,7 @@ export const ChatMediaModal = observer(
     };
     const getButtonState = async () => {
       if (messageData?.attachmentId && !messageData?.nftId) {
-        setButtonState({title: 'Wrap', cost: 100});
+        setButtonState({title: 'Wrap', cost: '100'});
 
         return 'Wrap';
       }
@@ -132,7 +146,7 @@ export const ChatMediaModal = observer(
     };
 
     const renderModalContent = () => {
-      if (imageMimetypes[type]) {
+      if (!!imageMimetypes[type]) {
         const modalButtonAction = () => {
           const manipulatedWalletAddress = underscoreManipulation(
             loginStore.initialData.walletAddress,

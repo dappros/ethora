@@ -5,11 +5,19 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-type TImageMimeType = 'image/png' | 'image/jpeg' | 'image/jpg';
-type TVideoMimeType = 'video/mp4';
-type TAudioMimeType = 'audio/mpeg' | 'application/octet-stream' | 'audio/x-m4a';
-type TPdfMimeType = 'application/pdf';
-
+export type TImageMimeType = 'image/png' | 'image/jpeg' | 'image/jpg';
+export type TVideoMimeType = 'video/mp4';
+export type TAudioMimeType =
+  | 'audio/mpeg'
+  | 'application/octet-stream'
+  | 'audio/x-m4a'
+  | 'audio/webm';
+export type TPdfMimeType = 'application/pdf';
+export type TCombinedMimeType =
+  | TAudioMimeType
+  | TImageMimeType
+  | TPdfMimeType
+  | TVideoMimeType;
 export const imageMimetypes: Record<TImageMimeType, TImageMimeType> = {
   'image/png': 'image/png',
   'image/jpeg': 'image/jpeg',
@@ -20,6 +28,7 @@ export const videoMimetypes: Record<TVideoMimeType, TVideoMimeType> = {
 };
 export const audioMimetypes: Record<TAudioMimeType, TAudioMimeType> = {
   'audio/mpeg': 'audio/mpeg',
+  'audio/webm': 'audio/webm',
   'application/octet-stream': 'application/octet-stream',
   'audio/x-m4a': 'audio/x-m4a',
 };

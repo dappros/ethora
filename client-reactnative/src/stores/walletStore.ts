@@ -479,8 +479,8 @@ export class WalletStore {
 
   fetchOwnTransactions = async (
     walletAddress: string,
-    limit: string,
-    offset: string,
+    limit: number | string,
+    offset: number | string,
   ) => {
     const url =
       this.defaultUrl +
