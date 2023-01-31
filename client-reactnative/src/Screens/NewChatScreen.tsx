@@ -76,7 +76,6 @@ const NewChatScreen = (props: NewChatScreenProps) => {
     try {
       const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
-      console.log(JSON.stringify(response), 'sdfasdfadf');
       setLoading(false);
       setChatAvatar(response.results[0].location);
     } catch (error) {

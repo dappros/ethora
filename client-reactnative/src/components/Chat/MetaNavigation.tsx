@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableOpacityBase,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
@@ -17,14 +16,11 @@ import {
   coinImagePath,
   commonColors,
   IMetaRoom,
-  ROOM_KEYS,
   textStyles,
 } from '../../../docs/config';
 import {ROUTES} from '../../constants/routes';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {useStores} from '../../stores/context';
-import {CONFERENCEDOMAIN} from '../../xmpp/xmppConstants';
-import {MainHeader} from '../MainHeader/MainHeader';
 import {CreateNewChatButton} from './CreateNewChatButton';
 import {metaRooms as predefinedMeta} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -250,11 +246,10 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     setLoading(true);
     try {
       const res = await httpGet(
-       roomRoute + '/getRoom/' + chatId,
+        roomRoute + '/getRoom/' + chatId,
         loginStore.userToken,
       );
       setCurrentMetaRoom(res.data.result);
-      console.log(res.data.result.userNavLinks);
     } catch (error) {
       setCurrentMetaRoom(emptyMetaRoom);
       console.log(error);
@@ -330,12 +325,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
   };
   const sendRoomJoin = async () => {
     try {
-      const res = await httpPost(
-        roomRoute + '/join/' + chatId,
-        {},
-        loginStore.userToken,
-      );
-      console.log(res.data);
+      await httpPost(roomRoute + '/join/' + chatId, {}, loginStore.userToken);
     } catch (error) {
       console.log(error);
     }

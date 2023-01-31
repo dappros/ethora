@@ -22,7 +22,7 @@ class RNWaveform : NSObject  {
   }
   @objc(loadAudioFile:rejecter:)
   func loadAudioFile(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
-    let recordingName = "hello.m4a"
+    let recordingName = "audio.m4a"
     let dirPath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
     let desURL = dirPath?.appendingPathComponent(recordingName)
     

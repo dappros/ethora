@@ -266,7 +266,7 @@ const Bubble = observer((props: BubbleProps) => {
       try {
         quickReplies = JSON.parse(currentMessage.quickReplies);
       } catch (error) {
-        console.log(error);
+        console.log(error, 'cannot parse quick replies');
       }
       return (
         <QuickReplies

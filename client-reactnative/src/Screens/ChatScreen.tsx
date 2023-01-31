@@ -41,7 +41,6 @@ import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
 import {Actionsheet, useDisclose, View} from 'native-base';
-import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
 import {banSystemMessage} from '../helpers/banSystemMessage';
@@ -914,7 +913,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const onDeleteMessagePress = () => {
-    // console.log(onTapMessageObject);
     const messageId = onTapMessageObject._id;
     deleteMessageStanza(
       manipulatedWalletAddress + '@' + apiStore.xmppDomains.DOMAIN,
@@ -1166,12 +1164,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           open={!audioMimetypes[mediaModal.type] && mediaModal.open}
           messageData={mediaModal.message}
         />
-          {/* <TransactionModal
-          type={modalType}
-          closeModal={closeModal}
-          extraData={dataForLongTapModal}
-          isVisible={showModal}
-        /> */}
+        
         <ChatLongTapModal
           open={showModal}
           onClose={closeModal}

@@ -3,7 +3,6 @@ import React, {useState} from 'react';
 import {StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 import {TokensOrItemsTransfer} from '../TransactionModal/TokensOrItemsTransfer';
-import ChangeUserDescriptionModal from './ChangeRoomDescriptionModal';
 import {ChatLongTapUserActions} from './ChatLongTapUserActions';
 import {IDataForTransfer} from './types';
 
@@ -18,12 +17,15 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
   onClose,
   dataForTransfer,
 }) => {
-  const [allowedEnterCustomAmount, setAllowedEnterCustomAmount] =
-    useState(false);
+  const [isUserActionsHidden, setUserActionsHidden] = useState(false);
+
+  const hideUserActions = () => {
+    setUserActionsHidden(true);
+  };
 
   const closeModal = () => {
     onClose();
-    setAllowedEnterCustomAmount(false);
+    setUserActionsHidden(false)
   };
   return (
     <Modal
@@ -47,11 +49,10 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
         }}>
         <TokensOrItemsTransfer
           closeModal={closeModal}
-          allowedEnterCustomAmount={allowedEnterCustomAmount}
-          setAllowedEnterCustomAmount={setAllowedEnterCustomAmount}
+          hideUserActions={hideUserActions}
           dataForTransfer={dataForTransfer}
         />
-        {!allowedEnterCustomAmount && (
+        {!isUserActionsHidden && (
           <ChatLongTapUserActions
             closeModal={closeModal}
             dataForTransfer={dataForTransfer}
@@ -62,4 +63,4 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
   );
 };
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});

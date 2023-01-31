@@ -92,7 +92,6 @@ const NftItemHistoryScreen = (props: any) => {
     setModalData(prev => ({...prev, visible: false, url: ''}));
   };
   const deleteItem = async () => {
-    console.log(item);
     setLoading(true);
     try {
       if (item?.isCollection) {
@@ -101,7 +100,6 @@ const NftItemHistoryScreen = (props: any) => {
           {},
           loginStore.userToken,
         );
-        console.log(res.data);
       }
 
       if (item.tokenType === 'NFMT') {
@@ -135,8 +133,6 @@ const NftItemHistoryScreen = (props: any) => {
     }
     setLoading(false);
   };
-
-  console.log(userWalletAddress, ' a', loginStore.initialData.walletAddress);
 
   return (
     <Fragment>

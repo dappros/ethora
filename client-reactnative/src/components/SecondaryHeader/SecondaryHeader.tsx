@@ -90,7 +90,6 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           )}
           {type === 'transaction' && (
             <TouchableOpacity
-              onPress={() => console.log('')}
               style={{flex: 0.2, alignItems: 'flex-end', marginRight: 10}}>
               <AntIcon name="filter" color="#FFFF" size={hp('3%')} />
             </TouchableOpacity>

@@ -40,10 +40,8 @@ export const insertRosterList = (chatsObject: any) =>
           priority: chatsObject.priority,
         };
         checkRoomExist(chatsObject.jid, async (callback: boolean) => {
-          console.log(callback,"hjnfgnb")
           if (!callback) {
             const realm = await Realm.open(databaseOptions);
-            console.log(realm.path);
             realm.write(() => {
               realm.create(schemaTypes.CHAT_LIST_SCHEMA, chatListObject);
               resolve(chatListObject);
@@ -124,14 +122,6 @@ export const updateRosterList = (data: any) =>
   });
 export const getChatRoom = (jid: string) =>
   new Promise(async (resolve, reject) => {
-    // const realm = await Realm.open(databaseOptions)
-
-    // const chatList = realm.objectForPrimaryKey(
-    //   schemaTypes.CHAT_LIST_SCHEMA,
-    //   jid,
-    // );
-    //   console.log(chatList)
-    // return(true);
     const realm = await Realm.open(databaseOptions);
     const chatList = realm.objectForPrimaryKey(
       schemaTypes.CHAT_LIST_SCHEMA,

@@ -445,7 +445,6 @@ export class LoginStore {
         });
       }
     } catch (error: any) {
-      console.log(error, 'sdjfklsdjfjlsdkfj');
       runInAction(() => {
         this.isFetching = false;
         this.error = true;

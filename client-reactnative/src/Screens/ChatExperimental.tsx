@@ -152,8 +152,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const giftedRef = useRef(null);
 
   const path = Platform.select({
-    ios: 'hello.m4a',
-    android: `${RNFetchBlob.fs.dirs.CacheDir}/hello.mp3`,
+    ios: 'audio.m4a',
+    android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
   });
 
   const {chatJid, chatName} = route.params;
@@ -654,7 +654,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const audioPath =
       url ||
       (Platform.OS === 'ios'
-        ? `${RNFetchBlob.fs.dirs.CacheDir}/hello.m4a`
+        ? `${RNFetchBlob.fs.dirs.CacheDir}/audio.m4a`
         : path);
     const data = await getWaveformArray(audioPath);
     const normalizedData = normalizeData(filterData(data));
@@ -663,7 +663,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
-      // console.log(item.duration, 'masdedia messsdfsdfage');
       const data = {
         firstName,
         lastName,
@@ -816,7 +815,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const onDeleteMessagePress = () => {
-    // console.log(onTapMessageObject);
     const messageId = onTapMessageObject._id;
     deleteMessageStanza(
       manipulatedWalletAddress + '@' + apiStore.xmppDomains.DOMAIN,

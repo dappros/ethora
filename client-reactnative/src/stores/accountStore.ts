@@ -26,7 +26,7 @@ export class AccountStore {
   }
 
   async getEmailList(token: any) {
-    const url =  getListOfEmails;
+    const url = getListOfEmails;
     runInAction(() => {
       this.isFetching = true;
     });
@@ -53,7 +53,7 @@ export class AccountStore {
   }
 
   async addEmailToList(token: any, body: any) {
-    const url =  addOrDeleteEmail;
+    const url = addOrDeleteEmail;
     this.isFetching = true;
 
     try {
@@ -83,8 +83,7 @@ export class AccountStore {
   }
 
   async deleteEmailFromList(token: any, email: any) {
-    const url =
-       addOrDeleteEmail + '/' + email;
+    const url = addOrDeleteEmail + '/' + email;
 
     runInAction(() => {
       this.isFetching = true;
@@ -111,7 +110,6 @@ export class AccountStore {
         this.error = true;
         this.errorMessage = error;
       });
-      console.log(JSON.stringify(error));
       if (error.code === 'ERR_BAD_REQUEST') {
         showToast(
           'error',

@@ -757,10 +757,6 @@ export class ChatStore {
         });
       }
 
-      // if(stanza.attrs.id === XMPP_TYPES.getBannedUserListOfRoom){
-      //   console.log(stanza.children[0].children, 'banned user list of a room')
-      // }
-
       if (stanza.attrs.id === XMPP_TYPES.ban) {
         console.log(stanza.children[0].children, 'dfsdsdsdsd');
         if (stanza.children[0].children[0].attrs.status === 'success') {
@@ -783,11 +779,9 @@ export class ChatStore {
       }
 
       if (stanza.attrs.id === 'activity') {
-        console.log(stanza.children[0].children, 'activityyyy');
       }
 
       if (stanza.attrs.id === XMPP_TYPES.roomConfig) {
-        // console.log(stanza,"roooooom config")
       }
 
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {

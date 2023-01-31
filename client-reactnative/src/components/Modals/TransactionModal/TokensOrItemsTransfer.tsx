@@ -23,9 +23,8 @@ import {IDataForTransfer} from '../Chat/types';
 
 export interface ITransferModal {
   dataForTransfer: IDataForTransfer;
-  allowedEnterCustomAmount: boolean;
-  setAllowedEnterCustomAmount: React.Dispatch<React.SetStateAction<boolean>>;
   closeModal: () => void;
+  hideUserActions: () => void;
 }
 
 const emptySelectedItem = {
@@ -40,14 +39,14 @@ const emptySelectedItem = {
 type TSelectedItem = typeof emptySelectedItem;
 export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
   dataForTransfer,
-  allowedEnterCustomAmount,
-  setAllowedEnterCustomAmount,
   closeModal,
+  hideUserActions,
 }) => {
   const {walletStore, loginStore} = useStores();
   const [selectedItem, setSelectedItem] =
     useState<TSelectedItem>(emptySelectedItem);
-
+  const [allowedEnterCustomAmount, setAllowedEnterCustomAmount] =
+    useState(false);
   const [customTransferAmount, setCustomTransferAmount] = useState('');
   const [displayItems, setDisplayItems] = useState(false);
   const [displayCollections, setDisplayCollections] = useState(false);
@@ -82,7 +81,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
       senderName,
       receiverName,
       receiverMessageId,
-      '',
+      false,
     );
     closeModal();
   };
@@ -151,7 +150,18 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
     setDisplayCollections(false);
     setSelectedItem(emptySelectedItem);
   };
-
+  const onCustomAmountPress = () => {
+    setAllowedEnterCustomAmount(true);
+    hideUserActions();
+  };
+  const onSendItemsPress = () => {
+    setDisplayItems(true);
+    hideUserActions();
+  };
+  const onSendCollectionsPress = () => {
+    setDisplayCollections(true);
+    hideUserActions();
+  };
   const renderItems = () => {
     const getItemSelected = (pressedItem: TSelectedItem, item) => {
       if (item.tokenType === 'NFMT') {
@@ -254,7 +264,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
             <CoinsTransferList
               name={dataForTransfer.name}
               onTokenTransferPress={transferTokens}
-              onCustomAmountPress={() => setAllowedEnterCustomAmount(true)}
+              onCustomAmountPress={onCustomAmountPress}
             />
           </View>
 
@@ -263,12 +273,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
               <>
                 <Seperator />
 
-                <SendItem
-                  title={'Send Items'}
-                  onPress={() => {
-                    setDisplayItems(true);
-                  }}
-                />
+                <SendItem title={'Send Items'} onPress={onSendItemsPress} />
               </>
             )}
           {!!walletStore.collections.length && (
@@ -277,9 +282,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
 
               <SendItem
                 title={'Send Collections'}
-                onPress={() => {
-                  setDisplayCollections(true);
-                }}
+                onPress={onSendCollectionsPress}
               />
             </>
           )}

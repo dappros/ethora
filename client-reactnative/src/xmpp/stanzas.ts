@@ -652,25 +652,6 @@ export const discoverProfileSupport = (
   xmpp.send(message);
 };
 
-export const discoverChatStates = (
-  walletAddress: string,
-  chat_jid: string,
-  xmpp: any,
-) => {
-  //     <iq from='juliet@capulet.com/balcony'
-  //     id='disco1'
-  //     to='romeo@shakespeare.lit/orchard'
-  //     type='result'>
-  //   <query xmlns='http://jabber.org/protocol/disco#info'>
-  //     <feature var='http://jabber.org/protocol/chatstates'/>
-  //   </query>
-  // </iq>
-  // const message = xml('iq',{
-  //     'from': walletAddress + '@z.okey.com.ua',
-  //     'id': 'disco1'
-  // })
-};
-
 export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   //     <iq from='stpeter@jabber.org/roundabout'
   //     id='v1'
@@ -801,11 +782,10 @@ export const createNewRoom = (from: string, to: string, xmpp: any) => {
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );
-  // console.log(message.toString());
   xmpp.send(message);
 };
 
-export const setOwner = (from, to, xmpp) => {
+export const setOwner = (from: string, to: string, xmpp: any) => {
   const message = xml(
     'iq',
     {
@@ -820,7 +800,12 @@ export const setOwner = (from, to, xmpp) => {
   xmpp.send(message);
 };
 
-export const roomConfig = (from, to, data, xmpp) => {
+export const roomConfig = (
+  from: string,
+  to: string,
+  data: {roomName: string; roomDescription: string},
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -1079,17 +1064,6 @@ export const unAssignModerator = (from: string, to: string, xmpp: any) => {
   xmpp.send(message);
 };
 
-export const reply = to => {
-  // <message to='anna@example.com' id='message-id2' type='chat'>
-  // <body>Great idea!</body>
-  // <reply to='anna@example.com/tablet' id='message-id1' xmlns='urn:xmpp:reply:0' />
-  // </message>
-
-  const message = xml('message', {
-    to: to,
-    id: 'reply',
-  });
-};
 
 export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   //   <iq

@@ -79,7 +79,6 @@ import {mentionRegEx, parseValue} from '../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
-import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
 import {NftItemGalleryModal} from '../../NftItemGalleryModal';
 import DocumentPicker from 'react-native-document-picker';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
@@ -90,6 +89,8 @@ import {
   createMainMessageForThread,
   IMessageToSend,
 } from '../helpers/chat/createMessageObject';
+import {IDataForTransfer} from '../components/Modals/Chat/types';
+import {ChatLongTapModal} from '../components/Modals/Chat/ChatLongTapModal';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -111,8 +112,14 @@ const ThreadScreen = observer((props: any) => {
     message: {},
   });
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState(undefined);
-  const [extraData, setExtraData] = useState({});
+  const [dataForLongTapModal, setDataForLongTapModal] =
+    useState<IDataForTransfer>({
+      name: '',
+      message_id: '',
+      senderName: '',
+      walletFromJid: '',
+      chatJid: '',
+    });
   const [composingUsername, setComposingUsername] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [onTapMessageObject, setOnTapMessageObject] = useState('');
@@ -158,8 +165,8 @@ const ThreadScreen = observer((props: any) => {
   }, [chatStore.isComposing.state]);
 
   const path = Platform.select({
-    ios: 'hello.m4a',
-    android: `${RNFetchBlob.fs.dirs.CacheDir}/hello.mp3`,
+    ios: 'audio.m4a',
+    android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
   });
 
   const animateMediaButtonIn = () => {
@@ -209,7 +216,7 @@ const ThreadScreen = observer((props: any) => {
     const audioPath =
       url ||
       (Platform.OS === 'ios'
-        ? `${RNFetchBlob.fs.dirs.CacheDir}/hello.m4a`
+        ? `${RNFetchBlob.fs.dirs.CacheDir}/audio.m4a`
         : path);
     const data = await getWaveformArray(audioPath);
     const normalizedData = normalizeData(filterData(data));
@@ -312,9 +319,6 @@ const ThreadScreen = observer((props: any) => {
   };
 
   const renderSend = (props: any) => {
-    const animateMediaButtonStyle = {
-      transform: [{scale: mediaButtonAnimation}],
-    };
     if (!props.text) {
       return (
         <AudioSendButton
@@ -514,43 +518,24 @@ const ThreadScreen = observer((props: any) => {
     ) {
       const jid = message.user._id.split('@' + apiStore.xmppDomains.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
-      const token = loginStore.userToken;
 
-      extraData = {
-        type: 'transfer',
-        amnt: null,
+      setDataForLongTapModal({
         name: message.user.name,
         message_id: message._id,
-        walletFromJid,
-        chatJid,
-        token,
-        jid,
         senderName:
           loginStore.initialData.firstName +
           ' ' +
           loginStore.initialData.lastName,
-      };
+        walletFromJid: walletFromJid,
+        chatJid: chatJid,
+      });
     }
     setShowModal(true);
-    setModalType(modalTypes.TOKENTRANSFER);
-    setExtraData(extraData);
   };
 
-  const renderMessageImage = (props: any) => {
-    const {
-      image,
-      realImageURL,
-      mimetype,
-      size,
-      duration,
-      waveForm,
-      originalName,
-      id,
-      imageLocation,
-      fileName,
-      nftId,
-      preview,
-    } = props.currentMessage;
+  const renderMediaMessage = (props: any) => {
+    const {image, mimetype, size, waveForm, originalName, nftId, preview} =
+      props.currentMessage;
     let parsedWaveform = [];
     if (waveForm) {
       try {
@@ -830,7 +815,7 @@ const ThreadScreen = observer((props: any) => {
               {currentMessage.text}
             </Text>
           </View>
-          {renderMessageImage({currentMessage})}
+          {renderMediaMessage({currentMessage})}
         </View>
       </HStack>
     );
@@ -860,7 +845,7 @@ const ThreadScreen = observer((props: any) => {
         renderUsernameOnMessage
         onInputTextChanged={handleInputChange}
         renderMessage={renderMessage}
-        renderMessageImage={props => renderMessageImage(props)}
+        renderMessageImage={props => renderMediaMessage(props)}
         renderComposer={renderComposer}
         messages={messages}
         renderAvatarOnTop
@@ -930,11 +915,10 @@ const ThreadScreen = observer((props: any) => {
           ) : null}
         </Actionsheet.Content>
       </Actionsheet>
-      <TransactionModal
-        type={modalType}
-        closeModal={() => setShowModal(false)}
-        extraData={extraData}
-        isVisible={showModal}
+      <ChatLongTapModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        dataForTransfer={dataForLongTapModal}
       />
       <NftItemGalleryModal
         onItemPress={sendNftItemsFromGallery}

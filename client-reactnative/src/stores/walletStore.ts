@@ -359,7 +359,6 @@ export class WalletStore {
           item.file = file;
           mappedDocuments.push(item);
         } catch (error) {
-          console.log(item.files[0], 'sdjfkls');
         }
       }
       this.documents = mappedDocuments;
@@ -414,8 +413,6 @@ export class WalletStore {
     } else {
       url = etherTransferURL;
     }
-
-    console.log(bodyData);
 
     if (bodyData.nftId) {
       Alert.alert(
