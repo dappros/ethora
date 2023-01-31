@@ -55,7 +55,10 @@ export const ShareInviteLink: React.FC<ShareInviteLinkProps> = ({
           <Text style={{fontFamily: textStyles.boldFont, marginBottom: 10}}>
             Your invitation code
           </Text>
-          <TouchableOpacity style={styles.submitButton} onPress={onPressShare}>
+          <TouchableOpacity
+            accessibilityLabel="Share invite link"
+            style={styles.submitButton}
+            onPress={onPressShare}>
             <Text style={styles.submitButtonText}>{link}</Text>
             <FontAwesomeIcon
               color={'white'}

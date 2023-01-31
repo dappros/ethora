@@ -270,7 +270,7 @@ export const ProfileScreen = observer(() => {
 
     if (activeTab === 1) {
       return (
-        <View style={{paddingBottom: hp('50%')}}>
+        <View style={{paddingBottom: hp('46%')}}>
           <TransactionsList
             transactions={transactions}
             walletAddress={walletAddress}
@@ -314,7 +314,7 @@ export const ProfileScreen = observer(() => {
               accessibilityLabel="Photo">
               <Avatar
                 bg={commonColors.primaryColor}
-                fontSize={'20'}
+                size={'xl'}
                 source={
                   uploadedAvatar.location || loginStore.userAvatar
                     ? {
@@ -346,6 +346,7 @@ export const ProfileScreen = observer(() => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                accessibilityLabel="Your Transactions"
                 onPress={onTransactionNumberPress}
                 style={{marginLeft: 5}}>
                 <Text

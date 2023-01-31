@@ -68,7 +68,8 @@ const firstLayout = [
 
 const OtherUserProfileScreen = observer(
   ({route}: {route: {params?: {linkToken: string}}}) => {
-    const {loginStore, walletStore, apiStore, chatStore, otherUserStore} = useStores();
+    const {loginStore, walletStore, apiStore, chatStore, otherUserStore} =
+      useStores();
 
     const navigation = useNavigation();
 
@@ -311,6 +312,7 @@ const OtherUserProfileScreen = observer(
                       {loginStore.anotherUserLastname}
                     </Text>
                     <TouchableOpacity
+                      accessibilityLabel="User Transactions"
                       onPress={onTransactionNumberPress}
                       style={{marginLeft: 5}}>
                       <Text

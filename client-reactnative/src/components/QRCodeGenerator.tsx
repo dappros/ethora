@@ -130,7 +130,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         marginTop={2}
         w={'80%'}
         borderRadius={5}
-        accessibilityLabel="Copy your profile hyperlink"
+        accessibilityLabel="Copy hyperlink"
         onPress={copyToClipboard}>
         <View flex={0.8}>
           <Text

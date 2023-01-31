@@ -1,12 +1,6 @@
 import {observer} from 'mobx-react-lite';
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  GiftedChat,
-  Send,
-  Actions,
-  InputToolbar,
-  IMessage,
-} from 'react-native-gifted-chat';
+import {GiftedChat, Send, Actions} from 'react-native-gifted-chat';
 import {useStores} from '../stores/context';
 import {
   deleteMessageStanza,
@@ -41,7 +35,6 @@ import {ROUTES} from '../constants/routes';
 import {ImageMessage} from '../components/Chat/ImageMessage';
 import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
 import {Actionsheet, useDisclose, View} from 'native-base';
-import {modalTypes} from '../constants/modalTypes';
 import {systemMessage} from '../helpers/systemMessage';
 import {banSystemMessage} from '../helpers/banSystemMessage';
 import parseChatLink from '../helpers/parseChatLink';
@@ -62,11 +55,7 @@ import {
 } from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import {RecordingSecondsCounter} from '../components/Recorder/RecordingSecondsCounter';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {fileUpload} from '../config/routesConstants';
 import {httpUpload} from '../config/apiService';
 import {showToast} from '../components/Toast/toast';
@@ -78,7 +67,6 @@ import {
   videoMimetypes,
 } from '../constants/mimeTypes';
 import {normalizeData} from '../helpers/normalizeData';
-import {formatBytes} from '../helpers/chat/formatBytes';
 import {AudioMessage} from '../components/Chat/AudioMessage';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import RenderChatFooter from '../components/Chat/RenderChatFooter';
@@ -89,20 +77,15 @@ import {FileMessage} from '../components/Chat/FileMessage';
 import {downloadFile} from '../helpers/downloadFile';
 import {VideoMessage} from '../components/Chat/VideoMessage';
 import {ChatComposer} from '../components/Chat/Composer';
-import {
-  generateValueFromPartsAndChangedText,
-  mentionRegEx,
-  parseValue,
-} from '../helpers/chat/inputUtils';
+import {mentionRegEx, parseValue} from '../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
 import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
-import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import {toJS} from 'mobx';
 import {IMessageToSend} from '../helpers/chat/createMessageObject';
 import {ChatLongTapModal} from '../components/Modals/Chat/ChatLongTapModal';
 import {IDataForTransfer} from '../components/Modals/Chat/types';
+import {QRModal} from '../components/Modals/QR/QRModal';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -125,7 +108,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const {firstName, lastName, walletAddress} = loginStore.initialData;
 
   const {tokenTransferSuccess} = walletStore;
-  const duration = 2000;
 
   const fullName = firstName + ' ' + lastName;
 
@@ -133,16 +115,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  const [modalType, setModalType] = useState(undefined);
-  const [showModal, setShowModal] = useState(false);
-  const [dataForLongTapModal, setDataForLongTapModal] =
-    useState<IDataForTransfer>({
-      name: '',
-      message_id: '',
-      senderName: '',
-      walletFromJid: '',
-      chatJid: '',
-    });
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [dataForLongTapModal, setDataForLongTapModal] = useState<
+    IDataForTransfer & {open: boolean}
+  >({
+    name: '',
+    message_id: '',
+    senderName: '',
+    walletFromJid: '',
+    chatJid: '',
+    open: false,
+  });
   const [recording, setRecording] = useState(false);
   const [fileUploadProgress, setFileUploadProgress] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -326,9 +309,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const messageText = messageString[0].text;
     const tokenAmount = messageString[0].tokenAmount || 0;
     const receiverMessageId = messageString[0].receiverMessageId || 0;
-    const manipulatedWalletAddress = underscoreManipulation(
-      loginStore.initialData.walletAddress,
-    );
+
     const data = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
@@ -389,14 +370,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const getOtherUserDetails = (props: any) => {
     const {avatar, name, _id} = props;
-    const firstName = name.split(' ')[0];
-    const lastName = name.split(' ')[1];
+    const anotherUserFirstname = name.split(' ')[0];
+    const anotherUserLastname = name.split(' ')[1];
     const xmppID = _id.split('@')[0];
-    // const {anotherUserWalletAddress} = this.props.loginReducer;
-    const walletAddress = reverseUnderScoreManipulation(xmppID);
-    //fetch transaction
-
-    //check if user clicked their own avatar/profile
+    const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
 
     const theirXmppUsername = xmppID;
     //this will get the other user's Avatar and description
@@ -407,10 +384,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
     );
 
     loginStore.setOtherUserDetails({
-      anotherUserFirstname: firstName,
-      anotherUserLastname: lastName,
+      anotherUserFirstname: anotherUserFirstname,
+      anotherUserLastname: anotherUserLastname,
       anotherUserLastSeen: {},
-      anotherUserWalletAddress: walletAddress,
+      anotherUserWalletAddress: anotherUserWalletAddress,
       anotherUserAvatar: avatar,
     });
   };
@@ -524,7 +501,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const handleOnLongPress = (message: any) => {
-    let extraData = {};
     if (
       message.user._id.includes(
         underscoreManipulation(loginStore.initialData.walletAddress),
@@ -537,26 +513,19 @@ const ChatScreen = observer(({route, navigation}: any) => {
     ) {
       const jid = message.user._id.split('@' + apiStore.xmppDomains.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
-      const token = loginStore.userToken;
 
-      extraData = {
-        type: 'transfer',
-        amnt: null,
+      setDataForLongTapModal({
         name: message.user.name,
         message_id: message._id,
-        walletFromJid,
-        chatJid,
-        token,
-        jid,
         senderName:
           loginStore.initialData.firstName +
           ' ' +
           loginStore.initialData.lastName,
-      };
+        walletFromJid: walletFromJid,
+        chatJid: chatJid,
+        open: true,
+      });
     }
-    setShowModal(true);
-    setModalType(modalTypes.TOKENTRANSFER);
-    setDataForLongTapModal(extraData);
   };
 
   const handleOnPress = (message: any) => {
@@ -657,15 +626,20 @@ const ChatScreen = observer(({route, navigation}: any) => {
     // }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
+  const closeLongTapModal = () => {
+    setDataForLongTapModal({
+      name: '',
+      message_id: '',
+      senderName: '',
+      walletFromJid: '',
+      chatJid: '',
+      open: false,
+    });
   };
 
   //on QRCode pressed function
   const QRPressed = () => {
-    setShowModal(true);
-    setModalType(modalTypes.GENERATEQR);
-    setDataForLongTapModal({link: chatJid, mode: 'chat'});
+    setShowQrModal(true);
   };
 
   const handleChatLinks = (chatLink: string) => {
@@ -840,7 +814,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         copyTo: 'cachesDirectory',
       });
 
-      const filesApiURL =  fileUpload;
+      const filesApiURL = fileUpload;
       const FormData = require('form-data');
       let data = new FormData();
       data.append('files', {
@@ -1112,7 +1086,6 @@ const ChatScreen = observer(({route, navigation}: any) => {
           ]}
         />
 
-      
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
           isModalVisible={isNftItemGalleryVisible}
@@ -1164,10 +1137,15 @@ const ChatScreen = observer(({route, navigation}: any) => {
           open={!audioMimetypes[mediaModal.type] && mediaModal.open}
           messageData={mediaModal.message}
         />
-        
+        <QRModal
+          open={showQrModal}
+          onClose={() => setShowQrModal(false)}
+          title={'Chatroom'}
+          link={chatJid}
+        />
         <ChatLongTapModal
-          open={showModal}
-          onClose={closeModal}
+          open={dataForLongTapModal.open}
+          onClose={closeLongTapModal}
           dataForTransfer={dataForLongTapModal}
         />
       </ImageBackground>

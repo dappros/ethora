@@ -17,7 +17,10 @@ import {FILTERS} from '../../constants/transactionsFilter';
 const FilterButton = ({title, active, ...props}: any) => {
   const isButtonPressed = active.toLowerCase() === title.toLowerCase();
   return (
-    <Pressable bg={isButtonPressed ? 'gray.200' : 'white'} {...props}>
+    <Pressable
+      accessibilityLabel={title + 'Transactions'}
+      bg={isButtonPressed ? 'gray.200' : 'white'}
+      {...props}>
       <HStack
         width={wp('100%') / 3}
         paddingY={'5'}

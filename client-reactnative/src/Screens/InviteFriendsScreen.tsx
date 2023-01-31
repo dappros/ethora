@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {Share, StyleSheet, useWindowDimensions, View} from 'react-native';
+import React, {useState} from 'react';
+import {Share, useWindowDimensions} from 'react-native';
 
-
-import {commonColors, textStyles} from '../../docs/config';
-import {showError, showSuccess} from '../components/Toast/toast';
+import {commonColors} from '../../docs/config';
+import {showError} from '../components/Toast/toast';
 
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {EnterInviteCode} from './EnterInviteCodeScreen';
@@ -11,13 +10,15 @@ import {ShareInviteLink} from './ShareInviteLinkScreen';
 import {useStores} from '../stores/context';
 import {observer} from 'mobx-react-lite';
 import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import {Text} from 'native-base';
 
-export const InviteFriendsScreen = observer(({navigation}) => {
+const routes = [
+  {key: 'refer', title: 'Refer & Earn'},
+  {key: 'code', title: 'Enter code'},
+];
+
+export const InviteFriendsScreen = observer(({}) => {
   const [index, setIndex] = useState(0);
-  const [routes, setRoutes] = useState([
-    {key: 'refer', title: 'Refer & Earn'},
-    {key: 'code', title: 'Enter code'},
-  ]);
   const layout = useWindowDimensions();
 
   const {loginStore} = useStores();
@@ -25,7 +26,7 @@ export const InviteFriendsScreen = observer(({navigation}) => {
 
   const onShare = async () => {
     try {
-      const result = await Share.share({
+      await Share.share({
         message: id,
       });
     } catch (error) {
@@ -41,6 +42,15 @@ export const InviteFriendsScreen = observer(({navigation}) => {
         navigationState={{index, routes}}
         renderTabBar={props => (
           <TabBar
+            renderLabel={({route, color}) => {
+              return (
+                <Text
+                  accessibilityLabel={route.title}
+                  style={{color, margin: 8}}>
+                  {route.title}
+                </Text>
+              );
+            }}
             indicatorStyle={{backgroundColor: 'white'}}
             style={{backgroundColor: commonColors.primaryDarkColor}}
             {...props}

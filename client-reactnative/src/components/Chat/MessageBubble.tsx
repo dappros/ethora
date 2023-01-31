@@ -431,6 +431,7 @@ const Bubble = observer((props: BubbleProps) => {
 
   return (
     <View
+      accessibilityLabel="Message Manu"
       onLayout={e => setBubbleWidth(e.nativeEvent.layout.width)}
       style={[
         styles[position].container,
