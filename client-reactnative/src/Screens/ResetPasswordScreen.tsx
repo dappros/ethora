@@ -39,7 +39,7 @@ export const ResetPasswordScreen = ({navigation}) => {
     setisLoading(true);
     try {
       const res = await httpPost(
-        apiStore.defaultUrl + resetPasswordURL,
+        resetPasswordURL,
         {email},
         apiStore.defaultToken,
       );

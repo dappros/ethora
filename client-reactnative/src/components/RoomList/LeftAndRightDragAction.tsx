@@ -81,9 +81,7 @@ export const RightActions = (props: RightActionsProps) => {
   const {loginStore, apiStore} = useStores();
   const deleteMetaRoom = async () => {
     try {
-      const res = await httpDelete(
-        apiStore.defaultUrl + '/room' + jidWithoutConference,
-      );
+      const res = await httpDelete('/room' + jidWithoutConference);
     } catch (error) {
       console.log(error);
     }

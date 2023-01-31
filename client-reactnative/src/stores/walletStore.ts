@@ -171,13 +171,11 @@ export class WalletStore {
     transaction: null,
   };
   stores: RootStore;
-  defaultUrl = '';
   coinBalance = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
     this.stores = stores;
-    this.defaultUrl = stores.apiStore.defaultUrl;
   }
 
   setInitialState() {
@@ -206,7 +204,6 @@ export class WalletStore {
         nftId: '',
         transaction: null,
       };
-      this.defaultUrl = this.stores.apiStore.defaultUrl;
       this.coinBalance = 0;
     });
   }
@@ -241,7 +238,7 @@ export class WalletStore {
   };
 
   async fetchWalletBalance(token: string, isOwn: boolean) {
-    let url = this.defaultUrl + tokenEtherBalanceURL;
+    let url = tokenEtherBalanceURL;
     runInAction(() => {
       this.isFetching = true;
     });
@@ -300,12 +297,7 @@ export class WalletStore {
     token: string,
     linkToken?: string,
   ) {
-    let url =
-      this.defaultUrl +
-      otherProfileBalance +
-      walletAddress +
-      '/' +
-      (linkToken || '');
+    let url = otherProfileBalance + walletAddress + '/' + (linkToken || '');
     console.log(url);
     runInAction(() => {
       this.isFetching = true;
@@ -353,7 +345,7 @@ export class WalletStore {
   async getDocuments(walletAddress: string) {
     try {
       const docs = await httpGet(
-        this.stores.apiStore.defaultUrl + docsURL + '/' + walletAddress,
+        docsURL + '/' + walletAddress,
         this.stores.loginStore.userToken,
       );
       const documents = docs.data.results;
@@ -361,7 +353,7 @@ export class WalletStore {
       for (const item of documents) {
         try {
           const {data: file} = await httpGet(
-            this.stores.apiStore.defaultUrl + fileUpload + item.files[0],
+            fileUpload + item.files[0],
             this.stores.loginStore.userToken,
           );
           item.file = file;
@@ -382,7 +374,7 @@ export class WalletStore {
     tokenName: string,
   ) {
     const response = await httpPost(
-      this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,
+      nfmtCollectionTransferURL,
       body,
       this.stores.loginStore.userToken,
     );
@@ -414,13 +406,13 @@ export class WalletStore {
   ) {
     let url = '';
     if (bodyData.isNfmt) {
-      url = this.defaultUrl + nfmtTransferURL;
+      url = nfmtTransferURL;
     } else if (bodyData.tokenName && !itemUrl) {
-      url = this.defaultUrl + tokenTransferURL;
+      url = tokenTransferURL;
     } else if (itemUrl) {
-      url = this.defaultUrl + itemTransferURL;
+      url = itemTransferURL;
     } else {
-      url = this.defaultUrl + etherTransferURL;
+      url = etherTransferURL;
     }
 
     console.log(bodyData);
@@ -483,7 +475,6 @@ export class WalletStore {
     offset: number | string,
   ) => {
     const url =
-      this.defaultUrl +
       transactionURL +
       'walletAddress=' +
       walletAddress +
@@ -538,7 +529,6 @@ export class WalletStore {
     offset: number,
   ) {
     let url =
-      this.defaultUrl +
       transactionURL +
       'walletAddress=' +
       walletAddress +

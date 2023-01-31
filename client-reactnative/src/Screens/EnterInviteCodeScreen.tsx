@@ -31,11 +31,7 @@ export const EnterInviteCode = observer(() => {
     }
     setLoading(true);
     try {
-      await httpPost(
-        apiStore.defaultUrl + referralRoute,
-        {referrerId: code},
-        loginStore.userToken,
-      );
+      await httpPost(referralRoute, {referrerId: code}, loginStore.userToken);
       loginStore.updateInitialData({
         ...loginStore.initialData,
         referrerId: code,

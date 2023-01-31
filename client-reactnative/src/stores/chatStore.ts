@@ -562,7 +562,7 @@ export class ChatStore {
     try {
       const body = {jids: roomJids};
       const res = await httpPost(
-        this.stores.apiStore.defaultUrl + '/room/check-for-meta-room',
+        '/room/check-for-meta-room',
         body,
         this.stores.loginStore.userToken,
       );

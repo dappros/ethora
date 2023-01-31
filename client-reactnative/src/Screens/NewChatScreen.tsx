@@ -32,10 +32,10 @@ import {CONFERENCEDOMAIN, DOMAIN} from '../xmpp/xmppConstants';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {httpPost} from '../config/apiService';
-import { Image } from 'react-native';
+import {Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { uploadFiles } from '../helpers/uploadFiles';
-import { fileUpload } from '../config/routesConstants';
+import {uploadFiles} from '../helpers/uploadFiles';
+import {fileUpload} from '../config/routesConstants';
 
 interface NewChatScreenProps {}
 
@@ -74,7 +74,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const sendFiles = async (data: any) => {
     setLoading(true);
     try {
-      const url = apiStore.defaultUrl + fileUpload;
+      const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       console.log(JSON.stringify(response), 'sdfasdfadf');
       setLoading(false);
@@ -101,8 +101,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           type: response.assets[0].type,
           uri: response.assets[0].uri,
         });
-        sendFiles(data)
-
+        sendFiles(data);
       }
     });
   };
@@ -126,15 +125,15 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           chatStore.xmpp,
         );
 
-        chatAvatar&&
-        setRoomImage(
-          manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
-          roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
-          chatAvatar,
-          '',
-          'icon',
-          chatStore.xmpp
-        );
+        chatAvatar &&
+          setRoomImage(
+            manipulatedWalletAddress + '@' + apiStore.xmppDomains.DOMAIN,
+            roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
+            chatAvatar,
+            '',
+            'icon',
+            chatStore.xmpp,
+          );
 
         subscribeToRoom(
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
@@ -158,11 +157,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
               roomJid: params.metaRoom.roomJid,
             },
           };
-          const res = await httpPost(
-            apiStore.defaultUrl + '/room',
-            body,
-            loginStore.userToken,
-          );
+          const res = await httpPost('/room', body, loginStore.userToken);
           console.log(res?.data);
         }
 
@@ -190,11 +185,11 @@ const NewChatScreen = (props: NewChatScreenProps) => {
               onPress={handleChatAvatar}>
               {chatAvatar ? (
                 <FastImage
-                source={{uri:chatAvatar}}
+                  source={{uri: chatAvatar}}
                   style={{
-                    width:wp('15%'),
-                    height:wp('15%'),
-                    borderRadius:wp('15%') / 2
+                    width: wp('15%'),
+                    height: wp('15%'),
+                    borderRadius: wp('15%') / 2,
                   }}
                 />
               ) : (

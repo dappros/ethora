@@ -55,7 +55,7 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
     setLoading(true);
     try {
       const {data} = await httpPost(
-        apiStore.defaultUrl + shareLink,
+         shareLink,
         body,
         loginStore.userToken,
       );

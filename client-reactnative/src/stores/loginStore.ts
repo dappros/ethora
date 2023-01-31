@@ -220,7 +220,7 @@ export class LoginStore {
   getRefreshToken = async () => {
     try {
       const response = await httpPost(
-        this.stores.apiStore.defaultUrl + refreshTokenURL,
+         refreshTokenURL,
         {},
         this.refreshToken,
       );
@@ -240,7 +240,7 @@ export class LoginStore {
       ? {email: username, password}
       : {username, password};
     const response = await httpPost(
-      this.stores.apiStore.defaultUrl + loginURL,
+       loginURL,
       body,
       this.stores.apiStore.defaultToken,
     );
@@ -263,7 +263,7 @@ export class LoginStore {
     runInAction(() => {
       this.isFetching = true;
     });
-    const url = this.stores.apiStore.defaultUrl + loginURL;
+    const url =  loginURL;
     try {
       const response: any = await httpPost(url, bodyData, token);
       if (response.data.success) {
@@ -373,7 +373,7 @@ export class LoginStore {
     msg: string;
     loginType: string;
   }) => {
-    const url = this.stores.apiStore.defaultUrl + loginURL;
+    const url =  loginURL;
 
     try {
       const response = await httpPost(
@@ -428,7 +428,7 @@ export class LoginStore {
   registerUser = async (body: any, ssoUserData: any) => {
     const token = this.stores.apiStore.defaultToken;
     try {
-      const url = this.stores.apiStore.defaultUrl + registerUserURL;
+      const url =  registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
         this.loginUser(
@@ -464,7 +464,7 @@ export class LoginStore {
   }) => {
     const token = this.stores.apiStore.defaultToken;
     try {
-      const url = this.stores.apiStore.defaultUrl + registerUserURL;
+      const url =  registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
         this.loginHandler(response, '');
@@ -487,7 +487,7 @@ export class LoginStore {
     fd.append('firstName', bodyData.firstName);
     fd.append('lastName', bodyData.lastName);
 
-    const url = this.stores.apiStore.defaultUrl + registerUserURL;
+    const url =  registerUserURL;
     const response: any = await httpPut(url, fd, this.userToken);
     if (response.data.success) {
       const updatedData = {

@@ -326,7 +326,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         apiStore.xmppDomains.DOMAIN;
       const roomJid = room.jid;
       try {
-        const url = apiStore.defaultUrl + fileUpload;
+        const url = fileUpload;
         const response = await uploadFiles(data, loginStore.userToken, url);
         const file = response.results[0];
         setUploadedImage(response.results[0]);

@@ -105,7 +105,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
     const getCosts = async () => {
       try {
         const res = await httpGet(
-          apiStore.defaultUrl + '/tokens/get/' + messageData?.contractAddress,
+           '/tokens/get/' + messageData?.contractAddress,
           apiStore.defaultToken,
         );
         return res.data;

@@ -24,7 +24,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
     setLoading(true);
     try {
       await httpDelete(
-        apiStore.defaultUrl + changeUserData,
+         changeUserData,
         loginStore.userToken,
       );
       showSuccess('Success', 'Account deleted successfully');
@@ -58,7 +58,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
 
     try {
       const {data} = await httpGet(
-        apiStore.defaultUrl + '/users/exportData',
+         '/users/exportData',
         loginStore.userToken,
       );
       const dataString = JSON.stringify(data);

@@ -278,7 +278,7 @@ const ThreadScreen = observer((props: any) => {
 
     const result = await audioRecorderPlayer.stopRecorder();
 
-    const filesApiURL = apiStore.defaultUrl + fileUpload;
+    const filesApiURL = fileUpload;
     const FormData = require('form-data');
     let data = new FormData();
     const waveform = await getAudioData();
@@ -402,7 +402,7 @@ const ThreadScreen = observer((props: any) => {
         copyTo: 'cachesDirectory',
       });
 
-      const filesApiURL = apiStore.defaultUrl + fileUpload;
+      const filesApiURL = fileUpload;
       const FormData = require('form-data');
       let data = new FormData();
       data.append('files', {

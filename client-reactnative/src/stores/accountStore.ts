@@ -10,7 +10,6 @@ export class AccountStore {
   errorMessage = '';
   emailList = [];
   stores: RootStore | {} = {};
-  defaultUrl = '';
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -23,12 +22,11 @@ export class AccountStore {
       this.error = false;
       this.errorMessage = '';
       this.emailList = [];
-      this.defaultUrl = '';
     });
   }
 
   async getEmailList(token: any) {
-    const url = this.stores.apiStore.defaultUrl + getListOfEmails;
+    const url =  getListOfEmails;
     runInAction(() => {
       this.isFetching = true;
     });
@@ -55,7 +53,7 @@ export class AccountStore {
   }
 
   async addEmailToList(token: any, body: any) {
-    const url = this.stores.apiStore.defaultUrl + addOrDeleteEmail;
+    const url =  addOrDeleteEmail;
     this.isFetching = true;
 
     try {
@@ -86,7 +84,7 @@ export class AccountStore {
 
   async deleteEmailFromList(token: any, email: any) {
     const url =
-      this.stores.apiStore.defaultUrl + addOrDeleteEmail + '/' + email;
+       addOrDeleteEmail + '/' + email;
 
     runInAction(() => {
       this.isFetching = true;

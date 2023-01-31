@@ -89,11 +89,7 @@ export const RegisterScreen = ({navigation, route}) => {
     }
     setLoading(true);
     try {
-      const res = await httpPost(
-        apiStore.defaultUrl + registerUserURL,
-        body,
-        apiStore.defaultToken,
-      );
+      const res = await httpPost(registerUserURL, body, apiStore.defaultToken);
       if (res.data.success) {
         showSuccess('Registration', 'User registered successfully');
 
@@ -233,16 +229,17 @@ export const RegisterScreen = ({navigation, route}) => {
                     }}
                   />
                   <Text
-                  style={{
-                    fontFamily:textStyles.boldFont,
-                    color:"black"
-                  }}
-                  >I agree to </Text>
+                    style={{
+                      fontFamily: textStyles.boldFont,
+                      color: 'black',
+                    }}>
+                    I agree to{' '}
+                  </Text>
                   <TouchableOpacity>
                     <Text
                       style={{
-                        fontFamily:textStyles.boldFont,
-                        color:"black",
+                        fontFamily: textStyles.boldFont,
+                        color: 'black',
                         textDecorationLine: 'underline',
                       }}>
                       Terms and conditions

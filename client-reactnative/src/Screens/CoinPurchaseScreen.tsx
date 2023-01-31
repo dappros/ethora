@@ -74,7 +74,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
 
       await finishTransaction(transaction, true);
       const res = await httpPost(
-        apiStore.defaultUrl + '/users/payments',
+        '/users/payments',
         {
           type: 'purchase',
           transaction: transaction,

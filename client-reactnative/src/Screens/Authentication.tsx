@@ -47,9 +47,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     setLoading(true);
     try {
       const res = await httpGet(
-        apiStore.defaultUrl +
-          walletRoute +
-          loginStore.initialData.walletAddress,
+        walletRoute + loginStore.initialData.walletAddress,
         loginStore.userToken,
       );
       if (res.data.result) {
@@ -75,10 +73,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const removeAddress = async () => {
     setLoading(true);
     try {
-      const res = await httpDelete(
-        apiStore.defaultUrl + walletRoute + account,
-        loginStore.userToken,
-      );
+      const res = await httpDelete(walletRoute + account, loginStore.userToken);
       console.log(res.data);
 
       showSuccess('Success', 'Your Mainnet address was successfully removed.');
@@ -95,7 +90,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   const updateAddress = async (address?: string) => {
     try {
       const res = await httpPost(
-        apiStore.defaultUrl + walletRoute,
+        walletRoute,
         {
           address: address || account,
         },

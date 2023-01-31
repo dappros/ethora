@@ -69,7 +69,6 @@ const NftItemHistoryScreen = (props: any) => {
     nftId: string,
   ) => {
     const url =
-      apiStore.defaultUrl +
       transactionURL +
       'walletAddress=' +
       walletAddress +
@@ -98,9 +97,7 @@ const NftItemHistoryScreen = (props: any) => {
     try {
       if (item?.isCollection) {
         const res = await httpPost(
-          apiStore.defaultUrl +
-            '/tokens/items/nfmt/collection-destroy/' +
-            item.contractAddress,
+          '/tokens/items/nfmt/collection-destroy/' + item.contractAddress,
           {},
           loginStore.userToken,
         );
@@ -109,8 +106,7 @@ const NftItemHistoryScreen = (props: any) => {
 
       if (item.tokenType === 'NFMT') {
         const res = await httpPost(
-          apiStore.defaultUrl +
-            '/tokens/items/nfmt/burn/' +
+          '/tokens/items/nfmt/burn/' +
             item.contractAddress +
             '/' +
             item.nfmtType,
@@ -121,7 +117,7 @@ const NftItemHistoryScreen = (props: any) => {
       }
       if (item.tokenType === 'NFT') {
         const res = await httpPost(
-          apiStore.defaultUrl + '/tokens/burn/items/',
+          '/tokens/burn/items/',
           {nftId: item.nftId, amount: item.balance},
           loginStore.userToken,
         );

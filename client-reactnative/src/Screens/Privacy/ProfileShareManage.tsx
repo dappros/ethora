@@ -49,7 +49,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
     setLoading(true);
     try {
       const {data} = await httpGet(
-        apiStore.defaultUrl + shareLink,
+         shareLink,
         loginStore.userToken,
       );
       setSharedLinks(data.items.filter(item => item.resource === 'profile'));
@@ -61,7 +61,7 @@ export const ProfileShareManage: React.FC<IProfileShareManage> = ({
   const deleteLink = async (linkToken: string) => {
     try {
       await httpDelete(
-        apiStore.defaultUrl + shareLink + linkToken,
+         shareLink + linkToken,
         loginStore.userToken,
       );
       await getSharedLinks();

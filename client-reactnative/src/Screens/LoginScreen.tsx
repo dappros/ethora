@@ -80,7 +80,6 @@ const LoginScreen = observer(({navigation}) => {
   }, []);
   const onAppleButtonPress = async () => {
     const user = await handleAppleLogin(
-      apiStore.defaultUrl,
       apiStore.defaultToken,
       loginStore.loginUser,
       loginStore.registerUser,
@@ -89,7 +88,6 @@ const LoginScreen = observer(({navigation}) => {
 
     await loginOrRegisterSocialUser(
       user,
-      apiStore.defaultUrl,
       apiStore.defaultToken,
       loginStore.loginUser,
       loginStore.registerUser,
@@ -125,7 +123,7 @@ const LoginScreen = observer(({navigation}) => {
   const checkExternalWalletExist = async () => {
     try {
       const res = await httpPost(
-        apiStore.defaultUrl + checkWalletExist,
+        checkWalletExist,
         {
           walletAddress: connector.accounts[0],
         },
@@ -224,7 +222,6 @@ const LoginScreen = observer(({navigation}) => {
               bg="#4D6DA4"
               onPress={() => {
                 handleFaceBookLogin(
-                  apiStore.defaultUrl,
                   apiStore.defaultToken,
                   loginStore.loginUser,
                   loginStore.registerUser,
@@ -252,7 +249,6 @@ const LoginScreen = observer(({navigation}) => {
               bg="#FFFF"
               onPress={() =>
                 handleGoogleLogin(
-                  apiStore.defaultUrl,
                   apiStore.defaultToken,
                   loginStore.loginUser,
                   loginStore.registerUser,

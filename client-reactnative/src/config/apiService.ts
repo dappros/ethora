@@ -9,7 +9,9 @@ import axios from 'axios';
 import {rootStore} from '../stores/context';
 import {refreshTokenURL} from './routesConstants';
 
-const http = axios.create();
+const http = axios.create({
+  baseURL: rootStore.apiStore.defaultUrl,
+});
 
 http.interceptors.response.use(undefined, async error => {
   if (
@@ -19,7 +21,7 @@ http.interceptors.response.use(undefined, async error => {
   ) {
     if (
       error?.request?.responseURL ===
-      rootStore.apiStore.defaultUrl + refreshTokenURL
+      rootStore. refreshTokenURL
     ) {
       return Promise.reject(error);
     }

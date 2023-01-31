@@ -120,7 +120,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     let item = {files: [uploadedFile.location], documentName: itemName};
 
     // alert(JSON.stringify(item))
-    const url = apiStore.defaultUrl + docsURL;
+    const url =  docsURL;
     setLoading(true);
     try {
       const res = await httpPost(url, item, loginStore.userToken);
@@ -196,7 +196,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
   const sendFiles = async (data: any) => {
     setLoading(true);
     try {
-      const url = apiStore.defaultUrl + fileUpload;
+      const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       setLoading(false);
 

@@ -89,7 +89,6 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
   ) => {
     // let axios = require('axios');
     const url =
-      apiStore.defaultUrl +
       transactionURL +
       'walletAddress=' +
       walletAddress +
@@ -116,10 +115,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
   const deleteDocument = async () => {
     setLoading(true);
     try {
-      const res = await httpDelete(
-        apiStore.defaultUrl + '/docs/' + item._id,
-        loginStore.userToken,
-      );
+      const res = await httpDelete('/docs/' + item._id, loginStore.userToken);
       await walletStore.getDocuments(loginStore.initialData.walletAddress);
       navigation.navigate(ROUTES.PROFILE);
     } catch (error) {

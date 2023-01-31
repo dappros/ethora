@@ -91,7 +91,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
 
   const sendFiles = async (data: any) => {
     try {
-      const url = apiStore.defaultUrl + fileUpload;
+      const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       const file = response.results[0];
       setRoomImage(

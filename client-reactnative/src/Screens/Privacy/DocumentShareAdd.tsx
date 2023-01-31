@@ -66,11 +66,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
     };
     setLoading(true);
     try {
-      const {data} = await httpPost(
-        apiStore.defaultUrl + shareLink,
-        body,
-        loginStore.userToken,
-      );
+      const {data} = await httpPost(shareLink, body, loginStore.userToken);
       setCreatedLink(data.sharelinkData);
     } catch (error) {
       console.log(error);

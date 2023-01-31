@@ -161,7 +161,7 @@ export const ProfileScreen = observer(() => {
     const formData = new FormData();
     formData.append('description', descriptionLocal);
     await httpUploadPut(
-      apiStore.defaultUrl + changeUserData,
+      changeUserData,
       formData,
       loginStore.userToken,
       console.log,
@@ -214,7 +214,7 @@ export const ProfileScreen = observer(() => {
 
   const sendFiles = async (data: any) => {
     try {
-      const url = apiStore.defaultUrl + fileUpload;
+      const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       const file = response.results[0];
       setUploadedAvatar(file);
@@ -222,7 +222,7 @@ export const ProfileScreen = observer(() => {
       formData.append('description', descriptionLocal);
       formData.append('file', file.location);
       // const userRes = await httpUploadPut(
-      //   apiStore.defaultUrl + changeUserData,
+      //    changeUserData,
       //   formData,
       //   loginStore.userToken,
       //   console.log,

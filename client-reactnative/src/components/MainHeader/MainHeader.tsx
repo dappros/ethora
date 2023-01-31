@@ -67,7 +67,7 @@ export const MainHeader = observer(() => {
   const navigateToLatestMetaRoom = async () => {
     try {
       const res = await httpGet(
-        apiStore.defaultUrl + '/room/currentRoom',
+         '/room/currentRoom',
         loginStore.userToken,
       );
       if (!res.data.result) {

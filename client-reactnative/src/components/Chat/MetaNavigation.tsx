@@ -250,7 +250,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     setLoading(true);
     try {
       const res = await httpGet(
-        apiStore.defaultUrl + roomRoute + '/getRoom/' + chatId,
+       roomRoute + '/getRoom/' + chatId,
         loginStore.userToken,
       );
       setCurrentMetaRoom(res.data.result);
@@ -331,7 +331,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
   const sendRoomJoin = async () => {
     try {
       const res = await httpPost(
-        apiStore.defaultUrl + roomRoute + '/join/' + chatId,
+        roomRoute + '/join/' + chatId,
         {},
         loginStore.userToken,
       );

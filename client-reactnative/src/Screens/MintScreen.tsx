@@ -72,7 +72,7 @@ const MintScreen = (props: MintScreenProps) => {
 
   const createNftItem = async () => {
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
-    const url = apiStore.defaultUrl + nftTransferURL;
+    const url = nftTransferURL;
     try {
       await httpPost(url, item, loginStore.userToken);
       walletStore.fetchWalletBalance(loginStore.userToken, true);
@@ -133,7 +133,7 @@ const MintScreen = (props: MintScreenProps) => {
   const sendFiles = async (data: any) => {
     setLoading(true);
     try {
-      const url = apiStore.defaultUrl + fileUpload;
+      const url =  fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       console.log(JSON.stringify(response), 'sdfasdfadf');
       setFileId(response.results[0]['_id']);

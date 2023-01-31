@@ -56,7 +56,7 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
     setLoading(true);
     try {
       const {data} = await httpGet(
-        apiStore.defaultUrl + shareLink,
+         shareLink,
         loginStore.userToken,
       );
       setSharedLinks(data.items.filter(item => item.resource === 'document'));
@@ -68,7 +68,7 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   const deleteLink = async (linkToken: string) => {
     try {
       const {data} = await httpDelete(
-        apiStore.defaultUrl + shareLink + linkToken,
+         shareLink + linkToken,
         loginStore.userToken,
       );
       await getSharedLinks();
