@@ -101,6 +101,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {toJS} from 'mobx';
+import { MessageProps } from '../stores/chatStore';
 import {IMessageToSend} from '../helpers/chat/createMessageObject';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -143,7 +144,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [text, setText] = useState('');
   const [selection, setSelection] = useState({start: 0, end: 0});
   const debouncedChatText = useDebounce(text, 500);
-  const [onTapMessageObject, setOnTapMessageObject] = useState();
+  const [onTapMessageObject, setOnTapMessageObject] = useState<MessageProps>();
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showEditOption, setShowEditOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
@@ -551,7 +552,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = (message: any) => {
+  const handleOnPress = (message: MessageProps) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
       setShowEditOption(false);
@@ -591,6 +592,16 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setShowEditOption(true);
     onClose();
   };
+
+  //send delete message stanza
+  const handleDelete = () => {
+    deleteMessageStanza(
+      manipulatedWalletAddress,
+      chatJid,
+      onTapMessageObject?._id as string,
+      chatStore.xmpp
+    )
+  }
 
   const handleSendMessage = (messageString: any) => {
     if (isEditing) {
@@ -1142,7 +1153,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
               <Actionsheet.Item onPress={handleEdit}>Edit</Actionsheet.Item>
             )}
             {isShowDeleteOption && (
-              <Actionsheet.Item onPress={onClose} color="red.500">
+              <Actionsheet.Item onPress={handleDelete} color="red.500">
                 Delete
               </Actionsheet.Item>
             )}

@@ -125,9 +125,75 @@ export interface replaceMessageListItemProps {
   replaceMessageId: string;
   replaceMessageText: string;
 }
+
+export interface messageData {
+
+}
+
+export interface MessageProps {
+  _id:                        string;
+  attachmentId:               string;
+  contractAddress:            string;
+  createdAt:                  Date;
+  duration:                   string;
+  fileName:                   string;
+  image:                      string;
+  imageLocation:              string;
+  imageLocationPreview:       string;
+  isEdited:                   boolean;
+  isReplace:                  boolean;
+  isReply:                    boolean;
+  isStoredFile:               boolean;
+  localURL:                   string;
+  mainMessageAttachmentId:    string;
+  mainMessageContractAddress: string;
+  mainMessageCreatedAt:       string;
+  mainMessageDuration:        string;
+  mainMessageFileName:        string;
+  mainMessageId:              string;
+  mainMessageImageLocation:   string;
+  mainMessageImagePreview:    string;
+  mainMessageMimeType:        string;
+  mainMessageNftActionType:   string;
+  mainMessageNftId:           string;
+  mainMessageOriginalName:    string;
+  mainMessageRoomJid:         string;
+  mainMessageSize:            string;
+  mainMessageText:            string;
+  mainMessageUserName:        string;
+  mainMessageWaveForm:        string;
+  mainMessageWrappable:       boolean;
+  mimetype:                   string;
+  nftActionType:              string;
+  nftId:                      string;
+  nftName:                    string;
+  numberOfReplies:            number;
+  originalName:               string;
+  preview:                    string;
+  quickReplies:               string;
+  realImageURL:               string;
+  receiverMessageId:          string;
+  replaceMessageId:           string;
+  roomJid:                    string;
+  showInChannel:              boolean;
+  size:                       string;
+  system:                     boolean;
+  text:                       string;
+  tokenAmount:                number;
+  user:                       User;
+  waveForm:                   string;
+  wrappable:                  boolean;
+}
+
+export interface User {
+  _id:    string;
+  avatar: string;
+  name:   string;
+}
+
 let temporaryArchiveMessages: IMessage[] = [];
 export class ChatStore {
-  messages: any = [];
+  messages: MessageProps[] = [];
   xmpp: any = null;
   xmppError: any = '';
   roomList: roomListProps[] | [] = [];
@@ -860,8 +926,13 @@ export class ChatStore {
       ) {
         getBlackList(xmppUsername, this.xmpp);
       }
+
+      //listener for delete response
       if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
-        console.log(stanza.children, '1');
+        if(stanza.children.find((item:any) => item.name === 'delete')){
+          const messageId = stanza.children.find((item:any)=> item.name === 'delete').attrs.id;
+          console.log(messageId);
+        }
       }
       if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
@@ -899,6 +970,10 @@ export class ChatStore {
             stanza.children[0].children[0].children[0].children;
 
           const message = createMessageObject(singleMessageDetailArray);
+
+          // if(message._id === '1674879752807000'){
+          //   console.log(stanza.children[0].children[0].children[0].children,"av ffv")
+          // }
 
           //check if the stanza is a replace stanza
           if (message.isReplace) {
@@ -1043,7 +1118,7 @@ export class ChatStore {
           ).children[0];
           // this.addToReplaceMessageList(replaceMessageId, messageString);
 
-          this.editMessage(replaceMessageId, messagexString);
+          this.editMessage(replaceMessageId, messageString);
           await updateMessageText(replaceMessageId, messageString);
         }
 

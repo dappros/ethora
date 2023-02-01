@@ -24,47 +24,47 @@ import {
   MessageImage,
   Time,
   utils,
-  MessageProps,
 } from 'react-native-gifted-chat';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import {Box, HStack, Text, View} from 'native-base';
-import {observer} from 'mobx-react-lite';
+import { Box, HStack, Text, View } from 'native-base';
+import { observer } from 'mobx-react-lite';
+import { MessageProps } from '../../stores/chatStore';
 
 const {isSameUser, isSameDay, StylePropType} = utils;
 
 interface BubbleProps {
-  onLongPress: any;
-  currentMessage: any;
-  onTap: any;
-  containerStyle?: any;
-  wrapperStyle?: any;
-  messageTextStyle?: any;
-  messageTextProps?: any;
-  renderMessageText?: any;
-  renderMessageImage?: any;
-  renderTicks?: any;
-  user: any;
-  tickStyle?: any;
-  renderUsername?: any;
-  renderTime?: any;
-  position?: 'left' | 'right';
-  renderCustomView?: any;
-  nextMessage?: any;
-  containerToNextStyle?: any;
-  previousMessage?: any;
-  containerToPreviousStyle?: any;
-  isCustomViewBottom?: any;
-  image?: any;
-  bottomContainerStyle?: any;
-  touchableProps?: any;
-  timeProps?: any;
-  usernameProps?: any;
-  messageImageProps?: any;
-  type: 'main' | 'thread';
-  scrollToParentMessage: any;
-  handleReply: (message: any) => void;
+  onLongPress:any;
+  currentMessage:MessageProps;
+  onTap:(message: MessageProps) => void;
+  containerStyle?:any;
+  wrapperStyle?:any;
+  messageTextStyle?:any;
+  messageTextProps?:any;
+  renderMessageText?:any;
+  renderMessageImage?:any;
+  renderTicks?:any;
+  user:any;
+  tickStyle?:any;
+  renderUsername?:any;
+  renderTime?:any;
+  position?:'left'|'right';
+  renderCustomView?:any;
+  nextMessage?:any;
+  containerToNextStyle?:any;
+  previousMessage?:any;
+  containerToPreviousStyle?:any;
+  isCustomViewBottom?:any;
+  image?:any;
+  bottomContainerStyle?:any;
+  touchableProps?:any;
+  timeProps?:any;
+  usernameProps?:any;
+  messageImageProps?:any;
+  type:'main'|'thread';
+  scrollToParentMessage:any;
+  handleReply:(message:any) => void
 }
 
 const Bubble = observer((props: BubbleProps) => {
@@ -144,15 +144,18 @@ const Bubble = observer((props: BubbleProps) => {
     return null;
   };
 
-  const renderMessageImageHandle = () => {
-    if (currentMessage.image || currentMessage.realImageUrl) {
+  const renderMessageImageHandle=() =>{
+    if (
+      currentMessage.image ||
+      currentMessage.realImageURL
+    ) {
       if (renderMessageImage) {
         return renderMessageImage(props);
       }
       return (
         <MessageImage
           {...messageImageProps}
-          imageStyle={[styles.slackImage, messageImageProps.imageStyle]}
+          imageStyle={[messageImageProps.imageStyle]}
         />
       );
     }

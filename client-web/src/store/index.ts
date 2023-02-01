@@ -254,6 +254,7 @@ interface IStore {
   setRoomRoles: (data: TRoomRoles) => void;
   activeRoomFilter: TActiveRoomFilter;
   setActiveRoomFilter: (filter: TActiveRoomFilter) => void;
+  deleteMessage:(messageId:number) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -478,6 +479,14 @@ const _useStore = create<IStore>()(
               );
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
+          deleteMessage:(messageId:number) => {
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex((i) => i.id === messageId);
+              if(messageIndex>-1){
+                state.historyMessages.splice(messageIndex,1);
+              }
+            })
+          },
           updateCoinsInMessageHistory: (
             id: number,
             userJID: string,

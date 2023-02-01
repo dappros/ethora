@@ -120,8 +120,9 @@ export function ChatInRoom() {
   const [isThreadView, setThreadView] = useState(false);
   const [showInChannel, setShowInChannel] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
-  const [currentEditMessage, setCurrentEditMessage] =
-    React.useState<TMessageHistory>();
+  const [currentEditMessage, setCurrentEditMessage] = React.useState<TMessageHistory>();
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState<boolean>(false);
+  const [currentDeleteMessage, setCurrentDeleteMessage] = React.useState<TMessageHistory>();
 
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
@@ -131,6 +132,14 @@ export function ChatInRoom() {
 
   const handleCurrentEditMessage = (message: TMessageHistory) =>
     setCurrentEditMessage(message);
+
+  const handleSetCurrentDeleteMessage = (message:TMessageHistory) => setCurrentDeleteMessage(message);
+
+  const handleCloseDeletMessageDialog = () => {
+    setShowDeleteDialog(false);
+    setCurrentDeleteMessage(null)
+  }
+  
 
   const [currentRoom, setCurrentRoom] = useState("");
   const currentPickedRoom = useMemo(() => {
@@ -530,6 +539,92 @@ export function ChatInRoom() {
     handleSetCurrentThreadViewMessage(message);
   };
 
+  //set the message to be deleted and show delete confirmation dialogue
+  const onMessageDeleteClick = (value:boolean, message: TMessageHistory) => {
+    setShowDeleteDialog(value);
+    handleSetCurrentDeleteMessage(message);
+  }
+
+  //triggered when user clicks Delete button on delete confirmation dialogue
+  const deleteMessage = () => {
+
+    //remove the message from store
+    useStoreState.getState().deleteMessage(currentDeleteMessage.id);
+
+    //send delete request to xmpp server
+    xmpp.deleteMessageStanza(currentUntrackedChatRoom,currentDeleteMessage.id.toString())
+
+    handleCloseDeletMessageDialog();
+  }
+
+  //Delete confirmation dialogue component
+  const DeleteMessageDialogComponent = () => {
+    return(
+      <Dialog
+      onClose={handleCloseDeletMessageDialog}
+      open={showDeleteDialog}
+      >
+        <DialogTitle>Delete message</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure you want to delete this message.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeletMessageDialog}>Cancel</Button>
+          <Button onClick={deleteMessage}>Delete</Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
+  //component to render File upload dialog box
+  const UploadFileDialogComponent = () => {
+    return(
+      <Dialog
+        fullScreen={fullScreen}
+        open={uploadFileDialogData.open}
+        onClose={() =>
+          setUploadFileDialogData({
+            open: false,
+            description: "",
+            headline: "",
+          })
+        }
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {uploadFileDialogData.headline}
+        </DialogTitle>
+        <DialogContent>
+          {!!uploadFileDialogData.description ? (
+            <DialogContentText>
+              {uploadFileDialogData.description}
+            </DialogContentText>
+          ) : (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress />
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() =>
+              setUploadFileDialogData({
+                open: false,
+                description: "",
+                headline: "",
+              })
+            }
+            autoFocus
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
       <MainContainer responsive>
@@ -798,6 +893,7 @@ export function ChatInRoom() {
         message={transferDialogData.message}
         onThreadClick={onMenuThreadClick}
         onEditClick={onMenuEditClick}
+        onDeleteClick={onMessageDeleteClick}
       />
       <ChatMediaModal
         open={mediaDialogData.open}
@@ -806,47 +902,9 @@ export function ChatInRoom() {
         url={mediaDialogData.message?.data?.location}
       />
 
-      <Dialog
-        fullScreen={fullScreen}
-        open={uploadFileDialogData.open}
-        onClose={() =>
-          setUploadFileDialogData({
-            open: false,
-            description: "",
-            headline: "",
-          })
-        }
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {uploadFileDialogData.headline}
-        </DialogTitle>
-        <DialogContent>
-          {!!uploadFileDialogData.description ? (
-            <DialogContentText>
-              {uploadFileDialogData.description}
-            </DialogContentText>
-          ) : (
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              setUploadFileDialogData({
-                open: false,
-                description: "",
-                headline: "",
-              })
-            }
-            autoFocus
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {UploadFileDialogComponent()}
+      {DeleteMessageDialogComponent()}
+      
       <QrModal
         open={isQrModalVisible}
         link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}
