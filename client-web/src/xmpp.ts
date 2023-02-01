@@ -184,7 +184,7 @@ const onRealtimeMessage = async (stanza: Element) => {
       useStoreState.getState().setNumberOfReplies(messageId);
     }
     useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-    useStoreState.getState().updateMessageHistory([msg]);
+    useStoreState.getState().updateMessageHistory(msg);
     sendBrowserNotification(msg.body, () => {
       history.push("/chat/" + msg.roomJID.split("@")[0]);
     });
@@ -1038,6 +1038,7 @@ class XmppClass {
         nftId: data?.nftId,
         isReply: data?.isReply,
         mainMessage: data?.mainMessage,
+        roomJid: data?.roomJid
       })
     );
 

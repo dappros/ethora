@@ -215,7 +215,7 @@ interface IStore {
   ) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
-  updateMessageHistory: (messages: TMessageHistory[]) => void;
+  updateMessageHistory: (messages: TMessageHistory[] | TMessageHistory) => void;
   removeAllInMessageHistory: (userJID: string) => void;
   updateCoinsInMessageHistory: (
     id: number,
@@ -254,7 +254,7 @@ interface IStore {
   setRoomRoles: (data: TRoomRoles) => void;
   activeRoomFilter: TActiveRoomFilter;
   setActiveRoomFilter: (filter: TActiveRoomFilter) => void;
-  deleteMessage:(messageId:number) => void;
+  deleteMessage: (messageId: number) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -471,21 +471,30 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.currentThreadViewMessage = currentThreadViewMessage;
             }),
-          updateMessageHistory: (messages: TMessageHistory[]) =>
+          updateMessageHistory: (
+            messages: TMessageHistory[] | TMessageHistory
+          ) =>
             set((state) => {
+              if (!Array.isArray(messages)) {
+                state.historyMessages.push(messages);
+                console.log(messages)
+                return;
+              }
               state.historyMessages = [...state.historyMessages, ...messages];
               state.historyMessages = state.historyMessages.filter(
                 (v, i, a) => a.findIndex((t) => t.id === v.id) === i
               );
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
-          deleteMessage:(messageId:number) => {
+          deleteMessage: (messageId: number) => {
             set((state) => {
-              const messageIndex = state.historyMessages.findIndex((i) => i.id === messageId);
-              if(messageIndex>-1){
-                state.historyMessages.splice(messageIndex,1);
+              const messageIndex = state.historyMessages.findIndex(
+                (i) => i.id === messageId
+              );
+              if (messageIndex > -1) {
+                state.historyMessages.splice(messageIndex, 1);
               }
-            })
+            });
           },
           updateCoinsInMessageHistory: (
             id: number,
