@@ -1,3 +1,4 @@
+import {observer} from 'mobx-react-lite';
 import React, {useEffect, useState} from 'react';
 import {
   Text,
@@ -12,13 +13,12 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import {useStores} from '../stores/context';
-import RenderEmailList from '../components/Account/RenderEmailList';
-import {showToast} from '../components/Toast/toast';
-import {observer} from 'mobx-react-lite';
-import AddNewEmailModal from '../components/Modals/Account/AddNewEmail';
+import {commonColors, textStyles} from '../../../docs/config';
+import RenderEmailList from '../../components/Account/RenderEmailList';
+import AddNewEmailModal from '../../components/Modals/Account/AddNewEmail';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {showToast} from '../../components/Toast/toast';
+import {useStores} from '../../stores/context';
 
 interface AccountScreenProps {}
 

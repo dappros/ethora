@@ -17,7 +17,7 @@ import {
   View,
 } from 'native-base';
 import React, {useState, useEffect} from 'react';
-import {commonColors, defaultChats, textStyles} from '../../docs/config';
+import {commonColors, defaultChats, textStyles} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   heightPercentageToDP as hp,
@@ -27,12 +27,12 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {Alert, Animated, Dimensions, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SceneMap} from 'react-native-tab-view';
-import {useStores} from '../stores/context';
+import {useStores} from '../../stores/context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from '../helpers/underscoreLogic';
+} from '../../helpers/underscoreLogic';
 import {observer} from 'mobx-react-lite';
 import {
   assignModerator,
@@ -48,16 +48,16 @@ import {
   unAssignModerator,
   unbanUser,
   unsubscribeFromChatXmpp,
-} from '../xmpp/stanzas';
-import {deleteChatRoom} from '../components/realmModels/chatList';
-import {uploadFiles} from '../helpers/uploadFiles';
-import {fileUpload} from '../config/routesConstants';
+} from '../../xmpp/stanzas';
+import {deleteChatRoom} from '../../components/realmModels/chatList';
+import {uploadFiles} from '../../helpers/uploadFiles';
+import {fileUpload} from '../../config/routesConstants';
 import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
-import {ROUTES} from '../constants/routes';
-import {renameTheRoom} from '../helpers/RoomList/renameRoom';
-import ChangeRoomNameModal from '../components/Modals/Chat/ChangeRoomNameModal';
-import ChangeRoomDescriptionModal from '../components/Modals/Chat/ChangeRoomDescriptionModal';
+import {ROUTES} from '../../constants/routes';
+import {renameTheRoom} from '../../helpers/RoomList/renameRoom';
+import ChangeRoomNameModal from '../../components/Modals/Chat/ChangeRoomNameModal';
+import ChangeRoomDescriptionModal from '../../components/Modals/Chat/ChangeRoomDescriptionModal';
 
 interface longTapUserProps {
   ban_status: string;

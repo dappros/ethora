@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import {HStack, Image, ScrollView, Text, View} from 'native-base';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   widthPercentageToDP as wp,
@@ -9,25 +9,25 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
-import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
-import NftTransactionListTab from '../components/Nft/NftTransactionList';
+import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
+import NftTransactionListTab from '../../components/Nft/NftTransactionList';
 import {
   audioMimetypes,
   imageMimetypes,
   videoMimetypes,
-} from '../constants/mimeTypes';
-import {useStores} from '../stores/context';
-import {transactionURL} from '../config/routesConstants';
-import {httpGet, httpPost} from '../config/apiService';
-import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
+} from '../../constants/mimeTypes';
+import {useStores} from '../../stores/context';
+import {transactionURL} from '../../config/routesConstants';
+import {httpGet, httpPost} from '../../config/apiService';
+import {APP_TOKEN, commonColors, textStyles} from '../../../docs/config';
 import VideoPlayer from 'react-native-video-player';
-import {mapTransactions} from '../stores/walletStore';
+import {mapTransactions} from '../../stores/walletStore';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {DeleteDialog} from '../components/Modals/DeleteDialog';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../constants/routes';
-import {showError, showSuccess} from '../components/Toast/toast';
+import {ROUTES} from '../../constants/routes';
+import {showError, showSuccess} from '../../components/Toast/toast';
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
 
@@ -274,7 +274,7 @@ const NftItemHistoryScreen = (props: any) => {
                 </Text>
                 <Image
                   alt={'no transaction'}
-                  source={require('../assets/transactions-empty.png')}
+                  source={require('../../assets/transactions-empty.png')}
                   style={styles.noTransactionsImage}
                 />
               </View>

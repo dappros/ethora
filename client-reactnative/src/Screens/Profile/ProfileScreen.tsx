@@ -16,28 +16,32 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
-import {useStores} from '../stores/context';
+
 import {Avatar, HStack, VStack} from 'native-base';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import TransactionsList from '../components/Transactions/TransactionsList';
+
 import {observer} from 'mobx-react-lite';
 import Hyperlink from 'react-native-hyperlink';
-import parseChatLink from '../helpers/parseChatLink';
-import {pattern1, pattern2} from '../helpers/chat/chatLinkpattern';
-import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+
 import {useNavigation} from '@react-navigation/native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import ProfileModal from '../components/Modals/Profile/ProfileModal';
-import {updateVCard} from '../xmpp/stanzas';
-import {showToast} from '../components/Toast/toast';
+
 import DocumentPicker from 'react-native-document-picker';
-import {changeUserData, fileUpload} from '../config/routesConstants';
-import {uploadFiles} from '../helpers/uploadFiles';
-import {httpUploadPut} from '../config/apiService';
-import {ProfileTabs} from '../components/Profile/ProfileTabs';
-import {QRModal} from '../components/Modals/QR/QRModal';
-import {generateProfileLink} from '../helpers/generateProfileLink';
+import {uploadFiles} from 'react-native-fs';
+import {commonColors, textStyles} from '../../../docs/config';
+import ProfileModal from '../../components/Modals/Profile/ProfileModal';
+import {QRModal} from '../../components/Modals/QR/QRModal';
+import TransactionsList from '../../components/Nft/NftTransactionList';
+import {ProfileTabs} from '../../components/Profile/ProfileTabs';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {showToast} from '../../components/Toast/toast';
+import {httpUploadPut} from '../../config/apiService';
+import {changeUserData, fileUpload} from '../../config/routesConstants';
+import {pattern1, pattern2} from '../../helpers/chat/chatLinkpattern';
+import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
+import {generateProfileLink} from '../../helpers/generateProfileLink';
+import parseChatLink from '../../helpers/parseChatLink';
+import {useStores} from '../../stores/context';
+import {updateVCard} from '../../xmpp/stanzas';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 

@@ -1,41 +1,30 @@
 import {Button, HStack, Icon, Input, TextArea, View} from 'native-base';
 import React, {useState} from 'react';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {
-  commonColors,
-  defaultBotsList,
-  metaRooms,
-  textStyles,
-} from '../../docs/config';
+import {commonColors, defaultBotsList, textStyles} from '../../../docs/config';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {sha256} from 'react-native-sha256';
-import {useStores} from '../stores/context';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+import {useStores} from '../../stores/context';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {
   createNewRoom,
-  getUserRoomsStanza,
   roomConfig,
   sendInvite,
   setOwner,
   setRoomImage,
-  subscribeStanza,
   subscribeToRoom,
-} from '../xmpp/stanzas';
+} from '../../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../constants/routes';
-import {CONFERENCEDOMAIN, DOMAIN} from '../xmpp/xmppConstants';
-import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
-import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import {httpPost} from '../config/apiService';
-import {Image} from 'react-native';
+import {ROUTES} from '../../constants/routes';
+import {httpPost} from '../../config/apiService';
 import FastImage from 'react-native-fast-image';
-import {uploadFiles} from '../helpers/uploadFiles';
-import {fileUpload} from '../config/routesConstants';
+import {uploadFiles} from '../../helpers/uploadFiles';
+import {fileUpload} from '../../config/routesConstants';
 
 interface NewChatScreenProps {}
 

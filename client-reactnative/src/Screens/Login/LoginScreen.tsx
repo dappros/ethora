@@ -10,7 +10,7 @@ import {
   VStack,
 } from 'native-base';
 import React, {useEffect, useState} from 'react';
-import SocialButton from '../components/Buttons/SocialButton';
+import SocialButton from '../../components/Buttons/SocialButton';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -31,9 +31,9 @@ import {
   regularLoginEmail,
   regularLogin,
   textStyles,
-} from '../../docs/config';
+} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import {useStores} from '../stores/context';
+import {useStores} from '../../stores/context';
 import {observer} from 'mobx-react-lite';
 import {
   handleAppleLogin,
@@ -41,14 +41,14 @@ import {
   handleGoogleLogin,
   loginOrRegisterSocialUser,
   socialLoginHandle,
-} from '../helpers/login/socialLoginHandle';
-import {socialLoginType} from '../constants/socialLoginConstants';
-import {httpGet, httpPost} from '../config/apiService';
+} from '../../helpers/login/socialLoginHandle';
+import {socialLoginType} from '../../constants/socialLoginConstants';
+import {httpGet, httpPost} from '../../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useRegisterModal} from '../hooks/useRegisterModal';
-import {UserNameModal} from '../components/Modals/Login/UserNameModal';
-import {checkEmailExist, checkWalletExist} from '../config/routesConstants';
-import {ROUTES} from '../constants/routes';
+import {useRegisterModal} from '../../hooks/useRegisterModal';
+import {UserNameModal} from '../../components/Modals/Login/UserNameModal';
+import {checkEmailExist, checkWalletExist} from '../../config/routesConstants';
+import {ROUTES} from '../../constants/routes';
 import {useWalletConnect} from '@walletconnect/react-native-dapp';
 
 interface LoginScreenProps {}

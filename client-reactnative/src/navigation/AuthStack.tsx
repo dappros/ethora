@@ -1,10 +1,10 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ROUTES} from '../constants/routes';
-import LoginScreen from '../Screens/LoginScreen';
-import {RegularLoginScreen} from '../Screens/RegularLoginScreen';
-import {RegisterScreen} from '../Screens/RegisterScreen';
-import {ResetPasswordScreen} from '../Screens/ResetPasswordScreen';
+import LoginScreen from '../Screens/Login/LoginScreen';
+import {RegisterScreen} from '../Screens/Login/RegisterScreen';
+import {RegularLoginScreen} from '../Screens/Login/RegularLoginScreen';
+import {ResetPasswordScreen} from '../Screens/Login/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 

@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Highlighter from 'react-native-highlight-words';
-import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
+
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import {
   heightPercentageToDP as hp,
@@ -18,8 +18,9 @@ import {
 
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
-import { useStores } from '../stores/context';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import {commonColors, textStyles} from '../../../docs/config';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {useStores} from '../../stores/context';
 
 const DebugScreenXmpp = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
@@ -27,12 +28,12 @@ const DebugScreenXmpp = ({navigation}) => {
   const submit = () => {
     setTextForSearch(searchText);
   };
- const {debugStore} = useStores()
+  const {debugStore} = useStores();
 
- const getCircularReplacer = () => {
+  const getCircularReplacer = () => {
     const seen = new WeakSet();
     return (key, value) => {
-      if (typeof value === "object" && value !== null) {
+      if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) {
           return;
         }
@@ -61,14 +62,22 @@ const DebugScreenXmpp = ({navigation}) => {
         {/* <JSONTree data={textForSearch ? filteredLogs : logs} /> */}
         <View style={{paddingLeft: 10}}>
           {debugStore.xmppLogs
-            .filter(log => JSON.stringify(log, getCircularReplacer()).includes(textForSearch))
+            .filter(log =>
+              JSON.stringify(log, getCircularReplacer()).includes(
+                textForSearch,
+              ),
+            )
             .map((log, i) => {
               return (
                 <Highlighter
                   key={i}
                   highlightStyle={{backgroundColor: commonColors.primaryColor}}
                   searchWords={[textForSearch]}
-                  textToHighlight={JSON.stringify(log, getCircularReplacer(), 2)}
+                  textToHighlight={JSON.stringify(
+                    log,
+                    getCircularReplacer(),
+                    2,
+                  )}
                 />
               );
             })}
@@ -83,8 +92,7 @@ const DebugScreenXmpp = ({navigation}) => {
   );
 };
 const DebugScreenApi = ({navigation}) => {
- const {debugStore} = useStores()
-  
+  const {debugStore} = useStores();
 
   const [searchText, setSearchText] = useState('');
   const [textForSearch, setTextForSearch] = useState('');
@@ -100,8 +108,6 @@ const DebugScreenApi = ({navigation}) => {
 
     setTextForSearch(searchText);
   };
-
-  
 
   return (
     <View style={{paddingBottom: 100}}>
@@ -175,12 +181,10 @@ const DebugScreenApi = ({navigation}) => {
         onBackdropPress={() => setModalVisible(false)}
         isVisible={isModalVisible}>
         <View style={styles.modalContainer}>
-          <TouchableOpacity
-            style={styles.rarityItems}>
+          <TouchableOpacity style={styles.rarityItems}>
             <Text style={styles.modalItem}>api-dev.dappros.com</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.rarityItems}>
+          <TouchableOpacity style={styles.rarityItems}>
             <Text style={styles.modalItem}>app.dappros.com</Text>
           </TouchableOpacity>
 

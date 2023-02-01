@@ -2,19 +2,17 @@ import {observer} from 'mobx-react-lite';
 import {HStack, VStack} from 'native-base';
 import React from 'react';
 import {FlatList, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {commonColors, textStyles} from '../../../docs/config';
-import {BlackListUser} from '../../stores/chatStore';
-import {useStores} from '../../stores/context';
+
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome5';
 
-import {removeUserFromBlackList} from '../../xmpp/stanzas';
-import {
-  reverseUnderScoreManipulation,
-  underscoreManipulation,
-} from '../../helpers/underscoreLogic';
 import moment from 'moment';
+import {commonColors, textStyles} from '../../../docs/config';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {BlackListUser} from '../../stores/chatStore';
+import {useStores} from '../../stores/context';
+import {removeUserFromBlackList} from '../../xmpp/stanzas';
 export interface IBlocking {}
 
 export const Blocking: React.FC<IBlocking> = observer(({}) => {

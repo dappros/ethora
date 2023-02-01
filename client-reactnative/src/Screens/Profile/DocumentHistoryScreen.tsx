@@ -1,33 +1,33 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import {HStack, Image, ScrollView, Text, View, VStack} from 'native-base';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
-import NftTransactionListTab from '../components/Nft/NftTransactionList';
+import NftTransactionListTab from '../../components/Nft/NftTransactionList';
 import {
   audioMimetypes,
   imageMimetypes,
   pdfMimemtype,
   videoMimetypes,
-} from '../constants/mimeTypes';
-import {useStores} from '../stores/context';
-import {transactionURL} from '../config/routesConstants';
-import {httpDelete, httpGet} from '../config/apiService';
-import {APP_TOKEN, commonColors, textStyles} from '../../docs/config';
+} from '../../constants/mimeTypes';
+import {useStores} from '../../stores/context';
+import {transactionURL} from '../../config/routesConstants';
+import {httpDelete, httpGet} from '../../config/apiService';
+import {APP_TOKEN, commonColors, textStyles} from '../../../docs/config';
 
-import {NftMediaModal} from '../components/NftMediaModal';
-import {downloadFile} from '../helpers/downloadFile';
-import {IDocument} from '../stores/walletStore';
+import {NftMediaModal} from '../../components/NftMediaModal';
+import {downloadFile} from '../../helpers/downloadFile';
+import {IDocument} from '../../stores/walletStore';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {showError} from '../components/Toast/toast';
-import {DeleteDialog} from '../components/Modals/DeleteDialog';
-import {ROUTES} from '../constants/routes';
+import {showError} from '../../components/Toast/toast';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
+import {ROUTES} from '../../constants/routes';
 
 interface DocumentHistoryScreenProps {
   route: {params: {item: IDocument; userWalletAddress: string}};
@@ -247,7 +247,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
               </Text>
               <Image
                 alt={'no transaction'}
-                source={require('../assets/transactions-empty.png')}
+                source={require('../../assets/transactions-empty.png')}
                 style={styles.noTransactionsImage}
               />
             </View>

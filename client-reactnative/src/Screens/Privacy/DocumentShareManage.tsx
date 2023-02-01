@@ -7,19 +7,22 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import {commonColors, textStyles, unv_url} from '../../../docs/config';
+
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {httpDelete, httpGet} from '../../config/apiService';
-import {useStores} from '../../stores/context';
-import {shareLink} from '../../config/routesConstants';
+
 import moment from 'moment';
-import {generateProfileLink} from '../../helpers/generateProfileLink';
+
 import {useClipboard} from '@react-native-clipboard/clipboard';
-import {showSuccess} from '../../components/Toast/toast';
-import QRCodeGenerator from '../../components/QRCodeGenerator';
+
 import Modal from 'react-native-modal';
+import {textStyles, commonColors} from '../../../docs/config';
+import QRCodeGenerator from '../../components/QRCodeGenerator';
+import {showSuccess} from '../../components/Toast/toast';
+import {httpGet, httpDelete} from '../../config/apiService';
+import {shareLink} from '../../config/routesConstants';
 import {generateDocumentLink} from '../../helpers/generateDocumentLink';
+import {useStores} from '../../stores/context';
 
 export interface IDocumentShareManage {
   onAddPress: Dispatch<SetStateAction<number>>;
@@ -53,10 +56,7 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   const getSharedLinks = async () => {
     setLoading(true);
     try {
-      const {data} = await httpGet(
-         shareLink,
-        loginStore.userToken,
-      );
+      const {data} = await httpGet(shareLink, loginStore.userToken);
       setSharedLinks(data.items.filter(item => item.resource === 'document'));
     } catch (error) {
       console.log(error);
@@ -66,7 +66,7 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   const deleteLink = async (linkToken: string) => {
     try {
       const {data} = await httpDelete(
-         shareLink + linkToken,
+        shareLink + linkToken,
         loginStore.userToken,
       );
       await getSharedLinks();
@@ -188,7 +188,6 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
         extraData={{link:modalData.link, removeBaseUrl:true}}
         isVisible={modalData.visible}
       /> */}
-      
     </VStack>
   );
 };

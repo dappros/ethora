@@ -6,7 +6,7 @@ import {
   Actions,
   InputToolbar,
 } from 'react-native-gifted-chat';
-import {useStores} from '../stores/context';
+import {useStores} from '../../stores/context';
 import {
   deleteMessageStanza,
   getPaginatedArchive,
@@ -17,8 +17,8 @@ import {
   sendInvite,
   sendMediaMessageStanza,
   sendMessageStanza,
-} from '../xmpp/stanzas';
-import MessageBody from '../components/Chat/MessageBody';
+} from '../../xmpp/stanzas';
+import MessageBody from '../../components/Chat/MessageBody';
 import {
   ActivityIndicator,
   Animated,
@@ -29,21 +29,20 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {format} from 'date-fns';
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from '../helpers/underscoreLogic';
-import {ROUTES} from '../constants/routes';
-import {ImageMessage} from '../components/Chat/ImageMessage';
-import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
+} from '../../helpers/underscoreLogic';
+import {ROUTES} from '../../constants/routes';
+import {ImageMessage} from '../../components/Chat/ImageMessage';
+import {ChatMediaModal} from '../../components/Modals/ChatMediaModal';
 import {Actionsheet, useDisclose, View} from 'native-base';
-import TransactionModal from '../components/Modals/TransactionModal/TransactionModal';
-import {modalTypes} from '../constants/modalTypes';
-import {systemMessage} from '../helpers/systemMessage';
-import parseChatLink from '../helpers/parseChatLink';
-import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+import {modalTypes} from '../../constants/modalTypes';
+import {systemMessage} from '../../helpers/systemMessage';
+import parseChatLink from '../../helpers/parseChatLink';
+import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
@@ -60,47 +59,45 @@ import {
   metaRooms as predefinedMeta,
   ROOM_KEYS,
   textStyles,
-} from '../../docs/config';
+} from '../../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import {RecordingSecondsCounter} from '../components/Recorder/RecordingSecondsCounter';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {fileUpload} from '../config/routesConstants';
-import {httpUpload} from '../config/apiService';
-import {showToast} from '../components/Toast/toast';
+import {fileUpload} from '../../config/routesConstants';
+import {httpUpload} from '../../config/apiService';
+import {showToast} from '../../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
 import {
   audioMimetypes,
   imageMimetypes,
   pdfMimemtype,
   videoMimetypes,
-} from '../constants/mimeTypes';
-import {normalizeData} from '../helpers/normalizeData';
-import {formatBytes} from '../helpers/chat/formatBytes';
-import {AudioMessage} from '../components/Chat/AudioMessage';
-import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
-import RenderChatFooter from '../components/Chat/RenderChatFooter';
-import {AudioSendButton} from '../components/Chat/AudioSendButton';
-import {NftItemGalleryModal} from '../../NftItemGalleryModal';
-import {PdfMessage} from '../components/Chat/PdfMessage';
-import {FileMessage} from '../components/Chat/FileMessage';
-import {downloadFile} from '../helpers/downloadFile';
-import {VideoMessage} from '../components/Chat/VideoMessage';
-import {ChatComposer} from '../components/Chat/Composer';
+} from '../../constants/mimeTypes';
+import {normalizeData} from '../../helpers/normalizeData';
+import {formatBytes} from '../../helpers/chat/formatBytes';
+import {AudioMessage} from '../../components/Chat/AudioMessage';
+import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
+import RenderChatFooter from '../../components/Chat/RenderChatFooter';
+import {AudioSendButton} from '../../components/Chat/AudioSendButton';
+import {PdfMessage} from '../../components/Chat/PdfMessage';
+import {FileMessage} from '../../components/Chat/FileMessage';
+import {downloadFile} from '../../helpers/downloadFile';
+import {VideoMessage} from '../../components/Chat/VideoMessage';
+import {ChatComposer} from '../../components/Chat/Composer';
 import {
   generateValueFromPartsAndChangedText,
   mentionRegEx,
   parseValue,
-} from '../helpers/chat/inputUtils';
+} from '../../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
-import {useDebounce} from '../hooks/useDebounce';
+import {useDebounce} from '../../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {MetaNavigation} from '../components/Chat/MetaNavigation';
-import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import {IMessageToSend} from '../helpers/chat/createMessageObject';
+import {MetaNavigation} from '../../components/Chat/MetaNavigation';
+import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
+import {IMessageToSend} from '../../helpers/chat/createMessageObject';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 

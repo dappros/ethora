@@ -4,22 +4,18 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, {Component, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 import {
   Text,
   View,
-  ActivityIndicator,
-  Image,
-  SafeAreaView,
   Platform,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
+  Button,
 } from 'react-native';
 
 import {
@@ -27,25 +23,22 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import {
-  commonColors,
-  loginScreenBackgroundImage,
-  logoHeight,
-  logoPath,
-  logoWidth,
-  regularLoginEmail,
-  textStyles,
-} from '../../docs/config';
-import {httpPost} from '../config/apiService';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 import CheckBox from '@react-native-community/checkbox';
-import {useStores} from '../stores/context';
-import {ROUTES} from '../constants/routes';
-import {registerUserURL} from '../config/routesConstants';
-import {Button} from '../components/Button';
-import {showError, showSuccess} from '../components/Toast/toast';
-import {HStack, Input} from 'native-base';
+
+import {Input} from 'native-base';
+import {
+  textStyles,
+  regularLoginEmail,
+  commonColors,
+  loginScreenBackgroundImage,
+} from '../../../docs/config';
+import {showError, showSuccess} from '../../components/Toast/toast';
+import {httpPost} from '../../config/apiService';
+import {registerUserURL} from '../../config/routesConstants';
+import {ROUTES} from '../../constants/routes';
+import {useStores} from '../../stores/context';
 
 const {mediumFont, lightFont, boldFont} = textStyles;
 

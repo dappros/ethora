@@ -2,13 +2,13 @@ import {Text} from 'native-base';
 import React, {useMemo, useState} from 'react';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
-import {commonColors, textStyles} from '../../docs/config';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import {Blocking} from './Privacy/Blocking';
-import {DocumentShares} from './Privacy/DocumentShares';
-import {ManageData} from './Privacy/ManageData';
-import {ProfileShare} from './Privacy/ProfileShare';
-import {Visibility} from './Privacy/Visibility';
+import {textStyles, commonColors} from '../../../docs/config';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {Blocking} from './Blocking';
+import {DocumentShares} from './DocumentShares';
+import {ManageData} from './ManageData';
+import {ProfileShare} from './ProfileShare';
+import {Visibility} from './Visibility';
 const renderTabBar = (props: any) => {
   return (
     <TabBar

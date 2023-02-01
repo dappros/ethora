@@ -7,26 +7,26 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import parseChatLink from '../helpers/parseChatLink';
-import {useStores} from '../stores/context';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+
 import {useNavigation} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {PNG} from 'pngjs/browser';
 import JpegDecoder from 'jpeg-js';
 import jsQR from 'jsqr';
-import {retrieveOtherUserVcard, subscribeToRoom} from '../xmpp/stanzas';
-import {ROUTES} from '../constants/routes';
-import {commonColors, textStyles} from '../../docs/config';
-import {CONFERENCEDOMAIN} from '../xmpp/xmppConstants';
-import {showToast} from '../components/Toast/toast';
+import {commonColors, textStyles} from '../../../docs/config';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {showToast} from '../../components/Toast/toast';
+import {ROUTES} from '../../constants/routes';
+import parseChatLink from '../../helpers/parseChatLink';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {useStores} from '../../stores/context';
+import {retrieveOtherUserVcard, subscribeToRoom} from '../../xmpp/stanzas';
+
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
 

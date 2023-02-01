@@ -2,14 +2,14 @@ import React, {useEffect} from 'react';
 import {Image, Platform, StyleSheet, Text, View} from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {coinImagePath, commonColors, textStyles} from '../../docs/config';
-import {Button} from '../components/Button';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
+import {Button} from '../../components/Button';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {HStack} from 'native-base';
 import {requestPurchase, useIAP} from 'react-native-iap';
-import {useStores} from '../stores/context';
-import {httpPost} from '../config/apiService';
-import {showError, showSuccess} from '../components/Toast/toast';
+import {useStores} from '../../stores/context';
+import {httpPost} from '../../config/apiService';
+import {showError, showSuccess} from '../../components/Toast/toast';
 
 const productsList = [
   {name: '849 Coins', value: '0.99', id: 'com.ethora.buy_1000'},

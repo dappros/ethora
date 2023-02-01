@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
 import Swiper from 'react-native-swiper';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-import {useStores} from '../stores/context';
-import {sendMessageStanza} from '../xmpp/stanzas';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {useStores} from '../../stores/context';
+import {sendMessageStanza} from '../../xmpp/stanzas';
 import ChatScreen from './ChatScreen';
 
 export interface ISwiperChatScreen {}

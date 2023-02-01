@@ -3,9 +3,9 @@ import {View} from 'native-base';
 import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import TransactionsList from '../components/Transactions/TransactionsList';
-import {useStores} from '../stores/context';
+import TransactionsList from '../../components/Nft/NftTransactionList';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {useStores} from '../../stores/context';
 
 const TransactionsScreen = observer(() => {
   const {walletStore, loginStore} = useStores();

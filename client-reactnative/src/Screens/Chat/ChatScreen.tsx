@@ -1,44 +1,20 @@
 import {observer} from 'mobx-react-lite';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {GiftedChat, Send, Actions} from 'react-native-gifted-chat';
-import {useStores} from '../stores/context';
-import {
-  deleteMessageStanza,
-  getPaginatedArchive,
-  getRoomArchiveStanza,
-  isComposing,
-  pausedComposing,
-  retrieveOtherUserVcard,
-  sendInvite,
-  sendMediaMessageStanza,
-  sendMessageStanza,
-  sendReplaceMessageStanza,
-} from '../xmpp/stanzas';
-import MessageBody from '../components/Chat/MessageBody';
+
 import {
   ActivityIndicator,
   Animated,
   ImageBackground,
   NativeModules,
   Platform,
-  Pressable,
   StyleSheet,
-  Text,
 } from 'react-native';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+
 import {format} from 'date-fns';
-import {
-  reverseUnderScoreManipulation,
-  underscoreManipulation,
-} from '../helpers/underscoreLogic';
-import {ROUTES} from '../constants/routes';
-import {ImageMessage} from '../components/Chat/ImageMessage';
-import {ChatMediaModal} from '../components/Modals/ChatMediaModal';
-import {Actionsheet, useDisclose, View} from 'native-base';
-import {systemMessage} from '../helpers/systemMessage';
-import {banSystemMessage} from '../helpers/banSystemMessage';
-import parseChatLink from '../helpers/parseChatLink';
-import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
+
+import {Actionsheet, Pressable, Text, useDisclose, View} from 'native-base';
+
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
@@ -47,45 +23,62 @@ import AudioRecorderPlayer, {
 } from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'react-native-blob-util';
 
-import {
-  allowIsTyping,
-  commonColors,
-  defaultBotsList,
-  textStyles,
-} from '../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {fileUpload} from '../config/routesConstants';
-import {httpUpload} from '../config/apiService';
-import {showToast} from '../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from '../constants/mimeTypes';
-import {normalizeData} from '../helpers/normalizeData';
-import {AudioMessage} from '../components/Chat/AudioMessage';
-import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
-import RenderChatFooter from '../components/Chat/RenderChatFooter';
-import {AudioSendButton} from '../components/Chat/AudioSendButton';
-import {NftItemGalleryModal} from '../../NftItemGalleryModal';
-import {PdfMessage} from '../components/Chat/PdfMessage';
-import {FileMessage} from '../components/Chat/FileMessage';
-import {downloadFile} from '../helpers/downloadFile';
-import {VideoMessage} from '../components/Chat/VideoMessage';
-import {ChatComposer} from '../components/Chat/Composer';
-import {mentionRegEx, parseValue} from '../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
-import {useDebounce} from '../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {MetaNavigation} from '../components/Chat/MetaNavigation';
-import {IMessageToSend} from '../helpers/chat/createMessageObject';
-import {ChatLongTapModal} from '../components/Modals/Chat/ChatLongTapModal';
-import {IDataForTransfer} from '../components/Modals/Chat/types';
-import {QRModal} from '../components/Modals/QR/QRModal';
+
+import {downloadFile} from 'react-native-fs';
+import {
+  defaultBotsList,
+  textStyles,
+  commonColors,
+  allowIsTyping,
+} from '../../../docs/config';
+import {NftItemGalleryModal} from '../../../NftItemGalleryModal';
+import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
+import {AudioMessage} from '../../components/Chat/AudioMessage';
+import {AudioSendButton} from '../../components/Chat/AudioSendButton';
+import {ChatComposer} from '../../components/Chat/Composer';
+import {FileMessage} from '../../components/Chat/FileMessage';
+import {ImageMessage} from '../../components/Chat/ImageMessage';
+import MessageBody from '../../components/Chat/MessageBody';
+import {MetaNavigation} from '../../components/Chat/MetaNavigation';
+import {PdfMessage} from '../../components/Chat/PdfMessage';
+import RenderChatFooter from '../../components/Chat/RenderChatFooter';
+import {VideoMessage} from '../../components/Chat/VideoMessage';
+import {ChatLongTapModal} from '../../components/Modals/Chat/ChatLongTapModal';
+import {IDataForTransfer} from '../../components/Modals/Chat/types';
+import {ChatMediaModal} from '../../components/Modals/ChatMediaModal';
+import {QRModal} from '../../components/Modals/QR/QRModal';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {showToast} from '../../components/Toast/toast';
+import {httpUpload} from '../../config/apiService';
+import {fileUpload} from '../../config/routesConstants';
+import {
+  imageMimetypes,
+  videoMimetypes,
+  audioMimetypes,
+  pdfMimemtype,
+} from '../../constants/mimeTypes';
+import {ROUTES} from '../../constants/routes';
+import {banSystemMessage} from '../../helpers/banSystemMessage';
+import {IMessageToSend} from '../../helpers/chat/createMessageObject';
+import {MentionSuggestionsProps} from '../../helpers/chat/inputTypes';
+import {parseValue, mentionRegEx} from '../../helpers/chat/inputUtils';
+import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
+import {normalizeData} from '../../helpers/normalizeData';
+import parseChatLink from '../../helpers/parseChatLink';
+import {systemMessage} from '../../helpers/systemMessage';
+import {
+  underscoreManipulation,
+  reverseUnderScoreManipulation,
+} from '../../helpers/underscoreLogic';
+import {useDebounce} from '../../hooks/useDebounce';
+import {useStores} from '../../stores/context';
+import { getRoomArchiveStanza, pausedComposing, getPaginatedArchive, sendInvite, sendMessageStanza, retrieveOtherUserVcard, isComposing, sendReplaceMessageStanza, sendMediaMessageStanza, deleteMessageStanza } from '../../xmpp/stanzas';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 

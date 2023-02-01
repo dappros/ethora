@@ -1,17 +1,19 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet} from 'react-native';
+import {Button, StyleSheet} from 'react-native';
 import {HStack, Input, Text, View} from 'native-base';
-import {commonColors, textStyles} from '../../../docs/config';
+
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Select} from 'native-base';
-import {Button} from '../../components/Button';
-import {httpPost} from '../../config/apiService';
-import {useStores} from '../../stores/context';
-import {shareLink} from '../../config/routesConstants';
-import QRCodeGenerator from '../../components/QRCodeGenerator';
+
 import {observer} from 'mobx-react-lite';
-import {generateDocumentLink} from '../../helpers/generateDocumentLink';
+
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {commonColors, textStyles} from '../../../docs/config';
+import QRCodeGenerator from '../../components/QRCodeGenerator';
+import {httpPost} from '../../config/apiService';
+import {shareLink} from '../../config/routesConstants';
+import {generateDocumentLink} from '../../helpers/generateDocumentLink';
+import {useStores} from '../../stores/context';
 
 export interface IDocumentShareAdd {}
 
@@ -48,10 +50,8 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
     walletAddress: '',
   });
   const [loading, setLoading] = useState(false);
-  const {apiStore, loginStore} = useStores();
+  const {apiStore, loginStore, walletStore} = useStores();
   const inputRef = useRef();
-
-  const {walletStore} = useStores();
 
   useEffect(() => {
     walletStore.getDocuments(loginStore.initialData.walletAddress);

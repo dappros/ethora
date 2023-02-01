@@ -6,7 +6,7 @@ import {ROUTES} from '../constants/routes';
 import AuthStack from './AuthStack';
 import {observer} from 'mobx-react-lite';
 import {Center, Spinner, View} from 'native-base';
-import { SafeAreaView } from 'react-native';
+import {SafeAreaView} from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,22 +37,22 @@ const RootStack = observer(() => {
           </Center>
         </View>
       ) : (
-        <SafeAreaView style={{flex:1}}>
-        <Stack.Navigator>
-          {userToken ? (
-            <Stack.Screen
-              options={{headerShown: false}}
-              name={ROUTES.HOMESTACK}
-              component={HomeStack}
-            />
-          ) : (
-            <Stack.Screen
-              options={{headerShown: false}}
-              name={ROUTES.AUTHSTACK}
-              component={AuthStack}
-            />
-          )}
-        </Stack.Navigator>
+        <SafeAreaView style={{flex: 1}}>
+          <Stack.Navigator>
+            {userToken ? (
+              <Stack.Screen
+                options={{headerShown: false}}
+                name={ROUTES.HOMESTACK}
+                component={HomeStack}
+              />
+            ) : (
+              <Stack.Screen
+                options={{headerShown: false}}
+                name={ROUTES.AUTHSTACK}
+                component={AuthStack}
+              />
+            )}
+          </Stack.Navigator>
         </SafeAreaView>
       )}
     </>

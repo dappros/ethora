@@ -1,17 +1,17 @@
 import Clipboard, {useClipboard} from '@react-native-clipboard/clipboard';
 import {useWalletConnect} from '@walletconnect/react-native-dapp';
 import React, {useEffect, useState} from 'react';
-import {Linking, StyleSheet, Text, View} from 'react-native';
+import {Button, Linking, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {commonColors, textStyles} from '../../docs/config';
-import {Button} from '../components/Button';
-import {DeleteDialog} from '../components/Modals/DeleteDialog';
-import {ScanQrModal} from '../components/Modals/ScanQrModal';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
-import {showError, showSuccess} from '../components/Toast/toast';
-import {httpDelete, httpGet, httpPost} from '../config/apiService';
-import {isAddress} from '../helpers/isAddress';
-import {useStores} from '../stores/context';
+import {commonColors, textStyles} from '../../../docs/config';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
+import {ScanQrModal} from '../../components/Modals/ScanQrModal';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
+import {showError, showSuccess} from '../../components/Toast/toast';
+import {httpGet, httpDelete, httpPost} from '../../config/apiService';
+import {isAddress} from '../../helpers/isAddress';
+import {useStores} from '../../stores/context';
+
 export interface IAuthentication {}
 
 const getMail = (email: string) => {

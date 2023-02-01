@@ -1,25 +1,29 @@
 import {Button, FlatList, HStack, ScrollView, Text, View} from 'native-base';
 import * as React from 'react';
-import {
-  commonColors,
-  defaultChatBackgroundTheme,
-  textStyles,
-} from '../../docs/config';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import ChatBackgroundCard from '../components/Chat/ChatBackgroundCard';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {useStores} from '../stores/context';
+
 import {observer} from 'mobx-react-lite';
-import {setRoomImage} from '../xmpp/stanzas';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+
 import DocumentPicker from 'react-native-document-picker';
-import {uploadFiles} from '../helpers/uploadFiles';
-import {fileUpload} from '../config/routesConstants';
+import {uploadFiles} from 'react-native-fs';
+import {
+  defaultChatBackgroundTheme,
+  textStyles,
+  commonColors,
+} from '../../../docs/config';
+import ChatBackgroundCard from '../../components/Chat/ChatBackgroundCard';
+import {fileUpload} from '../../config/routesConstants';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
+import {useStores} from '../../stores/context';
+import {setRoomImage} from '../../xmpp/stanzas';
 
 const renderCard = (
   index: number,

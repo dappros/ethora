@@ -4,35 +4,35 @@ import React, {useEffect} from 'react';
 import {appLinkingUrl, coinsMainName} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
 import {ROUTES} from '../constants/routes';
-import ChatScreen from '../Screens/ChatScreen';
-import OtherUserProfileScreen from '../Screens/OtherUserProfileScreen';
-import {ProfileScreen} from '../Screens/ProfileScreen';
-import RoomListScreen from '../Screens/RoomListScreen';
-import TransactionsScreen from '../Screens/TransactionsScreen';
-import NewChatScreen from '../Screens/NewChatScreen';
 import {useStores} from '../stores/context';
-import ScanScreen from '../Screens/ScanScreen';
-import AccountScreen from '../Screens/AccountScreen';
-import MintScreen from '../Screens/MintScreen';
-import NftItemHistoryScreen from '../Screens/NftItemHistoryScreen';
 import {Linking, Platform} from 'react-native';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
-import {DebugScreen} from '../Screens/DebugScreen';
 import {getLastMessageArchive, retrieveOtherUserVcard} from '../xmpp/stanzas';
 import {getPushToken} from '../helpers/pushNotifications';
-import {InviteFriendsScreen} from '../Screens/InviteFriendsScreen';
-import ChatDetailsScreen from '../Screens/ChatDetailsScreen';
-import ThreadScreen from '../Screens/ThreadScreen';
-import {PrivacyAndDataScreen} from '../Screens/PrivacyAndDataScreen';
-import {SwiperChatScreen} from '../Screens/SwiperChatScreen';
-import {DocumentHistoryScreen} from '../Screens/DocumentHistoryScreen';
-import ChangeBackgroundScreen from '../Screens/ChangeBackgroundScreen';
-import UploadDocumentsScreen from '../Screens/UploadDocumentsScreen';
 import {requestTrackingPermission} from 'react-native-tracking-transparency';
-import {CoinPurchaseScreen} from '../Screens/CoinPurchaseScreen';
-import { AuthenticationScreen } from '../Screens/Authentication';
+import AccountScreen from '../Screens/Account/AccountScreen';
+import {AuthenticationScreen} from '../Screens/Account/Authentication';
+import {CoinPurchaseScreen} from '../Screens/Account/CoinPurchaseScreen';
+import {InviteFriendsScreen} from '../Screens/Account/InviteFriendsScreen';
+import MintScreen from '../Screens/Actions/MintScreen';
+import ScanScreen from '../Screens/Actions/ScanScreen';
+import UploadDocumentsScreen from '../Screens/Actions/UploadDocumentsScreen';
+import ChangeBackgroundScreen from '../Screens/Chat/ChangeBackgroundScreen';
+import ChatDetailsScreen from '../Screens/Chat/ChatDetailsScreen';
+import ChatScreen from '../Screens/Chat/ChatScreen';
+import NewChatScreen from '../Screens/Chat/NewChatScreen';
+import RoomListScreen from '../Screens/Chat/RoomListScreen';
+import {SwiperChatScreen} from '../Screens/Chat/SwiperChatScreen';
+import ThreadScreen from '../Screens/Chat/ThreadScreen';
+import {PrivacyAndDataScreen} from '../Screens/Privacy/PrivacyAndDataScreen';
+import {DocumentHistoryScreen} from '../Screens/Profile/DocumentHistoryScreen';
+import NftItemHistoryScreen from '../Screens/Profile/NftItemHistoryScreen';
+import OtherUserProfileScreen from '../Screens/Profile/OtherUserProfileScreen';
+import {ProfileScreen} from '../Screens/Profile/ProfileScreen';
+import TransactionsScreen from '../Screens/Profile/TransactionsScreen';
+import {DebugScreen} from '../Screens/System/DebugScreen';
 
 const HomeStack = createNativeStackNavigator();
 
@@ -185,98 +185,98 @@ export const HomeStackScreen = observer(() => {
         name={ROUTES.ROOMSLIST}
         component={RoomListScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.CHAT}
         component={ChatScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.PROFILE}
         component={ProfileScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.TRANSACTIONS}
         component={TransactionsScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.OTHERUSERPROFILESCREEN}
         component={OtherUserProfileScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.NEWCHAT}
         component={NewChatScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.SCAN}
         component={ScanScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.ACCOUNT}
         component={AccountScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.DEBUG}
         component={DebugScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.MINT}
         component={MintScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.UPLOADDOCUMENTSSCREEN}
         component={UploadDocumentsScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.NFTITEMHISTORY}
         component={NftItemHistoryScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.INVITEFRIENDS}
         component={InviteFriendsScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.PRIVACY}
         component={PrivacyAndDataScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
 
@@ -284,7 +284,7 @@ export const HomeStackScreen = observer(() => {
         name={ROUTES.CHATDETAILS}
         component={ChatDetailsScreen}
         options={() => ({
-          // header: ({navigation}) => <MainHeader />,
+          // header: ({}) => <MainHeader />,
           headerShown: false,
         })}
       />
@@ -292,21 +292,21 @@ export const HomeStackScreen = observer(() => {
         name={ROUTES.SWIPERCHAT}
         component={SwiperChatScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.DOCUMENTHISTORY}
         component={DocumentHistoryScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
         name={ROUTES.THREADS}
         component={ThreadScreen}
         options={() => ({
-          // header: ({navigation}) => <MainHeader />,
+          // header: ({}) => <MainHeader />,
           headerShown: false,
         })}
       />
@@ -314,7 +314,7 @@ export const HomeStackScreen = observer(() => {
         name={ROUTES.CHANGEBACKGROUNDSCREEN}
         component={ChangeBackgroundScreen}
         options={() => ({
-          // header: ({navigation}) => <MainHeader />,
+          // header: ({}) => <MainHeader />,
           headerShown: false,
         })}
       />
@@ -322,14 +322,14 @@ export const HomeStackScreen = observer(() => {
         name={ROUTES.COINPURCHASESCREEN}
         component={CoinPurchaseScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
-        <HomeStack.Screen
+      <HomeStack.Screen
         name={ROUTES.AUTHENTICATIONSCREEN}
         component={AuthenticationScreen}
         options={() => ({
-          header: ({navigation}) => <MainHeader />,
+          header: ({}) => <MainHeader />,
         })}
       />
     </HomeStack.Navigator>

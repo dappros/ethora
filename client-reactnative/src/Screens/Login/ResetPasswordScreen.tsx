@@ -15,7 +15,7 @@ import {
   logoPath,
   logoWidth,
   textStyles,
-} from '../../docs/config';
+} from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -23,12 +23,12 @@ import {
 
 import {HStack, Image, Input, VStack} from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Button} from '../components/Button';
-import {useStores} from '../stores/context';
-import {ROUTES} from '../constants/routes';
-import {showError, showSuccess} from '../components/Toast/toast';
-import {httpPost} from '../config/apiService';
-import {resetPasswordURL} from '../config/routesConstants';
+import {Button} from '../../components/Button';
+import {useStores} from '../../stores/context';
+import {ROUTES} from '../../constants/routes';
+import {showError, showSuccess} from '../../components/Toast/toast';
+import {httpPost} from '../../config/apiService';
+import {resetPasswordURL} from '../../config/routesConstants';
 
 export const ResetPasswordScreen = ({navigation}) => {
   const [email, setEmail] = useState('');

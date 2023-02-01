@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+  Button,
   ImageBackground,
   Keyboard,
   StyleSheet,
@@ -8,15 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {
-  commonColors,
-  loginScreenBackgroundImage,
-  logoHeight,
-  logoPath,
-  logoWidth,
-  regularLoginEmail,
-  textStyles,
-} from '../../docs/config';
+
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -24,11 +17,18 @@ import {
 import Modal from 'react-native-modal';
 
 import {HStack, Image, Input, VStack} from 'native-base';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Button} from '../components/Button';
-import {useStores} from '../stores/context';
-import {ROUTES} from '../constants/routes';
-import {showError} from '../components/Toast/toast';
+import {
+  loginScreenBackgroundImage,
+  logoPath,
+  logoWidth,
+  logoHeight,
+  textStyles,
+  regularLoginEmail,
+  commonColors,
+} from '../../../docs/config';
+import {showError} from '../../components/Toast/toast';
+import {ROUTES} from '../../constants/routes';
+import {useStores} from '../../stores/context';
 
 export const RegularLoginScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');

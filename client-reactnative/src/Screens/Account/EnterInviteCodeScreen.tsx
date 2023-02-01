@@ -4,13 +4,13 @@ import React, {useState} from 'react';
 import {View} from 'react-native';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
-import {Button} from '../components/Button';
-import {showError, showSuccess} from '../components/Toast/toast';
+import {commonColors, textStyles} from '../../../docs/config';
+import {Button} from '../../components/Button';
+import {showError, showSuccess} from '../../components/Toast/toast';
 
-import {httpPost} from '../config/apiService';
-import {referralRoute} from '../config/routesConstants';
-import {useStores} from '../stores/context';
+import {httpPost} from '../../config/apiService';
+import {referralRoute} from '../../config/routesConstants';
+import {useStores} from '../../stores/context';
 export const EnterInviteCode = observer(() => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);

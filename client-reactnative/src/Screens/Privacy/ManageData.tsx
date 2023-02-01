@@ -1,18 +1,18 @@
 import React, {useState} from 'react';
 import {VStack} from 'native-base';
-import {Platform, StyleSheet, Text, View} from 'react-native';
-import {textStyles} from '../../../docs/config';
-import {Button} from '../../components/Button';
-import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {showError, showSuccess} from '../../components/Toast/toast';
-import {httpDelete, httpGet} from '../../config/apiService';
-import {changeUserData} from '../../config/routesConstants';
-import {useStores} from '../../stores/context';
+import {Button, Platform, StyleSheet, Text, View} from 'react-native';
+
 import Share from 'react-native-share';
 import RNFS, {
   DocumentDirectoryPath,
   DownloadDirectoryPath,
 } from 'react-native-fs';
+import {textStyles} from '../../../docs/config';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
+import {showSuccess, showError} from '../../components/Toast/toast';
+import {httpDelete, httpGet} from '../../config/apiService';
+import {changeUserData} from '../../config/routesConstants';
+import {useStores} from '../../stores/context';
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
@@ -23,10 +23,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
   const deleteAccount = async () => {
     setLoading(true);
     try {
-      await httpDelete(
-         changeUserData,
-        loginStore.userToken,
-      );
+      await httpDelete(changeUserData, loginStore.userToken);
       showSuccess('Success', 'Account deleted successfully');
       loginStore.logOut();
     } catch (error) {
@@ -57,10 +54,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
     setLoading(true);
 
     try {
-      const {data} = await httpGet(
-         '/users/exportData',
-        loginStore.userToken,
-      );
+      const {data} = await httpGet('/users/exportData', loginStore.userToken);
       const dataString = JSON.stringify(data);
       await writeFile(dataString);
     } catch (error) {

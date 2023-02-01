@@ -2,7 +2,7 @@ import {observer} from 'mobx-react-lite';
 import { View } from 'native-base';
 import React from 'react';
 
-import {RoomsTabBar} from '../components/RoomList/RoomsTabBar';
+import {RoomsTabBar} from '../../components/RoomList/RoomsTabBar';
 
 const RoomListScreen = observer(() => {
   return (

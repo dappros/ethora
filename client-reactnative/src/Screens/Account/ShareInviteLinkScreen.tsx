@@ -18,7 +18,7 @@ import {
   coinReplacedSymbol,
   commonColors,
   textStyles,
-} from '../../docs/config';
+} from '../../../docs/config';
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 

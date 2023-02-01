@@ -13,29 +13,29 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import TransactionListTab from '../components/Transactions/TransactionsList';
+import TransactionListTab from '../../components/Transactions/TransactionsList';
 import SkeletonContent from 'react-native-skeleton-content-nonexpo';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {commonColors, textStyles, coinsMainName} from '../../docs/config';
-import {useStores} from '../stores/context';
+import {commonColors, textStyles, coinsMainName} from '../../../docs/config';
+import {useStores} from '../../stores/context';
 import {Avatar, HStack, VStack} from 'native-base';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {observer} from 'mobx-react-lite';
-import {ROUTES} from '../constants/routes';
+import {ROUTES} from '../../constants/routes';
 import {
   createNewRoom,
   roomConfig,
   sendInvite,
   setOwner,
   subscribeToRoom,
-} from '../xmpp/stanzas';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+} from '../../xmpp/stanzas';
+import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {filterNftBalances, produceNfmtItems} from '../stores/walletStore';
-import {ProfileTabs} from '../components/Profile/ProfileTabs';
+import {filterNftBalances, produceNfmtItems} from '../../stores/walletStore';
+import {ProfileTabs} from '../../components/Profile/ProfileTabs';
 import {useNavigation} from '@react-navigation/native';
 
 const {primaryColor, primaryDarkColor} = commonColors;

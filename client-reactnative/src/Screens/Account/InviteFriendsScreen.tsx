@@ -1,15 +1,15 @@
 import React, {useState} from 'react';
 import {Share, useWindowDimensions} from 'react-native';
 
-import {commonColors} from '../../docs/config';
-import {showError} from '../components/Toast/toast';
+import {commonColors} from '../../../docs/config';
+import {showError} from '../../components/Toast/toast';
 
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {EnterInviteCode} from './EnterInviteCodeScreen';
 import {ShareInviteLink} from './ShareInviteLinkScreen';
-import {useStores} from '../stores/context';
+import {useStores} from '../../stores/context';
 import {observer} from 'mobx-react-lite';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {Text} from 'native-base';
 
 const routes = [
