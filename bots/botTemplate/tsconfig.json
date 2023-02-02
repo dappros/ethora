@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "outDir": "./lib",
+    "rootDir": "./src",
+    "baseUrl": "./"
+  },
+  "include": ["./src/**/*"]
+}
