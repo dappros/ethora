@@ -93,19 +93,6 @@ const OtherUserProfileScreen = observer(
     const anotherUserTransaction = walletStore.anotherUserTransaction;
     const transactionCount = walletStore.total;
 
-    useEffect(() => {
-      setOffset(0);
-      setTotal(0);
-
-      return () => {
-        clearPaginationData();
-        setCoinData([]);
-        setIsLoading(true);
-        setIsLoadingVCard(true);
-        setItemsData([]);
-      };
-    }, []);
-
     const onDirectChatPress = () => {
       const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
       const myWalletAddress = loginStore.initialData.walletAddress;
@@ -137,7 +124,7 @@ const OtherUserProfileScreen = observer(
       roomConfig(
         myXmppUserName,
         combinedWalletAddress.toLowerCase(),
-        {roomName: combinedUsersName},
+        {roomName: combinedUsersName, roomDescription: ''},
         chatStore.xmpp,
       );
       subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
@@ -161,6 +148,20 @@ const OtherUserProfileScreen = observer(
       setItemsBalance(
         itemsData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
       );
+    };
+    const getBalances = async () => {
+      await walletStore.fetchTransaction(
+        loginStore.anotherUserWalletAddress,
+        10,
+        0,
+      );
+      await walletStore.fetchOtherUserWalletBalance(
+        loginStore.anotherUserWalletAddress,
+        loginStore.userToken,
+        linkToken || '',
+      );
+      setIsLoading(false);
+      setIsLoadingVCard(false);
     };
     useEffect(() => {
       if (anotherUserBalance?.length > 0) {
@@ -189,20 +190,20 @@ const OtherUserProfileScreen = observer(
 
       return () => {};
     }, [itemsData, coinData]);
-    const getBalances = async () => {
-      await walletStore.fetchTransaction(
-        loginStore.anotherUserWalletAddress,
-        10,
-        0,
-      );
-      await walletStore.fetchOtherUserWalletBalance(
-        loginStore.anotherUserWalletAddress,
-        loginStore.userToken,
-        linkToken || '',
-      );
-      setIsLoading(false);
-      setIsLoadingVCard(false);
-    };
+    
+    useEffect(() => {
+      setOffset(0);
+      setTotal(0);
+
+      return () => {
+        clearPaginationData();
+        setCoinData([]);
+        setIsLoading(true);
+        setIsLoadingVCard(true);
+        setItemsData([]);
+      };
+    }, []);
+
     useEffect(() => {
       getBalances();
     }, [loginStore.anotherUserWalletAddress]);

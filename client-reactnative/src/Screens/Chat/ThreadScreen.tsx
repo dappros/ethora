@@ -1,6 +1,5 @@
 import {
   Actionsheet,
-  Checkbox,
   Divider,
   HStack,
   Text,
@@ -17,10 +16,7 @@ import {
 } from '../../../docs/config';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {useStores} from '../../stores/context';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   ActivityIndicator,
   Animated,
@@ -58,16 +54,9 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import {ChatComposer} from '../../components/Chat/Composer';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MessageBody from '../../components/Chat/MessageBody';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from '../../constants/mimeTypes';
 import {ImageMessage} from '../../components/Chat/ImageMessage';
 import {VideoMessage} from '../../components/Chat/VideoMessage';
 import {AudioMessage} from '../../components/Chat/AudioMessage';
-import {modalTypes} from '../../constants/modalTypes';
 import {PdfMessage} from '../../components/Chat/PdfMessage';
 import {FileMessage} from '../../components/Chat/FileMessage';
 import {downloadFile} from 'react-native-fs';
@@ -90,8 +79,14 @@ import {
 } from '../../helpers/chat/createMessageObject';
 import {IDataForTransfer} from '../../components/Modals/Chat/types';
 import {ChatLongTapModal} from '../../components/Modals/Chat/ChatLongTapModal';
-import { NftItemGalleryModal } from '../../../NftItemGalleryModal';
-import { MentionSuggestionsProps } from '../../helpers/chat/inputTypes';
+import {NftItemGalleryModal} from '../../../NftItemGalleryModal';
+import {MentionSuggestionsProps} from '../../helpers/chat/inputTypes';
+import {
+  isAudioMimetype,
+  isImageMimetype,
+  isPdfMimetype,
+  isVideoMimetype,
+} from '../../helpers/checkMimetypes';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -545,7 +540,7 @@ const ThreadScreen = observer((props: any) => {
         console.log('cant parse wave');
       }
     }
-    if (imageMimetypes[mimetype]) {
+    if (isImageMimetype(mimetype)) {
       return (
         <ImageMessage
           nftId={nftId}
@@ -556,7 +551,7 @@ const ThreadScreen = observer((props: any) => {
           }
         />
       );
-    } else if (videoMimetypes[mimetype]) {
+    } else if (isVideoMimetype(mimetype)) {
       return (
         <VideoMessage
           url={image}
@@ -566,7 +561,7 @@ const ThreadScreen = observer((props: any) => {
           }
         />
       );
-    } else if (audioMimetypes[mimetype]) {
+    } else if (isAudioMimetype(mimetype)) {
       return (
         <AudioMessage
           waveform={parsedWaveform}
@@ -577,7 +572,7 @@ const ThreadScreen = observer((props: any) => {
           onLongPress={handleOnLongPress}
         />
       );
-    } else if (pdfMimemtype[mimetype]) {
+    } else if (isPdfMimetype(mimetype)) {
       const pdfImage =
         'https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw';
       return (
@@ -825,7 +820,7 @@ const ThreadScreen = observer((props: any) => {
   return (
     <View flex={1} bg={'white'}>
       <SecondaryHeader title="Thread" />
-      {audioMimetypes[mediaModal.type] && (
+      {isAudioMimetype(mediaModal.type) && (
         <AudioPlayer audioUrl={mediaModal.url} />
       )}
       <View bg={commonColors.primaryDarkColor}>
@@ -931,7 +926,7 @@ const ThreadScreen = observer((props: any) => {
         url={mediaModal.url}
         type={mediaModal.type}
         onClose={closeMediaModal}
-        open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+        open={!isAudioMimetype(mediaModal.type) && mediaModal.open}
         messageData={mediaModal.message}
       />
     </View>

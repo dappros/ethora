@@ -61,7 +61,7 @@ const productIds = [
 
 const appleKey = '426b7e2459d74037962e34f57375dfe2';
 export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
-  const {apiStore, loginStore, walletStore} = useStores();
+  const {loginStore, walletStore} = useStores();
   const {
     connected,
 

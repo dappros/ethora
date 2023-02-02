@@ -6,12 +6,6 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-
 import {observer} from 'mobx-react-lite';
 
 import {NftTransactionItem} from '../Transactions/NftTransactionItem';

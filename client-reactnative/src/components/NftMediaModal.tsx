@@ -13,12 +13,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from '../constants/mimeTypes';
+import {pdfMimemtype} from '../constants/mimeTypes';
 import AudioPlayer from '../components/AudioPlayer/AudioPlayer';
 import VideoPlayer from 'react-native-video-player';
 import {commonColors, textStyles} from '../../docs/config';
@@ -26,6 +21,11 @@ import FastImage from 'react-native-fast-image';
 import {PdfViewer} from './PdfViewer';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import {
+  isAudioMimetype,
+  isImageMimetype,
+  isVideoMimetype,
+} from '../helpers/checkMimetypes';
 
 export const NftMediaModal = ({
   closeModal,
@@ -61,12 +61,12 @@ export const NftMediaModal = ({
           {pdfMimemtype[mimetype] && <PdfViewer uri={url} />}
         </View>
 
-        {audioMimetypes[mimetype] && (
+        {isAudioMimetype(mimetype) && (
           <View style={{position: 'absolute', top: '50%'}}>
             <AudioPlayer audioUrl={url} />
           </View>
         )}
-        {imageMimetypes[mimetype] && (
+        {isImageMimetype(mimetype) && (
           <TouchableOpacity onPress={closeModal}>
             <FastImage
               style={{
@@ -82,7 +82,7 @@ export const NftMediaModal = ({
           </TouchableOpacity>
         )}
 
-        {videoMimetypes[mimetype] && (
+        {isVideoMimetype(mimetype) && (
           <TouchableOpacity
             // onPress={() => setVideoPaused(prev => !prev)}
             activeOpacity={1}

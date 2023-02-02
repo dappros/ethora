@@ -1,11 +1,6 @@
 import {observer} from 'mobx-react-lite';
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  GiftedChat,
-  Send,
-  Actions,
-  InputToolbar,
-} from 'react-native-gifted-chat';
+import {GiftedChat, Send, Actions} from 'react-native-gifted-chat';
 import {useStores} from '../../stores/context';
 import {
   deleteMessageStanza,
@@ -62,22 +57,13 @@ import {
 } from '../../../docs/config';
 import Entypo from 'react-native-vector-icons/Entypo';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {fileUpload} from '../../config/routesConstants';
 import {httpUpload} from '../../config/apiService';
 import {showToast} from '../../components/Toast/toast';
 import DocumentPicker from 'react-native-document-picker';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from '../../constants/mimeTypes';
+import {pdfMimemtype} from '../../constants/mimeTypes';
 import {normalizeData} from '../../helpers/normalizeData';
-import {formatBytes} from '../../helpers/chat/formatBytes';
 import {AudioMessage} from '../../components/Chat/AudioMessage';
 import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
 import RenderChatFooter from '../../components/Chat/RenderChatFooter';
@@ -87,17 +73,14 @@ import {FileMessage} from '../../components/Chat/FileMessage';
 import {downloadFile} from '../../helpers/downloadFile';
 import {VideoMessage} from '../../components/Chat/VideoMessage';
 import {ChatComposer} from '../../components/Chat/Composer';
-import {
-  generateValueFromPartsAndChangedText,
-  mentionRegEx,
-  parseValue,
-} from '../../helpers/chat/inputUtils';
+import {mentionRegEx, parseValue} from '../../helpers/chat/inputUtils';
 import matchAll from 'string.prototype.matchall';
 import {useDebounce} from '../../hooks/useDebounce';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MetaNavigation} from '../../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {IMessageToSend} from '../../helpers/chat/createMessageObject';
+import {isAudioMimetype} from '../../helpers/checkMimetypes';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -410,7 +393,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         console.log('cant parse wave');
       }
     }
-    if (imageMimetypes[mimetype]) {
+    if (isImageMimetype(mimetype)) {
       return (
         <ImageMessage
           nftName={nftName}
@@ -422,7 +405,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           }
         />
       );
-    } else if (videoMimetypes[mimetype]) {
+    } else if (isVideoMimetype(mimetype)) {
       return (
         <VideoMessage
           url={image}
@@ -432,7 +415,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           }
         />
       );
-    } else if (audioMimetypes[mimetype]) {
+    } else if (isAudioMimetype(mimetype)) {
       return (
         <AudioMessage
           waveform={parsedWaveform}
@@ -925,7 +908,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
               chatStore.changeActiveChats(ROOM_KEYS.official);
           }}
         />
-        {audioMimetypes[mediaModal.type] && (
+        {isAudioMimetype(mediaModal.type) && (
           <AudioPlayer audioUrl={mediaModal.url} />
         )}
         {chatStore.isLoadingEarlierMessages && (
@@ -1063,7 +1046,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           url={mediaModal.url}
           type={mediaModal.type}
           onClose={closeMediaModal}
-          open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+          open={!isAudioMimetype(mediaModal.type) && mediaModal.open}
           messageData={mediaModal.message}
         />
       </ImageBackground>

@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -29,12 +29,13 @@ import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
 import {httpPost} from '../../config/apiService';
 import {docsURL, fileUpload} from '../../config/routesConstants';
-import {
-  pdfMimemtype,
-  audioMimetypes,
-  imageMimetypes,
-} from '../../constants/mimeTypes';
+import {pdfMimemtype} from '../../constants/mimeTypes';
 import {useStores} from '../../stores/context';
+import {
+  isAudioMimetype,
+  isImageMimetype,
+  isPdfMimetype,
+} from '../../helpers/checkMimetypes';
 
 interface MintScreenProps {}
 
@@ -47,9 +48,8 @@ const options = {
   saveToPhotos: true,
 };
 
-const UploadDocumentsScreen = (props: MintScreenProps) => {
-  const {loginStore, walletStore, apiStore, debugStore} = useStores();
-  const navigation = useNavigation();
+const UploadDocumentsScreen = () => {
+  const {loginStore, walletStore, debugStore} = useStores();
 
   const [itemName, setItemName] = useState<string>('');
   const [doctorsName, setDoctorsName] = useState<string>('');
@@ -78,9 +78,6 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [isSelected, setSelection] = useState<boolean>(true);
   const [date, setDate] = useState(new Date());
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
   const [open, setOpen] = useState(false);
 
   const clearData = () => {
@@ -309,14 +306,14 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                 }}>
                 {avatarSource !== null ? (
                   <>
-                    {audioMimetypes[uploadedFile.mimetype] && (
+                    {isAudioMimetype(uploadedFile.mimetype) && (
                       <AntIcon
                         name={'playcircleo'}
                         color={commonColors.primaryColor}
                         size={hp('5%')}
                       />
                     )}
-                    {!!imageMimetypes[uploadedFile.mimetype] && (
+                    {isImageMimetype(uploadedFile.mimetype) && (
                       <FastImage
                         source={{
                           uri: uploadedFile.locationPreview,
@@ -330,7 +327,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                         }}
                       />
                     )}
-                    {!!pdfMimemtype[uploadedFile.mimetype] && (
+                    {isPdfMimetype(uploadedFile.mimetype) && (
                       <FastImage
                         source={{
                           uri: uploadedFile.locationPreview,

@@ -57,12 +57,6 @@ import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
 import {httpUpload} from '../../config/apiService';
 import {fileUpload} from '../../config/routesConstants';
-import {
-  imageMimetypes,
-  videoMimetypes,
-  audioMimetypes,
-  pdfMimemtype,
-} from '../../constants/mimeTypes';
 import {ROUTES} from '../../constants/routes';
 import {banSystemMessage} from '../../helpers/banSystemMessage';
 import {IMessageToSend} from '../../helpers/chat/createMessageObject';
@@ -78,7 +72,24 @@ import {
 } from '../../helpers/underscoreLogic';
 import {useDebounce} from '../../hooks/useDebounce';
 import {useStores} from '../../stores/context';
-import { getRoomArchiveStanza, pausedComposing, getPaginatedArchive, sendInvite, sendMessageStanza, retrieveOtherUserVcard, isComposing, sendReplaceMessageStanza, sendMediaMessageStanza, deleteMessageStanza } from '../../xmpp/stanzas';
+import {
+  getRoomArchiveStanza,
+  pausedComposing,
+  getPaginatedArchive,
+  sendInvite,
+  sendMessageStanza,
+  retrieveOtherUserVcard,
+  isComposing,
+  sendReplaceMessageStanza,
+  sendMediaMessageStanza,
+  deleteMessageStanza,
+} from '../../xmpp/stanzas';
+import {
+  isImageMimetype,
+  isVideoMimetype,
+  isAudioMimetype,
+  isPdfMimetype,
+} from '../../helpers/checkMimetypes';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -437,7 +448,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         console.log('cant parse wave');
       }
     }
-    if (imageMimetypes[mimetype]) {
+    if (isImageMimetype(mimetype)) {
       return (
         <ImageMessage
           nftName={nftName}
@@ -449,7 +460,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           }
         />
       );
-    } else if (videoMimetypes[mimetype]) {
+    } else if (isVideoMimetype(mimetype)) {
       return (
         <VideoMessage
           url={image}
@@ -459,7 +470,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           }
         />
       );
-    } else if (audioMimetypes[mimetype]) {
+    } else if (isAudioMimetype(mimetype)) {
       return (
         <AudioMessage
           waveform={parsedWaveform}
@@ -470,7 +481,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onLongPress={handleOnLongPress}
         />
       );
-    } else if (pdfMimemtype[mimetype]) {
+    } else if (isPdfMimetype(mimetype)) {
       const pdfImage =
         'https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw';
       return (
@@ -994,7 +1005,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           onQRPressed={QRPressed}
           isChatRoomDetail={true}
         />
-        {audioMimetypes[mediaModal.type] && (
+        {isAudioMimetype(mediaModal.type) && (
           <AudioPlayer audioUrl={mediaModal.url} />
         )}
         {chatStore.isLoadingEarlierMessages && (
@@ -1127,7 +1138,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           url={mediaModal.url}
           type={mediaModal.type}
           onClose={closeMediaModal}
-          open={!audioMimetypes[mediaModal.type] && mediaModal.open}
+          open={!isAudioMimetype(mediaModal.type) && mediaModal.open}
           messageData={mediaModal.message}
         />
         <QRModal

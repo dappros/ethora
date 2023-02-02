@@ -18,21 +18,21 @@ export type TCombinedMimeType =
   | TImageMimeType
   | TPdfMimeType
   | TVideoMimeType;
-export const imageMimetypes: Record<TImageMimeType, TImageMimeType> = {
+export const imageMimetypes: Record<string, TImageMimeType> = {
   'image/png': 'image/png',
   'image/jpeg': 'image/jpeg',
   'image/jpg': 'image/jpg',
 };
-export const videoMimetypes: Record<TVideoMimeType, TVideoMimeType> = {
+export const videoMimetypes: Record<string, TVideoMimeType> = {
   'video/mp4': 'video/mp4',
 };
-export const audioMimetypes: Record<TAudioMimeType, TAudioMimeType> = {
+export const audioMimetypes: Record<string, TAudioMimeType> = {
   'audio/mpeg': 'audio/mpeg',
   'audio/webm': 'audio/webm',
   'application/octet-stream': 'application/octet-stream',
   'audio/x-m4a': 'audio/x-m4a',
 };
 
-export const pdfMimemtype: Record<TPdfMimeType, TPdfMimeType> = {
+export const pdfMimemtype: Record<string, TPdfMimeType> = {
   'application/pdf': 'application/pdf',
 };

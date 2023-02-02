@@ -1,9 +1,10 @@
-import Clipboard, {useClipboard} from '@react-native-clipboard/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import {useWalletConnect} from '@walletconnect/react-native-dapp';
 import React, {useEffect, useState} from 'react';
-import {Button, Linking, StyleSheet, Text, View} from 'react-native';
+import {Linking, StyleSheet, Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {commonColors, textStyles} from '../../../docs/config';
+import {Button} from '../../components/Button';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {ScanQrModal} from '../../components/Modals/ScanQrModal';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
@@ -25,7 +26,7 @@ const getMail = (email: string) => {
 const walletRoute = '/wallets/ext-wallet/';
 
 export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
-  const {loginStore, apiStore} = useStores();
+  const {loginStore} = useStores();
   const connector = useWalletConnect();
   const [showQrScan, setShowQrScan] = useState(false);
   const [showRemoveAccount, setShowRemoveAccount] = useState(false);
@@ -117,6 +118,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
       updateAddress(connector.accounts[0]);
     }
   }, [connector.accounts]);
+
   const renderConnected = () => {
     if (account) {
       return (

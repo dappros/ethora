@@ -39,17 +39,12 @@ interface ISharedLink {
   userId: string;
   walletAddress: string;
 }
-function addSeconds(numOfSeconds: number, date = new Date()) {
-  date.setSeconds(date.getSeconds() + numOfSeconds);
-
-  return date;
-}
 export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   onAddPress,
 }) => {
   const [sharedLinks, setSharedLinks] = useState<ISharedLink[]>([]);
-  const {loginStore, apiStore} = useStores();
-  const [data, setClipboard] = useClipboard();
+  const {loginStore} = useStores();
+  const [clipboardData, setClipboard] = useClipboard();
   const [modalData, setModalData] = useState({visible: false, link: ''});
   const [loading, setLoading] = useState(false);
 
@@ -65,10 +60,7 @@ export const DocumentShareManage: React.FC<IDocumentShareManage> = ({
   };
   const deleteLink = async (linkToken: string) => {
     try {
-      const {data} = await httpDelete(
-        shareLink + linkToken,
-        loginStore.userToken,
-      );
+      await httpDelete(shareLink + linkToken, loginStore.userToken);
       await getSharedLinks();
       showSuccess('Success', 'Link deleted');
     } catch (error) {

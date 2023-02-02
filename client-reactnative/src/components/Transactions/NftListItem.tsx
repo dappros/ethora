@@ -17,7 +17,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   coinImagePath,
@@ -40,6 +39,7 @@ import {ROUTES} from '../../constants/routes';
 import {botTypes} from '../../constants/botTypes';
 import {botStanza} from '../../xmpp/stanzas';
 import {formatBigNumber} from '../../helpers/formatBigNumber';
+import {isImageMimetype, isVideoMimetype} from '../../helpers/checkMimetypes';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -137,7 +137,7 @@ export const NftListItem = (props: NftListItemProps) => {
       <View style={styles.justifyAround}>
         <View style={styles.itemContainer}>
           <View style={styles.imageContainer}>
-            {imageMimetypes[mimetype] || videoMimetypes[mimetype] ? (
+            {isImageMimetype(mimetype) || isVideoMimetype(mimetype) ? (
               <TouchableWithoutFeedback
                 accessibilityLabel="Item preview"
                 onPress={onAssetPress}>
@@ -163,9 +163,7 @@ export const NftListItem = (props: NftListItemProps) => {
           </View>
           <TouchableWithoutFeedback onPress={onClick} style={{height: '100%'}}>
             <View style={{alignItems: 'flex-start', paddingLeft: 20}}>
-              <Text accessibilityLiveRegion="Item name" style={styles.itemName}>
-                {truncateString(name, 15)}
-              </Text>
+              <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
               {item.isCollection &&
                 route.name === ROUTES.OTHERUSERPROFILESCREEN && (
                   <HStack

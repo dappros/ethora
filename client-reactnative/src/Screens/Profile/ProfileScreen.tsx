@@ -26,7 +26,6 @@ import {useNavigation} from '@react-navigation/native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 
 import DocumentPicker from 'react-native-document-picker';
-import {uploadFiles} from 'react-native-fs';
 import {commonColors, textStyles} from '../../../docs/config';
 import ProfileModal from '../../components/Modals/Profile/ProfileModal';
 import {QRModal} from '../../components/Modals/QR/QRModal';
@@ -42,6 +41,7 @@ import {generateProfileLink} from '../../helpers/generateProfileLink';
 import parseChatLink from '../../helpers/parseChatLink';
 import {useStores} from '../../stores/context';
 import {updateVCard} from '../../xmpp/stanzas';
+import {uploadFiles} from '../../helpers/uploadFiles';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 
@@ -225,12 +225,12 @@ export const ProfileScreen = observer(() => {
       const formData = new FormData();
       formData.append('description', descriptionLocal);
       formData.append('file', file.location);
-      // const userRes = await httpUploadPut(
-      //    changeUserData,
-      //   formData,
-      //   loginStore.userToken,
-      //   console.log,
-      // );
+      await httpUploadPut(
+        changeUserData,
+        formData,
+        loginStore.userToken,
+        console.log,
+      );
       updateVCard(file.location, descriptionLocal, null, chatStore.xmpp);
     } catch (error) {
       console.log(error);

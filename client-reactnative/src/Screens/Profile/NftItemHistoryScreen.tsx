@@ -11,29 +11,30 @@ import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
 import NftTransactionListTab from '../../components/Nft/NftTransactionList';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  videoMimetypes,
-} from '../../constants/mimeTypes';
 import {useStores} from '../../stores/context';
 import {transactionURL} from '../../config/routesConstants';
 import {httpGet, httpPost} from '../../config/apiService';
 import {APP_TOKEN, commonColors, textStyles} from '../../../docs/config';
 import VideoPlayer from 'react-native-video-player';
 import {mapTransactions} from '../../stores/walletStore';
-import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
 import {showError, showSuccess} from '../../components/Toast/toast';
+import {
+  isAudioMimetype,
+  isImageMimetype,
+  isVideoMimetype,
+} from '../../helpers/checkMimetypes';
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
 
-  const {apiStore, loginStore, walletStore} = useStores();
+  const {loginStore, walletStore} = useStores();
 
-  const [avatarSource, setAvatarSource] = useState<string | null>(null);
+  const [avatarSource, setAvatarSource] = useState<{uri: string} | null>({
+    uri: '',
+  });
   const [itemTransactions, setItemTransactions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [videoPaused, setVideoPaused] = useState<boolean>(true);
@@ -95,11 +96,6 @@ const NftItemHistoryScreen = (props: any) => {
     setLoading(true);
     try {
       if (item?.isCollection) {
-        const res = await httpPost(
-          '/tokens/items/nfmt/collection-destroy/' + item.contractAddress,
-          {},
-          loginStore.userToken,
-        );
       }
 
       if (item.tokenType === 'NFMT') {
@@ -114,12 +110,6 @@ const NftItemHistoryScreen = (props: any) => {
         console.log(res.data);
       }
       if (item.tokenType === 'NFT') {
-        const res = await httpPost(
-          '/tokens/burn/items/',
-          {nftId: item.nftId, amount: item.balance},
-          loginStore.userToken,
-        );
-        console.log(res.data);
       }
       await walletStore.fetchWalletBalance(loginStore.userToken, true);
       navigation.navigate(ROUTES.PROFILE);
@@ -147,9 +137,7 @@ const NftItemHistoryScreen = (props: any) => {
               onPress={onPreviewClick}
               style={{alignItems: 'center', width: wp('60%')}}>
               <View style={[styles.alignCenter, styles.imageContainer]}>
-                {imageMimetypes[
-                  item.nftMimetype ? item.nftMimetype : 'image/png'
-                ] && (
+                {isImageMimetype(item.nftMimetype) && (
                   <FastImage
                     style={styles.tokenImage}
                     source={{
@@ -159,7 +147,7 @@ const NftItemHistoryScreen = (props: any) => {
                     resizeMode={FastImage.resizeMode.cover}
                   />
                 )}
-                {videoMimetypes[item.nftMimetype] && (
+                {isVideoMimetype(item.nftMimetype) && (
                   <View style={{position: 'relative'}}>
                     <View
                       style={{
@@ -189,7 +177,7 @@ const NftItemHistoryScreen = (props: any) => {
                     />
                   </View>
                 )}
-                {audioMimetypes[item.nftMimetype] && (
+                {isAudioMimetype(item.nftMimetype) && (
                   <AntIcon
                     name={'playcircleo'}
                     color={commonColors.primaryColor}
@@ -287,12 +275,12 @@ const NftItemHistoryScreen = (props: any) => {
         onRequestClose={closeModal}
         isVisible={modalData.visible}>
         <View style={styles.modal}>
-          {audioMimetypes[modalData.mimetype] && (
+          {isAudioMimetype(modalData.mimetype) && (
             <View style={{position: 'absolute', top: '50%'}}>
               <AudioPlayer audioUrl={modalData.url} />
             </View>
           )}
-          {imageMimetypes[modalData.mimetype] && (
+          {isImageMimetype(modalData.mimetype) && (
             <TouchableOpacity onPress={closeModal}>
               <Image
                 alt="modal image"
@@ -302,7 +290,7 @@ const NftItemHistoryScreen = (props: any) => {
             </TouchableOpacity>
           )}
 
-          {videoMimetypes[modalData.mimetype] && (
+          {isVideoMimetype(modalData.mimetype) && (
             <TouchableOpacity
               onPress={() => setVideoPaused(prev => !prev)}
               activeOpacity={1}

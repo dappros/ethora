@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {VStack} from 'native-base';
-import {Button, Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 
 import Share from 'react-native-share';
 import RNFS, {
@@ -13,10 +13,11 @@ import {showSuccess, showError} from '../../components/Toast/toast';
 import {httpDelete, httpGet} from '../../config/apiService';
 import {changeUserData} from '../../config/routesConstants';
 import {useStores} from '../../stores/context';
+import {Button} from '../../components/Button';
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
-  const {loginStore, apiStore} = useStores();
+  const {loginStore} = useStores();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 

@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
-import {HStack, Image, ScrollView, Text, View, VStack} from 'native-base';
+import {HStack, Image, Text, View, VStack} from 'native-base';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
@@ -9,25 +9,25 @@ import {
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import NftTransactionListTab from '../../components/Nft/NftTransactionList';
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from '../../constants/mimeTypes';
 import {useStores} from '../../stores/context';
 import {transactionURL} from '../../config/routesConstants';
-import {httpDelete, httpGet} from '../../config/apiService';
+import {httpGet} from '../../config/apiService';
 import {APP_TOKEN, commonColors, textStyles} from '../../../docs/config';
 
 import {NftMediaModal} from '../../components/NftMediaModal';
 import {downloadFile} from '../../helpers/downloadFile';
-import {IDocument} from '../../stores/walletStore';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {showError} from '../../components/Toast/toast';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {ROUTES} from '../../constants/routes';
+import {IDocument} from '../../stores/types';
+import {
+  isAudioMimetype,
+  isImageMimetype,
+  isPdfMimetype,
+  isVideoMimetype,
+} from '../../helpers/checkMimetypes';
 
 interface DocumentHistoryScreenProps {
   route: {params: {item: IDocument; userWalletAddress: string}};
@@ -40,7 +40,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 }) => {
   const {item, userWalletAddress} = route.params;
 
-  const {apiStore, loginStore, walletStore} = useStores();
+  const {loginStore, walletStore} = useStores();
 
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [itemTransactions, setItemTransactions] = useState<any>([]);
@@ -115,7 +115,6 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
   const deleteDocument = async () => {
     setLoading(true);
     try {
-      const res = await httpDelete('/docs/' + item._id, loginStore.userToken);
       await walletStore.getDocuments(loginStore.initialData.walletAddress);
       navigation.navigate(ROUTES.PROFILE);
     } catch (error) {
@@ -143,8 +142,8 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
             <TouchableOpacity
               onPress={onPreviewClick}
               style={{alignItems: 'center'}}>
-              {(!!imageMimetypes[item.file.mimetype] ||
-                !!pdfMimemtype[item.file.mimetype]) && (
+              {(isImageMimetype(item.file.mimetype) ||
+                isPdfMimetype(item.file.mimetype)) && (
                 <FastImage
                   style={styles.tokenImage}
                   source={{
@@ -155,7 +154,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
                 />
               )}
 
-              {videoMimetypes[item.file.mimetype] && (
+              {isVideoMimetype(item.file.mimetype) && (
                 <View style={{position: 'relative'}}>
                   <View style={styles.playButton}>
                     <AntIcon
@@ -176,7 +175,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
                 </View>
               )}
 
-              {audioMimetypes[item.file.mimetype] && (
+              {isAudioMimetype(item.file.mimetype) && (
                 <AntIcon
                   name={'playcircleo'}
                   color={commonColors.primaryColor}

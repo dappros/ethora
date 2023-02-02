@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Button, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {HStack, Input, Text, View} from 'native-base';
 
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
@@ -14,6 +14,7 @@ import {httpPost} from '../../config/apiService';
 import {shareLink} from '../../config/routesConstants';
 import {generateDocumentLink} from '../../helpers/generateDocumentLink';
 import {useStores} from '../../stores/context';
+import {Button} from '../../components/Button';
 
 export interface IDocumentShareAdd {}
 
@@ -50,7 +51,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
     walletAddress: '',
   });
   const [loading, setLoading] = useState(false);
-  const {apiStore, loginStore, walletStore} = useStores();
+  const {loginStore, walletStore} = useStores();
   const inputRef = useRef();
 
   useEffect(() => {

@@ -28,7 +28,7 @@ import {httpPost} from '../../config/apiService';
 import {fileUpload, nftTransferURL} from '../../config/routesConstants';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
-import {audioMimetypes} from '../../constants/mimeTypes';
+import {isAudioMimetype} from '../../helpers/checkMimetypes';
 
 interface MintScreenProps {}
 
@@ -133,7 +133,7 @@ const MintScreen = (props: MintScreenProps) => {
   const sendFiles = async (data: any) => {
     setLoading(true);
     try {
-      const url =  fileUpload;
+      const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
       console.log(JSON.stringify(response), 'sdfasdfadf');
       setFileId(response.results[0]['_id']);
@@ -238,7 +238,7 @@ const MintScreen = (props: MintScreenProps) => {
                 }}>
                 {avatarSource !== null ? (
                   <>
-                    {audioMimetypes[filePickResult.type] ? (
+                    {isAudioMimetype(filePickResult.type) ? (
                       <AntIcon
                         name={'playcircleo'}
                         color={commonColors.primaryColor}

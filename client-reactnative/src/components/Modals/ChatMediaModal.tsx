@@ -8,12 +8,7 @@ Note: linked open-source libraries and components may be subject to their own li
 import {Box, HStack, Image, Modal, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
-import {
-  imageMimetypes,
-  pdfMimemtype,
-  TCombinedMimeType,
-  videoMimetypes,
-} from '../../constants/mimeTypes';
+import {pdfMimemtype, TCombinedMimeType} from '../../constants/mimeTypes';
 import VideoPlayer from 'react-native-video-player';
 import {
   TouchableOpacity,
@@ -37,6 +32,7 @@ import {downloadFile} from '../../helpers/downloadFile';
 import {weiToNormalUnits} from '../../helpers/weiToNormalUnits';
 import {PdfViewer} from '../PdfViewer';
 import {formatBigNumber} from '../../helpers/formatBigNumber';
+import {isImageMimetype, isVideoMimetype} from '../../helpers/checkMimetypes';
 const {width, height: windowHeight} = Dimensions.get('window');
 
 const ModalActionButton = ({
@@ -105,7 +101,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
     const getCosts = async () => {
       try {
         const res = await httpGet(
-           '/tokens/get/' + messageData?.contractAddress,
+          '/tokens/get/' + messageData?.contractAddress,
           apiStore.defaultToken,
         );
         return res.data;
@@ -146,7 +142,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
     };
 
     const renderModalContent = () => {
-      if (!!imageMimetypes[type]) {
+      if (isImageMimetype(type)) {
         const modalButtonAction = () => {
           const manipulatedWalletAddress = underscoreManipulation(
             loginStore.initialData.walletAddress,
@@ -198,7 +194,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
           </View>
         );
       }
-      if (videoMimetypes[type]) {
+      if (isVideoMimetype(type)) {
         return (
           <TouchableOpacity
             activeOpacity={1}
