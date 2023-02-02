@@ -40,8 +40,20 @@ export const VideoMessage: React.FC<VideoMessageProps> = ({
       )}
       <Box p={'1.5'} position={'relative'}>
         <FastImage style={styles.preview} source={{uri: url}} />
-        <View style={{position: 'absolute', justifyContent: 'center', alignItems: 'center', height: '100%', width: '100%'}}>
-          <AntIcon name="play" color={'rgba(255,255,255,0.8)'} size={50} style={{margin: 5}} />
+        <View
+          style={{
+            position: 'absolute',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            width: '100%',
+          }}>
+          <AntIcon
+            name="play"
+            color={'rgba(255,255,255,0.8)'}
+            size={50}
+            style={{margin: 5}}
+          />
         </View>
       </Box>
     </TouchableOpacity>

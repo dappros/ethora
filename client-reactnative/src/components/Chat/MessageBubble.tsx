@@ -6,9 +6,8 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import PropTypes from 'prop-types';
-import React, {createRef, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  Clipboard,
   StyleSheet,
   Image,
   Animated,
@@ -16,7 +15,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {
-  widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
@@ -24,7 +22,6 @@ import {
   MessageImage,
   Time,
   utils,
-  MessageProps,
 } from 'react-native-gifted-chat';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';

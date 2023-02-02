@@ -23,7 +23,6 @@ import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {uploadFiles} from 'react-native-fs';
 import {commonColors, textStyles} from '../../../docs/config';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
@@ -36,6 +35,7 @@ import {
   isImageMimetype,
   isPdfMimetype,
 } from '../../helpers/checkMimetypes';
+import { uploadFiles } from '../../helpers/uploadFiles';
 
 interface MintScreenProps {}
 

@@ -8,7 +8,6 @@ Note: linked open-source libraries and components may be subject to their own li
 import {Text, View} from 'native-base';
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {commonColors} from '../../../docs/config';
 import {colors} from '../../constants/messageColors';
 import {alpha} from '../../helpers/aplha';
@@ -16,7 +15,21 @@ import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {sendMessageStanza} from '../../xmpp/stanzas';
 
-export const QuickReplies = ({
+interface IQuickReply {
+  name: string;
+  value: string;
+  notDisplayedValue: string;
+}
+
+interface IQuickReplies {
+  quickReplies: IQuickReply[];
+  roomJid: string;
+  roomName: string;
+  width: number;
+  messageAuthor: string;
+}
+
+export const QuickReplies: React.FC<IQuickReplies> = ({
   quickReplies,
   roomJid,
   roomName,
@@ -27,7 +40,15 @@ export const QuickReplies = ({
   const isSameUser =
     messageAuthor ===
     underscoreManipulation(loginStore.initialData.walletAddress);
-  const onQuickReplyPress = ({name, value, notDisplayedValue}) => {
+  const onQuickReplyPress = ({
+    name,
+    value,
+    notDisplayedValue,
+  }: {
+    name: string;
+    value: string;
+    notDisplayedValue: string;
+  }) => {
     const data = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
@@ -39,7 +60,7 @@ export const QuickReplies = ({
       photoURL: loginStore.userAvatar,
       roomJid: roomJid,
       notDisplayedValue,
-      push:true
+      push: true,
     };
     sendMessageStanza(
       underscoreManipulation(loginStore.initialData.walletAddress),

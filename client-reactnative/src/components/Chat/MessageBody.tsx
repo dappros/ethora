@@ -82,7 +82,7 @@ export default class Message extends React.Component {
     if (currentMessage) {
       const sameUser = isSameUser(currentMessage, nextMessage);
       return (
-        <View accessibilityLabel='Message (long tap to interact)'>
+        <View accessibilityLabel="Message (long tap to interact)">
           {this.renderDay()}
           {currentMessage.system ? (
             this.renderSystemMessage()

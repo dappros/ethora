@@ -12,12 +12,7 @@ import {
 import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {
-  coinImagePath,
-  commonColors,
-  IMetaRoom,
-  textStyles,
-} from '../../../docs/config';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {ROUTES} from '../../constants/routes';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {useStores} from '../../stores/context';
@@ -90,16 +85,6 @@ const getOpositeDirection = (direction: string) => {
   return OPOSITE_DIRECTIONS[direction];
 };
 
-const findRoom = (id: string | undefined, arr: IMetaRoom[]) => {
-  if (!id) {
-    return null;
-  }
-  const room = arr.find(item => item.idAddress === id);
-  if (!room) {
-    return null;
-  }
-  return room;
-};
 const CompassItem = ({
   room,
   name,

@@ -13,7 +13,6 @@ import {useNavigation} from '@react-navigation/native';
 import {observer} from 'mobx-react-lite';
 
 import DocumentPicker from 'react-native-document-picker';
-import {uploadFiles} from 'react-native-fs';
 import {
   defaultChatBackgroundTheme,
   textStyles,
@@ -24,6 +23,7 @@ import {fileUpload} from '../../config/routesConstants';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {setRoomImage} from '../../xmpp/stanzas';
+import { uploadFiles } from '../../helpers/uploadFiles';
 
 const renderCard = (
   index: number,

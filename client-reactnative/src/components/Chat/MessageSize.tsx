@@ -11,7 +11,13 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {StyleSheet} from 'react-native';
-export const MessageSize = ({size, duration}:any) => {
+export const MessageSize = ({
+  size,
+  duration,
+}: {
+  size: string;
+  duration?: string;
+}) => {
   return (
     <Box>
       <Box

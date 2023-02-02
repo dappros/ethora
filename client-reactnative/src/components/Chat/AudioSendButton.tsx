@@ -7,14 +7,19 @@ import {
 } from 'react-native';
 import {RecordingSecondsCounter} from '../Recorder/RecordingSecondsCounter';
 import Entypo from 'react-native-vector-icons/Entypo';
-import IonIcons from 'react-native-vector-icons/Ionicons';
 import {commonColors} from '../../../docs/config';
-import {Send} from 'react-native-gifted-chat';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-export const AudioSendButton = ({onPressIn, onPressOut, recording}) => {
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
+interface IAudioSendButton {
+  onPressIn: () => void;
+  onPressOut: () => void;
+  recording: boolean;
+}
+export const AudioSendButton: React.FC<IAudioSendButton> = ({
+  onPressIn,
+  onPressOut,
+  recording,
+}) => {
   //   const animateMediaButtonStyle = {
   //     transform: [{scale: mediaButtonAnimation}],
   //   };

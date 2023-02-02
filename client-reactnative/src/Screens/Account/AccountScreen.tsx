@@ -26,7 +26,7 @@ const newEmailAddedAlertText =
   " added to your profile's e-mail addresses. We have sent you a verification link to that address. Please open it to confirm this e-mail belongs to you.";
 const emailRemovedAlertText = " removed from your profile's e-mail addresses.";
 
-const AccountScreen = observer((props: AccountScreenProps) => {
+const AccountScreen = observer(() => {
   const {loginStore, accountStore} = useStores();
 
   const {userAvatar, initialData, userDescription, userToken} = loginStore;

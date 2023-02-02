@@ -6,17 +6,27 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import Svg, {Rect} from 'react-native-svg';
 import {commonColors} from '../../../docs/config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {HStack} from 'native-base';
+import {IMessage} from 'react-native-gifted-chat';
 
-export const AudioMessage = ({onLongPress, onPress, waveform, message}) => {
+interface IAudioMessage {
+  onLongPress: (type: string, message: IMessage) => void;
+  onPress: (message: IMessage) => void;
+  waveform: Array<number>;
+  message: IMessage;
+}
+
+export const AudioMessage: React.FC<IAudioMessage> = ({
+  onLongPress,
+  onPress,
+  waveform,
+  message,
+}) => {
   return (
     <TouchableOpacity
       onLongPress={() => onLongPress('', message.currentMessage)}

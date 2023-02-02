@@ -1,9 +1,6 @@
-import {Box, Image, Pressable, Text} from 'native-base';
+import {Box, Pressable} from 'native-base';
 import * as React from 'react';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {commonColors} from '../../../docs/config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';

@@ -63,7 +63,7 @@ export const ChatLongTapUserActions: React.FC<IChatLongTapUserActions> = ({
     roomConfig(
       myXmppUserName,
       combinedWalletAddress.toLowerCase(),
-      {roomName: combinedUsersName},
+      {roomName: combinedUsersName, roomDescription: ''},
       chatStore.xmpp,
     );
     subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
