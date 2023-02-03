@@ -769,7 +769,7 @@ export const retrieveOtherUserVcard = (
     xml('vCard', {xmlns: 'vcard-temp'}),
   );
 
-  xmpp.send(message);
+  xmpp?.send(message);
 };
 
 export const createNewRoom = (from: string, to: string, xmpp: any) => {

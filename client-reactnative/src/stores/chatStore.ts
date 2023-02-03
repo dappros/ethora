@@ -1,5 +1,4 @@
 import {client, xml} from '@xmpp/client';
-import {format} from 'date-fns';
 import {makeAutoObservable, runInAction, toJS} from 'mobx';
 import {
   defaultChatBackgroundTheme,
@@ -27,7 +26,7 @@ import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
 import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
 import {
   createMessageObject,
-  IMessage,
+  IMainMessage,
 } from '../helpers/chat/createMessageObject';
 import {playCoinSound} from '../helpers/chat/playCoinSound';
 import {underscoreManipulation} from '../helpers/underscoreLogic';
@@ -125,6 +124,55 @@ export interface replaceMessageListItemProps {
   replaceMessageId: string;
   replaceMessageText: string;
 }
+
+export interface IMessage {
+  imageLocationPreview?: any;
+  imageLocation?: any;
+  _id: string;
+  text?: string;
+  createdAt: string | number | Date;
+  system: boolean;
+  tokenAmount?: string | number;
+  user: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
+  image?: string;
+  realImageURL?: string;
+  localURL?: string;
+  isStoredFile?: boolean;
+  mimetype?: string;
+  duration?: string;
+  size?: string;
+  waveForm?: string;
+  roomJid: string;
+  receiverMessageId: string;
+  quickReplies: string;
+  attachmentId?: string;
+  wrappable: boolean;
+  nftId?: string;
+  nftName?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  fileName?: string;
+  originalName?: string;
+  isReply?: boolean;
+  mainMessage?: IMainMessage;
+  numberOfReplies?: number;
+  showInChannel?: boolean;
+  preview?: string;
+  isReplace?: boolean;
+  replaceMessageId?: string;
+  isEdited?: boolean;
+}
+
+export interface User {
+  _id:    string;
+  avatar: string;
+  name:   string;
+}
+
 let temporaryArchiveMessages: IMessage[] = [];
 export class ChatStore {
   messages: any = [];
