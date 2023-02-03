@@ -66,6 +66,12 @@ export const getPushToken = async (
     },
     onNotification: function (notification: any) {
       console.log('NOTIFICATION:', notification);
+      const chatJID = notification.data.mucId;
+      if (chatJID) {
+        setTimeout(() => {
+          navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
+        }, 2000);
+      }
 
       if (notification.message.includes('transaction')) {
         PushNotification.localNotification({
@@ -81,10 +87,6 @@ export const getPushToken = async (
         playCoinSound(7);
         return;
       }
-      const chatJID = notification.data.mucId;
-      setTimeout(() => {
-        navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
-      }, 2000);
     },
 
     onAction: function (notification: any) {

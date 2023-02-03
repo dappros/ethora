@@ -159,6 +159,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   });
 
   const {chatJid, chatName} = route.params;
+  console.log(chatJid)
   const [mediaModal, setMediaModal] = useState({
     open: false,
     url: '',

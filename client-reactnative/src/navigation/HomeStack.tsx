@@ -24,7 +24,6 @@ import ChatDetailsScreen from '../Screens/Chat/ChatDetailsScreen';
 import ChatScreen from '../Screens/Chat/ChatScreen';
 import NewChatScreen from '../Screens/Chat/NewChatScreen';
 import RoomListScreen from '../Screens/Chat/RoomListScreen';
-import {SwiperChatScreen} from '../Screens/Chat/SwiperChatScreen';
 import ThreadScreen from '../Screens/Chat/ThreadScreen';
 import {PrivacyAndDataScreen} from '../Screens/Privacy/PrivacyAndDataScreen';
 import {DocumentHistoryScreen} from '../Screens/Profile/DocumentHistoryScreen';
@@ -286,13 +285,6 @@ export const HomeStackScreen = observer(() => {
         options={() => ({
           // header: ({}) => <MainHeader />,
           headerShown: false,
-        })}
-      />
-      <HomeStack.Screen
-        name={ROUTES.SWIPERCHAT}
-        component={SwiperChatScreen}
-        options={() => ({
-          header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
