@@ -6,12 +6,12 @@ import 'dotenv/config';
 import {connectToDb} from "./database/dataBase.js";
 import {welcomePresence} from "./presence.js";
 import { Configuration, OpenAIApi } from "openai"
-import { ChatGPTAPIBrowser } from 'chatgpt'
-
-const GPTapi = new ChatGPTAPIBrowser({
-    email: process.env.OPENAI_EMAIL,
-    password: process.env.OPENAI_PASSWORD
-})
+// import { ChatGPTAPIBrowser } from 'chatgpt'
+//
+// const GPTapi = new ChatGPTAPIBrowser({
+//     email: process.env.OPENAI_EMAIL,
+//     password: process.env.OPENAI_PASSWORD
+// })
 
 
 
@@ -109,7 +109,6 @@ const groupDataForHandler = (xmpp, stanza, connectData) => {
         receiverData: stanza.getChild('data') ? stanza.getChild('data').attrs : null,
         receiverMessageId: stanza.getChild('stanza-id') ? stanza.getChild('stanza-id').attrs.id : 0,
         connectData,
-        openai,
-        GPTapi
+        openai
     }
 }

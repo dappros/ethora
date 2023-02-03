@@ -120,7 +120,7 @@ export const getMintItemData = async (walletAddress) => {
 export const runCompletion = async (openai, message) => {
     try {
         const completion = await openai.createCompletion({
-            model: "text-davinci-001",
+            model: "text-davinci-002",
             prompt: message,
             temperature: 0.4,
             max_tokens: 64,

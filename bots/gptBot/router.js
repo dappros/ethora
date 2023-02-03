@@ -24,7 +24,8 @@ const router = (handlerData) => {
     {
         const indexOfSpace = handlerData.message.indexOf(' ');
         const clearMessage = handlerData.message.slice(indexOfSpace + 1);
-        sendGPTMessage(handlerData.GPTapi, clearMessage).then(result => {
+
+        runCompletion(handlerData.openai, clearMessage).then(result => {
             return sendMessage(
                 handlerData,
                 result,
