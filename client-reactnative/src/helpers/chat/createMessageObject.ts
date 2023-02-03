@@ -5,47 +5,8 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-export interface IMessage {
-  imageLocationPreview?: any;
-  imageLocation?: any;
-  _id: string;
-  text?: string;
-  createdAt: string | number | Date;
-  system: boolean;
-  tokenAmount?: string | number;
-  user: {
-    _id: string;
-    name: string;
-    avatar: string;
-  };
-  image?: string;
-  realImageURL?: string;
-  localURL?: string;
-  isStoredFile?: boolean;
-  mimetype?: string;
-  duration?: string;
-  size?: string;
-  waveForm?: string;
-  roomJid: string;
-  receiverMessageId: string;
-  quickReplies: string;
-  attachmentId?: string;
-  wrappable: boolean;
-  nftId?: string;
-  nftName?: string;
-  nftActionType?: string;
-  contractAddress?: string;
-  fileName?: string;
-  originalName?: string;
-  isReply?: boolean;
-  mainMessage?: IMainMessage;
-  numberOfReplies?: number;
-  showInChannel?: boolean;
-  preview?: string;
-  isReplace?: boolean;
-  replaceMessageId?: string;
-  isEdited?: boolean;
-}
+import { IMessage } from "../../stores/chatStore";
+
 export interface IMessageToSend {
   senderFirstName: string;
   imageLocationPreview?: any;
@@ -111,7 +72,7 @@ export const createMainMessageForThread = (message: IMessage): string => {
   return JSON.stringify(data);
 };
 
-interface IMainMessage {
+export interface IMainMessage {
   text?: string;
   id: string;
   userName: string;
