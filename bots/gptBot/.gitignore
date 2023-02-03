@@ -1,0 +1,4 @@
+node_modules
+.env.production
+.env.development
+test.js
