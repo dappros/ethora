@@ -7,7 +7,7 @@ import {
 } from 'react-native-responsive-screen';
 import {commonColors, defaultBotsList, textStyles} from '../../../docs/config';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {ImageLibraryOptions, launchImageLibrary} from 'react-native-image-picker';
 import {sha256} from 'react-native-sha256';
 import {useStores} from '../../stores/context';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -25,15 +25,12 @@ import {httpPost} from '../../config/apiService';
 import FastImage from 'react-native-fast-image';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {fileUpload} from '../../config/routesConstants';
+import { Alert } from 'react-native';
 
 interface NewChatScreenProps {}
 
-const options = {
-  title: 'Select Avatar',
-  storageOptions: {
-    skipBackup: true,
-    path: 'images',
-  },
+const options:ImageLibraryOptions = {
+  mediaType:'photo',
 };
 
 const OPOSITE_DIRECTIONS: Record<string, string> = {
@@ -52,13 +49,14 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const [chatName, setChatName] = useState('');
   const [chatDescription, setChatDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  //@ts-ignore
   const params = props.route.params;
   const {loginStore, chatStore, apiStore} = useStores();
 
   const {walletAddress} = loginStore.initialData;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const sendFiles = async (data: any) => {
     setLoading(true);
@@ -79,17 +77,21 @@ const NewChatScreen = (props: NewChatScreenProps) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorMessage) {
-        alert('ImagePicker Error: ', response.errorMessage);
+        Alert.alert('ImagePicker Error: ', response.errorMessage);
       } else {
         // You can also display the image using data:
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         const data = new FormData();
-        data.append('files', {
-          name: response.assets[0].fileName,
-          type: response.assets[0].type,
-          uri: response.assets[0].uri,
-        });
-        sendFiles(data);
+
+        if(response.assets){
+          data.append('files', {
+            name: response.assets[0].fileName,
+            type: response.assets[0].type,
+            uri: response.assets[0].uri,
+          });
+  
+          sendFiles(data);
+        }
       }
     });
   };
@@ -100,7 +102,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
       roomHash = hash;
 
       if (chatName === '') {
-        alert('Please fill Chat Name');
+        Alert.alert('Please fill Chat Name');
       } else {
         createNewRoom(manipulatedWalletAddress, roomHash, chatStore.xmpp);
 

@@ -88,15 +88,15 @@ export const HomeStackScreen = observer(() => {
         if (url.includes('profileLink')) {
           const params = url.split(appLinkingUrl)[1];
           const queryParams = new URLSearchParams(params);
-          const firstName: string = queryParams.get('firstName');
-          const lastName: string = queryParams.get('lastName');
-          const xmppId: string = queryParams.get('xmppId');
+          const firstName: string = queryParams.get('firstName') as string;
+          const lastName: string = queryParams.get('lastName') as string;
+          const xmppId: string = queryParams.get('xmppId') as string;
           const walletAddressFromLink: string =
-            queryParams.get('walletAddress');
+            queryParams.get('walletAddress') as string;
           const linkToken = queryParams.get('linkToken');
 
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate(ROUTES.PROFILE);
+            navigation.navigate(ROUTES.PROFILE as never);
           } else {
             setTimeout(() => {
               retrieveOtherUserVcard(
@@ -112,6 +112,7 @@ export const HomeStackScreen = observer(() => {
                 anotherUserWalletAddress: walletAddressFromLink,
               });
             }, 2000);
+            //@ts-ignore
             navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN, {
               linkToken: linkToken,
             });
@@ -137,15 +138,15 @@ export const HomeStackScreen = observer(() => {
         if (data.url.includes('profileLink')) {
           const params = data.url.split(appLinkingUrl)[1];
           const queryParams = new URLSearchParams(params);
-          const firstName: string = queryParams.get('firstName');
-          const lastName: string = queryParams.get('lastName');
-          const xmppId: string = queryParams.get('xmppId');
-          const linkToken: string = queryParams.get('linkToken');
+          const firstName: string = queryParams.get('firstName') as string;
+          const lastName: string = queryParams.get('lastName') as string;
+          const xmppId: string = queryParams.get('xmppId') as string;
+          const linkToken: string = queryParams.get('linkToken') as string;
 
           const walletAddressFromLink: string =
-            queryParams.get('walletAddress');
+            queryParams.get('walletAddress') as string;
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate(ROUTES.PROFILE);
+            navigation.navigate(ROUTES.PROFILE as never);
           } else {
             retrieveOtherUserVcard(
               initialData.xmppUsername,
@@ -179,6 +180,7 @@ export const HomeStackScreen = observer(() => {
   }, []);
 
   return (
+    //@ts-ignore
     <HomeStack.Navigator options={{headerShown: true, headerTitle: ''}}>
       <HomeStack.Screen
         name={ROUTES.ROOMSLIST}
@@ -210,6 +212,7 @@ export const HomeStackScreen = observer(() => {
       />
       <HomeStack.Screen
         name={ROUTES.OTHERUSERPROFILESCREEN}
+        //@ts-ignore
         component={OtherUserProfileScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
@@ -289,6 +292,7 @@ export const HomeStackScreen = observer(() => {
       />
       <HomeStack.Screen
         name={ROUTES.DOCUMENTHISTORY}
+        //@ts-ignore
         component={DocumentHistoryScreen}
         options={() => ({
           header: ({}) => <MainHeader />,

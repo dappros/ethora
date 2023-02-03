@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Actions, GiftedChat, Send } from 'react-native-gifted-chat';
+import { Actions, GiftedChat, Send, User } from 'react-native-gifted-chat';
 import { AudioSendButton } from './AudioSendButton';
 import { ActivityIndicator, Animated, Image, ImageBackground, NativeModules, Platform, Pressable, StyleSheet, Text} from 'react-native';
 import AudioRecorderPlayer, { AVEncoderAudioQualityIOSType, AVEncodingOption, AudioEncoderAndroidType, AudioSourceAndroidType } from 'react-native-audio-recorder-player';
@@ -463,8 +463,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           mucname: roomDetails.name,
           photoURL: loginStore.userAvatar,
           roomJid: roomDetails.jid,
-          isReply: containerType==='thread'&&true,
-          mainMessage: createMainMessageForThread(currentMessage as IMessage),
+          isReply: containerType==='thread'||false,
+          mainMessage: createMainMessageForThread(message[0] as IMessage),
           showInChannel:showInChannel,
           push: true,
         };
@@ -614,7 +614,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             }
         };
 
-        const onUserAvatarPress = (props: any) => {
+        const onUserAvatarPress = (props: {_id:string, name:string, avatar:string}) => {
             //to set the current another user profile
             // otherUserStore.setUserData(firstName, lastName, avatar);
             const xmppID = props._id.split('@')[0];
@@ -623,7 +623,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               navigation.navigate(ROUTES.PROFILE as never);
               return;
             } else {
-              getOtherUserDetails(props);
+              chatStore.getOtherUserDetails({
+                jid:props._id,
+                avatar:props.avatar,
+                name:props.name
+              });
               navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN as never);
             }
         };
@@ -702,30 +706,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               data,
               chatStore.xmpp,
             );
-        };
-
-        const getOtherUserDetails = (props: any) => {
-            const {avatar, name, _id} = props;
-            const anotherUserFirstname = name.split(' ')[0];
-            const anotherUserLastname = name.split(' ')[1];
-            const xmppID = _id.split('@')[0];
-            const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
-        
-            const theirXmppUsername = xmppID;
-            //this will get the other user's Avatar and description
-            retrieveOtherUserVcard(
-              loginStore.initialData.xmppUsername,
-              theirXmppUsername,
-              chatStore.xmpp,
-            );
-        
-            loginStore.setOtherUserDetails({
-              anotherUserFirstname: anotherUserFirstname,
-              anotherUserLastname: anotherUserLastname,
-              anotherUserLastSeen: {},
-              anotherUserWalletAddress: anotherUserWalletAddress,
-              anotherUserAvatar: avatar,
-            });
         };
     
     //local functions

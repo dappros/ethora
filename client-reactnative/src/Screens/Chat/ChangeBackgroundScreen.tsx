@@ -24,10 +24,11 @@ import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {setRoomImage} from '../../xmpp/stanzas';
 import { uploadFiles } from '../../helpers/uploadFiles';
+import { IbackgroundTheme, roomListProps } from '../../stores/chatStore';
 
 const renderCard = (
   index: number,
-  item: {value: string; isSelected: boolean; title: string; isImage: boolean},
+  item: IbackgroundTheme,
   onSelect: any,
 ) => {
   const mod = index % 2;
@@ -39,8 +40,6 @@ const renderCard = (
       <ChatBackgroundCard
         value={item.value}
         isSelected={item.isSelected}
-        title={item.title}
-        isImage={item.isImage}
         index={index}
         onSelect={onSelect}
       />
@@ -61,11 +60,9 @@ const ChangeBackgroundScreen = observer((props: any) => {
     );
   }, []);
 
-  const currentRoomDetail = chatStore.roomList?.find((item: any) => {
-    if (item.name === props.route.params.roomName) {
-      return item;
-    }
-  });
+  const currentRoomDetail = chatStore.getRoomDetails(roomJID) as roomListProps;
+
+  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid)
 
   const userJid =
     underscoreManipulation(loginStore.initialData.walletAddress) +
@@ -93,7 +90,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
     });
   }
 
-  const sendFiles = async (data: any) => {
+  const sendFiles = async (data: FormData) => {
     try {
       const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
@@ -119,8 +116,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
 
   const onUploadPress = async () => {
     if (
-      chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
-      chatStore.roomRoles[currentRoomDetail.jid] === 'admin'
+      isOwnerOrModerator
     ) {
       try {
         const res = await DocumentPicker.pickSingle({

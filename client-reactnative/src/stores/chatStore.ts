@@ -29,12 +29,13 @@ import {
   IMainMessage,
 } from '../helpers/chat/createMessageObject';
 import {playCoinSound} from '../helpers/chat/playCoinSound';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+import {reverseUnderScoreManipulation, underscoreManipulation} from '../helpers/underscoreLogic';
 import {
   getBlackList,
   getRoomInfo,
   getUserRoomsStanza,
   presenceStanza,
+  retrieveOtherUserVcard,
   subscribeStanza,
   subscribeToRoom,
   updateVCard,
@@ -105,7 +106,7 @@ interface replyProps {
   isReply: boolean;
 }
 
-interface roomMemberInfoProps {
+export interface roomMemberInfoProps {
   ban_status: string;
   jid: string;
   last_active: string;
@@ -173,6 +174,12 @@ export interface User {
   name:   string;
 }
 
+export interface IbackgroundTheme {
+  value: string;
+  isSelected: boolean;
+  alt: string;
+}
+
 let temporaryArchiveMessages: IMessage[] = [];
 export class ChatStore {
   messages: any = [];
@@ -214,7 +221,7 @@ export class ChatStore {
     [ROOM_KEYS.private]: 0,
     [ROOM_KEYS.groups]: 0,
   };
-  backgroundTheme = defaultChatBackgroundTheme;
+  backgroundTheme:IbackgroundTheme[] = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
   userBanData = {
     success: false,
@@ -334,6 +341,10 @@ export class ChatStore {
     });
   };
 
+  checkIsModerator = (roomJid:string) => {
+    return this.roomRoles[roomJid] === 'moderator'||this.roomRoles[roomJid] === 'admin';
+  }
+
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
       this.xmpp = client({
@@ -376,6 +387,29 @@ export class ChatStore {
       this.unreadMessagesForGroups = unreadMessagesObject;
     });
   };
+
+  getOtherUserDetails = (props: {avatar:string, name:string, jid:string}) => {
+    const {avatar, name, jid} = props;
+    const anotherUserFirstname = name.split(' ')[0];
+    const anotherUserLastname = name.split(' ')[1];
+    const xmppID = jid.split('@')[0];
+    const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
+
+    //this will get the other user's Avatar and description
+    retrieveOtherUserVcard(
+      this.stores.loginStore.initialData.xmppUsername,
+      xmppID,
+      this.xmpp,
+    );
+
+    this.stores.loginStore.setOtherUserDetails({
+      anotherUserFirstname: anotherUserFirstname,
+      anotherUserLastname: anotherUserLastname,
+      anotherUserLastSeen: {},
+      anotherUserWalletAddress: anotherUserWalletAddress,
+      anotherUserAvatar: avatar,
+    });
+};
 
   updateCounter = () => {
     const notificationsCount: Record<string, number> = {
@@ -628,6 +662,11 @@ export class ChatStore {
       return rooms;
     }
   };
+
+  getRoomDetails = (roomJid:string) => {
+    return this.roomList.find(item => item.jid === roomJid)
+  }
+  
   xmppListener = async () => {
     let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(

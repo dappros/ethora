@@ -1,34 +1,20 @@
 import {
   Actionsheet,
   AlertDialog,
-  Box,
   Button,
-  Center,
-  Divider,
-  FlatList,
-  HStack,
-  Image,
-  Menu,
-  Pressable,
-  Switch,
   Text,
-  useColorModeValue,
   useDisclose,
   View,
 } from 'native-base';
 import React, {useState, useEffect} from 'react';
-import {commonColors, defaultChats, textStyles} from '../../../docs/config';
-import AntIcon from 'react-native-vector-icons/AntDesign';
+import {textStyles} from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-import {Alert, Animated, Dimensions, TouchableOpacity} from 'react-native';
+import {Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {SceneMap} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
@@ -42,7 +28,6 @@ import {
   getRoomInfo,
   getRoomMemberInfo,
   leaveRoomXmpp,
-  retrieveOtherUserVcard,
   setRoomImage,
   subscribeToRoom,
   unAssignModerator,
@@ -52,12 +37,16 @@ import {
 import {deleteChatRoom} from '../../components/realmModels/chatList';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {fileUpload} from '../../config/routesConstants';
-import FastImage from 'react-native-fast-image';
 import DocumentPicker from 'react-native-document-picker';
 import {ROUTES} from '../../constants/routes';
 import {renameTheRoom} from '../../helpers/RoomList/renameRoom';
 import ChangeRoomNameModal from '../../components/Modals/Chat/ChangeRoomNameModal';
 import ChangeRoomDescriptionModal from '../../components/Modals/Chat/ChangeRoomDescriptionModal';
+import { roomListProps, roomMemberInfoProps } from '../../stores/chatStore';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import RoomDetailsCard from '../../components/Chat/ChatDetails/RoomDetailsCard';
+import ChatDetailHeader from '../../components/Chat/ChatDetails/ChatDetailHeader';
+import ChatDetailMemebersList from '../../components/Chat/ChatDetails/ChatDetailMembersList';
 
 interface longTapUserProps {
   ban_status: string;
@@ -68,23 +57,48 @@ interface longTapUserProps {
   role: string;
 }
 
+export interface IuploadedImage {
+  _id: string;
+  createdAt: string;
+  expiresAt: number;
+  filename: string;
+  isVisible: boolean;
+  location: string;
+  locationPreview: string;
+  mimetype: string;
+  originalname: string;
+  ownerKey: string;
+  size: number;
+  updatedAt: string;
+  userId: string;
+}
+
 const ChatDetailsScreen = observer(({route}: any) => {
-  const {chatStore, loginStore} = useStores();
-  const currentRoomDetail = chatStore.roomList?.find((item: any) => {
-    if (item.jid === route.params.roomJID) {
-      return item;
-    }
-  });
+  const {chatStore, loginStore, apiStore} = useStores();
+  const currentRoomDetail = chatStore.getRoomDetails(route.params.roomJID) as roomListProps
 
   const roomJID = currentRoomDetail?.jid;
   const {isOpen, onOpen, onClose} = useDisclose();
 
-  const roomMemberInfo = chatStore.roomMemberInfo.filter(item => item);
+  const [longTapUser, setLongTapUser] = useState<longTapUserProps>({
+    ban_status: "",
+    jid: "",
+    last_active: "",
+    name: "",
+    profile: "",
+    role: ""
+  });
+  const [kickUserItem, setKickUserItem] = useState<longTapUserProps>({
+    ban_status: "",
+    jid: "",
+    last_active: "",
+    name: "",
+    profile: "",
+    role: ""
+  });
 
-  const [open, setOpen] = useState<boolean>(false);
-  const [index, setIndex] = useState<number>(0);
-  const [longTapUser, setLongTapUser] = useState<longTapUserProps | {}>({});
-  const [kickUserItem, setKickUserItem] = useState<longTapUserProps | {}>({});
+  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid)
+
   const [descriptionModalVisible, setDescriptionModalVisible] =
     useState<boolean>(false);
   const [isShowKickDialog, setIsShowKickDialog] = useState(false);
@@ -96,7 +110,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const cancelRef = React.useRef(null);
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const walletAddress = loginStore.initialData.walletAddress;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -121,14 +135,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
     );
   }, []);
 
-  const toggleNotification = value => {
-    if (!value) {
-      // unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-      // chatStore.updateRoomInfo(roomJID, {muted: true});
-      unsubscribeFromRoom();
-    } else {
-      subscribeRoom();
-    }
+  const toggleNotification = (value:boolean) => {
+    value?subscribeRoom():unsubscribeFromRoom()
   };
 
   const leaveTheRoom = async () => {
@@ -141,10 +149,11 @@ const ChatDetailsScreen = observer(({route}: any) => {
     unsubscribeFromRoom();
     await deleteChatRoom(roomJID);
     chatStore.getRoomsFromCache();
+    //@ts-ignore
     navigation.popToTop();
   };
 
-  const deleteRoomAlert = async () => {
+  const deleteRoomDialog = async () => {
     Alert.alert('Delete', 'Do you want to delete this room?', [
       {
         text: 'Cancel',
@@ -157,55 +166,13 @@ const ChatDetailsScreen = observer(({route}: any) => {
     ]);
   };
 
-  const routes = [
-    {
-      key: 'first',
-      title: `Members (${roomMemberInfo.length})`,
-    },
-    {
-      key: 'second',
-      title: 'Bots',
-    },
-    {
-      key: 'third',
-      title: 'Items',
-    },
-  ];
-
   const toggleFavourite = () => {
     chatStore.updateRoomInfo(roomJID, {
       isFavourite: !chatStore.roomsInfoMap[roomJID]?.isFavourite,
     });
   };
 
-  const toggleMenu = () => {
-    setOpen(prev => !prev);
-  };
-
-  const getOtherUserDetails = (props: any) => {
-    const {profile, name, jid, last_active} = props;
-    const firstName = name.split(' ')[0];
-    const lastName = name.split(' ')[1];
-    const xmppID = jid.split('@')[0];
-    const walletAddress = reverseUnderScoreManipulation(xmppID);
-    const theirXmppUsername = xmppID;
-
-    retrieveOtherUserVcard(
-      loginStore.initialData.xmppUsername,
-      theirXmppUsername,
-      chatStore.xmpp,
-    );
-
-    loginStore.setOtherUserDetails({
-      anotherUserFirstname: firstName,
-      anotherUserLastname: lastName,
-      anotherUserLastSeen: last_active,
-      anotherUserWalletAddress: walletAddress,
-      anotherUserAvatar: profile,
-    });
-  };
-
-  const onUserAvatarPress = (props: any) => {
+  const onUserAvatarPress = (props: roomMemberInfoProps) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
     const xmppID = props.jid.split('@')[0];
@@ -214,16 +181,17 @@ const ChatDetailsScreen = observer(({route}: any) => {
       navigation.navigate(ROUTES.PROFILE);
       return;
     } else {
-      getOtherUserDetails(props);
+      chatStore.getOtherUserDetails({
+        jid:props.jid,
+        avatar:props.profile,
+        name:props.name
+      });
       navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
     }
   };
 
-  const handleMemberLongTap = (item: any) => {
-    if (
-      chatStore.roomRoles[currentRoomDetail.jid] === 'moderator' ||
-      chatStore.roomRoles[currentRoomDetail.jid] === 'admin'
-    ) {
+  const handleMemberLongTap = (item: roomMemberInfoProps) => {
+    if (isOwnerOrModerator) {
       setLongTapUser(item);
       onOpen();
     }
@@ -267,7 +235,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
     }
   };
 
-  const handleKickDialog = (item: any) => {
+  const handleKickDialog = (item: roomMemberInfoProps) => {
     setKickUserItem(item);
     setIsShowKickDialog(true);
   };
@@ -292,476 +260,71 @@ const ChatDetailsScreen = observer(({route}: any) => {
     handleCloseKickDialog();
   };
 
-  const RoomDetails = ({
-    room,
-  }: {
-    room: {
-      jid: string;
-      name: string;
-      roomThumbnail: string;
-      roomBackground: string;
-    };
-  }) => {
-    const roomName = room.name;
-    const [uploadedImage, setUploadedImage] = useState({
-      _id: '',
-      createdAt: '',
-      expiresAt: 0,
-      filename: '',
-      isVisible: true,
-      location: '',
-      locationPreview: '',
-      mimetype: '',
-      originalname: '',
-      ownerKey: '',
-      size: 0,
-      updatedAt: '',
-      userId: '',
-    });
-    const {chatStore, loginStore, apiStore} = useStores();
-    const sendFiles = async (data: any) => {
-      const userJid =
-        underscoreManipulation(loginStore.initialData.walletAddress) +
-        '@' +
-        apiStore.xmppDomains.DOMAIN;
-      const roomJid = room.jid;
+  const handleEditDesriptionPress = () => {
+    isOwnerOrModerator&&setDescriptionModalVisible(true);
+  };
+
+  const handleRoomNameEdit = () => {
+    isOwnerOrModerator&&setRoomNameModalVisible(true);
+  };
+
+  const [uploadedImage, setUploadedImage] = useState<IuploadedImage>({
+    _id: '',
+    createdAt: '',
+    expiresAt: 0,
+    filename: '',
+    isVisible: true,
+    location: '',
+    locationPreview: '',
+    mimetype: '',
+    originalname: '',
+    ownerKey: '',
+    size: 0,
+    updatedAt: '',
+    userId: '',
+  });
+
+  const sendFiles = async (data: any) => {
+    const userJid =
+      underscoreManipulation(loginStore.initialData.walletAddress) +
+      '@' +
+      apiStore.xmppDomains.DOMAIN;
+    const {jid,roomBackground} = currentRoomDetail
+    try {
+      const url = fileUpload;
+      const response = await uploadFiles(data, loginStore.userToken, url);
+      const file = response.results[0];
+      setUploadedImage(response.results[0]);
+      setRoomImage(
+        userJid,
+        jid,
+        file.location,
+        roomBackground ? roomBackground : 'none',
+        'icon',
+        chatStore.xmpp,
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onImagePress = async () => {
+    if (isOwnerOrModerator) {
       try {
-        const url = fileUpload;
-        const response = await uploadFiles(data, loginStore.userToken, url);
-        const file = response.results[0];
-        setUploadedImage(response.results[0]);
-        setRoomImage(
-          userJid,
-          roomJid,
-          file.location,
-          room.roomBackground ? room.roomBackground : 'none',
-          'icon',
-          chatStore.xmpp,
-        );
+        const res = await DocumentPicker.pickSingle({
+          type: [DocumentPicker.types.images],
+        });
+        const formData = new FormData();
+        formData.append('files', {
+          name: res.name,
+          type: res.type,
+          uri: res.uri,
+        });
+        sendFiles(formData);
       } catch (error) {
         console.log(error);
       }
-    };
-    const onImagePress = async () => {
-      if (
-        chatStore.roomRoles[room.jid] === 'moderator' ||
-        chatStore.roomRoles[room.jid] === 'admin'
-      ) {
-        try {
-          const res = await DocumentPicker.pickSingle({
-            type: [DocumentPicker.types.images],
-          });
-          const formData = new FormData();
-          formData.append('files', {
-            name: res.name,
-            type: res.type,
-            uri: res.uri,
-          });
-          sendFiles(formData);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    };
-
-    const handleEditDesriptionPress = () => {
-      if (
-        chatStore.roomRoles[room.jid] === 'moderator' ||
-        chatStore.roomRoles[room.jid] === 'admin'
-      ) {
-        setDescriptionModalVisible(true);
-      } else {
-        alert('Only owners and moderators can edit room details');
-      }
-    };
-
-    const handleRoomNameEdit = () => {
-      if (
-        chatStore.roomRoles[room.jid] === 'moderator' ||
-        chatStore.roomRoles[room.jid] === 'admin'
-      ) {
-        setRoomNameModalVisible(true);
-      } else {
-        alert('Only owners and moderators can edit room details');
-      }
-    };
-
-    return (
-      <View margin={10} justifyContent="center" alignItems="center">
-        <TouchableOpacity
-          onPress={onImagePress}
-          activeOpacity={
-            chatStore.roomRoles[room.jid] === 'moderator' ||
-            chatStore.roomRoles[room.jid] === 'admin'
-              ? 0.8
-              : 1
-          }>
-          <Box
-            justifyContent={'center'}
-            alignItems={'center'}
-            borderRadius={10}
-            shadow={'5'}
-            bg={commonColors.primaryDarkColor}
-            h={wp('22%')}
-            w={wp('22%')}
-            marginBottom={4}>
-            {uploadedImage.location || room.roomThumbnail ? (
-              <FastImage
-                source={{
-                  uri: uploadedImage.location || room.roomThumbnail,
-                  priority: FastImage.priority.normal,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-                style={{
-                  width: wp('22%'),
-                  height: wp('22%'),
-                  borderRadius: 10,
-                }}
-              />
-            ) : (
-              <Text
-                // shadow={'8'}
-                fontSize={hp('6%')}
-                fontFamily={textStyles.semiBoldFont}
-                color={'white'}>
-                {roomName ? roomName[0] : 'No name'}
-              </Text>
-            )}
-          </Box>
-        </TouchableOpacity>
-
-        <HStack alignItems={'center'}>
-          <Text
-            color={'black'}
-            fontSize={hp('2.5%')}
-            fontFamily={textStyles.boldFont}>
-            {roomName ? roomName : 'No name'}
-          </Text>
-          {(chatStore.roomRoles[room.jid] === 'moderator' ||
-            chatStore.roomRoles[room.jid] === 'admin') && (
-            <Pressable onPress={handleRoomNameEdit}>
-              <AntIcon
-                name="edit"
-                color={
-                  chatStore.roomRoles[room.jid] === 'moderator' ||
-                  chatStore.roomRoles[room.jid] === 'admin'
-                    ? commonColors.primaryColor
-                    : 'grey'
-                }
-                size={hp('2%')}
-              />
-            </Pressable>
-          )}
-        </HStack>
-
-        <Text
-          color={'black'}
-          textAlign={'center'}
-          fontSize={hp('1.5%')}
-          fontFamily={textStyles.regularFont}>
-          {chatStore.roomsInfoMap[roomJID].roomDescription
-            ? chatStore.roomsInfoMap[roomJID].roomDescription
-            : 'No description here'}
-        </Text>
-        {(chatStore.roomRoles[room.jid] === 'moderator' ||
-          chatStore.roomRoles[room.jid] === 'admin') && (
-          <Pressable onPress={handleEditDesriptionPress}>
-            <AntIcon
-              name="edit"
-              color={
-                chatStore.roomRoles[room.jid] === 'moderator' ||
-                chatStore.roomRoles[room.jid] === 'admin'
-                  ? commonColors.primaryColor
-                  : 'grey'
-              }
-              size={hp('2%')}
-            />
-          </Pressable>
-        )}
-
-        <HStack marginTop={2} justifyContent={'flex-end'} alignItems="center">
-          <Text
-            fontFamily={textStyles.boldFont}
-            fontSize={hp('2%')}
-            color={commonColors.primaryColor}>
-            Notifications
-          </Text>
-          <Switch
-            isChecked={!chatStore.roomsInfoMap[room.jid].muted}
-            onToggle={args => toggleNotification(args)}
-            onTrackColor={commonColors.primaryColor}
-            size={'sm'}
-          />
-        </HStack>
-      </View>
-    );
-  };
-
-  const chatDetailsNavBar = () => {
-    const FavMenuContent = chatStore.roomsInfoMap[roomJID]?.isFavourite
-      ? 'Remove from favourites'
-      : 'Add to favourites';
-    return (
-      <Box
-        h={60}
-        padding={2}
-        justifyContent={'center'}
-        bg={commonColors.primaryColor}>
-        <HStack>
-          <View flex={0.6}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <AntIcon
-                name={'arrowleft'}
-                style={{marginRight: 5, marginLeft: 5}}
-                size={hp('3%')}
-                color={'white'}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View flex={0.4} justifyContent="flex-end" flexDirection="row">
-            {defaultChats[roomJID?.split('@')[0]] ? null : (
-              <View flex={0.3}>
-                <TouchableOpacity
-                  disabled={defaultChats[roomJID?.split('@')[0]] ? true : false}
-                  onPress={deleteRoomAlert}>
-                  <AntIcon
-                    name={'delete'}
-                    style={{marginRight: 5, marginLeft: 5}}
-                    size={hp('3%')}
-                    color={'white'}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-            <View flex={0.3}>
-              <TouchableOpacity
-                disabled={defaultChats[roomJID?.split('@')[0]] ? true : false}
-                onPress={toggleFavourite}>
-                <AntIcon
-                  name={
-                    chatStore.roomsInfoMap[roomJID]?.isFavourite ||
-                    defaultChats[roomJID?.split('@')[0]]
-                      ? 'star'
-                      : 'staro'
-                  }
-                  style={{marginRight: 5, marginLeft: 5}}
-                  size={hp('3%')}
-                  color={'white'}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {chatStore.roomRoles[currentRoomDetail?.jid] === 'moderator' ||
-            chatStore.roomRoles[currentRoomDetail?.jid] === 'admin' ? (
-              <View paddingRight={2} alignItems={'flex-end'} flex={0.3}>
-                <Menu
-                  w="190"
-                  isOpen={open}
-                  placement={'bottom'}
-                  onClose={() => setOpen(false)}
-                  trigger={triggerProps => {
-                    return (
-                      <TouchableOpacity
-                        {...triggerProps}
-                        style={{zIndex: 99999}}
-                        onPress={() => toggleMenu()}
-                        accessibilityLabel="More options menu">
-                        <EntypoIcon
-                          name="menu"
-                          color="#FFFFFF"
-                          size={hp('3%')}
-                        />
-                      </TouchableOpacity>
-                    );
-                  }}>
-                  {defaultChats[roomJID?.split('@')[0]] ? null : (
-                    <>
-                      <Menu.Item
-                        onPress={toggleFavourite}
-                        _text={{
-                          fontFamily: textStyles.lightFont,
-                        }}>
-                        {FavMenuContent}
-                      </Menu.Item>
-
-                      <Divider />
-                    </>
-                  )}
-                  {chatStore.roomRoles[currentRoomDetail?.jid] ===
-                    'moderator' ||
-                  chatStore.roomRoles[currentRoomDetail?.jid] === 'admin' ? (
-                    <Menu.Item
-                      onPress={() =>
-                        navigation.navigate(ROUTES.CHANGEBACKGROUNDSCREEN, {
-                          roomJID: roomJID,
-                          roomName: route.params.roomName,
-                        })
-                      }
-                      _text={{
-                        fontFamily: textStyles.lightFont,
-                      }}>
-                      Change Background
-                    </Menu.Item>
-                  ) : null}
-                  {defaultChats[roomJID?.split('@')[0]] ? null : (
-                    <>
-                      <Divider />
-                      <Menu.Item
-                        onPress={deleteRoomAlert}
-                        _text={{
-                          fontFamily: textStyles.lightFont,
-                          color: '#D32222',
-                        }}>
-                        Delete and leave
-                      </Menu.Item>
-                    </>
-                  )}
-                </Menu>
-              </View>
-            ) : null}
-          </View>
-        </HStack>
-      </Box>
-    );
-  };
-
-  const FirstRoute = () => (
-    <Box bg={'white'} minH={hp('40%')}>
-      <FlatList
-        contentContainerStyle={{
-          paddingBottom: 50,
-        }}
-        scrollEnabled={roomMemberInfo.length < 5 ? false : true}
-        data={roomMemberInfo}
-        renderItem={({item}) => (
-          <Pressable
-            onLongPress={() => handleMemberLongTap(item)}
-            onPress={() => onUserAvatarPress(item)}
-            h={hp('10%')}
-            flexDirection={'row'}
-            alignItems="center"
-            flex={1}>
-            <Box
-              h={hp('6.5')}
-              w={hp('6.5%')}
-              rounded={'md'}
-              justifyContent={'center'}
-              alignItems={'center'}
-              shadow="2"
-              bg={commonColors.primaryColor}
-              margin={2}>
-              {item.profile !== 'none' ? (
-                <Image
-                  alt={item.name}
-                  source={{uri: item.profile}}
-                  h={hp('6.5')}
-                  w={hp('6.5%')}
-                  rounded={'md'}
-                />
-              ) : (
-                <Text
-                  fontWeight={'bold'}
-                  fontFamily={textStyles.boldFont}
-                  fontSize={hp('2.2%')}
-                  shadow="10"
-                  color={'white'}>
-                  {item.name ? item.name[0] : null}
-                </Text>
-              )}
-            </Box>
-            <HStack flex={0.7}>
-              <Text
-                fontFamily={textStyles.boldFont}
-                fontWeight="bold"
-                shadow="2"
-                fontSize={hp('1.8%')}>
-                {item.name ? item.name : null}
-              </Text>
-              {(chatStore.roomRoles[currentRoomDetail?.jid] === 'moderator' ||
-                chatStore.roomRoles[currentRoomDetail?.jid] === 'admin') &&
-                !item.jid.includes(manipulatedWalletAddress) &&
-                (item.role !== 'moderator' ||
-                  item.role !== 'admin' ||
-                  item.role !== 'owner') && (
-                  <Button
-                    padding={'0'}
-                    width={hp('7%')}
-                    height={hp('3.5%')}
-                    justifyContent="center"
-                    alignItems="center"
-                    variant={'solid'}
-                    borderColor={'red.400'}
-                    bgColor={'red.400'}
-                    marginLeft={2}
-                    onPress={() => handleKickDialog(item)}>
-                    <Text
-                      fontSize={hp('1.5%')}
-                      color={'white'}
-                      fontFamily={textStyles.boldFont}>
-                      {item.ban_status === 'clear' ? 'Kick' : 'Un-kick'}
-                    </Text>
-                  </Button>
-                )}
-            </HStack>
-
-            {item.ban_status !== 'clear' ? (
-              <Box
-                borderWidth={1}
-                rounded="full"
-                justifyContent={'center'}
-                alignItems={'center'}
-                flex={0.2}>
-                {/* Banned */}
-                Kicked
-              </Box>
-            ) : null}
-
-            {item.role !== 'none' && item.role !== 'outcast' && (
-              <Box
-                borderWidth={item.role ? 1 : 0}
-                rounded="full"
-                justifyContent={'center'}
-                alignItems={'center'}
-                flex={0.2}>
-                {item.role}
-              </Box>
-            )}
-          </Pressable>
-        )}
-      />
-    </Box>
-  );
-
-  const SecondRoute = () => (
-    <Center flex={1} my="4">
-      This is Tab 2
-    </Center>
-  );
-
-  const ThirdRoute = () => (
-    <Center flex={1} my="4">
-      This is Tab 3
-    </Center>
-  );
-
-
-
-  const slider = () => {
-    return (
-      <View padding={2}>
-        <Box margin={2}>
-          <Text
-            color={'black'}
-            fontWeight={'bold'}
-            fontFamily={textStyles.boldFont}
-            fontSize={hp('2%')}>
-            {routes[0].title}
-          </Text>
-        </Box>
-        <FirstRoute />
-      </View>
-    );
+    }
   };
 
   const handleChangeDescription = (newDescription: string) => {
@@ -789,16 +352,36 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   return (
     <View bg={'white'} flex={1}>
-      <View justifyContent={'flex-start'}>{chatDetailsNavBar()}</View>
+      <View justifyContent={'flex-start'}>
+        <ChatDetailHeader
+        deleteRoomDialog={deleteRoomDialog}
+        toggleFavourite={toggleFavourite}
+        currentRoomDetail={currentRoomDetail}
+        />
+      </View>
       <View flex={0.4} justifyContent={'center'}>
-        <RoomDetails room={currentRoomDetail} />
+        <RoomDetailsCard
+        room={{
+          jid:currentRoomDetail.jid,
+          name:currentRoomDetail.name,
+          roomThumbnail:currentRoomDetail.roomThumbnail as string,
+          roomBackground:currentRoomDetail.roomBackground as string
+        }}
+        handleEditDesriptionPress={handleEditDesriptionPress}
+        handleRoomNameEdit={handleRoomNameEdit}
+        onImagePress={onImagePress}
+        uploadedImage={uploadedImage}
+        toggleNotification={toggleNotification}
+        />
       </View>
       <View justifyContent={'center'} flex={0.6}>
-        {slider()}
+        <ChatDetailMemebersList
+        currentRoomDetail={currentRoomDetail}
+        handleKickDialog={handleKickDialog}
+        handleMemberLongTap={handleMemberLongTap}
+        onUserAvatarPress={onUserAvatarPress}
+        />
       </View>
-      {/* <View justifyContent={'center'} flex={0.3}>
-        {footerControls()}
-      </View> */}
 
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content>
