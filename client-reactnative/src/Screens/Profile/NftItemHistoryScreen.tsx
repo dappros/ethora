@@ -97,6 +97,11 @@ const NftItemHistoryScreen = (props: any) => {
     setLoading(true);
     try {
       if (item?.isCollection) {
+        await httpPost(
+          '/tokens/items/nfmt/collection-destroy/' + item.contractAddress,
+          {},
+          loginStore.userToken,
+        );
       }
 
       if (item.tokenType === 'NFMT') {
