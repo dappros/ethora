@@ -65,13 +65,14 @@ const UploadDocumentsScreen = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [uploadedFile, setUploadedFile] = useState<typeof emptyFile>(emptyFile);
-  const [isSelected, setSelection] = useState<boolean>(true);
+  const [distributionRightsApproved, setDistributionRightsApproved] =
+    useState<boolean>(true);
 
   const clearData = () => {
     setLoading(false);
     setDocumentUrl('');
     setItemName('');
-    setSelection(false);
+    setDistributionRightsApproved(false);
     setUploadedFile(emptyFile);
     // setReportKind('');
     // setReportType('');
@@ -107,7 +108,7 @@ const UploadDocumentsScreen = () => {
       showError('Error', 'Please fill the item name.');
       return;
     }
-    if (!isSelected) {
+    if (!setDistributionRightsApproved) {
       showError('Error', 'Please confirm distribution rights');
       return;
     }
@@ -286,8 +287,8 @@ const UploadDocumentsScreen = () => {
             <CheckBox
               onCheckColor={commonColors.primaryColor}
               onTintColor={commonColors.primaryColor}
-              value={isSelected}
-              onValueChange={setSelection}
+              value={distributionRightsApproved}
+              onValueChange={setDistributionRightsApproved}
               style={{marginRight: 3, color: commonColors.primaryColor}}
             />
             <Text style={{color: commonColors.primaryColor}}>
