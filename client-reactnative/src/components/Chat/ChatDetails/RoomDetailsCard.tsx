@@ -1,32 +1,31 @@
-import { Box, HStack, Switch, Text, View } from 'native-base';
+import {Box, HStack, Switch, Text, View} from 'native-base';
 import React, {useState} from 'react';
 import {Pressable, TouchableOpacity} from 'react-native';
-import { useStores } from '../../../stores/context';
-import { commonColors, textStyles } from '../../../../docs/config';
+import {useStores} from '../../../stores/context';
+import {commonColors, textStyles} from '../../../../docs/config';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FastImage from 'react-native-fast-image';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { IuploadedImage } from '../../../Screens/Chat/ChatDetailsScreen';
+import {IuploadedImage} from '../../../Screens/Chat/ChatDetailsScreen';
 
 interface RoomDetailsCardProps {
-  uploadedImage: IuploadedImage
+  uploadedImage: IuploadedImage;
   room: {
     jid: string;
     name: string;
     roomThumbnail: string;
     roomBackground: string;
-  }
-  onImagePress: () => Promise<void>
+  };
+  onImagePress: () => Promise<void>;
   handleRoomNameEdit: () => void;
   handleEditDesriptionPress: () => void;
   toggleNotification: (value: boolean) => void;
 }
 
 const RoomDetailsCard = (props: RoomDetailsCardProps) => {
-
   //component props
   const {
     onImagePress,
@@ -34,8 +33,8 @@ const RoomDetailsCard = (props: RoomDetailsCardProps) => {
     handleRoomNameEdit,
     handleEditDesriptionPress,
     toggleNotification,
-    uploadedImage
-  } = props
+    uploadedImage,
+  } = props;
   //component props
 
   //mob stores
@@ -43,18 +42,14 @@ const RoomDetailsCard = (props: RoomDetailsCardProps) => {
   //mob stores
 
   //local variables
-  const isOwnerOrModerator = chatStore.checkIsModerator(room.jid)
+  const isOwnerOrModerator = chatStore.checkIsModerator(room.jid);
   //local variables
 
   return (
     <View margin={10} justifyContent="center" alignItems="center">
       <TouchableOpacity
         onPress={onImagePress}
-        activeOpacity={
-          isOwnerOrModerator
-            ? 0.8
-            : 1
-        }>
+        activeOpacity={isOwnerOrModerator ? 0.8 : 1}>
         <Box
           justifyContent={'center'}
           alignItems={'center'}
@@ -96,14 +91,11 @@ const RoomDetailsCard = (props: RoomDetailsCardProps) => {
           fontFamily={textStyles.boldFont}>
           {room.name ? room.name : 'No name'}
         </Text>
-        {isOwnerOrModerator&& (
+        {isOwnerOrModerator && (
           <Pressable onPress={handleRoomNameEdit}>
             <AntIcon
               name="edit"
-              color={isOwnerOrModerator
-                  ? commonColors.primaryColor
-                  : 'grey'
-              }
+              color={isOwnerOrModerator ? commonColors.primaryColor : 'grey'}
               size={hp('2%')}
             />
           </Pressable>
@@ -119,14 +111,11 @@ const RoomDetailsCard = (props: RoomDetailsCardProps) => {
           ? chatStore.roomsInfoMap[room.jid].roomDescription
           : 'No description here'}
       </Text>
-      {isOwnerOrModerator&& (
+      {isOwnerOrModerator && (
         <Pressable onPress={handleEditDesriptionPress}>
           <AntIcon
             name="edit"
-            color={isOwnerOrModerator
-                ? commonColors.primaryColor
-                : 'grey'
-            }
+            color={isOwnerOrModerator ? commonColors.primaryColor : 'grey'}
             size={hp('2%')}
           />
         </Pressable>
@@ -146,7 +135,7 @@ const RoomDetailsCard = (props: RoomDetailsCardProps) => {
           size={'sm'}
         />
       </HStack>
-  </View>
+    </View>
   );
 };
 

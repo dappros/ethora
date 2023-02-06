@@ -8,10 +8,7 @@ import {
 } from 'native-base';
 import React, {useState, useEffect} from 'react';
 import {textStyles} from '../../../docs/config';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useStores} from '../../stores/context';
@@ -42,8 +39,8 @@ import {ROUTES} from '../../constants/routes';
 import {renameTheRoom} from '../../helpers/RoomList/renameRoom';
 import ChangeRoomNameModal from '../../components/Modals/Chat/ChangeRoomNameModal';
 import ChangeRoomDescriptionModal from '../../components/Modals/Chat/ChangeRoomDescriptionModal';
-import { roomListProps, roomMemberInfoProps } from '../../stores/chatStore';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import {roomListProps, roomMemberInfoProps} from '../../stores/chatStore';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import RoomDetailsCard from '../../components/Chat/ChatDetails/RoomDetailsCard';
 import ChatDetailHeader from '../../components/Chat/ChatDetails/ChatDetailHeader';
 import ChatDetailMemebersList from '../../components/Chat/ChatDetails/ChatDetailMembersList';
@@ -75,29 +72,31 @@ export interface IuploadedImage {
 
 const ChatDetailsScreen = observer(({route}: any) => {
   const {chatStore, loginStore, apiStore} = useStores();
-  const currentRoomDetail = chatStore.getRoomDetails(route.params.roomJID) as roomListProps
+  const currentRoomDetail = chatStore.getRoomDetails(
+    route.params.roomJID,
+  ) as roomListProps;
 
   const roomJID = currentRoomDetail?.jid;
   const {isOpen, onOpen, onClose} = useDisclose();
 
   const [longTapUser, setLongTapUser] = useState<longTapUserProps>({
-    ban_status: "",
-    jid: "",
-    last_active: "",
-    name: "",
-    profile: "",
-    role: ""
+    ban_status: '',
+    jid: '',
+    last_active: '',
+    name: '',
+    profile: '',
+    role: '',
   });
   const [kickUserItem, setKickUserItem] = useState<longTapUserProps>({
-    ban_status: "",
-    jid: "",
-    last_active: "",
-    name: "",
-    profile: "",
-    role: ""
+    ban_status: '',
+    jid: '',
+    last_active: '',
+    name: '',
+    profile: '',
+    role: '',
   });
 
-  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid)
+  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid);
 
   const [descriptionModalVisible, setDescriptionModalVisible] =
     useState<boolean>(false);
@@ -135,8 +134,8 @@ const ChatDetailsScreen = observer(({route}: any) => {
     );
   }, []);
 
-  const toggleNotification = (value:boolean) => {
-    value?subscribeRoom():unsubscribeFromRoom()
+  const toggleNotification = (value: boolean) => {
+    value ? subscribeRoom() : unsubscribeFromRoom();
   };
 
   const leaveTheRoom = async () => {
@@ -176,15 +175,15 @@ const ChatDetailsScreen = observer(({route}: any) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
     const xmppID = props.jid.split('@')[0];
-    const walletAddress = reverseUnderScoreManipulation(xmppID);
-    if (walletAddress === loginStore.initialData.walletAddress) {
+    const userWalletAddress = reverseUnderScoreManipulation(xmppID);
+    if (userWalletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate(ROUTES.PROFILE);
       return;
     } else {
       chatStore.getOtherUserDetails({
-        jid:props.jid,
-        avatar:props.profile,
-        name:props.name
+        jid: props.jid,
+        avatar: props.profile,
+        name: props.name,
       });
       navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
     }
@@ -261,11 +260,11 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const handleEditDesriptionPress = () => {
-    isOwnerOrModerator&&setDescriptionModalVisible(true);
+    isOwnerOrModerator && setDescriptionModalVisible(true);
   };
 
   const handleRoomNameEdit = () => {
-    isOwnerOrModerator&&setRoomNameModalVisible(true);
+    isOwnerOrModerator && setRoomNameModalVisible(true);
   };
 
   const [uploadedImage, setUploadedImage] = useState<IuploadedImage>({
@@ -289,7 +288,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
       underscoreManipulation(loginStore.initialData.walletAddress) +
       '@' +
       apiStore.xmppDomains.DOMAIN;
-    const {jid,roomBackground} = currentRoomDetail
+    const {jid, roomBackground} = currentRoomDetail;
     try {
       const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
@@ -354,32 +353,32 @@ const ChatDetailsScreen = observer(({route}: any) => {
     <View bg={'white'} flex={1}>
       <View justifyContent={'flex-start'}>
         <ChatDetailHeader
-        deleteRoomDialog={deleteRoomDialog}
-        toggleFavourite={toggleFavourite}
-        currentRoomDetail={currentRoomDetail}
+          deleteRoomDialog={deleteRoomDialog}
+          toggleFavourite={toggleFavourite}
+          currentRoomDetail={currentRoomDetail}
         />
       </View>
       <View flex={0.4} justifyContent={'center'}>
         <RoomDetailsCard
-        room={{
-          jid:currentRoomDetail.jid,
-          name:currentRoomDetail.name,
-          roomThumbnail:currentRoomDetail.roomThumbnail as string,
-          roomBackground:currentRoomDetail.roomBackground as string
-        }}
-        handleEditDesriptionPress={handleEditDesriptionPress}
-        handleRoomNameEdit={handleRoomNameEdit}
-        onImagePress={onImagePress}
-        uploadedImage={uploadedImage}
-        toggleNotification={toggleNotification}
+          room={{
+            jid: currentRoomDetail.jid,
+            name: currentRoomDetail.name,
+            roomThumbnail: currentRoomDetail.roomThumbnail as string,
+            roomBackground: currentRoomDetail.roomBackground as string,
+          }}
+          handleEditDesriptionPress={handleEditDesriptionPress}
+          handleRoomNameEdit={handleRoomNameEdit}
+          onImagePress={onImagePress}
+          uploadedImage={uploadedImage}
+          toggleNotification={toggleNotification}
         />
       </View>
       <View justifyContent={'center'} flex={0.6}>
         <ChatDetailMemebersList
-        currentRoomDetail={currentRoomDetail}
-        handleKickDialog={handleKickDialog}
-        handleMemberLongTap={handleMemberLongTap}
-        onUserAvatarPress={onUserAvatarPress}
+          currentRoomDetail={currentRoomDetail}
+          handleKickDialog={handleKickDialog}
+          handleMemberLongTap={handleMemberLongTap}
+          onUserAvatarPress={onUserAvatarPress}
         />
       </View>
 
