@@ -42,19 +42,18 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
 
   const {loginStore, walletStore} = useStores();
 
-  const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [itemTransactions, setItemTransactions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const [modalData, setModalData] = useState<any>({
+  const [modalData, setModalData] = useState({
     visible: false,
     url: '',
     mimetype: '',
     originalName: '',
   });
+
   useEffect(() => {
-    setAvatarSource(item.file.locationPreview);
     getItemTransactionsHistory(userWalletAddress, item._id).then(res => {
       const allTransactions = res.data.items.map(document => {
         if (
@@ -118,7 +117,6 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
       await walletStore.getDocuments(loginStore.initialData.walletAddress);
       navigation.navigate(ROUTES.PROFILE);
     } catch (error) {
-      console.log(error.response);
       showError('Error', 'Cannot delete document');
     }
     setLoading(false);
@@ -127,7 +125,6 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
     <Fragment>
       <SecondaryHeader title="Document details" />
 
-      {/* <ScrollView style={styles.container}> */}
       <View style={{...styles.contentContainer, margin: 0}}>
         <VStack paddingTop={5} paddingX={5}>
           <VStack
@@ -180,7 +177,6 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
                   name={'playcircleo'}
                   color={commonColors.primaryColor}
                   size={hp('10%')}
-                  // style={{marginRight: 40}}
                 />
               )}
             </TouchableOpacity>
@@ -206,11 +202,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
           disabled={loading}
           // onPress={onMintClick}
           style={{...styles.createButton, height: hp('5%'), borderRadius: 0}}>
-          <View
-            style={{
-              ...styles.alignCenter,
-              flex: 1,
-            }}>
+          <VStack justifyContent={'center'} alignItems={'center'} flex={1}>
             {loading ? (
               <ActivityIndicator
                 animating={loading}
@@ -220,7 +212,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
             ) : (
               <Text style={styles.createButtonText}>Provenance</Text>
             )}
-          </View>
+          </VStack>
         </TouchableOpacity>
         <View style={{height: hp('50%')}}>
           {itemTransactions.length ? (
@@ -230,18 +222,15 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
               onEndReached={() => {}}
             />
           ) : (
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: 20,
-              }}>
+            <VStack justifyContent={'center'} alignItems={'center'} mt={'2'}>
               <Text
-                style={{
-                  ...styles.textStyle,
-                  fontWeight: 'bold',
-                  color: commonColors.primaryColor,
-                }}>
+                style={[
+                  styles.textStyle,
+                  {
+                    fontWeight: 'bold',
+                    color: commonColors.primaryColor,
+                  },
+                ]}>
                 This item has no transactions yet...
               </Text>
               <Image
@@ -249,11 +238,10 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
                 source={require('../../assets/transactions-empty.png')}
                 style={styles.noTransactionsImage}
               />
-            </View>
+            </VStack>
           )}
         </View>
       </View>
-      {/* </ScrollView> */}
       <NftMediaModal
         closeModal={closeModal}
         modalVisible={modalData.visible}

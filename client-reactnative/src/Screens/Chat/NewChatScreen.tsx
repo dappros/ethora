@@ -7,7 +7,10 @@ import {
 } from 'react-native-responsive-screen';
 import {commonColors, defaultBotsList, textStyles} from '../../../docs/config';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import {ImageLibraryOptions, launchImageLibrary} from 'react-native-image-picker';
+import {
+  ImageLibraryOptions,
+  launchImageLibrary,
+} from 'react-native-image-picker';
 import {sha256} from 'react-native-sha256';
 import {useStores} from '../../stores/context';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -25,12 +28,12 @@ import {httpPost} from '../../config/apiService';
 import FastImage from 'react-native-fast-image';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {fileUpload} from '../../config/routesConstants';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 
 interface NewChatScreenProps {}
 
-const options:ImageLibraryOptions = {
-  mediaType:'photo',
+const options: ImageLibraryOptions = {
+  mediaType: 'photo',
 };
 
 const OPOSITE_DIRECTIONS: Record<string, string> = {
@@ -83,13 +86,13 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         // const source = { uri: 'data:image/jpeg;base64,' + response.data };
         const data = new FormData();
 
-        if(response.assets){
+        if (response.assets) {
           data.append('files', {
             name: response.assets[0].fileName,
             type: response.assets[0].type,
             uri: response.assets[0].uri,
           });
-  
+
           sendFiles(data);
         }
       }

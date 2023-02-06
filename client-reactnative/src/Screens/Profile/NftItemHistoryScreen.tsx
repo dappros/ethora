@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
-import {HStack, Image, ScrollView, Text, View} from 'native-base';
+import {HStack, Image, ScrollView, Text, View, VStack} from 'native-base';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
@@ -27,12 +27,13 @@ import {
   isImageMimetype,
   isVideoMimetype,
 } from '../../helpers/checkMimetypes';
+
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
 
   const {loginStore, walletStore} = useStores();
 
-  const [avatarSource, setAvatarSource] = useState<{uri: string} | null>({
+  const [filePreview, setFilePreview] = useState<{uri: string}>({
     uri: '',
   });
   const [itemTransactions, setItemTransactions] = useState<any>([]);
@@ -40,17 +41,17 @@ const NftItemHistoryScreen = (props: any) => {
   const [videoPaused, setVideoPaused] = useState<boolean>(true);
   const navigation = useNavigation();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [modalData, setModalData] = useState<any>({
+  const [modalData, setModalData] = useState({
     visible: false,
     url: '',
     mimetype: '',
   });
 
   useEffect(() => {
-    setAvatarSource({uri: item.nftFileUrl});
+    setFilePreview({uri: item.nftFileUrl});
     getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
-      const allTransactions = res.data.items.map(item => {
-        return mapTransactions(item, userWalletAddress);
+      const allTransactions = res.data.items.map(transation => {
+        return mapTransactions(transation, userWalletAddress);
       });
 
       setItemTransactions(
@@ -99,7 +100,7 @@ const NftItemHistoryScreen = (props: any) => {
       }
 
       if (item.tokenType === 'NFMT') {
-        const res = await httpPost(
+        await httpPost(
           '/tokens/items/nfmt/burn/' +
             item.contractAddress +
             '/' +
@@ -107,7 +108,6 @@ const NftItemHistoryScreen = (props: any) => {
           {amount: item.balance},
           loginStore.userToken,
         );
-        console.log(res.data);
       }
       if (item.tokenType === 'NFT') {
       }
@@ -119,7 +119,6 @@ const NftItemHistoryScreen = (props: any) => {
         'Error',
         'Cant burn this collection as someone already owns NFTs in it',
       );
-      console.log(error.response.data.errors);
     }
     setLoading(false);
   };
@@ -141,7 +140,7 @@ const NftItemHistoryScreen = (props: any) => {
                   <FastImage
                     style={styles.tokenImage}
                     source={{
-                      uri: avatarSource?.uri,
+                      uri: filePreview?.uri,
                       priority: FastImage.priority.normal,
                     }}
                     resizeMode={FastImage.resizeMode.cover}
@@ -149,28 +148,18 @@ const NftItemHistoryScreen = (props: any) => {
                 )}
                 {isVideoMimetype(item.nftMimetype) && (
                   <View style={{position: 'relative'}}>
-                    <View
-                      style={{
-                        position: 'absolute',
-                        zIndex: 99999,
-                        backgroundColor: 'rgba(0,0,0,0.2)',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: wp('60%'),
-                        height: wp('40%'),
-                      }}>
+                    <View style={styles.videoPlayButton}>
                       <AntIcon
                         name={'playcircleo'}
                         color={'white'}
                         size={hp('5%')}
-                        // style={{marginRight: 40}}
                       />
                     </View>
 
                     <FastImage
                       style={styles.tokenImage}
                       source={{
-                        uri: avatarSource?.uri,
+                        uri: filePreview?.uri,
                         priority: FastImage.priority.normal,
                       }}
                       resizeMode={FastImage.resizeMode.cover}
@@ -182,26 +171,29 @@ const NftItemHistoryScreen = (props: any) => {
                     name={'playcircleo'}
                     color={commonColors.primaryColor}
                     size={hp('10%')}
-                    // style={{marginRight: 40}}
                   />
                 )}
               </View>
             </TouchableOpacity>
             <View style={styles.tokenDescriptionContainer}>
               <Text
-                style={{
-                  ...styles.textStyle,
-                  wordWrap: 'wrap',
-                  fontWeight: 'bold',
-                }}>
+                style={[
+                  styles.textStyle,
+                  {
+                    wordWrap: 'wrap',
+                    fontWeight: 'bold',
+                  },
+                ]}>
                 {item.tokenName}
               </Text>
               <Text
-                style={{
-                  ...styles.textStyle,
-                  marginTop: 10,
-                  alignSelf: 'flex-start',
-                }}>
+                style={[
+                  styles.textStyle,
+                  {
+                    marginTop: 10,
+                    alignSelf: 'flex-start',
+                  },
+                ]}>
                 Balance: {item.balance + '/' + item.total}
               </Text>
 
@@ -221,12 +213,8 @@ const NftItemHistoryScreen = (props: any) => {
           <TouchableOpacity
             disabled={loading}
             // onPress={onMintClick}
-            style={{...styles.createButton, height: hp('5%'), borderRadius: 0}}>
-            <View
-              style={{
-                ...styles.alignCenter,
-                flex: 1,
-              }}>
+            style={[styles.createButton, {height: hp('5%'), borderRadius: 0}]}>
+            <VStack justifyContent={'center'} alignItems={'center'} flex={1}>
               {loading ? (
                 <ActivityIndicator
                   animating={loading}
@@ -236,28 +224,25 @@ const NftItemHistoryScreen = (props: any) => {
               ) : (
                 <Text style={styles.createButtonText}>Provenance</Text>
               )}
-            </View>
+            </VStack>
           </TouchableOpacity>
           <View style={{height: hp('50%')}}>
             {itemTransactions.length ? (
               <NftTransactionListTab
-                historyItem={item}
+                onEndReached={() => {}}
                 transactions={itemTransactions}
                 walletAddress={userWalletAddress}
               />
             ) : (
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 20,
-                }}>
+              <VStack justifyContent={'center'} alignItems={'center'} mt={'2'}>
                 <Text
-                  style={{
-                    ...styles.textStyle,
-                    fontWeight: 'bold',
-                    color: commonColors.primaryColor,
-                  }}>
+                  style={[
+                    styles.textStyle,
+                    {
+                      fontWeight: 'bold',
+                      color: commonColors.primaryColor,
+                    },
+                  ]}>
                   This item has no transactions yet...
                 </Text>
                 <Image
@@ -265,15 +250,12 @@ const NftItemHistoryScreen = (props: any) => {
                   source={require('../../assets/transactions-empty.png')}
                   style={styles.noTransactionsImage}
                 />
-              </View>
+              </VStack>
             )}
           </View>
         </View>
       </ScrollView>
-      <Modal
-        onBackdropPress={closeModal}
-        onRequestClose={closeModal}
-        isVisible={modalData.visible}>
+      <Modal onBackdropPress={closeModal} isVisible={modalData.visible}>
         <View style={styles.modal}>
           {isAudioMimetype(modalData.mimetype) && (
             <View style={{position: 'absolute', top: '50%'}}>
@@ -284,7 +266,7 @@ const NftItemHistoryScreen = (props: any) => {
             <TouchableOpacity onPress={closeModal}>
               <Image
                 alt="modal image"
-                source={avatarSource}
+                source={filePreview}
                 style={styles.modalImage}
               />
             </TouchableOpacity>
@@ -302,7 +284,6 @@ const NftItemHistoryScreen = (props: any) => {
                 autoplay
                 videoWidth={wp('100%')}
                 videoHeight={hp('100%')}
-                // thumbnail={{uri: 'https://i.picsum.photos/id/866/1600/900.jpg'}}
               />
             </TouchableOpacity>
           )}
@@ -332,6 +313,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  videoPlayButton: {
+    position: 'absolute',
+    zIndex: 99999,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: wp('60%'),
+    height: wp('40%'),
   },
   contentContainer: {
     flex: 1,
@@ -378,7 +368,6 @@ const styles = StyleSheet.create({
   textStyle: {
     fontFamily: textStyles.lightFont,
     color: 'black',
-    // position: 'absolute',
   },
   noTransactionsImage: {
     marginTop: 20,

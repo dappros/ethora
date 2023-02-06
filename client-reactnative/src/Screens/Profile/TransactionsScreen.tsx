@@ -1,7 +1,6 @@
 import {observer} from 'mobx-react-lite';
 import {View} from 'native-base';
 import React, {useEffect} from 'react';
-import {SafeAreaView} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import TransactionsList from '../../components/Nft/NftTransactionList';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';

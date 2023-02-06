@@ -1,20 +1,14 @@
 import React from 'react';
-import {
-  commonColors
-} from '../../../docs/config';
+import {commonColors} from '../../../docs/config';
 import {useStores} from '../../stores/context';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {observer} from 'mobx-react-lite';
 import ChatContainer from '../../components/Chat/ChatContainer';
-import { roomListProps } from '../../stores/chatStore';
+import {roomListProps} from '../../stores/chatStore';
 
 const ThreadScreen = observer((props: any) => {
-  const {chatStore} =
-    useStores();
+  const {chatStore} = useStores();
   const {currentMessage, chatJid} = props.route.params;
-
 
   const room = chatStore.roomList.find(item => item.jid === chatJid);
 
@@ -28,12 +22,12 @@ const ThreadScreen = observer((props: any) => {
 
   return (
     <>
-    <ChatContainer
-    containerType='thread'
-    messages={messages}
-    roomDetails={room as roomListProps}
-    currentMessage={currentMessage}
-    />
+      <ChatContainer
+        containerType="thread"
+        messages={messages}
+        roomDetails={room as roomListProps}
+        currentMessage={currentMessage}
+      />
     </>
   );
 });
