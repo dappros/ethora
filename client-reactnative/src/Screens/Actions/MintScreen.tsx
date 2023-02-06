@@ -17,11 +17,10 @@ import {
 import {commonColors, textStyles} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {useStores} from '../../stores/context';
-import {showToast} from '../../components/Toast/toast';
+import {showError} from '../../components/Toast/toast';
 import {useNavigation} from '@react-navigation/native';
 import {ROUTES} from '../../constants/routes';
 import {httpPost} from '../../config/apiService';
@@ -29,30 +28,23 @@ import {fileUpload, nftTransferURL} from '../../config/routesConstants';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 import {isAudioMimetype} from '../../helpers/checkMimetypes';
+import {HStack, VStack} from 'native-base';
 
-interface MintScreenProps {}
+const selectOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const options = {
-  title: 'Select Avatar',
-  storageOptions: {
-    skipBackup: true,
-    path: 'images',
-  },
-  saveToPhotos: true,
-};
-
-const MintScreen = (props: MintScreenProps) => {
-  const {loginStore, walletStore, apiStore} = useStores();
+const MintScreen = () => {
+  const {loginStore, walletStore} = useStores();
   const navigation = useNavigation();
 
   const [itemName, setItemName] = useState<string>('');
-  const [avatarSource, setAvatarSource] = useState<string | null>(null);
+  const [nftFileUrl, setNftFileUrl] = useState<string>('');
   const [filePickResult, setFilePickResult] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const [fileId, setFileId] = useState<any>('');
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
-  const [isSelected, setSelection] = useState<boolean>(true);
+  const [distributionRightsApproved, setDistributionRightsApproved] =
+    useState<boolean>(true);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -60,9 +52,9 @@ const MintScreen = (props: MintScreenProps) => {
 
   const clearData = () => {
     setLoading(false);
-    setAvatarSource(null);
+    setNftFileUrl('');
     setItemName('');
-    setSelection(false);
+    setDistributionRightsApproved(false);
   };
 
   const selectNftQuantity = (value: number) => {
@@ -77,22 +69,22 @@ const MintScreen = (props: MintScreenProps) => {
       await httpPost(url, item, loginStore.userToken);
       walletStore.fetchWalletBalance(loginStore.userToken, true);
     } catch (error) {
-      showToast('error', 'Error', 'Cannot create item, try again later', 'top');
+      showError('Error', 'Cannot create item, try again later');
       console.log(error);
     }
   };
 
   const onMintClick = () => {
-    if (!avatarSource) {
-      showToast('error', 'Error', 'Please load the image.', 'top');
+    if (!nftFileUrl) {
+      showError('Error', 'Please load the image.');
       return;
     }
     if (!itemName.length) {
-      showToast('error', 'Error', 'Please fill the item name.', 'top');
+      showError('Error', 'Please fill the item name.');
       return;
     }
-    if (!isSelected) {
-      showToast('error', 'Error', 'Please confirm distribution rights', 'top');
+    if (!distributionRightsApproved) {
+      showError('Error', 'Please confirm distribution rights');
       return;
     }
 
@@ -125,7 +117,7 @@ const MintScreen = (props: MintScreenProps) => {
 
   const chooseImageOption = () => {
     Alert.alert('Choose a file', '', [
-      {text: 'Open from files', onPress: () => setChatAvatar('files')},
+      {text: 'Open from files', onPress: () => setNftFile()},
       {text: 'Dismiss', onPress: () => console.log('dismissed')},
     ]);
   };
@@ -138,62 +130,34 @@ const MintScreen = (props: MintScreenProps) => {
       console.log(JSON.stringify(response), 'sdfasdfadf');
       setFileId(response.results[0]['_id']);
       setLoading(false);
-      setAvatarSource(response.results[0].location);
+      setNftFileUrl(response.results[0].location);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const setChatAvatar = async (type: string) => {
-    if (type === 'image') {
-      launchImageLibrary(options, response => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else {
-          const data = new FormData();
-          data.append('files', {
-            name: response.fileName,
-            type: response.type,
-            uri: response.uri,
-          });
-          sendFiles(data);
-        }
+  const setNftFile = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [
+          DocumentPicker.types.images,
+          DocumentPicker.types.audio,
+          DocumentPicker.types.video,
+        ],
       });
-    } else if (type === 'photo') {
-      launchCamera(options, response => {
-        const data = new FormData();
-        data.append('files', {
-          name: response.fileName,
-          type: response.type,
-          uri: response.uri,
-        });
-        sendFiles(data);
+      setFilePickResult(res[0]);
+      const data = new FormData();
+      data.append('files', {
+        name: res[0].name,
+        type: res[0].type,
+        uri: res[0].uri,
       });
-    } else {
-      try {
-        const res = await DocumentPicker.pick({
-          type: [
-            DocumentPicker.types.images,
-            DocumentPicker.types.audio,
-            DocumentPicker.types.video,
-          ],
-        });
-        setFilePickResult(res[0]);
-        const data = new FormData();
-        data.append('files', {
-          name: res[0].name,
-          type: res[0].type,
-          uri: res[0].uri,
-        });
-        sendFiles(data);
-      } catch (err) {
-        if (DocumentPicker.isCancel(err)) {
-          // User cancelled the picker, exit any dialogs or menus and move on
-        } else {
-          throw err;
-        }
+      sendFiles(data);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
       }
     }
   };
@@ -208,7 +172,7 @@ const MintScreen = (props: MintScreenProps) => {
           <View style={classes.section1}>
             <TextInput
               value={itemName}
-              onChangeText={itemName => setItemName(itemName)}
+              onChangeText={text => setItemName(text)}
               placeholder="Item Name"
               placeholderTextColor={commonColors.primaryColor}
               style={classes.itemNameInput}
@@ -216,27 +180,15 @@ const MintScreen = (props: MintScreenProps) => {
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              marginTop: 20,
-            }}>
+          <HStack justifyContent={'space-between'} mt={'2'}>
             <TouchableOpacity
               onPress={chooseImageOption}
               style={{alignItems: 'flex-start', width: wp('50%')}}>
-              <View
-                style={{
-                  ...classes.alignCenter,
-                  width: wp('50%'),
-                  height: wp('50%'),
-                  borderRadius: 10,
-                  borderColor: commonColors.primaryColor,
-                  borderWidth: 1,
-                  marginRight: wp('5%'),
-                }}>
-                {avatarSource !== null ? (
+              <VStack
+                justifyContent={'center'}
+                alignItems={'center'}
+                style={classes.filePreviewContainer}>
+                {nftFileUrl ? (
                   <>
                     {isAudioMimetype(filePickResult.type) ? (
                       <AntIcon
@@ -247,7 +199,7 @@ const MintScreen = (props: MintScreenProps) => {
                     ) : (
                       <FastImage
                         source={{
-                          uri: avatarSource,
+                          uri: nftFileUrl,
                           priority: FastImage.priority.normal,
                         }}
                         resizeMode={FastImage.resizeMode.cover}
@@ -266,45 +218,14 @@ const MintScreen = (props: MintScreenProps) => {
                       size={hp('10%')}
                       color={commonColors.primaryColor}
                     />
-                    <Text
-                      style={{
-                        marginTop: 'auto',
-                        fontFamily: textStyles.lightFont,
-                        fontSize: hp('2.6%'),
-                        color: commonColors.primaryColor,
-                      }}>
-                      Add file
-                    </Text>
+                    <Text style={classes.addFileText}>Add file</Text>
                   </View>
                 )}
-              </View>
+              </VStack>
             </TouchableOpacity>
-            <View
-              style={{
-                borderColor: commonColors.primaryColor,
-                borderWidth: 1,
-                // marginTop: 10,
-                borderRadius: 5,
-                marginLeft: 10,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                width: wp('35%'),
-                height: wp('10%'),
-              }}>
-              <Text
-                style={{
-                  ...classes.textStyle,
-                  left: 5,
-                }}>
-                {' '}
-                Rarity
-              </Text>
-              <Text
-                style={{
-                  ...classes.textStyle,
-                  right: 40,
-                }}>
+            <View style={classes.selectContainer}>
+              <Text style={[classes.selectTextStyle, {left: 5}]}> Rarity</Text>
+              <Text style={[classes.selectTextStyle, {right: 40}]}>
                 {' '}
                 {selectedValue}
               </Text>
@@ -321,19 +242,14 @@ const MintScreen = (props: MintScreenProps) => {
                   />
                 </TouchableOpacity>
               </>
-              {/* )} */}
             </View>
-          </View>
+          </HStack>
 
           <TouchableOpacity
             disabled={loading}
             onPress={onMintClick}
             style={classes.createButton}>
-            <View
-              style={{
-                ...classes.alignCenter,
-                flex: 1,
-              }}>
+            <VStack justifyContent={'center'} alignItems={'center'} flex={1}>
               {loading ? (
                 <ActivityIndicator
                   animating={loading}
@@ -343,14 +259,14 @@ const MintScreen = (props: MintScreenProps) => {
               ) : (
                 <Text style={classes.createButtonText}>Mint Item</Text>
               )}
-            </View>
+            </VStack>
           </TouchableOpacity>
           <View style={classes.checkboxContainer}>
             <CheckBox
               onCheckColor={commonColors.primaryColor}
               onTintColor={commonColors.primaryColor}
-              value={isSelected}
-              onValueChange={setSelection}
+              value={distributionRightsApproved}
+              onValueChange={setDistributionRightsApproved}
               style={{marginRight: 3, color: commonColors.primaryColor}}
             />
             <Text style={{color: commonColors.primaryColor}}>
@@ -363,66 +279,22 @@ const MintScreen = (props: MintScreenProps) => {
       <Modal
         onBackdropPress={() => setModalVisible(false)}
         isVisible={isModalVisible}>
-        <View
-          style={{
-            backgroundColor: 'white',
-            borderRadius: 5,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(1)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>1</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(2)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(3)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>3</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(4)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>4</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(5)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(6)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>6</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(7)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>7</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(8)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>8</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(9)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>9</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => selectNftQuantity(10)}
-            style={classes.rarityItems}>
-            <Text style={classes.quantityItem}>10</Text>
-          </TouchableOpacity>
-
-          {/* <Button title="Hide modal" onPress={toggleModal} /> */}
-        </View>
+        <VStack
+          justifyContent={'center'}
+          alignItems={'center'}
+          bgColor={'white'}
+          borderRadius={10}>
+          {selectOptions.map(item => {
+            return (
+              <TouchableOpacity
+                key={item}
+                onPress={() => selectNftQuantity(item)}
+                style={classes.rarityItems}>
+                <Text style={classes.quantityItem}>{item}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </VStack>
       </Modal>
     </Fragment>
   );
@@ -435,6 +307,31 @@ const classes = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  filePreviewContainer: {
+    width: wp('50%'),
+    height: wp('50%'),
+    borderRadius: 10,
+    borderColor: commonColors.primaryColor,
+    borderWidth: 1,
+    marginRight: wp('5%'),
+  },
+  selectContainer: {
+    borderColor: commonColors.primaryColor,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    width: wp('35%'),
+    height: wp('10%'),
+  },
+  addFileText: {
+    marginTop: 'auto',
+    fontFamily: textStyles.lightFont,
+    fontSize: hp('2.6%'),
+    color: commonColors.primaryColor,
+  },
   contentContainer: {
     flex: 1,
     margin: 20,
@@ -444,11 +341,8 @@ const classes = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
   },
-  alignCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textStyle: {
+
+  selectTextStyle: {
     fontFamily: textStyles.lightFont,
     color: commonColors.primaryColor,
     position: 'absolute',
