@@ -30,7 +30,10 @@ import {
   IMainMessage,
 } from '../helpers/chat/createMessageObject';
 import {playCoinSound} from '../helpers/chat/playCoinSound';
-import {reverseUnderScoreManipulation, underscoreManipulation} from '../helpers/underscoreLogic';
+import {
+  reverseUnderScoreManipulation,
+  underscoreManipulation,
+} from '../helpers/underscoreLogic';
 import {
   getBlackList,
   getRoomInfo,
@@ -44,7 +47,7 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
-import { Results } from 'realm';
+import {Results} from 'realm';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -171,9 +174,9 @@ export interface IMessage {
 }
 
 export interface User {
-  _id:    string;
+  _id: string;
   avatar: string;
-  name:   string;
+  name: string;
 }
 
 export interface IbackgroundTheme {
@@ -223,7 +226,7 @@ export class ChatStore {
     [ROOM_KEYS.private]: 0,
     [ROOM_KEYS.groups]: 0,
   };
-  backgroundTheme:IbackgroundTheme[] = defaultChatBackgroundTheme;
+  backgroundTheme: IbackgroundTheme[] = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
   userBanData = {
     success: false,
@@ -343,9 +346,12 @@ export class ChatStore {
     });
   };
 
-  checkIsModerator = (roomJid:string) => {
-    return this.roomRoles[roomJid] === 'moderator'||this.roomRoles[roomJid] === 'admin';
-  }
+  checkIsModerator = (roomJid: string) => {
+    return (
+      this.roomRoles[roomJid] === 'moderator' ||
+      this.roomRoles[roomJid] === 'admin'
+    );
+  };
 
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
@@ -390,7 +396,11 @@ export class ChatStore {
     });
   };
 
-  getOtherUserDetails = (props: {avatar:string, name:string, jid:string}) => {
+  getOtherUserDetails = (props: {
+    avatar: string;
+    name: string;
+    jid: string;
+  }) => {
     const {avatar, name, jid} = props;
     const anotherUserFirstname = name.split(' ')[0];
     const anotherUserLastname = name.split(' ')[1];
@@ -411,7 +421,7 @@ export class ChatStore {
       anotherUserWalletAddress: anotherUserWalletAddress,
       anotherUserAvatar: avatar,
     });
-};
+  };
 
   updateCounter = () => {
     const notificationsCount: Record<string, number> = {
@@ -468,7 +478,7 @@ export class ChatStore {
   };
 
   addMessage = (message: any) => {
-    if (!this.messages.some((msg: { _id: any; }) => msg._id === message._id)) {
+    if (!this.messages.some((msg: {_id: any}) => msg._id === message._id)) {
       runInAction(() => {
         this.messages.push(message);
       });
@@ -477,7 +487,7 @@ export class ChatStore {
 
   editMessage = (replaceMessageId: any, messageString: string) => {
     const indexOfMessage = this.messages.findIndex(
-      (      item: { _id: any; }) => item._id === replaceMessageId,
+      (item: {_id: any}) => item._id === replaceMessageId,
     );
     if (indexOfMessage !== -1) {
       const messages = toJS(this.messages);
@@ -513,7 +523,9 @@ export class ChatStore {
 
   updateMessageReplyNumbers = (messageId: any) => {
     const messages = toJS(this.messages);
-    const index = messages.findIndex((item: { _id: any; }) => item._id === messageId);
+    const index = messages.findIndex(
+      (item: {_id: any}) => item._id === messageId,
+    );
     if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
@@ -536,7 +548,9 @@ export class ChatStore {
     }
 
     const messages = toJS(this.messages);
-    const index = messages.findIndex((item: { _id: string; }) => item._id === messageId);
+    const index = messages.findIndex(
+      (item: {_id: string}) => item._id === messageId,
+    );
 
     if (index !== -1) {
       const message = {
@@ -582,9 +596,12 @@ export class ChatStore {
     let map = {isUpdated: 0};
     this.roomList.forEach(item => {
       const latestMessage = this.messages
-        .filter((message: { roomJid: string; }) => item.jid === message.roomJid)
+        .filter((message: {roomJid: string}) => item.jid === message.roomJid)
         .sort(
-          (a: { createdAt: string | number | Date; }, b: { createdAt: string | number | Date; }) =>
+          (
+            a: {createdAt: string | number | Date},
+            b: {createdAt: string | number | Date},
+          ) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
 
@@ -629,7 +646,7 @@ export class ChatStore {
     const cachedRooms = await asyncStorageGetItem('metaRooms');
     const allRooms = cachedRooms || metaRooms;
     if (allRooms) {
-      allRooms.forEach((room: { idAddress: string; }) => {
+      allRooms.forEach((room: {idAddress: string}) => {
         subscribeToRoom(
           room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
           underscoreManipulation(
@@ -665,10 +682,10 @@ export class ChatStore {
     }
   };
 
-  getRoomDetails = (roomJid:string) => {
-    return this.roomList.find(item => item.jid === roomJid)
-  }
-  
+  getRoomDetails = (roomJid: string) => {
+    return this.roomList.find(item => item.jid === roomJid);
+  };
+
   xmppListener = async () => {
     let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(
@@ -679,14 +696,16 @@ export class ChatStore {
       //capture room info
       if (stanza.attrs.id === 'roomInfo') {
         const featureList = stanza.children[0].children.find(
-          (          item: { attrs: { xmlns: string; }; }) => item.attrs.xmlns === 'jabber:x:data',
+          (item: {attrs: {xmlns: string}}) =>
+            item.attrs.xmlns === 'jabber:x:data',
         );
-        featureList.children&&
-        this.updateRoomInfo(stanza.attrs.from, {
-          roomDescription: featureList.children.find(
-            (            item: { attrs: { var: string; }; }) => item.attrs.var === 'muc#roominfo_description',
-          ).children[0].children[0],
-        });
+        featureList.children &&
+          this.updateRoomInfo(stanza.attrs.from, {
+            roomDescription: featureList.children.find(
+              (item: {attrs: {var: string}}) =>
+                item.attrs.var === 'muc#roominfo_description',
+            ).children[0].children[0],
+          });
       }
 
       if (stanza.attrs.id === XMPP_TYPES.chatLinkInfo) {
@@ -819,30 +838,34 @@ export class ChatStore {
 
       //to catch error
       if (stanza.attrs.type === 'error') {
-        stanza.children.filter((item: { name: string; children: any[]; }) => {
+        stanza.children.filter((item: {name: string; children: any[]}) => {
           if (item.name === 'error') {
             console.log(item.children, 'stanza error==============');
-            item.children.filter((subItem: { name: string; children: string[]; }) => {
-              if (subItem.name === 'text') {
-                console.log(subItem.children[0]);
-                if (subItem.children[0] === 'You are banned in this room!') {
-                  showToast(
-                    'error',
-                    'Banned!',
-                    'You have been banned from this room.',
-                    'top',
-                  );
+            item.children.filter(
+              (subItem: {name: string; children: string[]}) => {
+                if (subItem.name === 'text') {
+                  console.log(subItem.children[0]);
+                  if (subItem.children[0] === 'You are banned in this room!') {
+                    showToast(
+                      'error',
+                      'Banned!',
+                      'You have been banned from this room.',
+                      'top',
+                    );
+                  }
+                  if (
+                    subItem.children[0] === 'Traffic rate limit is exceeded'
+                  ) {
+                    // showToast(
+                    //   'error',
+                    //   'XMPP: Too much traffic!',
+                    //   'Traffic rate limit is exceeded',
+                    //   'top',
+                    // );
+                  }
                 }
-                if (subItem.children[0] === 'Traffic rate limit is exceeded') {
-                  // showToast(
-                  //   'error',
-                  //   'XMPP: Too much traffic!',
-                  //   'Traffic rate limit is exceeded',
-                  //   'top',
-                  // );
-                }
-              }
-            });
+              },
+            );
           }
         });
       }
@@ -929,11 +952,15 @@ export class ChatStore {
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {
-        const blackList = stanza.children[0].children.map((item: { attrs: { user: any; date: string | number; fullname: any; }; }) => ({
-          userJid: item.attrs.user,
-          date: +item.attrs.date * 1000,
-          name: item.attrs.fullname,
-        }));
+        const blackList = stanza.children[0].children.map(
+          (item: {
+            attrs: {user: any; date: string | number; fullname: any};
+          }) => ({
+            userJid: item.attrs.user,
+            date: +item.attrs.date * 1000,
+            name: item.attrs.fullname,
+          }),
+        );
         runInAction(() => {
           this.blackList = blackList;
         });
@@ -1006,7 +1033,7 @@ export class ChatStore {
             //     message.text = item.rep
             // }
             const messageAlreadyExist = this.messages.findIndex(
-              (              x: { _id: string; }) => x._id === message._id,
+              (x: {_id: string}) => x._id === message._id,
             );
             if (messageAlreadyExist === -1) {
               temporaryArchiveMessages.push(message);
@@ -1120,10 +1147,10 @@ export class ChatStore {
           //   <body>Wow</body>
           // </message>
           const replaceMessageId = stanza.children.find(
-            (            item: { name: string; }) => item.name === 'replace',
+            (item: {name: string}) => item.name === 'replace',
           ).attrs.id;
           const messageString = stanza.children.find(
-            (            item: { name: string; }) => item.name === 'body',
+            (item: {name: string}) => item.name === 'body',
           ).children[0];
           // this.addToReplaceMessageList(replaceMessageId, messageString);
 

@@ -11,6 +11,9 @@ import {useStores} from '../../stores/context';
 import {RoomListItem} from './RoomListItem';
 import {View} from 'native-base';
 import {FlatList} from 'react-native';
+import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
+import {useNavigation} from '@react-navigation/native';
+import {ROUTES} from '../../constants/routes';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore} = useStores();
@@ -20,12 +23,13 @@ export const RoomList = observer(({roomsList}: any) => {
       chatStore.roomsInfoMap[a.jid]?.priority -
       chatStore.roomsInfoMap[b.jid]?.priority,
   );
-
+  const navigation = useNavigation();
   return (
     <>
-      <View flex={1} justifyContent={"center"} alignItems={"center"}>
+      <View justifyContent={'center'} alignItems={'center'} w={'full'}>
         <FlatList
           nestedScrollEnabled={true}
+          style={{width: '100%'}}
           data={sortedRoomsList}
           keyExtractor={(item: any) => `${item.jid}`}
           renderItem={({item, index}) => {
@@ -41,6 +45,9 @@ export const RoomList = observer(({roomsList}: any) => {
               />
             );
           }}
+        />
+        <CreateNewChatButton
+          onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
         />
       </View>
     </>
