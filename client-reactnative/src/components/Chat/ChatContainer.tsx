@@ -308,7 +308,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const submitMediaMessage = (
     mediaListArray: IMediaProps[],
     roomDetail: roomListProps,
-    senderDetails: ISenderDetails,
     xmpp: any,
     waveForm?: any,
   ) => {
@@ -378,7 +377,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         submitMediaMessage(
           response.data.results,
           roomDetails,
-          senderDetails,
           chatStore.xmpp,
           waveform,
         );
@@ -410,15 +408,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const sendAttachment = async (
-    filesApiURL: string,
     userToken: string,
-    setFileUploadProgress: React.Dispatch<React.SetStateAction<number>>,
-    getAudioData: (url?: string) => Promise<any>,
     roomDetail: roomListProps,
-    senderDetails: ISenderDetails,
-    xmpp: any,
-    addLogsApi?: (log: any) => void,
   ) => {
+    const xmpp = chatStore.xmpp;
+    const filesApiURL = apiStore.defaultUrl + fileUpload;
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
@@ -439,39 +433,20 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         setFileUploadProgress,
       );
       setFileUploadProgress(0);
+
       if (response.data.results?.length) {
-        addLogsApi && addLogsApi(response.data.results);
         if (response.data.results[0].mimetype === 'audio/mpeg') {
           let wave = await getAudioData(absolutePath);
-          submitMediaMessage(
-            response.data.results,
-            roomDetail,
-            senderDetails,
-            xmpp,
-            wave,
-          );
+          submitMediaMessage(response.data.results, roomDetail, xmpp, wave);
         } else {
-          submitMediaMessage(
-            response.data.results,
-            roomDetail,
-            senderDetails,
-            xmpp,
-          );
+          submitMediaMessage(response.data.results, roomDetail, xmpp, []);
         }
       }
     } catch (err) {
       console.log(err);
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker, exit any dialogs or menus and move on
-      } else {
-        showToast(
-          'error',
-          'Error',
-          'Cannot upload file, try again later',
-          'top',
-        );
-        throw err;
-      }
+      // User cancelled the picker, exit any dialogs or menus and move on
+      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
+      console.log(err);
     }
   };
 
@@ -827,20 +802,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   //component to render attachments in the main chat text input.
   const renderAttachment = () => {
-    const filesApiURL = apiStore.defaultUrl + fileUpload;
     const options = walletStore.nftItems.length
       ? {
           'Upload File': async () =>
-            await sendAttachment(
-              filesApiURL,
-              loginStore.userToken,
-              setFileUploadProgress,
-              getAudioData,
-              roomDetails,
-              senderDetails,
-              chatStore.xmpp,
-              debugStore.addLogsApi,
-            ),
+            await sendAttachment(loginStore.userToken, roomDetails),
           'Display an Item': async () => await displayNftItems(),
           Cancel: () => {
             console.log('Cancel');
@@ -848,16 +813,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         }
       : {
           'Upload File': async () =>
-            await sendAttachment(
-              filesApiURL,
-              loginStore.userToken,
-              setFileUploadProgress,
-              getAudioData,
-              roomDetails,
-              senderDetails,
-              chatStore.xmpp,
-              debugStore.addLogsApi,
-            ),
+            await sendAttachment(loginStore.userToken, roomDetails),
           Cancel: () => {
             console.log('Cancel');
           },
@@ -1120,7 +1076,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     <>
       <ImageBackground
         style={{width: '100%', height: '100%', zIndex: 0}}
-        source={{uri: roomDetails.roomBackground}}>
+        source={
+          roomDetails.roomBackground
+            ? {uri: roomDetails.roomBackground}
+            : undefined
+        }>
         {containerType === 'main' ? (
           <SecondaryHeader
             roomJID={roomDetails.jid}
