@@ -104,7 +104,7 @@ const ChatListSchema = {
     counter: 'int',
     lastUserText: 'string',
     lastUserName: 'string',
-    createdAt: 'date?',
+    createdAt:{type: 'date?', optional: true},
     priority: {type: 'int', optional: true},
     muted: {type: 'bool', optional: true},
     roomThumbnail: {type: 'string', optional: true},

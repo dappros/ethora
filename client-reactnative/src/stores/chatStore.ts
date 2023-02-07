@@ -1,3 +1,4 @@
+//@ts-ignore
 import {client, xml} from '@xmpp/client';
 import {makeAutoObservable, runInAction, toJS} from 'mobx';
 import {
@@ -43,6 +44,7 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
+import { Results } from 'realm';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -358,7 +360,7 @@ export class ChatStore {
   };
   getRoomsFromCache = async () => {
     try {
-      const rooms: roomListProps = await getRoomList();
+      const rooms: Results<Realm.Object> = await getRoomList();
       runInAction(() => {
         this.roomList = rooms;
       });
@@ -466,7 +468,7 @@ export class ChatStore {
   };
 
   addMessage = (message: any) => {
-    if (!this.messages.some(msg => msg._id === message._id)) {
+    if (!this.messages.some((msg: { _id: any; }) => msg._id === message._id)) {
       runInAction(() => {
         this.messages.push(message);
       });
@@ -475,7 +477,7 @@ export class ChatStore {
 
   editMessage = (replaceMessageId: any, messageString: string) => {
     const indexOfMessage = this.messages.findIndex(
-      item => item._id === replaceMessageId,
+      (      item: { _id: any; }) => item._id === replaceMessageId,
     );
     if (indexOfMessage !== -1) {
       const messages = toJS(this.messages);
@@ -511,7 +513,7 @@ export class ChatStore {
 
   updateMessageReplyNumbers = (messageId: any) => {
     const messages = toJS(this.messages);
-    const index = messages.findIndex(item => item._id === messageId);
+    const index = messages.findIndex((item: { _id: any; }) => item._id === messageId);
     if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
@@ -534,7 +536,7 @@ export class ChatStore {
     }
 
     const messages = toJS(this.messages);
-    const index = messages.findIndex(item => item._id === messageId);
+    const index = messages.findIndex((item: { _id: string; }) => item._id === messageId);
 
     if (index !== -1) {
       const message = {
@@ -580,9 +582,9 @@ export class ChatStore {
     let map = {isUpdated: 0};
     this.roomList.forEach(item => {
       const latestMessage = this.messages
-        .filter(message => item.jid === message.roomJid)
+        .filter((message: { roomJid: string; }) => item.jid === message.roomJid)
         .sort(
-          (a, b) =>
+          (a: { createdAt: string | number | Date; }, b: { createdAt: string | number | Date; }) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )[0];
 
@@ -609,7 +611,7 @@ export class ChatStore {
       this.roomsInfoMap,
     );
   };
-  setChatMessagesLoading = value => {
+  setChatMessagesLoading = (value: boolean) => {
     runInAction(() => {
       this.isLoadingEarlierMessages = value;
     });
@@ -627,7 +629,7 @@ export class ChatStore {
     const cachedRooms = await asyncStorageGetItem('metaRooms');
     const allRooms = cachedRooms || metaRooms;
     if (allRooms) {
-      allRooms.forEach(room => {
+      allRooms.forEach((room: { idAddress: string; }) => {
         subscribeToRoom(
           room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
           underscoreManipulation(
@@ -677,11 +679,12 @@ export class ChatStore {
       //capture room info
       if (stanza.attrs.id === 'roomInfo') {
         const featureList = stanza.children[0].children.find(
-          item => item.attrs.xmlns === 'jabber:x:data',
+          (          item: { attrs: { xmlns: string; }; }) => item.attrs.xmlns === 'jabber:x:data',
         );
+        featureList.children&&
         this.updateRoomInfo(stanza.attrs.from, {
           roomDescription: featureList.children.find(
-            item => item.attrs.var === 'muc#roominfo_description',
+            (            item: { attrs: { var: string; }; }) => item.attrs.var === 'muc#roominfo_description',
           ).children[0].children[0],
         });
       }
@@ -816,10 +819,10 @@ export class ChatStore {
 
       //to catch error
       if (stanza.attrs.type === 'error') {
-        stanza.children.filter(item => {
+        stanza.children.filter((item: { name: string; children: any[]; }) => {
           if (item.name === 'error') {
             console.log(item.children, 'stanza error==============');
-            item.children.filter(subItem => {
+            item.children.filter((subItem: { name: string; children: string[]; }) => {
               if (subItem.name === 'text') {
                 console.log(subItem.children[0]);
                 if (subItem.children[0] === 'You are banned in this room!') {
@@ -926,7 +929,7 @@ export class ChatStore {
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {
-        const blackList = stanza.children[0].children.map(item => ({
+        const blackList = stanza.children[0].children.map((item: { attrs: { user: any; date: string | number; fullname: any; }; }) => ({
           userJid: item.attrs.user,
           date: +item.attrs.date * 1000,
           name: item.attrs.fullname,
@@ -1003,7 +1006,7 @@ export class ChatStore {
             //     message.text = item.rep
             // }
             const messageAlreadyExist = this.messages.findIndex(
-              x => x._id === message._id,
+              (              x: { _id: string; }) => x._id === message._id,
             );
             if (messageAlreadyExist === -1) {
               temporaryArchiveMessages.push(message);
@@ -1117,14 +1120,14 @@ export class ChatStore {
           //   <body>Wow</body>
           // </message>
           const replaceMessageId = stanza.children.find(
-            item => item.name === 'replace',
+            (            item: { name: string; }) => item.name === 'replace',
           ).attrs.id;
           const messageString = stanza.children.find(
-            item => item.name === 'body',
+            (            item: { name: string; }) => item.name === 'body',
           ).children[0];
           // this.addToReplaceMessageList(replaceMessageId, messageString);
 
-          this.editMessage(replaceMessageId, messagexString);
+          this.editMessage(replaceMessageId, messageString);
           await updateMessageText(replaceMessageId, messageString);
         }
 
@@ -1158,7 +1161,7 @@ export class ChatStore {
       }
     });
 
-    this.xmpp.on('online', async address => {
+    this.xmpp.on('online', async (address: any) => {
       this.xmpp.reconnect.delay = 2000;
       this.xmpp.send(xml('presence'));
       this.subscribeToDefaultChats();
