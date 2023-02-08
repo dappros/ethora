@@ -18,7 +18,7 @@ export interface IMessageToSend {
   push: boolean;
   imageLocation?: any;
   text?: string;
-  tokenAmount?: string | number;
+  tokenAmount?: number;
   location?: string;
   locationPreview?: string;
   image?: string;
@@ -99,7 +99,7 @@ export const createMessageObject = (messageDetails = []) => {
     text: '',
     createdAt: '',
     system: false,
-    tokenAmount: '',
+    tokenAmount: 0,
     user: {
       _id: '',
       name: '',

@@ -9,7 +9,7 @@ import React, {useCallback, useEffect, } from 'react';
 import {observer} from 'mobx-react-lite';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
-import {defaultChats} from '../../../docs/config';
+import { checkIsDefaultChat } from '../../helpers/chat/checkIsDefaultChat';
 
 var _ = require('lodash');
 const ROOM_KEYS = {
@@ -23,10 +23,11 @@ export const RoomsTabBar = observer(() => {
   const privateRooms = chatStore.roomList?.filter((item: any) => {
     const splitedJid = item?.jid?.split('@')[0];
 
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
+
     if (
       item.participants < 3 &&
-      //@ts-ignore
-      !defaultChats[splitedJid] &&
+      !isDefaultChat &&
       !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
       !item.meta
     ) {
@@ -35,9 +36,9 @@ export const RoomsTabBar = observer(() => {
   });
   const official = chatStore.roomList.filter(item => {
     const splitedJid = item?.jid?.split('@')[0];
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
     if (
-      //@ts-ignore
-      defaultChats[splitedJid] ||
+      isDefaultChat ||
       chatStore.roomsInfoMap[item.jid]?.isFavourite
     ) {
       return item;
@@ -45,11 +46,10 @@ export const RoomsTabBar = observer(() => {
   });
   const groups = chatStore.roomList.filter((item: any) => {
     const splitedJid = item?.jid?.split('@')[0];
-
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
     if (
       item.participants > 2 &&
-      //@ts-ignore
-      !defaultChats[splitedJid] &&
+      !isDefaultChat &&
       !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
       !item.meta
     ) {
@@ -71,7 +71,7 @@ export const RoomsTabBar = observer(() => {
 
     return _.orderBy(
       roomsWithDate,
-      el => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
+      (el:any) => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
       'desc',
     ).concat(roomsWithoutDate);
   }, [

@@ -1,17 +1,17 @@
 import { Box, Divider, HStack, Menu, View } from 'native-base';
 import React, { useState } from 'react';
-import { commonColors, defaultChats, textStyles } from '../../../../docs/config';
+import { commonColors, textStyles } from '../../../../docs/config';
 import { TouchableOpacity } from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
     heightPercentageToDP as hp,
-    widthPercentageToDP as wp,
   } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 import { useStores } from '../../../stores/context';
 import { roomListProps } from '../../../stores/chatStore';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { ROUTES } from '../../../constants/routes';
+import { checkIsDefaultChat } from '../../../helpers/chat/checkIsDefaultChat';
 
 interface ChatDetailHeaderProps {
     deleteRoomDialog: () => Promise<void>;
@@ -43,6 +43,8 @@ const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: 
     const isOwnerOrModerator=chatStore.checkIsModerator(jid)
     ? 'Remove from favourites'
     : 'Add to favourites';
+
+    const isDefaultChat = checkIsDefaultChat(jid);
     //local variables
 
     //hooks
@@ -67,12 +69,9 @@ const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: 
         </View>
 
         <View flex={0.4} justifyContent="flex-end" flexDirection="row">
-            {/* @ts-ignore */}
-            {defaultChats[jid?.split('@')[0]] ? null : (
+            {isDefaultChat ? null : (
             <View flex={0.3}>
                 <TouchableOpacity
-                // @ts-ignore
-                disabled={defaultChats[jid?.split('@')[0]] ? true : false}
                 onPress={deleteRoomDialog}>
                 <AntIcon
                     name={'delete'}
@@ -85,14 +84,12 @@ const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: 
             )}
             <View flex={0.3}>
             <TouchableOpacity
-            //@ts-ignore
-                disabled={defaultChats[jid?.split('@')[0]] ? true : false}
+                disabled={isDefaultChat? true : false}
                 onPress={toggleFavourite}>
                 <AntIcon
                 name={
                     chatStore.roomsInfoMap[jid]?.isFavourite ||
-                    //@ts-ignore
-                    defaultChats[jid?.split('@')[0]]
+                    isDefaultChat
                     ? 'star'
                     : 'staro'
                 }
@@ -125,8 +122,7 @@ const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: 
                     </TouchableOpacity>
                     );
                 }}>
-                {/* @ts-ignore */}
-                {defaultChats[jid?.split('@')[0]] ? null : (
+                {isDefaultChat ? null : (
                     <>
                     <Menu.Item
                         onPress={toggleFavourite}
@@ -153,8 +149,7 @@ const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: 
                     Change Background
                     </Menu.Item>
                 ) : null}
-                {/* @ts-ignore */}
-                {defaultChats[jid?.split('@')[0]] ? null : (
+                {isDefaultChat ? null : (
                     <>
                     <Divider />
                     <Menu.Item

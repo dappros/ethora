@@ -47,7 +47,8 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
-import {Results} from 'realm';
+import { Results } from 'realm';
+import { checkIsDefaultChat } from '../helpers/chat/checkIsDefaultChat';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -138,7 +139,7 @@ export interface IMessage {
   text?: string;
   createdAt: string | number | Date;
   system: boolean;
-  tokenAmount?: string | number;
+  tokenAmount?: number;
   user: {
     _id: string;
     name: string;
@@ -185,9 +186,9 @@ export interface IbackgroundTheme {
   alt: string;
 }
 
-let temporaryArchiveMessages: IMessage[] = [];
+let temporaryArchiveMessages: IMessage[];
 export class ChatStore {
-  messages: any = [];
+  messages: IMessage[] = [];
   xmpp: any = null;
   xmppError: any = '';
   roomList: roomListProps[] | [] = [];
@@ -368,14 +369,17 @@ export class ChatStore {
     try {
       const rooms: Results<Realm.Object> = await getRoomList();
       runInAction(() => {
+        //@ts-ignore
         this.roomList = rooms;
       });
     } catch (error) {}
   };
   getCachedMessages = async () => {
     const messages = await getAllMessages();
+    //@ts-ignore
     temporaryArchiveMessages = messages;
     runInAction(() => {
+      //@ts-ignore
       this.messages = messages;
     });
   };
@@ -431,9 +435,10 @@ export class ChatStore {
     };
     this.roomList?.forEach(item => {
       const splitedJid = item?.jid?.split('@')[0];
+      const isDefaultChat = checkIsDefaultChat(splitedJid);
       if (
         item.participants < 3 &&
-        !defaultChats[splitedJid] &&
+        !isDefaultChat &&
         !this.roomsInfoMap[item.jid]?.isFavourite
       ) {
         notificationsCount[ROOM_KEYS.private] +=
@@ -441,7 +446,7 @@ export class ChatStore {
       }
 
       if (
-        defaultChats[splitedJid] ||
+        isDefaultChat ||
         this.roomsInfoMap[item.jid]?.isFavourite
       ) {
         notificationsCount[ROOM_KEYS.official] +=
@@ -450,7 +455,7 @@ export class ChatStore {
 
       if (
         item.participants > 2 &&
-        !defaultChats[splitedJid] &&
+        !isDefaultChat &&
         !this.roomsInfoMap[item.jid]?.isFavourite
       ) {
         notificationsCount[ROOM_KEYS.groups] +=
@@ -503,17 +508,12 @@ export class ChatStore {
     }
   };
 
-  addThreadMessage = (message: any) => {
-    runInAction(() => {
-      this.listOfThreads.push(message);
-    });
-  };
-
-  addRoom = (room: any) => {
-    runInAction(() => {
-      this.roomList.push(room);
-    });
-  };
+  // addRoom = (room: any) => {
+  //   runInAction(() => {
+  //     this.roomList.push(room);
+  //   });
+  // };
+  
   setRooms = async (roomsArray: any) => {
     const rooms = await this.checkMetaRooms(roomsArray);
     runInAction(() => {
@@ -527,14 +527,15 @@ export class ChatStore {
       (item: {_id: any}) => item._id === messageId,
     );
     if (index !== -1) {
+      if(messages[index].numberOfReplies){
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
-        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1,
+        'numberOfReplies': messages[index].numberOfReplies as number + 1,
       };
-
       runInAction(() => {
         this.messages[index] = message;
       });
+      }
     }
   };
 
@@ -556,8 +557,9 @@ export class ChatStore {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
         [property]:
+          typeof(value)==='number'&&
           property === 'tokenAmount'
-            ? messages[index][property] + value
+            ? messages[index][property] as number + value
             : value,
       };
       runInAction(() => {
@@ -593,7 +595,7 @@ export class ChatStore {
   };
 
   updateAllRoomsInfo = async () => {
-    let map = {isUpdated: 0};
+    let map:any = {isUpdated: 0};
     this.roomList.forEach(item => {
       const latestMessage = this.messages
         .filter((message: {roomJid: string}) => item.jid === message.roomJid)
@@ -657,7 +659,7 @@ export class ChatStore {
       });
     }
   };
-  checkMetaRooms = async (rooms = []) => {
+  checkMetaRooms = async (rooms:any[] = []) => {
     const roomsCopy = rooms;
     const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
     try {
@@ -923,7 +925,7 @@ export class ChatStore {
           };
 
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-          getChatRoom(item.attrs.jid).then(cachedChat => {
+          getChatRoom(item.attrs.jid).then((cachedChat:any) => {
             if (!cachedChat) {
               addChatRoom(rosterObject);
               this.updateRoomInfo(item.attrs.jid, {
@@ -1015,7 +1017,7 @@ export class ChatStore {
           if (message.isReplace) {
             this.addToReplaceMessageList(
               message.replaceMessageId,
-              message.text,
+              message.text as string,
             );
           } else {
             //check if the current stanza is an edited message.
@@ -1045,19 +1047,21 @@ export class ChatStore {
               }
 
               if (message.system) {
-                if (message?.contractAddress) {
+                if (message?.contractAddress && message.nftId) {
                   await updateMessageToWrapped(message.receiverMessageId, {
                     nftId: message.nftId,
                     contractAddress: message.contractAddress,
                   });
                 }
+
+                message.tokenAmount&&
                 await updateTokenAmount(
                   message.receiverMessageId,
                   message.tokenAmount,
                 );
               }
 
-              if (message.isReply) {
+              if (message.isReply && message.mainMessage?.id) {
                 const thread = temporaryArchiveMessages.filter(
                   item => item.mainMessage?.id === message.mainMessage?.id,
                 );
@@ -1067,7 +1071,7 @@ export class ChatStore {
                   thread.length,
                 );
                 await updateNumberOfReplies(
-                  message?.mainMessage?.id,
+                  message.mainMessage.id,
                   thread.length,
                 );
               }
@@ -1100,17 +1104,19 @@ export class ChatStore {
             lastMessageTime: message?.createdAt,
           });
           if (message.system) {
-            if (message?.contractAddress) {
+            if (message?.contractAddress && message.nftId) {
               await updateMessageToWrapped(message.receiverMessageId, {
                 nftId: message.nftId,
                 contractAddress: message.contractAddress,
               });
+              
               this.updateMessageProperty(
                 message.receiverMessageId,
                 'nftId',
                 message.nftId,
               );
             }
+            if(message.tokenAmount){
             this.updateMessageProperty(
               message.receiverMessageId,
               'tokenAmount',
@@ -1121,8 +1127,9 @@ export class ChatStore {
               message.tokenAmount,
             );
             playCoinSound(message.tokenAmount);
+            }
           }
-          if (message.isReply) {
+          if (message.isReply && message.mainMessage?.id) {
             const thread = temporaryArchiveMessages.filter(
               item => item.mainMessage?.id === message.mainMessage?.id,
             );

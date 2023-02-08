@@ -52,5 +52,4 @@ export const RoomList = observer(({roomsList}: any) => {
       </View>
     </>
   );
-  // });
 });

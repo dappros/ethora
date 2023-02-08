@@ -53,12 +53,13 @@ export const getAllMessages = async () => {
     return Array.from(messages);
   } catch (error) {
     console.log(error);
+    return [];
   }
 };
 //update message object
 export const updateTokenAmount = async (
   messageId: string,
-  tokenAmount: string,
+  tokenAmount: number,
 ) => {
   try {
     const realm = await Realm.open(databaseOptions);
@@ -69,6 +70,7 @@ export const updateTokenAmount = async (
 
     if (message) {
       realm.write(() => {
+        //@ts-ignore
         message.tokenAmount = message.tokenAmount + tokenAmount;
       });
     }

@@ -10,10 +10,11 @@ import {View} from 'native-base';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import {commonColors, defaultChats} from '../../../docs/config';
+import {commonColors} from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {httpDelete} from '../../config/apiService';
+import { checkIsDefaultChat } from '../../helpers/chat/checkIsDefaultChat';
 
 interface LeftActionsProps {
   toggleNotification: any;
@@ -73,6 +74,7 @@ interface RightActionsProps {
 export const RightActions = (props: RightActionsProps) => {
   const {jid, leaveChat, swipeRef} = props;
   const jidWithoutConference = jid?.split('@')[0];
+  const isDefaultChat = checkIsDefaultChat(jidWithoutConference);
   const {loginStore} = useStores();
   const deleteMetaRoom = async () => {
     try {
@@ -88,7 +90,7 @@ export const RightActions = (props: RightActionsProps) => {
   };
   return (
     <>
-      {!defaultChats[jidWithoutConference] && (
+      {!isDefaultChat && (
         <TouchableOpacity onPress={onSwipeRight}>
           <View style={[styles.swipeActionItem, {backgroundColor: 'red'}]}>
             <AntIcon color={'white'} size={hp('3%')} name={'delete'} />

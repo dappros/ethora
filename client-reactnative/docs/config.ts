@@ -59,14 +59,14 @@ import logoPath from '../src/assets/logo.png'; //done
 import DeviceInfo from 'react-native-device-info';
 
 //images for tutorial screens
-import slide1Image1 from '../src/assets/tutorials/slide1Img1.png';
-import slide2Image1 from '../src/assets/tutorials/slide2Img1.png';
-import slide2Image2 from '../src/assets/tutorials/slide2Img2.png';
-import slide2Image3 from '../src/assets/tutorials/slide2Img3.png';
-import slide3Image1 from '../src/assets/tutorials/slide3Img1.png';
-import slide3Image2 from '../src/assets/tutorials/slide3Img2.png';
-import slide4Image1 from '../src/assets/tutorials/slide4Img1.png';
-import slide4Image2 from '../src/assets/tutorials/slide4Img2.png';
+// import slide1Image1 from '../src/assets/tutorials/slide1Img1.png';
+// import slide2Image1 from '../src/assets/tutorials/slide2Img1.png';
+// import slide2Image2 from '../src/assets/tutorials/slide2Img2.png';
+// import slide2Image3 from '../src/assets/tutorials/slide2Img3.png';
+// import slide3Image1 from '../src/assets/tutorials/slide3Img1.png';
+// import slide3Image2 from '../src/assets/tutorials/slide3Img2.png';
+// import slide4Image1 from '../src/assets/tutorials/slide4Img1.png';
+// import slide4Image2 from '../src/assets/tutorials/slide4Img2.png';
 
 import loginScreenBackgroundImage from '../src/assets/login_background.png';
 
@@ -180,26 +180,30 @@ const defaultChatRooms = [
   },
 ];
 
-const defaultChats = {
-  '5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d': {
+const defaultChats = [
+  {
+    jid: '5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d',
     name: 'Random talks',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-  cc39004bf432f6dc34b47cd64251236c9ae65eadd890daef3ff7dbc94c3caecb: {
+  {
+    jid: 'cc39004bf432f6dc34b47cd64251236c9ae65eadd890daef3ff7dbc94c3caecb',
     name: 'Technical support',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-  dc635d74fb77f53701d48899d86175c3a62a3e8a2a76e9f5ea0e9a3918cf6152: {
+  {
+    jid: 'dc635d74fb77f53701d48899d86175c3a62a3e8a2a76e9f5ea0e9a3918cf6152',
     name: 'NFT Factory',
     premiumOnly: true,
     stickyOrder: false,
     removable: false,
   },
-};
+];
+
 export const defaultMetaRoom = {
   name: 'Agora (Start here) 🇬🇧🏛️👋💬',
   jid: '1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc',
@@ -797,14 +801,6 @@ export {
   coinsMainName,
   loginScreenBackgroundImage,
   unv_url,
-  slide1Image1,
-  slide2Image1,
-  slide2Image2,
-  slide2Image3,
-  slide3Image1,
-  slide3Image2,
-  slide4Image1,
-  slide4Image2,
   allowIsTyping,
   defaultBotsList,
   appEndpoint,
