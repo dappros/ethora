@@ -4,9 +4,9 @@ import {IApplicationAPI} from "./IApplicationAPI";
 
 export default class ApplicationAPI implements IApplicationAPI {
     authData: IAuthorization;
-    http: any;
+    private http: any;
     baseURL: string;
-    tokenJWT: string;
+    private readonly tokenJWT: string;
 
     constructor(tokenJWT: string, baseURL: string) {
         this.tokenJWT = tokenJWT;
@@ -19,6 +19,44 @@ export default class ApplicationAPI implements IApplicationAPI {
         this.http.interceptors.response.use(undefined, error => {
             return this._errorHandler(error)
         });
+    }
+
+    static _getJID(wallet: string): string {
+        return wallet.replace(/([A-Z])/g, '_$1').toLowerCase();
+    }
+
+    async userAuthorization(username: string, password: string): Promise<IAuthorization> {
+        try {
+            const request = await this.http.post('users/login', {
+                username: username,
+                password: password
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: this.tokenJWT,
+                },
+            });
+            this.authData = {
+                token: String(request.data.token),
+                refreshToken: String(request.data.refreshToken),
+                data: {
+                    _id: String(request.data._id),
+                    jid: ApplicationAPI._getJID(String(request.data.user.defaultWallet.walletAddress)),
+                    appId: String(request.data.appId),
+                    xmppPassword: String(request.data.xmppPassword),
+                    walletAddress: String(request.data.user.defaultWallet.walletAddress),
+                    username: String(request.data.username),
+                    firstName: String(request.data.firstName),
+                    lastName: String(request.data.lastName),
+                    emails: request.data.emails,
+                    updatedAt: String(request.data.updatedAt),
+                    isUserDataEncrypted: request.data.isUserDataEncrypted,
+                }
+            };
+            return this.authData;
+        } catch (error) {
+            return error.data;
+        }
     }
 
     _errorHandler(error: any) {
