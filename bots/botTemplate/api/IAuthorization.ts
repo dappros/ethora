@@ -6,6 +6,7 @@ export interface IAuthorization {
 
 export interface IAuthData {
     _id: string;
+    jid: string;
     appId: string;
     xmppPassword: string;
     walletAddress: string;
