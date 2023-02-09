@@ -48,7 +48,7 @@ export default class ApplicationAPI implements IApplicationAPI {
                     username: String(request.data.username),
                     firstName: String(request.data.firstName),
                     lastName: String(request.data.lastName),
-                    emails: request.data.emails,
+                    emails: Array.isArray(request.data.emails) ? request.data.emails : [],
                     updatedAt: String(request.data.updatedAt),
                     isUserDataEncrypted: request.data.isUserDataEncrypted,
                 }
