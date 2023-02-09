@@ -31,7 +31,7 @@ const router = (handlerData) => {
         }
     }
 
-    if (messageCheck(handlerData.message, 'bot')) {
+    // if (messageCheck(handlerData.message, 'bot')) {
         const indexOfSpace = handlerData.message.indexOf(' ');
         let clearMessage = handlerData.message.slice(indexOfSpace + 1);
         if (!clearMessage.endsWith('.')) {
@@ -55,6 +55,6 @@ const router = (handlerData) => {
                 0,
             );
         })
-    }
+    // }
 }
 export {router};
