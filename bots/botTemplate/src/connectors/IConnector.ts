@@ -10,7 +10,7 @@ export interface IConnector {
     getUniqueSessionKey(rawData?: {}): string;
     getUser(): Promise<IUser>;
     send(message: IMessage, user: IUser, options: any): Promise<void>;
-    listen(): any;
+    // listen(): any;
     on(event: ConnectorEvent, handler: () => any): void;
     emit(event: ConnectorEvent, data: any): void;
 }
