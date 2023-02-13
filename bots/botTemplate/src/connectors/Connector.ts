@@ -69,12 +69,13 @@ export default class Connector extends EventEmitter implements IConnector {
 
     listen() {
         const API = new ApplicationAPI();
+        const Xmpp = new XmppClient();
         API.userAuthorization(this.username, this.password).then(botAuthData => {
             //Initializing XMPP Client
-            XmppClient.init(botAuthData.data.jid, botAuthData.data.xmppPassword);
+            Xmpp.init(botAuthData.data.jid, botAuthData.data.xmppPassword);
             this.botAuthData = botAuthData;
             //Listen for incoming messages and redirect them to a bot
-            XmppClient.client.on("stanza", (stanza) => {
+            Xmpp.client.on("stanza", (stanza) => {
                 //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
                 if (stanza.getChild('body')) {
                     this.stanza = stanza;
