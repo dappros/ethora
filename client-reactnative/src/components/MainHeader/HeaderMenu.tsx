@@ -6,66 +6,88 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {useNavigation} from '@react-navigation/native';
-import {Box, Divider, Menu, Text, View} from 'native-base';
+import {Box, Divider, Menu} from 'native-base';
 import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native';
-import {ROUTES} from '../../constants/routes';
 import Icon from 'react-native-vector-icons/Entypo';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   configDocuments,
   configNFT,
   itemsMintingAllowed,
-  textStyles,
 } from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import SubMenu from './SubMenu';
+import {HomeStackNavigationProp} from '../../navigation/types';
+import {homeStackRoutes} from '../../navigation/routes';
 
-export interface IMenuItem{
+export interface IMenuItem {
   value: string;
   label: string;
   visible: boolean;
-}[]
+}
+[];
 
+const LOGOUT = 'LOGOUT';
 export const HeaderMenu = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const [open, setOpen] = useState(false);
 
   const {loginStore, debugStore} = useStores();
 
-  const AccountMenuItems:IMenuItem[] = [
-    {value: ROUTES.PROFILE, label: 'My profile', visible: true},
-    {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-    // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
-    {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
-    {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
+  const AccountMenuItems: IMenuItem[] = [
+    {value: homeStackRoutes.ProfileScreen, label: 'My profile', visible: true},
+    {
+      value: homeStackRoutes.TransactionsScreen,
+      label: 'Transactions',
+      visible: true,
+    },
+    // {value: homeStackRoutes.ACCOUNT, label: 'E-mails', visible: true},
+    {
+      value: homeStackRoutes.InviteFriendsScreen,
+      label: 'Referrals',
+      visible: true,
+    },
+    {
+      value: homeStackRoutes.CoinPurchaseScreen,
+      label: 'Buy coins',
+      visible: true,
+    },
   ];
 
-  const ActionsMenuItems:IMenuItem[] = [
-    {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
-    {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
+  const ActionsMenuItems: IMenuItem[] = [
+    {value: homeStackRoutes.NewChatScreen, label: 'New room', visible: true},
+    {value: homeStackRoutes.ScanScreen, label: 'QR Scan', visible: true},
     {
-      value: ROUTES.MINT,
+      value: homeStackRoutes.MintScreen,
       label: 'Mint items',
       visible: itemsMintingAllowed && configNFT,
     },
     {
-      value: ROUTES.UPLOADDOCUMENTSSCREEN,
+      value: homeStackRoutes.UploadDocumentsScreen,
       label: 'Upload Document',
       visible: configDocuments,
     },
   ];
 
-  const SystemMenuItems:IMenuItem[] = [
-    {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
+  const SystemMenuItems: IMenuItem[] = [
     {
-      value: ROUTES.AUTHENTICATIONSCREEN,
+      value: homeStackRoutes.PrivacyAndDataScreen,
+      label: 'Privacy and Data',
+      visible: true,
+    },
+    {
+      value: homeStackRoutes.AuthenticationScreen,
       label: 'Authentication',
       visible: true,
     },
 
-    {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
-    {value: ROUTES.LOGOUT, label: 'Sign out', visible: true},
+    {
+      value: homeStackRoutes.DebugScreen,
+      label: 'Debug',
+      visible: debugStore.debugMode,
+    },
+    {value: LOGOUT, label: 'Sign out', visible: true},
   ];
 
   const toggleMenu = () => {
@@ -73,10 +95,10 @@ export const HeaderMenu = () => {
   };
 
   const onMenuItemPress = (value: string) => {
-    if (value === ROUTES.LOGOUT) {
+    if (value === LOGOUT) {
       loginStore.logOut();
     } else {
-      navigation.navigate(value as never);
+      navigation.navigate(value);
     }
   };
   return (
@@ -85,14 +107,14 @@ export const HeaderMenu = () => {
       w={50}
       alignItems="center"
       style={{
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: {
           width: 0,
           height: 5,
         },
         shadowOpacity: 0.7,
         shadowRadius: 6.27,
-        
+
         elevation: 10,
       }}
       justifyContent={'center'}>

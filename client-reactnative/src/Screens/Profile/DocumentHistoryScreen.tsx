@@ -20,24 +20,21 @@ import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {showError} from '../../components/Toast/toast';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {ROUTES} from '../../constants/routes';
-import {IDocument} from '../../stores/types';
 import {
   isAudioMimetype,
   isImageMimetype,
   isPdfMimetype,
   isVideoMimetype,
 } from '../../helpers/checkMimetypes';
+import {HomeStackParamList} from '../../navigation/types';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-interface DocumentHistoryScreenProps {
-  route: {params: {item: IDocument; userWalletAddress: string}};
-  navigation: any;
-}
+type ScreenProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'DocumentHistoryScreen'
+>;
 
-export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
-  route,
-  navigation,
-}) => {
+export const DocumentHistoryScreen = ({route, navigation}: ScreenProps) => {
   const {item, userWalletAddress} = route.params;
 
   const {loginStore, walletStore} = useStores();
@@ -115,7 +112,7 @@ export const DocumentHistoryScreen: React.FC<DocumentHistoryScreenProps> = ({
     setLoading(true);
     try {
       await walletStore.getDocuments(loginStore.initialData.walletAddress);
-      navigation.navigate(ROUTES.PROFILE);
+      navigation.navigate('ProfileScreen');
     } catch (error) {
       showError('Error', 'Cannot delete document');
     }

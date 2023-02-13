@@ -35,15 +35,14 @@ import {deleteChatRoom} from '../../components/realmModels/chatList';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {fileUpload} from '../../config/routesConstants';
 import DocumentPicker from 'react-native-document-picker';
-import {ROUTES} from '../../constants/routes';
 import {renameTheRoom} from '../../helpers/RoomList/renameRoom';
 import ChangeRoomNameModal from '../../components/Modals/Chat/ChangeRoomNameModal';
 import ChangeRoomDescriptionModal from '../../components/Modals/Chat/ChangeRoomDescriptionModal';
 import {roomListProps, roomMemberInfoProps} from '../../stores/chatStore';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import RoomDetailsCard from '../../components/Chat/ChatDetails/RoomDetailsCard';
 import ChatDetailHeader from '../../components/Chat/ChatDetails/ChatDetailHeader';
 import ChatDetailMemebersList from '../../components/Chat/ChatDetails/ChatDetailMembersList';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 interface longTapUserProps {
   ban_status: string;
@@ -109,7 +108,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const cancelRef = React.useRef(null);
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const walletAddress = loginStore.initialData.walletAddress;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
@@ -177,7 +176,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
     const xmppID = props.jid.split('@')[0];
     const userWalletAddress = reverseUnderScoreManipulation(xmppID);
     if (userWalletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate(ROUTES.PROFILE);
+      navigation.navigate('ProfileScreen');
       return;
     } else {
       chatStore.getOtherUserDetails({
@@ -185,7 +184,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         avatar: props.profile,
         name: props.name,
       });
-      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+      navigation.navigate('OtherUserProfileScreen');
     }
   };
 

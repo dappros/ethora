@@ -37,12 +37,17 @@ import {
 import {showError, showSuccess} from '../../components/Toast/toast';
 import {httpPost} from '../../config/apiService';
 import {registerUserURL} from '../../config/routesConstants';
-import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
+import {AuthStackParamList} from '../../navigation/types';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {authStackRoutes} from '../../navigation/routes';
 
 const {mediumFont, lightFont, boldFont} = textStyles;
-
-export const RegisterScreen = ({navigation, route}) => {
+type RegisterScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Register'
+>;
+export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -86,7 +91,7 @@ export const RegisterScreen = ({navigation, route}) => {
       if (res.data.success) {
         showSuccess('Registration', 'User registered successfully');
 
-        navigation.navigate(ROUTES.REGULARLOGIN);
+        navigation.navigate(authStackRoutes.RegularLogin);
       }
     } catch (error) {
       if (error?.response?.status === 400) {
@@ -98,7 +103,7 @@ export const RegisterScreen = ({navigation, route}) => {
     setLoading(false);
   };
   const goBack = () => {
-    navigation.navigate(ROUTES.REGULARLOGIN);
+    navigation.navigate(authStackRoutes.RegularLogin);
   };
 
   return (

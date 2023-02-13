@@ -20,13 +20,13 @@ import {mapTransactions} from '../../stores/walletStore';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {DeleteDialog} from '../../components/Modals/DeleteDialog';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
 import {showError, showSuccess} from '../../components/Toast/toast';
 import {
   isAudioMimetype,
   isImageMimetype,
   isVideoMimetype,
 } from '../../helpers/checkMimetypes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 const NftItemHistoryScreen = (props: any) => {
   const {item, userWalletAddress} = props.route.params.params;
@@ -39,7 +39,7 @@ const NftItemHistoryScreen = (props: any) => {
   const [itemTransactions, setItemTransactions] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [videoPaused, setVideoPaused] = useState<boolean>(true);
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     visible: false,
@@ -117,7 +117,7 @@ const NftItemHistoryScreen = (props: any) => {
       if (item.tokenType === 'NFT') {
       }
       await walletStore.fetchWalletBalance(loginStore.userToken, true);
-      navigation.navigate(ROUTES.PROFILE);
+      navigation.navigate('ProfileScreen');
       showSuccess('Success', 'Item deleted');
     } catch (error) {
       showError(

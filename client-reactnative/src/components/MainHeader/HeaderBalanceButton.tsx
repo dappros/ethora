@@ -10,29 +10,29 @@ import {useNavigation} from '@react-navigation/native';
 import {observer} from 'mobx-react-lite';
 import {Box, Image, Spinner, Text, VStack} from 'native-base';
 import {Pressable} from 'react-native';
-import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
+import {coinImagePath, textStyles} from '../../../docs/config';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 export const HeaderBalanceButton = observer(() => {
   const {walletStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const onButtonPress = () => {
-    navigation.navigate(ROUTES.PROFILE as never);
+    navigation.navigate('ProfileScreen');
   };
   return (
     <Box
       background={'white'}
       style={{
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOffset: {
           width: 0,
           height: 5,
         },
         shadowOpacity: 0.7,
         shadowRadius: 6.27,
-        
+
         elevation: 10,
       }}
       rounded={'sm'}

@@ -10,14 +10,14 @@ import {Box, Text} from 'native-base';
 import React from 'react';
 import {Pressable, StyleSheet} from 'react-native';
 import {appTitle, textStyles} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 import {useStores} from '../../stores/context';
 let counter = 0;
 export const HeaderAppTitle = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const {debugStore} = useStores();
   const onTitlePress = () => {
-    navigation.navigate(ROUTES.ROOMSLIST);
+    navigation.navigate('RoomsListScreem');
     counter += 1;
     if (counter === 3) {
       debugStore.toggleDebugMode(true);

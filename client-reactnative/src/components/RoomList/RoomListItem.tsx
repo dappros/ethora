@@ -8,7 +8,6 @@ Note: linked open-source libraries and components may be subject to their own li
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {RoomListItemIcon} from './RoomListItemIcon';
-import {ROUTES} from '../../constants/routes';
 import {Box, HStack, Text, View, VStack} from 'native-base';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -18,6 +17,7 @@ import {textStyles} from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import {format} from 'date-fns';
 import dayjs from 'dayjs';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 interface RoomListProps {
   jid: string;
@@ -49,18 +49,17 @@ export const RoomListItem = observer(
   ({jid, name, participants}: RoomListProps) => {
     const {chatStore} = useStores();
     const room = chatStore.roomsInfoMap[jid];
-    const navigation = useNavigation();
+    const navigation = useNavigation<HomeStackNavigationProp>();
 
     const defaultText = 'Tap to view and join the conversation.';
 
     const navigateToChat = () => {
       chatStore.updateBadgeCounter(jid, 'CLEAR');
       //@ts-ignore
-      navigation.navigate(ROUTES.CHAT, {chatJid: jid, chatName: name});
+      navigation.navigate('ChatScreen', {chatJid: jid, chatName: name});
     };
     return (
-      <View
-       style={[{backgroundColor: 'white'}]}>
+      <View style={[{backgroundColor: 'white'}]}>
         <Box
           borderBottomWidth="1"
           _dark={{

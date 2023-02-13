@@ -14,7 +14,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import { Pressable } from 'native-base';
+import {Pressable} from 'native-base';
 
 interface SendItemProps {
   onPress: () => void;

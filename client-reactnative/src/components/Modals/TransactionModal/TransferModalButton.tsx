@@ -29,7 +29,7 @@ export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
       onPress={() => {
         onPress();
       }}>
-      <View style={styles.sendItemAndDMContainer}>
+      <View style={styles.sendItemAndDMContainer} accessibilityLabel={title}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontAwesome name="send" size={15} color="black" />
         </View>

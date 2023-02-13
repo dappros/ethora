@@ -23,12 +23,12 @@ import {
   subscribeToRoom,
 } from '../../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
 import {httpPost} from '../../config/apiService';
 import FastImage from 'react-native-fast-image';
 import {uploadFiles} from '../../helpers/uploadFiles';
 import {fileUpload} from '../../config/routesConstants';
 import {Alert} from 'react-native';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 interface NewChatScreenProps {}
 
@@ -59,7 +59,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
   const {walletAddress} = loginStore.initialData;
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const sendFiles = async (data: any) => {
     setLoading(true);
@@ -154,9 +154,9 @@ const NewChatScreen = (props: NewChatScreenProps) => {
           console.log(res?.data);
         }
 
-        navigation.navigate(ROUTES.CHAT, {
+        navigation.navigate('ChatScreen', {
           chatJid: roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
-          chatName:chatName
+          chatName: chatName,
         });
       }
     });
@@ -200,7 +200,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             _input={{
               maxLength: 50,
             }}
-            onChangeText={chatName => setChatName(chatName)}
+            onChangeText={text => setChatName(text)}
             placeholder="Chat name"
             placeholderTextColor={commonColors.primaryColor}
             color="black"

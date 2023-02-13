@@ -9,7 +9,6 @@ import {
   itemsTransfersAllowed,
   textStyles,
 } from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
 import {IDocument, TBalance} from '../../stores/types';
 import {NftListItem} from '../Transactions/NftListItem';
 import {DocumentListItem} from './DocumentListItem';
@@ -19,6 +18,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {NftMediaModal} from '../NftMediaModal';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 const renderItem = ({item, index}: {item: any; index: number}) => (
   <Item
@@ -105,7 +105,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
   coinsItems,
   itemsBalance,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const [mediaModalData, setMediaModalData] = useState({
     open: false,
@@ -161,12 +161,9 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
               <RenderAssetItem
                 item={e.item}
                 onClick={() =>
-                  navigation.navigate(ROUTES.NFTITEMHISTORY, {
-                    screen: 'NftItemHistory',
-                    params: {
-                      item: e.item,
-                      userWalletAddress: userWalletAddress,
-                    },
+                  navigation.navigate('NftItemHistory', {
+                    item: e.item,
+                    userWalletAddress: userWalletAddress,
                   })
                 }
                 onAssetPress={() => {
@@ -189,12 +186,9 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
               <RenderAssetItem
                 item={e.item}
                 onClick={() =>
-                  navigation.navigate(ROUTES.NFTITEMHISTORY, {
-                    screen: 'NftItemHistory',
-                    params: {
-                      item: e.item,
-                      userWalletAddress: userWalletAddress,
-                    },
+                  navigation.navigate('NftItemHistory', {
+                    item: e.item,
+                    userWalletAddress: userWalletAddress,
                   })
                 }
                 onAssetPress={() => {
@@ -224,7 +218,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
                   })
                 }
                 onItemPress={() => {
-                  navigation.navigate(ROUTES.DOCUMENTHISTORY, {
+                  navigation.navigate('DocumentHistoryScreen', {
                     item: e.item,
                     userWalletAddress: userWalletAddress,
                   });

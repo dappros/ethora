@@ -9,7 +9,7 @@ import axios from 'axios';
 import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import {subscribePushNotification} from '../config/routesConstants';
-import {ROUTES} from '../constants/routes';
+import {HomeStackNavigationProp} from '../navigation/types';
 import {playCoinSound} from './chat/playCoinSound';
 import {underscoreManipulation} from './underscoreLogic';
 
@@ -33,7 +33,7 @@ export const getPushToken = async (
   walletAddress: string,
   DOMAIN: string,
   defaultUrl: string,
-  navigation: any,
+  navigation: HomeStackNavigationProp,
 ) => {
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
@@ -69,7 +69,7 @@ export const getPushToken = async (
       const chatJID = notification.data.mucId;
       if (chatJID) {
         setTimeout(() => {
-          navigation.navigate(ROUTES.CHAT, {chatJid: chatJID});
+          navigation.navigate('ChatScreen', {chatJid: chatJID});
         }, 2000);
       }
 

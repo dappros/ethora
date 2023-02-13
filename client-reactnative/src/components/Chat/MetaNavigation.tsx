@@ -13,7 +13,6 @@ import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {useStores} from '../../stores/context';
 import {CreateNewChatButton} from './CreateNewChatButton';
@@ -23,6 +22,8 @@ import {sendMessageStanza} from '../../xmpp/stanzas';
 
 import Share from 'react-native-share';
 import {httpGet, httpPost} from '../../config/apiService';
+import {homeStackRoutes} from '../../navigation/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 type IRoom = {
   _id: string;
@@ -96,7 +97,7 @@ const CompassItem = ({
   chatId: string;
   setDirection: () => void;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const {apiStore} = useStores();
   if (!room) {
     return (
@@ -108,7 +109,7 @@ const CompassItem = ({
           disabled={!chatId}
           onPress={() => {
             setDirection();
-            navigation.navigate(ROUTES.CHAT, {
+            navigation.navigate('ChatScreen', {
               chatJid: '',
             });
           }}>
@@ -134,7 +135,7 @@ const CompassItem = ({
         onPress={() => {
           setDirection();
 
-          navigation.navigate(ROUTES.CHAT, {
+          navigation.navigate('ChatScreen', {
             chatJid: room.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
           });
         }}>
@@ -161,7 +162,7 @@ const MetaHeader = ({
   direction: string;
   previousRoom: IApiMetaRoom | undefined;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   if (!room?.name) {
     return (
       <View style={[styles.top, styles.innerContainer]}>
@@ -176,7 +177,7 @@ const MetaHeader = ({
         </Text>
         <CreateNewChatButton
           onPress={() =>
-            navigation.navigate(ROUTES.NEWCHAT, {
+            navigation.navigate('NewChatScreen', {
               metaDirection: direction,
               metaRoom: previousRoom,
             })

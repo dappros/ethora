@@ -2,13 +2,13 @@ import React, {useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useStores} from '../stores/context';
 import HomeStack from './HomeStack';
-import {ROUTES} from '../constants/routes';
 import AuthStack from './AuthStack';
 import {observer} from 'mobx-react-lite';
 import {Center, Spinner, View} from 'native-base';
 import {SafeAreaView} from 'react-native';
+import {RootStackParamList} from './types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = observer(() => {
   const {loginStore} = useStores();
@@ -42,13 +42,13 @@ const RootStack = observer(() => {
             {userToken ? (
               <Stack.Screen
                 options={{headerShown: false}}
-                name={ROUTES.HOMESTACK}
+                name={'HomeStackScreen'}
                 component={HomeStack}
               />
             ) : (
               <Stack.Screen
                 options={{headerShown: false}}
-                name={ROUTES.AUTHSTACK}
+                name={'AuthStackScreen'}
                 component={AuthStack}
               />
             )}

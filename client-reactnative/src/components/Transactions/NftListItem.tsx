@@ -35,11 +35,12 @@ import {
   underscoreManipulation,
 } from '../../helpers/underscoreLogic';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
 import {botTypes} from '../../constants/botTypes';
 import {botStanza} from '../../xmpp/stanzas';
 import {formatBigNumber} from '../../helpers/formatBigNumber';
 import {isImageMimetype, isVideoMimetype} from '../../helpers/checkMimetypes';
+import {HomeStackNavigationProp} from '../../navigation/types';
+import {homeStackRoutes} from '../../navigation/routes';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -92,7 +93,7 @@ export const NftListItem = (props: NftListItemProps) => {
     traitsEnabled,
   } = props;
   const {loginStore, apiStore, chatStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const route = useRoute();
 
   const onGetCollectionPress = async () => {
@@ -120,12 +121,12 @@ export const NftListItem = (props: NftListItemProps) => {
         data,
         chatStore.xmpp,
       );
-      navigation.navigate(ROUTES.CHAT, {chatJid: roomJid});
+      navigation.navigate('ChatScreen', {chatJid: roomJid});
     }, 3000);
   };
   return (
     <View
-      onPress={onClick}
+      accessibilityLabel={'NFT Item'}
       style={[
         styles.container,
         {backgroundColor: itemSelected ? 'rgba(0,0,0,0.15)' : '#F4F5F8'},
@@ -165,7 +166,7 @@ export const NftListItem = (props: NftListItemProps) => {
             <View style={{alignItems: 'flex-start', paddingLeft: 20}}>
               <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
               {item.isCollection &&
-                route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+                route.name === homeStackRoutes.OtherUserProfileScreen && (
                   <HStack
                     justifyContent={'flex-end'}
                     alignItems={'center'}

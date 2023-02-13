@@ -24,7 +24,6 @@ import {useStores} from '../../stores/context';
 import {Avatar, HStack, VStack} from 'native-base';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {observer} from 'mobx-react-lite';
-import {ROUTES} from '../../constants/routes';
 import {
   createNewRoom,
   roomConfig,
@@ -37,6 +36,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {filterNftBalances, produceNfmtItems} from '../../stores/walletStore';
 import {ProfileTabs} from '../../components/Profile/ProfileTabs';
 import {useNavigation} from '@react-navigation/native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {
+  HomeStackNavigationProp,
+  HomeStackParamList,
+} from '../../navigation/types';
 
 const {primaryColor, primaryDarkColor} = commonColors;
 const {boldFont} = textStyles;
@@ -65,348 +69,349 @@ const firstLayout = [
     ],
   },
 ];
+type ScreenProps = NativeStackScreenProps<
+  HomeStackParamList,
+  'OtherUserProfileScreen'
+>;
 
-const OtherUserProfileScreen = observer(
-  ({route}: {route: {params?: {linkToken: string}}}) => {
-    const {loginStore, walletStore, apiStore, chatStore, otherUserStore} =
-      useStores();
+const OtherUserProfileScreen = observer(({route}: ScreenProps) => {
+  const {loginStore, walletStore, apiStore, chatStore, otherUserStore} =
+    useStores();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
-    const navigation = useNavigation();
+  const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
+    walletStore;
 
-    const {setOffset, setTotal, clearPaginationData, anotherUserBalance} =
-      walletStore;
+  const [coinData, setCoinData] = useState([]);
+  const [itemsData, setItemsData] = useState([]);
+  const [collections, setCollections] = useState([]);
 
-    const [coinData, setCoinData] = useState([]);
-    const [itemsData, setItemsData] = useState([]);
-    const [collections, setCollections] = useState([]);
+  const [activeTab, setActiveTab] = useState(0);
+  const [activeAssetTab, setActiveAssetTab] = useState(1);
 
-    const [activeTab, setActiveTab] = useState(0);
-    const [activeAssetTab, setActiveAssetTab] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingVCard, setIsLoadingVCard] = useState(true);
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [isLoadingVCard, setIsLoadingVCard] = useState(true);
+  const [itemsBalance, setItemsBalance] = useState(0);
 
-    const [itemsBalance, setItemsBalance] = useState(0);
+  const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
+  const linkToken = route.params?.linkToken;
+  const anotherUserTransaction = walletStore.anotherUserTransaction;
+  const transactionCount = walletStore.total;
 
-    const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
-    const linkToken = route.params?.linkToken;
-    const anotherUserTransaction = walletStore.anotherUserTransaction;
-    const transactionCount = walletStore.total;
+  const onDirectChatPress = () => {
+    const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
+    const myWalletAddress = loginStore.initialData.walletAddress;
+    const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
+      .sort()
+      .join('_');
 
-    const onDirectChatPress = () => {
-      const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
-      const myWalletAddress = loginStore.initialData.walletAddress;
-      const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
-        .sort()
-        .join('_');
+    const roomJid =
+      combinedWalletAddress.toLowerCase() +
+      apiStore.xmppDomains.CONFERENCEDOMAIN;
+    const combinedUsersName = [
+      loginStore.initialData.firstName,
+      loginStore.anotherUserFirstname,
+    ]
+      .sort()
+      .join(' and ');
 
-      const roomJid =
-        combinedWalletAddress.toLowerCase() +
-        apiStore.xmppDomains.CONFERENCEDOMAIN;
-      const combinedUsersName = [
-        loginStore.initialData.firstName,
-        loginStore.anotherUserFirstname,
-      ]
-        .sort()
-        .join(' and ');
+    const myXmppUserName = underscoreManipulation(myWalletAddress);
+    createNewRoom(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      chatStore.xmpp,
+    );
+    setOwner(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      chatStore.xmpp,
+    );
+    roomConfig(
+      myXmppUserName,
+      combinedWalletAddress.toLowerCase(),
+      {roomName: combinedUsersName, roomDescription: ''},
+      chatStore.xmpp,
+    );
+    subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
 
-      const myXmppUserName = underscoreManipulation(myWalletAddress);
-      createNewRoom(
-        myXmppUserName,
-        combinedWalletAddress.toLowerCase(),
+    navigation.navigate('ChatScreen', {
+      chatJid: roomJid,
+      chatName: combinedUsersName,
+    });
+    chatStore.toggleShouldCount(false);
+
+    setTimeout(() => {
+      sendInvite(
+        underscoreManipulation(myWalletAddress),
+        roomJid.toLowerCase(),
+        underscoreManipulation(otherUserWalletAddress),
         chatStore.xmpp,
       );
-      setOwner(
-        myXmppUserName,
-        combinedWalletAddress.toLowerCase(),
-        chatStore.xmpp,
+    }, 3000);
+  };
+  const calculateBalances = () => {
+    setItemsBalance(
+      itemsData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
+    );
+  };
+  const getBalances = async () => {
+    await walletStore.fetchTransaction(
+      loginStore.anotherUserWalletAddress,
+      10,
+      0,
+    );
+    await walletStore.fetchOtherUserWalletBalance(
+      loginStore.anotherUserWalletAddress,
+      loginStore.userToken,
+      linkToken || '',
+    );
+    setIsLoading(false);
+    setIsLoadingVCard(false);
+  };
+  useEffect(() => {
+    if (anotherUserBalance?.length > 0) {
+      const nfmtItems = produceNfmtItems(anotherUserBalance);
+      setCoinData(
+        anotherUserBalance.filter(
+          (item: any) => item.tokenName === coinsMainName,
+        ),
       );
-      roomConfig(
-        myXmppUserName,
-        combinedWalletAddress.toLowerCase(),
-        {roomName: combinedUsersName, roomDescription: ''},
-        chatStore.xmpp,
+      setItemsData(
+        anotherUserBalance
+
+          .filter(filterNftBalances)
+          .concat(nfmtItems)
+
+          .reverse(),
       );
-      subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
+      setCollections(walletStore.anotherUserNfmtCollections);
 
-      navigation.navigate(ROUTES.CHAT, {
-        chatJid: roomJid,
-        chatName: combinedUsersName,
-      });
-      chatStore.toggleShouldCount(false);
-
-      setTimeout(() => {
-        sendInvite(
-          underscoreManipulation(myWalletAddress),
-          roomJid.toLowerCase(),
-          underscoreManipulation(otherUserWalletAddress),
-          chatStore.xmpp,
-        );
-      }, 3000);
-    };
-    const calculateBalances = () => {
-      setItemsBalance(
-        itemsData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0),
-      );
-    };
-    const getBalances = async () => {
-      await walletStore.fetchTransaction(
-        loginStore.anotherUserWalletAddress,
-        10,
-        0,
-      );
-      await walletStore.fetchOtherUserWalletBalance(
-        loginStore.anotherUserWalletAddress,
-        loginStore.userToken,
-        linkToken || '',
-      );
-      setIsLoading(false);
-      setIsLoadingVCard(false);
-    };
-    useEffect(() => {
-      if (anotherUserBalance?.length > 0) {
-        const nfmtItems = produceNfmtItems(anotherUserBalance);
-        setCoinData(
-          anotherUserBalance.filter(
-            (item: any) => item.tokenName === coinsMainName,
-          ),
-        );
-        setItemsData(
-          anotherUserBalance
-
-            .filter(filterNftBalances)
-            .concat(nfmtItems)
-
-            .reverse(),
-        );
-        setCollections(walletStore.anotherUserNfmtCollections);
-
-        calculateBalances();
-      }
-    }, [anotherUserBalance]);
-
-    useEffect(() => {
       calculateBalances();
+    }
+  }, [anotherUserBalance]);
 
-      return () => {};
-    }, [itemsData, coinData]);
-    
-    useEffect(() => {
-      setOffset(0);
-      setTotal(0);
+  useEffect(() => {
+    calculateBalances();
 
-      return () => {
-        clearPaginationData();
-        setCoinData([]);
-        setIsLoading(true);
-        setIsLoadingVCard(true);
-        setItemsData([]);
-      };
-    }, []);
+    return () => {};
+  }, [itemsData, coinData]);
 
-    useEffect(() => {
-      getBalances();
-    }, [loginStore.anotherUserWalletAddress]);
+  useEffect(() => {
+    setOffset(0);
+    setTotal(0);
 
-    const loadTabContent = () => {
-      if (activeTab === 0) {
-        return (
-          <ProfileTabs
-            activeAssetTab={activeAssetTab}
-            setActiveAssetTab={setActiveAssetTab}
-            documents={[]}
-            collections={collections}
-            coinsItems={coinData}
-            userWalletAddress={loginStore.anotherUserWalletAddress}
-            nftItems={itemsData}
-            itemsBalance={itemsBalance}
-          />
-        );
-      }
-
-      if (activeTab === 1) {
-        return (
-          <View style={{paddingBottom: hp('27%')}}>
-            <TransactionListTab
-              transactions={anotherUserTransaction}
-              walletAddress={loginStore.anotherUserWalletAddress}
-              onEndReached={() => {
-                if (anotherUserTransaction.length < walletStore.total) {
-                  walletStore.fetchTransaction(
-                    anotherUserWalletAddress,
-                    walletStore.limit,
-                    walletStore.offset,
-                  );
-                }
-              }}
-            />
-          </View>
-        );
-      }
+    return () => {
+      clearPaginationData();
+      setCoinData([]);
+      setIsLoading(true);
+      setIsLoadingVCard(true);
+      setItemsData([]);
     };
+  }, []);
 
-    const onTransactionNumberPress = () => {
-      setActiveTab(1);
-    };
+  useEffect(() => {
+    getBalances();
+  }, [loginStore.anotherUserWalletAddress]);
 
-    return (
-      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-        <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
-          <SecondaryHeader
-            title={"User's profile"}
-            onBackPress={() =>
-              activeTab === 1 ? setActiveTab(0) : navigation.goBack()
-            }
+  const loadTabContent = () => {
+    if (activeTab === 0) {
+      return (
+        <ProfileTabs
+          activeAssetTab={activeAssetTab}
+          setActiveAssetTab={setActiveAssetTab}
+          documents={[]}
+          collections={collections}
+          coinsItems={coinData}
+          userWalletAddress={loginStore.anotherUserWalletAddress}
+          nftItems={itemsData}
+          itemsBalance={itemsBalance}
+        />
+      );
+    }
+
+    if (activeTab === 1) {
+      return (
+        <View style={{paddingBottom: hp('27%')}}>
+          <TransactionListTab
+            transactions={anotherUserTransaction}
+            walletAddress={loginStore.anotherUserWalletAddress}
+            onEndReached={() => {
+              if (anotherUserTransaction.length < walletStore.total) {
+                walletStore.fetchTransaction(
+                  anotherUserWalletAddress,
+                  walletStore.limit,
+                  walletStore.offset,
+                );
+              }
+            }}
           />
+        </View>
+      );
+    }
+  };
 
-          <View style={{zIndex: +1, alignItems: 'center'}}>
-            <HStack
-              width={hp('10.46%')}
-              height={hp('10.46%')}
-              position={'absolute'}
-              justifyContent={'center'}
-              alignItems={'center'}
-              bgColor={primaryColor}
-              borderRadius={hp('10.46%') / 2}>
+  const onTransactionNumberPress = () => {
+    setActiveTab(1);
+  };
+
+  return (
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      <View style={{backgroundColor: primaryDarkColor, flex: 1}}>
+        <SecondaryHeader
+          title={"User's profile"}
+          onBackPress={() =>
+            activeTab === 1 ? setActiveTab(0) : navigation.goBack()
+          }
+        />
+
+        <View style={{zIndex: +1, alignItems: 'center'}}>
+          <HStack
+            width={hp('10.46%')}
+            height={hp('10.46%')}
+            position={'absolute'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            bgColor={primaryColor}
+            borderRadius={hp('10.46%') / 2}>
+            <SkeletonContent
+              containerStyle={{alignItems: 'center'}}
+              layout={firstLayout}
+              isLoading={isLoadingVCard}>
+              <Avatar
+                bg={commonColors.primaryColor}
+                size={'xl'}
+                source={
+                  loginStore.anotherUserAvatar !== 'none'
+                    ? {
+                        uri: loginStore.anotherUserAvatar,
+                      }
+                    : undefined
+                }>
+                {loginStore.anotherUserFirstname[0] +
+                  loginStore.anotherUserLastSeen[0]}
+              </Avatar>
+            </SkeletonContent>
+          </HStack>
+        </View>
+        <View style={{flex: 1, marginTop: hp('5.5%')}}>
+          <VStack
+            // paddingTop={hp('2.4%')}
+            bgColor={'#FBFBFB'}
+            borderTopLeftRadius={30}
+            borderTopRightRadius={30}
+            height={hp('75%')}>
+            <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
               <SkeletonContent
-                containerStyle={{alignItems: 'center'}}
-                layout={firstLayout}
+                containerStyle={{width: wp('100%'), alignItems: 'center'}}
+                layout={[
+                  {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
+                ]}
                 isLoading={isLoadingVCard}>
-                <Avatar
-                  bg={commonColors.primaryColor}
-                  size={'xl'}
-                  source={
-                    loginStore.anotherUserAvatar !== 'none'
-                      ? {
-                          uri: loginStore.anotherUserAvatar,
-                        }
-                      : undefined
-                  }>
-                  {loginStore.anotherUserFirstname[0] +
-                    loginStore.anotherUserLastSeen[0]}
-                </Avatar>
-              </SkeletonContent>
-            </HStack>
-          </View>
-          <View style={{flex: 1, marginTop: hp('5.5%')}}>
-            <VStack
-              // paddingTop={hp('2.4%')}
-              bgColor={'#FBFBFB'}
-              borderTopLeftRadius={30}
-              borderTopRightRadius={30}
-              height={hp('75%')}>
-              <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
-                <SkeletonContent
-                  containerStyle={{width: wp('100%'), alignItems: 'center'}}
-                  layout={[
-                    {width: wp('30%'), height: hp('2.216%'), marginBottom: 6},
-                  ]}
-                  isLoading={isLoadingVCard}>
-                  <HStack>
+                <HStack>
+                  <Text
+                    style={{
+                      fontSize: hp('2.216%'),
+                      fontFamily: textStyles.mediumFont,
+                      color: '#000000',
+                    }}>
+                    {loginStore.anotherUserFirstname}{' '}
+                    {loginStore.anotherUserLastname}
+                  </Text>
+                  <TouchableOpacity
+                    accessibilityLabel="User Transactions"
+                    onPress={onTransactionNumberPress}
+                    style={{marginLeft: 5}}>
                     <Text
                       style={{
                         fontSize: hp('2.216%'),
                         fontFamily: textStyles.mediumFont,
-                        color: '#000000',
+                        color: commonColors.primaryColor,
                       }}>
-                      {loginStore.anotherUserFirstname}{' '}
-                      {loginStore.anotherUserLastname}
-                    </Text>
-                    <TouchableOpacity
-                      accessibilityLabel="User Transactions"
-                      onPress={onTransactionNumberPress}
-                      style={{marginLeft: 5}}>
+                      (
                       <Text
                         style={{
                           fontSize: hp('2.216%'),
                           fontFamily: textStyles.mediumFont,
                           color: commonColors.primaryColor,
+                          textDecorationLine: 'underline',
                         }}>
-                        (
-                        <Text
-                          style={{
-                            fontSize: hp('2.216%'),
-                            fontFamily: textStyles.mediumFont,
-                            color: commonColors.primaryColor,
-                            textDecorationLine: 'underline',
-                          }}>
-                          {transactionCount}
-                        </Text>
-                        )
+                        {transactionCount}
                       </Text>
-                    </TouchableOpacity>
-                  </HStack>
-                </SkeletonContent>
+                      )
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
+              </SkeletonContent>
+              <View
+                style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
                 <View
-                  style={{padding: hp('4%'), paddingBottom: 0, paddingTop: 0}}>
-                  <View
-                    style={{
-                      padding: hp('4%'),
-                      paddingBottom: 0,
-                      paddingTop: 0,
-                    }}>
-                    <SkeletonContent
-                      containerStyle={{width: wp('100%'), alignItems: 'center'}}
-                      layout={[{width: wp('60%'), height: 70, marginBottom: 6}]}
-                      isLoading={isLoadingVCard}>
-                      <Text style={styles.descriptionText}>
-                        {otherUserStore.description}
-                      </Text>
-                      <TouchableOpacity
-                        accessibilityLabel="Direct message"
-                        onPress={onDirectChatPress}
-                        style={styles.chatButton}>
-                        <HStack alignItems={'center'}>
-                          <Ionicons
-                            name="chatbubble-ellipses"
-                            size={hp('1.7%')}
-                            color={'white'}
-                          />
-
-                          <Text style={{color: 'white', marginLeft: 5}}>
-                            Chat
-                          </Text>
-                        </HStack>
-                      </TouchableOpacity>
-                    </SkeletonContent>
-                  </View>
-                </View>
-              </View>
-
-              <View>
-                <View style={{padding: wp('4%')}}>
+                  style={{
+                    padding: hp('4%'),
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                  }}>
                   <SkeletonContent
-                    isLoading={isLoading}
-                    containerStyle={{
-                      width: '100%',
-                      alignItems: 'center',
-                    }}
-                    layout={[
-                      {width: wp('90%'), height: hp('2.216%'), marginBottom: 6},
-                    ]}>
-                    <View style={{flexDirection: 'row'}}></View>
+                    containerStyle={{width: wp('100%'), alignItems: 'center'}}
+                    layout={[{width: wp('60%'), height: 70, marginBottom: 6}]}
+                    isLoading={isLoadingVCard}>
+                    <Text style={styles.descriptionText}>
+                      {otherUserStore.description}
+                    </Text>
+                    <TouchableOpacity
+                      accessibilityLabel="Direct message"
+                      onPress={onDirectChatPress}
+                      style={styles.chatButton}>
+                      <HStack alignItems={'center'}>
+                        <Ionicons
+                          name="chatbubble-ellipses"
+                          size={hp('1.7%')}
+                          color={'white'}
+                        />
+
+                        <Text style={{color: 'white', marginLeft: 5}}>
+                          Chat
+                        </Text>
+                      </HStack>
+                    </TouchableOpacity>
                   </SkeletonContent>
                 </View>
+              </View>
+            </View>
+
+            <View>
+              <View style={{padding: wp('4%')}}>
                 <SkeletonContent
                   isLoading={isLoading}
                   containerStyle={{
                     width: '100%',
-                    padding: isLoading ? hp('3%') : 0,
                     alignItems: 'center',
                   }}
                   layout={[
-                    {width: wp('90%'), height: hp('30%'), marginBottom: 6},
+                    {width: wp('90%'), height: hp('2.216%'), marginBottom: 6},
                   ]}>
-                  {loadTabContent()}
+                  <View style={{flexDirection: 'row'}}></View>
                 </SkeletonContent>
               </View>
-            </VStack>
-          </View>
+              <SkeletonContent
+                isLoading={isLoading}
+                containerStyle={{
+                  width: '100%',
+                  padding: isLoading ? hp('3%') : 0,
+                  alignItems: 'center',
+                }}
+                layout={[
+                  {width: wp('90%'), height: hp('30%'), marginBottom: 6},
+                ]}>
+                {loadTabContent()}
+              </SkeletonContent>
+            </View>
+          </VStack>
         </View>
-      </SafeAreaView>
-    );
-  },
-);
+      </View>
+    </SafeAreaView>
+  );
+});
 
 const styles = StyleSheet.create({
   tokenIconStyle: {

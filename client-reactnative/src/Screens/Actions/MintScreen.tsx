@@ -22,19 +22,19 @@ import {uploadFiles} from '../../helpers/uploadFiles';
 import {useStores} from '../../stores/context';
 import {showError} from '../../components/Toast/toast';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
 import {httpPost} from '../../config/apiService';
 import {fileUpload, nftTransferURL} from '../../config/routesConstants';
 import CheckBox from '@react-native-community/checkbox';
 import Modal from 'react-native-modal';
 import {isAudioMimetype} from '../../helpers/checkMimetypes';
 import {HStack, VStack} from 'native-base';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 const selectOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const MintScreen = () => {
   const {loginStore, walletStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const [itemName, setItemName] = useState<string>('');
   const [nftFileUrl, setNftFileUrl] = useState<string>('');
@@ -102,11 +102,8 @@ const MintScreen = () => {
         {
           text: 'My Profile',
           onPress: () => {
-            navigation.navigate(ROUTES.PROFILE, {
-              screen: 'Profile',
-              params: {
-                viewItems: true,
-              },
+            navigation.navigate('ProfileScreen', {
+              viewItems: true,
             });
             clearData();
           },
@@ -234,7 +231,6 @@ const MintScreen = () => {
               <>
                 <TouchableOpacity onPress={toggleModal}>
                   <AntIcon
-                    // onPress={() => props.navigation.navigate('LoginComponent')}
                     color={commonColors.primaryColor}
                     name="caretdown"
                     size={hp('2%')}

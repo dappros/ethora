@@ -6,7 +6,6 @@ import {TransferModalButton} from '../TransactionModal/TransferModalButton';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {Seperator} from '../../Separator';
 import {useStores} from '../../../stores/context';
-import {ROUTES} from '../../../constants/routes';
 import {underscoreManipulation} from '../../../helpers/underscoreLogic';
 import {
   createNewRoom,
@@ -19,6 +18,7 @@ import {
 } from '../../../xmpp/stanzas';
 import {useNavigation} from '@react-navigation/native';
 import {IDataForTransfer} from './types';
+import { HomeStackNavigationProp } from '../../../navigation/types';
 
 export interface IChatLongTapUserActions {
   dataForTransfer: IDataForTransfer;
@@ -30,7 +30,7 @@ export const ChatLongTapUserActions: React.FC<IChatLongTapUserActions> = ({
   closeModal,
 }) => {
   const {chatStore, loginStore, apiStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const onDirectMessagePress = async () => {
     const otherUserWalletAddress = dataForTransfer?.walletFromJid;
@@ -68,7 +68,7 @@ export const ChatLongTapUserActions: React.FC<IChatLongTapUserActions> = ({
     );
     subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
 
-    navigation.navigate(ROUTES.CHAT, {
+    navigation.navigate('ChatScreen', {
       chatJid: roomJid,
       chatName: combinedUsersName,
     });

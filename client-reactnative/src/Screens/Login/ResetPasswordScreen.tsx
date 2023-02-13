@@ -25,12 +25,16 @@ import {HStack, Image, Input, VStack} from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Button} from '../../components/Button';
 import {useStores} from '../../stores/context';
-import {ROUTES} from '../../constants/routes';
 import {showError, showSuccess} from '../../components/Toast/toast';
 import {httpPost} from '../../config/apiService';
 import {resetPasswordURL} from '../../config/routesConstants';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigation/types';
+import {authStackRoutes} from '../../navigation/routes';
 
-export const ResetPasswordScreen = ({navigation}) => {
+type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPasswordScreen'>;
+
+export const ResetPasswordScreen = ({navigation}: Props) => {
   const [email, setEmail] = useState('');
   const [isLoading, setisLoading] = useState(false);
   const {apiStore} = useStores();
@@ -38,11 +42,7 @@ export const ResetPasswordScreen = ({navigation}) => {
   const onSubmit = async () => {
     setisLoading(true);
     try {
-      const res = await httpPost(
-        resetPasswordURL,
-        {email},
-        apiStore.defaultToken,
-      );
+      await httpPost(resetPasswordURL, {email}, apiStore.defaultToken);
       showSuccess('Success', 'Check your email');
     } catch (error) {
       showError('Error', 'Something went wrong');
@@ -93,7 +93,9 @@ export const ResetPasswordScreen = ({navigation}) => {
                 alignItems={'center'}
                 paddingY={10}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate(ROUTES.LOGIN)}>
+                  onPress={() =>
+                    navigation.navigate(authStackRoutes.LoginScreen)
+                  }>
                   <Text style={{fontSize: 13, color: 'black'}}>
                     Back to login
                   </Text>

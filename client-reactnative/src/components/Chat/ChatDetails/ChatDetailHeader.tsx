@@ -1,174 +1,163 @@
-import { Box, Divider, HStack, Menu, View } from 'native-base';
-import React, { useState } from 'react';
-import { commonColors, textStyles } from '../../../../docs/config';
-import { TouchableOpacity } from 'react-native';
+import {Box, Divider, HStack, Menu, View} from 'native-base';
+import React, {useState} from 'react';
+import {commonColors, textStyles} from '../../../../docs/config';
+import {TouchableOpacity} from 'react-native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import {
-    heightPercentageToDP as hp,
-  } from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
-import { useStores } from '../../../stores/context';
-import { roomListProps } from '../../../stores/chatStore';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useNavigation} from '@react-navigation/native';
+import {useStores} from '../../../stores/context';
+import {roomListProps} from '../../../stores/chatStore';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import { ROUTES } from '../../../constants/routes';
-import { checkIsDefaultChat } from '../../../helpers/chat/checkIsDefaultChat';
+import {checkIsDefaultChat} from '../../../helpers/chat/checkIsDefaultChat';
+import {HomeStackNavigationProp} from '../../../navigation/types';
 
 interface ChatDetailHeaderProps {
-    deleteRoomDialog: () => Promise<void>;
-    toggleFavourite: () => void;
-    currentRoomDetail: roomListProps
+  deleteRoomDialog: () => Promise<void>;
+  toggleFavourite: () => void;
+  currentRoomDetail: roomListProps;
 }
 
-const ChatDetailHeader:React.FunctionComponent<ChatDetailHeaderProps> = (props: ChatDetailHeaderProps) => {
+const ChatDetailHeader: React.FunctionComponent<ChatDetailHeaderProps> = (
+  props: ChatDetailHeaderProps,
+) => {
+  //component props
+  const {deleteRoomDialog, toggleFavourite, currentRoomDetail} = props;
+  //component props
 
-    //component props
-    const {
-        deleteRoomDialog,
-        toggleFavourite,
-        currentRoomDetail
-    } = props
-    //component props
+  //mobx stores
+  const {chatStore} = useStores();
+  //mobx stores
 
-    //mobx stores
-    const {chatStore} = useStores();
-    //mobx stores
+  //local states
+  const [open, setOpen] = useState<boolean>(false);
+  //local states
 
-    //local states
-    const [open, setOpen] = useState<boolean>(false);
-    //local states
-
-    //local variables
-    const {jid, name} = currentRoomDetail;
-    const FavMenuContent = chatStore.roomsInfoMap[jid]?.isFavourite
-    const isOwnerOrModerator=chatStore.checkIsModerator(jid)
+  //local variables
+  const {jid, name} = currentRoomDetail;
+  const FavMenuContent = chatStore.roomsInfoMap[jid]?.isFavourite;
+  const isOwnerOrModerator = chatStore.checkIsModerator(jid)
     ? 'Remove from favourites'
     : 'Add to favourites';
 
-    const isDefaultChat = checkIsDefaultChat(jid);
-    //local variables
+  const isDefaultChat = checkIsDefaultChat(jid);
+  //local variables
 
-    //hooks
-    const navigation = useNavigation<any>();
+  //hooks
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
-    return (
-        <Box
-        h={60}
-        padding={2}
-        justifyContent={'center'}
-        bg={commonColors.primaryColor}>
-        <HStack>
+  return (
+    <Box
+      h={60}
+      padding={2}
+      justifyContent={'center'}
+      bg={commonColors.primaryColor}>
+      <HStack>
         <View flex={0.6}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <AntIcon
-                name={'arrowleft'}
-                style={{marginRight: 5, marginLeft: 5}}
-                size={hp('3%')}
-                color={'white'}
+              name={'arrowleft'}
+              style={{marginRight: 5, marginLeft: 5}}
+              size={hp('3%')}
+              color={'white'}
             />
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
 
         <View flex={0.4} justifyContent="flex-end" flexDirection="row">
-            {isDefaultChat ? null : (
+          {isDefaultChat ? null : (
             <View flex={0.3}>
-                <TouchableOpacity
-                onPress={deleteRoomDialog}>
+              <TouchableOpacity onPress={deleteRoomDialog}>
                 <AntIcon
-                    name={'delete'}
-                    style={{marginRight: 5, marginLeft: 5}}
-                    size={hp('3%')}
-                    color={'white'}
+                  name={'delete'}
+                  style={{marginRight: 5, marginLeft: 5}}
+                  size={hp('3%')}
+                  color={'white'}
                 />
-                </TouchableOpacity>
+              </TouchableOpacity>
             </View>
-            )}
-            <View flex={0.3}>
+          )}
+          <View flex={0.3}>
             <TouchableOpacity
-                disabled={isDefaultChat? true : false}
-                onPress={toggleFavourite}>
-                <AntIcon
+              disabled={isDefaultChat ? true : false}
+              onPress={toggleFavourite}>
+              <AntIcon
                 name={
-                    chatStore.roomsInfoMap[jid]?.isFavourite ||
-                    isDefaultChat
+                  chatStore.roomsInfoMap[jid]?.isFavourite || isDefaultChat
                     ? 'star'
                     : 'staro'
                 }
                 style={{marginRight: 5, marginLeft: 5}}
                 size={hp('3%')}
                 color={'white'}
-                />
+              />
             </TouchableOpacity>
-            </View>
+          </View>
 
-            {isOwnerOrModerator? (
+          {isOwnerOrModerator ? (
             <View paddingRight={2} alignItems={'flex-end'} flex={0.3}>
-                <Menu
+              <Menu
                 w="190"
                 isOpen={open}
                 placement={'bottom'}
                 onClose={() => setOpen(false)}
                 trigger={triggerProps => {
-                    return (
+                  return (
                     <TouchableOpacity
-                        {...triggerProps}
-                        style={{zIndex: 99999}}
-                        onPress={() => setOpen(!open)}
-                        accessibilityLabel="More options menu">
-                        <EntypoIcon
-                        name="menu"
-                        color="#FFFFFF"
-                        size={hp('3%')}
-                        />
+                      {...triggerProps}
+                      style={{zIndex: 99999}}
+                      onPress={() => setOpen(!open)}
+                      accessibilityLabel="More options menu">
+                      <EntypoIcon name="menu" color="#FFFFFF" size={hp('3%')} />
                     </TouchableOpacity>
-                    );
+                  );
                 }}>
                 {isDefaultChat ? null : (
-                    <>
+                  <>
                     <Menu.Item
-                        onPress={toggleFavourite}
-                        _text={{
+                      onPress={toggleFavourite}
+                      _text={{
                         fontFamily: textStyles.lightFont,
-                        }}>
-                        {FavMenuContent}
+                      }}>
+                      {FavMenuContent}
                     </Menu.Item>
 
                     <Divider />
-                    </>
+                  </>
                 )}
-                {isOwnerOrModerator? (
-                    <Menu.Item
+                {isOwnerOrModerator ? (
+                  <Menu.Item
                     onPress={() =>
-                        navigation.navigate(ROUTES.CHANGEBACKGROUNDSCREEN, {
+                      navigation.navigate('ChangeBackgroundScreen', {
                         roomJID: jid,
                         roomName: name,
-                        })
+                      })
                     }
                     _text={{
-                        fontFamily: textStyles.lightFont,
+                      fontFamily: textStyles.lightFont,
                     }}>
                     Change Background
-                    </Menu.Item>
+                  </Menu.Item>
                 ) : null}
                 {isDefaultChat ? null : (
-                    <>
+                  <>
                     <Divider />
                     <Menu.Item
-                        onPress={deleteRoomDialog}
-                        _text={{
+                      onPress={deleteRoomDialog}
+                      _text={{
                         fontFamily: textStyles.lightFont,
                         color: '#D32222',
-                        }}>
-                        Delete and leave
+                      }}>
+                      Delete and leave
                     </Menu.Item>
-                    </>
+                  </>
                 )}
-                </Menu>
+              </Menu>
             </View>
-            ) : null}
+          ) : null}
         </View>
-        </HStack>
+      </HStack>
     </Box>
-    );
+  );
 };
 
 export default ChatDetailHeader;

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Actions, GiftedChat, Send, User} from 'react-native-gifted-chat';
+import {Actions, GiftedChat, Send} from 'react-native-gifted-chat';
 import {AudioSendButton} from './AudioSendButton';
 import {
   ActivityIndicator,
@@ -32,7 +32,6 @@ import {
   textStyles,
 } from '../../../docs/config';
 import {
-  widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -61,7 +60,6 @@ import {
 import {
   isComposing,
   pausedComposing,
-  retrieveOtherUserVcard,
   sendInvite,
   sendMediaMessageStanza,
   sendMessageStanza,
@@ -81,7 +79,6 @@ import {MetaNavigation} from './MetaNavigation';
 import {NftItemGalleryModal} from '../../../NftItemGalleryModal';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {IDataForTransfer} from '../Modals/Chat/types';
-import {ROUTES} from '../../constants/routes';
 import {observer} from 'mobx-react-lite';
 import {systemMessage} from '../../helpers/systemMessage';
 import {banSystemMessage} from '../../helpers/banSystemMessage';
@@ -93,10 +90,10 @@ import {
   isPdfMimetype,
 } from '../../helpers/checkMimetypes';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 //interfaces and types
 export type containerType = 'main' | 'thread';
-
 interface ChatContainerProps {
   containerType: containerType;
   roomDetails: roomListProps;
@@ -164,8 +161,13 @@ const styles = StyleSheet.create({
 //main component
 const ChatContainer = observer((props: ChatContainerProps) => {
   //props
-  const {containerType, roomDetails, messages, onLoadEarlier, currentMessageThreadMessage} =
-    props;
+  const {
+    containerType,
+    roomDetails,
+    messages,
+    onLoadEarlier,
+    currentMessageThreadMessage,
+  } = props;
   //props
 
   //mobx stores
@@ -225,7 +227,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     photoURL: loginStore.userAvatar,
   };
   const giftedRef = useRef(null);
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const manipulatedWalletAddress = underscoreManipulation(
     senderDetails.senderWalletAddress,
   );
@@ -457,7 +459,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const handleSendMessage = (message: IMessage[]) => {
-
     const messageText = message[0].text;
     const tokenAmount = message[0].tokenAmount || 0;
     const receiverMessageId = message[0].receiverMessageId || 0;
@@ -472,7 +473,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       photoURL: loginStore.userAvatar,
       roomJid: roomDetails.jid,
       isReply: containerType === 'thread' || false,
-      mainMessage: containerType === 'thread'&&createMainMessageForThread(currentMessageThreadMessage as IMessage),
+      mainMessage:
+        containerType === 'thread' &&
+        createMainMessageForThread(currentMessageThreadMessage as IMessage),
       showInChannel: showInChannel,
       push: true,
     };
@@ -486,7 +489,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         data,
         chatStore.xmpp,
       );
-      setIsEditing(false)
+      setIsEditing(false);
     } else {
       const text = parseValue(
         messageText as string,
@@ -634,7 +637,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     const xmppID = props._id.split('@')[0];
     const walletAddress = reverseUnderScoreManipulation(xmppID);
     if (walletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate(ROUTES.PROFILE as never);
+      navigation.navigate('ProfileScreen');
       return;
     } else {
       chatStore.getOtherUserDetails({
@@ -642,7 +645,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         avatar: props.avatar,
         name: props.name,
       });
-      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN as never);
+      navigation.navigate('OtherUserProfileScreen');
     }
   };
 
@@ -650,7 +653,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     setShowViewThread(false);
     //navigate to thread screen with current message details.
     //@ts-ignore
-    navigation.navigate(ROUTES.THREADS, {
+    navigation.navigate('ThreadScreen', {
       currentMessage: message ? message : onTapMessageObject,
       chatJid: roomDetails.jid,
       chatName: roomDetails.name,
@@ -669,7 +672,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const handleOnPress = (message: any) => {
-
     //if the current message is by the owner only then show delete and edit option
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
@@ -864,7 +866,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   //component to render message image
-  const renderMedia = (props: IMessage|undefined) => {
+  const renderMedia = (props: IMessage | undefined) => {
     if (!props) {
       return null;
     }
@@ -998,8 +1000,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   ];
 
   const RenderMainMessageSection: React.FC = () => {
-    const firstName = currentMessageThreadMessage?.user.name.split(' ')[0] || 'N/A';
-    const lastName = currentMessageThreadMessage?.user.name.split(' ')[1] || 'N/A';
+    const firstName =
+      currentMessageThreadMessage?.user.name.split(' ')[0] || 'N/A';
+    const lastName =
+      currentMessageThreadMessage?.user.name.split(' ')[1] || 'N/A';
     //@ts-ignore
     const parentDate = new Date(currentMessageThreadMessage?.createdAt * 1000);
     const parentTime = parentDate.toLocaleTimeString([], {
@@ -1080,94 +1084,103 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     );
   };
 
-    //component to render Action items of each menu
-    type ActionItemType = 'edit'|'delete'|'reply'|'copy'|'thread'
-    const ActionItems = (type:ActionItemType) => {
+  //component to render Action items of each menu
+  type ActionItemType = 'edit' | 'delete' | 'reply' | 'copy' | 'thread';
+  const ActionItems = (type: ActionItemType) => {
+    type TIconName =
+      | 'delete'
+      | 'edit'
+      | 'text-snippet'
+      | 'content-copy'
+      | 'reply'
+      | '';
+    type TItemTitle = 'Delete' | 'Edit' | 'View thread' | 'Copy' | 'Reply' | '';
+    let handleOnPress = () => onClose();
+    let itemTitle: TItemTitle = '';
+    let iconName: TIconName = '';
+    // const handleOnPress = () => {
+    switch (type) {
+      case 'reply':
+        handleOnPress = () => handleReply();
+        itemTitle = 'Reply';
+        iconName = 'reply';
+        break;
 
-      type TIconName = 'delete' | 'edit' | 'text-snippet' | 'content-copy' | 'reply' | '';
-      type TItemTitle = 'Delete' | 'Edit' | 'View thread' | 'Copy' | 'Reply'|'';
-      let handleOnPress = () => onClose();
-      let itemTitle:TItemTitle = '';
-      let iconName:TIconName = '';
-      // const handleOnPress = () => {
-        switch(type){
-          case 'reply':
-            handleOnPress=()=>handleReply();
-            itemTitle = 'Reply';
-            iconName = 'reply';
-          break;
+      case 'thread':
+        handleOnPress = () => handleReply();
+        itemTitle = 'View thread';
+        iconName = 'text-snippet';
+        break;
 
-          case 'thread':
-            handleOnPress=()=>handleReply();
-            itemTitle = 'View thread';
-            iconName = 'text-snippet';
-          break;
-          
-          case 'copy':
-            handleOnPress=()=>handleCopyText();
-            itemTitle = 'Copy';
-            iconName = 'content-copy';
-          break;
+      case 'copy':
+        handleOnPress = () => handleCopyText();
+        itemTitle = 'Copy';
+        iconName = 'content-copy';
+        break;
 
-          case 'delete':
-            handleOnPress=()=>onClose();
-            itemTitle = 'Delete';
-            iconName = 'delete';
-          break;
+      case 'delete':
+        handleOnPress = () => onClose();
+        itemTitle = 'Delete';
+        iconName = 'delete';
+        break;
 
-          case 'edit':
-            handleOnPress=()=>handleEdit();
-            itemTitle = 'Edit';
-            iconName = 'edit';
-          break;
+      case 'edit':
+        handleOnPress = () => handleEdit();
+        itemTitle = 'Edit';
+        iconName = 'edit';
+        break;
 
-          default:
-            handleOnPress=()=>onClose();
-            itemTitle = '';
-            iconName = '';
-        }
+      default:
+        handleOnPress = () => onClose();
+        itemTitle = '';
+        iconName = '';
+    }
 
-      return(
+    return (
       <Actionsheet.Item onPress={handleOnPress}>
-        <HStack alignItems={"center"} w={"full"} justifyContent={"space-evenly"}>
-          <View flex={0.5} justifyContent={"center"} alignItems={"flex-start"}>
-            <Text fontSize={hp("2%")} fontWeight={"bold"} fontFamily={textStyles.mediumFont}>{itemTitle}</Text>
+        <HStack
+          alignItems={'center'}
+          w={'full'}
+          justifyContent={'space-evenly'}>
+          <View flex={0.5} justifyContent={'center'} alignItems={'flex-start'}>
+            <Text
+              fontSize={hp('2%')}
+              fontWeight={'bold'}
+              fontFamily={textStyles.mediumFont}>
+              {itemTitle}
+            </Text>
           </View>
-          <View flex={0.5} justifyContent={"center"} alignItems={"flex-end"}>
+          <View flex={0.5} justifyContent={'center'} alignItems={'flex-end'}>
             <MaterialIcons size={hp('3%')} name={iconName} />
           </View>
         </HStack>
       </Actionsheet.Item>
-      )
-    }
+    );
+  };
 
-    //component to show menu on tap of message (Action sheet)
-    const ActionSheetContent:React.FC = () => {
-      return(
-        <Actionsheet.Content>
+  //component to show menu on tap of message (Action sheet)
+  const ActionSheetContent: React.FC = () => {
+    return (
+      <Actionsheet.Content>
         {ActionItems('copy')}
-        {showReplyOption ? (
-          ActionItems('reply')
-        ) : null}
-        {showViewThread ? (
-          ActionItems('thread')
-        ) : null}
-        {showEditOption && (
-          ActionItems('edit')
-        )}
-        {isShowDeleteOption && (
-          ActionItems('delete')
-        )}
+        {showReplyOption ? ActionItems('reply') : null}
+        {showViewThread ? ActionItems('thread') : null}
+        {showEditOption && ActionItems('edit')}
+        {isShowDeleteOption && ActionItems('delete')}
       </Actionsheet.Content>
-      )
-    }
+    );
+  };
   //smaller components
 
   return (
     <>
       <ImageBackground
         style={{width: '100%', height: '100%', zIndex: 0}}
-        source={{uri: roomDetails.roomBackground?roomDetails.roomBackground:defaultChatBackgroundTheme[0].value}}>
+        source={{
+          uri: roomDetails.roomBackground
+            ? roomDetails.roomBackground
+            : defaultChatBackgroundTheme[0].value,
+        }}>
         {containerType === 'main' ? (
           <SecondaryHeader
             roomJID={roomDetails.jid}
@@ -1292,7 +1305,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             setShowReplyOption(true);
             setShowViewThread(false);
           }}>
-            <ActionSheetContent/>
+          <ActionSheetContent />
         </Actionsheet>
         <MetaNavigation
           chatId={roomDetails.jid.split('@')[0]}

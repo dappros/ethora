@@ -1,11 +1,10 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {observer} from 'mobx-react-lite';
 import React, {useEffect} from 'react';
-import {appLinkingUrl, coinsMainName} from '../../docs/config';
+import {appLinkingUrl} from '../../docs/config';
 import {MainHeader} from '../components/MainHeader/MainHeader';
-import {ROUTES} from '../constants/routes';
 import {useStores} from '../stores/context';
-import {Linking, Platform} from 'react-native';
+import {Linking} from 'react-native';
 import parseChatLink from '../helpers/parseChatLink';
 import openChatFromChatLink from '../helpers/chat/openChatFromChatLink';
 import {useNavigation} from '@react-navigation/native';
@@ -32,14 +31,15 @@ import OtherUserProfileScreen from '../Screens/Profile/OtherUserProfileScreen';
 import {ProfileScreen} from '../Screens/Profile/ProfileScreen';
 import TransactionsScreen from '../Screens/Profile/TransactionsScreen';
 import {DebugScreen} from '../Screens/System/DebugScreen';
+import {HomeStackParamList, HomeStackNavigationProp} from './types';
 
-const HomeStack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
 export const HomeStackScreen = observer(() => {
   const {chatStore, loginStore, walletStore, apiStore} = useStores();
   const {initialData} = loginStore;
-  const {xmppPassword, xmppUsername, password, walletAddress} = initialData;
-  const navigation = useNavigation();
+  const {xmppPassword, xmppUsername, walletAddress} = initialData;
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   useEffect(() => {
     if (chatStore.roomList.length && chatStore.isOnline) {
@@ -91,12 +91,13 @@ export const HomeStackScreen = observer(() => {
           const firstName: string = queryParams.get('firstName') as string;
           const lastName: string = queryParams.get('lastName') as string;
           const xmppId: string = queryParams.get('xmppId') as string;
-          const walletAddressFromLink: string =
-            queryParams.get('walletAddress') as string;
+          const walletAddressFromLink: string = queryParams.get(
+            'walletAddress',
+          ) as string;
           const linkToken = queryParams.get('linkToken');
 
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate(ROUTES.PROFILE as never);
+            navigation.navigate('ProfileScreen');
           } else {
             setTimeout(() => {
               retrieveOtherUserVcard(
@@ -113,7 +114,7 @@ export const HomeStackScreen = observer(() => {
               });
             }, 2000);
             //@ts-ignore
-            navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN, {
+            navigation.navigate('OtherUserProfileScreen', {
               linkToken: linkToken,
             });
           }
@@ -143,10 +144,11 @@ export const HomeStackScreen = observer(() => {
           const xmppId: string = queryParams.get('xmppId') as string;
           const linkToken: string = queryParams.get('linkToken') as string;
 
-          const walletAddressFromLink: string =
-            queryParams.get('walletAddress') as string;
+          const walletAddressFromLink: string = queryParams.get(
+            'walletAddress',
+          ) as string;
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate(ROUTES.PROFILE as never);
+            navigation.navigate('ProfileScreen');
           } else {
             retrieveOtherUserVcard(
               initialData.xmppUsername,
@@ -180,38 +182,37 @@ export const HomeStackScreen = observer(() => {
   }, []);
 
   return (
-    //@ts-ignore
     <HomeStack.Navigator options={{headerShown: true, headerTitle: ''}}>
       <HomeStack.Screen
-        name={ROUTES.ROOMSLIST}
+        name={'RoomsListScreem'}
         component={RoomListScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.CHAT}
+        name={'ChatScreen'}
         component={ChatScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.PROFILE}
+        name={'ProfileScreen'}
         component={ProfileScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.TRANSACTIONS}
+        name={'TransactionsScreen'}
         component={TransactionsScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.OTHERUSERPROFILESCREEN}
+        name={'OtherUserProfileScreen'}
         //@ts-ignore
         component={OtherUserProfileScreen}
         options={() => ({
@@ -219,63 +220,63 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.NEWCHAT}
+        name={'NewChatScreen'}
         component={NewChatScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.SCAN}
+        name={'ScanScreen'}
         component={ScanScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.ACCOUNT}
+        name={'AccountScreen'}
         component={AccountScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.DEBUG}
+        name={'DebugScreen'}
         component={DebugScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.MINT}
+        name={'MintScreen'}
         component={MintScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.UPLOADDOCUMENTSSCREEN}
+        name={'UploadDocumentsScreen'}
         component={UploadDocumentsScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.NFTITEMHISTORY}
+        name={'NftItemHistory'}
         component={NftItemHistoryScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.INVITEFRIENDS}
+        name={'InviteFriendsScreen'}
         component={InviteFriendsScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.PRIVACY}
+        name={'PrivacyAndDataScreen'}
         component={PrivacyAndDataScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
@@ -283,7 +284,7 @@ export const HomeStackScreen = observer(() => {
       />
 
       <HomeStack.Screen
-        name={ROUTES.CHATDETAILS}
+        name={'ChatDetailsScreen'}
         component={ChatDetailsScreen}
         options={() => ({
           // header: ({}) => <MainHeader />,
@@ -291,7 +292,7 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.DOCUMENTHISTORY}
+        name={'DocumentHistoryScreen'}
         //@ts-ignore
         component={DocumentHistoryScreen}
         options={() => ({
@@ -299,7 +300,7 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.THREADS}
+        name={'ThreadScreen'}
         component={ThreadScreen}
         options={() => ({
           // header: ({}) => <MainHeader />,
@@ -307,7 +308,7 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.CHANGEBACKGROUNDSCREEN}
+        name={'ChangeBackgroundScreen'}
         component={ChangeBackgroundScreen}
         options={() => ({
           // header: ({}) => <MainHeader />,
@@ -315,14 +316,14 @@ export const HomeStackScreen = observer(() => {
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.COINPURCHASESCREEN}
+        name={'CoinPurchaseScreen'}
         component={CoinPurchaseScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
         })}
       />
       <HomeStack.Screen
-        name={ROUTES.AUTHENTICATIONSCREEN}
+        name={'AuthenticationScreen'}
         component={AuthenticationScreen}
         options={() => ({
           header: ({}) => <MainHeader />,

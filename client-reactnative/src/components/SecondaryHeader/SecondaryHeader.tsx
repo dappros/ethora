@@ -13,7 +13,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {appVersion, commonColors, textStyles} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 interface SecondaryHeaderProps {
   title: string;
@@ -36,7 +36,8 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   roomJID,
   onBackPress,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
+
   const onArrowClick = () => {
     if (onBackPress) {
       onBackPress();
@@ -66,10 +67,9 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
-            //@ts-ignore
-            navigation.navigate(ROUTES.CHATDETAILS, {
+            navigation.navigate('ChatDetailsScreen', {
               roomName: title,
-              roomJID: roomJID,
+              roomJID: roomJID || '',
             })
           }>
           <Text

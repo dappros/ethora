@@ -28,7 +28,6 @@ import {
   logoHeight,
   logoPath,
   logoWidth,
-  regularLoginEmail,
   regularLogin,
   textStyles,
 } from '../../../docs/config';
@@ -40,20 +39,23 @@ import {
   handleFaceBookLogin,
   handleGoogleLogin,
   loginOrRegisterSocialUser,
-  socialLoginHandle,
 } from '../../helpers/login/socialLoginHandle';
 import {socialLoginType} from '../../constants/socialLoginConstants';
-import {httpGet, httpPost} from '../../config/apiService';
+import {httpPost} from '../../config/apiService';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useRegisterModal} from '../../hooks/useRegisterModal';
 import {UserNameModal} from '../../components/Modals/Login/UserNameModal';
-import {checkEmailExist, checkWalletExist} from '../../config/routesConstants';
-import {ROUTES} from '../../constants/routes';
+import {checkWalletExist} from '../../config/routesConstants';
 import {useWalletConnect} from '@walletconnect/react-native-dapp';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigation/types';
 
-interface LoginScreenProps {}
+type LoginScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'LoginScreen'
+>;
 
-const LoginScreen = observer(({navigation}) => {
+const LoginScreen = observer(({navigation}: LoginScreenProps) => {
   const {loginStore, apiStore} = useStores();
   const {isFetching} = loginStore;
   const connector = useWalletConnect();
@@ -302,7 +304,7 @@ const LoginScreen = observer(({navigation}) => {
           {regularLogin && (
             <TouchableOpacity
               accessibilityLabel="Log in with password"
-              onPress={() => navigation.navigate(ROUTES.REGULARLOGIN)}>
+              onPress={() => navigation.navigate('RegularLogin')}>
               <Text
                 style={{
                   fontSize: 14,

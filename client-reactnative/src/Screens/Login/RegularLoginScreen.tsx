@@ -27,10 +27,13 @@ import {
   commonColors,
 } from '../../../docs/config';
 import {showError} from '../../components/Toast/toast';
-import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AuthStackParamList} from '../../navigation/types';
 
-export const RegularLoginScreen = ({navigation}) => {
+type ScreenProps = NativeStackScreenProps<AuthStackParamList, 'RegularLogin'>;
+
+export const RegularLoginScreen = ({navigation}: ScreenProps) => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setisLoading] = useState(false);
@@ -128,7 +131,7 @@ export const RegularLoginScreen = ({navigation}) => {
                 paddingY={10}>
                 <TouchableOpacity
                   accessibilityLabel="Create new account"
-                  onPress={() => navigation.navigate(ROUTES.REGISTER)}>
+                  onPress={() => navigation.navigate('Register')}>
                   <Text
                     style={{fontSize: 18, color: commonColors.primaryColor}}>
                     Create new account
@@ -139,7 +142,7 @@ export const RegularLoginScreen = ({navigation}) => {
                   onPress={() =>
                     !regularLoginEmail
                       ? setResetModalOpen(true)
-                      : navigation.navigate(ROUTES.RESETPASSWORD)
+                      : navigation.navigate('ResetPasswordScreen')
                   }>
                   <Text style={{fontSize: 13, color: 'black', marginTop: 5}}>
                     Forgot password?
@@ -147,7 +150,7 @@ export const RegularLoginScreen = ({navigation}) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   accessibilityLabel="Back to login"
-                  onPress={() => navigation.navigate(ROUTES.LOGIN)}>
+                  onPress={() => navigation.navigate('LoginScreen')}>
                   <Text style={{fontSize: 13, color: 'black', marginTop: 15}}>
                     Back to login
                   </Text>

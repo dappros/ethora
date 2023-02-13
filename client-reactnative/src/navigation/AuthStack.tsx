@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {ROUTES} from '../constants/routes';
 import LoginScreen from '../Screens/Login/LoginScreen';
 import {RegisterScreen} from '../Screens/Login/RegisterScreen';
 import {RegularLoginScreen} from '../Screens/Login/RegularLoginScreen';
 import {ResetPasswordScreen} from '../Screens/Login/ResetPasswordScreen';
+import {AuthStackParamList} from './types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthStack = () => {
   return (
@@ -14,22 +14,22 @@ const AuthStack = () => {
       <Stack.Screen
         options={{headerShown: false, headerTitle: ''}}
         component={LoginScreen}
-        name={ROUTES.LOGIN}
+        name={'LoginScreen'}
       />
       <Stack.Screen
         options={{headerShown: false, headerTitle: ''}}
         component={RegularLoginScreen}
-        name={ROUTES.REGULARLOGIN}
+        name={'RegularLogin'}
       />
       <Stack.Screen
         options={{headerShown: false, headerTitle: ''}}
         component={RegisterScreen}
-        name={ROUTES.REGISTER}
+        name={'Register'}
       />
       <Stack.Screen
         options={{headerShown: false, headerTitle: ''}}
         component={ResetPasswordScreen}
-        name={ROUTES.RESETPASSWORD}
+        name={'ResetPasswordScreen'}
       />
     </Stack.Navigator>
   );

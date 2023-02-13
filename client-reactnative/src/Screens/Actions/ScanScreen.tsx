@@ -21,11 +21,11 @@ import jsQR from 'jsqr';
 import {commonColors, textStyles} from '../../../docs/config';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
-import {ROUTES} from '../../constants/routes';
 import parseChatLink from '../../helpers/parseChatLink';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {retrieveOtherUserVcard, subscribeToRoom} from '../../xmpp/stanzas';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
@@ -67,7 +67,7 @@ const ScanScreen = (props: ScanScreenProps) => {
   );
   const username = loginStore.initialData.username;
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   const onSuccess = (e: any) => {
     if (!e) {
@@ -84,7 +84,7 @@ const ScanScreen = (props: ScanScreenProps) => {
       const walletAddressFromLink: string = queryParams.get('walletAddress');
 
       if (loginStore.initialData.walletAddress === walletAddressFromLink) {
-        navigation.navigate(ROUTES.PROFILE);
+        navigation.navigate('ProfileScreen');
       } else {
         retrieveOtherUserVcard(
           loginStore.initialData.xmppUsername,
@@ -98,7 +98,7 @@ const ScanScreen = (props: ScanScreenProps) => {
           anotherUserLastSeen: {},
           anotherUserWalletAddress: walletAddressFromLink,
         });
-        navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+        navigation.navigate('OtherUserProfileScreen');
       }
     } else {
       // const jid = parseChatLink(e.data) + CONFERENCEDOMAIN;
@@ -121,9 +121,8 @@ const ScanScreen = (props: ScanScreenProps) => {
             chatStore.xmpp,
           );
           setIsLoading(false);
-          navigation.navigate(ROUTES.CHAT, {
+          navigation.navigate('ChatScreen', {
             chatJid: jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
-            // chatName: 'Loading...',
           });
         } else {
           showToast('error', 'Error', 'Invalid QR', 'top');

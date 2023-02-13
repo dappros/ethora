@@ -10,16 +10,16 @@ import {Image, Pressable, View} from 'native-base';
 import React from 'react';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {logoPath} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 import {useStores} from '../../stores/context';
 
 let counter = 0;
 
 export const HeaderAppLogo = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const {debugStore} = useStores();
   const onPress = () => {
-    navigation.navigate(ROUTES.CHAT);
+    navigation.navigate('RoomsListScreem');
     counter += 1;
     if (counter === 3) {
       debugStore.toggleDebugMode(true);

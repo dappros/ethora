@@ -13,7 +13,7 @@ import {View} from 'native-base';
 import {FlatList} from 'react-native';
 import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
 import {useNavigation} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 export const RoomList = observer(({roomsList}: any) => {
   const {chatStore} = useStores();
@@ -23,7 +23,7 @@ export const RoomList = observer(({roomsList}: any) => {
       chatStore.roomsInfoMap[a.jid]?.priority -
       chatStore.roomsInfoMap[b.jid]?.priority,
   );
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   return (
     <>
       <View justifyContent={'center'} alignItems={'center'} w={'full'}>
@@ -47,7 +47,7 @@ export const RoomList = observer(({roomsList}: any) => {
           }}
         />
         <CreateNewChatButton
-          onPress={() => navigation.navigate(ROUTES.NEWCHAT as never)}
+          onPress={() => navigation.navigate('NewChatScreen')}
         />
       </View>
     </>

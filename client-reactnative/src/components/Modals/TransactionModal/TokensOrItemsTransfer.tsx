@@ -245,6 +245,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
               fontFamily={textStyles.lightFont}
               fontSize={hp('1.6%')}
               color={'black'}
+              accessibilityLabel={'Enter transfer amount'}
               value={customTransferAmount}
               onChangeText={setCustomTransferAmount}
               placeholder="Enter transfer amount"
