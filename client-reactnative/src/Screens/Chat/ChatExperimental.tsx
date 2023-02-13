@@ -81,6 +81,7 @@ import {MetaNavigation} from '../../components/Chat/MetaNavigation';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {IMessageToSend} from '../../helpers/chat/createMessageObject';
 import {isAudioMimetype} from '../../helpers/checkMimetypes';
+import {IMessage} from '../../stores/chatStore';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
@@ -369,7 +370,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }, 2000);
   };
 
-  const renderMessageImage = (props: any) => {
+  const renderMedia = (props: any) => {
     const {
       image,
       realImageURL,
@@ -485,7 +486,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     setExtraData(extraData);
   };
 
-  const handleOnPress = (message: any) => {
+  const handleOnPress = (message: IMessage) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
       setShowEditOption(false);
@@ -517,6 +518,51 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
     setShowEditOption(true);
     onClose();
+  };
+
+  //send delete message stanza
+  const handleDelete = () => {
+    deleteMessageStanza(
+      manipulatedWalletAddress,
+      chatJid,
+      onTapMessageObject?._id as string,
+      chatStore.xmpp,
+    );
+  };
+
+  const handleSendMessage = (messageString: any) => {
+    if (isEditing) {
+      const messageText = messageString[0].text;
+      const tokenAmount = messageString[0].tokenAmount || 0;
+      const receiverMessageId = messageString[0].receiverMessageId || 0;
+      const data = {
+        senderFirstName: loginStore.initialData.firstName,
+        senderLastName: loginStore.initialData.lastName,
+        senderWalletAddress: loginStore.initialData.walletAddress,
+        isSystemMessage: false,
+        tokenAmount: tokenAmount,
+        receiverMessageId: receiverMessageId,
+        mucname: chatName,
+        photoURL: loginStore.userAvatar,
+        roomJid: chatJid,
+        isReply: false,
+        mainMessage: undefined,
+
+        push: true,
+      };
+
+      sendReplaceMessageStanza(
+        manipulatedWalletAddress,
+        chatJid,
+        messageText,
+        onTapMessageObject._id,
+        data,
+        chatStore.xmpp,
+      );
+      setIsEditing(false);
+    } else {
+      sendMessage(messageString, false);
+    }
   };
 
   const handleReply = (message?: any) => {
@@ -634,7 +680,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const audioPath =
       url ||
       (Platform.OS === 'ios'
-        ? `${RNFetchBlob.fs.dirs.CacheDir}/audio.m4a`
+        ? `${RNFetchBlob.fs.dirs.CacheDir}/audioMessage.m4a`
         : path);
     const data = await getWaveformArray(audioPath);
     const normalizedData = normalizeData(filterData(data));
@@ -823,6 +869,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     return (
       <View style={{position: 'relative'}}>
         <View
+          accessibilityLabel="Choose attachment"
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
@@ -931,7 +978,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           renderUsernameOnMessage
           onInputTextChanged={handleInputChange}
           renderMessage={renderMessage}
-          renderMessageImage={props => renderMessageImage(props)}
+          renderMessageImage={props => renderMedia(props)}
           renderComposer={renderComposer}
           messages={messages}
           renderAvatarOnTop
@@ -1028,7 +1075,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
               <Actionsheet.Item onPress={handleEdit}>Edit</Actionsheet.Item>
             )}
             {isShowDeleteOption && (
-              <Actionsheet.Item onPress={onClose} color="red.500">
+              <Actionsheet.Item onPress={handleDelete} color="red.500">
                 Delete
               </Actionsheet.Item>
             )}

@@ -44,6 +44,7 @@ export const ImageMessage = ({
       )}
       <TouchableOpacity
         onLongPress={onLongPress}
+        accessibilityLabel={'Image Attachment'}
         onPress={onPress}
         activeOpacity={0.7}
         style={{
@@ -65,6 +66,7 @@ export const ImageMessage = ({
               borderWidth: nftId ? 2 : 0,
             }}
             source={{uri: url}}
+            alt={'Image message'}
           />
         </Box>
       </TouchableOpacity>

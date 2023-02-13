@@ -64,6 +64,8 @@ import { ChatAudioMessageDialog } from "../../components/Chat/ChatAudioRecorder"
 import { generateChatLink, getPosition, stripHtml } from "../../utils";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
+import { DeleteDialog } from "../../components/DeleteDialog";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -122,6 +124,10 @@ export function ChatInRoom() {
   const [isEditing, setIsEditing] = React.useState(false);
   const [currentEditMessage, setCurrentEditMessage] =
     React.useState<TMessageHistory>();
+  const [showDeleteDialog, setShowDeleteDialog] =
+    React.useState<boolean>(false);
+  const [currentDeleteMessage, setCurrentDeleteMessage] =
+    React.useState<TMessageHistory>();
 
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
@@ -132,12 +138,24 @@ export function ChatInRoom() {
   const handleCurrentEditMessage = (message: TMessageHistory) =>
     setCurrentEditMessage(message);
 
+  const handleSetCurrentDeleteMessage = (message: TMessageHistory) =>
+    setCurrentDeleteMessage(message);
+
+  const handleCloseDeleteMessageDialog = () => {
+    setShowDeleteDialog(false);
+    setCurrentDeleteMessage(null);
+  };
+
   const [currentRoom, setCurrentRoom] = useState("");
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
 
-  const mainWindowMessages = messages.filter((item: TMessageHistory) => item.data.roomJid === roomJID + CONFERENCEDOMAIN && (item.data.showInChannel || !item.data.isReply) )
+  const mainWindowMessages = messages.filter(
+    (item: TMessageHistory) =>
+      item.data.roomJid === roomJID + CONFERENCEDOMAIN &&
+      (item.data.showInChannel || !item.data.isReply)
+  );
 
   const [roomData, setRoomData] = useState<{
     jid: string;
@@ -153,6 +171,7 @@ export function ChatInRoom() {
     users_cnt: "",
   });
 
+
   const [transferDialogData, setTransferDialogData] = useState<{
     open: boolean;
     message: TMessageHistory | null;
@@ -165,11 +184,7 @@ export function ChatInRoom() {
 
   const [isQrModalVisible, setQrModalVisible] = useState(false);
 
-  const [uploadFileDialogData, setUploadFileDialogData] = useState<{
-    open: boolean;
-    headline: string;
-    description: string;
-  }>({ headline: "", description: "", open: false });
+  const [isFileUploading, setFileUploading] = useState(false);
 
   const [firstLoadMessages, setFirstLoadMessages] = useState(true);
   const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
@@ -182,8 +197,7 @@ export function ChatInRoom() {
   };
   const history = useHistory();
   const fileRef = useRef(null);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const { showSnackbar } = useSnackbar();
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       sendFile(acceptedFiles[0], false);
@@ -331,75 +345,63 @@ export function ChatInRoom() {
       }
     }
   };
-
-  const sendFile = (file: File, isReply: boolean) => {
-    setUploadFileDialogData({
-      headline: "File is loading, please wait...",
-      description: "",
-      open: true,
-    });
-
+  const sendFile = async (file: File, isReply: boolean) => {
     const formData = new FormData();
     formData.append("files", file);
+    setFileUploading(true);
+    try {
+      const result = await uploadFile(formData);
+      let userAvatar = "";
+      if (profile?.profileImage) {
+        userAvatar = profile?.profileImage;
+      }
 
-    uploadFile(formData)
-      .then((result) => {
-        let userAvatar = "";
-        if (profile?.profileImage) {
-          userAvatar = profile?.profileImage;
-        }
+      result.data.results.map(async (item: any) => {
+        let data = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          walletAddress: user.walletAddress,
+          chatName: roomData.name,
+          userAvatar: userAvatar,
+          createdAt: item.createdAt,
+          expiresAt: item.expiresAt,
+          fileName: item.filename,
+          isVisible: item.isVisible,
+          location: item.location,
+          locationPreview: item.locationPreview,
+          mimetype: item.mimetype,
+          originalName: item.originalname,
+          ownerKey: item.ownerKey,
+          size: item.size,
+          duration: item?.duration,
+          updatedAt: item.updatedAt,
+          userId: item.userId,
+          waveForm: "",
+          attachmentId: item._id,
+          wrappable: true,
+          roomJid: currentRoom
+        };
 
-        result.data.results.map(async (item: any) => {
-          let data = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            walletAddress: user.walletAddress,
-            chatName: roomData.name,
-            userAvatar: userAvatar,
-            createdAt: item.createdAt,
-            expiresAt: item.expiresAt,
-            fileName: item.filename,
-            isVisible: item.isVisible,
-            location: item.location,
-            locationPreview: item.locationPreview,
-            mimetype: item.mimetype,
-            originalName: item.originalname,
-            ownerKey: item.ownerKey,
-            size: item.size,
-            duration: item?.duration,
-            updatedAt: item.updatedAt,
-            userId: item.userId,
-            waveForm: "",
-            attachmentId: item._id,
-            wrappable: true,
-          };
-
-          const additionalDataForThread = {
-            isReply: isReply,
-            mainMessage: createMainMessageForThread(currentThreadViewMessage),
-            showInChannel: showInChannel,
-          };
-
-          data = { ...data, ...additionalDataForThread };
-          xmpp.sendMediaMessageStanza(currentRoom, data);
-          setUploadFileDialogData({
-            open: false,
-            description: "",
-            headline: "",
-          });
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        setUploadFileDialogData({
-          headline: "Error",
-          description: "An error occurred while uploading the file",
-          open: true,
+        const additionalDataForThread = {
+          isReply: isReply,
+          mainMessage: isReply
+            ? createMainMessageForThread(currentThreadViewMessage)
+            : undefined,
+          showInChannel: showInChannel,
+        };
+        xmpp.sendMediaMessageStanza(currentRoom, {
+          ...data,
+          ...additionalDataForThread,
         });
       });
+    } catch (error) {
+      showSnackbar("error", "Cannot upload file");
+    }
+
     if (fileRef.current) {
       fileRef.current.value = "";
     }
+    setFileUploading(false);
   };
 
   const setMessage = (value) => {
@@ -506,7 +508,11 @@ export function ChatInRoom() {
         );
       }
     }
-    if (filteredMessages.length === 0 && firstLoadMessages) {
+    if (
+      filteredMessages.length === 0 &&
+      firstLoadMessages &&
+      xmpp.client.status === "online"
+    ) {
       xmpp.getRoomArchiveStanza(currentRoom, 50);
     }
   }, [messages]);
@@ -529,6 +535,30 @@ export function ChatInRoom() {
     setThreadView(true);
     handleSetCurrentThreadViewMessage(message);
   };
+
+  //set the message to be deleted and show delete confirmation dialogue
+  const onMessageDeleteClick = (value: boolean, message: TMessageHistory) => {
+    setShowDeleteDialog(value);
+    handleSetCurrentDeleteMessage(message);
+  };
+
+  //triggered when user clicks Delete button on delete confirmation dialogue
+  const deleteMessage = () => {
+    //remove the message from store
+    useStoreState.getState().deleteMessage(currentDeleteMessage.id);
+
+    //send delete request to xmpp server
+    xmpp.deleteMessageStanza(
+      currentUntrackedChatRoom,
+      currentDeleteMessage.id.toString()
+    );
+
+    handleCloseDeleteMessageDialog();
+  };
+
+  //Delete confirmation dialogue component
+
+  //component to render File upload dialog box
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
@@ -621,7 +651,7 @@ export function ChatInRoom() {
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "100% 100%",
               }}
-              loadingMore={loaderArchive}
+              loadingMore={loaderArchive || isFileUploading}
               onYReachStart={onYReachStart}
               disableOnYReachWhenNoScroll={true}
               typingIndicator={
@@ -798,6 +828,7 @@ export function ChatInRoom() {
         message={transferDialogData.message}
         onThreadClick={onMenuThreadClick}
         onEditClick={onMenuEditClick}
+        onDeleteClick={onMessageDeleteClick}
       />
       <ChatMediaModal
         open={mediaDialogData.open}
@@ -806,47 +837,13 @@ export function ChatInRoom() {
         url={mediaDialogData.message?.data?.location}
       />
 
-      <Dialog
-        fullScreen={fullScreen}
-        open={uploadFileDialogData.open}
-        onClose={() =>
-          setUploadFileDialogData({
-            open: false,
-            description: "",
-            headline: "",
-          })
-        }
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {uploadFileDialogData.headline}
-        </DialogTitle>
-        <DialogContent>
-          {!!uploadFileDialogData.description ? (
-            <DialogContentText>
-              {uploadFileDialogData.description}
-            </DialogContentText>
-          ) : (
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() =>
-              setUploadFileDialogData({
-                open: false,
-                description: "",
-                headline: "",
-              })
-            }
-            autoFocus
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteDialog
+        open={showDeleteDialog}
+        onClose={handleCloseDeleteMessageDialog}
+        onDeletePress={deleteMessage}
+        description={"Are you sure you want to delete this message."}
+        title={"Delete message"}
+      />
       <QrModal
         open={isQrModalVisible}
         link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}

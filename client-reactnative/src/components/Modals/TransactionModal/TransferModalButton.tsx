@@ -26,6 +26,7 @@ export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
 }) => {
   return (
     <TouchableOpacity
+      accessibilityLabel="Direct Message"
       onPress={() => {
         onPress();
       }}>

@@ -184,7 +184,7 @@ const onRealtimeMessage = async (stanza: Element) => {
       useStoreState.getState().setNumberOfReplies(messageId);
     }
     useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-    useStoreState.getState().updateMessageHistory([msg]);
+    useStoreState.getState().updateMessageHistory(msg);
     sendBrowserNotification(msg.body, () => {
       history.push("/chat/" + msg.roomJID.split("@")[0]);
     });
@@ -588,16 +588,25 @@ const onBan = (stanza: Element) => {
 };
 
 //when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
-const onSendReplaceMessageStanza = (stanza: any) => {
-  if (stanza.attrs.id === "replaceMessage") {
-    const replaceMessageId = Number(
-      stanza.children.find((item) => item.name === "replace").attrs.id
-    );
-    const messageString = stanza.children.find((item) => item.name === "body")
-      .children[0];
-    useStoreState.getState().replaceMessage(replaceMessageId, messageString);
+const onSendReplaceMessageStanza = (stanza:any) => {
+  if(stanza.attrs.id === "replaceMessage"){
+    const replaceMessageId = Number(stanza.children.find(item => item.name === 'replace').attrs.id);
+    const messageString = stanza.children.find(item => item.name === 'body').children[0];
+    useStoreState.getState().replaceMessage(
+      replaceMessageId,
+      messageString
+    )
   }
-};
+}
+
+//when delete request is sent this listener will capture
+const onDeleteMessageStanza = (stanza:any) => {
+  if(stanza.attrs.id === 'deleteMessageStanza'){
+    console.log(stanza,"delete response");
+  }
+}
+
+
 
 class XmppClass {
   public client!: Client;
@@ -639,6 +648,7 @@ class XmppClass {
     this.client.on("stanza", (stanza) => onNewSubscription(stanza, this));
     this.client.on("stanza", (stanza) => onRoomDesignChange(stanza, this));
     this.client.on("stanza", (stanza) => onSendReplaceMessageStanza(stanza));
+    this.client.on("stanza", (stanza) => onDeleteMessageStanza(stanza));
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -1028,6 +1038,7 @@ class XmppClass {
         nftId: data?.nftId,
         isReply: data?.isReply,
         mainMessage: data?.mainMessage,
+        roomJid: data?.roomJid
       })
     );
 
@@ -1364,6 +1375,7 @@ class XmppClass {
     this.client.send(stanza);
   };
 
+  //stanza to edit/replace message.
   sendReplaceMessageStanza = (
     roomJID: string,
     replaceText: string,
@@ -1389,6 +1401,37 @@ class XmppClass {
         ...data,
       })
     );
+    this.client.send(stanza);
+  }
+
+  //stanza to delete message
+  deleteMessageStanza = (
+    roomJid: string,
+    messageId: string,
+  ) => {
+    // <message
+    //   from="olek@localhost"
+    //   id="1635229272917013"
+    //   to="test_olek@conference.localhost"
+    //   type="groupchat">
+    //   <body>Wow</body>
+    //   <delete id="1635229272917013" />
+    // </message>;
+  
+    const stanza = xml(
+      'message',
+      {
+        from: this.client.jid?.toString(),
+        to: roomJid, 
+        id: 'deleteMessageStanza', 
+        type: 'groupchat'
+      },
+      xml('body', 'wow'),
+      xml('delete', {
+        id: messageId,
+      }),
+    );
+  
     this.client.send(stanza);
   };
 }

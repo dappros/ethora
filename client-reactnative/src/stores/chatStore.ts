@@ -47,8 +47,8 @@ import {
 } from '../xmpp/stanzas';
 import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
-import { Results } from 'realm';
-import { checkIsDefaultChat } from '../helpers/chat/checkIsDefaultChat';
+import {Results} from 'realm';
+import {checkIsDefaultChat} from '../helpers/chat/checkIsDefaultChat';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -445,10 +445,7 @@ export class ChatStore {
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
 
-      if (
-        isDefaultChat ||
-        this.roomsInfoMap[item.jid]?.isFavourite
-      ) {
+      if (isDefaultChat || this.roomsInfoMap[item.jid]?.isFavourite) {
         notificationsCount[ROOM_KEYS.official] +=
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
@@ -513,7 +510,7 @@ export class ChatStore {
   //     this.roomList.push(room);
   //   });
   // };
-  
+
   setRooms = async (roomsArray: any) => {
     const rooms = await this.checkMetaRooms(roomsArray);
     runInAction(() => {
@@ -527,14 +524,14 @@ export class ChatStore {
       (item: {_id: any}) => item._id === messageId,
     );
     if (index !== -1) {
-      if(messages[index].numberOfReplies){
-      const message = {
-        ...JSON.parse(JSON.stringify(messages[index])),
-        'numberOfReplies': messages[index].numberOfReplies as number + 1,
-      };
-      runInAction(() => {
-        this.messages[index] = message;
-      });
+      if (messages[index].numberOfReplies) {
+        const message = {
+          ...JSON.parse(JSON.stringify(messages[index])),
+          numberOfReplies: (messages[index].numberOfReplies || 0) + 1,
+        };
+        runInAction(() => {
+          this.messages[index] = message;
+        });
       }
     }
   };
@@ -557,9 +554,8 @@ export class ChatStore {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
         [property]:
-          typeof(value)==='number'&&
-          property === 'tokenAmount'
-            ? messages[index][property] as number + value
+          typeof value === 'number' && property === 'tokenAmount'
+            ? (messages[index][property] as number) + value
             : value,
       };
       runInAction(() => {
@@ -595,7 +591,7 @@ export class ChatStore {
   };
 
   updateAllRoomsInfo = async () => {
-    let map:any = {isUpdated: 0};
+    let map: any = {isUpdated: 0};
     this.roomList.forEach(item => {
       const latestMessage = this.messages
         .filter((message: {roomJid: string}) => item.jid === message.roomJid)
@@ -659,7 +655,7 @@ export class ChatStore {
       });
     }
   };
-  checkMetaRooms = async (rooms:any[] = []) => {
+  checkMetaRooms = async (rooms: any[] = []) => {
     const roomsCopy = rooms;
     const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
     try {
@@ -925,7 +921,7 @@ export class ChatStore {
           };
 
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-          getChatRoom(item.attrs.jid).then((cachedChat:any) => {
+          getChatRoom(item.attrs.jid).then((cachedChat: any) => {
             if (!cachedChat) {
               addChatRoom(rosterObject);
               this.updateRoomInfo(item.attrs.jid, {
@@ -1054,11 +1050,11 @@ export class ChatStore {
                   });
                 }
 
-                message.tokenAmount&&
-                await updateTokenAmount(
-                  message.receiverMessageId,
-                  message.tokenAmount,
-                );
+                message.tokenAmount &&
+                  (await updateTokenAmount(
+                    message.receiverMessageId,
+                    message.tokenAmount,
+                  ));
               }
 
               if (message.isReply && message.mainMessage?.id) {
@@ -1109,24 +1105,24 @@ export class ChatStore {
                 nftId: message.nftId,
                 contractAddress: message.contractAddress,
               });
-              
+
               this.updateMessageProperty(
                 message.receiverMessageId,
                 'nftId',
                 message.nftId,
               );
             }
-            if(message.tokenAmount){
-            this.updateMessageProperty(
-              message.receiverMessageId,
-              'tokenAmount',
-              message.tokenAmount,
-            );
-            await updateTokenAmount(
-              message.receiverMessageId,
-              message.tokenAmount,
-            );
-            playCoinSound(message.tokenAmount);
+            if (message.tokenAmount) {
+              this.updateMessageProperty(
+                message.receiverMessageId,
+                'tokenAmount',
+                message.tokenAmount,
+              );
+              await updateTokenAmount(
+                message.receiverMessageId,
+                message.tokenAmount,
+              );
+              playCoinSound(message.tokenAmount);
             }
           }
           if (message.isReply && message.mainMessage?.id) {

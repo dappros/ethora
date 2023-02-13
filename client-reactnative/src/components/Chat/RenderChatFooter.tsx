@@ -80,7 +80,11 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     <>
       <Animated.View style={[boxAnimation]}>
         <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
-          <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
+          <View
+            accessibilityLabel="Now Typing"
+            justifyContent={'flex-end'}
+            bg={'transparent'}
+            flex={0.6}>
             {allowIsTyping && isTyping ? (
               <HStack bg={'transparent'}>
                 <View bg={'transparent'} marginRight={30}>

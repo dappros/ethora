@@ -15,57 +15,53 @@ import {
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
-  widthPercentageToDP as wp
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
-import {
-  MessageImage,
-  Time,
-  utils,
-} from 'react-native-gifted-chat';
+import {MessageImage, Time, utils} from 'react-native-gifted-chat';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
 import {Box, HStack, Text, View} from 'native-base';
 import {observer} from 'mobx-react-lite';
-import { containerType } from './ChatContainer';
-import { IMessage, roomListProps } from '../../stores/chatStore';
-import { isSameDay, isSameUser } from '../../helpers/chat/chatUtils';
-import { useStores } from '../../stores/context';
+import {containerType} from './ChatContainer';
+import {IMessage, roomListProps} from '../../stores/chatStore';
+import {isSameDay, isSameUser} from '../../helpers/chat/chatUtils';
+import {useStores} from '../../stores/context';
 
 // const {isSameUser, isSameDay, StylePropType} = utils;
 
 interface BubbleProps {
-  onLongPress:any;
-  currentMessage:IMessage;
-  onTap:(message: IMessage) => void;
-  containerStyle?:any;
-  wrapperStyle?:any;
-  messageTextStyle?:any;
-  messageTextProps?:any;
-  renderMessageText?:any;
-  renderMessageImage?:any;
-  renderTicks?:any;
-  user:any;
-  tickStyle?:any;
-  renderUsername?:any;
-  renderTime?:any;
-  position:'left'|'right';
-  renderCustomView?:any;
-  nextMessage?:any;
-  containerToNextStyle?:any;
-  previousMessage?:any;
-  containerToPreviousStyle?:any;
-  isCustomViewBottom?:any;
-  image?:any;
-  bottomContainerStyle?:any;
-  touchableProps?:any;
-  timeProps?:any;
-  usernameProps?:any;
-  messageImageProps?:any;
-  containerType:containerType;
-  scrollToParentMessage:any;
-  handleReply:(message:any) => void
+  onLongPress: any;
+  currentMessage: IMessage;
+  onTap: (message: IMessage) => void;
+  containerStyle?: any;
+  wrapperStyle?: any;
+  messageTextStyle?: any;
+  messageTextProps?: any;
+  renderMessageText?: any;
+  renderMessageImage?: any;
+  renderTicks?: any;
+  user: any;
+  tickStyle?: any;
+  renderUsername?: any;
+  renderTime?: any;
+  position: 'left' | 'right';
+  renderCustomView?: any;
+  nextMessage?: any;
+  containerToNextStyle?: any;
+  previousMessage?: any;
+  containerToPreviousStyle?: any;
+  isCustomViewBottom?: any;
+  image?: any;
+  bottomContainerStyle?: any;
+  touchableProps?: any;
+  timeProps?: any;
+  usernameProps?: any;
+  messageImageProps?: any;
+  containerType: containerType;
+  scrollToParentMessage: any;
+  handleReply: (message: any) => void;
 }
 
 const Bubble = observer((props: BubbleProps) => {
@@ -117,21 +113,23 @@ const Bubble = observer((props: BubbleProps) => {
     handleReply,
   } = props;
 
-  const room:roomListProps = chatStore.roomList.find(item => item.jid === currentMessage.roomJid)||{
-    avatar:"",
-    counter:0,
-    createdAt:"",
-    jid:currentMessage.roomJid,
-    lastUserName:"",
-    lastUserText:"",
-    name:'',
-    participants:0,
-    isFavourite:false,
-    muted:false,
-    priority:0,
-    roomBackground:"",
-    roomBackgroundIndex:0,
-    roomThumbnail:""
+  const room: roomListProps = chatStore.roomList.find(
+    item => item.jid === currentMessage.roomJid,
+  ) || {
+    avatar: '',
+    counter: 0,
+    createdAt: '',
+    jid: currentMessage.roomJid,
+    lastUserName: '',
+    lastUserText: '',
+    name: '',
+    participants: 0,
+    isFavourite: false,
+    muted: false,
+    priority: 0,
+    roomBackground: '',
+    roomBackgroundIndex: 0,
+    roomThumbnail: '',
   };
 
   const onLongPressHandle = () => {
@@ -226,15 +224,16 @@ const Bubble = observer((props: BubbleProps) => {
       }
       return (
         //@ts-ignore
-        <Time 
+        <Time
           {...props}
-          timeTextStyle={{left:{
-            fontFamily:textStyles.lightFont,
-          },
-          right:{
-            fontFamily:textStyles.lightFont,
-          }
-        }}
+          timeTextStyle={{
+            left: {
+              fontFamily: textStyles.lightFont,
+            },
+            right: {
+              fontFamily: textStyles.lightFont,
+            },
+          }}
         />
       );
     }
@@ -259,7 +258,8 @@ const Bubble = observer((props: BubbleProps) => {
   };
   const renderReplyCount = () => {
     if (currentMessage.numberOfReplies) {
-      const replyConst = currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
+      const replyConst =
+        currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
       let text = ' reply';
       if (currentMessage.numberOfReplies > 1) {
         text = ' replies';
@@ -372,14 +372,23 @@ const Bubble = observer((props: BubbleProps) => {
       <TouchableOpacity onPress={() => scrollToParentMessage(currentMessage)}>
         <HStack
           style={styles[position].replyWrapper}
-          alignItems={"center"}
-          justifyContent={"flex-start"}
+          alignItems={'center'}
+          justifyContent={'flex-start'}
           minH={hp('6%')}
           w="100%"
           bg={'white'}>
-
-          <View margin={2} borderRadius={5} height={hp("4%")} width={wp("2%")} bg={position==='left'?colors.leftBubbleBackground:colors.defaultBlue}/>
-          <View justifyContent={"center"}>
+          <View
+            margin={2}
+            borderRadius={5}
+            height={hp('4%')}
+            width={wp('2%')}
+            bg={
+              position === 'left'
+                ? colors.leftBubbleBackground
+                : colors.defaultBlue
+            }
+          />
+          <View justifyContent={'center'}>
             <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
               {currentMessage.mainMessage?.userName || 'N/A'}
             </Text>
@@ -399,7 +408,6 @@ const Bubble = observer((props: BubbleProps) => {
             )}
             <Text color={'blue.100'}>{currentMessage.showInChannel}</Text>
           </View>
-
         </HStack>
       </TouchableOpacity>
     ) : null;
@@ -466,9 +474,7 @@ const Bubble = observer((props: BubbleProps) => {
               </View>
             </View>
 
-            <View>
-              
-            </View>
+            <View></View>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>
@@ -554,11 +560,11 @@ const styles = {
     },
     replyWrapper: {
       borderTopRightRadius: 15,
-      borderTopLeftRadius:15,
+      borderTopLeftRadius: 15,
       padding: 2,
       borderLeftWidth: 2,
       borderWidth: 2,
-      borderColor:colors.defaultBlue,
+      borderColor: colors.defaultBlue,
       borderBottomWidth: 0,
     },
     wrapper: {

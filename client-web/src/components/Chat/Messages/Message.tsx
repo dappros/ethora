@@ -84,9 +84,6 @@ export const Message: React.FC<IMessage> = ({
   };
 
   const rightClick = (event: React.SyntheticEvent<HTMLElement>) => {
-    // if (messageDirection !== "incoming") {
-    //   return;
-    //
     event.preventDefault();
     openDialogMenu();
   };

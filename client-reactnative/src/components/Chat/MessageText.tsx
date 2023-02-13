@@ -128,6 +128,7 @@ export const MessageText = observer((props: any) => {
     );
     return (
       <TouchableOpacity
+        accessibilityLabel="Open Link"
         onPress={() => onUrlPress(props.currentMessage.text)}
         style={{
           margin: 10,

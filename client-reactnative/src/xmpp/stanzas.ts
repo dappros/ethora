@@ -702,6 +702,7 @@ export const setRoomImage = (
   xmpp.send(message);
 };
 
+//stanza to delete message.
 export const deleteMessageStanza = (
   from: string,
   roomJid: string,
@@ -719,7 +720,7 @@ export const deleteMessageStanza = (
 
   const stanza = xml(
     'message',
-    {from: from, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
+    {from: from + '@' + DOMAIN, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
     xml('body', 'wow'),
     xml('delete', {
       id: messageId,
@@ -728,6 +729,7 @@ export const deleteMessageStanza = (
 
   xmpp.send(stanza);
 };
+
 export const updateVCard = (
   photoURL: string | null,
   desc: string | null,
@@ -1087,6 +1089,7 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   xmpp.send(message);
 };
 
+//stanza to change room background.
 export const changeRoomBackgroundStanza = (
   from: string,
   to: string,
@@ -1116,6 +1119,7 @@ export const changeRoomBackgroundStanza = (
   );
 };
 
+//stanza to change room description.
 export const changeRoomDescription = (
   from: string,
   to: string,

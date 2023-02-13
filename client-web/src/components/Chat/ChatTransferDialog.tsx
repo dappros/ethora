@@ -31,6 +31,7 @@ interface IProps {
   onPrivateRoomClick: (jid: string) => void;
   onThreadClick:() => void;
   onEditClick:(value:boolean, message:TMessageHistory) => void;
+  onDeleteClick:(value:boolean, message:TMessageHistory) => void;
 }
 type IDialog = "dialog" | "error" | "clarification" | "transfer";
 
@@ -48,7 +49,8 @@ export function ChatTransferDialog({
   message,
   onPrivateRoomClick,
   onThreadClick,
-  onEditClick
+  onEditClick,
+  onDeleteClick
 }: IProps) {
   const user = useStoreState((state) => state.user);
 
@@ -73,7 +75,12 @@ export function ChatTransferDialog({
   
   const openEditView = () => {
     onEditClick(true, message);
-    onClose()
+    onClose();
+  }
+
+  const handleDelete = () => {
+    onDeleteClick(true, message);
+    onClose();
   }
 
   const userToBlackList = (step: "clarify" | "block") => {
@@ -273,6 +280,19 @@ export function ChatTransferDialog({
                 startIcon={<EditIcon />}
               >
                 Edit
+              </Button>
+            }
+
+            {isSameUser&&
+              <Button
+                style={{
+                  margin: "10px 0px 0px 0px",
+                }}
+                onClick={handleDelete}
+                variant="outlined"
+                startIcon={<EditIcon />}
+              >
+                Delete
               </Button>
             }
               
