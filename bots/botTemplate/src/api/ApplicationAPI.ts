@@ -42,7 +42,7 @@ export default class ApplicationAPI implements IApplicationAPI {
                 refreshToken: String(request.data.refreshToken),
                 data: {
                     _id: String(request.data._id),
-                    jid: ApplicationAPI._getJID(String(request.data.user.defaultWallet.walletAddress)),
+                    botJID: ApplicationAPI._getJID(String(request.data.user.defaultWallet.walletAddress)),
                     appId: String(request.data.appId),
                     xmppPassword: String(request.data.xmppPassword),
                     walletAddress: String(request.data.user.defaultWallet.walletAddress),

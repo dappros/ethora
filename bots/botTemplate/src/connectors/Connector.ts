@@ -63,7 +63,7 @@ export default class Connector extends EventEmitter implements IConnector {
             message: String(this.stanza.getChild('body').getText()),
             user: this.getUser(),
             sessionKey: this.getUniqueSessionKey(),
-            sender: this.botAuthData.data.jid ===  this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user
+            sender: this.botAuthData.data.botJID ===  this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user
         }
     }
 
@@ -72,7 +72,7 @@ export default class Connector extends EventEmitter implements IConnector {
         const Xmpp = new XmppClient();
         API.userAuthorization(this.username, this.password).then(botAuthData => {
             //Initializing XMPP Client
-            Xmpp.init(botAuthData.data.jid, botAuthData.data.xmppPassword);
+            Xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword);
             this.botAuthData = botAuthData;
             //Listen for incoming messages and redirect them to a bot
             Xmpp.client.on("stanza", (stanza) => {
