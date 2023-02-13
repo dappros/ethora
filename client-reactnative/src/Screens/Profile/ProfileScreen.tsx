@@ -117,7 +117,7 @@ export const ProfileScreen = observer(() => {
   useEffect(() => {
     calculateAssetsCount();
     return () => {};
-  }, [walletStore.nftItem, coinData]);
+  }, [walletStore.nftItems, coinData]);
 
   const onNamePressed = () => {
     setModalType('name');
@@ -334,10 +334,21 @@ export const ProfileScreen = observer(() => {
         <VStack
           marginTop={hp('5.5%')}
           bgColor={'#FBFBFB'}
+          style={{
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 5,
+            },
+            shadowOpacity: 0.9,
+            shadowRadius: 6.27,
+            
+            elevation: 5,
+          }}
           borderTopLeftRadius={30}
           borderTopRightRadius={30}
           height={hp('75%')}>
-          <View style={{alignItems: 'center', marginTop: hp('5.54%')}}>
+          <View style={{alignItems: 'center', marginTop: hp('5.54%'), backgroundColor:"white"}}>
             <HStack alignItems={'center'}>
               <TouchableOpacity onPress={onNamePressed} style={{marginLeft: 5}}>
                 <Text
@@ -407,7 +418,7 @@ export const ProfileScreen = observer(() => {
             </HStack>
           </View>
 
-          <View>{loadTabContent()}</View>
+          <View style={{backgroundColor:"white"}}>{loadTabContent()}</View>
         </VStack>
       </View>
       <ProfileModal

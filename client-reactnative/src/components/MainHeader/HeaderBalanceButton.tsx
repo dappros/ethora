@@ -19,12 +19,22 @@ export const HeaderBalanceButton = observer(() => {
   const {walletStore} = useStores();
   const navigation = useNavigation();
   const onButtonPress = () => {
-    navigation.navigate(ROUTES.PROFILE);
+    navigation.navigate(ROUTES.PROFILE as never);
   };
   return (
     <Box
       background={'white'}
-      shadow="7"
+      style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 6.27,
+        
+        elevation: 10,
+      }}
       rounded={'sm'}
       alignItems={'center'}
       justifyContent={'center'}

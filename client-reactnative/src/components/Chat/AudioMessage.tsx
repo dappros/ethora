@@ -12,7 +12,7 @@ import {commonColors} from '../../../docs/config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {HStack} from 'native-base';
-import {IMessage} from 'react-native-gifted-chat';
+import { IMessage } from '../../stores/chatStore';
 
 interface IAudioMessage {
   onLongPress: (type: string, message: IMessage) => void;
@@ -29,7 +29,7 @@ export const AudioMessage: React.FC<IAudioMessage> = ({
 }) => {
   return (
     <TouchableOpacity
-      onLongPress={() => onLongPress('', message.currentMessage)}
+      onLongPress={() => onLongPress('', message)}
       onPress={() => onPress(message)}
       activeOpacity={0.7}
       style={styles.button}>

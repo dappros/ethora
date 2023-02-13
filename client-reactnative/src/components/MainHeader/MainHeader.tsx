@@ -10,9 +10,6 @@ import {
   Badge,
   Box,
   HStack,
-  Image,
-  Pressable,
-  Text,
   View,
   VStack,
 } from 'native-base';
@@ -20,24 +17,18 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
-  coinsMainName,
   commonColors,
   defaultMetaRoom,
-  navbarLogoShow,
   ROOM_KEYS,
 } from '../../../docs/config';
 import {useStores} from '../../stores/context';
-import {HeaderAppLogo} from './HeaderAppLogo';
-import {HeaderAppTitle} from './HeaderAppTitle';
 import {HeaderBalanceButton} from './HeaderBalanceButton';
 import {HeaderMenu} from './HeaderMenu';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {observer} from 'mobx-react-lite';
 import {ROUTES} from '../../constants/routes';
-import {alpha} from '../../helpers/aplha';
 import {httpGet} from '../../config/apiService';
-import {showError} from '../Toast/toast';
 
 export const MainHeader = observer(() => {
   const {chatStore, apiStore, loginStore} = useStores();
@@ -71,11 +62,13 @@ export const MainHeader = observer(() => {
         loginStore.userToken,
       );
       if (!res.data.result) {
+        //@ts-ignore
         navigation.navigate(ROUTES.CHAT, {
           chatJid: defaultMetaRoom.jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
         });
         return;
       }
+      //@ts-ignore
       navigation.navigate(ROUTES.CHAT, {
         chatJid:
           res.data.result.roomId.roomJid +
@@ -94,7 +87,9 @@ export const MainHeader = observer(() => {
       chatStore.changeActiveChats(key);
 
       if (
+        //@ts-ignore
         !chatStore.roomList.find(item => item.jid === route.params?.chatJid)
+        //@ts-ignore
           ?.meta
       ) {
         await navigateToLatestMetaRoom();
@@ -112,7 +107,7 @@ export const MainHeader = observer(() => {
     }
     chatStore.changeActiveChats(key);
 
-    navigation.navigate(ROUTES.ROOMSLIST);
+    navigation.navigate(ROUTES.ROOMSLIST as never);
   };
 
   const highlightIcon = (id: string) => {
@@ -120,6 +115,17 @@ export const MainHeader = observer(() => {
   };
   return (
     <Box
+      style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.4,
+        shadowRadius: 6.27,
+        
+        elevation: 10,
+      }}
       height={hp('9%')}
       justifyContent={'center'}
       bgColor={commonColors.primaryColor}>
@@ -137,6 +143,17 @@ export const MainHeader = observer(() => {
                 accessibilityLabel={item.accessibilityLabel}
                 onPress={async () => await onTabPress(item.key)}>
                 <Ionicons
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 5,
+                    },
+                    shadowOpacity: 0.5,
+                    shadowRadius: 6.27,
+                    
+                    elevation: 5,
+                  }}
                   name={item.icon}
                   size={30}
                   color={

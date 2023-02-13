@@ -10,15 +10,14 @@ import {StyleSheet} from 'react-native';
 import {commonColors, textStyles} from '../../../docs/config';
 import {
   heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {Box, Text, View} from 'native-base';
+import {Box, Text} from 'native-base';
 import {observer} from 'mobx-react-lite';
 import {useStores} from '../../stores/context';
 import FastImage from 'react-native-fast-image';
 
 export const RoomListItemIcon = observer(
-  ({name, counter, jid}: {name: string; counter: number}) => {
+  ({name, counter, jid}: {name: string; counter: number, jid:string}) => {
     const {chatStore} = useStores();
     const room = chatStore.roomList.find(item => item.jid === jid);
     return (
@@ -36,7 +35,7 @@ export const RoomListItemIcon = observer(
         position={'relative'}
         accessibilityLabel={'Thumbnail'}
         borderRadius={hp('0.7%')}>
-        {room.roomThumbnail ? (
+        {room?.roomThumbnail ? (
           <FastImage
             source={{
               uri: room.roomThumbnail,

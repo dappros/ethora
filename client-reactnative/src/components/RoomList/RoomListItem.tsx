@@ -34,6 +34,7 @@ const getTime = (time: Date | undefined) => {
   try {
     const oneday = 60 * 60 * 24 * 1000;
     const now = Date.now();
+    //@ts-ignore
     const isMoreThanADay = now - time > oneday;
     if (isMoreThanADay) {
       return dayjs(time).locale('en').format('MMM D');
@@ -54,10 +55,12 @@ export const RoomListItem = observer(
 
     const navigateToChat = () => {
       chatStore.updateBadgeCounter(jid, 'CLEAR');
+      //@ts-ignore
       navigation.navigate(ROUTES.CHAT, {chatJid: jid, chatName: name});
     };
     return (
-      <View style={[{backgroundColor: 'white'}]}>
+      <View
+       style={[{backgroundColor: 'white'}]}>
         <Box
           borderBottomWidth="1"
           _dark={{

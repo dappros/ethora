@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     shadowColor: '#5D3F6A',
-    shadowOffset: {height: 15},
+    shadowOffset: {height: 15, width:0},
     shadowRadius: 8,
     shadowOpacity: 0.3,
   },

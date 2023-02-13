@@ -8,12 +8,12 @@ Note: linked open-source libraries and components may be subject to their own li
 import {Box, Menu, Text, View} from 'native-base';
 import React from 'react';
 import {textStyles} from '../../../docs/config';
-import {subMenuTitle} from '../../constants/subMenuTitle';
+import { IMenuItem } from './HeaderMenu';
 
 interface SubMenuProps {
   title: string;
-  menuItems: any;
-  onMenuItemPress: any;
+  menuItems: IMenuItem[];
+  onMenuItemPress: (value: string) => void;
 }
 const SubMenu = (props: SubMenuProps) => {
   const {title, menuItems, onMenuItemPress} = props;

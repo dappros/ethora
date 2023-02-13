@@ -156,6 +156,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
 
         navigation.navigate(ROUTES.CHAT, {
           chatJid: roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
+          chatName:chatName
         });
       }
     });

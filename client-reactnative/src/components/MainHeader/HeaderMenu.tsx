@@ -21,13 +21,19 @@ import {
 import {useStores} from '../../stores/context';
 import SubMenu from './SubMenu';
 
+export interface IMenuItem{
+  value: string;
+  label: string;
+  visible: boolean;
+}[]
+
 export const HeaderMenu = () => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
   const {loginStore, debugStore} = useStores();
 
-  const AccountMenuItems = [
+  const AccountMenuItems:IMenuItem[] = [
     {value: ROUTES.PROFILE, label: 'My profile', visible: true},
     {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
     // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
@@ -35,7 +41,7 @@ export const HeaderMenu = () => {
     {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
   ];
 
-  const ActionsMenuItems = [
+  const ActionsMenuItems:IMenuItem[] = [
     {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
     {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
     {
@@ -50,7 +56,7 @@ export const HeaderMenu = () => {
     },
   ];
 
-  const SystemMenuItems = [
+  const SystemMenuItems:IMenuItem[] = [
     {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
     {
       value: ROUTES.AUTHENTICATIONSCREEN,
@@ -66,11 +72,11 @@ export const HeaderMenu = () => {
     open ? setOpen(false) : setOpen(true);
   };
 
-  const onMenuItemPress = (value: any) => {
+  const onMenuItemPress = (value: string) => {
     if (value === ROUTES.LOGOUT) {
       loginStore.logOut();
     } else {
-      navigation.navigate(value);
+      navigation.navigate(value as never);
     }
   };
   return (
@@ -78,7 +84,17 @@ export const HeaderMenu = () => {
       h="100%"
       w={50}
       alignItems="center"
-      shadow={'9'}
+      style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 6.27,
+        
+        elevation: 10,
+      }}
       justifyContent={'center'}>
       <Menu
         accessibilityLabel="Menu"

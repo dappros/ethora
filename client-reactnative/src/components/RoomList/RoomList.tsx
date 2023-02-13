@@ -47,7 +47,7 @@ export const RoomList = observer(({roomsList}: any) => {
           }}
         />
         <CreateNewChatButton
-          onPress={() => navigation.navigate(ROUTES.NEWCHAT)}
+          onPress={() => navigation.navigate(ROUTES.NEWCHAT as never)}
         />
       </View>
     </>

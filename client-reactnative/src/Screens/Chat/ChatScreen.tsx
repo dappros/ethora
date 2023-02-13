@@ -1,23 +1,33 @@
 import {observer} from 'mobx-react-lite';
 import React, {useEffect} from 'react';
-import {StyleSheet} from 'react-native';
-
 import {format} from 'date-fns';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-
-import {commonColors} from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import {getRoomArchiveStanza, getPaginatedArchive} from '../../xmpp/stanzas';
 import ChatContainer from '../../components/Chat/ChatContainer';
-import {roomListProps} from '../../stores/chatStore';
+import {IMessage, roomListProps} from '../../stores/chatStore';
 
 const ChatScreen = observer(({route}: any) => {
   const {chatStore} = useStores();
 
   const {chatJid, chatName} = route.params;
-  const room = chatStore.roomList.find(item => item.jid === chatJid);
+  const room:roomListProps = chatStore.roomList.find(item => item.jid === chatJid)||{
+    avatar:"",
+    counter:0,
+    createdAt:"",
+    jid:chatJid,
+    lastUserName:"",
+    lastUserText:"",
+    name:chatName?chatName:'',
+    participants:0,
+    isFavourite:false,
+    muted:false,
+    priority:0,
+    roomBackground:"",
+    roomBackgroundIndex:0,
+    roomThumbnail:""
+  };
   const messages = chatStore.messages
-    .filter((item: any) => {
+    .filter((item: IMessage) => {
       if (item.roomJid === chatJid) {
         if (item.isReply) {
           if (item.showInChannel) {
@@ -55,15 +65,12 @@ const ChatScreen = observer(({route}: any) => {
         lastUserText: lastMessage?.text,
         lastUserName: lastMessage?.user?.name,
         lastMessageTime:
-          lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
+          lastMessage?.createdAt && format(lastMessage?.createdAt as Date, 'hh:mm'),
       });
   }, [!!messages]);
 
   const onLoadEarlier = () => {
-    // messages.length - 1 means last message, but because chat is inverted it will the first message by date
-
     const lastMessage = messages.length - 1;
-    // const lastMessage = 0;
     if (messages.length > 5) {
       getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
       chatStore.setChatMessagesLoading(true);
@@ -74,28 +81,12 @@ const ChatScreen = observer(({route}: any) => {
     <>
       <ChatContainer
         containerType="main"
-        roomDetails={room as roomListProps}
+        roomDetails={room}
         messages={messages}
         onLoadEarlier={onLoadEarlier}
       />
     </>
   );
-});
-
-const styles = StyleSheet.create({
-  usernameStyle: {
-    fontWeight: 'bold',
-    color: '#FFFF',
-    fontSize: hp('1.47%'),
-  },
-  sendButton: {
-    backgroundColor: commonColors.primaryDarkColor,
-    borderRadius: 100,
-    padding: 5,
-    marginRight: 5,
-    paddingLeft: 7,
-    marginBottom: 5,
-  },
 });
 
 export default ChatScreen;

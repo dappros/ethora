@@ -66,6 +66,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
+            //@ts-ignore
             navigation.navigate(ROUTES.CHATDETAILS, {
               roomName: title,
               roomJID: roomJID,
