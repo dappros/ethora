@@ -2,7 +2,7 @@ import xmpp, {xml} from "@xmpp/client";
 import {Client} from "@xmpp/client";
 
 class XmppClient {
-    public client: Client;
+    public client!: Client;
     public botJID: string;
 
     init(botJID: string, xmppPassword: string) {
@@ -13,7 +13,6 @@ class XmppClient {
         if (this.client) {
             return;
         }
-        this.botJID = botJID;
 
         this.client = xmpp.client({
             service: "dev.dxmpp.com",
@@ -39,3 +38,5 @@ class XmppClient {
         }
     }
 }
+
+export default new XmppClient();
