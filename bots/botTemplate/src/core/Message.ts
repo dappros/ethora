@@ -11,7 +11,7 @@ export class Message implements IMessage {
     }
 
     getText(): string {
-        return this.data.rawData.text;
+        return this.data.message;
     }
 
     getUser(): IUser {
