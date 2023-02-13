@@ -1,6 +1,7 @@
 import axios from "axios";
 import {IAuthorization} from "./IAuthorization";
 import {IApplicationAPI} from "./IApplicationAPI";
+import {APIDOMAIN, TOKENJWT} from "../Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
     authData: IAuthorization;
@@ -8,15 +9,15 @@ export default class ApplicationAPI implements IApplicationAPI {
     baseURL: string;
     private readonly tokenJWT: string;
 
-    constructor(tokenJWT: string, baseURL: string) {
-        this.tokenJWT = tokenJWT;
-        this.baseURL = baseURL;
+    constructor() {
+        this.tokenJWT = TOKENJWT;
+        this.baseURL = APIDOMAIN;
 
         this.http = axios.create({
             baseURL: this.baseURL
         });
 
-        this.http.interceptors.response.use(undefined, error => {
+        this.http.interceptors.response.use(undefined, (error: any) => {
             return this._errorHandler(error)
         });
     }
@@ -87,12 +88,12 @@ export default class ApplicationAPI implements IApplicationAPI {
     _refreshToken() {
         return new Promise((resolve, reject) => {
             this.http.post('/users/login/refresh', {}, {headers: {'Authorization': this.authData.refreshToken}})
-                .then(response => {
+                .then((response: any) => {
                     this.authData.token = response.data.token;
                     this.authData.refreshToken = response.data.refreshToken;
                     resolve(response)
                 })
-                .catch(error => {
+                .catch((error: any) => {
                     reject(error)
                 })
         });
