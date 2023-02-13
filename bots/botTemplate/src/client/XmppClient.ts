@@ -1,7 +1,13 @@
 import xmpp, {xml} from "@xmpp/client";
 import {Client} from "@xmpp/client";
 
-class XmppClient {
+const isOnline = (xmpp: any) => {
+    xmpp.client.send(xml("presence"));
+
+    console.log("=> Xmpp is Online")
+}
+
+export default class XmppClient {
     public client!: Client;
     public botJID: string;
 
@@ -22,6 +28,7 @@ class XmppClient {
 
         this.client.start();
 
+        this.client.on("online", () => isOnline(this));
         this.client.on("offline", () => console.log("=> XMPP is offline."));
 
         this.client.on("error", (error) => {
@@ -38,5 +45,3 @@ class XmppClient {
         }
     }
 }
-
-export default new XmppClient();
