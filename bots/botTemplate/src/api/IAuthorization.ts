@@ -13,6 +13,7 @@ export interface IAuthData {
     username: string;
     firstName: string;
     lastName: string;
+    photo: string;
     emails?: Array<string>;
     updatedAt: string;
     isUserDataEncrypted: boolean;
