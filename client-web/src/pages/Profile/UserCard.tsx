@@ -8,12 +8,12 @@ import { useStoreState } from "../../store";
 import EditProfileModal from "./EditProfileModal";
 import { Button, IconButton } from "@mui/material";
 import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
-import xmpp, { walletToUsername } from "../../xmpp";
 import { useHistory } from "react-router-dom";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { generateProfileLink } from "../../utils";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "./QrModal";
+import { walletToUsername } from "../../utils/walletManipulation";
 
 type TProps = {
   profile?: TProfile;

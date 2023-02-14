@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import xmpp, { createMainMessageForThread } from "../../xmpp";
+import xmpp from "../../xmpp";
 import {
   TActiveRoomFilter,
   TMessageHistory,
@@ -66,6 +66,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { createMainMessageForThread } from "../../utils/createMessage";
 
 export type IMessagePosition = {
   position: MessageModel["position"];

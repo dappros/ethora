@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import { sha256 } from "js-sha256";
-import xmpp, { walletToUsername } from "../../xmpp";
+import xmpp from "../../xmpp";
 import { useStoreState } from "../../store";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { useHistory, useLocation } from "react-router";
@@ -39,7 +39,6 @@ const NewChat: React.FC<INewChat> = ({}) => {
     onSubmit: async ({ chatName, description, chatImage }) => {
       setLoading(true);
       const roomHash = sha256(chatName);
-      const wallet = walletToUsername(user.walletAddress);
       xmpp.createNewRoom(roomHash);
 
       xmpp.setOwner(roomHash);

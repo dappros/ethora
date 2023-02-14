@@ -13,7 +13,7 @@ import { transferCoin } from "../../http";
 import coin from "../../assets/images/coin.png";
 import SendIcon from "@mui/icons-material/Send";
 import BlockIcon from "@mui/icons-material/Block";
-import xmpp, { walletToUsername } from "../../xmpp";
+import xmpp from "../../xmpp";
 import { TMessageHistory, useStoreState } from "../../store";
 import { coinReplacedName, coinsMainName } from "../../config/config";
 import { DOMAIN } from "../../constants";
@@ -21,6 +21,7 @@ import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
 import { useSnackbar } from "../../context/SnackbarContext";
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
+import { walletToUsername } from "../../utils/walletManipulation";
 
 const dialogItems = [1, 3, 5, "x"];
 interface IProps {
