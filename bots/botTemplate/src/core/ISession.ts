@@ -1,5 +1,6 @@
 import { IBot } from './IBot';
 import { ISessionState } from './ISessionState';
+import {IKeyboard} from "../client/types/IKeyboard";
 
 export interface ISession {
     bot: IBot;
@@ -7,7 +8,7 @@ export interface ISession {
     initialState: ISessionState;
     isNew: boolean;
     getUsername(): string;
-    send(message: any, options?: any): Promise<any>;
+    sendTextMessage(message: string, keyboard?: IKeyboard): Promise<any>;
     resetState(): void;
     setState(state: ISessionState): void;
 }
