@@ -1,12 +1,15 @@
 import EventEmitter = require("events");
 import {IConnector, ConnectorEvent } from "./IConnector";
 import {IUser} from "../core/IUser";
-import {IMessage, IMessageProps, MessageSender} from "../core/IMessage";
+import {IMessageProps, MessageSender} from "../core/IMessage";
 import XmppClient from "../client/XmppClient";
 import ApplicationAPI from "../api/ApplicationAPI";
 import {IAuthorization} from "../api/IAuthorization";
 import {Message} from "../core/Message";
 import {DOMAIN} from "../Config";
+import {XmppSender} from "../client/XmppSender";
+import {ISendTextMessageOptions} from "../client/IXmppSender";
+import {IKeyboard} from "../client/types/IKeyboard";
 
 export default class Connector extends EventEmitter implements IConnector {
     username: string;
@@ -20,8 +23,12 @@ export default class Connector extends EventEmitter implements IConnector {
         this.password = password;
     }
 
-    getUniqueSessionKey() {
-        return this.stanza.attrs.from.split("/").pop() + DOMAIN;
+    getUniqueSessionKey(): string {
+        return String(this.stanza.attrs.from.split("/").pop() + DOMAIN);
+    }
+
+    getCurrentRoomJID(): string {
+        return String(this.stanza.getChild('data').attrs.roomJid);
     }
 
     getUser(): IUser {
@@ -38,16 +45,21 @@ export default class Connector extends EventEmitter implements IConnector {
         }
     }
 
-    async send(message: IMessage) {
-        //sendMessage Logic
-        console.log(message.getText());
-
+    async send(message: string, keyboard?: IKeyboard) {
+        const Sender = new XmppSender();
+        const data: ISendTextMessageOptions = {
+            keyboard: keyboard ? keyboard : [],
+            message: message,
+            roomJID: this.getCurrentRoomJID(),
+            senderData: this.botAuthData.data
+        }
+        Sender.sendTextMessage(data);
         return Promise.resolve();
     }
 
     collectMessage(): IMessageProps {
         return {
-            data: {
+            messageData: {
                 xmlns: String(this.stanza.getChild('data').attrs.xmlns),
                 isSystemMessage: toBooleanType(this.stanza.getChild('data').attrs.isSystemMessage),
                 tokenAmount: Number(this.stanza.getChild('data').attrs.tokenAmount),
@@ -67,13 +79,15 @@ export default class Connector extends EventEmitter implements IConnector {
         }
     }
 
-    listen() {
+    listen(): any {
         const API = new ApplicationAPI();
         const Xmpp = new XmppClient();
+
         API.userAuthorization(this.username, this.password).then(botAuthData => {
+            this.botAuthData = botAuthData;
+
             //Initializing XMPP Client
             Xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword);
-            this.botAuthData = botAuthData;
             //Listen for incoming messages and redirect them to a bot
             Xmpp.client.on("stanza", (stanza) => {
                 //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
