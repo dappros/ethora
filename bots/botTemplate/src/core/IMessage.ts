@@ -3,7 +3,7 @@ import {IUser} from "./IUser";
 export enum MessageSender { bot, user }
 
 export interface IMessageProps {
-    data: {
+    messageData: {
         xmlns: string;
         isSystemMessage: boolean;
         tokenAmount: number;
