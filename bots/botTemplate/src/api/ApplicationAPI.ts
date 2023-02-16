@@ -1,24 +1,27 @@
 import axios from "axios";
 import {IAuthorization} from "./IAuthorization";
 import {IApplicationAPI} from "./IApplicationAPI";
-import {APIDOMAIN, BOTIMG, TOKENJWT} from "../Config";
+import Config from "../config/Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
-    authData: IAuthorization;
+    authData: IAuthorization | undefined;
     private http: any;
     baseURL: string;
     private readonly tokenJWT: string;
 
     constructor() {
-        this.tokenJWT = TOKENJWT;
-        this.baseURL = APIDOMAIN;
+        this.tokenJWT = Config.getData().tokenJWT;
+        this.baseURL = Config.getData().apiDomain;
 
         this.http = axios.create({
             baseURL: this.baseURL
         });
 
         this.http.interceptors.response.use(undefined, (error: any) => {
-            return this._errorHandler(error)
+            if(this.authData){
+                return this._errorHandler(error, this.authData)
+            }
+            return Promise.reject(error);
         });
     }
 
@@ -41,27 +44,27 @@ export default class ApplicationAPI implements IApplicationAPI {
                 token: String(request.data.token),
                 refreshToken: String(request.data.refreshToken),
                 data: {
-                    _id: String(request.data._id),
+                    _id: String(request.data.user._id),
                     botJID: ApplicationAPI._getJID(String(request.data.user.defaultWallet.walletAddress)),
-                    appId: String(request.data.appId),
-                    xmppPassword: String(request.data.xmppPassword),
+                    appId: String(request.data.user.appId),
+                    xmppPassword: String(request.data.user.xmppPassword),
                     walletAddress: String(request.data.user.defaultWallet.walletAddress),
-                    username: String(request.data.username),
-                    firstName: String(request.data.firstName),
-                    lastName: String(request.data.lastName),
-                    photo: BOTIMG,
-                    emails: Array.isArray(request.data.emails) ? request.data.emails : [],
-                    updatedAt: String(request.data.updatedAt),
-                    isUserDataEncrypted: request.data.isUserDataEncrypted,
+                    username: String(request.data.user.username),
+                    firstName: String(request.data.user.firstName),
+                    lastName: String(request.data.user.lastName),
+                    photo: Config.getData().botImg,
+                    emails: Array.isArray(request.data.user.emails) ? request.data.user.emails : [],
+                    updatedAt: String(request.data.user.updatedAt),
+                    isUserDataEncrypted: request.data.app.isUserDataEncrypted,
                 }
             };
             return this.authData;
-        } catch (error) {
+        } catch (error: any) {
             return error.data;
         }
     }
 
-    _errorHandler(error: any) {
+    _errorHandler(error: any, authData: IAuthorization) {
         if (!error.response || error.response.status !== 401) {
             return Promise.reject(error);
         }
@@ -72,11 +75,11 @@ export default class ApplicationAPI implements IApplicationAPI {
 
         const request = error.config;
 
-        return this._refreshToken()
+        return this._refreshToken(authData)
             .then(() => {
                 return new Promise((resolve) => {
                     'sendig request after refresh';
-                    request.headers['Authorization'] = this.authData.token;
+                    request.headers['Authorization'] = authData.token;
                     resolve(this.http(request));
                 });
             })
@@ -86,12 +89,12 @@ export default class ApplicationAPI implements IApplicationAPI {
             });
     }
 
-    _refreshToken() {
+    _refreshToken(authData: IAuthorization) {
         return new Promise((resolve, reject) => {
-            this.http.post('/users/login/refresh', {}, {headers: {'Authorization': this.authData.refreshToken}})
+            this.http.post('/users/login/refresh', {}, {headers: {'Authorization': authData.refreshToken}})
                 .then((response: any) => {
-                    this.authData.token = response.data.token;
-                    this.authData.refreshToken = response.data.refreshToken;
+                    authData.token = response.data.token;
+                    authData.refreshToken = response.data.refreshToken;
                     resolve(response)
                 })
                 .catch((error: any) => {
