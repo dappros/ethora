@@ -1,18 +1,23 @@
 import xmpp, {xml} from "@xmpp/client";
 import {Client} from "@xmpp/client";
+import Logger from "../utils/Logger";
+import Config from "../config/Config";
+import {XmppRoom} from "./XmppRoom";
 
 const isOnline = (xmpp: any) => {
     xmpp.client.send(xml("presence"));
+    Logger.info('XMPP is Online')
 
-    console.log("=> Xmpp is Online")
+    const XmppRooms = new XmppRoom();
+    XmppRooms.presenceInTheRoom('fb9cf8277d7133ef03aed5811bc5f57237ebddecea351d8abfcb8899f6b56d79@conference.dev.dxmpp.com');
 }
 
-export default class XmppClient {
+class XmppClient {
     public client!: Client;
-    public botJID: string;
 
     init(botJID: string, xmppPassword: string) {
-        if (!xmppPassword) {
+
+        if (!xmppPassword || !botJID) {
             return;
         }
 
@@ -21,20 +26,21 @@ export default class XmppClient {
         }
 
         this.client = xmpp.client({
-            service: "dev.dxmpp.com",
+            service: Config.getData().baseDomain,
             username: botJID,
             password: xmppPassword,
         });
 
         this.client.start();
+        Logger.info('XMPP Client starting...')
 
         this.client.on("online", () => isOnline(this));
-        this.client.on("offline", () => console.log("=> XMPP is offline."));
+        this.client.on("offline", () => Logger.info('XMPP is offline.'));
 
         this.client.on("error", (error) => {
-            console.log("=> XMPP on error: ", error);
+            Logger.error('XMPP on error' + error);
             this.stop();
-            console.log("=> XMPP error, terminating collection");
+            Logger.error('XMPP error, terminating collection');
         });
     }
 
@@ -44,4 +50,10 @@ export default class XmppClient {
             return;
         }
     }
+
+    sender(data: any) {
+        this.client.send(data).catch(error => {Logger.error('XMPP sender: ', error)});
+    }
 }
+
+export default new XmppClient();
