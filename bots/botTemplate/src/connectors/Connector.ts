@@ -1,30 +1,33 @@
 import EventEmitter = require("events");
-import {IConnector, ConnectorEvent } from "./IConnector";
+import {IConnector, ConnectorEvent} from "./IConnector";
 import {IUser} from "../core/IUser";
 import {IMessageProps, MessageSender} from "../core/IMessage";
 import XmppClient from "../client/XmppClient";
 import ApplicationAPI from "../api/ApplicationAPI";
 import {IAuthorization} from "../api/IAuthorization";
 import {Message} from "../core/Message";
-import {DOMAIN} from "../Config";
 import {XmppSender} from "../client/XmppSender";
 import {ISendTextMessageOptions} from "../client/IXmppSender";
 import {IKeyboard} from "../client/types/IKeyboard";
+import Config from "../config/Config";
+import Logger from "../utils/Logger";
 
 export default class Connector extends EventEmitter implements IConnector {
     username: string;
     password: string;
     stanza: any;
-    botAuthData: IAuthorization;
+    botAuthData: IAuthorization | undefined;
+    xmpp: any;
 
     constructor(username: string, password: string) {
         super();
         this.username = username;
         this.password = password;
+        this.xmpp = XmppClient;
     }
 
     getUniqueSessionKey(): string {
-        return String(this.stanza.attrs.from.split("/").pop() + DOMAIN);
+        return String(this.stanza.attrs.from.split("/").pop() + Config.getData().domain);
     }
 
     getCurrentRoomJID(): string {
@@ -33,7 +36,7 @@ export default class Connector extends EventEmitter implements IConnector {
 
     getUser(): IUser {
         if (!this.stanza || !this.stanza.getChild('data')) {
-            return;
+            throw Logger.error(new Error('Unable to get user data without connecting to xmpp'));
         }
 
         return {
@@ -46,6 +49,10 @@ export default class Connector extends EventEmitter implements IConnector {
     }
 
     async send(message: string, keyboard?: IKeyboard) {
+        if (!this.botAuthData) {
+            throw Logger.error(new Error('Authorization data not found. Without this, it is impossible to send a message.'));
+        }
+
         const Sender = new XmppSender();
         const data: ISendTextMessageOptions = {
             keyboard: keyboard ? keyboard : [],
@@ -58,6 +65,10 @@ export default class Connector extends EventEmitter implements IConnector {
     }
 
     collectMessage(): IMessageProps {
+        if (!this.botAuthData) {
+            throw Logger.error(new Error('Authorization data not found. This data is required to generate a message.'));
+        }
+
         return {
             messageData: {
                 xmlns: String(this.stanza.getChild('data').attrs.xmlns),
@@ -75,25 +86,29 @@ export default class Connector extends EventEmitter implements IConnector {
             message: String(this.stanza.getChild('body').getText()),
             user: this.getUser(),
             sessionKey: this.getUniqueSessionKey(),
-            sender: this.botAuthData.data.botJID ===  this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user
+            sender: this.botAuthData.data.botJID === this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user
         }
     }
 
     listen(): any {
         const API = new ApplicationAPI();
-        const Xmpp = new XmppClient();
 
         API.userAuthorization(this.username, this.password).then(botAuthData => {
             this.botAuthData = botAuthData;
 
+            if (botAuthData.data.botJID === 'undefined' || botAuthData.data.xmppPassword === 'undefined') {
+                throw Logger.error(new Error('Authorization error, perhaps the login or password is incorrect, and the JWT token could also be out of date.'));
+            }
+
             //Initializing XMPP Client
-            Xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword);
+            this.xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword);
             //Listen for incoming messages and redirect them to a bot
-            Xmpp.client.on("stanza", (stanza) => {
+            this.xmpp.client.on("stanza", (stanza: any) => {
                 //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
                 if (stanza.getChild('body')) {
                     this.stanza = stanza;
                     const receivedMessage = new Message(this.collectMessage());
+                    Logger.info('Received: ' + receivedMessage.getText());
                     this.emit(ConnectorEvent.receiveMessage, receivedMessage);
                 }
             });
@@ -103,5 +118,8 @@ export default class Connector extends EventEmitter implements IConnector {
 }
 
 const toBooleanType = (text: string): boolean => {
+    if (!text) {
+        return false;
+    }
     return text.replace(/^\s+|\s+$/g, "").toLowerCase() === "true";
 };
