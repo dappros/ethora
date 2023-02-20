@@ -11,6 +11,7 @@ import {ISendTextMessageOptions} from "../client/IXmppSender";
 import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
 import Logger from "../utils/Logger";
+import {XmppRoom} from "../client/XmppRoom";
 
 export default class Connector extends EventEmitter implements IConnector {
     username: string;
@@ -64,7 +65,7 @@ export default class Connector extends EventEmitter implements IConnector {
         return Promise.resolve();
     }
 
-    collectMessage(): IMessageProps {
+    _collectMessage(): IMessageProps {
         if (!this.botAuthData) {
             throw Logger.error(new Error('Authorization data not found. This data is required to generate a message.'));
         }
@@ -90,6 +91,12 @@ export default class Connector extends EventEmitter implements IConnector {
         }
     }
 
+    connectToRooms(connectionRooms: string[]): Promise<void>{
+        const XmppConnect = new XmppRoom();
+        connectionRooms.forEach(room => XmppConnect.presenceInTheRoom(String(room)));
+        return Promise.resolve();
+    }
+
     listen(): any {
         const API = new ApplicationAPI();
 
@@ -101,13 +108,14 @@ export default class Connector extends EventEmitter implements IConnector {
             }
 
             //Initializing XMPP Client
-            this.xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword);
+            this.xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword, this);
+
             //Listen for incoming messages and redirect them to a bot
             this.xmpp.client.on("stanza", (stanza: any) => {
                 //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
                 if (stanza.getChild('body')) {
                     this.stanza = stanza;
-                    const receivedMessage = new Message(this.collectMessage());
+                    const receivedMessage = new Message(this._collectMessage());
                     Logger.info('Received: ' + receivedMessage.getText());
                     this.emit(ConnectorEvent.receiveMessage, receivedMessage);
                 }

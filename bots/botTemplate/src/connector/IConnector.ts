@@ -14,6 +14,7 @@ export interface IConnector {
     getUniqueSessionKey(): string;
     getUser(): IUser;
     send(message: string, keyboard?: IKeyboard): Promise<void>;
+    connectToRooms(connectionRooms: string[]): Promise<void>;
     listen(): any;
     on(event: ConnectorEvent, handler: () => any): void;
     emit(event: ConnectorEvent, data: any): void;
