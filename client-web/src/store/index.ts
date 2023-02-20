@@ -22,7 +22,9 @@ export type TUser = {
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  isAllowedNewAppCreate: boolean;
   appId?: string;
+  isAgreeWithTerms: boolean
 };
 
 type TMode = "light" | "dark";
@@ -272,6 +274,9 @@ const _useStore = create<IStore>()(
             token: "",
             refreshToken: "",
             profileImage: "",
+            isAllowedNewAppCreate: false,
+            isAgreeWithTerms: false,
+
           },
           ACL: {
             result: {
@@ -407,6 +412,8 @@ const _useStore = create<IStore>()(
                 token: "",
                 refreshToken: "",
                 profileImage: "",
+                isAllowedNewAppCreate: false,
+                isAgreeWithTerms: false
               };
             }),
           clearOwner: () =>
@@ -420,6 +427,9 @@ const _useStore = create<IStore>()(
                 token: "",
                 refreshToken: "",
                 profileImage: "",
+                isAllowedNewAppCreate: false,
+                isAgreeWithTerms: false
+
               };
               state.apps = [];
               state.appUsers = [];
@@ -477,7 +487,7 @@ const _useStore = create<IStore>()(
             set((state) => {
               if (!Array.isArray(messages)) {
                 state.historyMessages.push(messages);
-                console.log(messages)
+                console.log(messages);
                 return;
               }
               state.historyMessages = [...state.historyMessages, ...messages];

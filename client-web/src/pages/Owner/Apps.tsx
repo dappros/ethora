@@ -12,134 +12,182 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useStoreState } from "../../store";
 import NoDataImage from "../../components/NoDataImage";
 import NewAppModal from "./NewAppModal";
-import DeleteAppModal from './DeletAppModal';
+import DeleteAppModal from "./DeletAppModal";
 import EditAppModal from "./EditAppModal";
 import RotateModal from "./RotateModal";
+import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 
 export default function BasicTable() {
-  const apps = useStoreState((state) => state.apps)
-  const [open, setOpen] = React.useState(false)
-  const [showDelete, setShowDelete] = React.useState(false)
-  const [showEdit, setShowEdit] = React.useState(false)
-  const [showRotate, setShowRotate] = React.useState(false)
+  const apps = useStoreState((state) => state.apps);
+  const user = useStoreState((state) => state.user);
+  const [open, setOpen] = React.useState(false);
+  const [companyModalOpen, setCompanyModalOpen] = React.useState(false);
+
+  const [showDelete, setShowDelete] = React.useState(false);
+  const [showEdit, setShowEdit] = React.useState(false);
+  const [showRotate, setShowRotate] = React.useState(false);
   const [currentApp, setCurrentApp] = React.useState({
-    _id: '',
-    appName: '',
-    appDescription: '',
-    appGoogleId: '',
+    _id: "",
+    appName: "",
+    appDescription: "",
+    appGoogleId: "",
     defaultAccessProfileOpen: false,
     defaultAccessAssetsOpen: false,
-    usersCanFree: false
-  })
+    usersCanFree: false,
+  });
 
   const onDelete = (app: any) => {
-    setCurrentApp(app)
-    setShowDelete(true)
-  }
+    setCurrentApp(app);
+    setShowDelete(true);
+  };
 
   const onEdit = (app: any) => {
-    setCurrentApp(app)
-    setShowEdit(true)
-  }
+    setCurrentApp(app);
+    setShowEdit(true);
+  };
 
   const onRotateJwt = (app: any) => {
-    setCurrentApp(app)
-    setShowRotate(true)
-  }
+    setCurrentApp(app);
+    setShowRotate(true);
+  };
+  const onAddApp = () => {
+    if (!user.isAgreeWithTerms) {
+      setCompanyModalOpen(true);
+      return;
+    }
+    setOpen(true);
+  };
 
   return (
-    <TableContainer
-      component={Paper}
-      style={{ margin: "0 auto" }}
-    >
+    <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
         <Typography variant="h6" style={{ margin: "16px" }}>
           Apps
         </Typography>
-        <IconButton onClick={() => setOpen(true)} size="large">
+        <IconButton onClick={onAddApp} size="large">
           <AddCircleIcon fontSize="large"></AddCircleIcon>
         </IconButton>
       </Box>
-      { apps.length === 0 && (
-        <Box style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      {apps.length === 0 && (
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <NoDataImage></NoDataImage>
-          <Typography style={{marginTop: '20px', marginBottom: '20px'}}>You have not created any apps.</Typography>
+          <Typography style={{ marginTop: "20px", marginBottom: "20px" }}>
+            You have not created any apps.
+          </Typography>
         </Box>
-      ) }
+      )}
 
-      {
-        apps.length > 0 && (
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell width={200}>Application Name</TableCell>
-                <TableCell align="right">Is Assets Open</TableCell>
-                <TableCell align="right">Is Profile Open</TableCell>
-                <TableCell align="right">Is Users Can Free</TableCell>
-                <TableCell align="right">Created</TableCell>
-                <TableCell align="right">Actions</TableCell>
+      {apps.length > 0 && (
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell width={200}>Application Name</TableCell>
+              <TableCell align="right">Is Assets Open</TableCell>
+              <TableCell align="right">Is Profile Open</TableCell>
+              <TableCell align="right">Is Users Can Free</TableCell>
+              <TableCell align="right">Created</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {apps.map((app) => (
+              <TableRow
+                key={app._id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {app.appName}
+                </TableCell>
+                <TableCell align="right">
+                  {app.defaultAccessAssetsOpen.toString()}
+                </TableCell>
+                <TableCell align="right">
+                  {app.defaultAccessProfileOpen.toString()}
+                </TableCell>
+                <TableCell align="right">
+                  {app.usersCanFree.toString()}
+                </TableCell>
+                <TableCell align="right">
+                  {new Date(app.createdAt).toDateString()}
+                </TableCell>
+                <TableCell align="right">
+                  <Box style={{ display: "flex", flexDirection: "column" }}>
+                    <a
+                      href="/"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onDelete(app);
+                      }}
+                    >
+                      Delete
+                    </a>
+                    <a
+                      href={`data:text/json;chatset=utf-8,${encodeURIComponent(
+                        JSON.stringify({ appJwt: app.appToken })
+                      )}`}
+                      style={{ display: "none" }}
+                      download="data.json"
+                      id={`app-jwt-${app._id}`}
+                    >
+                      download jwt
+                    </a>
+                    <a
+                      href="/"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.querySelector(
+                          `#app-jwt-${app._id}`
+                        ) as HTMLElement;
+                        el?.click();
+                      }}
+                    >
+                      Download App JWT
+                    </a>
+                    <a
+                      href="/"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onRotateJwt(app);
+                      }}
+                    >
+                      Rotate App Jwt
+                    </a>
+                    <a
+                      href="/"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onEdit(app);
+                      }}
+                    >
+                      Edit
+                    </a>
+                  </Box>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {apps.map((app) => (
-                <TableRow
-                  key={app._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {app.appName}
-                  </TableCell>
-                  <TableCell align="right">
-                    {app.defaultAccessAssetsOpen.toString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    {app.defaultAccessProfileOpen.toString()}
-                  </TableCell>
-                  <TableCell align="right">{app.usersCanFree.toString()}</TableCell>
-                  <TableCell align="right">
-                    {new Date(app.createdAt).toDateString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box style={{display: 'flex', flexDirection: 'column'}}>
-                      <a href="/" onClick={(e) => {
-                        e.preventDefault()
-                        onDelete(app)
-                      }}>Delete</a>
-                      <a 
-                        href={`data:text/json;chatset=utf-8,${encodeURIComponent(
-                          JSON.stringify({appJwt: app.appToken})
-                        )}`}
-                        style={{display: 'none'}}
-                        download = "data.json"
-                        id={`app-jwt-${app._id}`}
-                      >download jwt</a>
-                      <a href="/" onClick={(e) => {
-                        e.preventDefault()
-                        const el = document.querySelector(`#app-jwt-${app._id}`) as HTMLElement
-                        el?.click()
-                      }}>
-                        Download App JWT
-                      </a>
-                      <a href="/" onClick={(e) => {
-                        e.preventDefault()
-                        onRotateJwt(app)
-                      }}>Rotate App Jwt</a>
-                      <a href="/" onClick={(e) => {
-                        e.preventDefault()
-                        onEdit(app)
-                      }}>Edit</a>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )
-      }
-      <NewAppModal open={open} setOpen={setOpen}></NewAppModal>
-      <DeleteAppModal app={currentApp} open={showDelete} setOpen={setShowDelete}/>
-      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate}></RotateModal>
-      {showEdit && <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit}></EditAppModal>}
+            ))}
+          </TableBody>
+        </Table>
+      )}
+      <NewAppModal open={open} setOpen={setOpen} />
+      <RegisterCompanyModal
+        onClose={() => setCompanyModalOpen(false)}
+        open={companyModalOpen}
+      />
+      <DeleteAppModal
+        app={currentApp}
+        open={showDelete}
+        setOpen={setShowDelete}
+      />
+      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate} />
+      {showEdit && (
+        <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit} />
+      )}
     </TableContainer>
   );
 }

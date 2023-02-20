@@ -372,6 +372,16 @@ export function loginEmail(email: string, password: string) {
     { headers: { Authorization: APP_JWT } }
   );
 }
+export function agreeWithTerms(company: string) {
+  return httpWithAuth().post(
+    "/users/terms-and-conditions",
+    {
+      isAgreeWithTerms: true,
+      company,
+    },
+    { headers: { Authorization: APP_JWT } }
+  );
+}
 
 export function loginSocial(
   idToken: string,
@@ -560,8 +570,8 @@ export function updateProfile(fd: FormData, id?: string) {
 }
 
 interface ITokenTransferResponse {
-  success: boolean,
-  transaction: ITransaction
+  success: boolean;
+  transaction: ITransaction;
 }
 
 export function transferCoin(

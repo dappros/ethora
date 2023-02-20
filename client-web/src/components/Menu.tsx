@@ -48,13 +48,19 @@ const menuActionsSection = {
   ],
 };
 
-const idActionsSection = {
+const idActionsSection = (user: TUser) => ({
   name: "Id",
   items: [
     { name: "Privacy and Data", id: "/privacy", visible: true },
+    {
+      name: "Create new App",
+      id: "/owner",
+      visible: user.isAllowedNewAppCreate,
+    },
+
     { name: "Sign out", id: "logout", visible: true },
   ],
-};
+});
 
 const initMenuItems = (user: TUser, ACL: any) => {
   let items = [
@@ -64,7 +70,7 @@ const initMenuItems = (user: TUser, ACL: any) => {
       items: [{ name: "Chats", id: "/chat/none", visible: true }],
     },
     menuActionsSection,
-    idActionsSection,
+    idActionsSection(user),
   ];
 
   if (ACL?.result?.application?.appUsers?.read) {
