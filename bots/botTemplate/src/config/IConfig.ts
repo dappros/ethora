@@ -11,8 +11,29 @@ export interface IConfigData {
     connectionRooms: string[];
 }
 
+export interface IConfigStatuses {
+    useAppName?: boolean;
+    useAppImg?: boolean;
+}
+
+export interface IConfigInit {
+    botName: string;
+    tokenJWT: string;
+    isProduction?: boolean;
+    botImg?: string;
+    connectionRooms?: string[];
+    useAppName?: boolean;
+    useAppImg?: boolean;
+}
+
 export interface IConfig {
-    init(botName: string, tokenJWT: string, isProduction?: boolean, botImg?: string): void;
+    init(data: IConfigInit): void;
+
+    getConfigStatuses(): IConfigStatuses;
 
     getData(): IConfigData;
+
+    setBotName(name: string): void;
+
+    setBotImg(src: string): void;
 }

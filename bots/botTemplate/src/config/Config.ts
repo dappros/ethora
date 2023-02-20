@@ -1,39 +1,39 @@
-import {IConfig, IConfigData} from "./IConfig";
+import {IConfig, IConfigData, IConfigInit, IConfigStatuses} from "./IConfig";
 import Logger from "../utils/Logger";
 
 class Config implements IConfig {
-    private data: IConfigData
+    private data: IConfigData;
+    private configStatuses: IConfigStatuses;
 
-    init(
-        botName: string,
-        tokenJWT: string,
-        isProduction?: boolean,
-        botImg?: string,
-        connectionRooms?: string[]
-    ): void {
-        if (!botName) {
+    init(data: IConfigInit): void {
+        if (!data.botName) {
             throw Logger.error(new Error('botName (or username) is a required parameter to set the bot configuration.'));
         }
 
-        if (!tokenJWT) {
+        if (!data.tokenJWT) {
             throw Logger.error(new Error('tokenJWT is a required parameter to set the bot configuration.'));
         }
 
-        const baseDomain = isProduction ? "dxmpp.com" : "dev.dxmpp.com";
+        this.configStatuses = {
+            useAppName: data.useAppName,
+            useAppImg: data.useAppImg
+        }
+
+        const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
         this.data = {
-            isProduction: isProduction ? isProduction : false,
+            isProduction: data.isProduction ? data.isProduction : false,
             baseDomain: baseDomain,
 
             conferenceDomain: '@conference.' + baseDomain,
             domain: "@" + baseDomain,
             service: `wss://${baseDomain}:5443/ws`,
 
-            botName: botName,
-            botImg: botImg ? botImg : 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
-            apiDomain: isProduction ? "https://app.dappros.com/v1/" : "https://app-dev.dappros.com/v1/",
-            tokenJWT: tokenJWT,
+            botName: data.botName,
+            botImg: data.botImg ? data.botImg : 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
+            apiDomain: data.isProduction ? "https://app.dappros.com/v1/" : "https://app-dev.dappros.com/v1/",
+            tokenJWT: data.tokenJWT,
 
-            connectionRooms: connectionRooms
+            connectionRooms: data.connectionRooms
         }
         Logger.info(this.data.botName + ' - Bot configuration data successfully set.')
         return;
@@ -55,6 +55,18 @@ class Config implements IConfig {
             };
         }
         return this.data;
+    }
+
+    getConfigStatuses(): IConfigStatuses {
+        return this.configStatuses;
+    }
+
+    setBotName(name: string): void {
+        this.data.botName = name;
+    }
+
+    setBotImg(src: string): void {
+        this.data.botImg = src;
     }
 }
 
