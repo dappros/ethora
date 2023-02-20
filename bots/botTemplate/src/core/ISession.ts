@@ -9,6 +9,7 @@ export interface ISession {
     isNew: boolean;
     getUsername(): string;
     sendTextMessage(message: string, keyboard?: IKeyboard): Promise<any>;
+    subscribeToChatRoom(rooms: string | string[]): Promise<any>;
     resetState(): void;
     setState(state: ISessionState): void;
 }

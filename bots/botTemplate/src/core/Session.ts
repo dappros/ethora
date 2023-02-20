@@ -1,7 +1,7 @@
-import { IBot } from './IBot';
-import { IUser } from './IUser';
-import { ISessionState } from './ISessionState';
-import { ISession } from './ISession';
+import {IBot} from './IBot';
+import {IUser} from './IUser';
+import {ISessionState} from './ISessionState';
+import {ISession} from './ISession';
 import {IKeyboard} from "../client/types/IKeyboard";
 
 interface ISessionConstructorProps {
@@ -17,10 +17,10 @@ export class Session implements ISession {
     isNew: boolean = true;
     user: IUser;
 
-    constructor({ user, bot, initialState }: ISessionConstructorProps) {
+    constructor({user, bot, initialState}: ISessionConstructorProps) {
         this.bot = bot;
         this.initialState = initialState || {};
-        this.state = { ...initialState };
+        this.state = {...initialState};
         this.user = user;
     }
 
@@ -34,8 +34,17 @@ export class Session implements ISession {
         return this.bot.connector.send(message, keyboard);
     }
 
+    subscribeToChatRoom(rooms: string | string[]) {
+        if (Array.isArray(rooms)) {
+            return this.bot.connector.connectToRooms(rooms);
+        }
+
+        const roomsString = String(rooms);
+        return this.bot.connector.connectToRooms(roomsString.split(","));
+    }
+
     resetState(): void {
-        this.state = { ...this.initialState };
+        this.state = {...this.initialState};
     }
 
     setState(state: ISessionState): void {
