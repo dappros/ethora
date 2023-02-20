@@ -81,7 +81,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} open={open}>
+    <Dialog onClose={() => {setOpen(false)}} open={open}>
       <Box>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

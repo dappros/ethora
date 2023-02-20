@@ -76,6 +76,9 @@ export function UsernameSignUpForm(props: TProps) {
               isProfileOpen: result.data.user.isProfileOpen,
               isAssetsOpen: result.data.user.isAssetsOpen,
               ACL: result.data.user.ACL,
+              isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
+            isAgreeWithTerms: result.data.isAgreeWithTerms,
+
             });
             props.closeModal();
             history.push(

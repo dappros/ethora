@@ -60,7 +60,7 @@ export default function DocumentsCreateModal(props: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} maxWidth={false} open={props.open}>
+    <Dialog onClose={() => props.setOpen(false)} maxWidth={false} open={props.open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

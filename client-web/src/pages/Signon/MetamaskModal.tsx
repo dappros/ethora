@@ -67,6 +67,9 @@ export function MetamaskModal({ open, setOpen }: TProps) {
           isProfileOpen: user.isProfileOpen,
           isAssetsOpen: user.isAssetsOpen,
           ACL: user.ACL,
+          isAllowedNewAppCreate: resp.data.isAllowedNewAppCreate,
+          isAgreeWithTerms: user.isAgreeWithTerms
+          
         });
         deactivate();
         history.push(`/profile/${user.defaultWallet.walletAddress}`);
@@ -77,7 +80,7 @@ export function MetamaskModal({ open, setOpen }: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} maxWidth={false} open={open}>
+    <Dialog onClose={() => setOpen(false)} maxWidth={false} open={open}>
       <Box style={{ width: "350px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

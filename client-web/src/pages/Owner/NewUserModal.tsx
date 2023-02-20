@@ -81,7 +81,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
     return (
       <Dialog
         open={open}
-        onClose={() => {}}
+        onClose={() => setOpen(false)}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">There is no apps</DialogTitle>
@@ -105,7 +105,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
   }
 
   return (
-    <Dialog onClose={() => {}} open={open}>
+    <Dialog onClose={() => setOpen(false)} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

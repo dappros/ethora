@@ -67,31 +67,30 @@ export function EmailSignUpForm(props: TProps) {
       lastName: "",
     },
     validate,
-    onSubmit: (values, { resetForm }) => {
-      registerByEmail(
-        values.email,
-        values.firstName,
-        values.lastName,
-        values.password
-      )
-        .then((resp) => {
-          resetForm();
-          setOpenSnack(true);
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 400) {
-            if (error.response.data.errors) {
-              let errors: string[] = [];
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const resp = await registerByEmail(
+          values.email,
+          values.firstName,
+          values.lastName,
+          values.password
+        );
+        resetForm();
+        setOpenSnack(true);
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          if (error.response.data.errors) {
+            let errors: string[] = [];
 
-              for (const e of error.response.data.errors) {
-                if (e.msg) {
-                  errors.push(e.msg);
-                }
+            for (const e of error.response.data.errors) {
+              if (e.msg) {
+                errors.push(e.msg);
               }
-              setErrorMsg(errors.join(", "));
             }
+            setErrorMsg(errors.join(", "));
           }
-        });
+        }
+      }
     },
   });
 

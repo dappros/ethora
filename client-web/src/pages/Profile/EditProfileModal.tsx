@@ -78,7 +78,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} open={open}>
+    <Dialog onClose={() => setOpen(false)} open={open}>
       <Box>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

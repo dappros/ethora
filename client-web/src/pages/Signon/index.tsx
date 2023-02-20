@@ -147,7 +147,12 @@ export default function Signon() {
   };
   const updateUserInfo = (
     user: any,
-    tokens: { refreshToken: string; token: string; referrerId?: string }
+    tokens: {
+      refreshToken: string;
+      token: string;
+      referrerId?: string;
+      isAllowedNewAppCreate: boolean;
+    }
   ) => {
     setUser({
       _id: user._id,
@@ -163,6 +168,9 @@ export default function Signon() {
       isAssetsOpen: user.isAssetsOpen,
       ACL: user.ACL,
       referrerId: user.referrerId || "",
+      isAllowedNewAppCreate: tokens.isAllowedNewAppCreate,
+      isAgreeWithTerms: user.isAgreeWithTerms
+
     });
   };
 

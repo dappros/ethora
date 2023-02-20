@@ -63,7 +63,10 @@ export function UsernameSignInForm(props: TProps) {
             isAssetsOpen: result.data.user.isAssetsOpen,
             ACL: result.data.user.ACL,
             appId: result.data.user.appId,
-            referrerId: result.data.user.referrerId || ''
+            referrerId: result.data.user.referrerId || '',
+            isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
+            isAgreeWithTerms: result.data.isAgreeWithTerms,
+
           });
           props.closeModal();
           history.push(
