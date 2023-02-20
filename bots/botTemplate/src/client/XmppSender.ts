@@ -5,6 +5,8 @@ import {ISendTextMessageOptions, IXmppSender} from "./IXmppSender";
 
 export class XmppSender implements IXmppSender {
     sendTextMessage(data: ISendTextMessageOptions): void {
+        const configData = Config.getData();
+
         const xmlData = xml(
             "message",
             {
@@ -13,10 +15,10 @@ export class XmppSender implements IXmppSender {
                 id: "sendMessage",
             },
             xml("data", {
-                xmlns: Config.getData().service,
-                senderFirstName: data.senderData.firstName,
-                senderLastName: data.senderData.lastName,
-                photoURL: data.senderData.photo,
+                xmlns: configData.service,
+                senderFirstName: configData.botName,
+                senderLastName: 'Bot',
+                photoURL: configData.botImg,
                 senderJID: data.senderData.botJID,
                 senderWalletAddress: data.senderData.walletAddress,
                 roomJid: data.roomJID,
