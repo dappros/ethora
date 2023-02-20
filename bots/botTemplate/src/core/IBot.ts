@@ -10,6 +10,18 @@ export interface IBotContext {
     params?: object;
 }
 
+export interface IBotData {
+    username: string;
+    password: string;
+    tokenJWT: string;
+    botName?: string;
+    useAppName?: boolean;
+    useAppImg?: boolean;
+    isProduction?: boolean;
+    botImg?: string;
+    connectionRooms?: string[];
+}
+
 export type BotHandler = (context: IBotContext, next?: () => void) => void;
 
 export interface IBot {

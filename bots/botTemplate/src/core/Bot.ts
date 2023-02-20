@@ -1,4 +1,4 @@
-import {BotHandler, IBot, IBotContext} from "./IBot";
+import {BotHandler, IBot, IBotContext, IBotData} from "./IBot";
 import {ISessionState} from "./ISessionState";
 import {ISessionStore} from "../stores/ISessionStore";
 import MemorySessionStore from "../stores/MemorySessionStore";
@@ -9,6 +9,7 @@ import {ISession} from "./ISession";
 import {Message} from './Message';
 import {Session} from "./Session";
 import Config from "../config/Config";
+import {IConfigInit} from "../config/IConfig";
 
 
 export default class Bot implements IBot {
@@ -18,23 +19,10 @@ export default class Bot implements IBot {
     connector: IConnector;
     config: any;
 
-    constructor(
-        username: string,
-        password: string,
-        tokenJWT: string,
-        isProduction?: boolean,
-        botImg?: string,
-        connectionRooms?: string[]
-    ) {
-        Config.init(
-            username,
-            tokenJWT,
-            isProduction ? isProduction : false,
-            botImg ? botImg : '',
-            connectionRooms ? connectionRooms : []
-        );
+    constructor(data: IBotData) {
+        Config.init(collectConfigurationData(data));
 
-        this.connector = new Connector(username, password).listen();
+        this.connector = new Connector(data.username, data.password).listen();
         this.connector.on(ConnectorEvent.receiveMessage, this.processMessage.bind(this));
 
         return this;
@@ -106,5 +94,16 @@ export default class Bot implements IBot {
             this.handlers.push(handler);
         }
     }
+}
 
+const collectConfigurationData = (data: IBotData): IConfigInit => {
+    return {
+        botName: data.botName ? data.botName : data.username,
+        tokenJWT: data.tokenJWT,
+        isProduction: data.isProduction ? data.isProduction : false,
+        botImg: data.botImg ? data.botImg : '',
+        connectionRooms: data.connectionRooms ? data.connectionRooms : [],
+        useAppName: data.useAppName ? data.useAppName : true,
+        useAppImg: data.useAppImg ? data.useAppImg : true
+    }
 }
