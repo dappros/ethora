@@ -2,20 +2,23 @@ import xmpp, {xml} from "@xmpp/client";
 import {Client} from "@xmpp/client";
 import Logger from "../utils/Logger";
 import Config from "../config/Config";
-import {XmppRoom} from "./XmppRoom";
+import {IConnector} from "../connector/IConnector";
 
-const isOnline = (xmpp: any) => {
-    xmpp.client.send(xml("presence"));
+const isOnline = async (xmpp: any, connector: IConnector) => {
+    await xmpp.client.send(xml("presence"));
     Logger.info('XMPP is Online')
 
-    const XmppRooms = new XmppRoom();
-    XmppRooms.presenceInTheRoom('fb9cf8277d7133ef03aed5811bc5f57237ebddecea351d8abfcb8899f6b56d79@conference.dev.dxmpp.com');
+    //Connection to default rooms, if they were specified.
+    if (Config.getData().connectionRooms.length > 0) {
+        Logger.info('Default chat rooms found, connection to them started.');
+        await connector.connectToRooms(Config.getData().connectionRooms);
+    }
 }
 
 class XmppClient {
     public client!: Client;
 
-    init(botJID: string, xmppPassword: string) {
+    init(botJID: string, xmppPassword: string, connector: IConnector) {
 
         if (!xmppPassword || !botJID) {
             return;
@@ -34,7 +37,7 @@ class XmppClient {
         this.client.start();
         Logger.info('XMPP Client starting...')
 
-        this.client.on("online", () => isOnline(this));
+        this.client.on("online", () => isOnline(this, connector));
         this.client.on("offline", () => Logger.info('XMPP is offline.'));
 
         this.client.on("error", (error) => {
