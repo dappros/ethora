@@ -91,7 +91,7 @@ export default class Connector extends EventEmitter implements IConnector {
         }
     }
 
-    connectToRooms(connectionRooms: string[]): Promise<void>{
+    connectToRooms(connectionRooms: string[]): Promise<void> {
         const XmppConnect = new XmppRoom();
         connectionRooms.forEach(room => XmppConnect.presenceInTheRoom(String(room)));
         return Promise.resolve();
@@ -102,6 +102,17 @@ export default class Connector extends EventEmitter implements IConnector {
 
         API.userAuthorization(this.username, this.password).then(botAuthData => {
             this.botAuthData = botAuthData;
+            Logger.info('Bot authorization successful.');
+            if (Config.getConfigStatuses().useAppName) {
+                Logger.info(`Bot name obtained from application: ${botAuthData.data.firstName}`);
+                Config.setBotName(botAuthData.data.firstName);
+            }
+            if (Config.getConfigStatuses().useAppImg) {
+                if (botAuthData.data.photo && botAuthData.data.photo !== 'undefined') {
+                    Logger.info(`Bot image obtained from the application: ${botAuthData.data.photo}`);
+                    Config.setBotImg(botAuthData.data.photo);
+                }
+            }
 
             if (botAuthData.data.botJID === 'undefined' || botAuthData.data.xmppPassword === 'undefined') {
                 throw Logger.error(new Error('Authorization error, perhaps the login or password is incorrect, and the JWT token could also be out of date.'));
