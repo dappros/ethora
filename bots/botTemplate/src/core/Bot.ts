@@ -97,13 +97,22 @@ export default class Bot implements IBot {
 }
 
 const collectConfigurationData = (data: IBotData): IConfigInit => {
+    let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
+    let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
+
+    if (data.botName){
+        isAppName = false;
+    }
+    if (data.useAppImg){
+        isAppImg = false;
+    }
     return {
         botName: data.botName ? data.botName : data.username,
         tokenJWT: data.tokenJWT,
         isProduction: data.isProduction ? data.isProduction : false,
         botImg: data.botImg ? data.botImg : '',
         connectionRooms: data.connectionRooms ? data.connectionRooms : [],
-        useAppName: data.useAppName ? data.useAppName : true,
-        useAppImg: data.useAppImg ? data.useAppImg : true
+        useAppName: isAppName,
+        useAppImg: isAppImg
     }
 }
