@@ -8,6 +8,7 @@ export interface IConfigData {
     botImg: string;
     apiDomain: string;
     tokenJWT: string;
+    connectionRooms: string[];
 }
 
 export interface IConfig {

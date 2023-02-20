@@ -2,19 +2,15 @@ import {IConfig, IConfigData} from "./IConfig";
 import Logger from "../utils/Logger";
 
 class Config implements IConfig {
-    private data: {
-        isProduction: boolean;
-        baseDomain: string;
-        botName: string;
-        conferenceDomain: string;
-        domain: string;
-        service: string;
-        botImg: string;
-        apiDomain: string;
-        tokenJWT: string;
-    }
+    private data: IConfigData
 
-    init(botName: string, tokenJWT: string, isProduction?: boolean, botImg?: string): void {
+    init(
+        botName: string,
+        tokenJWT: string,
+        isProduction?: boolean,
+        botImg?: string,
+        connectionRooms?: string[]
+    ): void {
         if (!botName) {
             throw Logger.error(new Error('botName (or username) is a required parameter to set the bot configuration.'));
         }
@@ -35,7 +31,9 @@ class Config implements IConfig {
             botName: botName,
             botImg: botImg ? botImg : 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
             apiDomain: isProduction ? "https://app.dappros.com/v1/" : "https://app-dev.dappros.com/v1/",
-            tokenJWT: tokenJWT
+            tokenJWT: tokenJWT,
+
+            connectionRooms: connectionRooms
         }
         Logger.info(this.data.botName + ' - Bot configuration data successfully set.')
         return;
@@ -52,7 +50,8 @@ class Config implements IConfig {
                 service: `wss://dxmpp.com:5443/ws`,
                 botImg: 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
                 apiDomain: "https://app-dev.dappros.com/v1/",
-                tokenJWT: ''
+                tokenJWT: '',
+                connectionRooms: []
             };
         }
         return this.data;
