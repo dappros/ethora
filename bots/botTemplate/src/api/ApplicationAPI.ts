@@ -52,7 +52,7 @@ export default class ApplicationAPI implements IApplicationAPI {
                     username: String(request.data.user.username),
                     firstName: String(request.data.user.firstName),
                     lastName: String(request.data.user.lastName),
-                    photo: Config.getData().botImg,
+                    photo: request.data.user.photo ? String(request.data.user.photo) : '',
                     emails: Array.isArray(request.data.user.emails) ? request.data.user.emails : [],
                     updatedAt: String(request.data.user.updatedAt),
                     isUserDataEncrypted: request.data.app.isUserDataEncrypted,
