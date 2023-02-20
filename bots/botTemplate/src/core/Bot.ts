@@ -6,7 +6,7 @@ import {ConnectorEvent, IConnector} from "../connector/IConnector";
 import Connector from "../connector/Connector";
 import compose from "koa-compose";
 import {ISession} from "./ISession";
-import { Message } from './Message';
+import {Message} from './Message';
 import {Session} from "./Session";
 import Config from "../config/Config";
 
@@ -18,8 +18,21 @@ export default class Bot implements IBot {
     connector: IConnector;
     config: any;
 
-    constructor(username: string, password: string, tokenJWT: string, isProduction?: boolean, botImg?: string) {
-        Config.init(username, tokenJWT, isProduction ? isProduction : false, botImg ? botImg : '');
+    constructor(
+        username: string,
+        password: string,
+        tokenJWT: string,
+        isProduction?: boolean,
+        botImg?: string,
+        connectionRooms?: string[]
+    ) {
+        Config.init(
+            username,
+            tokenJWT,
+            isProduction ? isProduction : false,
+            botImg ? botImg : '',
+            connectionRooms ? connectionRooms : []
+        );
 
         this.connector = new Connector(username, password).listen();
         this.connector.on(ConnectorEvent.receiveMessage, this.processMessage.bind(this));
@@ -50,7 +63,7 @@ export default class Bot implements IBot {
 
     async processMessage(message: Message) {
         const session = await this.getSession(message);
-        const context: IBotContext = { session, message };
+        const context: IBotContext = {session, message};
 
         this
             .processHandlers(this.handlers, context)
