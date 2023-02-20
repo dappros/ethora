@@ -53,7 +53,7 @@ const idActionsSection = (user: TUser) => ({
   items: [
     { name: "Privacy and Data", id: "/privacy", visible: true },
     {
-      name: "Create new App",
+      name: "Create New App",
       id: "/owner",
       visible: user.isAllowedNewAppCreate,
     },
