@@ -2,7 +2,7 @@ import {ISession} from "./ISession";
 import {IMessage} from "./IMessage";
 import {ISessionState} from "./ISessionState";
 import {ISessionStore} from "../stores/ISessionStore";
-import {IConnector} from "../connectors/IConnector";
+import {IConnector} from "../connector/IConnector";
 
 export interface IBotContext {
     session: ISession;

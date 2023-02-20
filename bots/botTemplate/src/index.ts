@@ -1,10 +1,10 @@
 import Bot from './core/Bot';
 import { Session } from './core/Session';
 import { Message } from './core/Message';
-import Connector from "./connectors/Connector";
+import Connector from "./connector/Connector";
 import MemorySessionStore from './stores/MemorySessionStore';
 
-import { IConnector, ConnectorEvent } from './connectors/IConnector';
+import { IConnector, ConnectorEvent } from './connector/IConnector';
 import { IBot, IBotContext, BotHandler } from './core/IBot';
 import { IUser } from './core/IUser';
 import { IMessage, IMessageProps, MessageSender } from './core/IMessage';
