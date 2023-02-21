@@ -113,6 +113,7 @@ const collectConfigurationData = (data: IBotData): IConfigInit => {
         botImg: data.botImg ? data.botImg : '',
         connectionRooms: data.connectionRooms ? data.connectionRooms : [],
         useAppName: isAppName,
-        useAppImg: isAppImg
+        useAppImg: isAppImg,
+        useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false
     }
 }

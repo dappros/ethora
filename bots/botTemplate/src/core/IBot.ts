@@ -17,6 +17,7 @@ export interface IBotData {
     botName?: string;
     useAppName?: boolean;
     useAppImg?: boolean;
+    useInvites?: boolean;
     isProduction?: boolean;
     botImg?: string;
     connectionRooms?: string[];
