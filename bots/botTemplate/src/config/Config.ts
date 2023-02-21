@@ -16,10 +16,11 @@ class Config implements IConfig {
 
         this.configStatuses = {
             useAppName: data.useAppName,
-            useAppImg: data.useAppImg
+            useAppImg: data.useAppImg,
+            useInvites: data.useInvites
         }
 
-        const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
+            const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
         this.data = {
             isProduction: data.isProduction ? data.isProduction : false,
             baseDomain: baseDomain,
@@ -35,7 +36,11 @@ class Config implements IConfig {
 
             connectionRooms: data.connectionRooms
         }
-        Logger.info(this.data.botName + ' - Bot configuration data successfully set.')
+        Logger.info(`${this.data.botName} - Bot configuration data successfully set.`);
+
+        if(data.useInvites){
+            Logger.info('Listening for invitations is enabled.')
+        }
         return;
     }
 

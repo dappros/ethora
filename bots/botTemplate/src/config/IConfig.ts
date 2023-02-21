@@ -14,6 +14,7 @@ export interface IConfigData {
 export interface IConfigStatuses {
     useAppName?: boolean;
     useAppImg?: boolean;
+    useInvites?: boolean;
 }
 
 export interface IConfigInit {
@@ -24,6 +25,7 @@ export interface IConfigInit {
     connectionRooms?: string[];
     useAppName?: boolean;
     useAppImg?: boolean;
+    useInvites?: boolean;
 }
 
 export interface IConfig {
