@@ -256,7 +256,7 @@ export const ProfileScreen = observer(() => {
   const onTransactionNumberPress = () => {
     setActiveTab(1);
   };
-  // shows profile tabs which contains documents, items... or transactions
+  // shows profile tabs which contain documents, items... or transactions
   const loadTabContent = () => {
     if (activeTab === 0) {
       return (

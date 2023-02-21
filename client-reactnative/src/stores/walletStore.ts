@@ -82,7 +82,7 @@ export const filterNfts = (item: {tokenSymbol: string; tokenType: string}) => {
     item.tokenType !== 'NFMT'
   );
 };
-// function checks if item is nfmt, if so it will check its trait and add its total based on other items of same type
+// function checks if item is NFMT, if so it will check its trait and add its total based on other items of same type
 
 export const produceNfmtItems = (array: any[]) => {
   const result = [];
