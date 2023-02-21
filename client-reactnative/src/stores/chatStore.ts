@@ -49,6 +49,7 @@ import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
 import {Results} from 'realm';
 import {checkIsDefaultChat} from '../helpers/chat/checkIsDefaultChat';
+import { TCombinedMimeType } from '../constants/mimeTypes';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -150,7 +151,7 @@ export interface IMessage {
   realImageURL?: string;
   localURL?: string;
   isStoredFile?: boolean;
-  mimetype?: string;
+  mimetype?: TCombinedMimeType;
   duration?: string;
   size?: string;
   waveForm?: string;
@@ -327,7 +328,7 @@ export class ChatStore {
         });
     };
 
-    //save user band related data
+    //save user ban related data
     setUserBanData = (senderName: string, name: string) => {
       runInAction(() => {
         this.userBanData.name = name;
@@ -413,7 +414,7 @@ export class ChatStore {
       }
     };
   
-    //set undread messages
+    //set unread messages
     setUnreadMessages = (unreadMessagesObject: any) => {
       runInAction(() => {
         this.unreadMessagesForGroups = unreadMessagesObject;
@@ -954,7 +955,7 @@ export class ChatStore {
         );
       }
 
-      //response to create new rom request
+      //response to create new room request
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
@@ -1015,7 +1016,7 @@ export class ChatStore {
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
 
-      //response to get black list user request
+      //response to get blacklist user request
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {
         const blackList = stanza.children[0].children.map(
           (item: {
@@ -1055,7 +1056,7 @@ export class ChatStore {
         }
       }
 
-      //if stanza is of meesage type
+      //if stanza is of message type
       if (stanza.is('message')) {
 
         //capture message composing
@@ -1276,7 +1277,7 @@ export class ChatStore {
       }
     });
 
-    //listner when xmpp is online
+    //listener when xmpp is online
     this.xmpp.on('online', async (address: any) => {
       //set reconnect delay in ms
       this.xmpp.reconnect.delay = 2000;
@@ -1295,7 +1296,7 @@ export class ChatStore {
       //subscribe to meta rooms
       this.subscribeToMetaRooms();
 
-      //get black list
+      //get blacklist
       getBlackList(xmppUsername, this.xmpp);
 
       //retrive user vcard details for profile
