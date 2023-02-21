@@ -16,7 +16,6 @@ export const NFMT_TRAITS: Record<string, { color: string }> = {
 };
 
 const BASEDOMAIN = config.IS_PRODUCTION ? "dxmpp.com" : "dev.dxmpp.com";
-
 export const CONFERENCEDOMAIN = "@conference." + BASEDOMAIN;
 export const DOMAIN = "@" + BASEDOMAIN;
 export const SERVICE = `wss://${BASEDOMAIN}:5443/ws`

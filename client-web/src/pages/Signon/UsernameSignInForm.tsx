@@ -65,7 +65,7 @@ export function UsernameSignInForm(props: TProps) {
             appId: result.data.user.appId,
             referrerId: result.data.user.referrerId || '',
             isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
-            isAgreeWithTerms: result.data.isAgreeWithTerms,
+            isAgreeWithTerms: result.data.user.isAgreeWithTerms,
 
           });
           props.closeModal();

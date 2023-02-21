@@ -58,7 +58,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           </Button>
         )}
 
-        <Button
+        {/* <Button
           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth
           variant="contained"
@@ -66,7 +66,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           onClick={() => setOwnerRegistration(true)}
         >
           Owner Registration
-        </Button>
+        </Button> */}
         {/* <Button
           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth

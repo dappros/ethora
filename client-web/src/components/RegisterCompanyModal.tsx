@@ -100,18 +100,18 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
 
             <FormGroup>
               <FormControlLabel
-                value="I agree to the above terms and conditions"
+                value="I agree to the terms and conditions"
                 control={
                   <Checkbox
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
                   />
                 }
-                label="I agree to the above terms and conditions"
+                label="I agree to the terms and conditions"
                 labelPlacement="end"
               />
             </FormGroup>
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 alignItems: "flex-end",
@@ -131,7 +131,7 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
               >
                 Terms and Conditions
               </Typography>
-            </Box>
+            </Box> */}
             {!!error && <Alert severity="error">{error}</Alert>}
             <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
               <LoadingButton
