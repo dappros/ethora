@@ -123,12 +123,25 @@ export default class Connector extends EventEmitter implements IConnector {
 
             //Listen for incoming messages and redirect them to a bot
             this.xmpp.client.on("stanza", (stanza: any) => {
-                //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
+                const stanzaBody = stanza.getChild('body');
                 if (stanza.getChild('body')) {
                     this.stanza = stanza;
-                    const receivedMessage = new Message(this._collectMessage());
-                    Logger.info('Received: ' + receivedMessage.getText());
-                    this.emit(ConnectorEvent.receiveMessage, receivedMessage);
+
+                    // Processing an incoming chat room invitation
+                    if(Config.getConfigStatuses().useInvites){
+                        if(stanza.getChild('x') && stanza.getChild('x').getChild('invite')){
+                            Logger.info(`Accepted invite to the room: ${stanzaBody.parent.attrs.from}`);
+                            this.connectToRooms([String(stanzaBody.parent.attrs.from)]);
+                        }
+                    }
+
+                    //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
+                    if(stanza.getChild('data')){
+                        const receivedMessage = new Message(this._collectMessage());
+                        Logger.info('Received: ' + receivedMessage.getText());
+                        this.emit(ConnectorEvent.receiveMessage, receivedMessage);
+                    }
+
                 }
             });
         })
