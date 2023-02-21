@@ -51,7 +51,7 @@ export default function BasicTable() {
     setShowRotate(true);
   };
   const onAddApp = () => {
-    if (user.isAgreeWithTerms) {
+    if (!user.isAgreeWithTerms) {
       setCompanyModalOpen(true);
       return;
     }
