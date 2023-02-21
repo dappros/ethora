@@ -18,6 +18,7 @@ import { agreeWithTerms } from "../http";
 import Tnc from "../pages/Signon/Tnc";
 import { useStoreState } from "../store";
 import CloseIcon from "@mui/icons-material/Close";
+import { useSnackbar } from "../context/SnackbarContext";
 
 export interface IRegisterCompanyModal {
   open: boolean;
@@ -33,6 +34,7 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
 
   const [termsOpen, setTermsOpen] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const {showSnackbar} = useSnackbar()
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,8 +47,10 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
       try {
         const res = await agreeWithTerms(companyName);
         setUser({ ...user, isAgreeWithTerms: true });
+        onClose()
       } catch (error) {
         console.log(error);
+        showSnackbar('error', 'Something went wrong')
       }
       setLoading(false);
     },

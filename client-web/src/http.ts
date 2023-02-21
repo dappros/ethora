@@ -373,14 +373,10 @@ export function loginEmail(email: string, password: string) {
   );
 }
 export function agreeWithTerms(company: string) {
-  return httpWithAuth().post(
-    "/users/terms-and-conditions",
-    {
-      isAgreeWithTerms: true,
-      company,
-    },
-    { headers: { Authorization: APP_JWT } }
-  );
+  return httpWithAuth().post("/users/terms-and-conditions", {
+    isAgreeWithTerms: true,
+    company,
+  });
 }
 
 export function loginSocial(
