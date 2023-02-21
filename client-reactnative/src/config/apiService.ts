@@ -7,10 +7,10 @@ Note: linked open-source libraries and components may be subject to their own li
 
 import axios from 'axios';
 import {rootStore} from '../stores/context';
-import {refreshTokenURL} from './routesConstants';
+import { refreshTokenURL } from './routesConstants';
 
 const http = axios.create({
-  baseURL: rootStore.apiStore.defaultUrl,
+  baseURL: rootStore.apiStore?.defaultUrl,
 });
 
 http.interceptors.response.use(undefined, async error => {
@@ -21,7 +21,7 @@ http.interceptors.response.use(undefined, async error => {
   ) {
     if (
       error?.request?.responseURL ===
-      rootStore. refreshTokenURL
+      refreshTokenURL
     ) {
       return Promise.reject(error);
     }
@@ -45,7 +45,7 @@ export const httpGet = async (url: string, token: string | null) => {
     headers: {
       'Accept-Encoding': 'gzip, deflate, br',
       'Content-Type': 'application/json',
-      Authorization: token,
+      Authorization: token as string,
     },
   });
 };
@@ -60,7 +60,7 @@ export const httpPost = async (url: string, body: any, token: string) => {
   });
 };
 
-export const httpDelete = async (url, token) => {
+export const httpDelete = async (url:string, token:string) => {
   return await http.delete(url, {
     headers: {
       Authorization: token,
@@ -70,7 +70,7 @@ export const httpDelete = async (url, token) => {
   });
 };
 
-export const httpUpload = async (url, body, token, onProgress) => {
+export const httpUpload = async (url:string, body:any, token:string, onProgress:any) => {
   return await http.post(url, body, {
     headers: {
       Accept: 'application/json',

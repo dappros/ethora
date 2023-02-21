@@ -20,8 +20,6 @@ import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
 import {useStores} from '../../stores/context';
 
-interface AccountScreenProps {}
-
 const newEmailAddedAlertText =
   " added to your profile's e-mail addresses. We have sent you a verification link to that address. Please open it to confirm this e-mail belongs to you.";
 const emailRemovedAlertText = " removed from your profile's e-mail addresses.";

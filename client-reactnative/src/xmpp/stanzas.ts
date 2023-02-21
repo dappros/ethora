@@ -718,10 +718,16 @@ export const deleteMessageStanza = (
   //   <delete id="1635229272917013" />
   // </message>;
 
+//   <message
+//  from="oleksiika@dev.dxmpp.com" id="123" 
+// to="test_olek2@conference.dev.dxmpp.com" 
+// type="groupchat"><body></body><delete 
+// id="123"/></message>
+
   const stanza = xml(
     'message',
-    {from: from + '@' + DOMAIN, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
-    xml('body', 'wow'),
+    {from: from, to: roomJid, id: messageId, type: 'groupchat'},
+    xml('body', ''),
     xml('delete', {
       id: messageId,
     }),

@@ -3,6 +3,7 @@ import {Actions, GiftedChat, Send} from 'react-native-gifted-chat';
 import {AudioSendButton} from './AudioSendButton';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Image,
   ImageBackground,
@@ -58,6 +59,7 @@ import {
   createMainMessageForThread,
 } from '../../helpers/chat/createMessageObject';
 import {
+  deleteMessageStanza,
   isComposing,
   pausedComposing,
   sendInvite,
@@ -585,6 +587,32 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     onClose();
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Message",
+      "Are you sure you want to delete this message",
+      [
+        {
+          text: "Delete",
+          onPress: () => {
+            deleteMessageStanza(
+              onTapMessageObject?.user._id as string,
+              onTapMessageObject?.roomJid as string,
+              onTapMessageObject?._id as string,
+              chatStore.xmpp
+            )
+          }
+        },
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ]
+    );
+  }
+
   const handleInputChange = (text: string) => {
     setText(text);
     const {firstName, lastName} = loginStore.initialData;
@@ -659,16 +687,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       chatName: roomDetails.name,
     });
     onClose();
-
-    // if (type === 'open') {
-    //   setIsReply(true);
-    //   onClose();
-    // }
-
-    // if (type === 'close') {
-    //   setIsReply(false);
-    //   setOnTapMessageObject('');
-    // }
   };
 
   const handleOnPress = (message: any) => {
@@ -1118,11 +1136,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         iconName = 'content-copy';
         break;
 
-      case 'delete':
-        handleOnPress = () => onClose();
-        itemTitle = 'Delete';
-        iconName = 'delete';
-        break;
+          case 'delete':
+            handleOnPress=()=>handleDelete();
+            itemTitle = 'Delete';
+            iconName = 'delete';
+          break;
 
       case 'edit':
         handleOnPress = () => handleEdit();

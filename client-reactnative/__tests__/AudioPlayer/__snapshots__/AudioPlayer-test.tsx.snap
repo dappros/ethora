@@ -1,0 +1,236 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<RCTSafeAreaView
+  emulateUnlessSupported={true}
+  style={
+    Object {
+      "alignItems": "center",
+      "backgroundColor": "#003E9C",
+      "borderBottomLeftRadius": 5,
+      "borderBottomRightRadius": 5,
+      "flexDirection": "row",
+      "height": 50,
+      "justifyContent": "flex-start",
+      "paddingBottom": 5,
+      "paddingHorizontal": 10,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "flex-start",
+      }
+    }
+  >
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "alignItems": "center",
+          "borderColor": "rgba(93, 63, 106, 0.2)",
+          "borderRadius": 30,
+          "height": 30,
+          "justifyContent": "center",
+          "opacity": 1,
+          "shadowColor": "#5D3F6A",
+          "shadowOpacity": 0.5,
+          "width": 30,
+        }
+      }
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          Array [
+            Object {
+              "color": "black",
+              "fontSize": 25,
+            },
+            undefined,
+            Object {
+              "fontFamily": "FontAwesome",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            Object {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      Object {
+        "margin": 32,
+        "width": "80%",
+      }
+    }
+  >
+    <View
+      animationType="timing"
+      onLayout={[Function]}
+      onValueChange={[Function]}
+      step={0}
+      style={
+        Array [
+          Object {
+            "height": 40,
+            "justifyContent": "center",
+          },
+          undefined,
+        ]
+      }
+      thumbTouchSize={
+        Object {
+          "height": 40,
+          "width": 40,
+        }
+      }
+      value={0}
+    >
+      <View
+        onLayout={[Function]}
+        renderToHardwareTextureAndroid={true}
+        style={
+          Array [
+            Object {
+              "backgroundColor": "#b3b3b3",
+            },
+            Object {
+              "borderRadius": 2,
+              "height": 4,
+            },
+            Object {
+              "backgroundColor": "#FFF",
+              "borderRadius": 1,
+              "height": 2,
+              "width": "100%",
+            },
+          ]
+        }
+      />
+      <View
+        collapsable={false}
+        renderToHardwareTextureAndroid={true}
+        style={
+          Object {
+            "backgroundColor": "#2775EA",
+            "borderRadius": 1,
+            "height": 2,
+            "opacity": 0,
+            "position": "absolute",
+            "width": 0,
+          }
+        }
+      />
+      <View
+        collapsable={false}
+        onLayout={[Function]}
+        renderToHardwareTextureAndroid={true}
+        style={
+          Object {
+            "backgroundColor": "#2775EA",
+            "borderRadius": 10,
+            "height": 8,
+            "opacity": 0,
+            "position": "absolute",
+            "transform": Array [
+              Object {
+                "translateX": 0,
+              },
+              Object {
+                "translateY": 0,
+              },
+            ],
+            "width": 8,
+          }
+        }
+      />
+      <View
+        onMoveShouldSetResponder={[Function]}
+        onMoveShouldSetResponderCapture={[Function]}
+        onResponderEnd={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderReject={[Function]}
+        onResponderRelease={[Function]}
+        onResponderStart={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        onStartShouldSetResponderCapture={[Function]}
+        renderToHardwareTextureAndroid={true}
+        style={
+          Array [
+            Object {
+              "backgroundColor": "transparent",
+              "bottom": 0,
+              "left": 0,
+              "position": "absolute",
+              "right": 0,
+              "top": 0,
+            },
+            Object {},
+          ]
+        }
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+          "marginTop": -12,
+        }
+      }
+    >
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "rgba(255,255,255,1)",
+            },
+            Object {
+              "fontSize": 11,
+              "fontWeight": "500",
+            },
+          ]
+        }
+      >
+        00:00:00
+      </Text>
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "rgba(255,255,255,1)",
+            },
+            Object {
+              "fontSize": 11,
+              "fontWeight": "500",
+            },
+          ]
+        }
+      >
+        00:00:00
+      </Text>
+    </View>
+  </View>
+</RCTSafeAreaView>
+`;
