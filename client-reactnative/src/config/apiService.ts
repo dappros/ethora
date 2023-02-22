@@ -10,7 +10,7 @@ import {rootStore} from '../stores/context';
 import {refreshTokenURL} from './routesConstants';
 
 const http = axios.create({
-  baseURL: rootStore.apiStore?.defaultUrl,
+  baseURL: rootStore.apiStore.defaultUrl,
 });
 
 http.interceptors.response.use(undefined, async error => {
@@ -20,8 +20,17 @@ http.interceptors.response.use(undefined, async error => {
     !error.config.__isRetryRequest
   ) {
     if (error?.request?.responseURL === refreshTokenURL) {
+      if (
+        error?.request?.responseURL ===
+        rootStore.apiStore.defaultUrl + refreshTokenURL
+      ) {
+        console.log('logout because of 401 from refresh')
+        return rootStore.loginStore.logOut();
+      }
       return Promise.reject(error);
     }
+    await rootStore.loginStore.getRefreshToken();
+
     if (rootStore.loginStore.userToken) {
       let request = error.config;
       const token = rootStore.loginStore.userToken;
@@ -31,7 +40,6 @@ http.interceptors.response.use(undefined, async error => {
         resolve(http(request));
       });
     }
-    await rootStore.loginStore.getRefreshToken();
   }
   return Promise.reject(error);
 });
@@ -41,7 +49,7 @@ export const httpGet = async (url: string, token: string | null) => {
     headers: {
       'Accept-Encoding': 'gzip, deflate, br',
       'Content-Type': 'application/json',
-      Authorization: token as string,
+      Authorization: token,
     },
   });
 };
@@ -56,7 +64,7 @@ export const httpPost = async (url: string, body: any, token: string) => {
   });
 };
 
-export const httpDelete = async (url: string, token: string) => {
+export const httpDelete = async (url, token) => {
   return await http.delete(url, {
     headers: {
       Authorization: token,
@@ -66,12 +74,7 @@ export const httpDelete = async (url: string, token: string) => {
   });
 };
 
-export const httpUpload = async (
-  url: string,
-  body: any,
-  token: string,
-  onProgress: any,
-) => {
+export const httpUpload = async (url, body, token, onProgress) => {
   return await http.post(url, body, {
     headers: {
       Accept: 'application/json',

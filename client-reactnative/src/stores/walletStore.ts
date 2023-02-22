@@ -297,6 +297,11 @@ export class WalletStore {
       });
     }
   }
+  setCoinBalance = (newBalance: number) => {
+    runInAction(() => {
+      this.coinBalance = newBalance;
+    });
+  };
   // fetches other user balance (items, coins)
 
   async fetchOtherUserWalletBalance(

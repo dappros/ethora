@@ -79,11 +79,7 @@ export const getPushToken = async (
       ) {
         navigation.navigate('TransactionsScreen');
       }
-      if (notification?.data?.customValue?.includes('transaction')) {
-        rootStore.walletStore.fetchWalletBalance(
-          rootStore.loginStore.userToken,
-          true,
-        );
+      if (notification?.data?.customValue?.includes('receiverFirstName')) {
         PushNotification.localNotification({
           /* Android Only Properties */
           channelId: 'fcm_fallback_notification_channel', // (required) channelId, if the channel doesn't exist, notification will not trigger.
