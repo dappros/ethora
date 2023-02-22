@@ -23,11 +23,13 @@ import { useSnackbar } from "../context/SnackbarContext";
 export interface IRegisterCompanyModal {
   open: boolean;
   onClose: () => void;
+  afterSubmit?: () => void
 }
 
 export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
   open,
   onClose,
+  afterSubmit
 }) => {
   const user = useStoreState((state) => state.user);
   const setUser = useStoreState((state) => state.setUser);
@@ -48,6 +50,7 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
         const res = await agreeWithTerms(companyName);
         setUser({ ...user, isAgreeWithTerms: true });
         onClose()
+        afterSubmit()
       } catch (error) {
         console.log(error);
         showSnackbar('error', 'Something went wrong')
