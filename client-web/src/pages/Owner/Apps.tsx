@@ -80,7 +80,7 @@ export default function BasicTable() {
         >
           <span>
             <IconButton
-              disabled={isEnoughCoinsToCreateApp}
+              disabled={!isEnoughCoinsToCreateApp}
               onClick={onAddApp}
               size="large"
             >
