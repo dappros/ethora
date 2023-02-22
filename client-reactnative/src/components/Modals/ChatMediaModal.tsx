@@ -35,6 +35,18 @@ import {formatBigNumber} from '../../helpers/formatBigNumber';
 import {isImageMimetype, isVideoMimetype} from '../../helpers/checkMimetypes';
 const {width, height: windowHeight} = Dimensions.get('window');
 
+//interfaces
+interface IChatMediaModal {
+  open: boolean;
+  url: string|undefined;
+  type: TCombinedMimeType;
+  onClose: () => void;
+  messageData: any;
+}
+//interfaces
+
+
+//common action button
 const ModalActionButton = ({
   actionTypeText,
   cost,
@@ -82,22 +94,31 @@ const ModalActionButton = ({
   );
 };
 
-interface IChatMediaModal {
-  open: boolean;
-  url: string;
-  type: TCombinedMimeType;
-  onClose: () => void;
-  messageData: any;
-}
 export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
   ({open, url, type, onClose, messageData}) => {
-    const [height, setHeight] = useState(0);
+    console.log(messageData,"sdasdas")
+    //Mobx stores
     const {chatStore, loginStore, apiStore} = useStores();
+    //Mobx stores
+
+    //local states
+    const [height, setHeight] = useState(0);
     const [buttonState, setButtonState] = useState({
       title: 'Wrap',
       cost: '100',
     });
     const [loading, setLoading] = useState(false);
+    //local states
+
+    //hooks
+    useEffect(() => {
+      if (messageData) {
+        getButtonState();
+      }
+    }, [messageData]);
+    //hooks
+
+    //get cost of a nft attachment
     const getCosts = async () => {
       try {
         const res = await httpGet(
@@ -110,7 +131,10 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
         return [];
       }
     };
+
+    //to set action button state 
     const getButtonState = async () => {
+      console.log("get button")
       if (messageData?.attachmentId && !messageData?.nftId) {
         setButtonState({title: 'Wrap', cost: '100'});
 
@@ -129,18 +153,17 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
         return '';
       }
     };
-    useEffect(() => {
-      if (messageData) {
-        getButtonState();
-      }
-    }, [messageData]);
 
+
+
+    //handle to download media
     const downloadMedia = async () => {
       setLoading(true);
       await downloadFile(messageData?.image, messageData?.originalName);
       setLoading(false);
     };
 
+    //UI for content inside modal
     const renderModalContent = () => {
       if (isImageMimetype(type)) {
         const modalButtonAction = () => {
@@ -218,7 +241,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
         );
       }
       if (pdfMimemtype[type]) {
-        return <PdfViewer uri={url} />;
+        return url&&<PdfViewer uri={url} />;
       }
       return null;
     };

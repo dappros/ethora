@@ -14,15 +14,20 @@ import {textStyles} from '../../../docs/config';
 import {formatBytes} from '../../helpers/chat/formatBytes';
 import {MessageSize} from './MessageSize';
 
+
+//interface and types
 interface ImageMessageProps {
   url: any;
   size: any;
-  onLongPress?: any;
+  onLongPress?: () => void;
   onPress: any;
   nftId?: string;
   nftName?: string;
 }
+//interface and types
 
+
+//component to render UI for messages that has Image in it.
 export const ImageMessage = ({
   url,
   size,
@@ -66,7 +71,6 @@ export const ImageMessage = ({
               borderWidth: nftId ? 2 : 0,
             }}
             source={{uri: url}}
-            alt={'Image message'}
           />
         </Box>
       </TouchableOpacity>
