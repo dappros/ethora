@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -7,7 +7,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Tooltip, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { useStoreState } from "../../store";
 import NoDataImage from "../../components/NoDataImage";
@@ -16,17 +16,24 @@ import DeleteAppModal from "./DeletAppModal";
 import EditAppModal from "./EditAppModal";
 import RotateModal from "./RotateModal";
 import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
+import { coinsMainName } from "../../config/config";
+
+const COINS_TO_CREATE_APP = 10000;
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
   const user = useStoreState((state) => state.user);
-  const [open, setOpen] = React.useState(false);
-  const [companyModalOpen, setCompanyModalOpen] = React.useState(false);
-
-  const [showDelete, setShowDelete] = React.useState(false);
-  const [showEdit, setShowEdit] = React.useState(false);
-  const [showRotate, setShowRotate] = React.useState(false);
-  const [currentApp, setCurrentApp] = React.useState({
+  const [open, setOpen] = useState(false);
+  const [companyModalOpen, setCompanyModalOpen] = useState(false);
+  const mainCoinBalance = useStoreState((state) =>
+    state.balance.find((el) => el.tokenName === coinsMainName)
+  );
+  const isEnoughCoinsToCreateApp =
+    +mainCoinBalance.balance >= COINS_TO_CREATE_APP;
+  const [showDelete, setShowDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showRotate, setShowRotate] = useState(false);
+  const [currentApp, setCurrentApp] = useState({
     _id: "",
     appName: "",
     appDescription: "",
@@ -64,9 +71,23 @@ export default function BasicTable() {
         <Typography variant="h6" style={{ margin: "16px" }}>
           Apps
         </Typography>
-        <IconButton onClick={onAddApp} size="large">
-          <AddCircleIcon fontSize="large"></AddCircleIcon>
-        </IconButton>
+        <Tooltip
+          title={
+            !isEnoughCoinsToCreateApp
+              ? "You don't have enough coins to create the app."
+              : ""
+          }
+        >
+          <span>
+            <IconButton
+              disabled={!isEnoughCoinsToCreateApp}
+              onClick={onAddApp}
+              size="large"
+            >
+              <AddCircleIcon fontSize="large"></AddCircleIcon>
+            </IconButton>
+          </span>
+        </Tooltip>
       </Box>
       {apps.length === 0 && (
         <Box
@@ -178,13 +199,18 @@ export default function BasicTable() {
       <RegisterCompanyModal
         onClose={() => setCompanyModalOpen(false)}
         open={companyModalOpen}
+        afterSubmit={() => setOpen(true)}
       />
       <DeleteAppModal
         app={currentApp}
         open={showDelete}
         setOpen={setShowDelete}
       />
-      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate} />
+      <RotateModal
+        app={currentApp}
+        open={showRotate}
+        setOpen={setShowRotate}
+      />
       {showEdit && (
         <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit} />
       )}

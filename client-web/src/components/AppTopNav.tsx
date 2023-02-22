@@ -20,7 +20,7 @@ import { TActiveRoomFilter, useStoreState } from "../store";
 import coinImg from "../assets/images/coin.png";
 import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Badge, Divider } from "@mui/material";
-import { defaultChats, defaultMetaRoom, ROOMS_FILTERS } from "../config/config";
+import { coinsMainName, defaultChats, defaultMetaRoom, ROOMS_FILTERS } from "../config/config";
 import { Menu } from "./Menu";
 import { ethers } from "ethers";
 
@@ -50,7 +50,7 @@ const AppTopNav = () => {
   const location = useLocation();
   const balance = useStoreState((state) => state.balance);
   const mainCoinBalance = useStoreState((state) =>
-    state.balance.find((el) => el.tokenName === "Dappros Platform Token")
+    state.balance.find((el) => el.tokenName === coinsMainName)
   );
 
   const setBalance = useStoreState((state) => state.setBalance);
