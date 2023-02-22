@@ -10,6 +10,7 @@ import {Platform} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import {subscribePushNotification} from '../config/routesConstants';
 import {HomeStackNavigationProp} from '../navigation/types';
+import {rootStore} from '../stores/context';
 import {playCoinSound} from './chat/playCoinSound';
 import {underscoreManipulation} from './underscoreLogic';
 
@@ -72,8 +73,17 @@ export const getPushToken = async (
           navigation.navigate('ChatScreen', {chatJid: chatJID});
         }, 2000);
       }
-
-      if (notification.data.customValue.includes('transaction')) {
+      if (
+        notification.userInteraction &&
+        notification.message.includes('transaction')
+      ) {
+        navigation.navigate('TransactionsScreen');
+      }
+      if (notification?.data?.customValue?.includes('transaction')) {
+        rootStore.walletStore.fetchWalletBalance(
+          rootStore.loginStore.userToken,
+          true,
+        );
         PushNotification.localNotification({
           /* Android Only Properties */
           channelId: 'fcm_fallback_notification_channel', // (required) channelId, if the channel doesn't exist, notification will not trigger.

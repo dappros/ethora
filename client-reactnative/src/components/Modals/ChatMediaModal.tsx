@@ -96,7 +96,6 @@ const ModalActionButton = ({
 
 export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
   ({open, url, type, onClose, messageData}) => {
-    console.log(messageData,"sdasdas")
     //Mobx stores
     const {chatStore, loginStore, apiStore} = useStores();
     //Mobx stores
