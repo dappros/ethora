@@ -73,7 +73,7 @@ export const getPushToken = async (
         }, 2000);
       }
 
-      if (notification.message.includes('transaction')) {
+      if (notification.data.customValue.includes('transaction')) {
         PushNotification.localNotification({
           /* Android Only Properties */
           channelId: 'fcm_fallback_notification_channel', // (required) channelId, if the channel doesn't exist, notification will not trigger.
