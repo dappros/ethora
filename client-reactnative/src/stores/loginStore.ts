@@ -451,7 +451,7 @@ export class LoginStore {
     );
   };
 
-  //handle to registe a new user
+  //handle to register a new user
   registerUser = async (body: any, ssoUserData: any) => {
     const token = this.stores.apiStore.defaultToken;
     try {
