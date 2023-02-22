@@ -291,6 +291,28 @@ export const Message: React.FC<IMessage> = ({
             )}
 
           {message.data.isMediafile &&
+              message.data.mimetype === "application/pdf" && (
+                  <Card sx={{ maxWidth: 200 }}>
+                    <CardActionArea onClick={(event) => {
+                      event.preventDefault();
+                      window.open(message.data.location, "_blank");
+                    }}>
+                      <CardMedia
+                          style={{
+                            height: 150,
+                            objectFit: "cover",
+                            objectPosition: "left",
+                          }}
+                          component="img"
+                          height="150"
+                          image={message.data.locationPreview}
+                          alt={message.data.originalName}
+                      />
+                    </CardActionArea>
+                  </Card>
+              )}
+
+          {message.data.isMediafile &&
             !!videoMimetypes[message.data.mimetype] && (
               <video controls width="200px">
                 <source
