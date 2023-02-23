@@ -1,7 +1,6 @@
-import {IAuthorization} from "./IAuthorization";
+import {IAuthData, IAuthorization} from "./IAuthorization";
 
 export interface IApplicationAPI{
-    _errorHandler(error: any, authData: IAuthorization): any;
-    _refreshToken(authData: IAuthorization): any;
     userAuthorization(username: string, password: string): Promise<IAuthorization>;
+    userRegistration(username: string, password: string): Promise<IAuthData>;
 }
