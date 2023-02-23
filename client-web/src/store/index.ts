@@ -528,6 +528,10 @@ const _useStore = create<IStore>()(
           setLoaderArchive: (status: boolean) =>
             set((state) => {
               state.loaderArchive = status;
+              if(status === true){
+                const timer = setTimeout(() => state.loaderArchive = false, 5000)
+                clearTimeout(timer);
+              }
             }),
           clearMessageHistory: () =>
             set((state) => {
