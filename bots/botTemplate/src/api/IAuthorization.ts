@@ -1,6 +1,7 @@
 export interface IAuthorization {
     token: string;
     refreshToken: string;
+    success: boolean;
     data: IAuthData;
 }
 
