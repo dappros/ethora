@@ -37,14 +37,17 @@ export default function Signon() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const initClient = () => {
-      gapi.client.init({
-        clientId:
-          "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
-        scope: "",
-      });
-    };
-    gapi.load("client:auth2", initClient);
+      // @ts-ignore
+      window.onGoogleScriptLoad = () => {
+        const initClient = () => {
+          gapi.client.init({
+            clientId:
+              "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
+            scope: "",
+          });
+        };
+        gapi.load("client:auth2", initClient);
+      };
   });
 
   useEffect(() => {
