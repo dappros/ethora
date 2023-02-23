@@ -27,7 +27,7 @@ interface ImageMessageProps {
 //interface and types
 
 
-//component to render UI for messages that has Image in it.
+//component to render UI for messages that have an image in it.
 export const ImageMessage = ({
   url,
   size,

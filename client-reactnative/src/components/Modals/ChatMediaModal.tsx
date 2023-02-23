@@ -117,7 +117,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
     }, [messageData]);
     //hooks
 
-    //get cost of a nft attachment
+    //get the cost of NFT attachment
     const getCosts = async () => {
       try {
         const res = await httpGet(
@@ -162,7 +162,7 @@ export const ChatMediaModal: React.FC<IChatMediaModal> = observer(
       setLoading(false);
     };
 
-    //UI for content inside modal
+    //UI for the content inside modal
     const renderModalContent = () => {
       if (isImageMimetype(type)) {
         const modalButtonAction = () => {

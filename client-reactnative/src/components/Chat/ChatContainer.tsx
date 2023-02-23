@@ -253,7 +253,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
 
-  //get wavefrom 
+  //get Waveform
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== 'ios') {
       let ddd = await NativeModules.Waveform.getWaveformArray(url);
@@ -314,7 +314,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     console.log(result);
   };
 
-  //handle to stop audio recording, get the recorded details and send as message
+  //handle to stop audio recording, get the recorded details and send as a message
   const onStopRecord = async () => {
     setRecording(false);
     animateMediaButtonOut();
@@ -614,15 +614,15 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               onTapMessageObject?.roomJid as string,
               onTapMessageObject?._id as string,
               chatStore.xmpp
-            )
+            );
+            onClose();
           }
         },
         {
           text: "Cancel",
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") }
+        }
       ]
     );
   }

@@ -78,7 +78,7 @@ const ScanScreen = () => {
   const navigation = useNavigation<HomeStackNavigationProp>();
   //navigator
 
-  //handle to subsribe and open chat room from give qr image
+  //handle to subscribe and open chat room from given QR code image
   const onSuccess = (e: any) => {
     if (!e) {
       showToast('error', 'Error', 'Invalid QR', 'top');

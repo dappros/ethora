@@ -148,7 +148,7 @@ const MintScreen = () => {
     }
   };
 
-  //handle to set nftfile from file
+  //handle to set NFT file from file
   const setNftFile = async () => {
     try {
       const res = await DocumentPicker.pick({
