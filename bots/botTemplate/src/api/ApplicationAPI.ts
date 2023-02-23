@@ -1,5 +1,5 @@
 import axios from "axios";
-import {IAuthorization} from "./IAuthorization";
+import {IAuthData, IAuthorization} from "./IAuthorization";
 import {IApplicationAPI} from "./IApplicationAPI";
 import Config from "../config/Config";
 
@@ -18,7 +18,7 @@ export default class ApplicationAPI implements IApplicationAPI {
         });
 
         this.http.interceptors.response.use(undefined, (error: any) => {
-            if(this.authData){
+            if (this.authData) {
                 return this._errorHandler(error, this.authData)
             }
             return Promise.reject(error);
@@ -43,25 +43,54 @@ export default class ApplicationAPI implements IApplicationAPI {
             this.authData = {
                 token: String(request.data.token),
                 refreshToken: String(request.data.refreshToken),
-                data: {
-                    _id: String(request.data.user._id),
-                    botJID: ApplicationAPI._getJID(String(request.data.user.defaultWallet.walletAddress)),
-                    appId: String(request.data.user.appId),
-                    xmppPassword: String(request.data.user.xmppPassword),
-                    walletAddress: String(request.data.user.defaultWallet.walletAddress),
-                    username: String(request.data.user.username),
-                    firstName: String(request.data.user.firstName),
-                    lastName: String(request.data.user.lastName),
-                    photo: request.data.user.photo ? String(request.data.user.photo) : '',
-                    emails: Array.isArray(request.data.user.emails) ? request.data.user.emails : [],
-                    updatedAt: String(request.data.user.updatedAt),
-                    isUserDataEncrypted: request.data.app.isUserDataEncrypted,
-                }
+                success: request.data.success,
+                data: this._collectRequestData(request)
             };
             return this.authData;
         } catch (error: any) {
-            return error.data;
+            const errorData = error.response.data;
+            if(errorData.errors[0].msg === "User do not found"){
+                return errorData;
+            }
+            throw new Error(errorData);
         }
+    }
+
+    async userRegistration(username: string, password: string): Promise<IAuthData> {
+        try {
+            const request = await this.http.post('users', {
+                username: username,
+                password: password,
+                firstName: username.charAt(0).toUpperCase() + username.slice(1),
+                lastName: 'Bot'
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: this.tokenJWT,
+                },
+            });
+            return this._collectRequestData(request);
+        } catch (error: any) {
+            const errorData = error.response.data;
+            throw new Error(errorData);
+        }
+    }
+
+    _collectRequestData(data: any): IAuthData {
+        return {
+            _id: String(data.data.user._id),
+            botJID: ApplicationAPI._getJID(String(data.data.user.defaultWallet.walletAddress)),
+            appId: String(data.data.user.appId),
+            xmppPassword: String(data.data.user.xmppPassword),
+            walletAddress: String(data.data.user.defaultWallet.walletAddress),
+            username: String(data.data.user.username),
+            firstName: String(data.data.user.firstName),
+            lastName: String(data.data.user.lastName),
+            photo: data.data.user.photo ? String(data.data.user.photo) : '',
+            emails: Array.isArray(data.data.user.emails) ? data.data.user.emails : [],
+            updatedAt: String(data.data.user.updatedAt),
+            isUserDataEncrypted: data.data.app ? data.data.app.isUserDataEncrypted : true,
+        };
     }
 
     _errorHandler(error: any, authData: IAuthorization) {
