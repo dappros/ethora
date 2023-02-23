@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.7.1",
-    "@apollo/react-hooks": "^4.0.0",
     "@chatscope/chat-ui-kit-react": "^1.9.7",
     "@chatscope/chat-ui-kit-styles": "^1.4.0",
     "@emotion/react": "^11.10.4",
@@ -33,8 +31,6 @@
     "firebase": "^9.12.1",
     "formik": "^2.2.9",
     "gapi-script": "^1.2.0",
-    "graphql": "^16.6.0",
-    "graphql-ws": "^5.11.2",
     "js-sha256": "^0.9.0",
     "react": "^18.2.0",
     "react-audio-voice-recorder": "^1.0.4",
