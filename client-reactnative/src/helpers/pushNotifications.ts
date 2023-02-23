@@ -53,6 +53,8 @@ export const getPushToken = async (
         },
         defaultUrl,
       );
+
+      // creating channel for local notifications
       PushNotification.createChannel(
         {
           channelId: 'fcm_fallback_notification_channel', // (required)
@@ -68,17 +70,20 @@ export const getPushToken = async (
     onNotification: function (notification: any) {
       console.log('NOTIFICATION:', notification);
       const chatJID = notification.data.mucId;
+      // naviagting to chat if notification came from chat
       if (chatJID) {
         setTimeout(() => {
           navigation.navigate('ChatScreen', {chatJid: chatJID});
         }, 2000);
       }
+      // navigating to the Transactions screen after user tapped on the transaction notification
       if (
         notification.userInteraction &&
         notification.message.includes('transaction')
       ) {
         navigation.navigate('TransactionsScreen');
       }
+      // displaying local notification after receiving push from server with transaction
       if (notification?.data?.customValue?.includes('receiverFirstName')) {
         PushNotification.localNotification({
           /* Android Only Properties */

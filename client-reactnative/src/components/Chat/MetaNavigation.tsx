@@ -228,6 +228,8 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     setMetaRooms(rooms || predefinedMeta);
   };
 
+
+  // getting last rooms where user was
   const getCurrentRoom = async () => {
     setLoading(true);
     try {
@@ -309,6 +311,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       chatStore.xmpp,
     );
   };
+  // join request, sends every when user entered to the room
   const sendRoomJoin = async () => {
     try {
       await httpPost(roomRoute + '/join/' + chatId, {}, loginStore.userToken);
@@ -316,6 +319,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       console.log(error);
     }
   };
+  // sends leaving message to the room
   useEffect(() => {
     if (previousRoom?.name) {
       sendMessage(
@@ -325,6 +329,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       );
     }
   }, [previousRoom]);
+    // sends joining message to the room
   useEffect(() => {
     if (currentMetaRoom.name) {
       sendMessage(
