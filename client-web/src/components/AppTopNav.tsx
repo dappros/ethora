@@ -8,8 +8,6 @@ import Container from "@mui/material/Container";
 
 import { Link, useHistory, useLocation } from "react-router-dom";
 
-import { useSubscription } from "@apollo/client";
-import Snackbar from "@mui/material/Snackbar";
 import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
@@ -18,7 +16,6 @@ import xmpp from "../xmpp";
 import { TActiveRoomFilter, useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
-import { TRRANSFER_TO_SUBSCRIPTION } from "../apollo/subscription";
 import { Badge, Divider } from "@mui/material";
 import { coinsMainName, defaultChats, defaultMetaRoom, ROOMS_FILTERS } from "../config/config";
 import { Menu } from "./Menu";
@@ -43,9 +40,6 @@ const AppTopNav = () => {
     : "none";
   const user = useStoreState((state) => state.user);
 
-  const [showMainBalanceNotification, setShowMainBalanceNotification] =
-    useState(false);
-
   const history = useHistory();
   const location = useLocation();
   const balance = useStoreState((state) => state.balance);
@@ -66,43 +60,12 @@ const AppTopNav = () => {
   });
 
   const ACL = useStoreState((state) => state.ACL);
-  const { data, loading } = useSubscription(TRRANSFER_TO_SUBSCRIPTION, {
-    variables: {
-      walletAddress: user.walletAddress,
-      contractAddress: mainCoinBalance ? mainCoinBalance.contractAddress : "",
-    },
-    skip: mainCoinBalance ? false : true,
-  });
 
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
   }, []);
-
-  useEffect(() => {
-    if (data) {
-      const ethersAmounnt = ethers.utils.formatEther(data.transferTo.amount);
-      const newMainBalance = {
-        ...mainCoinBalance,
-        balance: Number(mainCoinBalance.balance) + Number(ethersAmounnt),
-      };
-
-      const newBalance = balance.map((el) => {
-        if (el.tokenName === "Dappros Platform Token") {
-          return newMainBalance;
-        }
-
-        return el;
-      });
-
-      setBalance(newBalance);
-      setShowMainBalanceNotification(true);
-      setTimeout(() => {
-        setShowMainBalanceNotification(false);
-      }, 4000);
-    }
-  }, [data]);
 
   useEffect(() => {
     xmpp.init(user.walletAddress, user?.xmppPassword as string);
@@ -227,16 +190,6 @@ const AppTopNav = () => {
           </Box>
         </Toolbar>
       </Container>
-      {showMainBalanceNotification && (
-        <Snackbar
-          open={true}
-          message={`You get ${ethers.utils.formatEther(
-            data.transferTo.amount
-          )} coins from ${data.transferTo.senderFirstName} ${
-            data.transferTo.senderLastName
-          }`}
-        />
-      )}
     </AppBar>
   );
 };
