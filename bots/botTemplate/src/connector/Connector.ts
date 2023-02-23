@@ -12,6 +12,7 @@ import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
 import Logger from "../utils/Logger";
 import {XmppRoom} from "../client/XmppRoom";
+import {IApplicationAPI} from "../api/IApplicationAPI";
 
 export default class Connector extends EventEmitter implements IConnector {
     username: string;
@@ -19,12 +20,14 @@ export default class Connector extends EventEmitter implements IConnector {
     stanza: any;
     botAuthData: IAuthorization | undefined;
     xmpp: any;
+    appAPI: IApplicationAPI
 
     constructor(username: string, password: string) {
         super();
         this.username = username;
         this.password = password;
         this.xmpp = XmppClient;
+        this.appAPI = new ApplicationAPI();
     }
 
     getUniqueSessionKey(): string {
@@ -98,9 +101,19 @@ export default class Connector extends EventEmitter implements IConnector {
     }
 
     listen(): any {
-        const API = new ApplicationAPI();
+        this.appAPI.userAuthorization(this.username, this.password).then(botAuthData => {
 
-        API.userAuthorization(this.username, this.password).then(botAuthData => {
+            if (!botAuthData.success) {
+                Logger.warn(`The user is not found, starting registration. ( ${this.username} )`);
+
+                return this.appAPI.userRegistration(this.username, this.password).then(result => {
+                    Logger.info(`User ${result.firstName} has been successfully created, starting authorization.`);
+                    return this.listen();
+                }).catch(error => {
+                    throw Logger.error(new Error(`An error occurred during registration: ${error}`));
+                });
+            }
+
             this.botAuthData = botAuthData;
             Logger.info('Bot authorization successful.');
             if (Config.getConfigStatuses().useAppName) {
@@ -128,15 +141,15 @@ export default class Connector extends EventEmitter implements IConnector {
                     this.stanza = stanza;
 
                     // Processing an incoming chat room invitation
-                    if(Config.getConfigStatuses().useInvites){
-                        if(stanza.getChild('x') && stanza.getChild('x').getChild('invite')){
+                    if (Config.getConfigStatuses().useInvites) {
+                        if (stanza.getChild('x') && stanza.getChild('x').getChild('invite')) {
                             Logger.info(`Accepted invite to the room: ${stanzaBody.parent.attrs.from}`);
                             this.connectToRooms([String(stanzaBody.parent.attrs.from)]);
                         }
                     }
 
                     //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
-                    if(stanza.getChild('data')){
+                    if (stanza.getChild('data')) {
                         const receivedMessage = new Message(this._collectMessage());
                         Logger.info('Received: ' + receivedMessage.getText());
                         this.emit(ConnectorEvent.receiveMessage, receivedMessage);
@@ -144,6 +157,8 @@ export default class Connector extends EventEmitter implements IConnector {
 
                 }
             });
+        }).catch(error => {
+            throw Logger.error(new Error(`An error occurred during authorization. ${error}`));
         })
         return this;
     }
