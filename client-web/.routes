@@ -1,0 +1,58 @@
+/users/login/refresh
+POST /users/login
+POST /users
+DELETE /users/
+POST /users/checkExtWallet
+POST /users/terms-and-conditions
+GET /users/checkEmail/{email}
+GET /users/acl/{userId}
+GET /users/acl/
+PUT /users/acl/{userId}
+POST /users/register
+POST /users/login/owner
+GET /users?appId=${appId}&limit=${limit}&offset=${offset}
+PUT /users/${id}
+PUT /users/
+GET /users/profile/${walletAddress}
+GET /users/exportData
+POST /users/referral
+
+POST /tokens/items/nfmt
+GET /wallets/balance
+GET /explorer/transactions?walletAddress=${walletAddress}
+GET /explorer/transactions?walletAddress
+GET /explorer/history
+GET /explorer/blocks/{blockNumber}
+GET /explorer/transactions/{transactionHash}
+POST /files
+GET /files/{id}
+POST /tokens/items
+GET /apps
+POST /apps
+DELETE /apps/${id}
+PUT /apps/${id}
+POST /apps/rotate-jwt/${appId}
+POST /tokens/transfer
+POST tokens/transfer/items
+
+GET /shareLink/
+DELETE /shareLink/${linkToken}
+POST /shareLink/
+
+GET /docs/${user.walletAddress}
+POST /docs
+
+GET /room/currentRoom
+GET /room/getRoom/{chatId}
+POST /room/join/{chatId}
+POST /room
+
+/analysis/sessions-count?startDate=${startDate}&endDate=${endDate}
+/analysis/transactions-count?startDate=${startDate}&endDate=${endDate}
+/analysis/issuance-count?startDate=${startDate}&endDate=${endDate}
+/analysis/apis-count?startDate=${startDate}&endDate=${endDate}
+
+/analysis/sessions-graph?startDate=${startDate}&endDate=${endDate}
+/analysis/apis-graph?startDate=${startDate}&endDate=${endDate}
+/analysis/transactions-graph?startDate=${startDate}&endDate=${endDate}
+/analysis/issuance-graph?startDate=${startDate}&endDate=${endDate}
