@@ -107,7 +107,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
   };
 
   return (
-    <View style={{backgroundColor: 'white', flex: 1}}>
+    <View testID='registerScreen' style={{backgroundColor: 'white', flex: 1}}>
       <View
         style={{
           justifyContent: 'center',
@@ -155,6 +155,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
               ]}>
               <View style={loginStyles.form}>
                 <Input
+                  testID='usernameInput'
                   maxLength={30}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -167,6 +168,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                 />
 
                 <Input
+                  testID='firstnameInput'
                   maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -179,6 +181,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                 />
 
                 <Input
+                  testID='lastnameInput'
                   maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -191,6 +194,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                 />
 
                 <Input
+                testID='passwordInput'
                   maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -204,6 +208,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                 />
 
                 <Input
+                testID='confirmPasswordInput'
                   maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
@@ -245,6 +250,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                   </TouchableOpacity>
                 </View>
                 <Button
+                  testID='createAccountButton'
                   title={'Create'}
                   onPress={registerUser}
                   loading={loading}
