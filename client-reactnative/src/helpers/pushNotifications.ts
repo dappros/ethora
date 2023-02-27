@@ -70,7 +70,7 @@ export const getPushToken = async (
     onNotification: function (notification: any) {
       console.log('NOTIFICATION:', notification);
       const chatJID = notification.data.mucId;
-      // naviagting to chat if notification came from chat
+      // navigating to chat if notification came from chat
       if (chatJID) {
         setTimeout(() => {
           navigation.navigate('ChatScreen', {chatJid: chatJID});

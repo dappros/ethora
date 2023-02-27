@@ -74,7 +74,7 @@ export const MainHeader = observer(() => {
     if (route.name === homeStackRoutes.ChatScreen && key === ROOM_KEYS.groups) {
       chatStore.toggleMetaNavigation(true);
       chatStore.changeActiveChats(key);
-      // if current chat room is not meta room - navigate to latest meta room
+      // if current chat room is not meta one - navigate to latest meta room
       if (
         //@ts-ignore
         !(

@@ -311,7 +311,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       chatStore.xmpp,
     );
   };
-  // join request, sends every when user entered to the room
+  // join request, sends every time when user entered to the room
   const sendRoomJoin = async () => {
     try {
       await httpPost(roomRoute + '/join/' + chatId, {}, loginStore.userToken);
