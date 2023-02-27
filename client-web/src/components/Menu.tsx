@@ -80,7 +80,7 @@ const initMenuItems = (user: TUser, ACL: any) => {
     });
   }
 
-  if (user.ACL.masterAccess) {
+  if (user?.ACL?.masterAccess) {
     items.push({
       name: "Admin",
       items: [{ name: "Statistics", id: "/statistics", visible: true }],

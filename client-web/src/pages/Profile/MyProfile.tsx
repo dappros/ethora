@@ -11,7 +11,7 @@ import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
-import { getToken } from "../../firebase";
+import { getFirebaseMesagingToken } from "../../services/firebase";
 
 const styles = {
   craeteNewLink: {
@@ -49,7 +49,7 @@ export function MyProfile() {
         Notification.requestPermission().then((permission) => {
           if (permission === "granted") {
             console.log("geting token");
-            getToken().then((token) => {
+            getFirebaseMesagingToken().then((token) => {
               console.log("my fb token ", token);
             });
             return;
@@ -57,7 +57,7 @@ export function MyProfile() {
         });
       } else {
         console.log("geting token");
-        getToken().then((token) => {
+        getFirebaseMesagingToken().then((token) => {
           console.log("my fb token ", token);
         });
         return;

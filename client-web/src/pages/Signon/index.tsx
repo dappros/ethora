@@ -15,8 +15,6 @@ import { useQuery } from "../../utils";
 import { EmailModal } from "./EmailModal";
 import { MetamaskModal } from "./MetamaskModal";
 import { UsernameModal } from "./UsernameModal";
-import { GoogleLogin } from "react-google-login";
-import { gapi } from "gapi-script";
 import { FullPageSpinner } from "../../components/FullPageSpinner";
 import {
   facebookSignIn,
@@ -24,6 +22,8 @@ import {
   metamaskSignIn,
   regularLogin,
 } from "../../config/config";
+import { signInWithGoogle } from "../../services/firebase";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -35,22 +35,7 @@ export default function Signon() {
   const [openUsername, setOpenUsername] = useState(false);
   const [showMetamask, setShowMetamask] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-   
-    // @ts-ignore
-    window.onGoogleScriptLoad = () => {
-      console.log('load')
-      const initClient = () => {
-        gapi.client.init({
-          clientId:
-            "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
-          scope: "",
-        });
-      };
-      gapi.load("client:auth2", initClient);
-    };
-  }, []);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
@@ -119,36 +104,45 @@ export default function Signon() {
     }
   }, [active, account]);
 
-  const onGoogleClickSuccess = async (res: any) => {
+  const onGoogleClick = async () => {
     const loginType = "google";
-    const emailExist = await http.checkEmailExist(res.profileObj.email);
-    setLoading(true);
-    if (!emailExist.data.success) {
-      const loginRes = await http.loginSocial(
-        res.tokenId,
-        res.accessToken,
-        loginType
-      );
-      const user = loginRes.data.user;
 
-      updateUserInfo(user, loginRes.data);
-    } else {
-      await http.registerSocial(res.tokenId, res.accessToken, "", loginType);
-      const loginRes = await http.loginSocial(
-        res.tokenId,
-        res.accessToken,
-        loginType
+    try {
+      const res = await signInWithGoogle();
+      const emailExist = await http.checkEmailExist(
+        res.user.providerData[0].email
       );
-      const user = loginRes.data.user;
+      if (!emailExist.data.success) {
+        const loginRes = await http.loginSocial(
+          res.idToken,
+          res.credential.accessToken,
+          loginType
+        );
+        const user = loginRes.data.user;
 
-      updateUserInfo(user, loginRes.data);
+        updateUserInfo(user, loginRes.data);
+      } else {
+        await http.registerSocial(
+          res.idToken,
+          res.credential.accessToken,
+          "",
+          loginType
+        );
+        const loginRes = await http.loginSocial(
+          res.idToken,
+          res.credential.accessToken,
+          loginType
+        );
+        const user = loginRes.data.user;
+
+        updateUserInfo(user, loginRes.data);
+      }
+    } catch (error) {
+      console.log(error);
+      showSnackbar("error", "Cannot authenticate user");
     }
-    setLoading(false);
   };
 
-  const onFailure = (err: any) => {
-    console.log("failed:", err);
-  };
   const updateUserInfo = (
     user: any,
     tokens: {
@@ -178,29 +172,36 @@ export default function Signon() {
   };
 
   const onFacebookClick = async (info: any) => {
+    if (!info?.email) return;
     const loginType = "facebook";
     setLoading(true);
     const emailExist = await http.checkEmailExist(info.email);
-    if (!emailExist.data.success) {
-      const loginRes = await http.loginSocial(
-        "",
-        "",
-        loginType,
-        info.accessToken
-      );
-      const user = loginRes.data.user;
-      updateUserInfo(user, loginRes.data);
-    } else {
-      await http.registerSocial("", "", info.accessToken, loginType);
-      const loginRes = await http.loginSocial(
-        "",
-        "",
-        loginType,
-        info.accessToken
-      );
-      const user = loginRes.data.user;
-      updateUserInfo(user, loginRes.data);
+    try {
+      if (!emailExist.data.success) {
+        const loginRes = await http.loginSocial(
+          "",
+          "",
+          loginType,
+          info.accessToken
+        );
+        const user = loginRes.data.user;
+        updateUserInfo(user, loginRes.data);
+      } else {
+        await http.registerSocial("", "", info.accessToken, loginType);
+        const loginRes = await http.loginSocial(
+          "",
+          "",
+          loginType,
+          info.accessToken
+        );
+        const user = loginRes.data.user;
+        updateUserInfo(user, loginRes.data);
+      }
+    } catch (error) {
+      showSnackbar("error", "Cannot authenticate user");
+      console.log(error);
     }
+
     setLoading(false);
   };
 
@@ -256,30 +257,21 @@ export default function Signon() {
           />
         )}
         {googleSignIn && (
-          <GoogleLogin
-            clientId="972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com"
-            buttonText="Sign In with Google"
-            onSuccess={onGoogleClickSuccess}
-            onFailure={onFailure}
-            cookiePolicy={"single_host_origin"}
-            render={(props) => (
-              <Button
-                {...props}
-                sx={{ margin: 1 }}
-                fullWidth
-                variant="contained"
-                startIcon={<GoogleIcon />}
-                style={{
-                  backgroundColor: "white",
-                  color: "rgba(0,0,0,0.6)",
-                  textTransform: "none",
-                  fontSize: "16px",
-                }}
-              >
-                Sign In with Google
-              </Button>
-            )}
-          />
+          <Button
+            onClick={onGoogleClick}
+            sx={{ margin: 1 }}
+            fullWidth
+            variant="contained"
+            startIcon={<GoogleIcon />}
+            style={{
+              backgroundColor: "white",
+              color: "rgba(0,0,0,0.6)",
+              textTransform: "none",
+              fontSize: "16px",
+            }}
+          >
+            Sign In with Google
+          </Button>
         )}
         {metamaskSignIn && (
           <Button

@@ -5,6 +5,8 @@ import {
   signInWithPopup,
   User,
 } from "firebase/auth";
+import { getMessaging, getToken } from "firebase/messaging";
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -16,9 +18,11 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = initializeApp(firebaseConfig);
+
 export const auth = getAuth(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope("https://www.googleapis.com/auth/userinfo.email");
+googleProvider.addScope("https://www.googleapis.com/auth/userinfo.profile");
 
 type IUser = User & { accessToken: string };
 
@@ -27,12 +31,22 @@ export const signInWithGoogle = async () => {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user as IUser;
     const idToken = await auth?.currentUser?.getIdToken();
+    const credential = GoogleAuthProvider.credentialFromResult(res);
     return {
       user,
       idToken,
+      credential,
     };
   } catch (err) {
     console.error(err);
     return {};
   }
 };
+
+export function getFirebaseMesagingToken() {
+  const messaging = getMessaging(firebaseApp);
+  return getToken(messaging, {
+    vapidKey:
+      "BCzcT7yzF8F188maOgPAISXqWCTDavGzWW0SWLOBx9vX2mYFjBXMaTMBDR3HXlmXOduyE253sblF9HP6aEBbx38",
+  });
+}
