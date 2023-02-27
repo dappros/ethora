@@ -1,16 +1,17 @@
 import React, { useEffect } from "react";
-import { Route, Router, Switch } from "react-router";
+import { Route, Switch } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../components/FullPageSpinner";
-import { checkNotificationsStatus } from "../utils";
+import { checkNotificationsStatus, sendBrowserNotification } from "../utils";
 import { MintNft } from "./MintNft/MintNft";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
 import { Snackbar } from "../components/Snackbar";
 import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
+import { onMessageListener } from "../services/firebaseMessaging";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -137,6 +138,15 @@ export const Routes = () => {
       getDocuments(user.walletAddress);
     }
   }, [userId]);
+
+  useEffect(() => {
+    onMessageListener()
+      .then((payload) => {
+        sendBrowserNotification(payload.notification.body, () => {});
+        console.log(payload);
+      })
+      .catch((err) => console.log("failed: ", err));
+  }, []);
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>

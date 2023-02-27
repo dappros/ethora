@@ -11,15 +11,26 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
-import { getBalance, httpWithAuth } from "../http";
-import xmpp from "../xmpp";
+import {
+  getBalance,
+  httpWithAuth,
+  subscribeForPushNotifications,
+} from "../http";
+import xmpp, { walletToUsername } from "../xmpp";
 import { TActiveRoomFilter, useStoreState } from "../store";
 
 import coinImg from "../assets/images/coin.png";
 import { Badge, Divider } from "@mui/material";
-import { coinsMainName, defaultChats, defaultMetaRoom, ROOMS_FILTERS } from "../config/config";
+import {
+  coinsMainName,
+  defaultChats,
+  defaultMetaRoom,
+  ROOMS_FILTERS,
+} from "../config/config";
 import { Menu } from "./Menu";
 import { ethers } from "ethers";
+import { DOMAIN } from "../constants";
+import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
@@ -32,17 +43,12 @@ const roomFilters = [
 ];
 
 const AppTopNav = () => {
-  const currentUntrackedChatRoom = useStoreState(
-    (store) => store.currentUntrackedChatRoom
-  );
-  const chatUrl = currentUntrackedChatRoom
-    ? String(currentUntrackedChatRoom.split("@")[0])
-    : "none";
+ 
+
   const user = useStoreState((state) => state.user);
 
   const history = useHistory();
   const location = useLocation();
-  const balance = useStoreState((state) => state.balance);
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
@@ -59,12 +65,23 @@ const AppTopNav = () => {
     private: 0,
   });
 
-  const ACL = useStoreState((state) => state.ACL);
-
+  const subscribeForXmppNotifications = async () => {
+    try {
+      const token = await getFirebaseMesagingToken();
+      const res = await subscribeForPushNotifications(
+        token,
+        walletToUsername(user.walletAddress) + DOMAIN
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
+    subscribeForXmppNotifications();
   }, []);
 
   useEffect(() => {
@@ -141,10 +158,10 @@ const AppTopNav = () => {
               }}
             >
               <Menu />
-              {roomFilters.map((item) => {
+              {roomFilters.map((item, i) => {
                 return (
                   <Badge
-                    key={item.name}
+                    key={i}
                     badgeContent={unreadMessagesCounts[item.name]}
                     color="secondary"
                   >

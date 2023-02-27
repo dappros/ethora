@@ -5,9 +5,8 @@ import {
   signInWithPopup,
   User,
 } from "firebase/auth";
-import { getMessaging, getToken } from "firebase/messaging";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
@@ -42,11 +41,3 @@ export const signInWithGoogle = async () => {
     return {};
   }
 };
-
-export function getFirebaseMesagingToken() {
-  const messaging = getMessaging(firebaseApp);
-  return getToken(messaging, {
-    vapidKey:
-      "BCzcT7yzF8F188maOgPAISXqWCTDavGzWW0SWLOBx9vX2mYFjBXMaTMBDR3HXlmXOduyE253sblF9HP6aEBbx38",
-  });
-}

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { config } from "./config";
+import { PUSH_URL } from "./constants";
 import {
   ExplorerRespose,
   IBlock,
@@ -7,6 +8,7 @@ import {
   ITransaction,
 } from "./pages/Profile/types";
 import { useStoreState } from "./store";
+import qs from 'qs'
 
 const { APP_JWT = "", API_URL = "" } = config;
 
@@ -101,6 +103,7 @@ export const httpWithAuth = () => {
   http.defaults.headers.common["Authorization"] = user.token;
   return http;
 };
+export const xmppHttp = axios.create({ baseURL: PUSH_URL });
 
 export const httpWithToken = (token: string) => {
   http.defaults.headers.common["Authorization"] = token;
@@ -203,6 +206,23 @@ export const loginUsername = (username: string, password: string) => {
     { username, password },
     { headers: { Authorization: APP_JWT } }
   );
+};
+
+export const subscribeForPushNotifications = (
+  token: string,
+  jid: string
+) => {
+  const body = {
+    appId: "Ethora",
+    deviceId: token,
+    deviceType: '12',
+    environment: "Production",
+    externalId: "",
+    isSubscribed: "1",
+    jid: jid,
+    screenName: "Ethora",
+  };
+  return xmppHttp.post("/subscriptions/deviceId/", qs.stringify(body));
 };
 
 export const registerUsername = (
