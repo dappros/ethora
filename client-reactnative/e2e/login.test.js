@@ -1,4 +1,5 @@
-describe('Register new user', () => {
+describe('Testing login mechanism', () => {
+
   //test story
   // launch app
   // tap on 'Login with credentials
@@ -6,14 +7,13 @@ describe('Register new user', () => {
   // tap on login button
 
   //default login
-  //username = test111@dappros.com;
+  //username = test222@dappros.com;
   //password = dapprosplatform;
 
   const username = 'test222@dappros.com',
   password = 'dapprosplatform';
 
   //default operation before test suite starts
-
   //this function will launch the app.
   beforeAll(async () => {
     await device.launchApp({permissions:{'notifications':'YES', 'userTracking':'YES'}});
@@ -32,10 +32,11 @@ describe('Register new user', () => {
     //then an assertion function checks if the result of the click opens RegularLoginScreen
     await expect(element(by.id('regularLoginScreen'))).toBeVisible();
 
+    //the following two actions will fill username and password
     await element(by.id('loginUsername')).typeText(username);
-
     await element(by.id('loginPassword')).typeText(password);
 
+    //the following action will click on submit/login button
     await element(by.id('loginSubmitButton')).tap();
 
   });

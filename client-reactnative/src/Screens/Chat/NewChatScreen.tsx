@@ -162,7 +162,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
     });
   };
   return (
-    <View>
+    <View testID='NewChatScreen'>
       <SecondaryHeader title="Create new chat" />
       <View margin={5}>
         <HStack>
@@ -197,6 +197,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
             </Button>
           </View>
           <Input
+            testID='newChatName'
             _input={{
               maxLength: 50,
             }}
@@ -216,6 +217,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         </HStack>
 
         <TextArea
+        testID='chatDescription'
           scrollEnabled
           placeholder="Short description about the chat"
           onChangeText={desc => setChatDescription(desc)}
@@ -234,6 +236,7 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         />
 
         <Button
+          testID='createNewChat'
           onPress={handleCreateNewChat}
           bg={commonColors.primaryColor}
           borderRadius={5}

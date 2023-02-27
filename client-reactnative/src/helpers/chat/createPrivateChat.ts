@@ -28,7 +28,7 @@ export const createPrivateChat = async (
   roomConfig(
     myXmppUserName,
     combinedWalletAddress.toLowerCase(),
-    {roomName: combinedUsersName},
+    {roomName: combinedUsersName, roomDescription:""},
     xmpp,
   );
   subscribeToRoom(roomJid, myXmppUserName, xmpp);

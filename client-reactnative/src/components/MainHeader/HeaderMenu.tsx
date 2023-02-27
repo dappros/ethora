@@ -25,6 +25,7 @@ export interface IMenuItem {
   value: string;
   label: string;
   visible: boolean;
+  testID: string;
 }
 [];
 
@@ -36,37 +37,42 @@ export const HeaderMenu = () => {
   const {loginStore, debugStore} = useStores();
 
   const AccountMenuItems: IMenuItem[] = [
-    {value: homeStackRoutes.ProfileScreen, label: 'My profile', visible: true},
+    {value: homeStackRoutes.ProfileScreen, label: 'My profile', visible: true, testID: "itemProfileScreen"},
     {
       value: homeStackRoutes.TransactionsScreen,
       label: 'Transactions',
       visible: true,
+      testID: "itemTransaction"
     },
     // {value: homeStackRoutes.ACCOUNT, label: 'E-mails', visible: true},
     {
       value: homeStackRoutes.InviteFriendsScreen,
       label: 'Referrals',
       visible: true,
+      testID: "itemReferrals"
     },
     {
       value: homeStackRoutes.CoinPurchaseScreen,
       label: 'Buy coins',
       visible: true,
+      testID: "itemBuyCoins"
     },
   ];
 
   const ActionsMenuItems: IMenuItem[] = [
-    {value: homeStackRoutes.NewChatScreen, label: 'New room', visible: true},
-    {value: homeStackRoutes.ScanScreen, label: 'QR Scan', visible: true},
+    {value: homeStackRoutes.NewChatScreen, label: 'New room', visible: true, testID: "itemNewRoom"},
+    {value: homeStackRoutes.ScanScreen, label: 'QR Scan', visible: true, testID: "itemScanScreen"},
     {
       value: homeStackRoutes.MintScreen,
       label: 'Mint items',
       visible: itemsMintingAllowed && configNFT,
+      testID: "itemMintItems"
     },
     {
       value: homeStackRoutes.UploadDocumentsScreen,
       label: 'Upload Document',
       visible: configDocuments,
+      testID: "itemUploadDocument"
     },
   ];
 
@@ -75,19 +81,22 @@ export const HeaderMenu = () => {
       value: homeStackRoutes.PrivacyAndDataScreen,
       label: 'Privacy and Data',
       visible: true,
+      testID: "itemPrivacyData"
     },
     {
       value: homeStackRoutes.AuthenticationScreen,
       label: 'Authentication',
       visible: true,
+      testID: "itemAuthentication"
     },
 
     {
       value: homeStackRoutes.DebugScreen,
       label: 'Debug',
       visible: debugStore.debugMode,
+      testID: "itemDebug"
     },
-    {value: LOGOUT, label: 'Sign out', visible: true},
+    {value: LOGOUT, label: 'Sign out', visible: true, testID: "itemTransaction"},
   ];
 
   const toggleMenu = () => {
@@ -98,7 +107,7 @@ export const HeaderMenu = () => {
     if (value === LOGOUT) {
       loginStore.logOut();
     } else {
-      navigation.navigate(value);
+      navigation.navigate(value as never);
     }
   };
   return (
@@ -121,6 +130,7 @@ export const HeaderMenu = () => {
       <Menu
         accessibilityLabel="Menu"
         w="190"
+        testID='mainHeaderMenu'
         isOpen={open}
         placement={'bottom'}
         onClose={() => setOpen(false)}
@@ -128,6 +138,7 @@ export const HeaderMenu = () => {
           return (
             <TouchableOpacity
               {...triggerProps}
+              testID='mainHeaderMenuButton'
               style={{zIndex: 99999}}
               onPress={() => toggleMenu()}
               accessibilityLabel="More options menu">
