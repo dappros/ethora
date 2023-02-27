@@ -37,18 +37,20 @@ export default function Signon() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-      // @ts-ignore
-      window.onGoogleScriptLoad = () => {
-        const initClient = () => {
-          gapi.client.init({
-            clientId:
-              "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
-            scope: "",
-          });
-        };
-        gapi.load("client:auth2", initClient);
+   
+    // @ts-ignore
+    window.onGoogleScriptLoad = () => {
+      console.log('load')
+      const initClient = () => {
+        gapi.client.init({
+          clientId:
+            "972933470054-9v5gnseqef8po7cvvrsovj51cte249ov.apps.googleusercontent.com",
+          scope: "",
+        });
       };
-  });
+      gapi.load("client:auth2", initClient);
+    };
+  }, []);
 
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
@@ -121,7 +123,6 @@ export default function Signon() {
     const loginType = "google";
     const emailExist = await http.checkEmailExist(res.profileObj.email);
     setLoading(true);
-    console.log(emailExist.data.success);
     if (!emailExist.data.success) {
       const loginRes = await http.loginSocial(
         res.tokenId,
@@ -172,8 +173,7 @@ export default function Signon() {
       ACL: user.ACL,
       referrerId: user.referrerId || "",
       isAllowedNewAppCreate: tokens.isAllowedNewAppCreate,
-      isAgreeWithTerms: user.isAgreeWithTerms
-
+      isAgreeWithTerms: user.isAgreeWithTerms,
     });
   };
 
