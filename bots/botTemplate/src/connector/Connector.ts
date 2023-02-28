@@ -1,7 +1,7 @@
 import EventEmitter = require("events");
 import {IConnector, ConnectorEvent} from "./IConnector";
 import {IUser} from "../core/IUser";
-import {IMessageProps, MessageSender} from "../core/IMessage";
+import {IMessageProps, MessageSender, TMessageType} from "../core/IMessage";
 import XmppClient from "../client/XmppClient";
 import ApplicationAPI from "../api/ApplicationAPI";
 import {IAuthorization} from "../api/IAuthorization";
@@ -31,24 +31,28 @@ export default class Connector extends EventEmitter implements IConnector {
     }
 
     getUniqueSessionKey(): string {
-        return String(this.stanza.attrs.from.split("/").pop() + Config.getData().domain);
+        return String(this.stanza.attrs.from.split("/").pop());
     }
 
     getCurrentRoomJID(): string {
-        return String(this.stanza.getChild('data').attrs.roomJid);
+        const stanzaData = this.stanza.getChild('data');
+        return stanzaData.attrs.roomJid ? String(stanzaData.attrs.roomJid) : this.stanza.attrs.from.split('/')[0];
     }
 
     getUser(): IUser {
-        if (!this.stanza || !this.stanza.getChild('data')) {
+        const stanzaData = this.stanza.getChild('data');
+        const stanzaType: TMessageType = this.stanza.attrs.id;
+
+        if (!this.stanza || !stanzaData) {
             throw Logger.error(new Error('Unable to get user data without connecting to xmpp'));
         }
 
         return {
-            userJID: String(this.stanza.getChild('data').attrs.senderJID),
-            firstName: String(this.stanza.getChild('data').attrs.senderFirstName),
-            lastName: String(this.stanza.getChild('data').attrs.senderLastName),
-            photoURL: String(this.stanza.getChild('data').attrs.photoURL),
-            walletAddress: String(this.stanza.getChild('data').attrs.senderWalletAddress)
+            userJID: stanzaData.attrs.senderJID ? String(stanzaData.attrs.senderJID) : this.stanza.attrs.to.split('/')[0] + Config.getData().domain,
+            firstName: stanzaType === "sendMessage" ? String(stanzaData.attrs.senderFirstName) : stanzaData.attrs.fullName.split('/')[0],
+            lastName: stanzaType === "sendMessage" ? String(stanzaData.attrs.senderLastName) : stanzaData.attrs.fullName.split('/')[0],
+            photoURL: stanzaData.attrs.photoURL ? String(stanzaData.attrs.photoURL) : "",
+            walletAddress: stanzaType === "sendMessage" ? String(stanzaData.attrs.senderWalletAddress) : String(this.stanza.attrs.to.split('@')[0])
         }
     }
 
@@ -68,29 +72,30 @@ export default class Connector extends EventEmitter implements IConnector {
         return Promise.resolve();
     }
 
-    _collectMessage(): IMessageProps {
-        if (!this.botAuthData) {
+    _collectMessage(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): IMessageProps {
+        if (!this.botAuthData || !this.stanza) {
             throw Logger.error(new Error('Authorization data not found. This data is required to generate a message.'));
         }
 
         return {
             messageData: {
-                xmlns: String(this.stanza.getChild('data').attrs.xmlns),
-                isSystemMessage: toBooleanType(this.stanza.getChild('data').attrs.isSystemMessage),
-                tokenAmount: Number(this.stanza.getChild('data').attrs.tokenAmount),
-                receiverMessageId: Number(this.stanza.getChild('data').attrs.receiverMessageId),
-                mucname: String(this.stanza.getChild('data').attrs.mucname),
-                roomJid: String(this.stanza.getChild('data').attrs.roomJid),
-                isReply: toBooleanType(this.stanza.getChild('data').attrs.isReply),
-                mainMessageText: String(this.stanza.getChild('data').attrs.mainMessageText),
-                mainMessageId: String(this.stanza.getChild('data').attrs.mainMessageId),
-                mainMessageUserName: String(this.stanza.getChild('data').attrs.mainMessageUserName),
-                push: toBooleanType(this.stanza.getChild('data').attrs.push)
+                xmlns: String(stanzaData.attrs.xmlns),
+                isSystemMessage: toBooleanType(stanzaData.attrs.isSystemMessage),
+                tokenAmount: stanzaData.attrs.tokenAmount ? Number(stanzaData.attrs.tokenAmount) : 0,
+                receiverMessageId: stanzaData.attrs.receiverMessageId ? Number(stanzaData.attrs.receiverMessageId) : 0,
+                mucname: stanzaData.attrs.mucname ? String(stanzaData.attrs.mucname) : "",
+                roomJid: stanzaData.attrs.roomJid ? String(stanzaData.attrs.roomJid) : this.stanza.attrs.from.split('/')[0],
+                isReply: toBooleanType(stanzaData.attrs.isReply),
+                mainMessageText: stanzaData.attrs.mainMessageText ? String(stanzaData.attrs.mainMessageText) : "",
+                mainMessageId: stanzaData.attrs.mainMessageId ? String(stanzaData.attrs.mainMessageId) : "",
+                mainMessageUserName: stanzaData.attrs.mainMessageUserName ? String(stanzaData.attrs.mainMessageUserName) : "",
+                push: toBooleanType(stanzaData.attrs.push)
             },
-            message: String(this.stanza.getChild('body').getText()),
+            message: stanzaBody ? String(stanzaBody.getText()) : "",
             user: this.getUser(),
             sessionKey: this.getUniqueSessionKey(),
-            sender: this.botAuthData.data.botJID === this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user
+            sender: this.botAuthData.data.botJID === this.getUniqueSessionKey() ? MessageSender.bot : MessageSender.user,
+            type: stanzaType
         }
     }
 
@@ -136,9 +141,23 @@ export default class Connector extends EventEmitter implements IConnector {
 
             //Listen for incoming messages and redirect them to a bot
             this.xmpp.client.on("stanza", (stanza: any) => {
-                const stanzaBody = stanza.getChild('body');
-                if (stanza.getChild('body')) {
-                    this.stanza = stanza;
+                this.stanza = stanza;
+                if(!stanza.attrs.from){
+                    return this;
+                }
+
+                const messageSender: 'bot' | 'user' = this.botAuthData.data.botJID === this.stanza.attrs.from.split("/").pop() ? 'bot' : 'user';
+                const stanzaBody: any = stanza.getChild('body');
+                const stanzaData: any = stanza.getChild('data');
+                const stanzaType: TMessageType = stanza.attrs.id;
+
+                // Send message if user presence detected
+                if (stanzaType === 'isComposing' && stanzaData && Config.getConfigStatuses().usePresence && messageSender === 'user') {
+                    const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
+                    this.emit(ConnectorEvent.receivePresence, receivedMessage);
+                }
+
+                if (stanzaBody && messageSender === 'user') {
 
                     // Processing an incoming chat room invitation
                     if (Config.getConfigStatuses().useInvites) {
@@ -149,8 +168,8 @@ export default class Connector extends EventEmitter implements IConnector {
                     }
 
                     //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
-                    if (stanza.getChild('data')) {
-                        const receivedMessage = new Message(this._collectMessage());
+                    if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage") {
+                        const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
                         Logger.info('Received: ' + receivedMessage.getText());
                         this.emit(ConnectorEvent.receiveMessage, receivedMessage);
                     }
