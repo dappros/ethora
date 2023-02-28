@@ -17,10 +17,12 @@ class Config implements IConfig {
         this.configStatuses = {
             useAppName: data.useAppName,
             useAppImg: data.useAppImg,
-            useInvites: data.useInvites
+            useInvites: data.useInvites,
+            usePresence: data.usePresence
         }
 
-            const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
+        const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
+
         this.data = {
             isProduction: data.isProduction ? data.isProduction : false,
             baseDomain: baseDomain,
@@ -33,13 +35,18 @@ class Config implements IConfig {
             botImg: data.botImg ? data.botImg : 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
             apiDomain: data.isProduction ? "https://app.dappros.com/v1/" : "https://app-dev.dappros.com/v1/",
             tokenJWT: data.tokenJWT,
+            presenceTimer: data.presenceTimer ? data.presenceTimer : 0,
 
             connectionRooms: data.connectionRooms
         }
         Logger.info(`${this.data.botName} - Bot configuration data successfully set.`);
 
-        if(data.useInvites){
+        if (data.useInvites) {
             Logger.info('Listening for invitations is enabled.')
+        }
+
+        if (data.usePresence) {
+            Logger.info('Presence handling is enabled.')
         }
         return;
     }
@@ -56,6 +63,7 @@ class Config implements IConfig {
                 botImg: 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
                 apiDomain: "https://app-dev.dappros.com/v1/",
                 tokenJWT: '',
+                presenceTimer: 0,
                 connectionRooms: []
             };
         }

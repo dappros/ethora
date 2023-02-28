@@ -8,6 +8,7 @@ export interface IConfigData {
     botImg: string;
     apiDomain: string;
     tokenJWT: string;
+    presenceTimer: number;
     connectionRooms: string[];
 }
 
@@ -15,6 +16,7 @@ export interface IConfigStatuses {
     useAppName?: boolean;
     useAppImg?: boolean;
     useInvites?: boolean;
+    usePresence?: boolean;
 }
 
 export interface IConfigInit {
@@ -22,10 +24,12 @@ export interface IConfigInit {
     tokenJWT: string;
     isProduction?: boolean;
     botImg?: string;
+    presenceTimer?: number;
     connectionRooms?: string[];
     useAppName?: boolean;
     useAppImg?: boolean;
     useInvites?: boolean;
+    usePresence?: boolean;
 }
 
 export interface IConfig {
