@@ -118,7 +118,13 @@ export default class Bot implements IBot {
             return this._useString(pattern, handler);
 
         } else {
-            this.handlers.push(handler);
+            this.handlers.push((ctx, next) => {
+                if (ctx.message.data.type === "sendMessage") {
+                    return handler(ctx, next);
+                }
+
+                return next();
+            });
         }
     }
 
