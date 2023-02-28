@@ -3,7 +3,8 @@ import {IAuthorization} from "../api/IAuthorization";
 import {IKeyboard} from "../client/types/IKeyboard";
 
 export enum ConnectorEvent {
-    receiveMessage = 'receiveMessage'
+    receiveMessage = 'receiveMessage',
+    receivePresence = 'receivePresence'
 }
 
 export interface IConnector {
