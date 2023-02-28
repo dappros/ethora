@@ -116,31 +116,36 @@ export default class Connector extends EventEmitter implements IConnector {
         });
     }
 
+    _setAuthConfiguration(botAuthData: IAuthorization): void {
+        if (Config.getConfigStatuses().useAppName) {
+            Logger.info(`Bot name obtained from application: ${botAuthData.data.firstName}`);
+            Config.setBotName(botAuthData.data.firstName);
+        }
+
+        if (Config.getConfigStatuses().useAppImg) {
+            if (botAuthData.data.photo && botAuthData.data.photo !== 'undefined') {
+                Logger.info(`Bot image obtained from the application: ${botAuthData.data.photo}`);
+                Config.setBotImg(botAuthData.data.photo);
+            }
+        }
+    }
+
     listen(): any {
         this.appAPI.userAuthorization(this.username, this.password).then(botAuthData => {
 
+            //If authorization is not successful with "User do not found" registration is started
             if (!botAuthData.success) {
                 return this.botRegistration(this.username, this.password);
-            }
-
-            this.botAuthData = botAuthData;
-            Logger.info('Bot authorization successful.');
-
-            if (Config.getConfigStatuses().useAppName) {
-                Logger.info(`Bot name obtained from application: ${botAuthData.data.firstName}`);
-                Config.setBotName(botAuthData.data.firstName);
-            }
-
-            if (Config.getConfigStatuses().useAppImg) {
-                if (botAuthData.data.photo && botAuthData.data.photo !== 'undefined') {
-                    Logger.info(`Bot image obtained from the application: ${botAuthData.data.photo}`);
-                    Config.setBotImg(botAuthData.data.photo);
-                }
             }
 
             if (botAuthData.data.botJID === 'undefined' || botAuthData.data.xmppPassword === 'undefined') {
                 throw Logger.error(new Error('Authorization error, perhaps the login or password is incorrect, and the JWT token could also be out of date.'));
             }
+
+            this.botAuthData = botAuthData;
+            Logger.info('Bot authorization successful.');
+
+            this._setAuthConfiguration(botAuthData);
 
             //Initializing XMPP Client
             this.xmpp.init(botAuthData.data.botJID, botAuthData.data.xmppPassword, this);
