@@ -10,6 +10,7 @@ import {Message} from './Message';
 import {Session} from "./Session";
 import Config from "../config/Config";
 import {IConfigInit} from "../config/IConfig";
+import Logger from "../utils/Logger";
 
 
 export default class Bot implements IBot {
@@ -20,7 +21,7 @@ export default class Bot implements IBot {
     config: any;
 
     constructor(data: IBotData) {
-        Config.init(collectConfigurationData(data));
+        Config.init(this._collectConfigurationData(data));
 
         this.connector = new Connector(data.username, data.password).listen();
         //Processing a received message
@@ -87,45 +88,82 @@ export default class Bot implements IBot {
     }
 
     use(
-        patternOrHandler: BotHandler | RegExp | string,
-        maybeHandler?: BotHandler
+        possiblePattern: BotHandler | RegExp | string,
+        possibleHandler?: BotHandler
     ) {
-        const handler = maybeHandler || patternOrHandler as BotHandler;
-        const pattern = patternOrHandler;
+        const handler = possibleHandler || possiblePattern as BotHandler;
+        const pattern = possiblePattern;
 
         if (typeof handler !== 'function') {
-            throw new Error('BotHandler should be function');
+            throw Logger.error(new Error(`Handler must be a function.`));
         }
 
+        //Processing an incoming RegExp pattern
         if (pattern instanceof RegExp) {
-            this.handlers.push((ctx, next) => {
-                const text = ctx.message.getText();
-                const match = text.match(pattern);
+            return this._useRegExp(pattern, handler);
 
-                if (match) {
-                    ctx.params = match.length > 1 ? match.slice(1) : null;
-                    return handler(ctx, next);
-                }
-
-                return next();
-            });
         } else if (typeof pattern === 'string') {
-
+            //Handling the incoming presence pattern
             if (pattern === 'presence' && Config.getConfigStatuses().usePresence) {
                 return this._usePresence(pattern, handler);
             }
 
+            //Handling an incoming keyword pattern
+            if (pattern.split('_')[1] === "key") {
+                return this._useKeywords(pattern.split('_key_')[1].trim(), handler);
+            }
+
+            //Handling an incoming string pattern
             return this._useString(pattern, handler);
 
         } else {
-            this.handlers.push((ctx, next) => {
-                if (ctx.message.data.type === "sendMessage") {
-                    return handler(ctx, next);
-                }
-
-                return next();
-            });
+            //Processing an incoming function without a pattern
+            return this._useEmptiness(handler);
         }
+    }
+
+    _useEmptiness(handler: BotHandler) {
+        this.handlers.push((ctx, next) => {
+            if (ctx.message.data.type === "sendMessage") {
+                return handler(ctx, next);
+            }
+
+            return next();
+        });
+    }
+
+    _useRegExp(pattern: RegExp | string, handler: BotHandler) {
+        this.handlers.push((ctx, next) => {
+            const text = ctx.message.getText();
+            const match = text.match(pattern);
+
+            if (match) {
+                ctx.params = match.length > 1 ? match.slice(1) : null;
+                return handler(ctx, next);
+            }
+
+            return next();
+        });
+    }
+
+    _useKeywords(keywords: string, handler: BotHandler) {
+        this.handlers.push((ctx, next) => {
+            const text = ctx.message.getText();
+            const buildRegEx = new RegExp("(?=.*?\\b" +
+                keywords
+                    .split(" ")
+                    .join(")(?=.*?\\b") +
+                ").*",
+                "i"
+            );
+
+            if (buildRegEx.test(text)) {
+                return handler(ctx, next);
+            } else {
+                return next();
+            }
+        });
+
     }
 
     _useString(pattern: RegExp | string, handler: BotHandler) {
@@ -149,43 +187,82 @@ export default class Bot implements IBot {
             return next();
         });
     }
-}
 
-const collectConfigurationData = (data: IBotData): IConfigInit => {
-    let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
-    let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
-    let usePresence = typeof data.usePresence == "boolean" ? data.usePresence : false;
-    let filteredPresenceTimer: number;
+    _collectConfigurationData(data: IBotData): IConfigInit {
+        let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
+        let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
+        let usePresence = typeof data.usePresence == "boolean" ? data.usePresence : false;
+        let filteredPresenceTimer: number;
 
-    if (data.botName) {
-        isAppName = false;
-    }
-    if (data.useAppImg) {
-        isAppImg = false;
-    }
-    if (data.presenceTimer > 0) {
-        usePresence = true;
-    }
-
-    if (!data.presenceTimer || data.presenceTimer === 0) {
-        if (usePresence) {
-            filteredPresenceTimer = 1;
-        } else {
-            filteredPresenceTimer = 0;
+        if (data.botName) {
+            isAppName = false;
         }
-    } else {
-        filteredPresenceTimer = data.presenceTimer;
-    }
-    return {
-        botName: data.botName ? data.botName : data.username,
-        tokenJWT: data.tokenJWT,
-        isProduction: data.isProduction ? data.isProduction : false,
-        botImg: data.botImg ? data.botImg : '',
-        presenceTimer: filteredPresenceTimer,
-        connectionRooms: data.connectionRooms ? data.connectionRooms : [],
-        useAppName: isAppName,
-        useAppImg: isAppImg,
-        useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
-        usePresence: usePresence
+        if (data.useAppImg) {
+            isAppImg = false;
+        }
+        if (data.presenceTimer > 0) {
+            usePresence = true;
+        }
+
+        if (!data.presenceTimer || data.presenceTimer === 0) {
+            if (usePresence) {
+                filteredPresenceTimer = 1;
+            } else {
+                filteredPresenceTimer = 0;
+            }
+        } else {
+            filteredPresenceTimer = data.presenceTimer;
+        }
+        return {
+            botName: data.botName ? data.botName : data.username,
+            tokenJWT: data.tokenJWT,
+            isProduction: data.isProduction ? data.isProduction : false,
+            botImg: data.botImg ? data.botImg : '',
+            presenceTimer: filteredPresenceTimer,
+            connectionRooms: data.connectionRooms ? data.connectionRooms : [],
+            useAppName: isAppName,
+            useAppImg: isAppImg,
+            useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
+            usePresence: usePresence
+        }
     }
 }
+
+// const collectConfigurationData = (data: IBotData): IConfigInit => {
+//     let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
+//     let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
+//     let usePresence = typeof data.usePresence == "boolean" ? data.usePresence : false;
+//     let filteredPresenceTimer: number;
+//
+//     if (data.botName) {
+//         isAppName = false;
+//     }
+//     if (data.useAppImg) {
+//         isAppImg = false;
+//     }
+//     if (data.presenceTimer > 0) {
+//         usePresence = true;
+//     }
+//
+//     if (!data.presenceTimer || data.presenceTimer === 0) {
+//         if (usePresence) {
+//             filteredPresenceTimer = 1;
+//         } else {
+//             filteredPresenceTimer = 0;
+//         }
+//     } else {
+//         filteredPresenceTimer = data.presenceTimer;
+//     }
+//     return {
+//         botName: data.botName ? data.botName : data.username,
+//         tokenJWT: data.tokenJWT,
+//         isProduction: data.isProduction ? data.isProduction : false,
+//         botImg: data.botImg ? data.botImg : '',
+//         presenceTimer: filteredPresenceTimer,
+//         connectionRooms: data.connectionRooms ? data.connectionRooms : [],
+//         useAppName: isAppName,
+//         useAppImg: isAppImg,
+//         useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
+//         usePresence: usePresence
+//     }
+// }
