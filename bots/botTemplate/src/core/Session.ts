@@ -3,6 +3,7 @@ import {IUser} from './IUser';
 import {ISessionState} from './ISessionState';
 import {ISession} from './ISession';
 import {IKeyboard} from "../client/types/IKeyboard";
+import Config from "../config/Config";
 
 interface ISessionConstructorProps {
     user: IUser;
@@ -30,7 +31,7 @@ export class Session implements ISession {
 
     sendTextMessage(message: string, keyboard?: IKeyboard) {
         this.isNew = false;
-
+        Config.getConfigStatuses().usePresence ? this.setState({lastPresenceTime: new Date()}) : null;
         return this.bot.connector.send(message, keyboard);
     }
 
