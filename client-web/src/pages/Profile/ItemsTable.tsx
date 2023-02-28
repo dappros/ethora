@@ -132,7 +132,6 @@ export default function ItemsTable({
   const nftItems = balance.filter((item) => item.tokenType === "NFT");
   const nfmtItems = produceNfmtItems(balance);
 
-  console.log({ nfmtItems });
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {nftItems.map((item, i) => {

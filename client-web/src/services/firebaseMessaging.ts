@@ -9,9 +9,10 @@ import { firebaseApp } from "./firebase";
 const messaging = getMessaging(firebaseApp);
 
 export function getFirebaseMesagingToken() {
+  const token =
+    "BIZdmCnHiDRMrBBRzW79Dm1i7hMFRQM9CS1QfbalxjNwY-yvLtkj3IuZQaZ0ChZtjzlRSowkXUCmJC_jVgbFqew";
   return getToken(messaging, {
-    vapidKey:
-      "BCzcT7yzF8F188maOgPAISXqWCTDavGzWW0SWLOBx9vX2mYFjBXMaTMBDR3HXlmXOduyE253sblF9HP6aEBbx38",
+    vapidKey: token,
   });
 }
 

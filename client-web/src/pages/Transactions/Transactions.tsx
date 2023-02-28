@@ -155,7 +155,6 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
 export const Transactions: React.FC<ITransactions> = ({ transactions }) => {
   const theme = useTheme();
   const walletAddress = useStoreState((state) => state.user.walletAddress);
-  console.log({ transactions });
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {transactions.map((item) => {

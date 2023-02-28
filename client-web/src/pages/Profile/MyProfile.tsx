@@ -30,9 +30,8 @@ export function MyProfile() {
   const documents = useStoreState((state) => state.documents);
   const setBalance = useStoreState((state) => state.setBalance);
 
- 
   useEffect(() => {
-    console.log("MyProfile init", walletToUsername(user.walletAddress));
+    console.log(walletToUsername(user.walletAddress));
     setLoading(true);
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
@@ -42,7 +41,6 @@ export function MyProfile() {
         setTransactions(result.data);
       })
       .finally(() => setLoading(false));
-
   }, []);
 
   if (loading) return <FullPageSpinner />;
