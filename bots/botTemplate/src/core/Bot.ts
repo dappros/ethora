@@ -23,7 +23,10 @@ export default class Bot implements IBot {
         Config.init(collectConfigurationData(data));
 
         this.connector = new Connector(data.username, data.password).listen();
+        //Processing a received message
         this.connector.on(ConnectorEvent.receiveMessage, this.processMessage.bind(this));
+        //Handling received presence
+        this.connector.on(ConnectorEvent.receivePresence, this.processPresence.bind(this));
 
         return this;
     }
@@ -60,7 +63,33 @@ export default class Bot implements IBot {
             });
     }
 
-    use(patternOrHandler: BotHandler | RegExp | string, maybeHandler?: BotHandler) {
+    async processPresence(message: Message) {
+        const session = await this.getSession(message);
+        const context: IBotContext = {session, message};
+        const {lastPresenceTime} = session.state;
+        let dateDifference: number;
+        const difference = Config.getData().presenceTimer;
+
+        if (lastPresenceTime) {
+            dateDifference = Math.abs(new Date(lastPresenceTime).valueOf() - new Date().valueOf()) / (1000 * 60);
+        } else {
+            dateDifference = difference;
+        }
+
+        if (dateDifference >= difference) {
+            session.setState({lastPresenceTime: new Date()});
+            this
+                .processHandlers(this.handlers, context)
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    }
+
+    use(
+        patternOrHandler: BotHandler | RegExp | string,
+        maybeHandler?: BotHandler
+    ) {
         const handler = maybeHandler || patternOrHandler as BotHandler;
         const pattern = patternOrHandler;
 
@@ -81,39 +110,76 @@ export default class Bot implements IBot {
                 return next();
             });
         } else if (typeof pattern === 'string') {
-            this.handlers.push((ctx, next) => {
-                const text = ctx.message.getText();
 
-                if (text === pattern) {
-                    return handler(ctx, next);
-                }
+            if (pattern === 'presence' && Config.getConfigStatuses().usePresence) {
+                return this._usePresence(pattern, handler);
+            }
 
-                return next();
-            });
+            return this._useString(pattern, handler);
+
         } else {
             this.handlers.push(handler);
         }
+    }
+
+    _useString(pattern: RegExp | string, handler: BotHandler) {
+        this.handlers.push((ctx, next) => {
+            const text = ctx.message.getText();
+
+            if (text === pattern) {
+                return handler(ctx, next);
+            }
+
+            return next();
+        });
+    }
+
+    _usePresence(pattern: RegExp | string, handler: BotHandler) {
+        this.handlers.push((ctx, next) => {
+            if (ctx.message.data.type === "isComposing") {
+                return handler(ctx, next);
+            }
+
+            return next();
+        });
     }
 }
 
 const collectConfigurationData = (data: IBotData): IConfigInit => {
     let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
     let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
+    let usePresence = typeof data.usePresence == "boolean" ? data.usePresence : false;
+    let filteredPresenceTimer: number;
 
-    if (data.botName){
+    if (data.botName) {
         isAppName = false;
     }
-    if (data.useAppImg){
+    if (data.useAppImg) {
         isAppImg = false;
+    }
+    if (data.presenceTimer > 0) {
+        usePresence = true;
+    }
+
+    if (!data.presenceTimer || data.presenceTimer === 0) {
+        if (usePresence) {
+            filteredPresenceTimer = 1;
+        } else {
+            filteredPresenceTimer = 0;
+        }
+    } else {
+        filteredPresenceTimer = data.presenceTimer;
     }
     return {
         botName: data.botName ? data.botName : data.username,
         tokenJWT: data.tokenJWT,
         isProduction: data.isProduction ? data.isProduction : false,
         botImg: data.botImg ? data.botImg : '',
+        presenceTimer: filteredPresenceTimer,
         connectionRooms: data.connectionRooms ? data.connectionRooms : [],
         useAppName: isAppName,
         useAppImg: isAppImg,
-        useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false
+        useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
+        usePresence: usePresence
     }
 }
