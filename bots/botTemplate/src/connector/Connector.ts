@@ -105,26 +105,32 @@ export default class Connector extends EventEmitter implements IConnector {
         return Promise.resolve();
     }
 
+    botRegistration(username: string, password: string): any {
+        Logger.warn(`The user is not found, starting registration. ( ${username} )`);
+
+        return this.appAPI.userRegistration(username, password).then(result => {
+            Logger.info(`User ${result.firstName} has been successfully created, starting authorization.`);
+            return this.listen();
+        }).catch(error => {
+            throw Logger.error(new Error(`An error occurred during registration: ${error}`));
+        });
+    }
+
     listen(): any {
         this.appAPI.userAuthorization(this.username, this.password).then(botAuthData => {
 
             if (!botAuthData.success) {
-                Logger.warn(`The user is not found, starting registration. ( ${this.username} )`);
-
-                return this.appAPI.userRegistration(this.username, this.password).then(result => {
-                    Logger.info(`User ${result.firstName} has been successfully created, starting authorization.`);
-                    return this.listen();
-                }).catch(error => {
-                    throw Logger.error(new Error(`An error occurred during registration: ${error}`));
-                });
+                return this.botRegistration(this.username, this.password);
             }
 
             this.botAuthData = botAuthData;
             Logger.info('Bot authorization successful.');
+
             if (Config.getConfigStatuses().useAppName) {
                 Logger.info(`Bot name obtained from application: ${botAuthData.data.firstName}`);
                 Config.setBotName(botAuthData.data.firstName);
             }
+
             if (Config.getConfigStatuses().useAppImg) {
                 if (botAuthData.data.photo && botAuthData.data.photo !== 'undefined') {
                     Logger.info(`Bot image obtained from the application: ${botAuthData.data.photo}`);
@@ -142,7 +148,7 @@ export default class Connector extends EventEmitter implements IConnector {
             //Listen for incoming messages and redirect them to a bot
             this.xmpp.client.on("stanza", (stanza: any) => {
                 this.stanza = stanza;
-                if(!stanza.attrs.from){
+                if (!stanza.attrs.from) {
                     return this;
                 }
 
