@@ -2,6 +2,8 @@ import {IUser} from "./IUser";
 
 export enum MessageSender { bot, user }
 
+export type TMessageType = "isComposing" | "sendMessage";
+
 export interface IMessageProps {
     messageData: {
         xmlns: string;
@@ -20,6 +22,7 @@ export interface IMessageProps {
     user: IUser;
     sessionKey: string;
     sender: MessageSender;
+    type: TMessageType
 }
 
 export interface IMessage {
