@@ -16,6 +16,7 @@ export interface IConnector {
     getUser(): IUser;
     send(message: string, keyboard?: IKeyboard): Promise<void>;
     connectToRooms(connectionRooms: string[]): Promise<void>;
+    botRegistration(username: string, password: string): any;
     listen(): any;
     on(event: ConnectorEvent, handler: () => any): void;
     emit(event: ConnectorEvent, data: any): void;
