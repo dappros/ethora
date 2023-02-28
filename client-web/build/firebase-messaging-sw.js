@@ -1,11 +1,12 @@
+// Scripts for firebase and firebase messaging
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.14.0/firebase-app-compat.js"
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"
 );
 importScripts(
-  "https://www.gstatic.com/firebasejs/9.14.0/firebase-messaging-compat.js"
+  "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"
 );
 
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDQdkvvxKKx4-WrjLQoYf08GFARgi_qO4g",
   authDomain: "ethora-668e9.firebaseapp.com",
   projectId: "ethora-668e9",
@@ -17,23 +18,16 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+// Retrieve firebase messaging
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
+messaging.onBackgroundMessage(function (payload) {
+  console.log("Received background message ", payload);
+
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
   };
-  return self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
-});
 
-self.addEventListener("notificationclick", (event) => {
-  console.log(event);
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
