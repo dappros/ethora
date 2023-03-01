@@ -15,7 +15,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
-  Button,
 } from 'react-native';
 
 import {
@@ -41,6 +40,7 @@ import {useStores} from '../../stores/context';
 import {AuthStackParamList} from '../../navigation/types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {authStackRoutes} from '../../navigation/routes';
+import { Button } from '../../components/Button';
 
 const {mediumFont, lightFont, boldFont} = textStyles;
 type RegisterScreenProps = NativeStackScreenProps<
@@ -143,7 +143,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
             style={{
               flex: 1,
               justifyContent: 'center',
-              marginTop: 200,
+              // marginTop: 200,
             }}>
             <View
               style={[
@@ -174,7 +174,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                   color={'black'}
                   onChangeText={setFirstname}
                   value={firstname}
-                  placeholder="Firstname"
+                  placeholder="First Name"
                   placeholderTextColor={commonColors.primaryColor}
                 />
 
@@ -186,7 +186,7 @@ export const RegisterScreen = ({navigation}: RegisterScreenProps) => {
                   color={'black'}
                   onChangeText={setLastname}
                   value={lastname}
-                  placeholder="Lastname"
+                  placeholder="Last Name"
                   placeholderTextColor={commonColors.primaryColor}
                 />
 

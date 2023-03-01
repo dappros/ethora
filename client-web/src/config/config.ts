@@ -61,7 +61,7 @@ export const facebookSignIn = true; // social sign on with existing Facebook acc
 export const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
 export const regularLogin = true; // custom login+password - users have to register first
 export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
-export const regularLoginUsername = true;
+export const regularLoginUsername = false;
 
 export const coinsMainSymbol = "DPT"; //done
 export const coinsMainName = "Dappros Platform Token"; //done

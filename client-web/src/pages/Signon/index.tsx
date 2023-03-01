@@ -21,6 +21,7 @@ import {
   googleSignIn,
   metamaskSignIn,
   regularLogin,
+  regularLoginEmail,
 } from "../../config/config";
 import { signInWithGoogle } from "../../services/firebase";
 import { useSnackbar } from "../../context/SnackbarContext";
@@ -289,14 +290,15 @@ export default function Signon() {
             Sign In with Metamask
           </Button>
         )}
-        {regularLogin && (
+
+        {regularLoginEmail && (
           <Button
-            sx={{ margin: 1 }}
+            sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
             fullWidth
-            variant="text"
-            onClick={() => history.push("/regularSignIn")}
+            variant="contained"
+            onClick={() => setOpenEmail(true)}
           >
-            Login with credentials
+            Sign In with E-mail
           </Button>
         )}
       </Box>

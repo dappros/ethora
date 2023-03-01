@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-  Button,
   ImageBackground,
   Keyboard,
   StyleSheet,
@@ -30,6 +29,7 @@ import {showError} from '../../components/Toast/toast';
 import {useStores} from '../../stores/context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AuthStackParamList} from '../../navigation/types';
+import { Button } from '../../components/Button';
 
 type ScreenProps = NativeStackScreenProps<AuthStackParamList, 'RegularLogin'>;
 

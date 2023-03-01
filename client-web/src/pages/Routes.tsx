@@ -142,8 +142,8 @@ export const Routes = () => {
   useEffect(() => {
     onMessageListener()
       .then((payload) => {
-        sendBrowserNotification(payload.notification.body, () => {});
         console.log(payload);
+        sendBrowserNotification(payload.notification.body, () => {});
       })
       .catch((err) => console.log("failed: ", err));
   }, []);

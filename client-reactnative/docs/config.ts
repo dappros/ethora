@@ -771,7 +771,7 @@ const appleSignIn = true; // social sign on with existing Apple account
 const facebookSignIn = true; // social sign on with existing Facebook account
 const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
 const regularLogin = true; // custom login+password - users have to register first
-const regularLoginEmail = false; // custom login using e-mail address for login - users have to register first
+const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
 const regularLoginUsername = false;
 
 // TO BE DEPRECATED

@@ -23,9 +23,7 @@ export function EmailModal({ open, setOpen }: TProps) {
   const query = useQuery();
 
   const onClose = (e: any, reason: any) => {
-    if (reason === "backdropClick") {
-      return;
-    }
+    setOpen(false);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
