@@ -25,6 +25,8 @@ import {
 } from "../../config/config";
 import { signInWithGoogle } from "../../services/firebase";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { ForgotPasswordModal } from "../../components/ForgotPasswordModal";
+import { Typography } from "@mui/material";
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -36,6 +38,8 @@ export default function Signon() {
   const [openUsername, setOpenUsername] = useState(false);
   const [showMetamask, setShowMetamask] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -301,11 +305,18 @@ export default function Signon() {
             Sign In with E-mail
           </Button>
         )}
+        <Typography sx={{ fontSize: "12px", textDecoration: "underline", cursor: 'pointer' }}>
+          <span onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</span>
+        </Typography>
       </Box>
 
       <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />
       <EmailModal open={openEmail} setOpen={setOpenEmail} />
       <UsernameModal open={openUsername} setOpen={setOpenUsername} />
+      <ForgotPasswordModal
+        open={showForgotPasswordModal}
+        onClose={() => setShowForgotPasswordModal(false)}
+      />
     </Container>
   );
 }
