@@ -130,6 +130,7 @@ export default class Connector extends EventEmitter implements IConnector {
         }
     }
 
+
     listen(): any {
         this.appAPI.userAuthorization(this.username, this.password).then(botAuthData => {
 
@@ -153,44 +154,62 @@ export default class Connector extends EventEmitter implements IConnector {
             //Listen for incoming messages and redirect them to a bot
             this.xmpp.client.on("stanza", (stanza: any) => {
                 this.stanza = stanza;
+
                 if (!stanza.attrs.from) {
                     return this;
                 }
 
-                const messageSender: 'bot' | 'user' = this.botAuthData.data.botJID === this.stanza.attrs.from.split("/").pop() ? 'bot' : 'user';
-                const stanzaBody: any = stanza.getChild('body');
-                const stanzaData: any = stanza.getChild('data');
-                const stanzaType: TMessageType = stanza.attrs.id;
-
-                // Send message if user presence detected
-                if (stanzaType === 'isComposing' && stanzaData && Config.getConfigStatuses().usePresence && messageSender === 'user') {
-                    const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
-                    this.emit(ConnectorEvent.receivePresence, receivedMessage);
-                }
-
-                if (stanzaBody && messageSender === 'user') {
-
-                    // Processing an incoming chat room invitation
-                    if (Config.getConfigStatuses().useInvites) {
-                        if (stanza.getChild('x') && stanza.getChild('x').getChild('invite')) {
-                            Logger.info(`Accepted invite to the room: ${stanzaBody.parent.attrs.from}`);
-                            this.connectToRooms([String(stanzaBody.parent.attrs.from)]);
-                        }
-                    }
-
-                    //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
-                    if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage") {
-                        const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
-                        Logger.info('Received: ' + receivedMessage.getText());
-                        this.emit(ConnectorEvent.receiveMessage, receivedMessage);
-                    }
-
-                }
+                // Run a method that determines the process depending on the conditions
+                return this._eventRouter(stanza);
             });
         }).catch(error => {
             throw Logger.error(new Error(`An error occurred during authorization. ${error}`));
         })
         return this;
+    }
+
+    _eventRouter(stanza: any): void {
+        const messageSender: 'bot' | 'user' = this.botAuthData.data.botJID === stanza.attrs.from.split("/").pop() ? 'bot' : 'user';
+        const stanzaBody: any = stanza.getChild('body');
+        const stanzaData: any = stanza.getChild('data');
+        const stanzaType: TMessageType = stanza.attrs.id;
+
+        // Send message if user presence detected
+        if (stanzaType === 'isComposing' && stanzaData && Config.getConfigStatuses().usePresence && messageSender === 'user') {
+            return this._presenceEvent(stanzaBody, stanzaData, stanzaType);
+        }
+
+        if (stanzaBody && messageSender === 'user') {
+
+            // Processing an incoming chat room invitation
+            if (Config.getConfigStatuses().useInvites) {
+                if (stanza.getChild('x') && stanza.getChild('x').getChild('invite')) {
+                    this._inviteEvent(stanzaBody);
+                }
+            }
+
+            //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
+            if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage") {
+                this._messageEvent(stanzaBody, stanzaData, stanzaType);
+            }
+
+        }
+    }
+
+    _presenceEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
+        const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
+        this.emit(ConnectorEvent.receivePresence, receivedMessage);
+    }
+
+    _inviteEvent(stanzaBody: any): void {
+        Logger.info(`Accepted invite to the room: ${stanzaBody.parent.attrs.from}`);
+        this.connectToRooms([String(stanzaBody.parent.attrs.from)]);
+    }
+
+    _messageEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
+        const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
+        Logger.info('Received: ' + receivedMessage.getText());
+        this.emit(ConnectorEvent.receiveMessage, receivedMessage);
     }
 }
 
