@@ -89,7 +89,8 @@ export default class Bot implements IBot {
 
     use(
         possiblePattern: BotHandler | RegExp | string,
-        possibleHandler?: BotHandler
+        possibleHandler?: BotHandler,
+        step?: string | number
     ) {
         const handler = possibleHandler || possiblePattern as BotHandler;
         const pattern = possiblePattern;
@@ -98,28 +99,35 @@ export default class Bot implements IBot {
             throw Logger.error(new Error(`Handler must be a function.`));
         }
 
-        //Processing an incoming RegExp pattern
-        if (pattern instanceof RegExp) {
-            return this._useRegExp(pattern, handler);
+        return this._useRouter(pattern, handler, step);
+    }
 
-        } else if (typeof pattern === 'string') {
-            //Handling the incoming presence pattern
-            if (pattern === 'presence' && Config.getConfigStatuses().usePresence) {
-                return this._usePresence(pattern, handler);
+    _useRouter(pattern: BotHandler | RegExp | string, handler: BotHandler, step?: string | number): any {
+        this.handlers.push((ctx, next) => {
+
+            //Processing an incoming RegExp pattern
+            if (pattern instanceof RegExp) {
+                return this._useRegExp(pattern, handler, ctx, next);
+
+            } else if (typeof pattern === 'string') {
+                //Handling the incoming presence pattern
+                if (pattern === 'presence' && Config.getConfigStatuses().usePresence) {
+                    return this._usePresence(pattern, handler, ctx, next);
+                }
+
+                //Handling an incoming keyword pattern
+                if (pattern.split('_')[1] === "key") {
+                    return this._useKeywords(pattern.split('_key_')[1].trim(), handler, ctx, next);
+                }
+
+                //Handling an incoming string pattern
+                return this._useString(pattern, handler, ctx, next);
+
+            } else {
+                //Processing an incoming function without a pattern
+                return this._useEmptiness(handler);
             }
-
-            //Handling an incoming keyword pattern
-            if (pattern.split('_')[1] === "key") {
-                return this._useKeywords(pattern.split('_key_')[1].trim(), handler);
-            }
-
-            //Handling an incoming string pattern
-            return this._useString(pattern, handler);
-
-        } else {
-            //Processing an incoming function without a pattern
-            return this._useEmptiness(handler);
-        }
+        });
     }
 
     _useEmptiness(handler: BotHandler) {
@@ -132,60 +140,51 @@ export default class Bot implements IBot {
         });
     }
 
-    _useRegExp(pattern: RegExp | string, handler: BotHandler) {
-        this.handlers.push((ctx, next) => {
-            const text = ctx.message.getText();
-            const match = text.match(pattern);
+    _useRegExp(pattern: RegExp | string, handler: BotHandler, ctx: IBotContext, next: any) {
+        const text = ctx.message.getText();
+        const match = text.match(pattern);
 
-            if (match) {
-                ctx.params = match.length > 1 ? match.slice(1) : null;
-                return handler(ctx, next);
-            }
+        if (match) {
+            ctx.params = match.length > 1 ? match.slice(1) : null;
+            return handler(ctx, next);
+        }
 
-            return next();
-        });
+        return next();
     }
 
-    _useKeywords(keywords: string, handler: BotHandler) {
-        this.handlers.push((ctx, next) => {
-            const text = ctx.message.getText();
-            const buildRegEx = new RegExp("(?=.*?\\b" +
-                keywords
-                    .split(" ")
-                    .join(")(?=.*?\\b") +
-                ").*",
-                "i"
-            );
+    _useKeywords(keywords: string, handler: BotHandler, ctx: IBotContext, next: any) {
+        const text = ctx.message.getText();
+        const buildRegEx = new RegExp("(?=.*?\\b" +
+            keywords
+                .split(" ")
+                .join(")(?=.*?\\b") +
+            ").*",
+            "i"
+        );
 
-            if (buildRegEx.test(text)) {
-                return handler(ctx, next);
-            } else {
-                return next();
-            }
-        });
-
+        if (buildRegEx.test(text)) {
+            return handler(ctx, next);
+        } else {
+            return next();
+        }
     }
 
-    _useString(pattern: RegExp | string, handler: BotHandler) {
-        this.handlers.push((ctx, next) => {
-            const text = ctx.message.getText();
+    _useString(pattern: RegExp | string, handler: BotHandler, ctx: IBotContext, next: any) {
+        const text = ctx.message.getText();
 
-            if (text === pattern) {
-                return handler(ctx, next);
-            }
+        if (text === pattern) {
+            return handler(ctx, next);
+        }
 
-            return next();
-        });
+        return next();
     }
 
-    _usePresence(pattern: RegExp | string, handler: BotHandler) {
-        this.handlers.push((ctx, next) => {
-            if (ctx.message.data.type === "isComposing") {
-                return handler(ctx, next);
-            }
+    _usePresence(pattern: RegExp | string, handler: BotHandler, ctx: IBotContext, next: any) {
+        if (ctx.message.data.type === "isComposing") {
+            return handler(ctx, next);
+        }
 
-            return next();
-        });
+        return next();
     }
 
     _collectConfigurationData(data: IBotData): IConfigInit {
