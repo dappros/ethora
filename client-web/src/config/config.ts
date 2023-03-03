@@ -67,6 +67,8 @@ export const coinsMainSymbol = "DPT"; //done
 export const coinsMainName = "Dappros Platform Token"; //done
 export const coinReplacedSymbol = "ETO"; //done
 export const coinReplacedName = "Ethora Coin"; //done
+export const appName = "Ethora"; //done
+
 
 export const defaultChats = {
   '5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d': {

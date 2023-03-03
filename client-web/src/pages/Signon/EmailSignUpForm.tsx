@@ -13,15 +13,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
 import { registerByEmail } from "../../http";
 import { useHistory } from "react-router-dom";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
-
-const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref
-) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
@@ -55,9 +47,10 @@ type TProps = {
 
 export function EmailSignUpForm(props: TProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [openSnack, setOpenSnack] = useState(false);
+
   const [errorMsg, setErrorMsg] = useState("");
   const history = useHistory();
+  const { showSnackbar } = useSnackbar();
 
   const formik = useFormik({
     initialValues: {
@@ -76,7 +69,10 @@ export function EmailSignUpForm(props: TProps) {
           values.password
         );
         resetForm();
-        setOpenSnack(true);
+        showSnackbar(
+          "success",
+          "Verify your e-mail to finish signing up for Ethora"
+        );
       } catch (error) {
         if (error.response && error.response.status === 400) {
           if (error.response.data.errors) {
@@ -88,6 +84,7 @@ export function EmailSignUpForm(props: TProps) {
               }
             }
             setErrorMsg(errors.join(", "));
+            showSnackbar("error", errors.join(", "));
           }
         }
       }
@@ -180,11 +177,6 @@ export function EmailSignUpForm(props: TProps) {
           Continue
         </Button>
       </Box>
-      <Snackbar open={openSnack} autoHideDuration={6000} onClose={() => {}}>
-        <Alert onClose={() => {}} severity="success" sx={{ width: "100%" }}>
-          Verify your e-mail to finish signing up for Ethora
-        </Alert>
-      </Snackbar>
     </form>
   );
 }

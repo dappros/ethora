@@ -39,6 +39,7 @@
     "react-dropzone": "^14.2.3",
     "react-facebook-login": "^4.1.1",
     "react-google-login": "^5.2.2",
+    "react-helmet": "^6.1.0",
     "react-hook-form": "^7.36.0",
     "react-image-crop": "^10.0.8",
     "react-qr-code": "^2.0.8",

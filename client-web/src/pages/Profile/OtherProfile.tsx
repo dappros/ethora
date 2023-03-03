@@ -17,6 +17,8 @@ import { TBalance } from "../../store";
 import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import * as http from "../../http";
+import { Helmet } from "react-helmet";
+import { appName } from "../../config/config";
 
 type TProps = {
   walletAddress: string;
@@ -37,10 +39,10 @@ export function OtherProfile(props: TProps) {
         //   .httpWithAuth()
         //   .get<http.IFile>("/files/" + item.files[0]);
         // item.file = file;
-        item.location = item.locations[0]
+        item.location = item.locations[0];
         mappedDocuments.push(item);
       } catch (error) {
-        console.log( item.files[0],"sdjfkls");
+        console.log(item.files[0], "sdjfkls");
       }
     }
     setDocuments(mappedDocuments);
@@ -64,6 +66,16 @@ export function OtherProfile(props: TProps) {
   }
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
+      {!!profile && (
+        <Helmet>
+          <title>{appName + ': ' + profile.firstName + " " + profile.lastName}</title>
+          <meta
+            property="og:title"
+            content={profile.firstName + " " + profile.lastName}
+          />
+          <meta name="description" content={profile.description} />
+        </Helmet>
+      )}
       <Box>
         {!!profile?.firstName && (
           <Box sx={{ width: "200px", margin: "auto", padding: "10px" }}>

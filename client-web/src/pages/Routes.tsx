@@ -13,6 +13,7 @@ import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
+import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -173,7 +174,7 @@ export const Routes = () => {
         </Route>
         <Route path={"/explorer"} component={Explorer} exact />
         <Route path={"/resetPassword/:token"} component={ResetPassword} exact />
-
+        <Route path={"/verifyEmail/:token"} component={VerifyEmail} exact />
         <Route
           path={"/explorer/block/:blockNumber"}
           component={BlockDetails}

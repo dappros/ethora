@@ -56,7 +56,7 @@ import { MetaNavigation } from "../../components/MetaNavigation/MetaNavigation";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
 import { CONFERENCEDOMAIN } from "../../constants";
-import { ROOMS_FILTERS } from "../../config/config";
+import { appName, ROOMS_FILTERS } from "../../config/config";
 import ThreadContainer from "../../components/Chat/Threads/ThreadContainer";
 import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
@@ -66,6 +66,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
+import {Helmet} from 'react-helmet'
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -150,7 +151,7 @@ export function ChatInRoom() {
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
-
+console.log(currentPickedRoom)
   const mainWindowMessages = messages.filter(
     (item: TMessageHistory) =>
       item.data.roomJid === roomJID + CONFERENCEDOMAIN &&
@@ -562,6 +563,16 @@ export function ChatInRoom() {
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
+      {!!currentPickedRoom && (
+        <Helmet>
+          <title>{appName + ': ' + currentPickedRoom.name}</title>
+          <meta
+            property="og:title"
+            content={currentPickedRoom.name}
+          />
+          <meta name="description" content={currentPickedRoom.description} />
+        </Helmet>
+      )}
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
