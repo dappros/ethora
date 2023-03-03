@@ -19,7 +19,7 @@ export const VerifyEmail: React.FC<IVerifyEmail> = ({}) => {
   const verifyEmail = async () => {
     setLoading(true);
     try {
-      const res = await httpWithToken(config.APP_JWT).post(
+      const res = await httpWithToken(config.APP_JWT).put(
         "/users/verifyEmail",
         { token }
       );
