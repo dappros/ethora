@@ -1,5 +1,5 @@
-import { IMessage, IMessageProps } from './IMessage';
-import { IUser } from './IUser';
+import {IMessage, IMessageProps} from './IMessage';
+import {IUser} from './IUser';
 
 export class Message implements IMessage {
     data: IMessageProps;
@@ -20,5 +20,17 @@ export class Message implements IMessage {
 
     getSessionKey(): string {
         return this.data.sessionKey;
+    }
+
+    filterText(keywords: string): boolean {
+        const buildRegEx = new RegExp("(?=.*?\\b" +
+            keywords
+                .split(" ")
+                .join(")(?=.*?\\b") +
+            ").*",
+            "i"
+        );
+
+        return buildRegEx.test(this.getText());
     }
 }
