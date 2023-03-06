@@ -3,10 +3,12 @@ import {IMessage} from "./IMessage";
 import {ISessionState} from "./ISessionState";
 import {ISessionStore} from "../stores/ISessionStore";
 import {IConnector} from "../connector/IConnector";
+import {IStepper, TStep} from "./IStepper";
 
 export interface IBotContext {
     session: ISession;
     message: IMessage;
+    stepper: IStepper;
     params?: object;
 }
 
@@ -35,5 +37,5 @@ export interface IBot {
     getSession(message: IMessage): Promise<ISession>;
     processMessage(message: IMessage): void;
     processHandlers(handlers: BotHandler[], context: IBotContext): any;
-    use(patternOrHandler: BotHandler | RegExp | string, handler?: BotHandler): any;
+    use(patternOrHandler: BotHandler | RegExp | string, handler?: BotHandler, handlerStep?: TStep,): any;
 }
