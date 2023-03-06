@@ -24,7 +24,7 @@ export class XmppSender implements IXmppSender {
                 roomJid: data.roomJID,
                 isSystemMessage: false,
                 tokenAmount: 0,
-                quickReplies: data.keyboard ? data.keyboard : [],
+                quickReplies: data.keyboard ? JSON.stringify(data.keyboard) : [],
             }),
             xml("body", {}, data.message)
         );
