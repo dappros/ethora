@@ -11,6 +11,8 @@ import {Session} from "./Session";
 import Config from "../config/Config";
 import {IConfigInit} from "../config/IConfig";
 import Logger from "../utils/Logger";
+import {IStepData, IStepper, TStep} from "./IStepper";
+import {Stepper} from "./Stepper";
 
 
 export default class Bot implements IBot {
@@ -18,7 +20,9 @@ export default class Bot implements IBot {
     handlers: BotHandler[] = [];
     sessionStore: ISessionStore = new MemorySessionStore();
     connector: IConnector;
+    stepper: IStepper;
     config: any;
+    initSteps: IStepData[] = [];
 
     constructor(data: IBotData) {
         Config.init(this._collectConfigurationData(data));
@@ -28,6 +32,7 @@ export default class Bot implements IBot {
         this.connector.on(ConnectorEvent.receiveMessage, this.processMessage.bind(this));
         //Handling received presence
         this.connector.on(ConnectorEvent.receivePresence, this.processPresence.bind(this));
+        this.initialState = {stepList: []};
 
         return this;
     }
@@ -53,9 +58,16 @@ export default class Bot implements IBot {
         return await this.sessionStore.add(key, session);
     }
 
+    getStepper(session: ISession) {
+        //Creating a stepper with an actual session.
+        this.stepper = new Stepper(session);
+        return this.stepper;
+    }
+
     async processMessage(message: Message) {
         const session = await this.getSession(message);
-        const context: IBotContext = {session, message};
+        const stepper = this.getStepper(session);
+        const context: IBotContext = {session, message, stepper};
 
         this
             .processHandlers(this.handlers, context)
@@ -66,7 +78,8 @@ export default class Bot implements IBot {
 
     async processPresence(message: Message) {
         const session = await this.getSession(message);
-        const context: IBotContext = {session, message};
+        const stepper = this.getStepper(session);
+        const context: IBotContext = {session, message, stepper};
         const {lastPresenceTime} = session.state;
         let dateDifference: number;
         const difference = Config.getData().presenceTimer;
@@ -89,21 +102,59 @@ export default class Bot implements IBot {
 
     use(
         possiblePattern: BotHandler | RegExp | string,
-        possibleHandler?: BotHandler,
-        step?: string | number
+        possibleHandler?: BotHandler | TStep,
+        handlerStep?: TStep,
     ) {
-        const handler = possibleHandler || possiblePattern as BotHandler;
+        const handler = possibleHandler && typeof possibleHandler === 'function' ? possibleHandler : possiblePattern as BotHandler;
         const pattern = possiblePattern;
+        const step = handlerStep && typeof possiblePattern !== 'function' ? handlerStep : possibleHandler as TStep;
 
         if (typeof handler !== 'function') {
             throw Logger.error(new Error(`Handler must be a function.`));
         }
 
-        return this._useRouter(pattern, handler, step);
+        this._saveSteps(step);
+        return this._useRouter(pattern, handler, typeof step === 'function' ? null : step);
+    }
+
+    _saveSteps(step: string | number): void {
+        if (!step || typeof step === 'function') {
+            return;
+        }
+        const stepIndex = this.initSteps.findIndex(el => el.stepName === step);
+        if (stepIndex !== -1) {
+            throw Logger.error(new Error(`Duplicate steps in handlers.`));
+        }
+
+        const stepData: IStepData = {
+            stepName: step,
+            onStep: false,
+            editing: false
+        }
+        this.initSteps = [...this.initSteps, stepData];
     }
 
     _useRouter(pattern: BotHandler | RegExp | string, handler: BotHandler, step?: string | number): any {
         this.handlers.push((ctx, next) => {
+            ctx.stepper.addStepList(this.initSteps);
+
+            const currentUserStep = ctx.stepper.getUserStep();
+            if (currentUserStep && !step) {
+                return next();
+            }
+
+            if (step) {
+                if (!currentUserStep) {
+                    return next();
+                }
+
+                if (currentUserStep && step === currentUserStep) {
+                    ctx.stepper.setOnStep(step, true);
+                    ctx.stepper.setStepEditing(step, true);
+                } else {
+                    return next();
+                }
+            }
 
             //Processing an incoming RegExp pattern
             if (pattern instanceof RegExp) {
@@ -125,19 +176,17 @@ export default class Bot implements IBot {
 
             } else {
                 //Processing an incoming function without a pattern
-                return this._useEmptiness(handler);
+                return this._useEmptiness(handler, ctx, next);
             }
         });
     }
 
-    _useEmptiness(handler: BotHandler) {
-        this.handlers.push((ctx, next) => {
-            if (ctx.message.data.type === "sendMessage") {
-                return handler(ctx, next);
-            }
+    _useEmptiness(handler: BotHandler, ctx: IBotContext, next: any) {
+        if (ctx.message.data.type === "sendMessage") {
+            return handler(ctx, next);
+        }
 
-            return next();
-        });
+        return next();
     }
 
     _useRegExp(pattern: RegExp | string, handler: BotHandler, ctx: IBotContext, next: any) {
@@ -153,16 +202,7 @@ export default class Bot implements IBot {
     }
 
     _useKeywords(keywords: string, handler: BotHandler, ctx: IBotContext, next: any) {
-        const text = ctx.message.getText();
-        const buildRegEx = new RegExp("(?=.*?\\b" +
-            keywords
-                .split(" ")
-                .join(")(?=.*?\\b") +
-            ").*",
-            "i"
-        );
-
-        if (buildRegEx.test(text)) {
+        if (ctx.message.filterText(keywords)) {
             return handler(ctx, next);
         } else {
             return next();
