@@ -29,4 +29,5 @@ export interface IMessage {
     data: IMessageProps;
 
     getText(): string;
+    filterText(keywords: string): boolean;
 }
