@@ -18,11 +18,11 @@ exports[`renders correctly 1`] = `
   <View
     accessible={true}
     collapsable={false}
-    style={Object {}}
+    style={{}}
   >
     <View
       style={
-        Object {
+        {
           "backgroundColor": "#F4F5F8",
           "height": 115,
           "justifyContent": "center",
@@ -34,7 +34,7 @@ exports[`renders correctly 1`] = `
     >
       <View
         style={
-          Object {
+          {
             "flexDirection": "row",
             "justifyContent": "space-around",
             "width": "100%",
@@ -43,7 +43,7 @@ exports[`renders correctly 1`] = `
       >
         <View
           style={
-            Object {
+            {
               "alignItems": "center",
               "flexDirection": "row",
               "width": 750,
@@ -52,7 +52,7 @@ exports[`renders correctly 1`] = `
         >
           <View
             style={
-              Object {
+              {
                 "alignItems": "center",
                 "justifyContent": "center",
                 "width": 180,
@@ -61,12 +61,12 @@ exports[`renders correctly 1`] = `
           >
             <Image
               source={
-                Object {
+                {
                   "uri": "image",
                 }
               }
               style={
-                Object {
+                {
                   "height": "100%",
                   "width": "100%",
                 }
@@ -75,14 +75,14 @@ exports[`renders correctly 1`] = `
           </View>
           <View
             style={
-              Object {
+              {
                 "width": 450,
               }
             }
           >
             <Text
               style={
-                Object {
+                {
                   "color": "#000000",
                   "fontFamily": "Poppins-Regular",
                   "fontSize": 29.5,
@@ -96,7 +96,7 @@ exports[`renders correctly 1`] = `
         </View>
         <View
           style={
-            Object {
+            {
               "alignItems": "flex-start",
               "justifyContent": "center",
               "paddingRight": 50,

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Actions, GiftedChat, Send } from 'react-native-gifted-chat';
-import { AudioSendButton } from './AudioSendButton';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Actions, GiftedChat, Send} from 'react-native-gifted-chat';
+import {AudioSendButton} from './AudioSendButton';
 import {
   ActivityIndicator,
   Alert,
@@ -19,12 +19,12 @@ import AudioRecorderPlayer, {
   AudioSourceAndroidType,
 } from 'react-native-audio-recorder-player';
 import RNFetchBlob from 'react-native-blob-util';
-import { fileUpload } from '../../config/routesConstants';
-import { normalizeData } from '../../helpers/normalizeData';
-import { useStores } from '../../stores/context';
-import { httpUpload } from '../../config/apiService';
-import { showToast } from '../Toast/toast';
-import { Actionsheet, HStack, Text, View, useDisclose } from 'native-base';
+import {fileUpload} from '../../config/routesConstants';
+import {normalizeData} from '../../helpers/normalizeData';
+import {useStores} from '../../stores/context';
+import {httpUpload} from '../../config/apiService';
+import {showToast} from '../Toast/toast';
+import {Actionsheet, HStack, Text, View, useDisclose} from 'native-base';
 import {
   allowIsTyping,
   commonColors,
@@ -32,22 +32,20 @@ import {
   defaultChatBackgroundTheme,
   textStyles,
 } from '../../../docs/config';
-import {
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
-import { IMessage, roomListProps } from '../../stores/chatStore';
+import {IMessage, roomListProps} from '../../stores/chatStore';
 import MessageBody from './MessageBody';
-import { ImageMessage } from './ImageMessage';
-import { VideoMessage } from './VideoMessage';
-import { AudioMessage } from './AudioMessage';
-import { PdfMessage } from './PdfMessage';
-import { FileMessage } from './FileMessage';
-import { downloadFile } from '../../helpers/downloadFile';
-import { ChatComposer } from './Composer';
-import { MentionSuggestionsProps } from '../../helpers/chat/inputTypes';
-import { useNavigation } from '@react-navigation/native';
+import {ImageMessage} from './ImageMessage';
+import {VideoMessage} from './VideoMessage';
+import {AudioMessage} from './AudioMessage';
+import {PdfMessage} from './PdfMessage';
+import {FileMessage} from './FileMessage';
+import {downloadFile} from '../../helpers/downloadFile';
+import {ChatComposer} from './Composer';
+import {MentionSuggestionsProps} from '../../helpers/chat/inputTypes';
+import {useNavigation} from '@react-navigation/native';
 import RenderChatFooter from './RenderChatFooter';
 import DocumentPicker from 'react-native-document-picker';
 import {
@@ -70,21 +68,21 @@ import {
 import SecondaryHeader from '../SecondaryHeader/SecondaryHeader';
 import parseChatLink from '../../helpers/parseChatLink';
 import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
-import { mentionRegEx, parseValue } from '../../helpers/chat/inputUtils';
+import {mentionRegEx, parseValue} from '../../helpers/chat/inputUtils';
 //@ts-ignore
 import matchAll from 'string.prototype.matchall';
 import AudioPlayer from '../AudioPlayer/AudioPlayer';
-import { ChatLongTapModal } from '../Modals/Chat/ChatLongTapModal';
-import { QRModal } from '../Modals/QR/QRModal';
-import { ChatMediaModal } from '../Modals/ChatMediaModal';
-import { MetaNavigation } from './MetaNavigation';
-import { NftItemGalleryModal } from '../../../NftItemGalleryModal';
+import {ChatLongTapModal} from '../Modals/Chat/ChatLongTapModal';
+import {QRModal} from '../Modals/QR/QRModal';
+import {ChatMediaModal} from '../Modals/ChatMediaModal';
+import {MetaNavigation} from './MetaNavigation';
+import {NftItemGalleryModal} from '../../../NftItemGalleryModal';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { IDataForTransfer } from '../Modals/Chat/types';
-import { observer } from 'mobx-react-lite';
-import { systemMessage } from '../../helpers/systemMessage';
-import { banSystemMessage } from '../../helpers/banSystemMessage';
-import { useDebounce } from '../../hooks/useDebounce';
+import {IDataForTransfer} from '../Modals/Chat/types';
+import {observer} from 'mobx-react-lite';
+import {systemMessage} from '../../helpers/systemMessage';
+import {banSystemMessage} from '../../helpers/banSystemMessage';
+import {useDebounce} from '../../hooks/useDebounce';
 import {
   isImageMimetype,
   isVideoMimetype,
@@ -92,8 +90,8 @@ import {
   isPdfMimetype,
 } from '../../helpers/checkMimetypes';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { HomeStackNavigationProp } from '../../navigation/types';
-import { TCombinedMimeType } from '../../constants/mimeTypes';
+import {HomeStackNavigationProp} from '../../navigation/types';
+import {TCombinedMimeType} from '../../constants/mimeTypes';
 
 //interfaces and types
 export type containerType = 'main' | 'thread';
@@ -138,11 +136,6 @@ interface ISystemMessage {
 
 //styles
 const styles = StyleSheet.create({
-  usernameStyle: {
-    fontWeight: 'bold',
-    color: '#FFFF',
-    fontSize: hp('1.47%'),
-  },
   sendButton: {
     backgroundColor: commonColors.primaryDarkColor,
     borderRadius: 100,
@@ -150,6 +143,60 @@ const styles = StyleSheet.create({
     marginRight: 5,
     paddingLeft: 7,
     marginBottom: 5,
+  },
+  attachmentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  attachmentActionContainer: {
+    width: hp('4%'),
+    height: hp('4%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nameTextStyle: {
+    fontFamily: textStyles.boldFont,
+    fontSize: hp('2'),
+    color: 'white',
+  },
+  usernameTextStyle: {
+    fontSize: hp('2.216%'),
+    fontFamily: textStyles.boldFont,
+    color: '#ffff',
+    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
+  },
+  suggestionsContainer: {
+    position: 'absolute',
+    bottom: 43,
+    backgroundColor: 'white',
+    left: 0,
+    padding: 10,
+    borderRadius: 10,
+    width: 200,
+  },
+  suggestionsPressableStyle: {
+    paddingBottom: 5,
+  },
+  suggestionsTextStyle: {
+    fontFamily: textStyles.semiBoldFont,
+    color: '#000',
+  },
+  parentTimeStyle: {
+    fontSize: hp('1.5%'),
+    fontFamily: textStyles.mediumFont,
+    color: '#ffff',
+    marginLeft: 3,
+  },
+  currentThreadMessageTextStyle: {
+    fontSize: hp('2%'),
+    fontFamily: textStyles.mediumFont,
+    color: '#ffff',
+  },
+  renderAttachmentContainerStyle: {
+    position: 'relative',
+  },
+  activityIndicatorContainerStyle: {
+    backgroundColor: 'transparent',
   },
 });
 //styles
@@ -167,7 +214,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //props
 
   //mobx stores
-  const { loginStore, debugStore, chatStore, walletStore, apiStore } =
+  const {loginStore, debugStore, chatStore, walletStore, apiStore} =
     useStores();
   //mobx stores
 
@@ -177,7 +224,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] =
     useState<boolean>(false);
   const [text, setText] = useState<string>('');
-  const [selection, setSelection] = useState({ start: 0, end: 0 });
+  const [selection, setSelection] = useState({start: 0, end: 0});
   const [isEditing, setIsEditing] = useState(false);
   const [onTapMessageObject, setOnTapMessageObject] = useState<IMessage>();
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -189,14 +236,19 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [showEditOption, setShowEditOption] = useState(true);
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
   const [showInChannel, setShowInChannel] = useState<boolean>(false);
-  const [mediaModal, setMediaModal] = useState<{ open: boolean, url: string | undefined, type: TCombinedMimeType | undefined, message: IMessage | undefined }>({
+  const [mediaModal, setMediaModal] = useState<{
+    open: boolean;
+    url: string | undefined;
+    type: TCombinedMimeType | undefined;
+    message: IMessage | undefined;
+  }>({
     open: false,
     url: undefined,
     type: undefined,
     message: undefined,
   });
   const [dataForLongTapModal, setDataForLongTapModal] = useState<
-    IDataForTransfer & { open: boolean }
+    IDataForTransfer & {open: boolean}
   >({
     name: '',
     message_id: '',
@@ -205,7 +257,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     chatJid: '',
     open: false,
   });
-  const { isOpen, onOpen, onClose } = useDisclose();
+  const {isOpen, onOpen, onClose} = useDisclose();
   //local states
 
   //local variables
@@ -227,7 +279,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const manipulatedWalletAddress: string = underscoreManipulation(
     senderDetails.senderWalletAddress,
   );
-  const { tokenTransferSuccess } = walletStore;
+  const {tokenTransferSuccess} = walletStore;
   const debouncedChatText = useDebounce(text, 500);
   //local variables
 
@@ -252,7 +304,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     }).start();
   };
 
-
   //get Waveform
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== 'ios') {
@@ -265,7 +316,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       return res;
     }
   };
-
 
   //normalize audio waveform data
   function filterData(arr: any) {
@@ -501,7 +551,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       );
       setIsEditing(false);
     } else {
-      const text = parseValue(
+      const parsedext = parseValue(
         messageText as string,
         partTypes as any,
       ).plainText;
@@ -517,7 +567,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       sendMessageStanza(
         manipulatedWalletAddress,
         roomDetails.jid,
-        text,
+        parsedext,
         data,
         chatStore.xmpp,
       );
@@ -566,7 +616,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const closeMediaModal = () => {
-    setMediaModal({ type: undefined, open: false, url: '', message: undefined });
+    setMediaModal({type: undefined, open: false, url: '', message: undefined});
   };
 
   //function to copy text
@@ -575,7 +625,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     showToast('success', 'Info', 'Message copied', 'top');
     return onClose();
   };
-
 
   const closeLongTapModal = () => {
     setDataForLongTapModal({
@@ -603,34 +652,34 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to initiate delete process
   const handleDelete = () => {
     Alert.alert(
-      "Delete Message",
-      "Are you sure you want to delete this message",
+      'Delete Message',
+      'Are you sure you want to delete this message',
       [
         {
-          text: "Delete",
+          text: 'Delete',
           onPress: () => {
             deleteMessageStanza(
               onTapMessageObject?.user._id as string,
               onTapMessageObject?.roomJid as string,
               onTapMessageObject?._id as string,
-              chatStore.xmpp
+              chatStore.xmpp,
             );
             onClose();
-          }
+          },
         },
         {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        }
-      ]
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
     );
-  }
+  };
 
   //handle to send is typing to xmpp server when user inputs keywords in the message composer section
-  const handleInputChange = (text: string) => {
-    setText(text);
-    const { firstName, lastName } = loginStore.initialData;
+  const handleInputChange = (inputText: string) => {
+    setText(inputText);
+    const {firstName, lastName} = loginStore.initialData;
     const fullName = firstName + ' ' + lastName;
     setTimeout(() => {
       isComposing(
@@ -643,8 +692,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   //handle to preview any media in a modal
-  const onMediaMessagePress = (type: TCombinedMimeType | undefined, url: string | undefined, message: IMessage) => {
-    setMediaModal({ open: true, type, url, message });
+  const onMediaMessagePress = (
+    type: TCombinedMimeType | undefined,
+    url: string | undefined,
+    message: IMessage,
+  ) => {
+    setMediaModal({open: true, type, url, message});
   };
 
   const handleOnLongPress = (message: IMessage) => {
@@ -672,23 +725,23 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   //handle to open other user profile when clicked on their avatar in the chat screen
-  const onUserAvatarPress = (props: {
+  const onUserAvatarPress = (avatarProps: {
     _id: string;
     name: string;
     avatar: string;
   }) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = props._id.split('@')[0];
+    const xmppID = avatarProps._id.split('@')[0];
     const walletAddress = reverseUnderScoreManipulation(xmppID);
     if (walletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate('ProfileScreen');
       return;
     } else {
       chatStore.getOtherUserDetails({
-        jid: props._id,
-        avatar: props.avatar,
-        name: props.name,
+        jid: avatarProps._id,
+        avatar: avatarProps.avatar,
+        name: avatarProps.name,
       });
       navigation.navigate('OtherUserProfileScreen');
     }
@@ -707,9 +760,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     onClose();
   };
 
-
   //handle to show options when a message bubble is tapped
-  const handleOnPress = (message: any) => {
+  const onMessageBubbleTap = (message: any) => {
     //if the current message is by the owner only then show delete and edit option
     if (!message.user._id.includes(manipulatedWalletAddress)) {
       setIsShowDeleteOption(false);
@@ -738,34 +790,46 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     return onOpen();
   };
 
-  const sendSystemMessage = (message: ISystemMessage[]) => {
-    const messageText = message[0].text;
-    const tokenAmount = message[0].tokenAmount || 0;
-    const receiverMessageId = message[0].receiverMessageId || 0;
+  const sendSystemMessage = useCallback(
+    (message: ISystemMessage[]) => {
+      const messageText = message[0].text;
+      const tokenAmount = message[0].tokenAmount || 0;
+      const receiverMessageId = message[0].receiverMessageId || 0;
 
-    const data = {
-      ...message[0],
-      senderFirstName: loginStore.initialData.firstName,
-      senderLastName: loginStore.initialData.lastName,
-      senderWalletAddress: loginStore.initialData.walletAddress,
-      isSystemMessage: true,
-      tokenAmount: tokenAmount,
-      receiverMessageId: receiverMessageId,
-      mucname: roomDetails.name,
-      photoURL: loginStore.userAvatar,
-      roomJid: roomDetails.jid,
-      isReply: false,
-      mainMessage: undefined,
-      push: true,
-    };
-    sendMessageStanza(
+      const data = {
+        ...message[0],
+        senderFirstName: loginStore.initialData.firstName,
+        senderLastName: loginStore.initialData.lastName,
+        senderWalletAddress: loginStore.initialData.walletAddress,
+        isSystemMessage: true,
+        tokenAmount: tokenAmount,
+        receiverMessageId: receiverMessageId,
+        mucname: roomDetails.name,
+        photoURL: loginStore.userAvatar,
+        roomJid: roomDetails.jid,
+        isReply: false,
+        mainMessage: undefined,
+        push: true,
+      };
+      sendMessageStanza(
+        manipulatedWalletAddress,
+        roomDetails.jid,
+        messageText,
+        data,
+        chatStore.xmpp,
+      );
+    },
+    [
+      chatStore.xmpp,
+      loginStore.initialData.firstName,
+      loginStore.initialData.lastName,
+      loginStore.initialData.walletAddress,
+      loginStore.userAvatar,
       manipulatedWalletAddress,
       roomDetails.jid,
-      messageText,
-      data,
-      chatStore.xmpp,
-    );
-  };
+      roomDetails.name,
+    ],
+  );
 
   //local functions
 
@@ -774,64 +838,89 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     if (
       chatStore.isComposing.chatJID === roomDetails.jid &&
       chatStore.isComposing.manipulatedWalletAddress !==
-      manipulatedWalletAddress
+        manipulatedWalletAddress
     ) {
       setIsTyping(chatStore.isComposing.state);
       setComposingUsername(chatStore.isComposing.username);
     }
-  }, [chatStore.isComposing.state]);
+  }, [
+    chatStore.isComposing.chatJID,
+    chatStore.isComposing.manipulatedWalletAddress,
+    chatStore.isComposing.state,
+    chatStore.isComposing.username,
+    manipulatedWalletAddress,
+    roomDetails.jid,
+  ]);
 
   useEffect(() => {
     if (tokenTransferSuccess.success) {
       const message = systemMessage({
         senderName: tokenTransferSuccess.senderName,
         tokenName: tokenTransferSuccess.tokenName,
-        //@ts-ignore
-        receiverMessageId: tokenTransferSuccess.receiverMessageId,
+        receiverMessageId: tokenTransferSuccess.receiverMessageId as string,
         receiverName: tokenTransferSuccess.receiverName,
         nftId: tokenTransferSuccess.nftId,
         tokenAmount: tokenTransferSuccess.amount,
         transactionId: tokenTransferSuccess.transaction?._id,
       });
-      //@ts-ignore
       sendSystemMessage(message);
       walletStore.clearPreviousTransfer();
     }
-  }, [tokenTransferSuccess.success]);
+  }, [
+    sendSystemMessage,
+    tokenTransferSuccess.amount,
+    tokenTransferSuccess.nftId,
+    tokenTransferSuccess.receiverMessageId,
+    tokenTransferSuccess.receiverName,
+    tokenTransferSuccess.senderName,
+    tokenTransferSuccess.success,
+    tokenTransferSuccess.tokenName,
+    tokenTransferSuccess.transaction?._id,
+    walletStore,
+  ]);
 
   useEffect(() => {
     if (chatStore.userBanData.success) {
-      const message = banSystemMessage({ ...chatStore.userBanData });
+      const message = banSystemMessage({...chatStore.userBanData});
       //@ts-ignore
       sendSystemMessage(message);
       chatStore.clearUserBanData();
     }
-  }, [chatStore.userBanData.success]);
+  }, [chatStore, chatStore.userBanData.success, sendSystemMessage]);
 
   useEffect(() => {
     pausedComposing(manipulatedWalletAddress, roomDetails.jid, chatStore.xmpp);
-  }, [debouncedChatText]);
+  }, [
+    chatStore.xmpp,
+    debouncedChatText,
+    manipulatedWalletAddress,
+    roomDetails.jid,
+  ]);
 
   useEffect(() => {
     if (
       chatStore.isComposing.chatJID === roomDetails.jid &&
       chatStore.isComposing.manipulatedWalletAddress !==
-      manipulatedWalletAddress
+        manipulatedWalletAddress
     ) {
       setIsTyping(chatStore.isComposing.state);
       setComposingUsername(chatStore.isComposing.username);
     }
-  }, [chatStore.isComposing.state]);
+  }, [
+    chatStore.isComposing.chatJID,
+    chatStore.isComposing.manipulatedWalletAddress,
+    chatStore.isComposing.state,
+    chatStore.isComposing.username,
+    manipulatedWalletAddress,
+    roomDetails.jid,
+  ]);
   //use effects
 
   //smaller components
 
   //component to render send button in the main chat text input.
-  const renderSend = (props: any) => {
-    const animateMediaButtonStyle = {
-      transform: [{ scale: mediaButtonAnimation }],
-    };
-    if (!props.text) {
+  const renderSend = (sendProps: any) => {
+    if (!sendProps.text) {
       return (
         <AudioSendButton
           recording={recording}
@@ -841,7 +930,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       );
     }
     return (
-      <Send {...props}>
+      <Send {...sendProps}>
         <View style={[styles.sendButton]}>
           <IonIcons name="ios-send" color={'white'} size={hp('3%')} />
         </View>
@@ -853,35 +942,27 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const renderAttachment = () => {
     const options = walletStore.nftItems.length
       ? {
-        'Upload File': async () =>
-          await sendAttachment(loginStore.userToken, roomDetails),
-        'Display an Item': async () => await displayNftItems(),
-        Cancel: () => {
-          console.log('Cancel');
-        },
-      }
+          'Upload File': async () =>
+            await sendAttachment(loginStore.userToken, roomDetails),
+          'Display an Item': async () => await displayNftItems(),
+          Cancel: () => {
+            console.log('Cancel');
+          },
+        }
       : {
-        'Upload File': async () =>
-          await sendAttachment(loginStore.userToken, roomDetails),
-        Cancel: () => {
-          console.log('Cancel');
-        },
-      };
+          'Upload File': async () =>
+            await sendAttachment(loginStore.userToken, roomDetails),
+          Cancel: () => {
+            console.log('Cancel');
+          },
+        };
     return (
-      <View style={{ position: 'relative' }}>
+      <View style={styles.renderAttachmentContainerStyle}>
         <View
           accessibilityLabel="Choose attachment"
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}>
+          style={styles.attachmentContainer}>
           <Actions
-            containerStyle={{
-              width: hp('4%'),
-              height: hp('4%'),
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            containerStyle={styles.attachmentActionContainer}
             icon={() => (
               <Entypo
                 accessibilityLabel="Send Attachment"
@@ -899,13 +980,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   //component to render message body
-  const renderMessage = (props: IMessage) => {
-    return <MessageBody {...props} />;
+  const renderMessage = (messageProps: IMessage) => {
+    return <MessageBody {...messageProps} />;
   };
 
   //component to render message image
-  const renderMedia = (props: IMessage | undefined) => {
-    if (!props) {
+  const renderMedia = (mediaProps: IMessage | any) => {
+    if (!mediaProps) {
       return null;
     }
     const {
@@ -917,7 +998,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       nftId,
       preview,
       nftName,
-    } = props;
+    } = mediaProps;
     let parsedWaveform = [];
     if (waveForm) {
       try {
@@ -933,8 +1014,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           nftId={nftId}
           url={image}
           size={size}
-          onLongPress={() => handleOnLongPress(props)}
-          onPress={() => onMediaMessagePress(mimetype, image, props)}
+          onLongPress={() => handleOnLongPress(mediaProps)}
+          onPress={() => onMediaMessagePress(mimetype, image, mediaProps)}
         />
       );
     } else if (isVideoMimetype(mimetype as string)) {
@@ -942,15 +1023,15 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         <VideoMessage
           url={image}
           size={size}
-          onPress={() => onMediaMessagePress(mimetype, image, props)}
+          onPress={() => onMediaMessagePress(mimetype, image, mediaProps)}
         />
       );
     } else if (isAudioMimetype(mimetype as string)) {
       return (
         <AudioMessage
           waveform={parsedWaveform}
-          message={props}
-          onPress={() => onMediaMessagePress(mimetype, image, props)}
+          message={mediaProps}
+          onPress={() => onMediaMessagePress(mimetype, image, mediaProps)}
           onLongPress={handleOnLongPress}
         />
       );
@@ -961,7 +1042,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         <PdfMessage
           url={preview || pdfImage}
           size={size}
-          onPress={() => onMediaMessagePress(mimetype, image, props)}
+          onPress={() => onMediaMessagePress(mimetype, image, mediaProps)}
         />
       );
     } else if (mimetype) {
@@ -976,13 +1057,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   //component to render chat composer
-  const renderComposer = (props: any) => {
+  const renderComposer = (composerProps: any) => {
     return (
       <ChatComposer
         onTextChanged={setText}
         partTypes={partTypes}
         selection={selection}
-        {...props}
+        {...composerProps}
       />
     );
   };
@@ -997,16 +1078,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     }
 
     return (
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 43,
-          backgroundColor: 'white',
-          left: 0,
-          padding: 10,
-          borderRadius: 10,
-          width: 200,
-        }}>
+      <View style={styles.suggestionsContainer}>
         {defaultBotsList
           .filter(one =>
             one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
@@ -1015,16 +1087,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             <Pressable
               key={one.id}
               onPress={() => onSuggestionPress(one)}
-              style={{
-                paddingBottom: 5,
-              }}>
-              <Text
-                style={{
-                  fontFamily: textStyles.semiBoldFont,
-                  color: '#000',
-                }}>
-                {one.name}
-              </Text>
+              style={styles.suggestionsPressableStyle}>
+              <Text style={styles.suggestionsTextStyle}>{one.name}</Text>
             </Pressable>
           ))}
       </View>
@@ -1034,16 +1098,14 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     {
       trigger: '@', // Should be a single character like '@' or '#'
       renderSuggestions,
-      textStyle: { fontWeight: 'bold', color: 'blue' }, // The mention style in the input
+      textStyle: {fontWeight: 'bold', color: 'blue'}, // The mention style in the input
     },
   ];
 
   //component to render the UI for main message or the message to which replies and threads are created. This is shown in thread view
   const RenderMainMessageSection: React.FC = () => {
-    const firstName =
-      currentThreadMessage?.user.name.split(' ')[0] || 'N/A';
-    const lastName =
-      currentThreadMessage?.user.name.split(' ')[1] || 'N/A';
+    const firstName = currentThreadMessage?.user.name.split(' ')[0] || 'N/A';
+    const lastName = currentThreadMessage?.user.name.split(' ')[1] || 'N/A';
     //@ts-ignore
     const parentDate = new Date(currentThreadMessage?.createdAt * 1000);
     const parentTime = parentDate.toLocaleTimeString([], {
@@ -1066,7 +1128,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             borderRadius={hp('5.46%') / 2}>
             {currentThreadMessage?.user.avatar ? (
               <Image
-                source={{ uri: currentThreadMessage.user.avatar }}
+                source={{uri: currentThreadMessage.user.avatar}}
                 style={{
                   height: hp('5.46%'),
                   width: hp('5.46%'),
@@ -1074,12 +1136,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
                 }}
               />
             ) : (
-              <Text
-                style={{
-                  fontFamily: textStyles.boldFont,
-                  fontSize: hp('2'),
-                  color: 'white',
-                }}>
+              <Text style={styles.nameTextStyle}>
                 {firstName[0] + lastName[0]}
               </Text>
             )}
@@ -1088,32 +1145,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
         <View flex={0.9} padding={2} justifyContent={'flex-start'}>
           <HStack>
-            <Text
-              style={{
-                fontSize: hp('2.216%'),
-                fontFamily: textStyles.boldFont,
-                color: '#ffff',
-                fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
-              }}>
+            <Text style={styles.usernameTextStyle}>
               {currentThreadMessage?.user.name}
             </Text>
-            <Text
-              style={{
-                fontSize: hp('1.5%'),
-                fontFamily: textStyles.mediumFont,
-                color: '#ffff',
-                marginLeft: 3,
-              }}>
-              {parentTime}
-            </Text>
+            <Text style={styles.parentTimeStyle}>{parentTime}</Text>
           </HStack>
           <View marginTop={1}>
-            <Text
-              style={{
-                fontSize: hp('2%'),
-                fontFamily: textStyles.mediumFont,
-                color: '#ffff',
-              }}>
+            <Text style={styles.currentThreadMessageTextStyle}>
               {currentThreadMessage?.text}
             </Text>
           </View>
@@ -1215,7 +1253,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   return (
     <>
       <ImageBackground
-        style={{ width: '100%', height: '100%', zIndex: 0 }}
+        style={{width: '100%', height: '100%', zIndex: 0}}
         source={{
           uri: roomDetails.roomBackground
             ? roomDetails.roomBackground
@@ -1242,7 +1280,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           </View>
         )}
         {chatStore.isLoadingEarlierMessages && (
-          <View style={{ backgroundColor: 'transparent' }}>
+          <View style={styles.activityIndicatorContainerStyle}>
             <ActivityIndicator size={30} color={commonColors.primaryColor} />
           </View>
         )}
@@ -1264,7 +1302,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           renderMessage={renderMessage}
           //@ts-ignore
-          renderMessageImage={props => renderMedia(props.currentMessage)}
+          renderMessageImage={renderMessageImageProps =>
+            renderMedia(renderMessageImageProps.currentMessage)
+          }
           renderComposer={renderComposer}
           //@ts-ignore
           messages={messages}
@@ -1310,11 +1350,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           showUserAvatar
           textInputProps={{
             color: 'black',
-            onSelectionChange: (e: { nativeEvent: { selection: any } }) =>
+            onSelectionChange: (e: {nativeEvent: {selection: any}}) =>
               setSelection(e.nativeEvent.selection),
           }}
           onLongPress={(message: any) => handleOnLongPress(message)}
-          onTap={(message: any) => handleOnPress(message)}
+          onTap={(message: any) => onMessageBubbleTap(message)}
           handleReply={handleReply}
           // onInputTextChanged={()=>{alert('hhh')}}
           parsePatterns={linkStyle => [

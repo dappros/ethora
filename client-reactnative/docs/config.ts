@@ -74,10 +74,6 @@ import loginScreenBackgroundImage from '../src/assets/login_background.png';
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
 const navbarLogoShow = false; //done
 
-//universal link url
-const unv_url = 'https://www.eto.li/go?c=';
-const appLinkingUrl = 'https://www.eto.li/go';
-
 // COLOUR THEME
 const commonColors = {
   primaryColor: '#003E9C',
@@ -725,9 +721,16 @@ const allowIsTyping = true;
 
 const endPoints: ['DEV', 'QA', 'PROD'] = ['DEV', 'QA', 'PROD'];
 
-const appEndpoint = endPoints[0];
+type TappEndpoint = 'DEV' | 'QA' | 'PROD';
+const appEndpoint: TappEndpoint = endPoints[0];
 
 const appVersion = DeviceInfo.getVersion();
+
+//universal link url
+//@ts-ignore
+let env = appEndpoint === 'PROD' ? 'p' : 'd';
+const unv_url = `https://www.eto.li/go?env=${env}&c=`;
+const appLinkingUrl = 'https://www.eto.li/go';
 
 //Application token
 

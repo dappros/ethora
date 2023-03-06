@@ -1,5 +1,7 @@
-describe('Testing login mechanism', () => {
+import {} from 'react-native-gifted-chat';
 
+/* eslint-disable no-undef */
+describe('Testing login mechanism', () => {
   //test story
   // launch app
   // tap on 'Login with credentials
@@ -11,12 +13,14 @@ describe('Testing login mechanism', () => {
   //password = dapprosplatform;
 
   const username = 'test222@dappros.com',
-  password = 'dapprosplatform';
+    password = 'dapprosplatform';
 
   //default operation before test suite starts
   //this function will launch the app.
   beforeAll(async () => {
-    await device.launchApp({permissions:{'notifications':'YES', 'userTracking':'YES'}});
+    await device.launchApp({
+      permissions: {notifications: 'YES', userTracking: 'YES'},
+    });
   });
 
   //once the app launches, the react server is reloaded so that any old instance is deleted and freshly started
@@ -38,6 +42,5 @@ describe('Testing login mechanism', () => {
 
     //the following action will click on submit/login button
     await element(by.id('loginSubmitButton')).tap();
-
   });
 });

@@ -2,7 +2,7 @@
 
 exports[`renders correctly 1`] = `
 <View
-  style={Object {}}
+  style={{}}
 >
   <Text>
     ll

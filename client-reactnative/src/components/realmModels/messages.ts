@@ -85,7 +85,7 @@ export const updateMessageText = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions);
-    let message = realm.objectForPrimaryKey(
+    let message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId,
     );
@@ -108,7 +108,7 @@ export const updateNumberOfReplies = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions);
-    let message = realm.objectForPrimaryKey(
+    let message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId,
     );
@@ -129,7 +129,7 @@ export const updateMessageToWrapped = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions);
-    let message = realm.objectForPrimaryKey(
+    let message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId,
     );
@@ -140,5 +140,21 @@ export const updateMessageToWrapped = async (
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const deleteMessageObject = async (messageId: string) => {
+  try {
+    const realm = await Realm.open(databaseOptions);
+    let message: any = realm.objectForPrimaryKey(
+      schemaTypes.MESSAGE_SCHEMA,
+      messageId,
+    );
+    realm.write(() => {
+      realm.delete(message);
+    });
+    return true;
+  } catch (err: any) {
+    return {success: false, error: err};
   }
 };

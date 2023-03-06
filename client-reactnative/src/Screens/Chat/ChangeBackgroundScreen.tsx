@@ -1,10 +1,7 @@
 import {Button, FlatList, HStack, ScrollView, Text, View} from 'native-base';
 import * as React from 'react';
 
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Pressable} from 'react-native';
@@ -23,14 +20,10 @@ import {fileUpload} from '../../config/routesConstants';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {setRoomImage} from '../../xmpp/stanzas';
-import { uploadFiles } from '../../helpers/uploadFiles';
-import { IbackgroundTheme, roomListProps } from '../../stores/chatStore';
+import {uploadFiles} from '../../helpers/uploadFiles';
+import {IbackgroundTheme, roomListProps} from '../../stores/chatStore';
 
-const renderCard = (
-  index: number,
-  item: IbackgroundTheme,
-  onSelect: any,
-) => {
+const renderCard = (index: number, item: IbackgroundTheme, onSelect: any) => {
   const mod = index % 2;
   return (
     <View
@@ -56,13 +49,14 @@ const ChangeBackgroundScreen = observer((props: any) => {
     const selectedRoomBackgroundIndex =
       chatStore.roomsInfoMap[roomJID]?.roomBackgroundIndex;
     chatStore.changeBackgroundTheme(
-      selectedRoomBackgroundIndex ? parseInt(selectedRoomBackgroundIndex) : 0,
+      selectedRoomBackgroundIndex ? Number(selectedRoomBackgroundIndex) : 0,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const currentRoomDetail = chatStore.getRoomDetails(roomJID) as roomListProps;
 
-  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid)
+  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid);
 
   const userJid =
     underscoreManipulation(loginStore.initialData.walletAddress) +
@@ -115,9 +109,7 @@ const ChangeBackgroundScreen = observer((props: any) => {
   };
 
   const onUploadPress = async () => {
-    if (
-      isOwnerOrModerator
-    ) {
+    if (isOwnerOrModerator) {
       try {
         const res = await DocumentPicker.pickSingle({
           type: [DocumentPicker.types.images],

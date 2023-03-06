@@ -18,7 +18,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
-import {MessageImage, Time, utils} from 'react-native-gifted-chat';
+import {MessageImage, Time} from 'react-native-gifted-chat';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
@@ -65,19 +65,7 @@ interface BubbleProps {
 }
 
 const Bubble = observer((props: BubbleProps) => {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     initialAnimationValue: new Animated.Value(0),
-  //     width: 0,
-  //   };
-  //   this.onLongPress = this.onLongPress.bind(this);
-  //   this.onPressMessage = this.onPressMessage.bind(this);
-  // }
   const {chatStore} = useStores();
-  const [initialAnimationValue, setInitialAnimationValue] = useState(
-    new Animated.Value(0),
-  );
   const [width, setWidth] = useState(0);
 
   const {
@@ -90,9 +78,6 @@ const Bubble = observer((props: BubbleProps) => {
     messageTextProps,
     renderMessageText,
     renderMessageImage,
-    renderTicks,
-    user,
-    tickStyle,
     renderUsername,
     renderTime,
     position,
@@ -102,13 +87,10 @@ const Bubble = observer((props: BubbleProps) => {
     previousMessage,
     containerToPreviousStyle,
     isCustomViewBottom,
-    image,
     bottomContainerStyle,
-    touchableProps,
     timeProps,
     usernameProps,
     messageImageProps,
-    containerType,
     scrollToParentMessage,
     handleReply,
   } = props;

@@ -19,6 +19,7 @@ import {
   updateNumberOfReplies,
   updateTokenAmount,
   updateMessageText,
+  deleteMessageObject,
 } from '../components/realmModels/messages';
 import {showToast} from '../components/Toast/toast';
 import {httpPost} from '../config/apiService';
@@ -49,7 +50,7 @@ import {XMPP_TYPES} from '../xmpp/xmppConstants';
 import {RootStore} from './context';
 import {Results} from 'realm';
 import {checkIsDefaultChat} from '../helpers/chat/checkIsDefaultChat';
-import { TCombinedMimeType } from '../constants/mimeTypes';
+import {TCombinedMimeType} from '../constants/mimeTypes';
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -99,19 +100,6 @@ interface isComposingProps {
   username: string;
   manipulatedWalletAddress: string;
   chatJID: string;
-}
-
-interface defaultChatProps {
-  name: string;
-  premiumOnly: boolean;
-  stickyOrder: boolean;
-  removable: boolean;
-}
-
-interface replyProps {
-  messageID: string;
-  message: string;
-  isReply: boolean;
 }
 
 export interface roomMemberInfoProps {
@@ -188,7 +176,6 @@ export interface IbackgroundTheme {
   alt: string;
 }
 //interfaces and types
-
 
 let temporaryArchiveMessages: IMessage[];
 export class ChatStore {
@@ -280,462 +267,460 @@ export class ChatStore {
     });
   };
 
-    //actions
-    toggleShouldCount = (value: boolean) => {
-      runInAction(() => {
-        this.shouldCount = value;
-      });
-    };
-  
-    toggleMetaNavigation = (value: boolean) => {
-      runInAction(() => {
-        this.showMetaNavigation = value;
-      });
-    };
-  
-    changeBackgroundTheme = (index: number) => {
-      runInAction(() => {
-        this.backgroundTheme = defaultChatBackgroundTheme;
-        if (index != -1) {
-          this.backgroundTheme[index].isSelected = true;
-        }
-        this.selectedBackgroundIndex = index;
-      });
-    };
-  
-    //insert edited message into list of edited messages
-    addToReplaceMessageList = (
-      replaceMessageId: any,
-      replaceMessageText: string,
-    ) => {
-      const replaceMessageListItem: replaceMessageListItemProps = {
-        replaceMessageId: replaceMessageId,
-        replaceMessageText: replaceMessageText,
-      };
-      runInAction(() => {
-        this.replaceMessageList.push(replaceMessageListItem);
-      });
-    };
+  //actions
+  toggleShouldCount = (value: boolean) => {
+    runInAction(() => {
+      this.shouldCount = value;
+    });
+  };
 
-    //remove an edited message from the list of edited messages
-    removeFromReplaceMessageList = (replaceMessageId: string) => {
-      const messageIndex = this.replaceMessageList.findIndex(
-        item => item.replaceMessageId === replaceMessageId,
-      );
-      if (messageIndex)
-        runInAction(() => {
-          this.replaceMessageList.splice(messageIndex, 1);
-        });
-    };
+  toggleMetaNavigation = (value: boolean) => {
+    runInAction(() => {
+      this.showMetaNavigation = value;
+    });
+  };
 
-    //save user ban related data
-    setUserBanData = (senderName: string, name: string) => {
-      runInAction(() => {
-        this.userBanData.name = name;
-        this.userBanData.senderName = senderName;
-      });
-    };
-  
-    //set if user ban is success or not
-    setUserBanSuccess = (value: boolean) => {
-      runInAction(() => {
-        this.userBanData.success = value;
-      });
-    };
-  
-    //clear any data in user ban 
-    clearUserBanData = () => {
-      runInAction(() => {
-        this.userBanData.success = false;
-        this.userBanData.name = '';
-        this.userBanData.senderName = '';
-      });
-    };
-  
-    //set roles associated to the provided room in store
-    setRoomRoles = (jid: string, role: string) => {
-      runInAction(() => {
-        this.roomRoles[jid] = role;
-      });
-    };
-  
-    //check if user is a moderator or admin
-    checkIsModerator = (roomJid: string) => {
-      return (
-        this.roomRoles[roomJid] === 'moderator' ||
-        this.roomRoles[roomJid] === 'admin'
-      );
-    };
-  
-    //function to start a new xmpp connection
-    xmppConnect = (username: string, password: string) => {
-      runInAction(() => {
-        this.xmpp = client({
-          service: this.stores.apiStore.xmppDomains.SERVICE,
-          domain: this.stores.apiStore.xmppDomains.DOMAIN,
-          username,
-          password,
-        });
-      });
-      this.xmpp.start().catch(console.log);
-    };
+  changeBackgroundTheme = (index: number) => {
+    runInAction(() => {
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      if (index != -1) {
+        this.backgroundTheme[index].isSelected = true;
+      }
+      this.selectedBackgroundIndex = index;
+    });
+  };
 
-    //to get list of rooms from realm/cache
-    getRoomsFromCache = async () => {
-      try {
-        const rooms: Results<Realm.Object> = await getRoomList();
-        runInAction(() => {
-          //@ts-ignore
-          this.roomList = rooms;
-        });
-      } catch (error) {}
+  //insert edited message into list of edited messages
+  addToReplaceMessageList = (
+    replaceMessageId: any,
+    replaceMessageText: string,
+  ) => {
+    const replaceMessageListItem: replaceMessageListItemProps = {
+      replaceMessageId: replaceMessageId,
+      replaceMessageText: replaceMessageText,
     };
+    runInAction(() => {
+      this.replaceMessageList.push(replaceMessageListItem);
+    });
+  };
 
-    //get list of messages from Realm/cache
-    getCachedMessages = async () => {
-      const messages = await getAllMessages();
-      //@ts-ignore
-      temporaryArchiveMessages = messages;
+  //remove an edited message from the list of edited messages
+  removeFromReplaceMessageList = (replaceMessageId: string) => {
+    const messageIndex = this.replaceMessageList.findIndex(
+      item => item.replaceMessageId === replaceMessageId,
+    );
+    if (messageIndex)
+      runInAction(() => {
+        this.replaceMessageList.splice(messageIndex, 1);
+      });
+  };
+
+  //save user ban related data
+  setUserBanData = (senderName: string, name: string) => {
+    runInAction(() => {
+      this.userBanData.name = name;
+      this.userBanData.senderName = senderName;
+    });
+  };
+
+  //set if user ban is success or not
+  setUserBanSuccess = (value: boolean) => {
+    runInAction(() => {
+      this.userBanData.success = value;
+    });
+  };
+
+  //clear any data in user ban
+  clearUserBanData = () => {
+    runInAction(() => {
+      this.userBanData.success = false;
+      this.userBanData.name = '';
+      this.userBanData.senderName = '';
+    });
+  };
+
+  //set roles associated to the provided room in store
+  setRoomRoles = (jid: string, role: string) => {
+    runInAction(() => {
+      this.roomRoles[jid] = role;
+    });
+  };
+
+  //check if user is a moderator or admin
+  checkIsModerator = (roomJid: string) => {
+    return (
+      this.roomRoles[roomJid] === 'moderator' ||
+      this.roomRoles[roomJid] === 'admin'
+    );
+  };
+
+  //function to start a new xmpp connection
+  xmppConnect = (username: string, password: string) => {
+    runInAction(() => {
+      this.xmpp = client({
+        service: this.stores.apiStore.xmppDomains.SERVICE,
+        domain: this.stores.apiStore.xmppDomains.DOMAIN,
+        username,
+        password,
+      });
+    });
+    this.xmpp.start().catch(console.log);
+  };
+
+  //to get list of rooms from realm/cache
+  getRoomsFromCache = async () => {
+    try {
+      const rooms: Results<Realm.Object> = await getRoomList();
       runInAction(() => {
         //@ts-ignore
-        this.messages = messages;
-      });
-    };
-
-    //get cached room info from async
-    getCachedRoomsInfo = async () => {
-      const res = await asyncStorageGetItem(
-        asyncStorageConstants.roomsListHashMap,
-      );
-      if (res) {
-        runInAction(() => {
-          this.roomsInfoMap = res;
-        });
-      }
-    };
-  
-    //set unread messages
-    setUnreadMessages = (unreadMessagesObject: any) => {
-      runInAction(() => {
-        this.unreadMessagesForGroups = unreadMessagesObject;
-      });
-    };
-  
-    //handle to get user details
-    getOtherUserDetails = (props: {
-      avatar: string;
-      name: string;
-      jid: string;
-    }) => {
-      const {avatar, name, jid} = props;
-      const anotherUserFirstname = name.split(' ')[0];
-      const anotherUserLastname = name.split(' ')[1];
-      const xmppID = jid.split('@')[0];
-      const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
-  
-      //this will get the other user's Avatar and description
-      retrieveOtherUserVcard(
-        this.stores.loginStore.initialData.xmppUsername,
-        xmppID,
-        this.xmpp,
-      );
-  
-      this.stores.loginStore.setOtherUserDetails({
-        anotherUserFirstname: anotherUserFirstname,
-        anotherUserLastname: anotherUserLastname,
-        anotherUserLastSeen: {},
-        anotherUserWalletAddress: anotherUserWalletAddress,
-        anotherUserAvatar: avatar,
-      });
-    };
-  
-    //to update message counter badge
-    updateCounter = () => {
-      const notificationsCount: Record<string, number> = {
-        official: 0,
-        private: 0,
-        groups: 0,
-      };
-      this.roomList?.forEach(item => {
-        const splitedJid = item?.jid?.split('@')[0];
-        const isDefaultChat = checkIsDefaultChat(splitedJid);
-        if (
-          item.participants < 3 &&
-          !isDefaultChat &&
-          !this.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          notificationsCount[ROOM_KEYS.private] +=
-            this.roomsInfoMap[item.jid]?.counter || 0;
-        }
-  
-        if (
-          isDefaultChat ||
-          this.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          notificationsCount[ROOM_KEYS.official] +=
-            this.roomsInfoMap[item.jid]?.counter || 0;
-        }
-  
-        if (
-          item.participants > 2 &&
-          !isDefaultChat &&
-          !this.roomsInfoMap[item.jid]?.isFavourite
-        ) {
-          notificationsCount[ROOM_KEYS.groups] +=
-            this.roomsInfoMap[item.jid]?.counter || 0;
-        }
-      });
-      this.setUnreadMessages(notificationsCount);
-    };
-
-    //update room info/details
-    updateRoomInfo = async (jid: string, data: any) => {
-      runInAction(() => {
-        this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
-        if (data?.isFavourite !== undefined) {
-          this.roomsInfoMap.isUpdated += 1;
-        }
-      });
-      await asyncStorageSetItem(
-        asyncStorageConstants.roomsListHashMap,
-        this.roomsInfoMap,
-      );
-    };
-
-    //set current active chat tab
-    changeActiveChats = (type: string) => {
-      runInAction(() => {
-        this.activeChats = type;
-      });
-    };
-  
-    //add a new message object in to the message store
-    addMessage = (message: any) => {
-      if (!this.messages.some((msg: {_id: any}) => msg._id === message._id)) {
-        runInAction(() => {
-          this.messages.push(message);
-        });
-      }
-    };
-  
-    //delete a message object from the message store.
-    deleteMessage = (messageId:string) => {
-      runInAction(()=>{
-        const index = this.messages.findIndex(item => item._id === messageId);
-        if(index !== -1){
-          this.messages.splice(index, 1);
-        }
-      })
-    }
-  
-    //edit message text, this called when messages are edited
-    editMessage = (replaceMessageId: any, messageString: string) => {
-      const indexOfMessage = this.messages.findIndex(
-        (item: {_id: any}) => item._id === replaceMessageId,
-      );
-      if (indexOfMessage !== -1) {
-        const messages = toJS(this.messages);
-        const message = {
-          ...JSON.parse(JSON.stringify(messages[indexOfMessage])),
-          ['text']: messageString,
-          ['isEdited']: true,
-        };
-        message.text = messageString;
-        runInAction(() => {
-          this.messages[indexOfMessage] = message;
-        });
-      }
-    };
-  
-    
-    setRooms = async (roomsArray: any) => {
-      const rooms = await this.checkMetaRooms(roomsArray);
-      runInAction(() => {
         this.roomList = rooms;
       });
+    } catch (error) {}
+  };
+
+  //get list of messages from Realm/cache
+  getCachedMessages = async () => {
+    const messages = await getAllMessages();
+    //@ts-ignore
+    temporaryArchiveMessages = messages;
+    runInAction(() => {
+      //@ts-ignore
+      this.messages = messages;
+    });
+  };
+
+  //get cached room info from async
+  getCachedRoomsInfo = async () => {
+    const res = await asyncStorageGetItem(
+      asyncStorageConstants.roomsListHashMap,
+    );
+    if (res) {
+      runInAction(() => {
+        this.roomsInfoMap = res;
+      });
+    }
+  };
+
+  //set unread messages
+  setUnreadMessages = (unreadMessagesObject: any) => {
+    runInAction(() => {
+      this.unreadMessagesForGroups = unreadMessagesObject;
+    });
+  };
+
+  //handle to get user details
+  getOtherUserDetails = (props: {
+    avatar: string;
+    name: string;
+    jid: string;
+  }) => {
+    const {avatar, name, jid} = props;
+    const anotherUserFirstname = name.split(' ')[0];
+    const anotherUserLastname = name.split(' ')[1];
+    const xmppID = jid.split('@')[0];
+    const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
+
+    //this will get the other user's Avatar and description
+    retrieveOtherUserVcard(
+      this.stores.loginStore.initialData.xmppUsername,
+      xmppID,
+      this.xmpp,
+    );
+
+    this.stores.loginStore.setOtherUserDetails({
+      anotherUserFirstname: anotherUserFirstname,
+      anotherUserLastname: anotherUserLastname,
+      anotherUserLastSeen: {},
+      anotherUserWalletAddress: anotherUserWalletAddress,
+      anotherUserAvatar: avatar,
+    });
+  };
+
+  //to update message counter badge
+  updateCounter = () => {
+    const notificationsCount: Record<string, number> = {
+      official: 0,
+      private: 0,
+      groups: 0,
     };
-  
-    //update message reply counter
-    updateMessageReplyNumbers = (messageId: any) => {
-      const messages = toJS(this.messages);
-      const index = messages.findIndex(
-        (item: {_id: any}) => item._id === messageId,
-      );
+    this.roomList?.forEach(item => {
+      const splitedJid = item?.jid?.split('@')[0];
+      const isDefaultChat = checkIsDefaultChat(splitedJid);
+      if (
+        item.participants < 3 &&
+        !isDefaultChat &&
+        !this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
+        notificationsCount[ROOM_KEYS.private] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+
+      if (isDefaultChat || this.roomsInfoMap[item.jid]?.isFavourite) {
+        notificationsCount[ROOM_KEYS.official] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+
+      if (
+        item.participants > 2 &&
+        !isDefaultChat &&
+        !this.roomsInfoMap[item.jid]?.isFavourite
+      ) {
+        notificationsCount[ROOM_KEYS.groups] +=
+          this.roomsInfoMap[item.jid]?.counter || 0;
+      }
+    });
+    this.setUnreadMessages(notificationsCount);
+  };
+
+  //update room info/details
+  updateRoomInfo = async (jid: string, data: any) => {
+    runInAction(() => {
+      this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
+      if (data?.isFavourite !== undefined) {
+        this.roomsInfoMap.isUpdated += 1;
+      }
+    });
+    await asyncStorageSetItem(
+      asyncStorageConstants.roomsListHashMap,
+      this.roomsInfoMap,
+    );
+  };
+
+  //set current active chat tab
+  changeActiveChats = (type: string) => {
+    runInAction(() => {
+      this.activeChats = type;
+    });
+  };
+
+  //add a new message object in to the message store
+  addMessage = (message: any) => {
+    if (!this.messages.some((msg: {_id: any}) => msg._id === message._id)) {
+      runInAction(() => {
+        this.messages.push(message);
+      });
+    }
+  };
+
+  //delete a message object from the message store.
+  deleteMessage = (messageId: string) => {
+    //delete from Mobx store
+    runInAction(() => {
+      const index = this.messages.findIndex(item => item._id === messageId);
       if (index !== -1) {
-        if(messages[index].numberOfReplies){
+        this.messages.splice(index, 1);
+      }
+    });
+
+    //delete from realm store
+    deleteMessageObject(messageId).then(success => {
+      console.log('Message deleted from realm', success);
+    });
+  };
+
+  //edit message text, this called when messages are edited
+  editMessage = (replaceMessageId: any, messageString: string) => {
+    const indexOfMessage = this.messages.findIndex(
+      (item: {_id: any}) => item._id === replaceMessageId,
+    );
+    if (indexOfMessage !== -1) {
+      const messages = toJS(this.messages);
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[indexOfMessage])),
+        ['text']: messageString,
+        ['isEdited']: true,
+      };
+      message.text = messageString;
+      runInAction(() => {
+        this.messages[indexOfMessage] = message;
+      });
+    }
+  };
+
+  setRooms = async (roomsArray: any) => {
+    const rooms = await this.checkMetaRooms(roomsArray);
+    runInAction(() => {
+      this.roomList = rooms;
+    });
+  };
+
+  //update message reply counter
+  updateMessageReplyNumbers = (messageId: any) => {
+    const messages = toJS(this.messages);
+    const index = messages.findIndex(
+      (item: {_id: any}) => item._id === messageId,
+    );
+    if (index !== -1) {
+      if (messages[index].numberOfReplies) {
         const message = {
           ...JSON.parse(JSON.stringify(messages[index])),
-          'numberOfReplies': messages[index].numberOfReplies as number + 1,
+          numberOfReplies: (messages[index].numberOfReplies as number) + 1,
         };
         runInAction(() => {
           this.messages[index] = message;
         });
+      }
+    }
+  };
+
+  //update any property of message object, for eg:- update token count number when new tokens received for the message
+  updateMessageProperty = (
+    messageId: string | undefined,
+    property: keyof IMessage,
+    value: string | number,
+  ) => {
+    if (!messageId || !value) {
+      return;
+    }
+
+    const messages = toJS(this.messages);
+    const index = messages.findIndex(
+      (item: {_id: string}) => item._id === messageId,
+    );
+
+    if (index !== -1) {
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[index])),
+        [property]:
+          typeof value === 'number' && property === 'tokenAmount'
+            ? (messages[index][property] as number) + value
+            : value,
+      };
+      runInAction(() => {
+        this.messages[index] = message;
+      });
+    }
+  };
+
+  //update the message badge counter
+  updateBadgeCounter = (roomJid: string, type: 'CLEAR' | 'UPDATE') => {
+    this.roomList.map((item: any) => {
+      if (item.jid === roomJid) {
+        if (type === 'CLEAR') {
+          runInAction(() => {
+            item.counter = 0;
+            this.roomsInfoMap[roomJid].counter = 0;
+          });
+        }
+        if (type === 'UPDATE') {
+          runInAction(() => {
+            item.counter++;
+            this.roomsInfoMap[roomJid].counter = item.counter;
+          });
         }
       }
-    };
-  
-    //update any property of message object, for eg:- update token count number when new tokens received for the message
-    updateMessageProperty = (
-      messageId: string | undefined,
-      property: keyof IMessage,
-      value: string | number,
-    ) => {
-      if (!messageId || !value) {
-        return;
-      }
-  
-      const messages = toJS(this.messages);
-      const index = messages.findIndex(
-        (item: {_id: string}) => item._id === messageId,
-      );
-  
-      if (index !== -1) {
-        const message = {
-          ...JSON.parse(JSON.stringify(messages[index])),
-          [property]:
-            typeof(value)==='number'&&
-            property === 'tokenAmount'
-              ? messages[index][property] as number + value
-              : value,
+    });
+    this.updateCounter();
+  };
+
+  //update the state of typing when user starts typing
+  updateMessageComposingState = (props: isComposingProps) => {
+    runInAction(() => {
+      this.isComposing = props;
+    });
+  };
+
+  updateAllRoomsInfo = async () => {
+    let map: any = {isUpdated: 0};
+    this.roomList.forEach(item => {
+      const latestMessage = this.messages
+        .filter((message: {roomJid: string}) => item.jid === message.roomJid)
+        .sort(
+          (
+            a: {createdAt: string | number | Date},
+            b: {createdAt: string | number | Date},
+          ) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        )[0];
+
+      if (latestMessage) {
+        map[latestMessage?.roomJid] = {
+          ...this.roomsInfoMap[latestMessage?.roomJid],
+
+          lastUserName: latestMessage?.user.name,
+          lastUserText: latestMessage?.text,
+          muted: this.roomsInfoMap[item.jid]?.muted,
+
+          lastMessageTime: latestMessage.createdAt,
         };
-        runInAction(() => {
-          this.messages[index] = message;
-        });
       }
-    };
-  
-    //update the message badge counter
-    updateBadgeCounter = (roomJid: string, type: 'CLEAR' | 'UPDATE') => {
-      this.roomList.map((item: any, index: number) => {
-        if (item.jid === roomJid) {
-          if (type === 'CLEAR') {
-            runInAction(() => {
-              item.counter = 0;
-              this.roomsInfoMap[roomJid].counter = 0;
-            });
-          }
-          if (type === 'UPDATE') {
-            runInAction(() => {
-              item.counter++;
-              this.roomsInfoMap[roomJid].counter = item.counter;
-            });
-          }
-        }
-      });
-      this.updateCounter();
-    };
-  
-    //update the state of typing when user starts typing
-    updateMessageComposingState = (props: isComposingProps) => {
-      runInAction(() => {
-        this.isComposing = props;
-      });
-    };
-  
+      if (!latestMessage) {
+        map[item.jid] = this.roomsInfoMap[item.jid];
+      }
+    });
+    runInAction(() => {
+      this.roomsInfoMap = map;
+    });
+    await asyncStorageSetItem(
+      asyncStorageConstants.roomsListHashMap,
+      this.roomsInfoMap,
+    );
+  };
 
-    updateAllRoomsInfo = async () => {
-      let map:any = {isUpdated: 0};
-      this.roomList.forEach(item => {
-        const latestMessage = this.messages
-          .filter((message: {roomJid: string}) => item.jid === message.roomJid)
-          .sort(
-            (
-              a: {createdAt: string | number | Date},
-              b: {createdAt: string | number | Date},
-            ) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-          )[0];
-  
-        if (latestMessage) {
-          map[latestMessage?.roomJid] = {
-            ...this.roomsInfoMap[latestMessage?.roomJid],
-  
-            lastUserName: latestMessage?.user.name,
-            lastUserText: latestMessage?.text,
-            muted: this.roomsInfoMap[item.jid]?.muted,
-  
-            lastMessageTime: latestMessage.createdAt,
-          };
-        }
-        if (!latestMessage) {
-          map[item.jid] = this.roomsInfoMap[item.jid];
-        }
-      });
-      runInAction(() => {
-        this.roomsInfoMap = map;
-      });
-      await asyncStorageSetItem(
-        asyncStorageConstants.roomsListHashMap,
-        this.roomsInfoMap,
+  //loading state update when previous messages are loading.
+  setChatMessagesLoading = (value: boolean) => {
+    runInAction(() => {
+      this.isLoadingEarlierMessages = value;
+    });
+  };
+
+  //subscribes to all default chats mestioned in config
+  subscribeToDefaultChats = () => {
+    Object.entries(defaultChats).forEach(([key]) => {
+      const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
+      const manipulatedWalletAddress = underscoreManipulation(
+        this.stores.loginStore.initialData.walletAddress,
       );
-    };
+      subscribeToRoom(jid, manipulatedWalletAddress, this.xmpp);
+    });
+  };
 
-    //loading state update when previous messages are loading.
-    setChatMessagesLoading = (value: boolean) => {
-      runInAction(() => {
-        this.isLoadingEarlierMessages = value;
-      });
-    };
-
-    //subscribes to all default chats mestioned in config
-    subscribeToDefaultChats = () => {
-      Object.entries(defaultChats).forEach(([key, value]) => {
-        const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
-        const manipulatedWalletAddress = underscoreManipulation(
-          this.stores.loginStore.initialData.walletAddress,
+  //subscribes to all metaRooms mentioned in config
+  subscribeToMetaRooms = async () => {
+    const cachedRooms = await asyncStorageGetItem('metaRooms');
+    const allRooms = cachedRooms || metaRooms;
+    if (allRooms) {
+      allRooms.forEach((room: {idAddress: string}) => {
+        subscribeToRoom(
+          room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
+          underscoreManipulation(
+            this.stores.loginStore.initialData.walletAddress,
+          ),
+          this.xmpp,
         );
-        subscribeToRoom(jid, manipulatedWalletAddress, this.xmpp);
       });
-    };
+    }
+  };
 
-    //subscribes to all metaRooms mentioned in config
-    subscribeToMetaRooms = async () => {
-      const cachedRooms = await asyncStorageGetItem('metaRooms');
-      const allRooms = cachedRooms || metaRooms;
-      if (allRooms) {
-        allRooms.forEach((room: {idAddress: string}) => {
-          subscribeToRoom(
-            room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
-            underscoreManipulation(
-              this.stores.loginStore.initialData.walletAddress,
-            ),
-            this.xmpp,
-          );
-        });
-      }
-    };
-    
-
-    checkMetaRooms = async (rooms:any[] = []) => {
-      const roomsCopy = rooms;
-      const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
-      try {
-        const body = {jids: roomJids};
-        const res = await httpPost(
-          '/room/check-for-meta-room',
-          body,
-          this.stores.loginStore.userToken,
+  checkMetaRooms = async (rooms: any[] = []) => {
+    const roomsCopy = rooms;
+    const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
+    try {
+      const body = {jids: roomJids};
+      const res = await httpPost(
+        '/room/check-for-meta-room',
+        body,
+        this.stores.loginStore.userToken,
+      );
+      for (const item of res.data.results) {
+        const roomIndex = roomsCopy.findIndex(
+          r => r.jid.split('@')[0] === item,
         );
-        for (const item of res.data.results) {
-          const roomIndex = roomsCopy.findIndex(
-            r => r.jid.split('@')[0] === item,
-          );
-          if (roomIndex !== -1) {
-            roomsCopy[roomIndex].meta = true;
-          }
+        if (roomIndex !== -1) {
+          roomsCopy[roomIndex].meta = true;
         }
-        return roomsCopy;
-      } catch (error) {
-        console.log(error);
-        return rooms;
       }
-    };
-  
-    getRoomDetails = (roomJid: string) => {
-      return this.roomList.find(item => item.jid === roomJid);
-    };
-    //actions
+      return roomsCopy;
+    } catch (error) {
+      console.log(error);
+      return rooms;
+    }
+  };
 
+  getRoomDetails = (roomJid: string) => {
+    return this.roomList.find(item => item.jid === roomJid);
+  };
+  //actions
 
   //xmpp listeners
   xmppListener = async () => {
@@ -745,7 +730,6 @@ export class ChatStore {
     );
     // xmpp.reconnect.start();
     this.xmpp.on('stanza', async (stanza: any) => {
-
       //capture room info/details
       if (stanza.attrs.id === 'roomInfo') {
         const featureList = stanza.children[0].children.find(
@@ -874,7 +858,6 @@ export class ChatStore {
         }
       }
 
-
       //response to request get current room member details
       if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
         if (stanza.children[0].children.length) {
@@ -889,7 +872,6 @@ export class ChatStore {
       //response to presence request, we set roles for each room here
       if (stanza.attrs.id === XMPP_TYPES.roomPresence) {
         let roomJID = stanza.attrs.from.split('/')[0];
-        let userJID = stanza.attrs.from.split('/')[1];
 
         let role = stanza.children[1].children[0].attrs.role;
         this.setRoomRoles(roomJID, role);
@@ -936,7 +918,6 @@ export class ChatStore {
         });
       }
 
-
       //response to request ban user
       if (stanza.attrs.id === XMPP_TYPES.ban) {
         if (stanza.children[0].children[0].attrs.status === 'success') {
@@ -965,7 +946,9 @@ export class ChatStore {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
         rosterFromXmpp.forEach((item: any) => {
-          if (!item.attrs.name) return;
+          if (!item.attrs.name) {
+            return;
+          }
           const rosterObject = {
             name: item.attrs.name,
             jid: item.attrs.jid,
@@ -1039,11 +1022,17 @@ export class ChatStore {
       ) {
         getBlackList(xmppUsername, this.xmpp);
       }
-      
+
       //response to delete message request
       if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
         console.log(stanza.children, '1');
-        const deleteMessageId = stanza.children.find((item:{attrs:{xmlns?:any,id?:string},children:any[], name:string}) => item.name==="delete").attrs.id;
+        const deleteMessageId = stanza.children.find(
+          (item: {
+            attrs: {xmlns?: any; id?: string};
+            children: any[];
+            name: string;
+          }) => item.name === 'delete',
+        ).attrs.id;
         this.deleteMessage(deleteMessageId);
       }
 
@@ -1058,7 +1047,6 @@ export class ChatStore {
 
       //if stanza is of message type
       if (stanza.is('message')) {
-
         //capture message composing
         if (
           stanza?.children[0]?.children[0]?.children[0]?.children[2]
@@ -1090,7 +1078,7 @@ export class ChatStore {
             stanza.children[0].children[0].children[0].children;
 
           const message = createMessageObject(singleMessageDetailArray);
-          if(message._id === '1676444732726065'){
+          if (message._id === '1676444732726065') {
             console.log(message);
           }
           //check if the stanza is a replace stanza
@@ -1278,7 +1266,7 @@ export class ChatStore {
     });
 
     //listener when xmpp is online
-    this.xmpp.on('online', async (address: any) => {
+    this.xmpp.on('online', async () => {
       //set reconnect delay in ms
       this.xmpp.reconnect.delay = 2000;
 

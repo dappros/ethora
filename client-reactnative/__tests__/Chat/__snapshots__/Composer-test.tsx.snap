@@ -15,8 +15,8 @@ exports[`renders correctly 1`] = `
   placeholder="Type a message..."
   placeholderTextColor="#b2b2b2"
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
         "fontSize": 16,
         "lineHeight": 16,
@@ -24,8 +24,8 @@ exports[`renders correctly 1`] = `
         "marginLeft": 10,
         "marginTop": 6,
       },
-      Object {},
-      Object {
+      {},
+      {
         "height": 33,
       },
     ]

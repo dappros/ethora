@@ -109,8 +109,9 @@
     "url": "^0.10.3"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
     "@types/jest": "^29.4.0",
@@ -132,6 +133,7 @@
     "metro-react-native-babel-preset": "^0.67.0",
     "react-dom": "^18.2.0",
     "react-test-renderer": "17.0.2",
+    "reactotron-react-native": "^5.0.3",
     "rn-nodeify": "^10.3.0",
     "ts-jest": "^26.0.5",
     "typescript": "^4.4.4"

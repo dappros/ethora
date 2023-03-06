@@ -14,15 +14,15 @@ exports[`renders correctly 1`] = `
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
       "opacity": 1,
     }
   }
 >
   <View
     style={
-      Array [
-        Object {
+      [
+        {
           "alignItems": "center",
           "backgroundColor": "#B22222",
           "borderRadius": 13.5,
@@ -39,7 +39,7 @@ exports[`renders correctly 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "marginBottom": 3,
           "marginRight": 5,
         }
@@ -49,18 +49,18 @@ exports[`renders correctly 1`] = `
         allowFontScaling={false}
         selectable={false}
         style={
-          Array [
-            Object {
+          [
+            {
               "color": "#fff",
               "fontSize": 15,
             },
             undefined,
-            Object {
+            {
               "fontFamily": "Material Icons",
               "fontStyle": "normal",
               "fontWeight": "normal",
             },
-            Object {},
+            {},
           ]
         }
       >
@@ -69,7 +69,7 @@ exports[`renders correctly 1`] = `
     </View>
     <Text
       style={
-        Object {
+        {
           "color": "#fff",
           "fontFamily": "Poppins-SemiBold",
         }
