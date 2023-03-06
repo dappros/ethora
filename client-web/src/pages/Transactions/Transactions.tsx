@@ -12,12 +12,12 @@ import {
 import React, { useState } from "react";
 import { ITransaction } from "../Profile/types";
 
-import coin from "../../assets/images/coin.png";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import { format } from "date-fns";
 import { useStoreState } from "../../store";
 import { useHistory } from "react-router";
+const coin = '/coin.png'
 
 export interface ITransactions {
   transactions: ITransaction[];

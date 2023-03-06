@@ -6,7 +6,8 @@ import ShareIcon from "@mui/icons-material/Share";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useFormik } from "formik";
 import { getBalance, httpWithAuth } from "../../http";
-import coinImg from "../../assets/images/coin.png";
+
+const coinImg = '/coin.png'
 
 export interface IReferrals {}
 

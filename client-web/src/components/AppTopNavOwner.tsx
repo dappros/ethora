@@ -18,7 +18,7 @@ import { useWeb3React } from "@web3-react/core";
 import { NavLink } from "react-router-dom";
 
 import { useStoreState } from "../store";
-import coinImg from "../assets/images/coin.png";
+const coinImg = '/coin.png'
 
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;

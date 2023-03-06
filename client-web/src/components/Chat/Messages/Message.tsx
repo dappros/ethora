@@ -17,7 +17,6 @@ import {
   Divider,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import coin from "../../../assets/images/coin.png";
 import { Box } from "@mui/system";
 import {
   audioMimetypes,
@@ -27,6 +26,7 @@ import {
 } from "../../../constants";
 import xmpp from "../../../xmpp";
 import { IButtons } from "../../../pages/ChatInRoom/Chat";
+const coin = '/coin.png'
 
 const avatarPreviewUrl = "https://icotar.com/initials/";
 

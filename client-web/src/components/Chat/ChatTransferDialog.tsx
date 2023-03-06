@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { transferCoin } from "../../http";
 
-import coin from "../../assets/images/coin.png";
+
 import SendIcon from "@mui/icons-material/Send";
 import BlockIcon from "@mui/icons-material/Block";
 import xmpp, { walletToUsername } from "../../xmpp";
@@ -21,6 +21,7 @@ import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
 import { useSnackbar } from "../../context/SnackbarContext";
 import ReplyIcon from '@mui/icons-material/Reply';
 import EditIcon from '@mui/icons-material/Edit';
+const coin = '/coin.png'
 
 const dialogItems = [1, 3, 5, "x"];
 interface IProps {

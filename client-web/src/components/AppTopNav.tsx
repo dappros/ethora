@@ -19,7 +19,6 @@ import {
 import xmpp, { walletToUsername } from "../xmpp";
 import { TActiveRoomFilter, useStoreState } from "../store";
 
-import coinImg from "../assets/images/coin.png";
 import { Badge, Divider } from "@mui/material";
 import {
   coinsMainName,
@@ -32,6 +31,7 @@ import { ethers } from "ethers";
 import { DOMAIN } from "../constants";
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
 
+const coinImg = '/coin.png'
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
