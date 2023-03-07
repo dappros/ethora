@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch } from "react-router";
+import { Redirect, Route, Switch } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
@@ -155,7 +155,7 @@ export const Routes = () => {
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
       <Switch>
-        <Route path="/" exact>
+        <Route path={["/signIn/"]} exact>
           <Signon />
         </Route>
         <Route path="/regularSignIn" component={RegularSignIn} />
@@ -172,7 +172,6 @@ export const Routes = () => {
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
         <AuthRoute path="/organizations" component={Organizations} />
         <AuthRoute path="/payments" component={Subscriptions} />
-
 
         <Route path="/profile/:wallet">
           <Profile />
@@ -202,6 +201,9 @@ export const Routes = () => {
           component={TransactionAddressDetails}
           exact
         />
+        <Route path={'/'}>
+          <Redirect to={user.walletAddress ?  '/profile/'+ user.walletAddress : '/signIn'}  />
+        </Route>
       </Switch>
       <Snackbar />
     </React.Suspense>

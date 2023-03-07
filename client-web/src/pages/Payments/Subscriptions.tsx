@@ -28,19 +28,22 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
       return;
     }
 
-    const result = await stripe.confirmPayment({
+    const {error, paymentIntent} = await stripe.confirmPayment({
       //`Elements` instance that was used to create the Payment Element
       elements,
       confirmParams: {
-        return_url: window.location.origin + "/complete",
+        return_url: window.location.origin + "/payments",
       },
+      redirect: 'if_required'
     });
 
-    if (result.error) {
+    if (error) {
       // Show error to your customer (for example, payment details incomplete)
-      console.log(result.error.message);
-      showSnackbar("error", result.error.message);
-    } else {
+      console.log(error);
+      showSnackbar("error", error.message);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      showSnackbar("success", paymentIntent.status);
+
       // Your customer will be redirected to your `return_url`. For some payment
       // methods like iDEAL, your customer will be redirected to an intermediate
       // site first to authorize the payment, then redirected to the `return_url`.

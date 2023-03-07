@@ -368,7 +368,8 @@ export function registerByEmail(
   email: string,
   password: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  signUpPlan?: string
 ) {
   return http.post(
     "/users",
@@ -377,6 +378,7 @@ export function registerByEmail(
       password,
       firstName,
       lastName,
+      signupPlan: signUpPlan
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -470,7 +472,8 @@ export function registerSocial(
   idToken: string,
   accessToken: string,
   authToken: string,
-  loginType: string
+  loginType: string,
+  signUpPlan?: string
 ) {
   return http.post(
     "/users",
@@ -479,6 +482,7 @@ export function registerSocial(
       accessToken,
       loginType,
       authToken: authToken,
+      signupPlan: signUpPlan
     },
     { headers: { Authorization: APP_JWT } }
   );
