@@ -14,6 +14,7 @@ import * as http from "../http";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
 import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
+import Organizations from "./Organizations/Organizations";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -168,6 +169,8 @@ export const Routes = () => {
         <AuthRoute path="/referrals" component={Referrals} />
         <AuthRoute path="/statistics" component={StatisticsPage} />
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
+        <AuthRoute path="/organizations" component={Organizations} />
+
 
         <Route path="/profile/:wallet">
           <Profile />
