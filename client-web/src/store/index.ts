@@ -24,7 +24,7 @@ export type TUser = {
   isAssetsOpen?: boolean;
   isAllowedNewAppCreate: boolean;
   appId?: string;
-  isAgreeWithTerms: boolean
+  isAgreeWithTerms: boolean;
 };
 
 type TMode = "light" | "dark";
@@ -192,6 +192,8 @@ interface IStore {
     token: string;
     refreshToken: string;
   };
+  showHeaderError: boolean;
+  setShowHeaderError: (value: boolean) => void;
   ACL: http.IUserAcl;
   messages: TMessage[];
   currentThreadViewMessage: TMessageHistory;
@@ -276,7 +278,6 @@ const _useStore = create<IStore>()(
             profileImage: "",
             isAllowedNewAppCreate: false,
             isAgreeWithTerms: false,
-
           },
           ACL: {
             result: {
@@ -305,6 +306,7 @@ const _useStore = create<IStore>()(
           balance: [],
           viewMode: "light",
           messages: [],
+          showHeaderError: true,
           currentThreadViewMessage: {
             id: 0,
             body: "",
@@ -346,6 +348,11 @@ const _useStore = create<IStore>()(
           documents: [],
           blackList: [],
           activeRoomFilter: "",
+          setShowHeaderError(value) {
+            set((state) => {
+              state.showHeaderError = value;
+            });
+          },
           setDocuments: (documents: http.IDocument[]) =>
             set((state) => {
               state.documents = documents;
@@ -413,7 +420,7 @@ const _useStore = create<IStore>()(
                 refreshToken: "",
                 profileImage: "",
                 isAllowedNewAppCreate: false,
-                isAgreeWithTerms: false
+                isAgreeWithTerms: false,
               };
             }),
           clearOwner: () =>
@@ -428,8 +435,7 @@ const _useStore = create<IStore>()(
                 refreshToken: "",
                 profileImage: "",
                 isAllowedNewAppCreate: false,
-                isAgreeWithTerms: false
-
+                isAgreeWithTerms: false,
               };
               state.apps = [];
               state.appUsers = [];
@@ -528,8 +534,11 @@ const _useStore = create<IStore>()(
           setLoaderArchive: (status: boolean) =>
             set((state) => {
               state.loaderArchive = status;
-              if(status === true){
-                const timer = setTimeout(() => state.loaderArchive = false, 5000)
+              if (status === true) {
+                const timer = setTimeout(
+                  () => (state.loaderArchive = false),
+                  5000
+                );
                 clearTimeout(timer);
               }
             }),

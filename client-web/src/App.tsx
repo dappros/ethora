@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useStoreState } from "./store";
 import AppTopNavAuth from "./components/AppTopNavAuth";
@@ -10,6 +10,7 @@ import { Routes } from "./pages/Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
 import { SnackbarContextProvider } from "./context/SnackbarContext";
+import { HeaderWarningMessage } from "./components/HeaderWarningMessage";
 
 const darkTheme = createTheme({
   palette: {
@@ -25,6 +26,8 @@ const lightTheme = createTheme({
 function App() {
   const viewMode = useStoreState((state) => state.viewMode);
   const user = useStoreState((state) => state.user);
+  const showHeaderError = useStoreState((state) => state.showHeaderError);
+
   return (
     <Router history={history}>
       <SnackbarContextProvider>
@@ -33,6 +36,7 @@ function App() {
             {!user.firstName && <AppTopNavAuth />}
             {user.firstName && user.xmppPassword && <AppTopNav />}
             {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
+            {showHeaderError && <HeaderWarningMessage message="Warning" />}
             <Routes />
           </div>
         </ThemeProvider>
