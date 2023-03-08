@@ -173,6 +173,17 @@ export default class Connector extends EventEmitter implements IConnector {
         const stanzaBody: any = stanza.getChild('body');
         const stanzaData: any = stanza.getChild('data');
         const stanzaType: TMessageType = stanza.attrs.id;
+        const isArchiveInvite = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('x')?.getChild('invite');
+
+        if(isArchiveInvite) {
+            let lastArchiveJID = '';
+            const inviteArchiveJID = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.attrs.from;
+
+            if(lastArchiveJID !== inviteArchiveJID){
+                this.connectToRooms([inviteArchiveJID]);
+            }
+            lastArchiveJID = inviteArchiveJID;
+        }
 
         // Send message if user presence detected
         if (stanzaType === 'isComposing' && stanzaData && Config.getConfigStatuses().usePresence && messageSender === 'user') {
