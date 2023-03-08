@@ -18,7 +18,8 @@ class Config implements IConfig {
             useAppName: data.useAppName,
             useAppImg: data.useAppImg,
             useInvites: data.useInvites,
-            usePresence: data.usePresence
+            usePresence: data.usePresence,
+            useRoomsArchive: data.useRoomsArchive
         }
 
         const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
@@ -47,6 +48,10 @@ class Config implements IConfig {
 
         if (data.usePresence) {
             Logger.info('Presence handling is enabled.')
+        }
+
+        if (data.useRoomsArchive) {
+            Logger.info('Getting chat rooms from the archive handling is enabled.')
         }
         return;
     }
