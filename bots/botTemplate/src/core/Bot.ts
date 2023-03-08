@@ -231,6 +231,7 @@ export default class Bot implements IBot {
         let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
         let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
         let usePresence = typeof data.usePresence == "boolean" ? data.usePresence : false;
+        let useRoomsArchive = typeof data.useRoomsArchive == "boolean" ? data.useRoomsArchive : false;
         let filteredPresenceTimer: number;
 
         if (data.botName) {
@@ -262,7 +263,8 @@ export default class Bot implements IBot {
             useAppName: isAppName,
             useAppImg: isAppImg,
             useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
-            usePresence: usePresence
+            usePresence: usePresence,
+            useRoomsArchive: useRoomsArchive
         }
     }
 }
