@@ -21,6 +21,7 @@ export interface IBotData {
     useAppImg?: boolean;
     useInvites?: boolean;
     usePresence?: boolean;
+    useRoomsArchive?: boolean;
     isProduction?: boolean;
     presenceTimer?: number;
     botImg?: string;

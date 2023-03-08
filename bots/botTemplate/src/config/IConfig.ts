@@ -17,6 +17,7 @@ export interface IConfigStatuses {
     useAppImg?: boolean;
     useInvites?: boolean;
     usePresence?: boolean;
+    useRoomsArchive?: boolean;
 }
 
 export interface IConfigInit {
@@ -30,6 +31,7 @@ export interface IConfigInit {
     useAppImg?: boolean;
     useInvites?: boolean;
     usePresence?: boolean;
+    useRoomsArchive?: boolean;
 }
 
 export interface IConfig {
