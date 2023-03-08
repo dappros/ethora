@@ -3,6 +3,7 @@ import {Client} from "@xmpp/client";
 import Logger from "../utils/Logger";
 import Config from "../config/Config";
 import {IConnector} from "../connector/IConnector";
+import {XmppRoom} from "./XmppRoom";
 
 const isOnline = async (xmpp: any, connector: IConnector) => {
     await xmpp.client.send(xml("presence"));
@@ -12,6 +13,12 @@ const isOnline = async (xmpp: any, connector: IConnector) => {
     if (Config.getData().connectionRooms.length > 0) {
         Logger.info('Default chat rooms found, connection to them started.');
         await connector.connectToRooms(Config.getData().connectionRooms);
+    }
+
+    //Getting chat rooms from the archive if it is enabled
+    if (Config.getConfigStatuses().useRoomsArchive) {
+        const XmppConnect = new XmppRoom();
+        XmppConnect.getArchiveChatRooms(xmpp.client.jid?.toString());
     }
 }
 
