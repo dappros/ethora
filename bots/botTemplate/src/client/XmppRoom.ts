@@ -16,4 +16,17 @@ export class XmppRoom implements IXmppRoom {
 
         XmppClient.sender(xmlData);
     }
+
+    getArchiveChatRooms(userJID: string): void {
+        const xmlData = xml(
+            "iq",
+            {type: "set", id: userJID},
+            xml(
+                "query",
+                {xmlns: "urn:xmpp:mam:2", queryid: "userArchive"},
+                xml("set", {xmlns: "http://jabber.org/protocol/rsm"}, xml("before"))
+            )
+        );
+        XmppClient.sender(xmlData);
+    }
 }
