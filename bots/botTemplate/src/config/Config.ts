@@ -19,7 +19,8 @@ class Config implements IConfig {
             useAppImg: data.useAppImg,
             useInvites: data.useInvites,
             usePresence: data.usePresence,
-            useRoomsArchive: data.useRoomsArchive
+            useRoomsArchive: data.useRoomsArchive,
+            useNameInMsg: data.useNameInMsg
         }
 
         const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
@@ -52,6 +53,10 @@ class Config implements IConfig {
 
         if (data.useRoomsArchive) {
             Logger.info('Getting chat rooms from the archive handling is enabled.')
+        }
+
+        if (data.useNameInMsg) {
+            Logger.info('The username is displayed in messages.')
         }
         return;
     }
