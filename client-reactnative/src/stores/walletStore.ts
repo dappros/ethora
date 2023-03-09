@@ -43,6 +43,7 @@ export const NFMT_TRAITS = {
   Paper: {color: '#E0C9A6'},
 };
 
+// function to check transaction sender and receiver and modify balances to view them later in the Transaction tab
 export const mapTransactions = (item: any, walletAddress: string) => {
   if (item.tokenId === 'NFT') {
     if (item.from === walletAddress && item.from !== item.to) {
@@ -63,6 +64,7 @@ export const mapTransactions = (item: any, walletAddress: string) => {
     return item;
   }
 };
+// function for filtering coins from NFT or NFMT
 export const filterNftBalances = (item: {
   tokenSymbol: string;
   tokenType: string;
@@ -72,6 +74,7 @@ export const filterNftBalances = (item: {
     (item.tokenType === 'NFT' || item.tokenType === 'NFMT') && item.balance > 0
   );
 };
+// function for filtering NFT or NFMT from other items like coins
 export const filterNfts = (item: {tokenSymbol: string; tokenType: string}) => {
   return (
     item.tokenSymbol !== 'ETHD' &&
@@ -79,6 +82,7 @@ export const filterNfts = (item: {tokenSymbol: string; tokenType: string}) => {
     item.tokenType !== 'NFMT'
   );
 };
+// function checks if item is NFMT, if so it will check its trait and add its total based on other items of same type
 
 export const produceNfmtItems = (array: any[]) => {
   const result = [];
@@ -117,6 +121,8 @@ export const produceNfmtItems = (array: any[]) => {
   }
   return result;
 };
+
+// function generates collections based on NFMT item
 
 export const generateCollections = (item: {
   minted: number[];
@@ -207,7 +213,7 @@ export class WalletStore {
       this.coinBalance = 0;
     });
   }
-
+  // fetches metadata from external item (Metamask)
   getExternalBalanceMetadata = async items => {
     const externalBalanceNft = [];
     try {
@@ -236,7 +242,7 @@ export class WalletStore {
       return [];
     }
   };
-
+  // fetches user balance (items, coins)
   async fetchWalletBalance(token: string, isOwn: boolean) {
     let url = tokenEtherBalanceURL;
     runInAction(() => {
@@ -291,6 +297,12 @@ export class WalletStore {
       });
     }
   }
+  setCoinBalance = (newBalance: number) => {
+    runInAction(() => {
+      this.coinBalance = newBalance;
+    });
+  };
+  // fetches other user balance (items, coins)
 
   async fetchOtherUserWalletBalance(
     walletAddress: string,
@@ -342,6 +354,8 @@ export class WalletStore {
       };
     });
   };
+  // fetches user documents
+
   async getDocuments(walletAddress: string) {
     try {
       const docs = await httpGet(
@@ -358,8 +372,7 @@ export class WalletStore {
           );
           item.file = file;
           mappedDocuments.push(item);
-        } catch (error) {
-        }
+        } catch (error) {}
       }
       this.documents = mappedDocuments;
     } catch (error) {
@@ -394,6 +407,8 @@ export class WalletStore {
       this.fetchWalletBalance(this.stores.loginStore.userToken, true);
     }
   }
+
+  // transfer coins or nft items
   async transferTokens(
     bodyData: any,
     token: string,

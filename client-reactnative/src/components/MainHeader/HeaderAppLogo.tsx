@@ -12,6 +12,7 @@ import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {logoPath} from '../../../docs/config';
 import {HomeStackNavigationProp} from '../../navigation/types';
 import {useStores} from '../../stores/context';
+import { ROUTES } from '../../constants/routes';
 
 let counter = 0;
 
@@ -20,6 +21,7 @@ export const HeaderAppLogo = () => {
   const {debugStore} = useStores();
   const onPress = () => {
     navigation.navigate('RoomsListScreem');
+    navigation.navigate(ROUTES.ROOMSLIST as never);
     counter += 1;
     if (counter === 3) {
       debugStore.toggleDebugMode(true);

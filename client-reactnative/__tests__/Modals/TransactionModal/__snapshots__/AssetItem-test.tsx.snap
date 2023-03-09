@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<RNGestureHandlerButton
+  collapsable={false}
+  delayLongPress={600}
+  enabled={true}
+  exclusive={true}
+  handlerTag={1}
+  handlerType="NativeViewGestureHandler"
+  onGestureEvent={[Function]}
+  onGestureHandlerEvent={[Function]}
+  onGestureHandlerStateChange={[Function]}
+  onHandlerStateChange={[Function]}
+  rippleColor={0}
+  touchSoundDisabled={false}
+>
+  <View
+    accessible={true}
+    collapsable={false}
+    style={{}}
+  >
+    <View
+      style={
+        {
+          "backgroundColor": "#F4F5F8",
+          "height": 115,
+          "justifyContent": "center",
+          "marginBottom": 10,
+          "padding": 0,
+          "width": "100%",
+        }
+      }
+    >
+      <View
+        style={
+          {
+            "flexDirection": "row",
+            "justifyContent": "space-around",
+            "width": "100%",
+          }
+        }
+      >
+        <View
+          style={
+            {
+              "alignItems": "center",
+              "flexDirection": "row",
+              "width": 750,
+            }
+          }
+        >
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "justifyContent": "center",
+                "width": 180,
+              }
+            }
+          >
+            <Image
+              source={
+                {
+                  "uri": "image",
+                }
+              }
+              style={
+                {
+                  "height": "100%",
+                  "width": "100%",
+                }
+              }
+            />
+          </View>
+          <View
+            style={
+              {
+                "width": 450,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "color": "#000000",
+                  "fontFamily": "Poppins-Regular",
+                  "fontSize": 29.5,
+                  "marginLeft": 20,
+                }
+              }
+            >
+              name
+            </Text>
+          </View>
+        </View>
+        <View
+          style={
+            {
+              "alignItems": "flex-start",
+              "justifyContent": "center",
+              "paddingRight": 50,
+            }
+          }
+        >
+          <Text>
+            /
+            0
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</RNGestureHandlerButton>
+`;

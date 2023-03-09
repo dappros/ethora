@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<TextInput
+  accessibilityLabel="Type a message..."
+  accessible={true}
+  autoFocus={false}
+  editable={true}
+  enablesReturnKeyAutomatically={true}
+  keyboardAppearance="default"
+  multiline={true}
+  onChange={[Function]}
+  onChangeText={[Function]}
+  onContentSizeChange={[Function]}
+  placeholder="Type a message..."
+  placeholderTextColor="#b2b2b2"
+  style={
+    [
+      {
+        "flex": 1,
+        "fontSize": 16,
+        "lineHeight": 16,
+        "marginBottom": 5,
+        "marginLeft": 10,
+        "marginTop": 6,
+      },
+      {},
+      {
+        "height": 33,
+      },
+    ]
+  }
+  testID="Type a message..."
+  underlineColorAndroid="transparent"
+  value="dsds"
+/>
+`;

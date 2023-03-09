@@ -11,7 +11,6 @@ import { Typography } from "@mui/material";
 import DocumentsTable from "./DocumentsTable";
 import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { filterNftBalances } from "../../utils";
-import { walletToUsername } from "../../xmpp";
 
 const styles = {
   craeteNewLink: {
@@ -31,7 +30,6 @@ export function MyProfile() {
   const setBalance = useStoreState((state) => state.setBalance);
 
   useEffect(() => {
-    console.log(walletToUsername(user.walletAddress));
     setLoading(true);
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);

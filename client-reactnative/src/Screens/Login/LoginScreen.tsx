@@ -96,7 +96,8 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
       socialLoginType.APPLE,
     );
   };
-  const openModalForWallet = message => {
+
+  const openModalForWallet = (message:string) => {
     setExternalWalletModalData({
       message,
       walletAddress: connector.accounts[0],
@@ -152,6 +153,7 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
     await loginStore.registerUser(dataObject, user);
     setModalOpen(false);
   };
+
   const onModalSubmit = async () => {
     if (!externalWalletModalData.message) {
       await onAppleLogin();
@@ -166,6 +168,7 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
       });
     }
   };
+  
   useEffect(() => {
     if (!!connector.accounts && !signedMessage && connector.connected) {
       sendWalletMessage();
@@ -186,7 +189,7 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
         justifyContent: 'center',
         alignItems: 'center',
       }}>
-      <Box margin={3} justifyContent={'center'} alignItems={'center'}>
+      <Box testID='login-screen' margin={3} justifyContent={'center'} alignItems={'center'}>
         <Image
           alt="App logo"
           accessibilityLabel="App logo"
@@ -303,6 +306,7 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
         <HStack justifyContent={'center'}>
           {regularLogin && (
             <TouchableOpacity
+              testID='login-with-cred'
               accessibilityLabel="Log in with password"
               onPress={() => navigation.navigate('RegularLogin')}>
               <Text
@@ -319,7 +323,6 @@ const LoginScreen = observer(({navigation}: LoginScreenProps) => {
       </Stack>
       {isFetching && <Spinner />}
 
-      {/* <Text onPress={()=>Clipboard.setString(apiStore.defaultToken)}>{apiStore.defaultToken}</Text> */}
       <VStack
         style={{position: 'absolute', bottom: 0}}
         justifyContent={'center'}

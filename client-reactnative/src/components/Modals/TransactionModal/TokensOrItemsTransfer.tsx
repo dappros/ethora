@@ -51,7 +51,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
   const [displayItems, setDisplayItems] = useState(false);
   const [displayCollections, setDisplayCollections] = useState(false);
   const [loading, setLoading] = useState(false);
-  const transferTokens = async (tokenAmount: string | number) => {
+  const transferTokens = async (tokenAmount: number) => {
     if (tokenAmount <= 0) {
       showError('Error', 'Amount must be greater than 0');
       return;
@@ -163,7 +163,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
     hideUserActions();
   };
   const renderItems = () => {
-    const getItemSelected = (pressedItem: TSelectedItem, item) => {
+    const getItemSelected = (pressedItem: TSelectedItem, item:any) => {
       if (item.tokenType === 'NFMT') {
         return (
           pressedItem.nfmtType + pressedItem.contractAddress ===
@@ -176,10 +176,10 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
       <FlatList
         data={
           displayItems
-            ? walletStore.nftItems.filter(item => !item.external)
+            ? walletStore.nftItems.filter((item:any) => !item.external)
             : walletStore.collections
         }
-        renderItem={({item}) => (
+        renderItem={({item}:any) => (
           <NftListItem
             assetUrl={item.imagePreview || item.nftFileUrl}
             name={item.tokenName}
@@ -256,7 +256,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
           </View>
           <TransferModalButton
             title={'Send'}
-            onPress={() => transferTokens(customTransferAmount)}
+            onPress={() => transferTokens(parseInt(customTransferAmount))}
           />
         </VStack>
       ) : (
@@ -269,7 +269,7 @@ export const TokensOrItemsTransfer: React.FC<ITransferModal> = ({
             />
           </View>
 
-          {walletStore.nftItems.filter(item => !item.external).length > 0 &&
+          {walletStore.nftItems.filter((item:any) => !item.external).length > 0 &&
             itemsTransfersAllowed && (
               <>
                 <Seperator />

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Text,
   View,
@@ -26,17 +26,22 @@ import {underscoreManipulation} from '../../helpers/underscoreLogic';
 import {useStores} from '../../stores/context';
 import {retrieveOtherUserVcard, subscribeToRoom} from '../../xmpp/stanzas';
 import {HomeStackNavigationProp} from '../../navigation/types';
+import { ImageLibraryOptions } from 'react-native-image-picker';
 
+declare var global: any;
 const Buffer = require('buffer').Buffer;
 global.Buffer = Buffer; // very important
 
-const options = {
+//interface and types
+const options: ImageLibraryOptions = {
   mediaType: 'photo',
   includeBase64: true,
   maxHeight: 200,
   maxWidth: 200,
 };
+//interface and types
 
+//handle decode data from a qr image
 function createImageData(base64ImageData: any, imageType: string) {
   let decodedData: any = {};
   const bufferFrom = Buffer.from(base64ImageData, 'base64');
@@ -52,23 +57,28 @@ function createImageData(base64ImageData: any, imageType: string) {
   );
 }
 
-interface ScanScreenProps {}
+const ScanScreen = () => {
 
-const ScanScreen = (props: ScanScreenProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [scan, setScan] = useState(false);
-  const [scanResult, setScanResult] = useState(false);
-  const [result, setResult] = useState(null);
-
+  //mobx stores
   const {loginStore, chatStore, apiStore} = useStores();
+  //mobx stores
 
+  //local states
+  const [isLoading, setIsLoading] = useState(false);
+  //local states
+
+  //local variables
   const manipulatedWalletAddress = underscoreManipulation(
     loginStore.initialData.walletAddress,
   );
   const username = loginStore.initialData.username;
+  //local variables
 
+  //navigator
   const navigation = useNavigation<HomeStackNavigationProp>();
+  //navigator
 
+  //handle to subscribe and open chat room from given QR code image
   const onSuccess = (e: any) => {
     if (!e) {
       showToast('error', 'Error', 'Invalid QR', 'top');
@@ -78,10 +88,10 @@ const ScanScreen = (props: ScanScreenProps) => {
     if (e.data.includes('profileLink')) {
       const params = e.data.split('https://www.eto.li/go')[1];
       const queryParams = new URLSearchParams(params);
-      const firstName: string = queryParams.get('firstName');
-      const lastName: string = queryParams.get('lastName');
-      const xmppId: string = queryParams.get('xmppId');
-      const walletAddressFromLink: string = queryParams.get('walletAddress');
+      const firstName: string = queryParams.get('firstName') as string;
+      const lastName: string = queryParams.get('lastName') as string;
+      const xmppId: string = queryParams.get('xmppId') as string;
+      const walletAddressFromLink: string = queryParams.get('walletAddress') as string;
 
       if (loginStore.initialData.walletAddress === walletAddressFromLink) {
         navigation.navigate('ProfileScreen');
@@ -101,15 +111,6 @@ const ScanScreen = (props: ScanScreenProps) => {
         navigation.navigate('OtherUserProfileScreen');
       }
     } else {
-      // const jid = parseChatLink(e.data) + CONFERENCEDOMAIN;
-      // setResult(jid);
-      // setScan(false);
-      // setScanResult(true);
-      // subscribeToRoom(jid, manipulatedWalletAddress, chatStore.xmpp);
-      // navigation.navigate(ROUTES.CHAT, {
-      //   chatJid: jid,
-      //   // chatName: 'Loading...',
-      // });
 
       if (e) {
         const jid = parseChatLink(e.data);
@@ -135,9 +136,10 @@ const ScanScreen = (props: ScanScreenProps) => {
     }
   };
 
+  //launch image gallery
   const openGallery = () => {
     setIsLoading(true);
-    launchImageLibrary(options, async response => {
+    launchImageLibrary(options, async (response:any) => {
       if (response.didCancel) {
         setIsLoading(false);
         console.log('User cancelled image picker');
@@ -193,10 +195,11 @@ const ScanScreen = (props: ScanScreenProps) => {
 
 export default ScanScreen;
 
+
+//styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems:"center"
   },
   buttonTouchable: {
     fontSize: 21,
@@ -213,3 +216,5 @@ const styles = StyleSheet.create({
     fontFamily: textStyles.regularFont,
   },
 });
+//styles
+

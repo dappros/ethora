@@ -1,0 +1,82 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<View
+  accessibilityLabel="text"
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    style={
+      [
+        {
+          "alignItems": "center",
+          "backgroundColor": "#B22222",
+          "borderRadius": 13.5,
+          "flexDirection": "row",
+          "height": 66.5,
+          "justifyContent": "center",
+          "margin": 5,
+          "paddingHorizontal": 10,
+          "width": 375,
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "marginBottom": 3,
+          "marginRight": 5,
+        }
+      }
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#fff",
+              "fontSize": 15,
+            },
+            undefined,
+            {
+              "fontFamily": "Material Icons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+    <Text
+      style={
+        {
+          "color": "#fff",
+          "fontFamily": "Poppins-SemiBold",
+        }
+      }
+    >
+      text
+    </Text>
+  </View>
+</View>
+`;

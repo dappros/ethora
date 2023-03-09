@@ -1,20 +1,24 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import {useWalletConnect} from '@walletconnect/react-native-dapp';
-import React, {useEffect, useState} from 'react';
-import {Linking, StyleSheet, Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {commonColors, textStyles} from '../../../docs/config';
-import {Button} from '../../components/Button';
-import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {ScanQrModal} from '../../components/Modals/ScanQrModal';
+import { useWalletConnect } from '@walletconnect/react-native-dapp';
+import React, { useEffect, useState } from 'react';
+import { Linking, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { commonColors, textStyles } from '../../../docs/config';
+import { Button } from '../../components/Button';
+import { DeleteDialog } from '../../components/Modals/DeleteDialog';
+import { ScanQrModal } from '../../components/Modals/ScanQrModal';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
-import {showError, showSuccess} from '../../components/Toast/toast';
-import {httpGet, httpDelete, httpPost} from '../../config/apiService';
-import {isAddress} from '../../helpers/isAddress';
-import {useStores} from '../../stores/context';
+import { showError, showSuccess } from '../../components/Toast/toast';
+import { httpGet, httpDelete, httpPost } from '../../config/apiService';
+import { isAddress } from '../../helpers/isAddress';
+import { useStores } from '../../stores/context';
 
-export interface IAuthentication {}
+//interfaces and types
+export interface IAuthentication { }
+//interfaces and types
 
+
+//handle to get mail domain eg: Gmail etc
 const getMail = (email: string) => {
   if (!email) return '';
   const splittedEmail = email.split('@');
@@ -25,25 +29,55 @@ const getMail = (email: string) => {
 };
 const walletRoute = '/wallets/ext-wallet/';
 
-export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
-  const {loginStore} = useStores();
-  const connector = useWalletConnect();
+export const AuthenticationScreen: React.FC<IAuthentication> = ({ }) => {
+
+  //mobx stores
+  const { loginStore } = useStores();
+  //mobx stores
+
+  //local states
   const [showQrScan, setShowQrScan] = useState(false);
   const [showRemoveAccount, setShowRemoveAccount] = useState(false);
   const [loading, setLoading] = useState(false);
   const [account, setAccount] = useState('');
   const [accountVerified, setAccountVerified] = useState(false);
+  //local states
 
+  //local variables
+  const connector = useWalletConnect();
+  //local variables
+
+  //hooks
+  useEffect(() => {
+    getAddress();
+    return () => {
+      connector.killSession();
+    };
+  }, []);
+  
+  useEffect(() => {
+    if (connector.accounts.length) {
+      updateAddress(connector.accounts[0]);
+    }
+  }, [connector.accounts]);
+  //hooks
+
+  //handle to connect to metamask
   const onMetamaskPress = () => {
-    connector.connect({chainId: 1});
+    connector.connect({ chainId: 1 });
   };
+
+  //handle to show qr
   const onQRPress = () => {
     setShowQrScan(true);
   };
+
+
   const onRemovePress = () => {
     setShowRemoveAccount(true);
   };
 
+  //handle to get mainnet address
   const getAddress = async () => {
     setLoading(true);
     try {
@@ -55,11 +89,13 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
         setAccount(res.data.result.address);
         setAccountVerified(res.data.result?.verified);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error.response);
     }
     setLoading(false);
   };
+
+  //handle to open qr scanner
   const onQRScan = async (e: any) => {
     const data = e.data?.split(':')[1]?.split('@')[0];
     if (!isAddress(data)) {
@@ -71,6 +107,8 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     await updateAddress(data);
   };
 
+
+  //handle to remove mainnet address
   const removeAddress = async () => {
     setLoading(true);
     try {
@@ -88,6 +126,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     setShowRemoveAccount(false);
   };
 
+  //update or add new address
   const updateAddress = async (address?: string) => {
     try {
       const res = await httpPost(
@@ -107,18 +146,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
     }
   };
 
-  useEffect(() => {
-    getAddress();
-    return () => {
-      connector.killSession();
-    };
-  }, []);
-  useEffect(() => {
-    if (connector.accounts.length) {
-      updateAddress(connector.accounts[0]);
-    }
-  }, [connector.accounts]);
-
+  //ui to for displaying the main net address section
   const renderConnected = () => {
     if (account) {
       return (
@@ -150,18 +178,18 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
           </View>
           {!accountVerified && (
             <>
-              <View style={{marginTop: 20}}>
+              <View style={{ marginTop: 20 }}>
                 <Text style={styles.description}>
                   Use button below if you need to remove your Mainnet address
                   association from your Ethora account.
                 </Text>
               </View>
               <View style={styles.buttonBlock}>
-                <View style={{width: '50%'}}>
+                <View style={{ width: '50%' }}>
                   <Button
                     onPress={onRemovePress}
                     title="Remove"
-                    style={{backgroundColor: 'red', marginBottom: 10}}
+                    style={{ backgroundColor: 'red', marginBottom: 10 }}
                   />
                 </View>
               </View>
@@ -181,19 +209,19 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
           </Text>
         </View>
         <View style={styles.buttonBlock}>
-          <View style={{width: '50%'}}>
+          <View style={{ width: '50%' }}>
             <Button
               loading={loading}
               onPress={onMetamaskPress}
               title="Read from Metamask"
-              style={{backgroundColor: '#cc6228', marginBottom: 10}}
+              style={{ backgroundColor: '#cc6228', marginBottom: 10 }}
             />
             <Button
               loading={loading}
               onPress={onQRPress}
               title="QR Scan"
-              style={{backgroundColor: 'lightgrey'}}
-              textStyle={{color: 'black'}}
+              style={{ backgroundColor: 'lightgrey' }}
+              textStyle={{ color: 'black' }}
             />
           </View>
         </View>
@@ -203,7 +231,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
   return (
     <View>
       <SecondaryHeader title="Authentication" />
-      <View style={{paddingHorizontal: 10}}>
+      <View style={{ paddingHorizontal: 10 }}>
         {renderConnected()}
         <View>
           <Text style={styles.title}>L2 Address</Text>
@@ -224,8 +252,8 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
           <Text style={styles.description}>
             Your current sign on method is:
           </Text>
-          <Text style={{textAlign: 'center'}}>
-            <Text style={[styles.boldFont, {textTransform: 'capitalize'}]}>
+          <Text style={{ textAlign: 'center' }}>
+            <Text style={[styles.boldFont, { textTransform: 'capitalize' }]}>
               {getMail(loginStore.initialData.email)}
             </Text>{' '}
             (
@@ -234,7 +262,7 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({}) => {
               loginStore.initialData.walletAddress}
             )
           </Text>
-          <View style={{marginTop: 20}}>
+          <View style={{ marginTop: 20 }}>
             <Text style={styles.description}>
               Note: different sign on methods will generate different identities
               in our L2 chain. Please make sure to use the same sign on method

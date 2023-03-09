@@ -9,6 +9,8 @@
     "startReset": "react-native start --reset-cache",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "detox ios": "detox test --configuration ios.sim.debug ",
+    "detox android": "detox test --configuration android.emu.debug ",
     "postinstall": "node_modules/.bin/rn-nodeify --install crypto,assert,url,stream,events --hack"
   },
   "dependencies": {
@@ -27,6 +29,7 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@realm/react": "^0.2.1",
+    "@types/node": "^18.14.0",
     "@walletconnect/client": "^1.7.8",
     "@walletconnect/react-native-dapp": "^1.8.0",
     "@xmpp/client": "^0.13.1",
@@ -47,13 +50,14 @@
     "pngjs": "^6.0.0",
     "qs": "^6.10.3",
     "react": "17.0.2",
+    "react-dom": "^18.2.0",
     "react-native": "0.68.1",
     "react-native-audio-recorder-player": "^3.5.1",
     "react-native-blob-util": "^0.16.2",
     "react-native-camera": "^4.2.1",
     "react-native-crypto": "^2.2.0",
     "react-native-crypto-js": "^1.0.0",
-    "react-native-device-info": "^8.7.1",
+    "react-native-device-info": "^10.4.0",
     "react-native-document-picker": "^8.1.0",
     "react-native-draggable-flatlist": "^3.1.1",
     "react-native-fast-image": "^8.5.11",
@@ -106,24 +110,32 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^29.4.0",
     "@types/pngjs": "^6.0.1",
-    "@types/react-native": "^0.67.3",
+    "@types/react": "17.0.2",
+    "@types/react-native": "^0.68.1",
     "@types/react-native-crypto-js": "^1.0.0",
     "@types/react-native-vector-icons": "^6.4.10",
     "@types/react-native-video-player": "^0.10.3",
     "@types/react-test-renderer": "^17.0.1",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
-    "babel-jest": "^26.6.3",
+    "babel-jest": "^29.4.3",
+    "detox": "^20.1.3",
     "eslint": "^7.32.0",
-    "jest": "^26.6.3",
+    "jest": "^29.4.3",
+    "jest-circus": "^29.4.3",
+    "metro-babel-register": "^0.75.0",
     "metro-react-native-babel-preset": "^0.67.0",
     "react-dom": "^18.2.0",
     "react-test-renderer": "17.0.2",
+    "reactotron-react-native": "^5.0.3",
     "rn-nodeify": "^10.3.0",
+    "ts-jest": "^26.0.5",
     "typescript": "^4.4.4"
   },
   "resolutions": {
@@ -140,6 +152,32 @@
       "jsx",
       "json",
       "node"
+    ],
+    "transform": {},
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js|jsx)$",
+    "testPathIgnorePatterns": [
+      "\\.snap$",
+      "node_modules/",
+      "/node_modules/(?!react-native)/.+"
+    ],
+    "cacheDirectory": ".jest/cache",
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/assetsTransformer.js",
+      "\\.(css|less)$": "<rootDir>/assetsTransformer.js",
+      "mobx$": "<rootDir>/node_modules/mobx/dist/",
+      "mobx-react-lite$": "<rootDir>/node_modules/mobx-react-lite/dist/"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
+    ],
+    "setupFiles": [
+      "/Users/vineethnambiar/Reactnative/ethora/client-reactnative/jest.setup.js",
+      "./node_modules/react-native-gesture-handler/jestSetup.js"
     ]
   },
   "babel": {

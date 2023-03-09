@@ -12,15 +12,19 @@ import {commonColors} from '../../../docs/config';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {HStack} from 'native-base';
-import {IMessage} from '../../stores/chatStore';
+import { IMessage } from '../../stores/chatStore';
 
+
+//interfaces and types
 interface IAudioMessage {
-  onLongPress: (type: string, message: IMessage) => void;
-  onPress: (message: IMessage) => void;
+  onLongPress: (message: IMessage) => void;
+  onPress: () => void
   waveform: Array<number>;
   message: IMessage;
 }
+//interfaces and types
 
+//UI Component for messages with audio files
 export const AudioMessage: React.FC<IAudioMessage> = ({
   onLongPress,
   onPress,
@@ -30,8 +34,8 @@ export const AudioMessage: React.FC<IAudioMessage> = ({
   return (
     <TouchableOpacity
       accessibilityLabel="Play Audio Message"
-      onLongPress={() => onLongPress('', message.currentMessage)}
-      onPress={() => onPress(message)}
+      onLongPress={() => onLongPress(message)}
+      onPress={() => onPress()}
       activeOpacity={0.7}
       style={styles.button}>
       <HStack

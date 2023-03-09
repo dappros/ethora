@@ -5,7 +5,7 @@ import QRCode from 'react-qr-code';
 import { CONFERENCEDOMAIN } from '../../constants';
 import { TUser } from '../../store';
 import { generateDocumentLink, generateProfileLink, truncateString } from '../../utils';
-import { walletToUsername } from '../../xmpp';
+import { walletToUsername } from '../../utils/walletManipulation';
 import { ISharedLink } from './ProfileShareTab';
 
 interface QRSectionProps {

@@ -1,6 +1,8 @@
 import {makeAutoObservable, runInAction} from 'mobx';
 import {APP_TOKEN, appEndpoint} from '../../docs/config';
 
+
+//Mobx store for api
 const xmppEndpoints = {
   DEV: {
     DOMAIN: 'dev.dxmpp.com',

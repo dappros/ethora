@@ -92,7 +92,7 @@ const TransactionsList = observer(
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(transactions)}
-          keyExtractor={transaction => transaction.transactionHash}
+          keyExtractor={(transaction:any) => transaction.transactionHash}
         />
       </Box>
     );

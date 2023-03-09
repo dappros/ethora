@@ -9,7 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { MetaHeader } from "./MetaHeader";
-import xmpp, { walletToUsername } from "../../xmpp";
+import xmpp from "../../xmpp";
 import { httpWithAuth } from "../../http";
 import { CONFERENCEDOMAIN, DOMAIN } from "../../constants";
 import { useStoreState } from "../../store";
@@ -157,7 +157,6 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
   };
 
   const sendMessage = (chatName: string, jid: string, isPrevious: boolean) => {
-    const manipulatedWalletAddress = walletToUsername(user.walletAddress);
     const textEnter =
       user.firstName + " " + user.lastName + " " + "has joined" + " " + "<-";
     const textLeave =

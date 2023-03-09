@@ -13,7 +13,8 @@ import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import { TMemberInfo, TUserChatRooms, useStoreState } from "../../store";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import xmpp, { usernameToWallet, walletToUsername } from "../../xmpp";
+import xmpp from "../../xmpp";
+import { walletToUsername, usernameToWallet } from "../../utils/walletManipulation";
 
 export default function MembersList() {
   const { roomJID }: any = useParams();

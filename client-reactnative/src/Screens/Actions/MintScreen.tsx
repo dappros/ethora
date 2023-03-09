@@ -33,9 +33,16 @@ import {HomeStackNavigationProp} from '../../navigation/types';
 const selectOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const MintScreen = () => {
-  const {loginStore, walletStore} = useStores();
-  const navigation = useNavigation<HomeStackNavigationProp>();
 
+  //mobx stores
+  const {loginStore, walletStore} = useStores();
+  //mobx stores
+
+  //navigator
+  const navigation = useNavigation<HomeStackNavigationProp>();
+  //navigator
+
+  //local states
   const [itemName, setItemName] = useState<string>('');
   const [nftFileUrl, setNftFileUrl] = useState<string>('');
   const [filePickResult, setFilePickResult] = useState<any>({});
@@ -45,11 +52,14 @@ const MintScreen = () => {
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [distributionRightsApproved, setDistributionRightsApproved] =
     useState<boolean>(true);
+  //local states
 
+  //handle to display or hide modal
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
+  //handle to clear all data
   const clearData = () => {
     setLoading(false);
     setNftFileUrl('');
@@ -57,11 +67,13 @@ const MintScreen = () => {
     setDistributionRightsApproved(false);
   };
 
+  //handle to set the quantity of nft to mint
   const selectNftQuantity = (value: number) => {
     setSelectedValue(value);
     setModalVisible(false);
   };
 
+  //handle to create an Nft item
   const createNftItem = async () => {
     let item = {name: itemName, rarity: selectedValue, mediaId: fileId};
     const url = nftTransferURL;
@@ -74,6 +86,7 @@ const MintScreen = () => {
     }
   };
 
+  //handle for mint 
   const onMintClick = () => {
     if (!nftFileUrl) {
       showError('Error', 'Please load the image.');
@@ -112,6 +125,7 @@ const MintScreen = () => {
     );
   };
 
+  //dialog to choose a file
   const chooseImageOption = () => {
     Alert.alert('Choose a file', '', [
       {text: 'Open from files', onPress: () => setNftFile()},
@@ -119,6 +133,7 @@ const MintScreen = () => {
     ]);
   };
 
+  //handle to upload file
   const sendFiles = async (data: any) => {
     setLoading(true);
     try {
@@ -133,6 +148,7 @@ const MintScreen = () => {
     }
   };
 
+  //handle to set NFT file from file
   const setNftFile = async () => {
     try {
       const res = await DocumentPicker.pick({
@@ -263,7 +279,7 @@ const MintScreen = () => {
               onTintColor={commonColors.primaryColor}
               value={distributionRightsApproved}
               onValueChange={setDistributionRightsApproved}
-              style={{marginRight: 3, color: commonColors.primaryColor}}
+              style={{marginRight: 3}}
             />
             <Text style={{color: commonColors.primaryColor}}>
               By proceeding I confirm that I have the rights to distribute the
@@ -298,6 +314,7 @@ const MintScreen = () => {
 
 export default MintScreen;
 
+//styles
 const classes = StyleSheet.create({
   container: {
     flex: 1,
@@ -389,3 +406,4 @@ const classes = StyleSheet.create({
     fontFamily: textStyles.regularFont,
   },
 });
+//styles

@@ -47,7 +47,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
     setisLoading(true);
     try {
       await loginStore.regularLogin({username: userName, password});
-    } catch (error) {
+    } catch (error:any) {
       if (error?.response?.status === 409) {
         showError('Error', 'This email is not verified');
       } else {
@@ -67,7 +67,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <TouchableWithoutFeedback testID='regularLoginScreen' onPress={Keyboard.dismiss} accessible={false}>
           <VStack justifyContent={'center'} height={'full'}>
             <VStack justifyContent={'center'} height={'full'} padding={'1'}>
               <HStack paddingY={5}>
@@ -81,6 +81,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
               </HStack>
               <View>
                 <Input
+                  testID='loginUsername'
                   accessibilityLabel="Enter your username"
                   maxLength={30}
                   marginBottom={2}
@@ -97,6 +98,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
                   placeholderTextColor={commonColors.primaryColor}
                 />
                 <Input
+                  testID={'loginPassword'}
                   accessibilityLabel="Enter your password"
                   maxLength={15}
                   marginBottom={2}
@@ -117,6 +119,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
                     alignItems: 'center',
                   }}>
                   <Button
+                  testID='loginSubmitButton'
                     title={'Login'}
                     onPress={onSubmit}
                     loading={isLoading}
@@ -130,6 +133,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
                 alignItems={'center'}
                 paddingY={10}>
                 <TouchableOpacity
+                  testID='createNewAccount'
                   accessibilityLabel="Create new account"
                   onPress={() => navigation.navigate('Register')}>
                   <Text

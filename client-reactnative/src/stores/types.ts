@@ -25,7 +25,7 @@ export interface IFile {
   createdAt: string;
   expiresAt: number;
   filename: string;
-  isVisible: true;
+  isVisible: boolean;
   location: string;
   locationPreview: string;
   mimetype: string;
@@ -40,7 +40,7 @@ export interface IDocument {
   admin: string;
   contractAddress: string;
   createdAt: Date;
-  documentName: 'Fff';
+  documentName: string;
   files: Array<string>;
   hashes: Array<string>;
   isBurnable: boolean;

@@ -19,10 +19,14 @@ http.interceptors.response.use(undefined, async error => {
     error.config &&
     !error.config.__isRetryRequest
   ) {
-    if (
-      error?.request?.responseURL ===
-      rootStore. refreshTokenURL
-    ) {
+    if (error?.request?.responseURL === refreshTokenURL) {
+      if (
+        error?.request?.responseURL ===
+        rootStore.apiStore.defaultUrl + refreshTokenURL
+      ) {
+        console.log('logout because of 401 from refresh')
+        return rootStore.loginStore.logOut();
+      }
       return Promise.reject(error);
     }
     await rootStore.loginStore.getRefreshToken();

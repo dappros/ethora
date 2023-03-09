@@ -158,6 +158,8 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy "store", "play"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -264,6 +266,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -287,6 +290,9 @@ android {
 dependencies {
     //facebook login sdk
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+
+    androidTestImplementation('com.wix:detox:+')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
