@@ -11,6 +11,7 @@ import { EmailSingInForm } from "./EmailSignInForm";
 import { EmailSignUpForm } from "./EmailSignUpForm";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { useLocation } from "react-router";
 
 type TProps = {
   open: boolean;
@@ -21,6 +22,7 @@ export function EmailModal({ open, setOpen }: TProps) {
   const [tab, setTab] = useState("1");
   const [message, setMessage] = useState("");
   const query = useQuery();
+ 
 
   const onClose = (e: any, reason: any) => {
     setOpen(false);

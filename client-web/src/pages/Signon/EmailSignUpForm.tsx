@@ -12,7 +12,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
 import { registerByEmail } from "../../http";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 const validate = (values: Record<string, string>) => {
@@ -51,7 +51,9 @@ export function EmailSignUpForm(props: TProps) {
   const [errorMsg, setErrorMsg] = useState("");
   const history = useHistory();
   const { showSnackbar } = useSnackbar();
-
+  const { search } = useLocation();
+  const signUpPlan = new URLSearchParams(search).get("signUpPlan");
+  
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -66,7 +68,8 @@ export function EmailSignUpForm(props: TProps) {
           values.email,
           values.firstName,
           values.lastName,
-          values.password
+          values.password,
+          signUpPlan
         );
         resetForm();
         showSnackbar(

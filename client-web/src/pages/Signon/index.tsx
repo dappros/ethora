@@ -7,7 +7,7 @@ import Container from "@mui/material/Container";
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react";
 import FacebookLogin from "react-facebook-login";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { injected } from "../../connector";
 import * as http from "../../http";
 import { useStoreState } from "../../store";
@@ -33,15 +33,15 @@ export default function Signon() {
   const user = useStoreState((state) => state.user);
   const query = useQuery();
   const history = useHistory();
+  const {search} = useLocation()
   const { active, account, library, activate } = useWeb3React();
   const [openEmail, setOpenEmail] = useState(false);
   const [openUsername, setOpenUsername] = useState(false);
   const [showMetamask, setShowMetamask] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
-
   const { showSnackbar } = useSnackbar();
-
+  const signUpPlan = new URLSearchParams(search).get('signUpPlan')
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
       history.push(`/profile/${user.walletAddress}`);
@@ -131,7 +131,8 @@ export default function Signon() {
           res.idToken,
           res.credential.accessToken,
           "",
-          loginType
+          loginType,
+          signUpPlan
         );
         const loginRes = await http.loginSocial(
           res.idToken,
@@ -192,7 +193,7 @@ export default function Signon() {
         const user = loginRes.data.user;
         updateUserInfo(user, loginRes.data);
       } else {
-        await http.registerSocial("", "", info.accessToken, loginType);
+        await http.registerSocial("", "", info.accessToken, loginType, signUpPlan);
         const loginRes = await http.loginSocial(
           "",
           "",

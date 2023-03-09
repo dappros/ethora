@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch } from "react-router";
+import { Redirect, Route, Switch } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
@@ -15,6 +15,7 @@ import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
 import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
 import Organizations from "./Organizations/Organizations";
+import { Subscriptions } from "./Payments/Subscriptions";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -154,7 +155,7 @@ export const Routes = () => {
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
       <Switch>
-        <Route path="/" exact>
+        <Route path={["/signIn/"]} exact>
           <Signon />
         </Route>
         <Route path="/regularSignIn" component={RegularSignIn} />
@@ -170,7 +171,7 @@ export const Routes = () => {
         <AuthRoute path="/statistics" component={StatisticsPage} />
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
         <AuthRoute path="/organizations" component={Organizations} />
-
+        <AuthRoute path="/payments" component={Subscriptions} />
 
         <Route path="/profile/:wallet">
           <Profile />
@@ -200,6 +201,9 @@ export const Routes = () => {
           component={TransactionAddressDetails}
           exact
         />
+        <Route path={'/'}>
+          <Redirect to={user.walletAddress ?  '/profile/'+ user.walletAddress : '/signIn'}  />
+        </Route>
       </Switch>
       <Snackbar />
     </React.Suspense>
