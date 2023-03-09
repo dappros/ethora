@@ -30,9 +30,12 @@ export class Session implements ISession {
     }
 
     sendTextMessage(message: string, keyboard?: IKeyboard) {
+        const configStatuses = Config.getConfigStatuses();
+        let textMsg = message;
         this.isNew = false;
-        Config.getConfigStatuses().usePresence ? this.setState({lastPresenceTime: new Date()}) : null;
-        return this.bot.connector.send(message, keyboard);
+        configStatuses.usePresence ? this.setState({lastPresenceTime: new Date()}) : null;
+        configStatuses.useNameInMsg ? textMsg = `${this.getUsername()} ${message}` : null;
+        return this.bot.connector.send(textMsg, keyboard);
     }
 
     subscribeToChatRoom(rooms: string | string[]) {
