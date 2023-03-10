@@ -94,9 +94,9 @@ import {HomeStackNavigationProp} from '../../navigation/types';
 import {TCombinedMimeType} from '../../constants/mimeTypes';
 
 //interfaces and types
-export type containerType = 'main' | 'thread';
+export type TcontainerType = 'main' | 'thread';
 interface ChatContainerProps {
-  containerType: containerType;
+  containerType: TcontainerType;
   roomDetails: roomListProps;
   messages: IMessage[];
   onLoadEarlier?: () => void;

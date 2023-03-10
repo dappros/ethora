@@ -24,10 +24,11 @@ import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
 import {Box, HStack, Text, View} from 'native-base';
 import {observer} from 'mobx-react-lite';
-import {containerType} from './ChatContainer';
+import {TcontainerType} from './ChatContainer';
 import {IMessage, roomListProps} from '../../stores/chatStore';
 import {isSameDay, isSameUser} from '../../helpers/chat/chatUtils';
 import {useStores} from '../../stores/context';
+import {GestureResponderEvent} from 'react-native';
 
 // const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -59,7 +60,7 @@ interface BubbleProps {
   timeProps?: any;
   usernameProps?: any;
   messageImageProps?: any;
-  containerType: containerType;
+  containerType: TcontainerType;
   scrollToParentMessage: any;
   handleReply: (message: any) => void;
 }
@@ -67,6 +68,7 @@ interface BubbleProps {
 const Bubble = observer((props: BubbleProps) => {
   const {chatStore} = useStores();
   const [width, setWidth] = useState(0);
+  const initialAnimationValue = new Animated.Value(0);
 
   const {
     onLongPress,
@@ -93,6 +95,7 @@ const Bubble = observer((props: BubbleProps) => {
     messageImageProps,
     scrollToParentMessage,
     handleReply,
+    containerType,
   } = props;
 
   const room: roomListProps = chatStore.roomList.find(
@@ -242,10 +245,6 @@ const Bubble = observer((props: BubbleProps) => {
     if (currentMessage.numberOfReplies) {
       const replyConst =
         currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
-      let text = ' reply';
-      if (currentMessage.numberOfReplies > 1) {
-        text = ' replies';
-      }
       return (
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
           <TouchableOpacity onPress={() => handleReply(currentMessage)}>
@@ -335,8 +334,8 @@ const Bubble = observer((props: BubbleProps) => {
     );
   };
 
-  const setBubbleWidth = (width: any) => {
-    setWidth(width);
+  const setBubbleWidth = (bubbleWidth: any) => {
+    setWidth(bubbleWidth);
   };
 
   const AnimatedStyle = {
@@ -455,8 +454,6 @@ const Bubble = observer((props: BubbleProps) => {
                 {/* {renderTicksHandle()} */}
               </View>
             </View>
-
-            <View></View>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>
