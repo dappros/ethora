@@ -12,7 +12,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
 import { useHistory } from "react-router";
-import { loginEmail } from "../../http";
+import { loginEmail, TLoginSuccessResponse } from "../../http";
 import { useStoreState } from "../../store";
 
 const validate = (values: Record<string, string>) => {
@@ -35,6 +35,7 @@ const validate = (values: Record<string, string>) => {
 
 type TProps = {
   closeModal: () => void;
+  updateUser: (data: TLoginSuccessResponse) => void;
 };
 
 export function EmailSingInForm(props: TProps) {
@@ -54,26 +55,8 @@ export function EmailSingInForm(props: TProps) {
       loginEmail(values.email, values.password)
         .then((resp) => {
           const user = resp.data.user;
-          setUser({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            description: user.description,
-            _id: user._id,
-            xmppPassword: user.xmppPassword,
-            walletAddress: user.defaultWallet.walletAddress,
-            refreshToken: resp.data.refreshToken,
-            token: resp.data.token,
-            profileImage: user.profileImage,
-            isProfileOpen: user.isProfileOpen,
-            isAssetsOpen: user.isAssetsOpen,
-            ACL: user.ACL,
-            referrerId: user.referrerId || "",
-            isAllowedNewAppCreate: resp.data.isAllowedNewAppCreate,
-            isAgreeWithTerms: user.isAgreeWithTerms,
-            stripeCustomerId: user.stripeCustomerId
+          props.updateUser(resp.data);
 
-          });
-          history.push(`/profile/${user.defaultWallet.walletAddress}`);
           props.closeModal();
         })
         .catch((error) => {

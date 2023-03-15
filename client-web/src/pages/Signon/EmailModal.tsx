@@ -12,13 +12,16 @@ import { EmailSignUpForm } from "./EmailSignUpForm";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useLocation } from "react-router";
+import { TLoginSuccessResponse } from "../../http";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateUser: (data: TLoginSuccessResponse) => void;
+
 };
 
-export function EmailModal({ open, setOpen }: TProps) {
+export function EmailModal({ open, setOpen, updateUser }: TProps) {
   const [tab, setTab] = useState("1");
   const [message, setMessage] = useState("");
   const query = useQuery();
@@ -57,7 +60,7 @@ export function EmailModal({ open, setOpen }: TProps) {
             {/* SIGN IN */}
             <TabPanel value="1">
               <Box>{message}</Box>
-              <EmailSingInForm closeModal={() => setOpen(false)} />
+              <EmailSingInForm updateUser={updateUser} closeModal={() => setOpen(false)} />
             </TabPanel>
             {/* SIGN UP */}
             <TabPanel value="2">

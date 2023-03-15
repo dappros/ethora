@@ -33,7 +33,7 @@ export default function Signon() {
   const user = useStoreState((state) => state.user);
   const query = useQuery();
   const history = useHistory();
-  const {search} = useLocation()
+  const { search } = useLocation();
   const { active, account, library, activate } = useWeb3React();
   const [openEmail, setOpenEmail] = useState(false);
   const [openUsername, setOpenUsername] = useState(false);
@@ -41,9 +41,13 @@ export default function Signon() {
   const [loading, setLoading] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const { showSnackbar } = useSnackbar();
-  const signUpPlan = new URLSearchParams(search).get('signUpPlan')
+  const signUpPlan = new URLSearchParams(search).get("signUpPlan");
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
+      if (user.stripeCustomerId) {
+        history.push(`/organizations`);
+        return;
+      }
       history.push(`/profile/${user.walletAddress}`);
       return;
     }
@@ -92,7 +96,7 @@ export default function Signon() {
             const resp = await http.loginSignature(account, signature, msg);
             const user = resp.data.user;
 
-            updateUserInfo(user, resp.data);
+            updateUserInfo(resp.data);
 
             history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
@@ -125,7 +129,7 @@ export default function Signon() {
         );
         const user = loginRes.data.user;
 
-        updateUserInfo(user, loginRes.data);
+        updateUserInfo(loginRes.data);
       } else {
         await http.registerSocial(
           res.idToken,
@@ -141,7 +145,8 @@ export default function Signon() {
         );
         const user = loginRes.data.user;
 
-        updateUserInfo(user, loginRes.data);
+        updateUserInfo(loginRes.data);
+        history.push("/organizations");
       }
     } catch (error) {
       console.log(error);
@@ -149,32 +154,24 @@ export default function Signon() {
     }
   };
 
-  const updateUserInfo = (
-    user: http.TUser,
-    tokens: {
-      refreshToken: string;
-      token: string;
-      referrerId?: string;
-      isAllowedNewAppCreate: boolean;
-    }
-  ) => {
+  const updateUserInfo = (loginData: http.TLoginSuccessResponse) => {
     setUser({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      description: user.description,
-      xmppPassword: user.xmppPassword,
-      walletAddress: user.defaultWallet.walletAddress,
-      token: tokens.token,
-      refreshToken: tokens.refreshToken,
-      profileImage: user.profileImage,
-      isProfileOpen: user.isProfileOpen,
-      isAssetsOpen: user.isAssetsOpen,
-      ACL: user.ACL,
-      referrerId: user.referrerId || "",
-      isAllowedNewAppCreate: tokens.isAllowedNewAppCreate,
-      isAgreeWithTerms: user.isAgreeWithTerms,
-      stripeCustomerId: user.stripeCustomerId
+      _id: loginData.user._id,
+      firstName: loginData.user.firstName,
+      lastName: loginData.user.lastName,
+      description: loginData.user.description,
+      xmppPassword: loginData.user.xmppPassword,
+      walletAddress: loginData.user.defaultWallet.walletAddress,
+      token: loginData.token,
+      refreshToken: loginData.refreshToken,
+      profileImage: loginData.user.profileImage,
+      isProfileOpen: loginData.user.isProfileOpen,
+      isAssetsOpen: loginData.user.isAssetsOpen,
+      ACL: loginData.user.ACL,
+      referrerId: loginData.user.referrerId || "",
+      isAllowedNewAppCreate: loginData.isAllowedNewAppCreate,
+      isAgreeWithTerms: loginData.user.isAgreeWithTerms,
+      stripeCustomerId: loginData.user.stripeCustomerId,
     });
   };
 
@@ -192,9 +189,15 @@ export default function Signon() {
           info.accessToken
         );
         const user = loginRes.data.user;
-        updateUserInfo(user, loginRes.data);
+        updateUserInfo(loginRes.data);
       } else {
-        await http.registerSocial("", "", info.accessToken, loginType, signUpPlan);
+        await http.registerSocial(
+          "",
+          "",
+          info.accessToken,
+          loginType,
+          signUpPlan
+        );
         const loginRes = await http.loginSocial(
           "",
           "",
@@ -202,7 +205,7 @@ export default function Signon() {
           info.accessToken
         );
         const user = loginRes.data.user;
-        updateUserInfo(user, loginRes.data);
+        updateUserInfo(loginRes.data);
       }
     } catch (error) {
       showSnackbar("error", "Cannot authenticate user");
@@ -307,14 +310,34 @@ export default function Signon() {
             Sign In with E-mail
           </Button>
         )}
-        <Typography sx={{ fontSize: "12px", textDecoration: "underline", cursor: 'pointer' }}>
-          <span onClick={() => setShowForgotPasswordModal(true)}>Forgot password?</span>
+        <Typography
+          sx={{
+            fontSize: "12px",
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}
+        >
+          <span onClick={() => setShowForgotPasswordModal(true)}>
+            Forgot password?
+          </span>
         </Typography>
       </Box>
 
-      <MetamaskModal open={showMetamask} setOpen={setShowMetamask} />
-      <EmailModal open={openEmail} setOpen={setOpenEmail} />
-      <UsernameModal open={openUsername} setOpen={setOpenUsername} />
+      <MetamaskModal
+        updateUser={updateUserInfo}
+        open={showMetamask}
+        setOpen={setShowMetamask}
+      />
+      <EmailModal
+        updateUser={updateUserInfo}
+        open={openEmail}
+        setOpen={setOpenEmail}
+      />
+      <UsernameModal
+        updateUser={updateUserInfo}
+        open={openUsername}
+        setOpen={setOpenUsername}
+      />
       <ForgotPasswordModal
         open={showForgotPasswordModal}
         onClose={() => setShowForgotPasswordModal(false)}

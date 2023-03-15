@@ -135,6 +135,15 @@ export const Routes = () => {
       console.log(error, "404");
     }
   };
+  const getRedirect = () => {
+    if (user.walletAddress) {
+      // if (user.stripeCustomerId) {
+      //   return "/organizations";
+      // }
+      return "/profile/" + user.walletAddress;
+    }
+    return "/signIn";
+  };
   useEffect(() => {
     if (userId) {
       checkNotificationsStatus();
@@ -202,11 +211,7 @@ export const Routes = () => {
           exact
         />
         <Route path={"/"}>
-          <Redirect
-            to={
-              user.walletAddress ? "/profile/" + user.walletAddress : "/signIn"
-            }
-          />
+          <Redirect to={getRedirect()} />
         </Route>
       </Switch>
       <Snackbar />

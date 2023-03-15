@@ -13,7 +13,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
 import { useStoreState } from "../../store";
 import { useHistory } from "react-router-dom";
-import { registerUsername, loginUsername } from "../../http";
+import { registerUsername, loginUsername, TLoginSuccessResponse, updateApp } from "../../http";
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
@@ -41,6 +41,8 @@ const validate = (values: Record<string, string>) => {
 
 type TProps = {
   closeModal: () => void;
+  updateUser: (data: TLoginSuccessResponse) => void;
+
 };
 
 export function UsernameSignUpForm(props: TProps) {
@@ -63,27 +65,8 @@ export function UsernameSignUpForm(props: TProps) {
       registerUsername(fd.username, fd.password, fd.firstName, fd.lastName)
         .then((resp) => {
           loginUsername(fd.username, fd.password).then((result) => {
-            setUser({
-              firstName: result.data.user.firstName,
-              lastName: result.data.user.lastName,
-              description: result.data.user.description,
-              xmppPassword: result.data.user.xmppPassword,
-              _id: result.data.user._id,
-              walletAddress: result.data.user.defaultWallet.walletAddress,
-              token: result.data.token,
-              refreshToken: result.data.refreshToken,
-              profileImage: result.data.user.profileImage,
-              isProfileOpen: result.data.user.isProfileOpen,
-              isAssetsOpen: result.data.user.isAssetsOpen,
-              ACL: result.data.user.ACL,
-              isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
-              isAgreeWithTerms: result.data.user.isAgreeWithTerms,
-              stripeCustomerId: result.data.user.stripeCustomerId
-            });
+            props.updateUser(resp.data)
             props.closeModal();
-            history.push(
-              `/profile/${result.data.user.defaultWallet.walletAddress}`
-            );
           });
         })
         .catch((error) => {})

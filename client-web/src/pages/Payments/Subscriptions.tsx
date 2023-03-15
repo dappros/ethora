@@ -1,4 +1,4 @@
-import React, {  } from "react";
+import React from "react";
 import {
   PaymentElement,
   useStripe,
@@ -6,14 +6,17 @@ import {
 } from "@stripe/react-stripe-js";
 import { Box, Button, Container } from "@mui/material";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { useHistory } from "react-router";
 
-export interface ISubscriptions {}
+export interface ISubscriptions {
+  clientSecret: string;
+}
 
-export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
+export const Subscriptions: React.FC<ISubscriptions> = ({ clientSecret }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { showSnackbar } = useSnackbar();
-
+  const history = useHistory();
   const handleSubmit = async (event: React.FormEvent) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
@@ -25,29 +28,33 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
       return;
     }
 
-    const {error, paymentIntent} = await stripe.confirmPayment({
-      //`Elements` instance that was used to create the Payment Element
-      elements,
-      confirmParams: {
-        return_url: window.location.origin + "/payments",
-      },
-      redirect: 'if_required'
+    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      switch (paymentIntent.status) {
+        case "succeeded":
+          showSnackbar("success", "Success! Payment received.");
+          history.push("/");
+          break;
+
+        case "processing":
+          // showSnackbar( 'error',"Payment processing. We'll update you when payment is received.");
+          break;
+
+        case "requires_payment_method":
+          showSnackbar(
+            "error",
+            "Payment failed. Please try another payment method."
+          );
+          // Redirect your user back to your payment page to attempt collecting
+          // payment again
+          break;
+
+        default:
+          showSnackbar("error", "Something went wrong.");
+          break;
+      }
     });
-
-    if (error) {
-      // Show error to your customer (for example, payment details incomplete)
-      console.log(error);
-      showSnackbar("error", error.message);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      showSnackbar("success", paymentIntent.status);
-
-      // Your customer will be redirected to your `return_url`. For some payment
-      // methods like iDEAL, your customer will be redirected to an intermediate
-      // site first to authorize the payment, then redirected to the `return_url`.
-    }
   };
   return (
-   
     <Container maxWidth={"xs"}>
       <Box
         sx={{
@@ -58,7 +65,7 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
           gap: 2,
         }}
       >
-        <PaymentElement  />
+        <PaymentElement />
         <Button variant="outlined" onClick={handleSubmit}>
           Submit
         </Button>

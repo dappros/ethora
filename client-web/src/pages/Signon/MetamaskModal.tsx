@@ -8,13 +8,14 @@ import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useWeb3React } from "@web3-react/core";
-import { registerSignature } from "../../http";
+import { registerSignature, TLoginSuccessResponse } from "../../http";
 import { useHistory } from "react-router-dom";
 import { useStoreState } from "../../store";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateUser: (data: TLoginSuccessResponse) => void;
 };
 
 const validate = (values: Record<string, string>) => {
@@ -31,7 +32,7 @@ const validate = (values: Record<string, string>) => {
   return errors;
 };
 
-export function MetamaskModal({ open, setOpen }: TProps) {
+export function MetamaskModal({ open, setOpen, updateUser }: TProps) {
   const { account, library, deactivate } = useWeb3React();
   const setUser = useStoreState((state) => state.setUser);
   const history = useHistory();
@@ -54,23 +55,7 @@ export function MetamaskModal({ open, setOpen }: TProps) {
           values.lastName
         );
         const user = resp.data.user;
-        setUser({
-          _id: user._id,
-          description: user.description,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          xmppPassword: user.xmppPassword,
-          walletAddress: user.defaultWallet.walletAddress,
-          token: resp.data.token,
-          refreshToken: resp.data.refreshToken,
-          profileImage: user.profileImage,
-          isProfileOpen: user.isProfileOpen,
-          isAssetsOpen: user.isAssetsOpen,
-          ACL: user.ACL,
-          isAllowedNewAppCreate: resp.data.isAllowedNewAppCreate,
-          isAgreeWithTerms: user.isAgreeWithTerms
-          
-        });
+        updateUser(resp.data);
         deactivate();
         history.push(`/profile/${user.defaultWallet.walletAddress}`);
       } catch (error) {

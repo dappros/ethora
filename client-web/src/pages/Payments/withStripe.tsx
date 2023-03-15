@@ -8,8 +8,12 @@ import { config } from "../../config";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { httpWithAuth } from "../../http";
 
-export const withStripe = (Component: React.ComponentType) => () => {
-  const [clientSecret, setClientSecret] = useState(config.STRIPE_SECRET_KEY);
+interface ISecret {
+  clientSecret: string;
+}
+
+export const withStripe = (Component: React.FC<ISecret>) => () => {
+  const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { showSnackbar } = useSnackbar();
@@ -19,15 +23,16 @@ export const withStripe = (Component: React.ComponentType) => () => {
     []
   );
   const stripeOptions: StripeElementsOptions = useMemo(
-    () => ({ clientSecret: clientSecret, locale: 'en' }),
+    () => ({ clientSecret: clientSecret, locale: "en" }),
     [clientSecret]
   );
 
   const getClientSecret = async () => {
     setLoading(true);
     try {
-      // const res = await httpWithAuth().get("/billing");
-      // setClientSecret(res.data.client_secret);
+      const res = await httpWithAuth().post("/stripe/create-payment-intent");
+      const secret = res.data.latest_invoice.payment_intent.client_secret;
+      setClientSecret(secret);
     } catch (error) {
       showSnackbar("error", "Cannot get payment intent");
       history.push("/");
@@ -52,7 +57,7 @@ export const withStripe = (Component: React.ComponentType) => () => {
 
   return (
     <Elements stripe={stripePromise} options={stripeOptions}>
-      <Component />;
+      <Component clientSecret={clientSecret} />;
     </Elements>
   );
 };

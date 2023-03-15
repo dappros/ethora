@@ -11,7 +11,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
-import { loginUsername } from "../../http";
+import { loginUsername, TLoginSuccessResponse } from "../../http";
 import { Typography } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import { useStoreState } from "../../store";
@@ -34,6 +34,8 @@ const validate = (values: Record<string, string>) => {
 
 type TProps = {
   closeModal: () => void;
+  updateUser: (data: TLoginSuccessResponse) => void;
+
 };
 
 export function UsernameSignInForm(props: TProps) {
@@ -49,30 +51,8 @@ export function UsernameSignInForm(props: TProps) {
       setDisableSubmit(true);
       loginUsername(values.username, values.password)
         .then((result) => {
-          setUser({
-            firstName: result.data.user.firstName,
-            lastName: result.data.user.lastName,
-            description: result.data.user.description,
-            xmppPassword: result.data.user.xmppPassword,
-            _id: result.data.user._id,
-            walletAddress: result.data.user.defaultWallet.walletAddress,
-            token: result.data.token,
-            refreshToken: result.data.refreshToken,
-            profileImage: result.data.user.profileImage,
-            isProfileOpen: result.data.user.isProfileOpen,
-            isAssetsOpen: result.data.user.isAssetsOpen,
-            ACL: result.data.user.ACL,
-            appId: result.data.user.appId,
-            referrerId: result.data.user.referrerId || '',
-            isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
-            isAgreeWithTerms: result.data.user.isAgreeWithTerms,
-            stripeCustomerId: result.data.user.stripeCustomerId
-
-          });
+          props.updateUser(result.data)
           props.closeModal();
-          history.push(
-            `/profile/${result.data.user.defaultWallet.walletAddress}`
-          );
         })
         .catch((error) => {
           console.log(error);
