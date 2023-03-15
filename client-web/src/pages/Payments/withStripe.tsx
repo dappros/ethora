@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { FullPageSpinner } from "../../components/FullPageSpinner";
@@ -9,7 +9,7 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { httpWithAuth } from "../../http";
 
 export const withStripe = (Component: React.ComponentType) => () => {
-  const [clientSecret, setClientSecret] = useState("");
+  const [clientSecret, setClientSecret] = useState(config.STRIPE_SECRET_KEY);
   const [loading, setLoading] = useState(false);
 
   const { showSnackbar } = useSnackbar();
@@ -18,16 +18,16 @@ export const withStripe = (Component: React.ComponentType) => () => {
     () => loadStripe(config.STRIPE_PUBLISHABLE_KEY),
     []
   );
-  const stripeOptions = useMemo(
-    () => ({ clientSecret: clientSecret }),
+  const stripeOptions: StripeElementsOptions = useMemo(
+    () => ({ clientSecret: clientSecret, locale: 'en' }),
     [clientSecret]
   );
 
   const getClientSecret = async () => {
     setLoading(true);
     try {
-      const res = await httpWithAuth().get("/create-checkout-intent");
-      setClientSecret(res.data.client_secret);
+      // const res = await httpWithAuth().get("/billing");
+      // setClientSecret(res.data.client_secret);
     } catch (error) {
       showSnackbar("error", "Cannot get payment intent");
       history.push("/");
