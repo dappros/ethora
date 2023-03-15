@@ -62,8 +62,7 @@ const ProfileModal = (props: ProfileModalProps) => {
             value={description}
             onChangeText={text => onDescriptionChange(text)}
             placeholder="Enter your description"
-            placeholderTextColor={commonColors.primaryColor}
-          />
+            placeholderTextColor={commonColors.primaryColor} autoCompleteType={undefined}          />
 
           <TouchableOpacity
             onPress={setDescription}

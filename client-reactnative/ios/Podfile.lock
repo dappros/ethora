@@ -459,7 +459,7 @@ PODS:
     - React-Core
   - react-native-rsa-native (2.0.5):
     - React
-  - react-native-safe-area-context (4.4.1):
+  - react-native-safe-area-context (4.5.0):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -474,7 +474,7 @@ PODS:
     - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
     - React-Core
-  - react-native-webview (11.26.0):
+  - react-native-webview (11.26.1):
     - React-Core
   - React-perflogger (0.68.1)
   - React-RCTActionSheet (0.68.1):
@@ -558,7 +558,7 @@ PODS:
     - React-Core
   - RNCPushNotificationIOS (1.10.1):
     - React-Core
-  - RNDeviceInfo (8.7.1):
+  - RNDeviceInfo (10.4.0):
     - React-Core
   - RNFastImage (8.6.3):
     - React-Core
@@ -577,7 +577,7 @@ PODS:
     - RNFBApp
   - RNFS (2.20.0):
     - React-Core
-  - RNGestureHandler (2.8.0):
+  - RNGestureHandler (2.9.0):
     - React-Core
   - RNGoogleSignin (7.2.2):
     - GoogleSignIn (~> 6.1.0)
@@ -586,7 +586,7 @@ PODS:
     - React-Core
   - RNPermissions (3.6.1):
     - React-Core
-  - RNReanimated (2.14.1):
+  - RNReanimated (2.14.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -613,14 +613,14 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.18.2):
+  - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
   - RNSha256 (1.4.9):
     - React-Core
   - RNShare (7.9.1):
     - React-Core
-  - RNSVG (12.5.0):
+  - RNSVG (12.5.1):
     - React-Core
   - RNVectorIcons (9.2.0):
     - React-Core
@@ -989,11 +989,11 @@ SPEC CHECKSUMS:
   react-native-pdf: 33c622cbdf776a649929e8b9d1ce2d313347c4fa
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-rsa-native: 12132eb627797529fdb1f0d22fd0f8f9678df64a
-  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-tracking-transparency: 25ff1ff866e338c137c818bdec20526bb05ffcc1
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
-  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
+  react-native-webview: 9f111dfbcfc826084d6c507f569e5e03342ee1c1
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
   React-RCTActionSheet: 4b45da334a175b24dabe75f856b98fed3dfd6201
   React-RCTAnimation: d6237386cb04500889877845b3e9e9291146bc2e
@@ -1014,21 +1014,21 @@ SPEC CHECKSUMS:
   RNCCheckbox: 38989bbd3d7d536adf24ba26c6b3e6cefe0bea6f
   RNCClipboard: 2834e1c4af68697089cdd455ee4a4cdd198fa7dd
   RNCPushNotificationIOS: 87b8d16d3ede4532745e05b03c42cff33a36cc45
-  RNDeviceInfo: aad3c663b25752a52bf8fce93f2354001dd185aa
+  RNDeviceInfo: 749f2e049dcd79e2e44f134f66b73a06951b5066
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBAnalytics: ea1421b49a0bf5e5bb7274df4a330713d0e85d2e
   RNFBApp: e4439717c23252458da2b41b81b4b475c86f90c4
   RNFBAuth: 50ac123123b27241927e639c0ac9c8af17f05aa1
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
-  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: d7f8368b82d94f1dec964785d496387ca7f19092
   RNIap: 0f95fd117338bd1846e0a77600a02d16056f7795
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
-  RNReanimated: d466d50898ba2d63b254c7aef30e8ff991389155
-  RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
+  RNReanimated: 73afd1a9b4087e403163e0d300854cb99260c9b6
+  RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSha256: a6bc3640a34eb41907e363828b9ec742c274298d
   RNShare: a5dc3b9c53ddc73e155b8cd9a94c70c91913c43c
-  RNSVG: 6adc5c52d2488a476248413064b7f2832e639057
+  RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d

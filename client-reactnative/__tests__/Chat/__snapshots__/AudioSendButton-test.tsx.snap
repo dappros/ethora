@@ -1,0 +1,122 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<View
+  accessibilityLabel="Hold to record audio message"
+  style={
+    {
+      "alignItems": "center",
+      "flexDirection": "row",
+      "height": "100%",
+      "justifyContent": "center",
+      "paddingHorizontal": 5,
+      "position": "relative",
+    }
+  }
+>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={false}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "backgroundColor": "#2775EA",
+        "borderRadius": 50,
+        "padding": 5,
+      }
+    }
+  >
+    <Text
+      allowFontScaling={false}
+      selectable={false}
+      style={
+        [
+          {
+            "color": "white",
+            "fontSize": 40,
+          },
+          undefined,
+          {
+            "fontFamily": "Entypo",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          {},
+        ]
+      }
+    >
+      
+    </Text>
+  </View>
+  <View
+    style={
+      {
+        "position": "absolute",
+        "right": 133.5,
+      }
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+        }
+      }
+    >
+      <Text
+        style={
+          {
+            "color": "#003E9C",
+          }
+        }
+      >
+        00:00:00
+      </Text>
+      <View
+        style={
+          {
+            "marginLeft": 15,
+          }
+        }
+      >
+        <View
+          style={
+            [
+              {
+                "alignItems": "center",
+                "left": 0,
+                "position": "absolute",
+                "right": 0,
+              },
+              {
+                "alignItems": "center",
+                "bottom": 0,
+                "flexDirection": "row",
+                "justifyContent": "center",
+                "top": 0,
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              {
+                "height": 40,
+                "width": 40,
+              }
+            }
+          />
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;

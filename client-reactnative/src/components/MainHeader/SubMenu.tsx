@@ -22,7 +22,7 @@ const SubMenu = (props: SubMenuProps) => {
     <Box padding={2} width={'100%'}>
       <Text fontFamily={textStyles.semiBoldFont}>{title}</Text>
       {menuItems.map(
-        (item: {value: string; label: string; visible: boolean}) => {
+        (item: {value: string; label: string; visible: boolean, testID:string}) => {
           if (!item.visible) return null;
           return (
             <Menu.Item
@@ -30,6 +30,7 @@ const SubMenu = (props: SubMenuProps) => {
               _text={{
                 fontFamily: textStyles.lightFont,
               }}
+              testID={item.testID}
               onPress={() => onMenuItemPress(item.value)}
               key={item.label}>
               {item.label}

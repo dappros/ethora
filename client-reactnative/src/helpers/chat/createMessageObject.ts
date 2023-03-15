@@ -109,7 +109,7 @@ export const createMessageObject = (messageDetails = []) => {
     realImageURL: '',
     localURL: '',
     isStoredFile: false,
-    mimetype: '',
+    mimetype: undefined,
     duration: '',
     size: '',
     waveForm: '',

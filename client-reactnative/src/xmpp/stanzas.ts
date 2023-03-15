@@ -709,19 +709,10 @@ export const deleteMessageStanza = (
   messageId: string,
   xmpp: any,
 ) => {
-  // <message
-  //   from="olek@localhost"
-  //   id="1635229272917013"
-  //   to="test_olek@conference.localhost"
-  //   type="groupchat">
-  //   <body>Wow</body>
-  //   <delete id="1635229272917013" />
-  // </message>;
-
   const stanza = xml(
     'message',
-    {from: from + '@' + DOMAIN, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
-    xml('body', 'wow'),
+    {from: from, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
+    xml('body', ''),
     xml('delete', {
       id: messageId,
     }),
@@ -1066,7 +1057,6 @@ export const unAssignModerator = (from: string, to: string, xmpp: any) => {
   xmpp.send(message);
 };
 
-
 export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   //   <iq
   // from="oleksiika@localhost" type="get"
@@ -1087,36 +1077,6 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   );
 
   xmpp.send(message);
-};
-
-//stanza to change room background.
-export const changeRoomBackgroundStanza = (
-  from: string,
-  to: string,
-  roomThumbnail: string,
-  roomBackground: string,
-) => {
-  // <iq from="user_jid" type="set" id="set_room_profile">
-  //   <query xmlns="ns:getrooms:setprofile"
-  //       room_thumbnail="https://img.dxmpp.com/thumbnail.jpg"
-  //       room_background="https://img.dxmpp.com/background.jpg"
-  //       room="test12@conference.localhost"/>
-  // </iq>
-
-  const message = xml(
-    'iq',
-    {
-      from: from + '@' + DOMAIN,
-      type: 'set',
-      id: XMPP_TYPES.changeRoomBackground,
-    },
-    xml('query', {
-      xmlns: 'ns:getrooms:setprofile',
-      room_thumbnail: roomThumbnail,
-      room_background: roomBackground,
-      room: to,
-    }),
-  );
 };
 
 //stanza to change room description.

@@ -1,14 +1,10 @@
-import React, { useState } from "react";
+import React, {  } from "react";
 import {
-  CardNumberElement,
-  CardCvcElement,
   PaymentElement,
-  CardExpiryElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
 import { Box, Button, Container } from "@mui/material";
-import { config } from "../../config";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface ISubscriptions {}
@@ -17,6 +13,7 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
   const stripe = useStripe();
   const elements = useElements();
   const { showSnackbar } = useSnackbar();
+
   const handleSubmit = async (event: React.FormEvent) => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
@@ -50,6 +47,7 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
     }
   };
   return (
+   
     <Container maxWidth={"xs"}>
       <Box
         sx={{
@@ -60,7 +58,7 @@ export const Subscriptions: React.FC<ISubscriptions> = ({}) => {
           gap: 2,
         }}
       >
-        <PaymentElement />
+        <PaymentElement  />
         <Button variant="outlined" onClick={handleSubmit}>
           Submit
         </Button>

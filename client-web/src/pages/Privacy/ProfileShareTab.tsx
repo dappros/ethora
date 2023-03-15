@@ -2,12 +2,12 @@ import { Box, Tab, Tabs, } from '@mui/material';
 import * as React from 'react';
 import { deleteSharedLink, getSharedLinksService } from '../../http';
 import { useStoreState } from '../../store';
-import { walletToUsername } from '../../xmpp';
 import { generateProfileLink } from '../../utils';
 import { CONFERENCEDOMAIN } from "../../constants";
 import { QrModal } from '../Profile/QrModal';
 import { ManageTabPanel } from './ManageProfileTabPanel';
 import { AddTabPanel } from './AddProfileTabPanel';
+import { walletToUsername } from '../../utils/walletManipulation';
 
 interface ProfileShareTabProps {
 }

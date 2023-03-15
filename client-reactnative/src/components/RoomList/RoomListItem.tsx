@@ -23,7 +23,7 @@ interface RoomListProps {
   jid: string;
   name: string;
   counter: number;
-  participants: string;
+  participants: string|number;
   index: number;
   length: number;
 }

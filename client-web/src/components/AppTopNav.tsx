@@ -16,7 +16,7 @@ import {
   httpWithAuth,
   subscribeForPushNotifications,
 } from "../http";
-import xmpp, { walletToUsername } from "../xmpp";
+import xmpp from "../xmpp";
 import { TActiveRoomFilter, useStoreState } from "../store";
 
 import { Badge, Divider } from "@mui/material";
@@ -30,6 +30,7 @@ import { Menu } from "./Menu";
 import { ethers } from "ethers";
 import { DOMAIN } from "../constants";
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
+import { walletToUsername } from "../utils/walletManipulation";
 
 const coinImg = '/coin.png'
 function firstLetersFromName(fN: string, lN: string) {

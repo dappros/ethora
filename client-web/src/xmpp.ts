@@ -1,614 +1,13 @@
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
-import { Element } from "ltx";
-import { defaultChats } from "./config/config";
 import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
-import {
-  TActiveRoomFilter,
-  TMessageHistory,
-  TRoomRoles,
-  TUserChatRooms,
-  replaceMessageListItemProps,
-  useStoreState,
-  IMainMessage,
-} from "./store";
-import { sendBrowserNotification } from "./utils";
-import { history } from "./utils/history";
+import { useStoreState } from "./store";
+import { walletToUsername } from "./utils/walletManipulation";
+import { XmppHandler } from "./xmppHandler";
 
-let lastMsgId: string = "";
-let temporaryMessages: TMessageHistory[] = [];
-let temporaryReplaceMessages: replaceMessageListItemProps[] = [];
-let isGettingMessages: boolean = false;
-let isGettingFirstMessages: boolean = false;
-let lastRomJIDLoading: string = "";
+const xmppMessagesHandler = new XmppHandler();
 
-export function walletToUsername(str: string) {
-  if (str) {
-    return str.replace(/([A-Z])/g, "_$1").toLowerCase();
-  }
-  return "";
-}
-
-export function usernameToWallet(str: string) {
-  return str.replace(/_([a-z])/gm, (m1: string, m2: string) => {
-    return m2.toUpperCase();
-  });
-}
-const createMessage = (data: any, body: any, id: string, from: string) => {
-  let msg = {
-    id: Number(id),
-    body: body.getText(),
-    data: {
-      isSystemMessage: data.attrs.isSystemMessage,
-      photoURL: data.attrs.photoURL,
-      quickReplies: data.attrs.quickReplies,
-      roomJid: data.attrs.roomJid,
-      receiverMessageId: data.attrs?.receiverMessageId,
-      senderFirstName: data.attrs.senderFirstName,
-      senderJID: data.attrs.senderJID,
-      senderLastName: data.attrs.senderLastName,
-      senderWalletAddress: data.attrs.senderWalletAddress,
-      tokenAmount: Number(data.attrs.tokenAmount),
-      isMediafile: data.attrs?.isMediafile,
-      originalName: data.attrs?.originalName,
-      location: data.attrs?.location,
-      locationPreview: data.attrs?.locationPreview,
-      mimetype: data.attrs?.mimetype,
-      xmlns: data.attrs.xmlns,
-      isReply: data.attrs.isReply === "true" || false,
-      showInChannel: data.attrs.showInChannel === "true" || false,
-      isEdited: false,
-      mainMessage: undefined,
-    },
-    roomJID: from,
-    date: new Date().toISOString(),
-    key: Date.now() + Number(id),
-    coinsInMessage: 0,
-    numberOfReplies: 0,
-  };
-  if (data.attrs.mainMessage) {
-    try {
-      const parsedMessage = JSON.parse(data.attrs.mainMessage);
-      const mainMessage: IMainMessage = {
-        text: parsedMessage.text || "",
-        id: parsedMessage?.id,
-        userName: parsedMessage.userName || "",
-        createdAt: parsedMessage.createdAt,
-        fileName: parsedMessage.fileName,
-        imageLocation: parsedMessage.imageLocation,
-        imagePreview: parsedMessage.imagePreview,
-        mimeType: parsedMessage.mimeType,
-        originalName: parsedMessage.originalName,
-        size: parsedMessage.size,
-        duration: parsedMessage.duration,
-        waveForm: parsedMessage.waveForm,
-        attachmentId: parsedMessage.attachmentId,
-        wrappable: parsedMessage.wrappable === "true" || false,
-        nftId: parsedMessage.mainMessageNftId,
-        nftActionType: parsedMessage.nftActionType,
-        contractAddress: parsedMessage.contractAddress,
-        roomJid: parsedMessage.roomJid,
-      };
-      msg.data.mainMessage = mainMessage;
-    } catch (error) {
-      console.log(error, data.attrs.mainMessage);
-    }
-  }
-  return msg;
-};
-const updateTemporaryMessagesRepliesCount = (messageId: number) => {
-  const messageIndex = temporaryMessages.findIndex(
-    (item) => item.id === messageId
-  );
-  if (!messageId || isNaN(messageId) || messageIndex === -1) {
-    return;
-  }
-  const threadMessages = temporaryMessages.filter(
-    (item) => item.data.mainMessage?.id === messageId
-  );
-  temporaryMessages[messageIndex].numberOfReplies = threadMessages.length;
-};
-
-export const createMainMessageForThread = (
-  message: TMessageHistory
-): string => {
-  const data = {
-    text: message.body,
-    id: message.id,
-    userName: message.data.senderFirstName + " " + message.data.senderLastName,
-    createdAt: message.date,
-    fileName: message.data.originalName,
-    imageLocation: message.data?.location,
-    imagePreview: message.data?.locationPreview,
-    mimeType: message.data?.mimetype,
-    originalName: message.data?.originalName,
-    size: "",
-    duration: "",
-    waveForm: "",
-    attachmentId: "",
-    wrappable: "",
-    nftActionType: "",
-    contractAddress: "",
-    roomJid: message.data.roomJid,
-    nftId: "",
-  };
-  return JSON.stringify(data);
-};
-
-const getRoomGroup = (jid: string, userCount: number): TActiveRoomFilter => {
-  const splittedJid = jid.split("@")[0];
-  if (defaultChats[splittedJid]) {
-    console.log();
-    return "official";
-  }
-  return "groups";
-};
-
-const onRealtimeMessage = async (stanza: Element) => {
-  if (stanza.attrs.id === "sendMessage") {
-    const body = stanza?.getChild("body");
-    const data = stanza?.getChild("data");
-    const replace = stanza?.getChild("replace");
-    const archived = stanza?.getChild("archived");
-
-    const id = stanza.getChild("archived")?.attrs.id;
-    if (!data || !body || !id) {
-      return;
-    }
-
-    if (
-      !data.attrs.senderFirstName ||
-      !data.attrs.senderLastName ||
-      !data.attrs.senderJID
-    ) {
-      return;
-    }
-
-    const msg = createMessage(data, body, id, stanza.attrs.from);
-    const blackList = useStoreState
-      .getState()
-      .blackList.find((item) => item.user === msg.data.senderJID);
-
-    if (blackList) {
-      return;
-    }
-
-    if (replace) {
-      const replaceMessageId = Number(replace.attrs.id);
-      const messageString = body.getText();
-      useStoreState.getState().replaceMessage(replaceMessageId, messageString);
-    }
-
-    if (data.attrs.isReply) {
-      const messageId = Number(msg.data?.mainMessage?.id);
-      useStoreState.getState().setNumberOfReplies(messageId);
-    }
-    useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-    useStoreState.getState().updateMessageHistory(msg);
-    sendBrowserNotification(msg.body, () => {
-      history.push("/chat/" + msg.roomJID.split("@")[0]);
-    });
-  }
-};
-
-const onMessageHistory = async (stanza: any) => {
-  if (
-    stanza.is("message") &&
-    stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2"
-  ) {
-    const body = stanza
-      .getChild("result")
-      ?.getChild("forwarded")
-      ?.getChild("message")
-      ?.getChild("body");
-    const data = stanza
-      .getChild("result")
-      ?.getChild("forwarded")
-      ?.getChild("message")
-      ?.getChild("data");
-    const delay = stanza
-      .getChild("result")
-      ?.getChild("forwarded")
-      ?.getChild("delay");
-    const replace = stanza
-      .getChild("result")
-      ?.getChild("forwarded")
-      ?.getChild("message")
-      ?.getChild("replace");
-
-    const id = stanza.getChild("result")?.attrs.id;
-    if (!data || !body || !delay || !id) {
-      return;
-    }
-
-    if (
-      !data.attrs.senderFirstName ||
-      !data.attrs.senderLastName ||
-      !data.attrs.senderJID
-    ) {
-      return;
-    }
-
-    const msg = createMessage(data, body, id, stanza.attrs.from);
-
-    // console.log('TEST ', data.attrs)
-    const blackList = useStoreState
-      .getState()
-      .blackList.find((item) => item.user === msg.data.senderJID);
-
-    if (blackList) {
-      return;
-    }
-    //if current stanza has replace tag
-    if (replace) {
-      //if message loading
-      if (isGettingMessages) {
-        const replaceItem: replaceMessageListItemProps = {
-          replaceMessageId: Number(replace.attrs.id),
-          replaceMessageText: body.getText(),
-        };
-        //add the replace item, which has the id of the main message to be edited, in a temporory array
-        temporaryReplaceMessages.push(replaceItem);
-      }
-      //if message loading done
-      if (!isGettingMessages) {
-        const replaceMessageId = Number(replace.attrs.id);
-        const messageString = body.getText();
-        //replace body/text of message id in messageHistory array
-        useStoreState
-          .getState()
-          .replaceMessage(replaceMessageId, messageString);
-      }
-    } else {
-      temporaryMessages.push(msg);
-
-      if (!isGettingMessages) {
-        //check for messages in temp Replace message array agains the current stanza message id
-        const replaceItem = temporaryReplaceMessages.find(
-          (item) => item.replaceMessageId === msg.id
-        );
-        //if exists then replace the body with current stanza body
-        if (replaceItem) {
-          msg.body = replaceItem.replaceMessageText;
-        }
-        useStoreState.getState().setNewMessageHistory(msg);
-        useStoreState.getState().sortMessageHistory();
-      }
-
-      const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
-      if (
-        stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
-        stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
-        !isGettingFirstMessages &&
-        data.attrs.roomJid
-      ) {
-        useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-      }
-      if (data.attrs.isReply) {
-        const messageid = msg.data.mainMessage?.id;
-        useStoreState.getState().setNumberOfReplies(messageid);
-        updateTemporaryMessagesRepliesCount(messageid);
-      }
-    }
-  }
-};
-const onLastMessageArchive = (stanza: Element, xmpp: any) => {
-  if (
-    stanza.attrs.id === "paginatedArchive" ||
-    stanza.attrs.id === "GetArchive"
-  ) {
-    lastMsgId = String(
-      stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
-    );
-
-    if (isGettingMessages) {
-      useStoreState.getState().updateMessageHistory(temporaryMessages);
-      isGettingMessages = false;
-
-      temporaryMessages.forEach((item) => {
-        if (item.data.isSystemMessage && item.data.tokenAmount > 0) {
-          useStoreState
-            .getState()
-            .updateCoinsInMessageHistory(
-              Number(item.data.receiverMessageId),
-              String(item.data.senderJID),
-              Number(item.data.tokenAmount)
-            );
-        }
-      });
-
-      temporaryReplaceMessages.forEach((item) => {
-        useStoreState
-          .getState()
-          .replaceMessage(item.replaceMessageId, item.replaceMessageText);
-      });
-
-      useStoreState.getState().setLoaderArchive(false);
-      temporaryMessages = [];
-      isGettingFirstMessages = false;
-    }
-
-    if (lastRomJIDLoading && lastRomJIDLoading === stanza.attrs.from) {
-      useStoreState.getState().setLoaderArchive(false);
-      lastRomJIDLoading = "";
-      isGettingFirstMessages = false;
-    }
-  }
-};
-
-const onGetLastMessageArchive = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "sendMessage") {
-    const data = stanza.getChild("stanza-id");
-    if (data) {
-      xmpp.getLastMessageArchive(data.attrs.by);
-      return;
-    }
-    return onMessageHistory(stanza);
-  }
-};
-
-const onGetRoomInfo = (stanza: Element | any) => {
-  const userChatRooms = useStoreState.getState().userChatRooms;
-  const currentRoomData = userChatRooms.filter(
-    (e) => e.jid === stanza.attrs.from
-  )[0];
-  if (stanza.attrs.id === "roomInfo") {
-    if (stanza.children[0] && currentRoomData) {
-      const featureList = stanza.children[0].children.find(
-        (item) => item.attrs.xmlns === "jabber:x:data"
-      );
-      const roomDescription = featureList.children.find(
-        (item) => item.attrs.var === "muc#roominfo_description"
-      ).children[0]?.children[0];
-      const roomName = featureList.children.find(
-        (item) => item.attrs.var === "muc#roomconfig_roomname"
-      ).children[0]?.children[0];
-
-      const roomData = {
-        jid: currentRoomData.jid,
-        name: roomName,
-        room_background: currentRoomData.room_background,
-        room_thumbnail: currentRoomData.room_thumbnail,
-        users_cnt: currentRoomData.users_cnt,
-        unreadMessages: currentRoomData.unreadMessages,
-        composing: currentRoomData.composing,
-        toUpdate: currentRoomData.toUpdate,
-        description: roomDescription,
-      };
-      useStoreState.getState().updateUserChatRoom(roomData);
-    }
-  }
-};
-
-const onGetRoomMemberInfo = (stanza: Element | any) => {
-  if (stanza.attrs.id === "roomMemberInfo") {
-    if (stanza.children.length) {
-      const info = stanza.children[0].children.map((item) => item.attrs);
-      useStoreState.getState().setRoomMemberInfo(info);
-    }
-  }
-};
-
-const onChangeDescription = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "changeRoomDescription") {
-    // console.log(stanza)
-    xmpp.getRoomInfo(stanza.attrs.from);
-  }
-};
-
-const onChangeRoomName = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "changeRoomName") {
-    xmpp.getRoomInfo(stanza.attrs.from);
-  }
-};
-
-const onPresenceInRoom = (stanza: Element | any) => {
-  if (stanza.attrs.id === "presenceInRoom") {
-    const roomJID: string = stanza.attrs.from.split("/")[0];
-    const role: string = stanza?.children[1]?.children[0]?.attrs.role;
-    const elementObject: TRoomRoles = { roomJID: roomJID, role: role };
-    useStoreState.getState().setRoomRoles(elementObject);
-  }
-};
-
-const connectToUserRooms = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "getUserRooms") {
-    if (stanza.getChild("query")?.children) {
-      isGettingFirstMessages = true;
-      useStoreState.getState().setLoaderArchive(true);
-      let roomJID: string = "";
-      stanza.getChild("query")?.children.forEach((result: any) => {
-        const currentChatRooms = useStoreState.getState().userChatRooms;
-
-        if (result?.attrs.name) {
-          const currentSavedChatRoom = currentChatRooms.filter(
-            (el) => el.jid === result?.attrs.jid
-          );
-          if (
-            currentSavedChatRoom.length === 0 ||
-            currentSavedChatRoom[0].toUpdate
-          ) {
-            roomJID = result.attrs.jid;
-            xmpp.presenceInRoom(roomJID);
-            const roomData: TUserChatRooms = {
-              jid: roomJID,
-              name: result?.attrs.name,
-              room_background: result?.attrs.room_background,
-              room_thumbnail: result?.attrs.room_thumbnail,
-              users_cnt: result?.attrs.users_cnt,
-              unreadMessages: 0,
-              composing: "",
-              toUpdate: false,
-              description: "",
-              group: getRoomGroup(roomJID, +result?.attrs.users_cnt),
-            };
-            if (
-              currentSavedChatRoom.length > 0 &&
-              currentSavedChatRoom[0].toUpdate
-            ) {
-              useStoreState.getState().updateUserChatRoom(roomData);
-            } else {
-              useStoreState.getState().setNewUserChatRoom(roomData);
-            }
-            //get message history in the room
-            xmpp.getRoomArchiveStanza(roomJID, 1);
-            lastRomJIDLoading = roomJID;
-          }
-        }
-      });
-    }
-  }
-};
-
-const onComposing = (stanza: Element) => {
-  if (
-    stanza.attrs.id === "isComposing" ||
-    stanza.attrs.id === "pausedComposing"
-  ) {
-    const requestType = stanza.attrs.id;
-    const recipientID = String(stanza.attrs.to).split("@")[0];
-    const senderID = stanza.getChild("data").attrs.manipulatedWalletAddress;
-
-    if (recipientID === walletToUsername(senderID)) {
-      return;
-    }
-
-    if (requestType === "isComposing") {
-      useStoreState
-        .getState()
-        .updateComposingChatRoom(
-          stanza.attrs.from.toString().split("/")[0],
-          true,
-          stanza.getChild("data").attrs.fullName
-        );
-
-      setTimeout(
-        () =>
-          useStoreState
-            .getState()
-            .updateComposingChatRoom(
-              stanza.attrs.from.toString().split("/")[0],
-              false
-            ),
-        1500
-      );
-    }
-
-    if (stanza.attrs.id === "pausedComposing") {
-      useStoreState
-        .getState()
-        .updateComposingChatRoom(
-          stanza.attrs.from.toString().split("/")[0],
-          false
-        );
-    }
-  }
-};
-
-const getListOfRooms = (xmpp: any) => {
-  useStoreState.getState().clearUserChatRooms();
-  useStoreState.getState().setCurrentUntrackedChatRoom("");
-  useStoreState.getState().clearBlackList();
-
-  xmpp.client.send(xml("presence"));
-  xmpp.getArchive(xmpp.client?.jid?.toString());
-  Object.keys(defaultChats).forEach((roomJID) => {
-    xmpp.presenceInRoom(roomJID + CONFERENCEDOMAIN);
-  });
-  xmpp.getRooms();
-  xmpp.getBlackList();
-  useStoreState.getState().clearMessageHistory();
-};
-
-const onInvite = (stanza: Element, xmpp: any) => {
-  if (stanza.is("message")) {
-    const isArchiveInvite = stanza
-      .getChild("result")
-      ?.getChild("forwarded")
-      ?.getChild("message")
-      ?.getChild("x")
-      ?.getChild("invite");
-    if (stanza.getChild("x")?.getChild("invite") || isArchiveInvite) {
-      let jid = stanza.attrs.from;
-      if (isArchiveInvite) {
-        jid = stanza
-          .getChild("result")
-          ?.getChild("forwarded")
-          ?.getChild("message").attrs.from;
-      }
-      const currentChatRooms = useStoreState.getState().userChatRooms;
-      if (currentChatRooms.filter((el) => el.jid === jid).length === 0) {
-        xmpp.subsribe(jid);
-        xmpp.presenceInRoom(jid);
-        xmpp.getRooms();
-      }
-    } else {
-    }
-  } else {
-  }
-};
-
-const onBlackList = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "blackList") {
-    const blackList = stanza?.getChild("query").children.map((item: any) => ({
-      date: Number(item.attrs.date),
-      fullName: item.attrs.fullname,
-      user: item.attrs.user,
-    }));
-    useStoreState.getState().saveInBlackList(blackList);
-  }
-};
-
-const onRemoveFromBlackList = (stanza: Element, xmpp: any) => {
-  if (stanza.attrs.id === "removeFromBlackList") {
-    console.log(stanza);
-  }
-};
-const onNewSubscription = (stanza: Element, xmpp: XmppClass) => {
-  if (stanza.attrs.id === "newSubscription") {
-    xmpp.getRooms();
-  }
-};
-const onRoomDesignChange = (stanza: Element, xmpp: XmppClass) => {
-  if (stanza.attrs.id === "unsubscribe") {
-    xmpp.getRooms();
-  }
-  if (
-    stanza.attrs.id === "setRoomImage" ||
-    stanza.attrs.id === "setRoomBackground"
-  ) {
-    xmpp.getRoomInfo(stanza.attrs.from);
-  }
-};
-
-const onBan = (stanza: Element) => {
-  if (stanza.attrs.id === "ban") {
-    console.log(stanza, "ban stanza");
-  }
-};
-
-//when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
-const onSendReplaceMessageStanza = (stanza:any) => {
-  if(stanza.attrs.id === "replaceMessage"){
-    const replaceMessageId = Number(stanza.children.find(item => item.name === 'replace').attrs.id);
-    const messageString = stanza.children.find(item => item.name === 'body').children[0];
-    useStoreState.getState().replaceMessage(
-      replaceMessageId,
-      messageString
-    )
-  }
-}
-
-//when delete request is sent this listener will capture
-const onDeleteMessageStanza = (stanza:any) => {
-  if(stanza.attrs.id === 'deleteMessageStanza'){
-    console.log(stanza,"delete response");
-  }
-}
-
-
-
-class XmppClass {
+export class XmppClass {
   public client!: Client;
 
   init(walletAddress: string, password: string) {
@@ -628,27 +27,61 @@ class XmppClass {
 
     this.client.start();
 
-    this.client.on("online", (jid) => getListOfRooms(this));
-    this.client.on("stanza", onMessageHistory);
-    this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
-    this.client.on("stanza", (stanza) => onGetLastMessageArchive(stanza, this));
-    this.client.on("stanza", (stanza) => connectToUserRooms(stanza, this));
-    this.client.on("stanza", (stanza) => onLastMessageArchive(stanza, this));
-    this.client.on("stanza", (stanza) => onComposing(stanza));
-    this.client.on("stanza", (stanza) => onInvite(stanza, this));
-    this.client.on("stanza", (stanza) => onBlackList(stanza, this));
-    this.client.on("stanza", (stanza) => onGetRoomInfo(stanza));
-    this.client.on("stanza", (stanza) => onGetRoomMemberInfo(stanza));
-    this.client.on("stanza", (stanza) => onChangeDescription(stanza, this));
-    this.client.on("stanza", (stanza) => onChangeRoomName(stanza, this));
-    this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
-    this.client.on("stanza", (stanza) => onBan(stanza));
-    this.client.on("stanza", (stanza) => onRemoveFromBlackList(stanza, this));
-    this.client.on("stanza", (stanza) => onBan(stanza));
-    this.client.on("stanza", (stanza) => onNewSubscription(stanza, this));
-    this.client.on("stanza", (stanza) => onRoomDesignChange(stanza, this));
-    this.client.on("stanza", (stanza) => onSendReplaceMessageStanza(stanza));
-    this.client.on("stanza", (stanza) => onDeleteMessageStanza(stanza));
+    this.client.on("online", (jid) => xmppMessagesHandler.getListOfRooms(this));
+    this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onRealtimeMessage(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onGetLastMessageArchive(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.connectToUserRooms(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onLastMessageArchive(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onComposing(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onInvite(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onBlackList(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onGetRoomInfo(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onGetRoomMemberInfo(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onChangeDescription(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onChangeRoomName(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onPresenceInRoom(stanza)
+    );
+    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza));
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onRemoveFromBlackList(stanza, this)
+    );
+    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza));
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onNewSubscription(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onRoomDesignChange(stanza, this)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onSendReplaceMessageStanza(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onDeleteMessageStanza(stanza)
+    );
 
     this.client.on("offline", () => console.log("offline"));
     this.client.on("error", (error) => {
@@ -752,7 +185,6 @@ class XmppClass {
   }
 
   getVcard(username: string) {
-    console.log(username + "@" + this.client.jid?.getDomain());
     if (username !== this.client.jid?.getLocal()) {
       // get other vcard
       const message = xml(
@@ -859,11 +291,11 @@ class XmppClass {
     firstUserMessageID: string,
     amount: number
   ) => {
-    if (lastMsgId === firstUserMessageID) {
+    if (xmppMessagesHandler.lastMsgId === firstUserMessageID) {
       return;
     }
-    isGettingMessages = true;
-    isGettingFirstMessages = true;
+    xmppMessagesHandler.isGettingMessages = true;
+    xmppMessagesHandler.isGettingFirstMessages = true;
     useStoreState.getState().setLoaderArchive(true);
     const message = xml(
       "iq",
@@ -887,7 +319,7 @@ class XmppClass {
   };
 
   getLastMessageArchive(chat_jid: string) {
-    isGettingMessages = true;
+    xmppMessagesHandler.isGettingMessages = true;
     let message = xml(
       "iq",
       {
@@ -1038,7 +470,7 @@ class XmppClass {
         nftId: data?.nftId,
         isReply: data?.isReply,
         mainMessage: data?.mainMessage,
-        roomJid: data?.roomJid
+        roomJid: data?.roomJid,
       })
     );
 
@@ -1402,13 +834,10 @@ class XmppClass {
       })
     );
     this.client.send(stanza);
-  }
+  };
 
   //stanza to delete message
-  deleteMessageStanza = (
-    roomJid: string,
-    messageId: string,
-  ) => {
+  deleteMessageStanza = (roomJid: string, messageId: string) => {
     // <message
     //   from="olek@localhost"
     //   id="1635229272917013"
@@ -1417,21 +846,21 @@ class XmppClass {
     //   <body>Wow</body>
     //   <delete id="1635229272917013" />
     // </message>;
-  
+
     const stanza = xml(
-      'message',
+      "message",
       {
         from: this.client.jid?.toString(),
-        to: roomJid, 
-        id: 'deleteMessageStanza', 
-        type: 'groupchat'
+        to: roomJid,
+        id: "deleteMessageStanza",
+        type: "groupchat",
       },
-      xml('body', 'wow'),
-      xml('delete', {
+      xml("body", "wow"),
+      xml("delete", {
         id: messageId,
-      }),
+      })
     );
-  
+
     this.client.send(stanza);
   };
 }

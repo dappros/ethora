@@ -15,8 +15,8 @@ import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
 import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
 import Organizations from "./Organizations/Organizations";
-import { Subscriptions } from "./Payments/Subscriptions";
-import {Billing} from "./Payments/Billing";
+import Subscriptions from "./Payments/";
+import { Billing } from "./Payments/Billing";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -203,8 +203,12 @@ export const Routes = () => {
           component={TransactionAddressDetails}
           exact
         />
-        <Route path={'/'}>
-          <Redirect to={user.walletAddress ?  '/profile/'+ user.walletAddress : '/signIn'}  />
+        <Route path={"/"}>
+          <Redirect
+            to={
+              user.walletAddress ? "/profile/" + user.walletAddress : "/signIn"
+            }
+          />
         </Route>
       </Switch>
       <Snackbar />

@@ -10,7 +10,7 @@ import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Message } from "../Messages/Message";
 import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
-import xmpp, { createMainMessageForThread } from "../../../xmpp";
+import xmpp from "../../../xmpp";
 import * as DOMPurify from "dompurify";
 import { SystemMessage } from "../Messages/SystemMessage";
 import CustomMessageInput from "./CustomMessageInput";
@@ -18,6 +18,7 @@ import { TProfile } from "../../../pages/Profile/types";
 import { IMessagePosition } from "../../../pages/ChatInRoom/Chat";
 import { getPosition, stripHtml } from "../../../utils";
 import { useHistory, useParams } from "react-router";
+import { createMainMessageForThread } from "../../../utils/createMessage";
 
 interface ThreadContainerProps {
   roomData: {

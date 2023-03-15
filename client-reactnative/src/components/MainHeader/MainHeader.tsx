@@ -70,10 +70,11 @@ export const MainHeader = observer(() => {
   };
 
   const onTabPress = async (key: string) => {
+    // if user clicked on the Meta button in the header and he is in the chat screen
     if (route.name === homeStackRoutes.ChatScreen && key === ROOM_KEYS.groups) {
       chatStore.toggleMetaNavigation(true);
       chatStore.changeActiveChats(key);
-
+      // if current chat room is not meta one - navigate to latest meta room
       if (
         //@ts-ignore
         !(

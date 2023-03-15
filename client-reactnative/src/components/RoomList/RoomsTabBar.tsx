@@ -10,6 +10,7 @@ import {observer} from 'mobx-react-lite';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
 import { checkIsDefaultChat } from '../../helpers/chat/checkIsDefaultChat';
+import { roomListProps } from '../../stores/chatStore';
 
 var _ = require('lodash');
 const ROOM_KEYS = {
@@ -73,12 +74,13 @@ export const RoomsTabBar = observer(() => {
       roomsWithDate,
       (el:any) => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
       'desc',
-    ).concat(roomsWithoutDate);
+    ).concat(roomsWithoutDate) as roomListProps[];
   }, [
     chatStore.roomList,
     chatStore.activeChats,
     chatStore.roomsInfoMap.isUpdated,
   ]);
+
 
   useEffect(() => {
     if (chatStore.roomList) {

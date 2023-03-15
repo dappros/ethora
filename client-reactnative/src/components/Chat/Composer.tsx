@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Composer, ComposerProps} from 'react-native-gifted-chat';
+import {Composer, ComposerProps,} from 'react-native-gifted-chat';
 import {
   MentionPartType,
   PartType,
