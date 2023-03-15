@@ -152,7 +152,6 @@ export function ChatInRoom() {
   const currentPickedRoom = useMemo(() => {
     return userChatRooms.find((item) => item.jid === currentRoom);
   }, [userChatRooms, currentRoom]);
-console.log(currentPickedRoom)
   const mainWindowMessages = messages.filter(
     (item: TMessageHistory) =>
       item.data.roomJid === roomJID + CONFERENCEDOMAIN &&
@@ -428,7 +427,7 @@ console.log(currentPickedRoom)
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      xmpp.pausedComposing(user.walletAddress, roomData.jid);
+      xmpp.pausedComposing(user.walletAddress, roomData?.jid);
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [myMessage]);
