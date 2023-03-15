@@ -17,6 +17,8 @@ export interface IMenu {}
 
 const menuAccountSection = (walletAddress: string) => ({
   name: "Account",
+  visible: true,
+
   items: [
     {
       name: "My Profile",
@@ -36,6 +38,8 @@ const menuAccountSection = (walletAddress: string) => ({
 
 const menuActionsSection = {
   name: "Actions",
+  visible: true,
+
   items: [
     { name: "New room", id: "/newchat", visible: true },
 
@@ -50,6 +54,7 @@ const menuActionsSection = {
 
 const idActionsSection = (user: TUser) => ({
   name: "Id",
+  visible: true,
   items: [
     { name: "Privacy and Data", id: "/privacy", visible: true },
     {
@@ -63,6 +68,7 @@ const idActionsSection = (user: TUser) => ({
 });
 const billingSection = (user: TUser) => ({
   name: "Billing",
+  visible: !!user.stripeCustomerId || !!user.company.length,
   items: [
     { name: "Subscription", id: "/payments", visible: user.stripeCustomerId },
     {
@@ -77,6 +83,7 @@ const initMenuItems = (user: TUser, ACL: any) => {
     menuAccountSection(user.walletAddress),
     {
       name: "Messaging",
+      visible: true,
       items: [{ name: "Chats", id: "/chat/none", visible: true }],
     },
     menuActionsSection,
@@ -87,6 +94,8 @@ const initMenuItems = (user: TUser, ACL: any) => {
   if (ACL?.result?.application?.appUsers?.read) {
     items.push({
       name: "Users",
+      visible: true,
+
       items: [{ name: "Users", id: "/users", visible: true }],
     });
   }
@@ -94,6 +103,7 @@ const initMenuItems = (user: TUser, ACL: any) => {
   if (user?.ACL?.masterAccess) {
     items.push({
       name: "Admin",
+      visible: true,
       items: [{ name: "Statistics", id: "/statistics", visible: true }],
     });
   }
@@ -168,6 +178,9 @@ export const Menu: React.FC<IMenu> = ({}) => {
         onClose={handleCloseUserMenu}
       >
         {menuItems.map((el, i) => {
+          if (!el.visible) {
+            return null;
+          }
           return (
             <Box key={el.name}>
               {i !== 0 && <Divider />}
