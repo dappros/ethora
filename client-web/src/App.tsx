@@ -26,6 +26,10 @@ const lightTheme = createTheme({
   },
 });
 
+export const stripePromise = loadStripe(
+  config.STRIPE_PUBLISHABLE_KEY
+);
+
 function App() {
   const viewMode = useStoreState((state) => state.viewMode);
   const user = useStoreState((state) => state.user);
@@ -35,9 +39,7 @@ function App() {
   return (
     <Router history={history}>
       <SnackbarContextProvider>
-        <Elements stripe={stripe}
-         options={stripeOptions}
-         >
+        <Elements stripe={stripePromise}>
           <ThemeProvider theme={viewMode === "light" ? lightTheme : darkTheme}>
             <div className="app-root">
               {!user.firstName && <AppTopNavAuth />}
