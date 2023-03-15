@@ -9,6 +9,7 @@ import {
 } from "./pages/Profile/types";
 import { useStoreState } from "./store";
 import qs from 'qs'
+import type { Stripe } from 'stripe'
 
 const { APP_JWT = "", API_URL = "" } = config;
 
@@ -44,8 +45,8 @@ export type TLoginSuccessResponse = {
   token: string;
   refreshToken: string;
   user: TUser;
-  subscriptions?: {data: any[]};
-  paymentMethods?: {data: any[]};
+  subscriptions?: {data: Stripe.Subscription[]};
+  paymentMethods?: {data: Stripe.PaymentMethod[]};
   isAllowedNewAppCreate: boolean
 };
 
