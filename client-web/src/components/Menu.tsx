@@ -68,7 +68,7 @@ const billingSection = (user: TUser) => ({
     {
       name: "Organizations",
       id: "/organizations",
-      visible: user.isAllowedNewAppCreate,
+      visible: !!user.company.length,
     },
   ],
 });

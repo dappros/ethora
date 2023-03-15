@@ -332,6 +332,9 @@ export function getProvenanceTransacitons(walletAddress: string, nftId) {
 export function getExplorerHistory() {
   return http.get<ILineChartData>(`/explorer/history`);
 }
+export function getUserCompany(token: string) {
+  return httpWithToken(token).get<{result: ICompany[]}>(`/company`);
+}
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
 }

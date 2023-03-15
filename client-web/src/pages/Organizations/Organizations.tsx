@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Box,
@@ -13,8 +13,10 @@ import {
 import { FormikErrors, useFormik } from "formik";
 import countries from "../../assets/countries.json";
 import { LoadingButton } from "@mui/lab";
-import { httpWithAuth } from "../../http";
+import { getUserCompany, httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { useStoreState } from "../../store";
+import { useHistory } from "react-router";
 type Props = {};
 interface FormValues {
   companyName: string;
@@ -34,11 +36,23 @@ const validate = (values: FormValues): FormikErrors<FormValues> => {
     if (value.length < 3 && key !== "companyRegistrationNumber") {
       errors[key] = "Must be 3 characters or more";
     }
+    if (value.length < 5 && key === 'companyAddress') {
+      errors[key] = "Must be 3 characters or more";
+    }
   });
   return errors;
 };
 const Organizations: React.FC<Props> = ({}) => {
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
+  const setUser = useStoreState((s) => s.setUser);
+
+  const user = useStoreState((s) => s.user);
+  const history = useHistory();
+  const getCompany = async () => {
+    const res = await getUserCompany(user.token);
+    setUser({ ...user, company: res.data.result });
+  };
+
   const formik = useFormik<FormValues>({
     initialValues: {
       companyName: "",
@@ -82,9 +96,15 @@ const Organizations: React.FC<Props> = ({}) => {
       setSubmitting(true);
       try {
         const res = await httpWithAuth().post("/company/", body);
-        showSnackbar('success', 'Company added')
+        await getCompany();
+        if (user.subscriptions.data.length) {
+          history.push("/");
+        } else {
+          history.push("/payments");
+        }
+        showSnackbar("success", "Company added");
       } catch (error) {
-        showSnackbar('error', 'Something went wrong')
+        showSnackbar("error", "Something went wrong");
         console.log(error);
       }
 
@@ -92,6 +112,10 @@ const Organizations: React.FC<Props> = ({}) => {
       setSubmitting(false);
     },
   });
+
+  useEffect(() => {
+    getCompany();
+  }, []);
 
   return (
     <Container maxWidth="xl">

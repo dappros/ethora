@@ -48,7 +48,7 @@ function hasACLAdmin(acl: http.IUserAcl): boolean {
 
 export default function UsersTable() {
   const apps = useStoreState((state) => state.apps);
-  const ownerAccess = useStoreState((state) => state.user.ACL.ownerAccess);
+  const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
   const user = useStoreState((state) => state.user);
   const [showNewUser, setShowNewUser] = React.useState(false);
   const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
