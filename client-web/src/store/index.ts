@@ -4,6 +4,7 @@ import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
 import { TCombinedMimeType } from "../constants";
 import { stat } from "fs";
+import type { Stripe } from "stripe";
 
 export type TUser = {
   firstName: string;
@@ -26,7 +27,8 @@ export type TUser = {
   appId?: string;
   isAgreeWithTerms: boolean;
   stripeCustomerId?: string;
-  paymentMethods?: any[]
+  subscriptions?: { data: Stripe.Subscription[] };
+  paymentMethods?: { data: Stripe.PaymentMethod[] };
 };
 
 type TMode = "light" | "dark";

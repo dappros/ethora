@@ -61,7 +61,17 @@ const idActionsSection = (user: TUser) => ({
     { name: "Sign out", id: "logout", visible: true },
   ],
 });
-
+const billingSection = (user: TUser) => ({
+  name: "Billing",
+  items: [
+    { name: "Subscription", id: "/payments", visible: true },
+    {
+      name: "Organizations",
+      id: "/organizations",
+      visible: user.isAllowedNewAppCreate,
+    },
+  ],
+});
 const initMenuItems = (user: TUser, ACL: any) => {
   let items = [
     menuAccountSection(user.walletAddress),
@@ -70,6 +80,7 @@ const initMenuItems = (user: TUser, ACL: any) => {
       items: [{ name: "Chats", id: "/chat/none", visible: true }],
     },
     menuActionsSection,
+    billingSection(user),
     idActionsSection(user),
   ];
 
