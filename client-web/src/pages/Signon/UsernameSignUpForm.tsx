@@ -78,6 +78,7 @@ export function UsernameSignUpForm(props: TProps) {
               ACL: result.data.user.ACL,
               isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
               isAgreeWithTerms: result.data.user.isAgreeWithTerms,
+              stripeCustomerId: result.data.user.stripeCustomerId
             });
             props.closeModal();
             history.push(

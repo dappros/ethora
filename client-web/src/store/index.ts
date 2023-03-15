@@ -25,6 +25,8 @@ export type TUser = {
   isAllowedNewAppCreate: boolean;
   appId?: string;
   isAgreeWithTerms: boolean;
+  stripeCustomerId?: string;
+  paymentMethods?: any[]
 };
 
 type TMode = "light" | "dark";

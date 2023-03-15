@@ -66,6 +66,7 @@ export function UsernameSignInForm(props: TProps) {
             referrerId: result.data.user.referrerId || '',
             isAllowedNewAppCreate: result.data.isAllowedNewAppCreate,
             isAgreeWithTerms: result.data.user.isAgreeWithTerms,
+            stripeCustomerId: result.data.user.stripeCustomerId
 
           });
           props.closeModal();

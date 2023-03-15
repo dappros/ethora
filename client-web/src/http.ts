@@ -12,33 +12,41 @@ import qs from 'qs'
 
 const { APP_JWT = "", API_URL = "" } = config;
 
+export type TDefaultWallet = {
+  walletAddress: string;
+}
+
 export type TUser = {
-  defaultWallet: {
-    walletAddress: string;
-  };
-  description?: string;
-  tags: string[];
-  roles: string[];
-  _id: string;
   firstName: string;
   lastName: string;
-  userName: string;
-  ACL: {
+  description?: string;
+  xmppPassword?: string;
+  _id: string;
+  walletAddress: string;
+  token: string;
+  refreshToken?: string;
+  profileImage?: string;
+  referrerId?: string;
+  ACL?: {
     ownerAccess: boolean;
+    masterAccess: boolean;
   };
-  appId: string;
-  xmppPassword: string;
-  profileImage: string;
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
-  referrerId?: string;
+  isAllowedNewAppCreate: boolean;
+  appId?: string;
+  isAgreeWithTerms: boolean;
+  stripeCustomerId?: string;
+  defaultWallet: TDefaultWallet;
 };
 
 export type TLoginSuccessResponse = {
-  success: true;
   token: string;
   refreshToken: string;
   user: TUser;
+  subscriptions?: {data: any[]};
+  paymentMethods?: {data: any[]};
+  isAllowedNewAppCreate: boolean
 };
 
 export interface IUser {
@@ -201,7 +209,7 @@ http.interceptors.response.use(undefined, (error) => {
 });
 
 export const loginUsername = (username: string, password: string) => {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     { username, password },
     { headers: { Authorization: APP_JWT } }
@@ -385,7 +393,7 @@ export function registerByEmail(
 }
 
 export function loginEmail(email: string, password: string) {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
       email,
@@ -407,7 +415,7 @@ export function loginSocial(
   loginType: string,
   authToken: string = "authToken"
 ) {
-  return http.post(
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
       idToken,

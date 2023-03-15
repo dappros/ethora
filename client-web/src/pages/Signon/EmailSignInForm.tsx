@@ -69,7 +69,8 @@ export function EmailSingInForm(props: TProps) {
             ACL: user.ACL,
             referrerId: user.referrerId || "",
             isAllowedNewAppCreate: resp.data.isAllowedNewAppCreate,
-            isAgreeWithTerms: user.isAgreeWithTerms
+            isAgreeWithTerms: user.isAgreeWithTerms,
+            stripeCustomerId: user.stripeCustomerId
 
           });
           history.push(`/profile/${user.defaultWallet.walletAddress}`);

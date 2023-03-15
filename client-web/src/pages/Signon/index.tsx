@@ -150,7 +150,7 @@ export default function Signon() {
   };
 
   const updateUserInfo = (
-    user: any,
+    user: http.TUser,
     tokens: {
       refreshToken: string;
       token: string;
@@ -174,6 +174,7 @@ export default function Signon() {
       referrerId: user.referrerId || "",
       isAllowedNewAppCreate: tokens.isAllowedNewAppCreate,
       isAgreeWithTerms: user.isAgreeWithTerms,
+      stripeCustomerId: user.stripeCustomerId
     });
   };
 
