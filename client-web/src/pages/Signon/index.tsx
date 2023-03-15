@@ -44,6 +44,10 @@ export default function Signon() {
   const signUpPlan = new URLSearchParams(search).get("signUpPlan");
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
+      if (user.stripeCustomerId && !user.company) {
+        history.push(`/organizations`);
+        return;
+      }
       if (user.stripeCustomerId && !user.paymentMethods) {
         history.push(`/payments`);
         return;
@@ -174,6 +178,7 @@ export default function Signon() {
       stripeCustomerId: loginData.user.stripeCustomerId,
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
+      company: loginData.user.company
     });
   };
 

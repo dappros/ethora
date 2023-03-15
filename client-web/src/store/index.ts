@@ -6,6 +6,9 @@ import { TCombinedMimeType } from "../constants";
 import { stat } from "fs";
 import type { Stripe } from "stripe";
 
+
+
+
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -29,6 +32,7 @@ export type TUser = {
   stripeCustomerId?: string;
   subscriptions?: { data: Stripe.Subscription[] };
   paymentMethods?: { data: Stripe.PaymentMethod[] };
+  company?: http.ICompany[]
 };
 
 type TMode = "light" | "dark";

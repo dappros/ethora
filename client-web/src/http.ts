@@ -16,7 +16,17 @@ const { APP_JWT = "", API_URL = "" } = config;
 export type TDefaultWallet = {
   walletAddress: string;
 }
-
+export interface ICompany {
+  name: string;
+  address: string;
+  town: string;
+  regionOrState: string;
+  postCode: string;
+  country: string;
+  phoneNumber: string;
+  registrationNumber: string;
+  payeReference: string;
+}
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -39,6 +49,7 @@ export type TUser = {
   isAgreeWithTerms: boolean;
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
+  company?: ICompany[]
 };
 
 export type TLoginSuccessResponse = {

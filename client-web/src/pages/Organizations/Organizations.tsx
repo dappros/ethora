@@ -13,6 +13,8 @@ import {
 import { FormikErrors, useFormik } from "formik";
 import countries from "../../assets/countries.json";
 import { LoadingButton } from "@mui/lab";
+import { httpWithAuth } from "../../http";
+import { useSnackbar } from "../../context/SnackbarContext";
 type Props = {};
 interface FormValues {
   companyName: string;
@@ -36,6 +38,7 @@ const validate = (values: FormValues): FormikErrors<FormValues> => {
   return errors;
 };
 const Organizations: React.FC<Props> = ({}) => {
+  const {showSnackbar} = useSnackbar()
   const formik = useFormik<FormValues>({
     initialValues: {
       companyName: "",
@@ -51,9 +54,41 @@ const Organizations: React.FC<Props> = ({}) => {
 
     validate,
 
-    onSubmit: async ({}, { setSubmitting }) => {
+    onSubmit: async (
+      {
+        companyAddress,
+        companyName,
+        companyRegistrationNumber,
+        businessPhoneNumber,
+        region,
+        town,
+        postCode,
+        country,
+        taxNumber,
+      },
+      { setSubmitting, resetForm }
+    ) => {
+      const body = {
+        name: companyName,
+        address: companyAddress,
+        town: town,
+        regionOrState: region,
+        postCode: postCode,
+        country: country,
+        phoneNumber: businessPhoneNumber,
+        registrationNumber: companyRegistrationNumber,
+        payeReference: taxNumber,
+      };
       setSubmitting(true);
+      try {
+        const res = await httpWithAuth().post("/company/", body);
+        showSnackbar('success', 'Company added')
+      } catch (error) {
+        showSnackbar('error', 'Something went wrong')
+        console.log(error);
+      }
 
+      resetForm();
       setSubmitting(false);
     },
   });
