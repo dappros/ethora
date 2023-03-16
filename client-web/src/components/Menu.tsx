@@ -70,7 +70,11 @@ const billingSection = (user: TUser) => ({
   name: "Billing",
   visible: !!user.stripeCustomerId || !!user.company.length,
   items: [
-    { name: "Subscription", id: "/payments", visible: user.stripeCustomerId },
+    {
+      name: "Subscription",
+      id: "/payments",
+      visible: user.stripeCustomerId && !user.subscriptions.data.length,
+    },
     {
       name: "Organizations",
       id: "/organizations",
