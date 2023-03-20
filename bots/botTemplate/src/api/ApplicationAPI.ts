@@ -5,9 +5,9 @@ import Config from "../config/Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
     authData: IAuthorization | undefined;
-    private http: any;
     baseURL: string;
     private readonly tokenJWT: string;
+    private http: any;
     private tokenData: IBalance;
 
     constructor() {
@@ -53,6 +53,7 @@ export default class ApplicationAPI implements IApplicationAPI {
 
             if (currentBalanceData) {
                 this.tokenData = currentBalanceData;
+                !Config.getData().tokenName ? Config.setBotTokenName(currentBalanceData.tokenName) : null;
                 return this.authData;
             }
 
@@ -98,6 +99,26 @@ export default class ApplicationAPI implements IApplicationAPI {
         } catch (error: any) {
             const errorData = error.response.data;
             throw new Error(errorData);
+        }
+    }
+
+    async transferToken(amount: number, wallet: string): Promise<any> {
+        try {
+            const request = await this.http.post('tokens/transfer', {
+                tokenId: this.tokenData.tokenSymbol,
+                tokenName: this.tokenData.tokenName,
+                amount: amount,
+                toWallet: wallet
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: this.authData.token,
+                },
+            });
+            return request.data;
+        } catch (error) {
+            JSON.stringify(error)
+            throw error;
         }
     }
 
