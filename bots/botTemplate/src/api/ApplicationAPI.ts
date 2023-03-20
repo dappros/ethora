@@ -1,6 +1,6 @@
 import axios from "axios";
 import {IAuthData, IAuthorization} from "./IAuthorization";
-import {IApplicationAPI} from "./IApplicationAPI";
+import {IApplicationAPI, IWalletBalance} from "./IApplicationAPI";
 import Config from "../config/Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
@@ -49,7 +49,7 @@ export default class ApplicationAPI implements IApplicationAPI {
             return this.authData;
         } catch (error: any) {
             const errorData = error.response.data;
-            if(errorData.errors[0].msg === "User do not found"){
+            if (errorData.errors[0].msg === "User do not found") {
                 return errorData;
             }
             throw new Error(errorData);
@@ -70,6 +70,21 @@ export default class ApplicationAPI implements IApplicationAPI {
                 },
             });
             return this._collectRequestData(request);
+        } catch (error: any) {
+            const errorData = error.response.data;
+            throw new Error(errorData);
+        }
+    }
+
+    async getBalance(): Promise<IWalletBalance> {
+        try {
+            const request = await this.http.get('wallets/balance', {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: this.authData.token,
+                },
+            });
+            return request.data;
         } catch (error: any) {
             const errorData = error.response.data;
             throw new Error(errorData);
