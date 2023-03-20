@@ -9,6 +9,7 @@ export interface IConfigData {
     apiDomain: string;
     tokenJWT: string;
     presenceTimer: number;
+    tokenName?: string;
     connectionRooms: string[];
 }
 
@@ -28,6 +29,7 @@ export interface IConfigInit {
     botImg?: string;
     presenceTimer?: number;
     connectionRooms?: string[];
+    tokenName?: string;
     useAppName?: boolean;
     useAppImg?: boolean;
     useInvites?: boolean;
@@ -46,4 +48,6 @@ export interface IConfig {
     setBotName(name: string): void;
 
     setBotImg(src: string): void;
+
+    setBotTokenName(name: string): void;
 }
