@@ -26,7 +26,7 @@ export class Session implements ISession {
     }
 
     getUsername(): string {
-        return this.user.firstName;
+        return `${this.user.firstName} ${this.user.lastName}`;
     }
 
     sendTextMessage(message: string, keyboard?: IKeyboard) {
@@ -45,6 +45,14 @@ export class Session implements ISession {
 
         const roomsString = String(rooms);
         return this.bot.connector.connectToRooms(roomsString.split(","));
+    }
+
+    sendCoinsToUser(amount: number, wallet?: string): void {
+        const receiverWallet = wallet ? wallet : this.user.walletAddress;
+        const configData = Config.getData();
+        const systemMessage = `${configData.botName} Bot -> ${amount} ${configData.tokenName} -> ${this.getUsername()}`;
+
+        return this.bot.connector.sendCoins(amount, systemMessage, receiverWallet)
     }
 
     resetState(): void {

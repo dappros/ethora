@@ -7,7 +7,7 @@ import ApplicationAPI from "../api/ApplicationAPI";
 import {IAuthorization} from "../api/IAuthorization";
 import {Message} from "../core/Message";
 import {XmppSender} from "../client/XmppSender";
-import {ISendTextMessageOptions} from "../client/IXmppSender";
+import {ISendSystemMessageOptions, ISendTextMessageOptions} from "../client/IXmppSender";
 import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
 import Logger from "../utils/Logger";
@@ -70,6 +70,28 @@ export default class Connector extends EventEmitter implements IConnector {
         }
         Sender.sendTextMessage(data);
         return Promise.resolve();
+    }
+
+    sendCoins(amount: number, message: string, wallet: string) {
+        if (!this.botAuthData) {
+            throw Logger.error(new Error('Authorization data not found. Without this, it is impossible to send a coins.'));
+        }
+
+        this.appAPI.transferToken(amount, wallet).then(() => {
+            const Sender = new XmppSender();
+            const data: ISendSystemMessageOptions = {
+                amount,
+                message: message,
+                roomJID: this.getCurrentRoomJID(),
+                senderData: this.botAuthData.data
+            }
+            Sender.sendSystemMessage(data);
+            return Promise.resolve();
+        }).catch(error => {
+            throw Logger.error(new Error(`Error sending coin: ${error}`));
+        })
+
+
     }
 
     _collectMessage(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): IMessageProps {
@@ -175,11 +197,11 @@ export default class Connector extends EventEmitter implements IConnector {
         const stanzaType: TMessageType = stanza.attrs.id;
         const isArchiveInvite = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.getChild('x')?.getChild('invite');
 
-        if(isArchiveInvite) {
+        if (isArchiveInvite) {
             let lastArchiveJID = '';
             const inviteArchiveJID = stanza.getChild('result')?.getChild('forwarded')?.getChild('message')?.attrs.from;
 
-            if(lastArchiveJID !== inviteArchiveJID){
+            if (lastArchiveJID !== inviteArchiveJID) {
                 this.connectToRooms([inviteArchiveJID]);
             }
             lastArchiveJID = inviteArchiveJID;

@@ -15,6 +15,7 @@ export interface IConnector {
     getUniqueSessionKey(): string;
     getUser(): IUser;
     send(message: string, keyboard?: IKeyboard): Promise<void>;
+    sendCoins(amount: number, message: string, wallet: string)
     connectToRooms(connectionRooms: string[]): Promise<void>;
     botRegistration(username: string, password: string): any;
     listen(): any;
