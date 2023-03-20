@@ -20,6 +20,7 @@ export interface IBotData {
     password: string;
     tokenJWT: string;
     botName?: string;
+    tokenName?: string;
     useAppName?: boolean;
     useAppImg?: boolean;
     useInvites?: boolean;

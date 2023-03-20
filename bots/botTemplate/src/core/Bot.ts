@@ -260,6 +260,7 @@ export default class Bot implements IBot {
             tokenJWT: data.tokenJWT,
             isProduction: data.isProduction ? data.isProduction : false,
             botImg: data.botImg ? data.botImg : '',
+            tokenName: data.tokenName ? data.tokenName : '',
             presenceTimer: filteredPresenceTimer,
             connectionRooms: data.connectionRooms ? data.connectionRooms : [],
             useAppName: isAppName,
