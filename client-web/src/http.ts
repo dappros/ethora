@@ -348,6 +348,14 @@ export function checkExtWallet(walletAddress: string) {
     { headers: { Authorization: APP_JWT } }
   );
 }
+interface ISubscriptionResponse {
+  paymentMethods: {data: Stripe.PaymentMethod[]},
+  subscriptions: {data: Stripe.Subscription[]}
+}
+
+export function getSubscriptions() {
+  return httpWithAuth().get<ISubscriptionResponse>('/stripe/subscriptions')
+}
 
 export function registerSignature(
   walletAddress: string,

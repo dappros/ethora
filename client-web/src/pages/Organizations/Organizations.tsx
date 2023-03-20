@@ -13,7 +13,7 @@ import {
 import { FormikErrors, useFormik } from "formik";
 import countries from "../../assets/countries.json";
 import { LoadingButton } from "@mui/lab";
-import { getUserCompany, httpWithAuth } from "../../http";
+import { getSubscriptions, getUserCompany, httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useStoreState } from "../../store";
 import { useHistory, useLocation } from "react-router";
@@ -52,11 +52,26 @@ const Organizations: React.FC<Props> = ({}) => {
     const res = await getUserCompany(user.token);
     setUser({ ...user, company: res.data.result });
   };
-  const payment = new URLSearchParams(window.location.search).get("payment");
+  const payment = new URLSearchParams(location.search).get("payment");
+
+  const getUserSubscriptions = async () => {
+    try {
+      const res = await getSubscriptions();
+      console.log(res.data);
+      setUser({
+        ...user,
+        paymentMethods: res.data.paymentMethods,
+        subscriptions: res.data.subscriptions,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     if (payment === "success") {
       showSnackbar("success", "Success! Payment received.");
     }
+    getUserSubscriptions();
   }, []);
 
   const formik = useFormik<FormValues>({
