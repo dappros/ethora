@@ -30,7 +30,7 @@ export const withStripe = (Component: React.FC<ISecret>) => () => {
   const getClientSecret = async () => {
     setLoading(true);
     try {
-      const res = await httpWithAuth().post("/stripe/create-payment-intent");
+      const res = await httpWithAuth().post("/stripe/subscriptions");
       const secret = res.data.latest_invoice.payment_intent.client_secret;
       setClientSecret(secret);
     } catch (error) {

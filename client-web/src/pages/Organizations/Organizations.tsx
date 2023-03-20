@@ -16,7 +16,7 @@ import { LoadingButton } from "@mui/lab";
 import { getUserCompany, httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useStoreState } from "../../store";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 type Props = {};
 interface FormValues {
   companyName: string;
@@ -36,7 +36,7 @@ const validate = (values: FormValues): FormikErrors<FormValues> => {
     if (value.length < 3 && key !== "companyRegistrationNumber") {
       errors[key] = "Must be 3 characters or more";
     }
-    if (value.length < 5 && key === 'companyAddress') {
+    if (value.length < 5 && key === "companyAddress") {
       errors[key] = "Must be 3 characters or more";
     }
   });
@@ -45,13 +45,19 @@ const validate = (values: FormValues): FormikErrors<FormValues> => {
 const Organizations: React.FC<Props> = ({}) => {
   const { showSnackbar } = useSnackbar();
   const setUser = useStoreState((s) => s.setUser);
-
+  const location = useLocation();
   const user = useStoreState((s) => s.user);
   const history = useHistory();
   const getCompany = async () => {
     const res = await getUserCompany(user.token);
     setUser({ ...user, company: res.data.result });
   };
+  const payment = new URLSearchParams(window.location.search).get("payment");
+  useEffect(() => {
+    if (payment === "success") {
+      showSnackbar("success", "Success! Payment received.");
+    }
+  }, []);
 
   const formik = useFormik<FormValues>({
     initialValues: {
