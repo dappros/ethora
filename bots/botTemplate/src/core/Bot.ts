@@ -13,6 +13,7 @@ import {IConfigInit} from "../config/IConfig";
 import Logger from "../utils/Logger";
 import {IStepData, IStepper, TStep} from "./IStepper";
 import {Stepper} from "./Stepper";
+import {IApplicationAPI} from "../api/IApplicationAPI";
 
 
 export default class Bot implements IBot {
@@ -64,10 +65,10 @@ export default class Bot implements IBot {
         return this.stepper;
     }
 
-    async processMessage(message: Message) {
+    async processMessage(message: Message, api: IApplicationAPI) {
         const session = await this.getSession(message);
         const stepper = this.getStepper(session);
-        const context: IBotContext = {session, message, stepper};
+        const context: IBotContext = {session, message, stepper, api};
 
         this
             .processHandlers(this.handlers, context)
@@ -76,10 +77,10 @@ export default class Bot implements IBot {
             });
     }
 
-    async processPresence(message: Message) {
+    async processPresence(message: Message, api: IApplicationAPI) {
         const session = await this.getSession(message);
         const stepper = this.getStepper(session);
-        const context: IBotContext = {session, message, stepper};
+        const context: IBotContext = {session, message, stepper, api};
         const {lastPresenceTime} = session.state;
         let dateDifference: number;
         const difference = Config.getData().presenceTimer;
