@@ -1,6 +1,6 @@
 import axios from "axios";
 import {IAuthData, IAuthorization} from "./IAuthorization";
-import {IApplicationAPI, IWalletBalance} from "./IApplicationAPI";
+import {IApplicationAPI, IBalance, IWalletBalance} from "./IApplicationAPI";
 import Config from "../config/Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
@@ -8,6 +8,7 @@ export default class ApplicationAPI implements IApplicationAPI {
     private http: any;
     baseURL: string;
     private readonly tokenJWT: string;
+    private tokenData: IBalance;
 
     constructor() {
         this.tokenJWT = Config.getData().tokenJWT;
@@ -46,7 +47,16 @@ export default class ApplicationAPI implements IApplicationAPI {
                 success: request.data.success,
                 data: this._collectRequestData(request)
             };
-            return this.authData;
+
+            const balance = await this.getBalance();
+            const currentBalanceData = this.getBalanceByDefaultToken(balance);
+
+            if (currentBalanceData) {
+                this.tokenData = currentBalanceData;
+                return this.authData;
+            }
+
+            throw new Error('Default token not found.');
         } catch (error: any) {
             const errorData = error.response.data;
             if (errorData.errors[0].msg === "User do not found") {
@@ -89,6 +99,11 @@ export default class ApplicationAPI implements IApplicationAPI {
             const errorData = error.response.data;
             throw new Error(errorData);
         }
+    }
+
+    getBalanceByDefaultToken(balance: IWalletBalance): IBalance {
+        const balanceObj = balance.balance.find((item) => item.tokenName === balance.defaultToken);
+        return balanceObj || null;
     }
 
     _collectRequestData(data: any): IAuthData {
