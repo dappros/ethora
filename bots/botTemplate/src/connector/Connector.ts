@@ -209,7 +209,7 @@ export default class Connector extends EventEmitter implements IConnector {
 
     _presenceEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
         const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
-        this.emit(ConnectorEvent.receivePresence, receivedMessage);
+        this.emit(ConnectorEvent.receivePresence, receivedMessage, this.appAPI);
     }
 
     _inviteEvent(stanzaBody: any): void {
@@ -220,7 +220,7 @@ export default class Connector extends EventEmitter implements IConnector {
     _messageEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
         const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
         Logger.info('Received: ' + receivedMessage.getText());
-        this.emit(ConnectorEvent.receiveMessage, receivedMessage);
+        this.emit(ConnectorEvent.receiveMessage, receivedMessage, this.appAPI);
     }
 }
 
