@@ -8,6 +8,13 @@ export interface ISendTextMessageOptions {
     keyboard?: IKeyboard,
 }
 
+export interface ISendSystemMessageOptions {
+    roomJID: string,
+    senderData: IAuthData,
+    message: string,
+    amount: number,
+}
+
 export interface IXmppSender{
     sendTextMessage(data: ISendTextMessageOptions): void;
 }
