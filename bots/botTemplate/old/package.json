@@ -1,0 +1,15 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node -r dotenv/config client.js dotenv_config_path=.env.production",
+    "dev": "node -r dotenv/config client.js dotenv_config_path=.env.development"
+  },
+  "dependencies": {
+    "@xmpp/client": "^0.13.1",
+    "@xmpp/debug": "^0.13.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "ethers": "^5.6.9",
+    "mongoose": "^6.3.8"
+  }
+}
