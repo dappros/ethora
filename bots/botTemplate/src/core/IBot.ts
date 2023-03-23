@@ -43,5 +43,5 @@ export interface IBot {
     getSession(message: IMessage): Promise<ISession>;
     processMessage(message: Message, api: IApplicationAPI);
     processHandlers(handlers: BotHandler[], context: IBotContext, api: IApplicationAPI): any;
-    use(patternOrHandler: BotHandler | RegExp | string, handler?: BotHandler, handlerStep?: TStep,): any;
+    use(possiblePattern: BotHandler | RegExp | string, handler?: BotHandler, handlerStep?: TStep,): any;
 }
