@@ -268,7 +268,8 @@ export default class Bot implements IBot {
             useInvites: typeof data.useInvites == "boolean" ? data.useInvites : false,
             usePresence: usePresence,
             useRoomsArchive: useRoomsArchive,
-            useNameInMsg: useNameInMsg
+            useNameInMsg: useNameInMsg,
+            useTyping: typeof data.useTyping == "boolean" ? data.useTyping : false
         }
     }
 }

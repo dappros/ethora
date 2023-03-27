@@ -20,7 +20,8 @@ class Config implements IConfig {
             useInvites: data.useInvites,
             usePresence: data.usePresence,
             useRoomsArchive: data.useRoomsArchive,
-            useNameInMsg: data.useNameInMsg
+            useNameInMsg: data.useNameInMsg,
+            useTyping: data.useTyping
         }
 
         const baseDomain = data.isProduction ? "dxmpp.com" : "dev.dxmpp.com";
@@ -58,6 +59,10 @@ class Config implements IConfig {
 
         if (data.useNameInMsg) {
             Logger.info('The username is displayed in messages.')
+        }
+
+        if (data.useTyping) {
+            Logger.info('Typing enabled')
         }
         return;
     }

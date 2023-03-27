@@ -20,6 +20,7 @@ export interface IConfigStatuses {
     usePresence?: boolean;
     useRoomsArchive?: boolean;
     useNameInMsg?: boolean;
+    useTyping?: boolean
 }
 
 export interface IConfigInit {
@@ -36,6 +37,7 @@ export interface IConfigInit {
     usePresence?: boolean;
     useRoomsArchive?: boolean;
     useNameInMsg?: boolean;
+    useTyping?: boolean;
 }
 
 export interface IConfig {
