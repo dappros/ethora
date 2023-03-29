@@ -12,7 +12,7 @@ import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
 import Logger from "../utils/Logger";
 import {XmppRoom} from "../client/XmppRoom";
-import {IApplicationAPI} from "../api/IApplicationAPI";
+import {IApplicationAPI, ITransaction} from "../api/IApplicationAPI";
 
 export default class Connector extends EventEmitter implements IConnector {
     username: string;
@@ -94,7 +94,7 @@ export default class Connector extends EventEmitter implements IConnector {
 
     }
 
-    _collectMessage(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): IMessageProps {
+    _collectMessage(stanzaBody: any, stanzaData: any, stanzaType: TMessageType, transaction?: ITransaction): IMessageProps {
         if (!this.botAuthData || !this.stanza) {
             throw Logger.error(new Error('Authorization data not found. This data is required to generate a message.'));
         }
@@ -111,7 +111,8 @@ export default class Connector extends EventEmitter implements IConnector {
                 mainMessageText: stanzaData.attrs.mainMessageText ? String(stanzaData.attrs.mainMessageText) : "",
                 mainMessageId: stanzaData.attrs.mainMessageId ? String(stanzaData.attrs.mainMessageId) : "",
                 mainMessageUserName: stanzaData.attrs.mainMessageUserName ? String(stanzaData.attrs.mainMessageUserName) : "",
-                push: toBooleanType(stanzaData.attrs.push)
+                push: toBooleanType(stanzaData.attrs.push),
+                transaction: transaction ? transaction : undefined
             },
             message: stanzaBody ? String(stanzaBody.getText()) : "",
             user: this.getUser(),
@@ -214,24 +215,49 @@ export default class Connector extends EventEmitter implements IConnector {
 
         if (stanzaBody && messageSender === 'user') {
 
+            //Processing the receipt of coins by the bot
+            if (
+                stanzaData &&
+                stanzaData.attrs.isSystemMessage === "true" &&
+                stanzaData.attrs.tokenAmount > 0 &&
+                stanzaData.attrs.transactionId &&
+                stanza.attrs.to.split("/")[0] === this.xmpp.client.jid?.toString().split("/")[0]
+            ) {
+                this.appAPI.getTransactions(this.botAuthData.data.walletAddress).then(result => {
+                    const transaction = result.items.find(el => el.to === this.botAuthData.data.walletAddress && el._id === stanzaData.attrs.transactionId);
+                    if(transaction){
+                        return this._receivingCoinsEvent(stanzaBody, stanzaData, stanzaType, transaction);
+                    }
+                    return Logger.error(new Error(`No matching transaction found.`));
+                }).catch(error => {
+                    return Logger.error(new Error(`Failed to get bot transaction list. ${error}`));
+                })
+            }
+
             // Processing an incoming chat room invitation
             if (Config.getConfigStatuses().useInvites) {
-                if (stanza.getChild('x') && stanza.getChild('x').getChild('invite')) {
+                if (stanza.getChild('x') && stanza.getChild('x').getChild('invite') && stanzaData.attrs.isSystemMessage === "false") {
                     this._inviteEvent(stanzaBody);
                 }
             }
 
             //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
-            if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage") {
+            if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage" && stanzaData.attrs.isSystemMessage  === "false") {
                 this._messageEvent(stanzaBody, stanzaData, stanzaType);
             }
 
         }
     }
 
+    _receivingCoinsEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType, transaction: ITransaction): void {
+        const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType, transaction));
+        Logger.info(`Coins received from: ${stanzaData.attrs.senderWalletAddress}`);
+        this.emit(ConnectorEvent.receiveMessage, receivedMessage, this.appAPI, 'coinReceived');
+    }
+
     _presenceEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
         const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
-        this.emit(ConnectorEvent.receivePresence, receivedMessage, this.appAPI);
+        this.emit(ConnectorEvent.receivePresence, receivedMessage, this.appAPI, 'presence');
     }
 
     _inviteEvent(stanzaBody: any): void {
@@ -242,7 +268,7 @@ export default class Connector extends EventEmitter implements IConnector {
     _messageEvent(stanzaBody: any, stanzaData: any, stanzaType: TMessageType): void {
         const receivedMessage = new Message(this._collectMessage(stanzaBody, stanzaData, stanzaType));
         Logger.info('Received: ' + receivedMessage.getText());
-        this.emit(ConnectorEvent.receiveMessage, receivedMessage, this.appAPI);
+        this.emit(ConnectorEvent.receiveMessage, receivedMessage, this.appAPI, 'message');
     }
 }
 
