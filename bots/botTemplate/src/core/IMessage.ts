@@ -1,4 +1,5 @@
 import {IUser} from "./IUser";
+import {ITransaction} from "../api/IApplicationAPI";
 
 export enum MessageSender { bot, user }
 
@@ -17,6 +18,7 @@ export interface IMessageProps {
         mainMessageId: string;
         mainMessageUserName: string;
         push: boolean;
+        transaction: ITransaction | undefined;
     };
     message: string;
     user: IUser;
