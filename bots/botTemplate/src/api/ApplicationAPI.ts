@@ -1,6 +1,6 @@
 import axios from "axios";
 import {IAuthData, IAuthorization} from "./IAuthorization";
-import {IApplicationAPI, IBalance, IWalletBalance} from "./IApplicationAPI";
+import {IApplicationAPI, IBalance, ITransactions, IWalletBalance} from "./IApplicationAPI";
 import Config from "../config/Config";
 
 export default class ApplicationAPI implements IApplicationAPI {
@@ -125,6 +125,23 @@ export default class ApplicationAPI implements IApplicationAPI {
     getBalanceByDefaultToken(balance: IWalletBalance): IBalance {
         const balanceObj = balance.balance.find((item) => item.tokenName === balance.defaultToken);
         return balanceObj || null;
+    }
+
+    async getTransactions(walletAddress: string): Promise<ITransactions> {
+        try {
+            const request = await this.http.get('explorer/transactions', {
+                limit: 50, offset: 0, walletAddress: walletAddress
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: this.authData.token,
+                },
+            });
+            return request.data;
+        } catch (error: any) {
+            const errorData = error.response.data;
+            throw new Error(errorData);
+        }
     }
 
     _collectRequestData(data: any): IAuthData {
