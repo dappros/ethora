@@ -7,11 +7,14 @@ import {IStepper, TStep} from "./IStepper";
 import {Message} from "./Message";
 import {IApplicationAPI} from "../api/IApplicationAPI";
 
+export type TMessageType = 'presence' | 'message' | 'coinReceived';
+
 export interface IBotContext {
     session: ISession;
     message: IMessage;
     stepper: IStepper;
-    api: IApplicationAPI
+    api: IApplicationAPI;
+    type: TMessageType;
     params?: object;
 }
 
@@ -42,7 +45,7 @@ export interface IBot {
     sessionStore: ISessionStore;
     connector: IConnector;
     getSession(message: IMessage): Promise<ISession>;
-    processMessage(message: Message, api: IApplicationAPI);
+    processMessage(message: Message, api: IApplicationAPI, type: TMessageType);
     processHandlers(handlers: BotHandler[], context: IBotContext, api: IApplicationAPI): any;
     use(possiblePattern: BotHandler | RegExp | string, handler?: BotHandler, handlerStep?: TStep,): any;
 }

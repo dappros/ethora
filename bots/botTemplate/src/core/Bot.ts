@@ -1,4 +1,4 @@
-import {BotHandler, IBot, IBotContext, IBotData} from "./IBot";
+import {BotHandler, IBot, IBotContext, IBotData, TMessageType} from "./IBot";
 import {ISessionState} from "./ISessionState";
 import {ISessionStore} from "../stores/ISessionStore";
 import MemorySessionStore from "../stores/MemorySessionStore";
@@ -65,10 +65,14 @@ export default class Bot implements IBot {
         return this.stepper;
     }
 
-    async processMessage(message: Message, api: IApplicationAPI) {
+    async processMessage(message: Message, api: IApplicationAPI, type: TMessageType) {
         const session = await this.getSession(message);
         const stepper = this.getStepper(session);
-        const context: IBotContext = {session, message, stepper, api};
+
+        const transaction = message.data.messageData.transaction;
+        transaction ? session.setState({lastTransaction: transaction}) : null;
+
+        const context: IBotContext = {session, message, stepper, api, type};
 
         this
             .processHandlers(this.handlers, context)
@@ -77,10 +81,10 @@ export default class Bot implements IBot {
             });
     }
 
-    async processPresence(message: Message, api: IApplicationAPI) {
+    async processPresence(message: Message, api: IApplicationAPI, type: TMessageType) {
         const session = await this.getSession(message);
         const stepper = this.getStepper(session);
-        const context: IBotContext = {session, message, stepper, api};
+        const context: IBotContext = {session, message, stepper, api, type};
         const {lastPresenceTime} = session.state;
         let dateDifference: number;
         const difference = Config.getData().presenceTimer;
@@ -157,6 +161,11 @@ export default class Bot implements IBot {
                 }
             }
 
+            //Processing of incoming coins
+            if(ctx.type === 'coinReceived'){
+                return this._useCoinReceived(pattern, handler, ctx, next);
+            }
+
             //Processing an incoming RegExp pattern
             if (pattern instanceof RegExp) {
                 return this._useRegExp(pattern, handler, ctx, next);
@@ -228,6 +237,12 @@ export default class Bot implements IBot {
         return next();
     }
 
+    _useCoinReceived(pattern: RegExp | string | BotHandler, handler: BotHandler, ctx: IBotContext, next: any) {
+        if (typeof pattern === 'string' && pattern === "coinReceived") {
+            return handler(ctx, next);
+        }
+        return ctx.session.sendTextMessage(`Thanks for the ${ctx.message.data.messageData.tokenAmount} coins!`);
+    }
     _collectConfigurationData(data: IBotData): IConfigInit {
         let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
         let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;
