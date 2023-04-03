@@ -68,8 +68,8 @@ export default class Connector extends EventEmitter implements IConnector {
             roomJID: this.getCurrentRoomJID(),
             senderData: this.botAuthData.data
         }
-        Sender.sendTextMessage(data);
-        return Promise.resolve();
+
+        return Promise.resolve(Sender.sendTextMessage(data));
     }
 
     sendCoins(amount: number, message: string, wallet: string) {
@@ -192,7 +192,7 @@ export default class Connector extends EventEmitter implements IConnector {
     }
 
     _eventRouter(stanza: any): void {
-        const messageSender: 'bot' | 'user' = this.botAuthData.data.botJID === stanza.attrs.from.split("/").pop() ? 'bot' : 'user';
+        const messageSender: 'bot' | 'user' = this.botAuthData.data.botJID === stanza.attrs.from.split('/')[1] ? 'bot' : 'user';
         const stanzaBody: any = stanza.getChild('body');
         const stanzaData: any = stanza.getChild('data');
         const stanzaType: TMessageType = stanza.attrs.id;
@@ -243,6 +243,8 @@ export default class Connector extends EventEmitter implements IConnector {
 
             //If there is "data" in the incoming "stanza", then these are message and the bot is processing it.
             if (stanza.is("message") && stanzaData && stanzaBody && stanzaType === "sendMessage" && stanzaData.attrs.isSystemMessage  === "false") {
+
+                // console.log("SUKA => ", stanzaBody.getText(), this.botAuthData.data.botJID, stanza.attrs.from.split('/')[1])
                 this._messageEvent(stanzaBody, stanzaData, stanzaType);
             }
 
