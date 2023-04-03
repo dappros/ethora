@@ -4,7 +4,7 @@ import Config from "../config/Config";
 import {ISendSystemMessageOptions, ISendTextMessageOptions, IXmppSender, TTyping} from "./IXmppSender";
 
 export class XmppSender implements IXmppSender {
-    sendTextMessage(data: ISendTextMessageOptions): void {
+    async sendTextMessage(data: ISendTextMessageOptions): Promise<void> {
         const configData = Config.getData();
 
         const xmlData = xml(
@@ -28,7 +28,7 @@ export class XmppSender implements IXmppSender {
             }),
             xml("body", {}, data.message)
         );
-        this.sendWithTyping(xmlData, data.roomJID, data.senderData.walletAddress, data.message);
+        return await this.sendWithTyping(xmlData, data.roomJID, data.senderData.walletAddress, data.message);
     }
 
     sendSystemMessage(data: ISendSystemMessageOptions): void {
@@ -73,15 +73,17 @@ export class XmppSender implements IXmppSender {
         XmppClient.sender(xmlData);
     }
 
-    sendWithTyping(xml: any, roomJID: string, botWalletAddress: string, message: string): void {
+    async sendWithTyping(xml: any, roomJID: string, botWalletAddress: string, message: string): Promise<void> {
         if (Config.getConfigStatuses().useTyping) {
             this.sendTyping(roomJID, 'isComposing', botWalletAddress)
 
-            setTimeout(() => {
-                XmppClient.sender(xml);
-                this.sendTyping(roomJID, 'pausedComposing', botWalletAddress);
-
-            }, this._getWritingTime(message))
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    XmppClient.sender(xml);
+                    this.sendTyping(roomJID, 'pausedComposing', botWalletAddress);
+                    resolve();
+                }, this._getWritingTime(message))
+            })
 
         } else {
             XmppClient.sender(xml)
@@ -90,10 +92,10 @@ export class XmppSender implements IXmppSender {
 
     _getWritingTime(message: string): number {
         if (message.length <= 120) {
-            return 2000
+            return 3000
         }
         if (message.length <= 250 && message.length > 120) {
-            return 3500
+            return 4000
         }
         if (message.length <= 400 && message.length > 250) {
             return 5000
