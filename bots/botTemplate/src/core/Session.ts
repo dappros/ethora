@@ -29,13 +29,25 @@ export class Session implements ISession {
         return `${this.user.firstName} ${this.user.lastName}`;
     }
 
-    sendTextMessage(message: string, keyboard?: IKeyboard) {
+    async sendTextMessage(message: string | string[], keyboard?: IKeyboard) {
         const configStatuses = Config.getConfigStatuses();
-        let textMsg = message;
-        this.isNew = false;
         configStatuses.usePresence ? this.setState({lastPresenceTime: new Date()}) : null;
-        configStatuses.useNameInMsg ? textMsg = `${this.getUsername()} ${message}` : null;
-        return this.bot.connector.send(textMsg, keyboard);
+        this.isNew = false;
+
+        if (Array.isArray(message)) {
+            for (const [index, msg] of message.entries()) {
+                let textMsg = msg;
+                configStatuses.useNameInMsg && Number(index) === 0 ? textMsg = `${this.getUsername()} \n${msg}` : null;
+                if (Number(index) === message.length - 1) {
+                    return this.bot.connector.send(textMsg, keyboard)
+                }
+                  await this.bot.connector.send(textMsg)
+            }
+        } else {
+            let textMsg = message;
+            configStatuses.useNameInMsg ? textMsg = `${this.getUsername()} \n ${message}` : null;
+            return this.bot.connector.send(textMsg, keyboard);
+        }
     }
 
     subscribeToChatRoom(rooms: string | string[]) {

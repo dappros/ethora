@@ -8,7 +8,7 @@ export interface ISession {
     initialState: ISessionState;
     isNew: boolean;
     getUsername(): string;
-    sendTextMessage(message: string, keyboard?: IKeyboard): Promise<any>;
+    sendTextMessage(message: string | string[], keyboard?: IKeyboard): Promise<any>;
     sendCoinsToUser(amount: number, wallet?: string): void;
     subscribeToChatRoom(rooms: string | string[]): Promise<any>;
     resetState(): void;
