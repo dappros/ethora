@@ -11,6 +11,7 @@ import { IMessage, IMessageProps, MessageSender } from './core/IMessage';
 import { ISession } from './core/ISession';
 import { ISessionState } from './core/ISessionState';
 import { ISessionStore } from './stores/ISessionStore';
+import { IKeyboard } from './client/types/IKeyboard';
 
 export {
     Bot,
@@ -32,5 +33,6 @@ export {
     IUser,
     IConnector,
     ISessionStore,
-    IMessageProps
+    IMessageProps,
+    IKeyboard,
 };
