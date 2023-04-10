@@ -34,7 +34,9 @@ export class Config implements IConfig {
             password: this.data.password,
             tokenJWT: this.data.token,
             botName: this.data.username,
+            botImg: this.data.avatar,
             useTyping: true,
+            useNameInMsg: false,
             connectionRooms: this.data.rooms
         }
     }

@@ -11,7 +11,9 @@ export interface IBotInit {
     password: string;
     tokenJWT: string;
     botName: string;
+    botImg: string;
     useTyping: boolean;
+    useNameInMsg: boolean;
     connectionRooms: string[];
 }
 
