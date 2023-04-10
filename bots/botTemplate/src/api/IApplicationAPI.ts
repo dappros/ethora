@@ -57,4 +57,15 @@ export interface IApplicationAPI {
     transferToken(amount: number, wallet: string): Promise<any>;
     getBalance(): Promise<any>;
     getTransactions(walletAddress: string): Promise<ITransactions>;
+    deployNfmt(
+        type: string,
+        name: string,
+        description: string,
+        owner: string,
+        beneficiaries: string[],
+        splitPercents: number[],
+        costs: string[],
+        attachmentId: string,
+        maxSupplies: number[]
+    ): Promise<any>;
 }

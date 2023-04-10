@@ -127,6 +127,46 @@ export default class ApplicationAPI implements IApplicationAPI {
         return balanceObj || null;
     }
 
+    async deployNfmt(
+        type: string,
+        name: string,
+        description: string,
+        owner: string,
+        beneficiaries: string[],
+        splitPercents: number[],
+        costs: string[],
+        attachmentId: string,
+        maxSupplies: number[]
+    ): Promise<any> {
+        try {
+            const request = await this.http.post(
+                '/tokens/items/nfmt',
+                {
+                    type,
+                    name,
+                    description,
+                    owner,
+                    beneficiaries,
+                    splitPercents,
+                    costs,
+                    attachmentId,
+                    maxSupplies,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: this.authData.token,
+                    },
+                }
+            )
+
+            return request.data
+        } catch (error) {
+            console.log(JSON.stringify(error))
+            throw error;
+        }
+    }
+
     async getTransactions(walletAddress: string): Promise<ITransactions> {
         try {
             const request = await this.http.get('explorer/transactions', {

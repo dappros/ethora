@@ -1,7 +1,13 @@
 import XmppClient from "./XmppClient";
 import {xml} from "@xmpp/client";
 import Config from "../config/Config";
-import {ISendSystemMessageOptions, ISendTextMessageOptions, IXmppSender, TTyping} from "./IXmppSender";
+import {
+    ISendMediaMessageOptions,
+    ISendSystemMessageOptions,
+    ISendTextMessageOptions,
+    IXmppSender,
+    TTyping
+} from "./IXmppSender";
 
 export class XmppSender implements IXmppSender {
     async sendTextMessage(data: ISendTextMessageOptions): Promise<void> {
@@ -29,6 +35,40 @@ export class XmppSender implements IXmppSender {
             xml("body", {}, data.message)
         );
         return await this.sendWithTyping(xmlData, data.roomJID, data.senderData.walletAddress, data.message);
+    }
+
+     async sendMediaMessage(data: ISendMediaMessageOptions): Promise<void> {
+        const configData = Config.getData();
+
+        const xmlData = xml(
+            "message",
+            {
+                to: data.roomJID,
+                type: "groupchat",
+                id: "sendMessage",
+                from: XmppClient.client.jid?.toString(),
+            },
+            xml("data", {
+                xmlns: configData.service,
+                senderFirstName: configData.botName,
+                senderLastName: 'Bot',
+                photoURL: configData.botImg,
+                senderJID: data.senderData.botJID,
+                senderWalletAddress: data.senderData.walletAddress,
+                roomJid: data.roomJID,
+                isSystemMessage: false,
+                tokenAmount: 0,
+                isVisible: data.mediaData.isVisible,
+                mimetype: data.mediaData.mimetype,
+                location: data.mediaData.location,
+                locationPreview: data.mediaData.locationPreview,
+                contractAddress: data.mediaData.contractAddress,
+                nftId: data.mediaData.nftId,
+                attachmentId: data.mediaData.attachmentId,
+            }),
+            xml("body", {}, 'media file')
+        );
+        return XmppClient.sender(xmlData);
     }
 
     sendSystemMessage(data: ISendSystemMessageOptions): void {

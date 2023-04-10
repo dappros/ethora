@@ -4,6 +4,7 @@ import {ISessionState} from './ISessionState';
 import {ISession} from './ISession';
 import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
+import {IMediaMessage} from "../client/IXmppSender";
 
 interface ISessionConstructorProps {
     user: IUser;
@@ -48,6 +49,10 @@ export class Session implements ISession {
             configStatuses.useNameInMsg ? textMsg = `${this.getUsername()} \n ${message}` : null;
             return this.bot.connector.send(textMsg, keyboard);
         }
+    }
+
+    async sendMediaMessage(data: IMediaMessage){
+        return this.bot.connector.sendMedia(data);
     }
 
     subscribeToChatRoom(rooms: string | string[]) {

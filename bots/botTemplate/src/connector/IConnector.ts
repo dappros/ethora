@@ -1,6 +1,7 @@
 import { IUser } from '../core/IUser';
 import {IAuthorization} from "../api/IAuthorization";
 import {IKeyboard} from "../client/types/IKeyboard";
+import {IMediaMessage} from "../client/IXmppSender";
 
 export enum ConnectorEvent {
     receiveMessage = 'receiveMessage',
@@ -15,6 +16,7 @@ export interface IConnector {
     getUniqueSessionKey(): string;
     getUser(): IUser;
     send(message: string, keyboard?: IKeyboard): Promise<void>;
+    sendMedia(mediaData: IMediaMessage): Promise<void>;
     sendCoins(amount: number, message: string, wallet: string)
     connectToRooms(connectionRooms: string[]): Promise<void>;
     botRegistration(username: string, password: string): any;

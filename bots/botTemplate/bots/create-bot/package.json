@@ -10,6 +10,7 @@
   "author": "Dappros",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "web3": "^1.9.0"
   }
 }
