@@ -120,15 +120,15 @@ export const getMintItemData = async (walletAddress) => {
 export const runCompletion = async (openai, message) => {
     try {
         const completion = await openai.createCompletion({
-            model: "text-davinci-002",
+            model: "text-davinci-003",
             prompt: message,
-            temperature: 0.4,
-            max_tokens: 64,
+            temperature: 0,
+            max_tokens: 250,
             top_p: 1,
-            frequency_penalty: 0,
-            presence_penalty: 0,
+            frequency_penalty: 0.0,
+            presence_penalty: 0.0,
         });
-        console.log(completion.data.choices)
+        console.log(completion.data)
         return completion.data.choices[0].text;
     }catch (error){
         console.log('Error runCompletion: ', error)
