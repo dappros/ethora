@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import LoginScreen from '../Screens/Login/LoginScreen';
-import {RegisterScreen} from '../Screens/Login/RegisterScreen';
-import {RegularLoginScreen} from '../Screens/Login/RegularLoginScreen';
-import {ResetPasswordScreen} from '../Screens/Login/ResetPasswordScreen';
+import LoginScreen from '../screens/Login/LoginScreen';
+import {RegisterScreen} from '../screens/Login/RegisterScreen';
+import {RegularLoginScreen} from '../screens/Login/RegularLoginScreen';
+import {ResetPasswordScreen} from '../screens/Login/ResetPasswordScreen';
 import {AuthStackParamList} from './types';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
