@@ -275,7 +275,7 @@ export const ProfileScreen = observer(() => {
 
     if (activeTab === 1) {
       return (
-        <View style={{paddingBottom: hp('46%')}}>
+        <View style={{paddingBottom: hp('18%')}}>
           <TransactionsList
             transactions={transactions}
             walletAddress={walletAddress}
