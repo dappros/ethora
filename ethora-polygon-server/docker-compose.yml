@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - ./docker/data/mongo:/data/db
+    ports:
+      - "27017:27017"
+      - "27018:27017"

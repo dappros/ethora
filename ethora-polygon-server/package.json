@@ -1,0 +1,41 @@
+{
+  "name": "ethora-polygon-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@metamask/eth-sig-util": "^5.0.2",
+    "@pinata/sdk": "^2.1.0",
+    "base-64": "^1.0.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "generate-password": "^1.7.0",
+    "joi": "^17.9.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "web3": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/base-64": "^1.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/form-data": "^2.5.0",
+    "@types/morgan": "^1.9.4",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^18.15.10",
+    "typescript": "^5.0.2"
+  }
+}
