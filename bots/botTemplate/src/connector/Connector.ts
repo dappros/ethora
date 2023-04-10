@@ -7,7 +7,12 @@ import ApplicationAPI from "../api/ApplicationAPI";
 import {IAuthorization} from "../api/IAuthorization";
 import {Message} from "../core/Message";
 import {XmppSender} from "../client/XmppSender";
-import {ISendSystemMessageOptions, ISendTextMessageOptions} from "../client/IXmppSender";
+import {
+    IMediaMessage,
+    ISendMediaMessageOptions,
+    ISendSystemMessageOptions,
+    ISendTextMessageOptions
+} from "../client/IXmppSender";
 import {IKeyboard} from "../client/types/IKeyboard";
 import Config from "../config/Config";
 import Logger from "../utils/Logger";
@@ -72,6 +77,21 @@ export default class Connector extends EventEmitter implements IConnector {
         return Promise.resolve(Sender.sendTextMessage(data));
     }
 
+    async sendMedia(mediaData: IMediaMessage) {
+        if (!this.botAuthData) {
+            throw Logger.error(new Error('Authorization data not found. Without this, it is impossible to send a message.'));
+        }
+
+        const Sender = new XmppSender();
+        const data: ISendMediaMessageOptions = {
+            roomJID: this.getCurrentRoomJID(),
+            senderData: this.botAuthData.data,
+            mediaData
+        }
+
+        return Promise.resolve(Sender.sendMediaMessage(data));
+    }
+
     sendCoins(amount: number, message: string, wallet: string) {
         if (!this.botAuthData) {
             throw Logger.error(new Error('Authorization data not found. Without this, it is impossible to send a coins.'));
@@ -108,10 +128,20 @@ export default class Connector extends EventEmitter implements IConnector {
                 mucname: stanzaData.attrs.mucname ? String(stanzaData.attrs.mucname) : "",
                 roomJid: stanzaData.attrs.roomJid ? String(stanzaData.attrs.roomJid) : this.stanza.attrs.from.split('/')[0],
                 isReply: toBooleanType(stanzaData.attrs.isReply),
+                isMediafile: toBooleanType(stanzaData.attrs.isMediafile),
+                fileName: stanzaData.attrs.fileName ? String(stanzaData.attrs.fileName) : '',
+                location: stanzaData.attrs.location ? String(stanzaData.attrs.location) : '',
+                locationPreview: stanzaData.attrs.locationPreview ? String(stanzaData.attrs.locationPreview) : '',
+                mimetype: stanzaData.attrs.mimetype ? String(stanzaData.attrs.mimetype) : '',
+                originalName: stanzaData.attrs.originalName ? String(stanzaData.attrs.originalName) : '',
+                attachmentId: stanzaData.attrs.attachmentId ? String(stanzaData.attrs.attachmentId) : '',
+                size: stanzaData.attrs.size ? Number(stanzaData.attrs.size) : 0,
+                wrappable: toBooleanType(stanzaData.attrs.isMediafile),
                 mainMessageText: stanzaData.attrs.mainMessageText ? String(stanzaData.attrs.mainMessageText) : "",
                 mainMessageId: stanzaData.attrs.mainMessageId ? String(stanzaData.attrs.mainMessageId) : "",
                 mainMessageUserName: stanzaData.attrs.mainMessageUserName ? String(stanzaData.attrs.mainMessageUserName) : "",
                 push: toBooleanType(stanzaData.attrs.push),
+                notDisplayedValue: stanzaData.attrs.notDisplayedValue ? String(stanzaData.attrs.notDisplayedValue) : "",
                 transaction: transaction ? transaction : undefined
             },
             message: stanzaBody ? String(stanzaBody.getText()) : "",
