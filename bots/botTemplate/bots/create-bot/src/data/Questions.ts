@@ -1,4 +1,4 @@
-import {IMessageData, IQuestion} from "./IQuestions";
+import {IQuestion} from "./IQuestions";
 import Web3 from "web3";
 
 export const questions: IQuestion[] = [
@@ -40,7 +40,7 @@ export const questions: IQuestion[] = [
                 ]
             }
         },
-        validateAnswer: (session, data: IMessageData, index: number) => {
+        validateAnswer: (session, data, index: number) => {
             return {
                 status: data.message.length >= 3 && data.message.length <= 20,
                 messages: questions[index].message(data.user, session.state.answers).messages
