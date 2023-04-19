@@ -18,7 +18,7 @@ import RotateModal from "./RotateModal";
 import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
 
-const COINS_TO_CREATE_APP = 10000;
+const COINS_TO_CREATE_APP = 10;
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);

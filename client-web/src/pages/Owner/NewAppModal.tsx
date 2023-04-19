@@ -12,6 +12,7 @@ import * as http from "../../http";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import { Button } from "@mui/material";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type TProps = {
   open: boolean;
@@ -23,7 +24,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   const setApp = useStoreState((state) => state.setApp);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string>("");
-
+  const {showSnackbar} = useSnackbar()
   const formik = useFormik({
     initialValues: {
       appName: "",
@@ -81,6 +82,9 @@ export default function NewAppModal({ open, setOpen }: TProps) {
         .then((response) => {
           setApp(response.data.app);
           setOpen(false);
+        }).catch(e => {
+          console.log(e)
+showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || ''))
         })
         .finally(() => setLoading(false));
     },
