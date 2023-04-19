@@ -68,17 +68,17 @@ const idActionsSection = (user: TUser) => ({
 });
 const billingSection = (user: TUser) => ({
   name: "Billing",
-  visible: !!user.stripeCustomerId || !!user.company.length,
+  visible: !!user.stripeCustomerId || !!user?.company?.length,
   items: [
     {
       name: "Subscription",
       id: "/payments",
-      visible: user.stripeCustomerId && !user.subscriptions.data.length,
+      visible: user.stripeCustomerId && !user?.subscriptions?.data?.length,
     },
     {
       name: "Organizations",
       id: "/organizations",
-      visible: !!user.company.length,
+      visible: !!user?.company?.length,
     },
   ],
 });
