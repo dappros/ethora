@@ -27,6 +27,7 @@ import { signInWithGoogle } from "../../services/firebase";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { ForgotPasswordModal } from "../../components/ForgotPasswordModal";
 import { Typography } from "@mui/material";
+import UsersTable from "../../components/UsersTable";
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);

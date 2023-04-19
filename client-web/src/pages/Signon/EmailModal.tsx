@@ -18,7 +18,6 @@ type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   updateUser: (data: TLoginSuccessResponse) => void;
-
 };
 
 export function EmailModal({ open, setOpen, updateUser }: TProps) {

@@ -8,14 +8,14 @@ import {
   ITransaction,
 } from "./pages/Profile/types";
 import { useStoreState } from "./store";
-import qs from 'qs'
-import type { Stripe } from 'stripe'
+import qs from "qs";
+import type { Stripe } from "stripe";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;
-}
+};
 export interface ICompany {
   name: string;
   address: string;
@@ -49,16 +49,16 @@ export type TUser = {
   isAgreeWithTerms: boolean;
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
-  company?: ICompany[]
+  company?: ICompany[];
 };
 
 export type TLoginSuccessResponse = {
   token: string;
   refreshToken: string;
   user: TUser;
-  subscriptions?: {data: Stripe.Subscription[]};
-  paymentMethods?: {data: Stripe.PaymentMethod[]};
-  isAllowedNewAppCreate: boolean
+  subscriptions?: { data: Stripe.Subscription[] };
+  paymentMethods?: { data: Stripe.PaymentMethod[] };
+  isAllowedNewAppCreate: boolean;
 };
 
 export interface IUser {
@@ -228,14 +228,11 @@ export const loginUsername = (username: string, password: string) => {
   );
 };
 
-export const subscribeForPushNotifications = (
-  token: string,
-  jid: string
-) => {
+export const subscribeForPushNotifications = (token: string, jid: string) => {
   const body = {
     appId: "Ethora",
     deviceId: token,
-    deviceType: '12',
+    deviceType: "12",
     environment: "Production",
     externalId: "",
     isSubscribed: "1",
@@ -333,7 +330,7 @@ export function getExplorerHistory() {
   return http.get<ILineChartData>(`/explorer/history`);
 }
 export function getUserCompany(token: string) {
-  return httpWithToken(token).get<{result: ICompany[]}>(`/company`);
+  return httpWithToken(token).get<{ result: ICompany[] }>(`/company`);
 }
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
@@ -349,12 +346,12 @@ export function checkExtWallet(walletAddress: string) {
   );
 }
 interface ISubscriptionResponse {
-  paymentMethods: {data: Stripe.PaymentMethod[]},
-  subscriptions: {data: Stripe.Subscription[]}
+  paymentMethods: { data: Stripe.PaymentMethod[] };
+  subscriptions: { data: Stripe.Subscription[] };
 }
 
 export function getSubscriptions() {
-  return httpWithAuth().get<ISubscriptionResponse>('/stripe/subscriptions')
+  return httpWithAuth().get<ISubscriptionResponse>("/stripe/subscriptions");
 }
 
 export function registerSignature(
@@ -409,7 +406,7 @@ export function registerByEmail(
       password,
       firstName,
       lastName,
-      signupPlan: signUpPlan
+      signupPlan: signUpPlan,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -513,7 +510,7 @@ export function registerSocial(
       accessToken,
       loginType,
       authToken: authToken,
-      signupPlan: signUpPlan
+      signupPlan: signUpPlan,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -611,7 +608,21 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
-
+export function addTagToUser(tag: string, userIds: string[]) {
+  return httpWithAuth().post(`/users/tags`, { tag, userId: userIds });
+}
+export function sendTokens( userIds: string[], quantity: number | string) {
+  return httpWithAuth().post(`/users/tokens`, { userId: userIds, quantity });
+}
+export function removeTagFromUser(tag: string, userIds: string[], removeAll = false) {
+  return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
+}
+export function resetUsersPasswords(userIds: string[]) {
+  return httpWithAuth().post(`/users/resetPassword`, { userId: userIds });
+}
+export function deleteUsers(userIds: string[]) {
+  return httpWithAuth().delete(`/users/` + userIds);
+}
 export function updateProfile(fd: FormData, id?: string) {
   const path = id ? `/users/${id}` : "/users";
   const user = useStoreState.getState().user;

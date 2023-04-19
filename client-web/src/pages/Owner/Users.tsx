@@ -34,16 +34,21 @@ const boxStyle = {
 };
 
 function hasACLAdmin(acl: http.IUserAcl): boolean {
-  const appKeys = Object.keys(acl.result.application);
-  let hasAdmin = false;
-  for (let i = 0; i < appKeys.length; i++) {
-    if (acl.result.application[appKeys[i]].admin === true) {
-      hasAdmin = true;
-      break;
+  const application = acl.result?.application;
+  if (application) {
+    const appKeys = Object.keys(acl.result?.application);
+    let hasAdmin = false;
+    for (let i = 0; i < appKeys.length; i++) {
+      if (acl.result?.application[appKeys[i]]?.admin === true) {
+        hasAdmin = true;
+        break;
+      }
     }
-  }
-
   return hasAdmin;
+
+  }
+  return false
+
 }
 
 export default function UsersTable() {
@@ -180,7 +185,7 @@ export default function UsersTable() {
           </FormControl>
         ) : null}
 
-        {(ownerAccess || ACL.result.application.appUsers.create) && (
+        {(ownerAccess || ACL.result?.application.appUsers.create) && (
           <IconButton onClick={() => setShowNewUser(true)} size="large">
             <AddCircleIcon fontSize="large"></AddCircleIcon>
           </IconButton>
@@ -232,7 +237,7 @@ export default function UsersTable() {
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>
-                    {ACL.result.application.appUsers.update && (
+                    {ACL.result?.application.appUsers.update && (
                       <Typography>Edit</Typography>
                     )}
 

@@ -24,7 +24,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   const setApp = useStoreState((state) => state.setApp);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string>("");
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
       appName: "",
@@ -35,6 +35,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       usersCanFree: false,
       newUserTokenGift: 0,
       coinsDayliBonus: 0,
+      appUrl: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -52,6 +53,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       defaultAccessAssetsOpen,
       defaultAccessProfileOpen,
       usersCanFree,
+      appUrl,
     }) => {
       setLoading(true);
       const fd = new FormData();
@@ -76,15 +78,18 @@ export default function NewAppModal({ open, setOpen }: TProps) {
         defaultAccessProfileOpen.toString()
       );
       fd.append("usersCanFree", usersCanFree.toString());
-
+      fd.append("appUrl", appUrl);
       http
         .createApp(fd)
         .then((response) => {
           setApp(response.data.app);
           setOpen(false);
-        }).catch(e => {
-          console.log(e)
-showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || ''))
+        })
+        .catch((e) => {
+          showSnackbar(
+            "error",
+            "Cannot create the app " + (e.response?.data?.error || "")
+          );
         })
         .finally(() => setLoading(false));
     },
@@ -148,7 +153,22 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                 value={formik.values.appGoogleId}
               />
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+            <Box>
+              <TextField
+                sx={{ width: "100%" }}
+                margin="dense"
+                label="App Url"
+                name="appUrl"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.appUrl}
+                error={!!formik.touched.appUrl && !!formik.errors.appUrl}
+              />
+            </Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+            >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <FormControlLabel
                   checked={formik.values.defaultAccessProfileOpen}
@@ -227,7 +247,7 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                       src={preview}
                       style={{
                         width: 200,
-                        height: '100%',
+                        height: "100%",
                         objectFit: "cover",
                         borderRadius: 10,
                       }}

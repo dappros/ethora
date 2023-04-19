@@ -35,7 +35,7 @@ function App() {
             {!user.firstName && <AppTopNavAuth />}
             {user.firstName && user.xmppPassword && <AppTopNav />}
             {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
-            {showHeaderError && <HeaderWarningMessage message="Warning" />}
+            {/* {showHeaderError && <HeaderWarningMessage message="Warning" />} */}
             <Routes />
           </div>
         </ThemeProvider>
