@@ -4,21 +4,22 @@ import * as http from "../../http";
 import { Box } from "@mui/material";
 
 type Props = {
-  apps: any[];
-  currentAppIndex: number;
+  appToken?: string;
 };
 
-export default function Contracts({ apps, currentAppIndex }: Props) {
+export default function Contracts({ appToken }: Props) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    http
-      .httpWithToken(apps[currentAppIndex].appToken)
-      .get("/explorer/count/contract")
-      .then((response) => {
-        setCount(response.data.count);
-      });
-  }, [apps, currentAppIndex]);
-  
+    if (appToken) {
+      http
+        .httpWithToken(appToken)
+        .get("/explorer/count/contract")
+        .then((response) => {
+          setCount(response.data.count);
+        });
+    }
+  }, [appToken]);
+
   return (
     <div
       className="dashboard-graph"

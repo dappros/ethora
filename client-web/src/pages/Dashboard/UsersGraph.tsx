@@ -15,11 +15,10 @@ import { CircularProgress, useTheme } from "@mui/material";
 import { TChartData, transformDataForLineChart } from "../../utils";
 
 type Props = {
-  apps: any[];
-  currentAppIndex: number;
+  appToken: string;
 };
 
-export default function UsersGraph({ apps, currentAppIndex }: Props) {
+export default function UsersGraph({ appToken }: Props) {
   const [userCount, setUsersCount] = useState(0);
   const theme = useTheme();
   const [userGraphData, setUserGraphData] = useState<TChartData>([]);
@@ -28,13 +27,9 @@ export default function UsersGraph({ apps, currentAppIndex }: Props) {
   const getUsersData = async () => {
     setLoading(true);
     try {
-      const usersCount = await http
-        .httpWithToken(apps[currentAppIndex].appToken)
-        .get("users/count");
+      const usersCount = await http.httpWithToken(appToken).get("users/count");
       setUsersCount(usersCount.data.count);
-      const graphData = await http
-        .httpWithToken(apps[currentAppIndex].appToken)
-        .get("users/graph");
+      const graphData = await http.httpWithToken(appToken).get("users/graph");
       setUserGraphData(transformDataForLineChart(graphData.data));
     } catch (error) {
       console.log(error);
@@ -42,9 +37,11 @@ export default function UsersGraph({ apps, currentAppIndex }: Props) {
     setLoading(false);
   };
   useEffect(() => {
-    getUsersData();
-  }, [apps, currentAppIndex]);
-  
+    if (appToken) {
+      getUsersData();
+    }
+  }, [appToken]);
+
   if (loading) {
     return (
       <div

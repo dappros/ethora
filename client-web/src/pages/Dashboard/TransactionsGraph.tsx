@@ -14,11 +14,10 @@ import { CircularProgress, useTheme } from "@mui/material";
 import { TChartData, transformDataForLineChart } from "../../utils";
 
 type Props = {
-  apps: any[];
-  currentAppIndex: number;
+  appToken: string;
 };
 
-export default function TransactionsGraph({ apps, currentAppIndex }: Props) {
+export default function TransactionsGraph({ appToken }: Props) {
   const [transactions, setTransactions] = useState<TChartData>([]);
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
@@ -26,9 +25,7 @@ export default function TransactionsGraph({ apps, currentAppIndex }: Props) {
   const getData = async () => {
     setLoading(true);
     try {
-      const res = await http
-        .httpWithToken(apps[currentAppIndex].appToken)
-        .get("explorer/graph");
+      const res = await http.httpWithToken(appToken).get("explorer/graph");
       setTransactions(transformDataForLineChart(res.data));
     } catch (error) {
       console.log(error);
@@ -37,8 +34,10 @@ export default function TransactionsGraph({ apps, currentAppIndex }: Props) {
   };
 
   useEffect(() => {
-    getData();
-  }, [apps, currentAppIndex]);
+    if (appToken) {
+      getData();
+    }
+  }, [appToken]);
 
   if (loading) {
     return (

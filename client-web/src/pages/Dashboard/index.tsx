@@ -28,7 +28,7 @@ export interface IBlockChain {
 function Dashboard() {
   const apps = useStoreState((state) => state.apps);
   const [currentAppIndex, setCurrentAppIndex] = useState(0);
-
+  const appToken = apps[currentAppIndex]?.appToken;
   const [blockchain, setBlockchain] = useState<IBlockChain>({
     blockTimestamp: "",
     latestBlockHash: "",
@@ -42,7 +42,7 @@ function Dashboard() {
   const getBlockchainData = async () => {
     try {
       const res = await http
-        .httpWithToken(apps[currentAppIndex].appToken)
+        .httpWithToken(appToken)
         .get<IBlockChain>("/explorer/blockchain");
       setBlockchain(res.data);
     } catch (error) {
@@ -79,11 +79,16 @@ function Dashboard() {
             gridTemplateRows: "250px 250px",
           }}
         >
-          <UsersGraph apps={apps} currentAppIndex={currentAppIndex} />
-          <TokensGraph />
-          <TransactionsGraph apps={apps} currentAppIndex={currentAppIndex} />
+          {!!appToken && (
+            <>
+              {" "}
+              <UsersGraph appToken={appToken} />
+              <TokensGraph />
+              <TransactionsGraph appToken={appToken} />
+            </>
+          )}
           <Box sx={{ display: "flex", width: "100%" }}>
-            <Contracts apps={apps} currentAppIndex={currentAppIndex} />
+            <Contracts appToken={appToken} />
             <NetworkHealth blockchain={blockchain} />
             <Peers blockchain={blockchain} />
           </Box>
