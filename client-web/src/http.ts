@@ -561,10 +561,7 @@ export function loginOwner(email: string, password: string) {
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().user;
-  return http.get("/apps", {
-    headers: { Authorization: owner.token },
-  });
+  return httpWithAuth().get("/apps");
 }
 
 export function createApp(fd: FormData) {

@@ -97,7 +97,6 @@ const mockAcl = {
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
-
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
   const getAcl = async () => {

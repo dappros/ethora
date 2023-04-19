@@ -16,6 +16,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import { NativeSelect } from "@mui/material";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type TProps = {
   open: boolean;
@@ -26,8 +27,8 @@ type TProps = {
 export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
   const apps = useStoreState((state) => state.apps);
   const addAppUsers = useStoreState((state) => state.addAppUsers);
-  const [loading, setLoading] = useState(false);
-
+  // const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -57,23 +58,34 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
 
       return errors;
     },
-    onSubmit: ({ username, firstName, lastName, password, appId }) => {
-      setLoading(true);
+    onSubmit: async (
+      { username, firstName, lastName, password, appId },
+      { resetForm, setSubmitting }
+    ) => {
+      setSubmitting(true);
       const app = apps.find((el) => el._id === appId);
-      http
-        .registerUsername(
+      try {
+        const result = await http.registerUsername(
           username,
           password,
           firstName,
           lastName,
           app?.appToken
-        )
-        .then((result) => {
-          setUsers((old) => {
-            return [...old, result.data.user];
-          });
-          setOpen(false);
+        );
+        setUsers((old) => {
+          return [...old, result.data.user];
         });
+        resetForm();
+
+        setOpen(false);
+      } catch (error) {
+        showSnackbar(
+          "error",
+          "Cannot create user " + error.response?.data?.errors[0]?.msg || ""
+        );
+      }
+
+      setSubmitting(false);
     },
   });
 
@@ -92,7 +104,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
         </DialogContent>
         <DialogActions>
           <Button
-            disabled={loading}
+            disabled={formik.isSubmitting}
             variant="contained"
             autoFocus
             onClick={() => setOpen(false)}
@@ -111,7 +123,10 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           New User
-          <IconButton disabled={loading} onClick={() => setOpen(false)}>
+          <IconButton
+            disabled={formik.isSubmitting}
+            onClick={() => setOpen(false)}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -225,17 +240,16 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
             </Box>
             <Box
               style={{
-                display: "inline-flex",
-                margin: "0 auto",
-                flexDirection: "column",
+                display: "flex",
+                justifyContent: "center",
               }}
             >
               <LoadingButton
-                loading={loading}
+                loading={formik.isSubmitting}
                 variant="contained"
                 style={{ marginTop: "15px" }}
                 type="submit"
-                disabled={loading}
+                disabled={formik.isSubmitting}
               >
                 Create New User
               </LoadingButton>
