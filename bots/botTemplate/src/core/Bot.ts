@@ -143,6 +143,11 @@ export default class Bot implements IBot {
         this.handlers.push((ctx, next) => {
             ctx.stepper.addStepList(this.initSteps);
 
+            //Processing of incoming coins
+            if(ctx.type === 'coinReceived'){
+                return this._useCoinReceived(pattern, handler, ctx, next);
+            }
+
             const currentUserStep = ctx.stepper.getUserStep();
             if (currentUserStep && !step) {
                 return next();
@@ -159,11 +164,6 @@ export default class Bot implements IBot {
                 } else {
                     return next();
                 }
-            }
-
-            //Processing of incoming coins
-            if(ctx.type === 'coinReceived'){
-                return this._useCoinReceived(pattern, handler, ctx, next);
             }
 
             //Processing an incoming RegExp pattern
@@ -219,10 +219,10 @@ export default class Bot implements IBot {
         }
     }
 
-    _useString(pattern: RegExp | string, handler: BotHandler, ctx: IBotContext, next: any) {
-        const text = ctx.message.getText();
+    _useString(pattern: string, handler: BotHandler, ctx: IBotContext, next: any) {
+        const text = ctx.message.getText().toLowerCase();
 
-        if (text === pattern) {
+        if (text === pattern.toLowerCase()) {
             return handler(ctx, next);
         }
 
@@ -241,7 +241,7 @@ export default class Bot implements IBot {
         if (typeof pattern === 'string' && pattern === "coinReceived") {
             return handler(ctx, next);
         }
-        return ctx.session.sendTextMessage(`Thanks for the ${ctx.message.data.messageData.tokenAmount} coins!`);
+        return next();
     }
     _collectConfigurationData(data: IBotData): IConfigInit {
         let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
