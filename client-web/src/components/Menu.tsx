@@ -12,6 +12,7 @@ import { configNFT, configDocuments } from "../config/config";
 import xmpp from "../xmpp";
 import { useHistory } from "react-router";
 import { TUser, useStoreState } from "../store";
+import { IUserAcl } from "../http";
 
 export interface IMenu {}
 
@@ -57,11 +58,6 @@ const idActionsSection = (user: TUser) => ({
   visible: true,
   items: [
     { name: "Privacy and Data", id: "/privacy", visible: true },
-    {
-      name: "Create New App",
-      id: "/owner",
-      visible: user.isAllowedNewAppCreate,
-    },
 
     { name: "Sign out", id: "logout", visible: true },
   ],
@@ -82,7 +78,31 @@ const billingSection = (user: TUser) => ({
     },
   ],
 });
-const initMenuItems = (user: TUser, ACL: any) => {
+const userSection = (ACL: IUserAcl) => ({
+  name: "Users",
+  visible: ACL?.result?.application?.appUsers?.read,
+
+  items: [
+    {
+      name: "Users",
+      id: "/users",
+      visible: true,
+    },
+  ],
+});
+const adminSection = (user: TUser) => ({
+  name: "Admin",
+  visible: user?.ACL?.masterAccess || user.isAllowedNewAppCreate,
+  items: [
+    { name: "Statistics", id: "/statistics", visible: user?.ACL?.masterAccess },
+    {
+      name: "Create New App",
+      id: "/owner",
+      visible: user.isAllowedNewAppCreate,
+    },
+  ],
+});
+const initMenuItems = (user: TUser, ACL: IUserAcl) => {
   let items = [
     menuAccountSection(user.walletAddress),
     {
@@ -92,25 +112,10 @@ const initMenuItems = (user: TUser, ACL: any) => {
     },
     menuActionsSection,
     billingSection(user),
+    userSection(ACL),
+    adminSection(user),
     idActionsSection(user),
   ];
-
-  if (ACL?.result?.application?.appUsers?.read) {
-    items.push({
-      name: "Users",
-      visible: true,
-
-      items: [{ name: "Users", id: "/users", visible: true }],
-    });
-  }
-
-  if (user?.ACL?.masterAccess) {
-    items.push({
-      name: "Admin",
-      visible: true,
-      items: [{ name: "Statistics", id: "/statistics", visible: true }],
-    });
-  }
 
   return items;
 };
