@@ -592,7 +592,7 @@ export function getAppUsers(
 ) {
   const owner = useStoreState.getState().user;
   return http.get<ExplorerRespose<IUser[]>>(
-    `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
+    `/users/${appId}?&limit=${limit}&offset=${offset}`,
     {
       headers: { Authorization: owner.token },
     }

@@ -94,7 +94,6 @@ function hasACLAdmin(acl: IUserAcl): boolean {
 const ITEM_HEIGHT = 48;
 const ROWS_PER_PAGE = 10;
 
-
 export default function UsersTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
@@ -167,9 +166,6 @@ export default function UsersTable() {
       });
     }
   }, [apps]);
-
-
- 
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
@@ -288,10 +284,10 @@ export default function UsersTable() {
           </Typography>
         </Box>
         <NewUserModal
-        open={showNewUser}
-        setUsers={setUsers}
-        setOpen={setShowNewUser}
-      />
+          open={showNewUser}
+          setUsers={setUsers}
+          setOpen={setShowNewUser}
+        />
       </Paper>
     );
   }
@@ -375,6 +371,7 @@ export default function UsersTable() {
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
+                          disabled={!hasAdmin}
                           aria-label="more"
                           id="long-button"
                           aria-controls={open ? "long-menu" : undefined}
@@ -399,13 +396,9 @@ export default function UsersTable() {
                             },
                           }}
                         >
-                          {hasAdmin && (
-                            <MenuItem
-                              onClick={() => handleAclEditOpen(row._id)}
-                            >
-                              Edit Acl
-                            </MenuItem>
-                          )}
+                          <MenuItem onClick={() => handleAclEditOpen(row._id)}>
+                            Edit Acl
+                          </MenuItem>
                         </Menu>
                       </TableCell>
                     </TableRow>
