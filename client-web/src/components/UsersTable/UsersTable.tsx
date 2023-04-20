@@ -160,25 +160,16 @@ export default function UsersTable() {
   };
 
   useEffect(() => {
-    if (ownerAccess && apps.length) {
+    if (apps.length && apps[0]) {
       setCurrentApp(apps[0]._id);
       getUsers(apps[0]._id).then((users) => {
         setUsers(users);
       });
     }
-  }, [apps, ownerAccess]);
-  useEffect(() => {
-    if (!ownerAccess && apps.length) {
-      setCurrentApp(apps[0]._id);
-      getUsers(apps[0]._id).then((users) => {
-        setUsers(users);
-      });
-    }
-  }, []);
+  }, [apps]);
 
-  useEffect(() => {
-    console.log("Users mount");
-  }, []);
+
+ 
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
@@ -479,6 +470,7 @@ export default function UsersTable() {
           <EditAcl
             updateData={updateUserDataAfterAclChange}
             userId={aclEditData.userId}
+            onAclError={handleAclEditClose}
           />
           <IconButton
             onClick={handleAclEditClose}

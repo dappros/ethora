@@ -31,6 +31,9 @@ export function UsersTableToolbar({
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
+          display: 'flex',
+          justifyContent: 'space-between',
+         
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
@@ -39,39 +42,42 @@ export function UsersTableToolbar({
         }}
       >
         <Typography
-          sx={{ flex: "1 1 100%" }}
           color="inherit"
           variant="subtitle1"
           component="div"
+          sx={{minWidth: 200}}
         >
           {selected.length} selected
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexDirection:  { xs: 'row', md: 'row' }, flexWrap: 'wrap' }}>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("sendTokens")}
-            sx={{ width: "150px" }}
+            sx={{minWidth: 'max-content'}}
           >
             Send Tokens
           </Button>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("addTag")}
-            sx={{ width: "120px" }}
+            sx={{minWidth: 'max-content'}}
+
           >
             Add Tag
           </Button>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("removeAllTags")}
-            sx={{ width: "200px" }}
+            sx={{minWidth: 'max-content'}}
+
           >
             Remove All Tags
           </Button>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("removeTag")}
-            sx={{ width: "150px" }}
+            sx={{minWidth: 'max-content'}}
+
           >
             Remove Tag
           </Button>
@@ -79,7 +85,8 @@ export function UsersTableToolbar({
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("resetPassword")}
-            sx={{ width: "200px" }}
+            sx={{minWidth: 'max-content'}}
+
           >
             Reset Passwords
           </Button>
