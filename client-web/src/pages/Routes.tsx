@@ -99,6 +99,8 @@ export const Routes = () => {
   const user = useStoreState((state) => state.user);
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
+  const apps = useStoreState((state) => state.apps);
+
   const getAcl = async () => {
     try {
       if (user?.ACL?.ownerAccess) {
@@ -150,6 +152,9 @@ export const Routes = () => {
       getDocuments(user.walletAddress);
     }
   }, [userId]);
+  useEffect(() => {
+    getAcl()
+  }, [apps.length])
 
   useEffect(() => {
     onMessageListener()
