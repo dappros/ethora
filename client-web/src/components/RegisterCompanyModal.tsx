@@ -23,20 +23,20 @@ import { useSnackbar } from "../context/SnackbarContext";
 export interface IRegisterCompanyModal {
   open: boolean;
   onClose: () => void;
-  afterSubmit?: () => void
+  afterSubmit?: () => void;
 }
 
 export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
   open,
   onClose,
-  afterSubmit
+  afterSubmit,
 }) => {
   const user = useStoreState((state) => state.user);
   const setUser = useStoreState((state) => state.setUser);
 
   const [termsOpen, setTermsOpen] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,18 +49,18 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
       try {
         const res = await agreeWithTerms(companyName);
         setUser({ ...user, isAgreeWithTerms: true });
-        onClose()
-        afterSubmit()
+        onClose();
+        afterSubmit();
       } catch (error) {
         console.log(error);
-        showSnackbar('error', 'Something went wrong')
+        showSnackbar("error", "Something went wrong");
       }
       setLoading(false);
     },
   });
   return (
     <Dialog onClose={onClose} maxWidth={false} open={open}>
-      <Box style={{ width: "400px" }}>
+      <Box style={{ width: "600px" }}>
         <IconButton
           sx={{ position: "absolute", top: 0, right: 0 }}
           disabled={loading}
@@ -75,7 +75,7 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
             paddingLeft: 1,
           }}
         >
-          Owner Registration
+          Entity Registration
         </DialogTitle>
         <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
           <form onSubmit={formik.handleSubmit}>
@@ -100,17 +100,36 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
                   : ""
               }
             />
+            <Typography sx={{ fontSize: 10 }}>
+              Please add a name of your entity, such as your registered company
+              name. If you don't have a formal entity, simply add your startup
+              or team name. This is needed so that your Applications and assets
+              can be assigned to a group. You will be able to change the group
+              entity name and manage its members later .
+            </Typography>
 
             <FormGroup>
               <FormControlLabel
-                value="I agree to the terms and conditions"
+                value={"I agree to the Terms & Conditions"}
                 control={
                   <Checkbox
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
                   />
                 }
-                label="I agree to the terms and conditions"
+                label={
+                  <p>
+                    I agree to the{" "}
+                    <span
+                      onClick={(e) => {
+                        setTermsOpen(true);
+                      }}
+                      style={{ cursor: "pointer", textDecoration: "underline" }}
+                    >
+                      Terms & Conditions
+                    </span>
+                  </p>
+                }
                 labelPlacement="end"
               />
             </FormGroup>
