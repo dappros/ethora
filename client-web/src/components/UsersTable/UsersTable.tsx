@@ -303,7 +303,8 @@ export default function UsersTable() {
           )}
           {canCreateUsers && (
             <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
-              <AddCircleIcon fontSize="large" />
+             
+              <AddCircleIcon fontSize="large"  color="primary" />
             </IconButton>
           )}
         </Box>
@@ -363,7 +364,7 @@ export default function UsersTable() {
           )}
           {canCreateUsers && (
             <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
-              <AddCircleIcon fontSize="large" />
+              <AddCircleIcon fontSize="large"  color="primary" />
             </IconButton>
           )}
         </Box>

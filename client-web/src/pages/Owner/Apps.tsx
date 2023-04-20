@@ -97,11 +97,12 @@ export default function BasicTable() {
               : ""
           }
         >
-          <span>
+          <span style={{marginLeft: 'auto'}}>
             <IconButton
               disabled={!isEnoughCoinsToCreateApp}
               onClick={onAddApp}
               size="large"
+              color="primary"
             >
               <AddCircleIcon fontSize="large"></AddCircleIcon>
             </IconButton>
