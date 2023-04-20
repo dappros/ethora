@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -17,11 +17,15 @@ import EditAppModal from "./EditAppModal";
 import RotateModal from "./RotateModal";
 import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
+import { getApps } from "../../http";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const COINS_TO_CREATE_APP = 10;
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
+  const setApps = useStoreState((state) => state.setApps);
+
   const user = useStoreState((state) => state.user);
   const [open, setOpen] = useState(false);
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
@@ -42,7 +46,17 @@ export default function BasicTable() {
     defaultAccessAssetsOpen: false,
     usersCanFree: false,
   });
-
+  const { showSnackbar } = useSnackbar();
+  const getUserApps = async () => {
+    try {
+      const apps = await getApps();
+      const notNullApps = apps.data.apps.filter(a => !!a);
+      setApps(notNullApps);
+    } catch (error) {
+      console.log(error)
+      showSnackbar("error", "Cannot get user apps");
+    }
+  };
   const onDelete = (app: any) => {
     setCurrentApp(app);
     setShowDelete(true);
@@ -64,6 +78,9 @@ export default function BasicTable() {
     }
     setOpen(true);
   };
+  useEffect(() => {
+    getUserApps()
+  }, [])
 
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
@@ -206,11 +223,7 @@ export default function BasicTable() {
         open={showDelete}
         setOpen={setShowDelete}
       />
-      <RotateModal
-        app={currentApp}
-        open={showRotate}
-        setOpen={setShowRotate}
-      />
+      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate} />
       {showEdit && (
         <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit} />
       )}
