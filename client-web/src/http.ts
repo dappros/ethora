@@ -93,25 +93,29 @@ export type TPermission = {
   disabled?: Array<string>;
 };
 
-export interface IUserAcl {
-  result: {
-    application: {
-      appCreate: TPermission;
-      appPush: TPermission;
-      appSettings: TPermission;
-      appStats: TPermission;
-      appTokens: TPermission;
-      appUsers: TPermission;
-    };
-    network: {
-      netStats: TPermission;
-    };
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
-    userId?: string;
-    _id?: string;
-    appId?: string;
+export interface ACL {
+  application: {
+    appCreate: TPermission;
+    appPush: TPermission;
+    appSettings: TPermission;
+    appStats: TPermission;
+    appTokens: TPermission;
+    appUsers: TPermission;
   };
+  network: {
+    netStats: TPermission;
+  };
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  userId?: string;
+  _id?: string;
+  appId?: string;
+}
+export interface IOtherUserACL {
+  result: ACL
+}
+export interface IUserAcl {
+  result: ACL[]
 }
 
 const http = axios.create({
@@ -457,7 +461,7 @@ export function checkEmailExist(email: string) {
 export function getUserAcl(userId: string) {
   const user = useStoreState.getState().user;
 
-  return http.get<IUserAcl>(
+  return http.get<IOtherUserACL>(
     "/users/acl/" + userId,
 
     { headers: { Authorization: user.token } }
@@ -488,7 +492,7 @@ export interface IAclBody {
 export function updateUserAcl(userId: string, body: IAclBody) {
   const owner = useStoreState.getState().user;
 
-  return http.put<IUserAcl>(
+  return http.put<IOtherUserACL>(
     "/users/acl/" + userId,
     body,
 

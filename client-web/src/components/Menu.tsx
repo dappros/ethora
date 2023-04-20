@@ -80,7 +80,7 @@ const billingSection = (user: TUser) => ({
 });
 const userSection = (ACL: IUserAcl) => ({
   name: "Users",
-  visible: ACL?.result?.application?.appUsers?.read,
+  visible: false,
 
   items: [
     {

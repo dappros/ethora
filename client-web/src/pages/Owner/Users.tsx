@@ -33,13 +33,13 @@ const boxStyle = {
   p: 4,
 };
 
-function hasACLAdmin(acl: http.IUserAcl): boolean {
-  const application = acl.result?.application;
+function hasACLAdmin(acl: http.ACL): boolean {
+  const application = acl?.application
   if (application) {
-    const appKeys = Object.keys(acl.result?.application);
+    const appKeys = Object.keys(application);
     let hasAdmin = false;
     for (let i = 0; i < appKeys.length; i++) {
-      if (acl.result?.application[appKeys[i]]?.admin === true) {
+      if (application[appKeys[i]]?.admin === true) {
         hasAdmin = true;
         break;
       }
@@ -60,7 +60,7 @@ export default function Users() {
     userId: "",
   });
   const [hasAdmin, setHasAdmin] = useState(false);
-  const ACL = useStoreState((state) => state.ACL);
+  const ACL = useStoreState((state) => state.ACL.result.find(item => item.appId === currentApp));
 
   useEffect(() => {
     setHasAdmin(hasACLAdmin(ACL));
@@ -79,7 +79,6 @@ export default function Users() {
   ) => {
     try {
       if (appId) {
-        console.log(appId);
         const getUsersResp = await http.getAppUsers(appId, limit, offset);
         const { data } = getUsersResp;
         setPagination({
@@ -140,7 +139,7 @@ export default function Users() {
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
 
-  const updateUserDataAfterAclChange = (user: http.IUserAcl) => {
+  const updateUserDataAfterAclChange = (user: http.IOtherUserACL) => {
     const oldUsers = users;
     const indexToUpdate = oldUsers.findIndex(
       (item) => item._id === aclEditData.userId
@@ -178,7 +177,7 @@ export default function Users() {
           </FormControl>
         ) : null}
 
-        {(ownerAccess || ACL.result?.application.appUsers.create) && (
+        {(ownerAccess || ACL?.application.appUsers.create) && (
           <IconButton onClick={() => setShowNewUser(true)} size="large">
             <AddCircleIcon fontSize="large"></AddCircleIcon>
           </IconButton>
@@ -230,7 +229,7 @@ export default function Users() {
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>
-                    {ACL.result?.application.appUsers.update && (
+                    {ACL?.application.appUsers.update && (
                       <Typography>Edit</Typography>
                     )}
 
@@ -266,6 +265,8 @@ export default function Users() {
         open={showNewUser}
         setUsers={setUsers}
         setOpen={setShowNewUser}
+        appId={currentApp}
+
       />
       <Modal
         open={aclEditData.modalOpen}

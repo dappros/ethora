@@ -8,8 +8,10 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, Checkbox, Typography } from "@mui/material";
 import {
+  ACL,
   getUserAcl,
   IAclBody,
+  IOtherUserACL,
   IUserAcl,
   TPermission,
   updateUserAcl,
@@ -21,8 +23,8 @@ import { useSnackbar } from "../context/SnackbarContext";
 
 export interface IEditAcl {
   userId: string;
-  updateData?(user: IUserAcl): void;
-  onAclError?: () => void
+  updateData?(user: IOtherUserACL): void;
+  onAclError?: () => void;
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -153,15 +155,25 @@ const Row = ({
   );
 };
 
-export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData, onAclError }) => {
-  const [userAcl, setUserAcl] = useState<IUserAcl>();
+export const EditAcl: React.FC<IEditAcl> = ({
+  userId,
+  updateData,
+  onAclError,
+}) => {
+  const [userAcl, setUserAcl] = useState<IOtherUserACL>();
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
   >([]);
   const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>(
     []
   );
-  const myAcl = useStoreState((state) => state.ACL);
+  const acl = useStoreState((state) =>
+    state.ACL.result.find((a) => a.appId === userAcl?.result?.appId)
+  );
+  console.log(acl, 'sfjkdsfdsjkfldsf')
+  const myAcl = {
+    result: acl,
+  };
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
@@ -181,8 +193,8 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData, onAclError }) 
         "error",
         "Cannot get user ACL " + error?.response?.data?.errors[0]?.msg || ""
       );
-      if(onAclError) {
-        onAclError()
+      if (onAclError) {
+        onAclError();
       }
       console.log(error);
     }
@@ -246,7 +258,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData, onAclError }) 
       } as IAclBody;
 
       const aclRes = await updateUserAcl(userId, body);
-      const updatedUserAcl = aclRes.data as IUserAcl;
+      const updatedUserAcl = aclRes.data as IOtherUserACL;
       if (updateData) {
         updateData(updatedUserAcl);
       }

@@ -46,7 +46,7 @@ const ChangeBackground = React.lazy(
 );
 
 const mockAcl = {
-  result: {
+  result: [{
     network: {
       netStats: {
         read: true,
@@ -91,7 +91,7 @@ const mockAcl = {
         disabled: ["create", "update", "delete"],
       },
     },
-  },
+  }],
 };
 
 export const Routes = () => {
@@ -106,7 +106,7 @@ export const Routes = () => {
         return;
       }
       const res = await getMyAcl();
-      setACL({ result: res.data.result[0] });
+      setACL({ result: res.data.result });
     } catch (error) {
       console.log(error);
     }

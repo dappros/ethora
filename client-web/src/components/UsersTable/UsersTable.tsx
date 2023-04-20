@@ -3,11 +3,14 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
+  FormControl,
   IconButton,
+  InputLabel,
   Menu,
   MenuItem,
   Modal,
   Paper,
+  Select,
   SelectChangeEvent,
   Table,
   TableBody,
@@ -24,7 +27,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { UsersTableToolbar } from "./Toolbar";
 import { UsersTableHead } from "./Head";
 import { UsersActionModal } from "../UsersActionModal";
-import { IUser, IUserAcl, getAppUsers } from "../../http";
+import { ACL, IOtherUserACL, IUser, IUserAcl, getAppUsers } from "../../http";
 import { useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
@@ -75,13 +78,13 @@ type ModalType =
   | "resetPassword";
 
 interface Props {}
-function hasACLAdmin(acl: IUserAcl): boolean {
-  const application = acl.result?.application;
+function hasACLAdmin(acl: ACL): boolean {
+  const application = acl?.application;
   if (application) {
-    const appKeys = Object.keys(acl.result?.application);
+    const appKeys = Object.keys(application);
     let hasAdmin = false;
     for (let i = 0; i < appKeys.length; i++) {
-      if (acl.result?.application[appKeys[i]]?.admin === true) {
+      if (application[appKeys[i]]?.admin === true) {
         hasAdmin = true;
         break;
       }
@@ -118,13 +121,18 @@ export default function UsersTable() {
   const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
   const [showNewUser, setShowNewUser] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [currentApp, setCurrentApp] = useState<string>();
+  const [currentApp, setCurrentApp] = useState<string>(apps[0]?._id);
   const [aclEditData, setAclEditData] = useState({
     modalOpen: false,
     userId: "",
   });
   const [hasAdmin, setHasAdmin] = useState(false);
-  const ACL = useStoreState((state) => state.ACL);
+  const [loading, setLoading] = useState(false);
+
+  const ACL = useStoreState((state) =>
+    state.ACL.result.find((i) => i.appId === currentApp)
+  );
+  const canCreateUsers = ownerAccess || ACL?.application.appUsers.create;
 
   useEffect(() => {
     setHasAdmin(hasACLAdmin(ACL));
@@ -150,6 +158,7 @@ export default function UsersTable() {
           offset: data.offset,
           total: data.total,
         });
+
         return data.items;
       }
     } catch (e) {
@@ -159,13 +168,12 @@ export default function UsersTable() {
   };
 
   useEffect(() => {
-    if (apps.length && apps[0]) {
-      setCurrentApp(apps[0]._id);
-      getUsers(apps[0]._id).then((users) => {
+    if (currentApp) {
+      getUsers(currentApp).then((users) => {
         setUsers(users);
       });
     }
-  }, [apps]);
+  }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
@@ -194,7 +202,7 @@ export default function UsersTable() {
   const handleAclEditClose = () =>
     setAclEditData({ modalOpen: false, userId: "" });
 
-  const updateUserDataAfterAclChange = (user: IUserAcl) => {
+  const updateUserDataAfterAclChange = (user: IOtherUserACL) => {
     const oldUsers = users;
     const indexToUpdate = oldUsers.findIndex(
       (item) => item._id === aclEditData.userId
@@ -255,9 +263,8 @@ export default function UsersTable() {
     setSelectedIds(newSelected);
   };
 
-  console.log(selectedIds);
-
-  const isSelected = (id: string) => selectedIds.findIndex(u => u._id === id) !== -1
+  const isSelected = (id: string) =>
+    selectedIds.findIndex((u) => u._id === id) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -274,8 +281,28 @@ export default function UsersTable() {
           <Typography variant="h6" style={{ margin: "16px" }}>
             Users
           </Typography>
-          {(ownerAccess || ACL.result?.application.appUsers.create) && (
-            <IconButton onClick={() => setShowNewUser(true)} size="large">
+          {!!apps.length && (
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel id="demo-simple-select-label">App</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="App"
+                value={currentApp}
+                onChange={onAppSelectChange}
+              >
+                {apps.map((app) => {
+                  return (
+                    <MenuItem key={app._id} value={app._id}>
+                      {app.appName}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
+          {canCreateUsers && (
+            <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
               <AddCircleIcon fontSize="large" />
             </IconButton>
           )}
@@ -296,6 +323,7 @@ export default function UsersTable() {
           open={showNewUser}
           setUsers={setUsers}
           setOpen={setShowNewUser}
+          appId={currentApp}
         />
       </Paper>
     );
@@ -313,8 +341,28 @@ export default function UsersTable() {
           <Typography variant="h6" style={{ margin: "16px" }}>
             Users
           </Typography>
-          {(ownerAccess || ACL.result?.application.appUsers.create) && (
-            <IconButton onClick={() => setShowNewUser(true)} size="large">
+          {!!apps.length && (
+            <FormControl variant="outlined" sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel id="select-label">App</InputLabel>
+              <Select
+                labelId="select-label"
+                id="select-label"
+                label="App"
+                value={currentApp}
+                onChange={onAppSelectChange}
+              >
+                {apps.map((app) => {
+                  return (
+                    <MenuItem key={app._id} value={app._id}>
+                      {app.appName}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          )}
+          {canCreateUsers && (
+            <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
               <AddCircleIcon fontSize="large" />
             </IconButton>
           )}
@@ -346,9 +394,7 @@ export default function UsersTable() {
                   return (
                     <TableRow
                       hover
-                      onClick={(event) =>
-                        handleClick(event, row)
-                      }
+                      onClick={(event) => handleClick(event, row)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -449,6 +495,8 @@ export default function UsersTable() {
         open={showNewUser}
         setUsers={setUsers}
         setOpen={setShowNewUser}
+        appId={currentApp}
+
       />
       <Modal
         open={aclEditData.modalOpen}

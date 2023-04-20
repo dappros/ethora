@@ -22,9 +22,15 @@ type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setUsers: React.Dispatch<React.SetStateAction<any>>;
+  appId: string;
 };
 
-export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
+export default function NewUserModal({
+  open,
+  setOpen,
+  setUsers,
+  appId,
+}: TProps) {
   const apps = useStoreState((state) => state.apps);
   const addAppUsers = useStoreState((state) => state.addAppUsers);
   // const [loading, setLoading] = useState(false);
@@ -35,7 +41,6 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]?._id,
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -59,7 +64,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
       return errors;
     },
     onSubmit: async (
-      { username, firstName, lastName, password, appId },
+      { username, firstName, lastName, password },
       { resetForm, setSubmitting }
     ) => {
       setSubmitting(true);
@@ -120,7 +125,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
     <Dialog onClose={() => setOpen(false)} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
-          style={{ display: "flex", justifyContent: "space-between" }}
+          sx={{ display: "flex", justifyContent: "space-between", padding: 1, m: 0 }}
         >
           New User
           <IconButton
@@ -130,32 +135,8 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
+        <Box sx={{ width: "100%", typography: "body1", padding: 1, pt: 0 }}>
           <form onSubmit={formik.handleSubmit}>
-            <Box>
-              <FormControl fullWidth>
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                  App
-                </InputLabel>
-                <NativeSelect
-                  inputProps={{
-                    name: "appName",
-                    id: "uncontrolled-native",
-                  }}
-                  onChange={(e) => {
-                    formik.setFieldValue("appId", e.target.value);
-                  }}
-                >
-                  {apps.map((app) => {
-                    return (
-                      <option key={app._id} value={app._id}>
-                        {app.appName}
-                      </option>
-                    );
-                  })}
-                </NativeSelect>
-              </FormControl>
-            </Box>
             <Box>
               <TextField
                 fullWidth
