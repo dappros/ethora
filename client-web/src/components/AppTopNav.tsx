@@ -69,7 +69,6 @@ const AppTopNav = () => {
 
   const subscribeForXmppNotifications = async () => {
     try {
-      const apps = await getApps()
       const token = await getFirebaseMesagingToken();
       const res = await subscribeForPushNotifications(
         token,

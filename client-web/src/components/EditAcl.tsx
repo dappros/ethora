@@ -17,10 +17,12 @@ import {
 import { Box } from "@mui/system";
 import { FullPageSpinner } from "./FullPageSpinner";
 import { useStoreState } from "../store";
+import { useSnackbar } from "../context/SnackbarContext";
 
 export interface IEditAcl {
   userId: string;
   updateData?(user: IUserAcl): void;
+  onAclError?: () => void
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -151,7 +153,7 @@ const Row = ({
   );
 };
 
-export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
+export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData, onAclError }) => {
   const [userAcl, setUserAcl] = useState<IUserAcl>();
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
@@ -161,10 +163,7 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
   );
   const myAcl = useStoreState((state) => state.ACL);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log("userAclApplicationKeys ", userAclApplicationKeys);
-  }, [userAclApplicationKeys]);
+  const { showSnackbar } = useSnackbar();
 
   const getAcl = async () => {
     setLoading(true);
@@ -178,6 +177,13 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
       setUserAclApplicationKeys(appKeys);
       setUserAclNetworkKeys(networkKeys);
     } catch (error) {
+      showSnackbar(
+        "error",
+        "Cannot get user ACL " + error?.response?.data?.errors[0]?.msg || ""
+      );
+      if(onAclError) {
+        onAclError()
+      }
       console.log(error);
     }
     setLoading(false);
