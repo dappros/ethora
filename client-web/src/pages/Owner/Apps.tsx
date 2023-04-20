@@ -19,6 +19,8 @@ import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
 import { getApps } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 
 const COINS_TO_CREATE_APP = 10;
 
@@ -126,10 +128,10 @@ export default function BasicTable() {
           <TableHead>
             <TableRow>
               <TableCell width={200}>Application Name</TableCell>
-              <TableCell align="right">Is Assets Open</TableCell>
-              <TableCell align="right">Is Profile Open</TableCell>
-              <TableCell align="right">Is Users Can Free</TableCell>
-              <TableCell align="right">Created</TableCell>
+              <TableCell align="center">Profile Open</TableCell>
+              <TableCell align="center">Assets Visible</TableCell>
+              <TableCell align="center">Self-Sovereignty</TableCell>
+              <TableCell align="center">Created</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -142,14 +144,16 @@ export default function BasicTable() {
                 <TableCell component="th" scope="row">
                   {app.appName}
                 </TableCell>
-                <TableCell align="right">
-                  {app.defaultAccessAssetsOpen.toString()}
+                  <TableCell align="center">
+                  {app.defaultAccessProfileOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
-                <TableCell align="right">
-                  {app.defaultAccessProfileOpen.toString()}
+                <TableCell align="center">
+                  
+                  {app.defaultAccessAssetsOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
-                <TableCell align="right">
-                  {app.usersCanFree.toString()}
+              
+                <TableCell align="center">
+                  {app.usersCanFree ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
                 <TableCell align="right">
                   {new Date(app.createdAt).toDateString()}
