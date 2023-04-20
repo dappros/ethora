@@ -12,12 +12,14 @@ import { useLocation } from "react-router";
 import { Button, DialogActions, TextField } from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
 import {
+  TTransferToUser,
   addTagToUser,
   deleteUsers,
   removeTagFromUser,
   resetUsersPasswords,
   sendTokens,
 } from "../http";
+import { coinsMainName } from "../config/config";
 
 type ModalType =
   | "deleteUser"
@@ -26,21 +28,27 @@ type ModalType =
   | "removeAllTags"
   | "sendTokens"
   | "resetPassword";
+type TSelectedIds = { walletAddress: string; _id: string };
 
 type TProps = {
   open: boolean;
   type: ModalType;
-  userIds: string[];
+  selectedUsers: TSelectedIds[];
   onClose: () => void;
 };
 
-export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
+export function UsersActionModal({
+  open,
+  onClose,
+  type,
+  selectedUsers,
+}: TProps) {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoaging] = useState(false);
   const [inputError, setInputError] = useState(false);
 
   const { showSnackbar } = useSnackbar();
-
+  const selectedUsersIds = selectedUsers.map((i) => i._id);
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
@@ -57,7 +65,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
   const addTag = async () => {
     setLoaging(true);
     try {
-      await addTagToUser(inputValue, userIds);
+      await addTagToUser(inputValue, selectedUsersIds);
       showSnackbar("success", "Tag added");
     } catch (error) {
       showSnackbar("error", "Something went wrong");
@@ -66,8 +74,13 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
   };
   const sendTokensToUsers = async () => {
     setLoaging(true);
+    const totalAmount = +inputValue * selectedUsers.length;
+    const usersForTransfer: TTransferToUser[] = selectedUsers.map((u) => ({
+      walletAddress: u.walletAddress,
+      amount: inputValue,
+    }));
     try {
-      await sendTokens(userIds, inputValue);
+      await sendTokens(usersForTransfer, totalAmount, coinsMainName);
       showSnackbar("success", "Tokens sent");
     } catch (error) {
       showSnackbar("error", "Something went wrong");
@@ -77,7 +90,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
   const removeTag = async (removeAll: boolean) => {
     setLoaging(true);
     try {
-      await removeTagFromUser(inputValue, userIds, removeAll);
+      await removeTagFromUser(inputValue, selectedUsersIds, removeAll);
       showSnackbar("success", "Tag removed");
     } catch (error) {
       showSnackbar("error", "Something went wrong");
@@ -87,7 +100,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
   const resetPasswords = async () => {
     setLoaging(true);
     try {
-      await resetUsersPasswords(userIds);
+      await resetUsersPasswords(selectedUsersIds);
       showSnackbar("success", "Passwords reseted");
     } catch (error) {
       showSnackbar("error", "Something went wrong");
@@ -97,7 +110,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
   const deletePickedUsers = async () => {
     setLoaging(true);
     try {
-      await deleteUsers(userIds);
+      await deleteUsers(selectedUsersIds);
       showSnackbar("success", "Users deleted");
     } catch (error) {
       showSnackbar("error", "Something went wrong");
@@ -231,7 +244,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
               style={{ display: "flex", justifyContent: "space-between" }}
             >
               Are you sure you want to force a password reset for{" "}
-              {userIds.length} users?
+              {selectedUsers.length} users?
             </DialogTitle>
           </Box>
         );
@@ -283,7 +296,7 @@ export function UsersActionModal({ open, onClose, type, userIds }: TProps) {
           {"Cancel"}
         </Button>
         <Button
-          //   disabled={loading}
+            disabled={loading}
           onClick={onSubmit}
           autoFocus
           color={"error"}

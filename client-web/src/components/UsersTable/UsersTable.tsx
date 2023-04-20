@@ -93,11 +93,11 @@ function hasACLAdmin(acl: IUserAcl): boolean {
 
 const ITEM_HEIGHT = 48;
 const ROWS_PER_PAGE = 10;
-
+type TSelectedIds = { walletAddress: string; _id: string };
 export default function UsersTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<TSelectedIds[]>([]);
   const [page, setPage] = useState(0);
   const [userActionModal, setUsersActionModal] = useState<{
     open: boolean;
@@ -219,19 +219,28 @@ export default function UsersTable() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = users.map((n) => n._id);
+      const newSelected = users.map((n) => ({
+        _id: n._id,
+        walletAddress: n.defaultWallet.walletAddress,
+      }));
       setSelectedIds(newSelected);
       return;
     }
     setSelectedIds([]);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    const selectedIndex = selectedIds.indexOf(id);
-    let newSelected: string[] = [];
+  const handleClick = (event: React.MouseEvent<unknown>, user: IUser) => {
+    const selectedIndex = selectedIds.findIndex(
+      (item) => item._id === user._id
+    );
+    const mappedUser: TSelectedIds = {
+      _id: user._id,
+      walletAddress: user.defaultWallet.walletAddress,
+    };
+    let newSelected: TSelectedIds[] = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selectedIds, id);
+      newSelected = newSelected.concat(selectedIds, mappedUser);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selectedIds.slice(1));
     } else if (selectedIndex === selectedIds.length - 1) {
@@ -248,7 +257,7 @@ export default function UsersTable() {
 
   console.log(selectedIds);
 
-  const isSelected = (name: string) => selectedIds.indexOf(name) !== -1;
+  const isSelected = (id: string) => selectedIds.findIndex(u => u._id === id) !== -1
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -338,7 +347,7 @@ export default function UsersTable() {
                     <TableRow
                       hover
                       onClick={(event) =>
-                        handleClick(event, row._id.toString())
+                        handleClick(event, row)
                       }
                       role="checkbox"
                       aria-checked={isItemSelected}
@@ -434,7 +443,7 @@ export default function UsersTable() {
         type={userActionModal.type}
         open={userActionModal.open}
         onClose={() => setUsersActionModal((p) => ({ ...p, open: false }))}
-        userIds={selectedIds}
+        selectedUsers={selectedIds}
       />
       <NewUserModal
         open={showNewUser}

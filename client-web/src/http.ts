@@ -608,10 +608,26 @@ export function rotateAppJwt(appId: string) {
 export function addTagToUser(tag: string, userIds: string[]) {
   return httpWithAuth().post(`/users/tags`, { tag, userId: userIds });
 }
-export function sendTokens( userIds: string[], quantity: number | string) {
-  return httpWithAuth().post(`/users/tokens`, { userId: userIds, quantity });
+export type TTransferToUser = {
+  amount: number | string;
+  walletAddress: string;
+};
+export function sendTokens(
+  receivers: TTransferToUser[],
+  amount: number | string,
+  tokenName: string
+) {
+  return httpWithAuth().post(`/tokens/transfer`, {
+    tokenName,
+    amount,
+    reveiverArray: receivers,
+  });
 }
-export function removeTagFromUser(tag: string, userIds: string[], removeAll = false) {
+export function removeTagFromUser(
+  tag: string,
+  userIds: string[],
+  removeAll = false
+) {
   return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
 }
 export function resetUsersPasswords(userIds: string[]) {

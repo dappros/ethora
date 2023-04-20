@@ -8,9 +8,10 @@ import {
   alpha,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+type TSelectedIds = { walletAddress: string; _id: string };
 
 interface UsersTableToolbarProps {
-  selected: readonly string[];
+  selected:  TSelectedIds[];
   onButtonClick: (type: ModalType) => void;
 }
 type ModalType =
