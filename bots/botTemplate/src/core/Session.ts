@@ -38,7 +38,7 @@ export class Session implements ISession {
         if (Array.isArray(message)) {
             for (const [index, msg] of message.entries()) {
                 let textMsg = msg;
-                configStatuses.useNameInMsg && Number(index) === 0 ? textMsg = `${this.getUsername()} \n${msg}` : null;
+                configStatuses.useNameInMsg && Number(index) === 0 ? textMsg = `${this.getUsername()}\n${msg}` : null;
                 if (Number(index) === message.length - 1) {
                     return this.bot.connector.send(textMsg, keyboard)
                 }
