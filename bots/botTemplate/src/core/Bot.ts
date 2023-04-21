@@ -1,4 +1,4 @@
-import {BotHandler, IBot, IBotContext, IBotData, TMessageType} from "./IBot";
+import {BotHandler, IBot, IBotContext, IBotData, IExit, TMessageType} from "./IBot";
 import {ISessionState} from "./ISessionState";
 import {ISessionStore} from "../stores/ISessionStore";
 import MemorySessionStore from "../stores/MemorySessionStore";
@@ -24,6 +24,7 @@ export default class Bot implements IBot {
     stepper: IStepper;
     config: any;
     initSteps: IStepData[] = [];
+    handlerNames: string[];
 
     constructor(data: IBotData) {
         Config.init(this._collectConfigurationData(data));
@@ -34,6 +35,7 @@ export default class Bot implements IBot {
         //Handling received presence
         this.connector.on(ConnectorEvent.receivePresence, this.processPresence.bind(this));
         this.initialState = {stepList: []};
+        this.handlerNames = [];
 
         return this;
     }
@@ -118,6 +120,10 @@ export default class Bot implements IBot {
             throw Logger.error(new Error(`Handler must be a function.`));
         }
 
+        if(typeof pattern === 'string'){
+            this.handlerNames.push(pattern);
+        }
+
         this._saveSteps(step);
         return this._useRouter(pattern, handler, typeof step === 'function' ? null : step);
     }
@@ -144,8 +150,17 @@ export default class Bot implements IBot {
             ctx.stepper.addStepList(this.initSteps);
 
             //Processing of incoming coins
-            if(ctx.type === 'coinReceived'){
+            if (ctx.type === 'coinReceived') {
                 return this._useCoinReceived(pattern, handler, ctx, next);
+            }
+
+            // Process exit handling.
+            const isExit = this._isExit(pattern, handler, ctx, next)
+            if(isExit.status){
+                if(isExit.isSystem){
+                    return;
+                }
+                return isExit.handler ?  isExit.handler : next();
             }
 
             const currentUserStep = ctx.stepper.getUserStep();
@@ -243,6 +258,29 @@ export default class Bot implements IBot {
         }
         return next();
     }
+
+    _isExit(pattern: RegExp | string | BotHandler, handler: BotHandler, ctx: IBotContext, next: any): IExit {
+        const exitKeywords = ["exit", "close", "stop"];
+        const isExitCommand = exitKeywords.some(keyword => ctx.message.filterText(keyword));
+
+        if (isExitCommand) {
+            if (this.handlerNames.includes("exit")) {
+                const isPatternExit = pattern === "exit";
+                return isPatternExit
+                    ? { status: true, handler: handler(ctx, next) }
+                    : { status: true };
+            }
+
+            ctx.stepper.removeNextUserStep();
+            ctx.session.sendTextMessage(
+                "The processes are stopped, you have exited to the main menu."
+            );
+            return { status: true, isSystem: true };
+        }
+
+        return { status: false };
+    }
+
     _collectConfigurationData(data: IBotData): IConfigInit {
         let isAppName = typeof data.useAppName == "boolean" ? data.useAppName : true;
         let isAppImg = typeof data.useAppImg == "boolean" ? data.useAppImg : true;

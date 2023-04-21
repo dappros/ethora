@@ -39,6 +39,12 @@ export interface IBotData {
 
 export type BotHandler = (context: IBotContext, next?: () => void) => void;
 
+export interface IExit {
+    status: boolean,
+    isSystem?: boolean,
+    handler?: any
+}
+
 export interface IBot {
     initialState: ISessionState;
     handlers: BotHandler[];
