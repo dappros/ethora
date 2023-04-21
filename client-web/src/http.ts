@@ -8,14 +8,14 @@ import {
   ITransaction,
 } from "./pages/Profile/types";
 import { useStoreState } from "./store";
-import qs from 'qs'
-import type { Stripe } from 'stripe'
+import qs from "qs";
+import type { Stripe } from "stripe";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;
-}
+};
 export interface ICompany {
   name: string;
   address: string;
@@ -49,20 +49,21 @@ export type TUser = {
   isAgreeWithTerms: boolean;
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
-  company?: ICompany[]
+  company?: ICompany[];
 };
 
 export type TLoginSuccessResponse = {
   token: string;
   refreshToken: string;
   user: TUser;
-  subscriptions?: {data: Stripe.Subscription[]};
-  paymentMethods?: {data: Stripe.PaymentMethod[]};
-  isAllowedNewAppCreate: boolean
+  subscriptions?: { data: Stripe.Subscription[] };
+  paymentMethods?: { data: Stripe.PaymentMethod[] };
+  isAllowedNewAppCreate: boolean;
 };
 
 export interface IUser {
   ACL: { ownerAccess: boolean };
+  acl: ACL;
   appId: string;
   createdAt: Date;
   defaultWallet: {
@@ -93,25 +94,29 @@ export type TPermission = {
   disabled?: Array<string>;
 };
 
-export interface IUserAcl {
-  result: {
-    application: {
-      appCreate: TPermission;
-      appPush: TPermission;
-      appSettings: TPermission;
-      appStats: TPermission;
-      appTokens: TPermission;
-      appUsers: TPermission;
-    };
-    network: {
-      netStats: TPermission;
-    };
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
-    userId?: string;
-    _id?: string;
-    appId?: string;
+export interface ACL {
+  application: {
+    appCreate: TPermission;
+    appPush: TPermission;
+    appSettings: TPermission;
+    appStats: TPermission;
+    appTokens: TPermission;
+    appUsers: TPermission;
   };
+  network: {
+    netStats: TPermission;
+  };
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  userId?: string;
+  _id?: string;
+  appId?: string;
+}
+export interface IOtherUserACL {
+  result: ACL;
+}
+export interface IUserAcl {
+  result: ACL[];
 }
 
 const http = axios.create({
@@ -228,14 +233,11 @@ export const loginUsername = (username: string, password: string) => {
   );
 };
 
-export const subscribeForPushNotifications = (
-  token: string,
-  jid: string
-) => {
+export const subscribeForPushNotifications = (token: string, jid: string) => {
   const body = {
     appId: "Ethora",
     deviceId: token,
-    deviceType: '12',
+    deviceType: "12",
     environment: "Production",
     externalId: "",
     isSubscribed: "1",
@@ -333,7 +335,7 @@ export function getExplorerHistory() {
   return http.get<ILineChartData>(`/explorer/history`);
 }
 export function getUserCompany(token: string) {
-  return httpWithToken(token).get<{result: ICompany[]}>(`/company`);
+  return httpWithToken(token).get<{ result: ICompany[] }>(`/company`);
 }
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
@@ -349,12 +351,12 @@ export function checkExtWallet(walletAddress: string) {
   );
 }
 interface ISubscriptionResponse {
-  paymentMethods: {data: Stripe.PaymentMethod[]},
-  subscriptions: {data: Stripe.Subscription[]}
+  paymentMethods: { data: Stripe.PaymentMethod[] };
+  subscriptions: { data: Stripe.Subscription[] };
 }
 
 export function getSubscriptions() {
-  return httpWithAuth().get<ISubscriptionResponse>('/stripe/subscriptions')
+  return httpWithAuth().get<ISubscriptionResponse>("/stripe/subscriptions");
 }
 
 export function registerSignature(
@@ -409,7 +411,7 @@ export function registerByEmail(
       password,
       firstName,
       lastName,
-      signupPlan: signUpPlan
+      signupPlan: signUpPlan,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -460,7 +462,7 @@ export function checkEmailExist(email: string) {
 export function getUserAcl(userId: string) {
   const user = useStoreState.getState().user;
 
-  return http.get<IUserAcl>(
+  return http.get<IOtherUserACL>(
     "/users/acl/" + userId,
 
     { headers: { Authorization: user.token } }
@@ -488,11 +490,11 @@ export interface IAclBody {
     netStats: TPermission;
   };
 }
-export function updateUserAcl(userId: string, body: IAclBody) {
+export function updateUserAcl(userId: string, appid: string, body: IAclBody) {
   const owner = useStoreState.getState().user;
 
-  return http.put<IUserAcl>(
-    "/users/acl/" + userId,
+  return http.put<IOtherUserACL>(
+    "/users/acl/" + appid + "/" + userId,
     body,
 
     { headers: { Authorization: owner.token } }
@@ -513,7 +515,7 @@ export function registerSocial(
       accessToken,
       loginType,
       authToken: authToken,
-      signupPlan: signUpPlan
+      signupPlan: signUpPlan,
     },
     { headers: { Authorization: APP_JWT } }
   );
@@ -564,10 +566,7 @@ export function loginOwner(email: string, password: string) {
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().user;
-  return http.get("/apps", {
-    headers: { Authorization: owner.token },
-  });
+  return httpWithAuth().get("/apps");
 }
 
 export function createApp(fd: FormData) {
@@ -598,7 +597,7 @@ export function getAppUsers(
 ) {
   const owner = useStoreState.getState().user;
   return http.get<ExplorerRespose<IUser[]>>(
-    `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
+    `/users/${appId}?&limit=${limit}&offset=${offset}`,
     {
       headers: { Authorization: owner.token },
     }
@@ -611,7 +610,37 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
-
+export function addTagToUser(tag: string, userIds: string[]) {
+  return httpWithAuth().post(`/users/tags`, { tag, userId: userIds });
+}
+export type TTransferToUser = {
+  amount: number | string;
+  walletAddress: string;
+};
+export function sendTokens(
+  receivers: TTransferToUser[],
+  amount: number | string,
+  tokenName: string
+) {
+  return httpWithAuth().post(`/tokens/transfer`, {
+    tokenName,
+    amount,
+    reveiverArray: receivers,
+  });
+}
+export function removeTagFromUser(
+  tag: string,
+  userIds: string[],
+  removeAll = false
+) {
+  return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
+}
+export function resetUsersPasswords(userIds: string[]) {
+  return httpWithAuth().post(`/users/resetPassword`, { userId: userIds });
+}
+export function deleteUsers(userIds: string[]) {
+  return httpWithAuth().delete(`/users/` + userIds);
+}
 export function updateProfile(fd: FormData, id?: string) {
   const path = id ? `/users/${id}` : "/users";
   const user = useStoreState.getState().user;

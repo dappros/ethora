@@ -12,6 +12,7 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import {
+  getApps,
   getBalance,
   httpWithAuth,
   subscribeForPushNotifications,

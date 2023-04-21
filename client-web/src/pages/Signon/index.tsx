@@ -180,6 +180,7 @@ export default function Signon() {
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
       company: res.data.result,
+      appId: loginData.user.appId
     });
   };
 

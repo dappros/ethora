@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -17,11 +17,17 @@ import EditAppModal from "./EditAppModal";
 import RotateModal from "./RotateModal";
 import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
+import { getApps } from "../../http";
+import { useSnackbar } from "../../context/SnackbarContext";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
 
 const COINS_TO_CREATE_APP = 10;
 
 export default function BasicTable() {
   const apps = useStoreState((state) => state.apps);
+  const setApps = useStoreState((state) => state.setApps);
+
   const user = useStoreState((state) => state.user);
   const [open, setOpen] = useState(false);
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
@@ -42,7 +48,17 @@ export default function BasicTable() {
     defaultAccessAssetsOpen: false,
     usersCanFree: false,
   });
-
+  const { showSnackbar } = useSnackbar();
+  const getUserApps = async () => {
+    try {
+      const apps = await getApps();
+      const notNullApps = apps.data.apps.filter(a => !!a);
+      setApps(notNullApps);
+    } catch (error) {
+      console.log(error)
+      showSnackbar("error", "Cannot get user apps");
+    }
+  };
   const onDelete = (app: any) => {
     setCurrentApp(app);
     setShowDelete(true);
@@ -64,6 +80,9 @@ export default function BasicTable() {
     }
     setOpen(true);
   };
+  useEffect(() => {
+    getUserApps()
+  }, [])
 
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
@@ -78,11 +97,12 @@ export default function BasicTable() {
               : ""
           }
         >
-          <span>
+          <span style={{marginLeft: 'auto'}}>
             <IconButton
               disabled={!isEnoughCoinsToCreateApp}
               onClick={onAddApp}
               size="large"
+              color="primary"
             >
               <AddCircleIcon fontSize="large"></AddCircleIcon>
             </IconButton>
@@ -109,10 +129,10 @@ export default function BasicTable() {
           <TableHead>
             <TableRow>
               <TableCell width={200}>Application Name</TableCell>
-              <TableCell align="right">Is Assets Open</TableCell>
-              <TableCell align="right">Is Profile Open</TableCell>
-              <TableCell align="right">Is Users Can Free</TableCell>
-              <TableCell align="right">Created</TableCell>
+              <TableCell align="center">Profile Open</TableCell>
+              <TableCell align="center">Assets Visible</TableCell>
+              <TableCell align="center">Self-Sovereignty</TableCell>
+              <TableCell align="center">Created</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -125,14 +145,16 @@ export default function BasicTable() {
                 <TableCell component="th" scope="row">
                   {app.appName}
                 </TableCell>
-                <TableCell align="right">
-                  {app.defaultAccessAssetsOpen.toString()}
+                  <TableCell align="center">
+                  {app.defaultAccessProfileOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
-                <TableCell align="right">
-                  {app.defaultAccessProfileOpen.toString()}
+                <TableCell align="center">
+                  
+                  {app.defaultAccessAssetsOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
-                <TableCell align="right">
-                  {app.usersCanFree.toString()}
+              
+                <TableCell align="center">
+                  {app.usersCanFree ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
                 </TableCell>
                 <TableCell align="right">
                   {new Date(app.createdAt).toDateString()}
@@ -206,11 +228,7 @@ export default function BasicTable() {
         open={showDelete}
         setOpen={setShowDelete}
       />
-      <RotateModal
-        app={currentApp}
-        open={showRotate}
-        setOpen={setShowRotate}
-      />
+      <RotateModal app={currentApp} open={showRotate} setOpen={setShowRotate} />
       {showEdit && (
         <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit} />
       )}

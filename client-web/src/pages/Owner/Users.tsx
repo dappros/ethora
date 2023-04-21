@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -33,38 +33,43 @@ const boxStyle = {
   p: 4,
 };
 
-function hasACLAdmin(acl: http.IUserAcl): boolean {
-  const appKeys = Object.keys(acl.result.application);
-  let hasAdmin = false;
-  for (let i = 0; i < appKeys.length; i++) {
-    if (acl.result.application[appKeys[i]].admin === true) {
-      hasAdmin = true;
-      break;
+function hasACLAdmin(acl: http.ACL): boolean {
+  const application = acl?.application
+  if (application) {
+    const appKeys = Object.keys(application);
+    let hasAdmin = false;
+    for (let i = 0; i < appKeys.length; i++) {
+      if (application[appKeys[i]]?.admin === true) {
+        hasAdmin = true;
+        break;
+      }
     }
+    return hasAdmin;
   }
-
-  return hasAdmin;
+  return false;
 }
 
-export default function UsersTable() {
+export default function Users() {
   const apps = useStoreState((state) => state.apps);
   const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
-  const user = useStoreState((state) => state.user);
-  const [showNewUser, setShowNewUser] = React.useState(false);
-  const [users, setUsers] = React.useState<[] | http.IUser[]>([]);
-  const [currentApp, setCurrentApp] = React.useState<string>();
-  const [aclEditData, setAclEditData] = React.useState({
+  const [showNewUser, setShowNewUser] = useState(false);
+  const [users, setUsers] = useState<http.IUser[]>([]);
+  const [currentApp, setCurrentApp] = useState<string>();
+  const [aclEditData, setAclEditData] = useState<{
+    modalOpen: boolean;
+    user: http.IUser | null;
+  }>({
     modalOpen: false,
-    userId: "",
+    user: null,
   });
-  const [hasAdmin, setHasAdmin] = React.useState(false);
-  const ACL = useStoreState((state) => state.ACL);
+  const [hasAdmin, setHasAdmin] = useState(false);
+  const ACL = useStoreState((state) => state.ACL.result.find(item => item.appId === currentApp));
 
-  React.useEffect(() => {
+  useEffect(() => {
     setHasAdmin(hasACLAdmin(ACL));
   }, [ACL]);
 
-  const [pagination, setPagination] = React.useState<{
+  const [pagination, setPagination] = useState<{
     total: number;
     limit: number;
     offset: number;
@@ -77,7 +82,6 @@ export default function UsersTable() {
   ) => {
     try {
       if (appId) {
-        console.log(appId);
         const getUsersResp = await http.getAppUsers(appId, limit, offset);
         const { data } = getUsersResp;
         setPagination({
@@ -87,31 +91,30 @@ export default function UsersTable() {
         });
         return data.items;
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
     return [];
   };
 
-  React.useEffect(() => {
-    if (ownerAccess) {
-      if (apps.length) {
-        setCurrentApp(apps[0]._id);
-        getUsers(apps[0]._id).then((users) => {
-          setUsers(users);
-        });
-      }
+  useEffect(() => {
+    if (ownerAccess && apps.length) {
+      setCurrentApp(apps[0]._id);
+      getUsers(apps[0]._id).then((users) => {
+        setUsers(users);
+      });
     }
-  }, [apps]);
-
-  React.useEffect(() => {
-    if (!ownerAccess) {
-      setCurrentApp(user.appId);
-      getUsers(user.appId).then((users) => {
+  }, [apps, ownerAccess]);
+  useEffect(() => {
+    if (!ownerAccess && apps.length) {
+      setCurrentApp(apps[0]._id);
+      getUsers(apps[0]._id).then((users) => {
         setUsers(users);
       });
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log("Users mount");
   }, []);
 
@@ -122,10 +125,7 @@ export default function UsersTable() {
     });
   };
 
-  const onPagination = (event: React.ChangeEvent<unknown>, page: number) => {
-    // page = 1 => offset 0
-    // page = 2 => offset 10
-    // page = 3 => offset 20
+  const onPagination = (event: ChangeEvent<unknown>, page: number) => {
     let offset = 0;
     if (page - 1 > 0) {
       offset = (page - 1) * (pagination?.limit || 10);
@@ -136,16 +136,16 @@ export default function UsersTable() {
     );
   };
 
-  const handleAclEditOpen = (userId: string) =>
-    setAclEditData({ modalOpen: true, userId: userId });
+  const handleAclEditOpen = (user: http.IUser) =>
+    setAclEditData({ modalOpen: true, user });
 
   const handleAclEditClose = () =>
-    setAclEditData({ modalOpen: false, userId: "" });
+    setAclEditData({ modalOpen: false, user: null });
 
-  const updateUserDataAfterAclChange = (user: http.IUserAcl) => {
+  const updateUserDataAfterAclChange = (user: http.IOtherUserACL) => {
     const oldUsers = users;
     const indexToUpdate = oldUsers.findIndex(
-      (item) => item._id === aclEditData.userId
+      (item) => item._id === aclEditData.user._id
     );
     if (indexToUpdate !== -1) {
     }
@@ -180,7 +180,7 @@ export default function UsersTable() {
           </FormControl>
         ) : null}
 
-        {(ownerAccess || ACL.result.application.appUsers.create) && (
+        {(ownerAccess || ACL?.application.appUsers.create) && (
           <IconButton onClick={() => setShowNewUser(true)} size="large">
             <AddCircleIcon fontSize="large"></AddCircleIcon>
           </IconButton>
@@ -205,11 +205,11 @@ export default function UsersTable() {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell width={200}>appId</TableCell>
-              <TableCell align="right">firstName</TableCell>
-              <TableCell align="right">lastName</TableCell>
-              <TableCell align="right">username</TableCell>
-              <TableCell align="right">email</TableCell>
+              <TableCell width={200}>App Id</TableCell>
+              <TableCell align="right">First Name</TableCell>
+              <TableCell align="right">Last Name</TableCell>
+              <TableCell align="right">User Name</TableCell>
+              <TableCell align="right">Email</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -232,7 +232,7 @@ export default function UsersTable() {
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>
-                    {ACL.result.application.appUsers.update && (
+                    {ACL?.application.appUsers.update && (
                       <Typography>Edit</Typography>
                     )}
 
@@ -242,7 +242,7 @@ export default function UsersTable() {
                           cursor: "pointer",
                           textDecoration: "underline",
                         }}
-                        onClick={() => handleAclEditOpen(user._id)}
+                        onClick={() => handleAclEditOpen(user)}
                       >
                         Edit ACL
                       </Typography>
@@ -268,6 +268,8 @@ export default function UsersTable() {
         open={showNewUser}
         setUsers={setUsers}
         setOpen={setShowNewUser}
+        appId={currentApp}
+
       />
       <Modal
         open={aclEditData.modalOpen}
@@ -278,7 +280,7 @@ export default function UsersTable() {
         <Box sx={boxStyle}>
           <EditAcl
             updateData={updateUserDataAfterAclChange}
-            userId={aclEditData.userId}
+            user={aclEditData.user}
           />
           <IconButton
             onClick={handleAclEditClose}

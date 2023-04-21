@@ -16,25 +16,31 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import { NativeSelect } from "@mui/material";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setUsers: React.Dispatch<React.SetStateAction<any>>;
+  appId: string;
 };
 
-export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
+export default function NewUserModal({
+  open,
+  setOpen,
+  setUsers,
+  appId,
+}: TProps) {
   const apps = useStoreState((state) => state.apps);
   const addAppUsers = useStoreState((state) => state.addAppUsers);
-  const [loading, setLoading] = useState(false);
-
+  // const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
       firstName: "",
       lastName: "",
       username: "",
       password: "",
-      appId: apps[0]?._id,
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -57,23 +63,34 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
 
       return errors;
     },
-    onSubmit: ({ username, firstName, lastName, password, appId }) => {
-      setLoading(true);
+    onSubmit: async (
+      { username, firstName, lastName, password },
+      { resetForm, setSubmitting }
+    ) => {
+      setSubmitting(true);
       const app = apps.find((el) => el._id === appId);
-      http
-        .registerUsername(
+      try {
+        const result = await http.registerUsername(
           username,
           password,
           firstName,
           lastName,
           app?.appToken
-        )
-        .then((result) => {
-          setUsers((old) => {
-            return [...old, result.data.user];
-          });
-          setOpen(false);
+        );
+        setUsers((old) => {
+          return [...old, result.data.user];
         });
+        resetForm();
+
+        setOpen(false);
+      } catch (error) {
+        showSnackbar(
+          "error",
+          "Cannot create user " + error.response?.data?.errors[0]?.msg || ""
+        );
+      }
+
+      setSubmitting(false);
     },
   });
 
@@ -92,7 +109,7 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
         </DialogContent>
         <DialogActions>
           <Button
-            disabled={loading}
+            disabled={formik.isSubmitting}
             variant="contained"
             autoFocus
             onClick={() => setOpen(false)}
@@ -108,39 +125,18 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
     <Dialog onClose={() => setOpen(false)} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
-          style={{ display: "flex", justifyContent: "space-between" }}
+          sx={{ display: "flex", justifyContent: "space-between", padding: 1, m: 0 }}
         >
           New User
-          <IconButton disabled={loading} onClick={() => setOpen(false)}>
+          <IconButton
+            disabled={formik.isSubmitting}
+            onClick={() => setOpen(false)}
+          >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
+        <Box sx={{ width: "100%", typography: "body1", padding: 1, pt: 0 }}>
           <form onSubmit={formik.handleSubmit}>
-            <Box>
-              <FormControl fullWidth>
-                <InputLabel variant="standard" htmlFor="uncontrolled-native">
-                  App
-                </InputLabel>
-                <NativeSelect
-                  inputProps={{
-                    name: "appName",
-                    id: "uncontrolled-native",
-                  }}
-                  onChange={(e) => {
-                    formik.setFieldValue("appId", e.target.value);
-                  }}
-                >
-                  {apps.map((app) => {
-                    return (
-                      <option key={app._id} value={app._id}>
-                        {app.appName}
-                      </option>
-                    );
-                  })}
-                </NativeSelect>
-              </FormControl>
-            </Box>
             <Box>
               <TextField
                 fullWidth
@@ -225,17 +221,16 @@ export default function NewUserModal({ open, setOpen, setUsers }: TProps) {
             </Box>
             <Box
               style={{
-                display: "inline-flex",
-                margin: "0 auto",
-                flexDirection: "column",
+                display: "flex",
+                justifyContent: "center",
               }}
             >
               <LoadingButton
-                loading={loading}
+                loading={formik.isSubmitting}
                 variant="contained"
                 style={{ marginTop: "15px" }}
                 type="submit"
-                disabled={loading}
+                disabled={formik.isSubmitting}
               >
                 Create New User
               </LoadingButton>

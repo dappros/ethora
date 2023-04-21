@@ -11,7 +11,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import * as http from "../../http";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 type TProps = {
@@ -24,7 +24,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   const setApp = useStoreState((state) => state.setApp);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string>("");
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
       appName: "",
@@ -35,6 +35,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       usersCanFree: false,
       newUserTokenGift: 0,
       coinsDayliBonus: 0,
+      appUrl: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -52,6 +53,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       defaultAccessAssetsOpen,
       defaultAccessProfileOpen,
       usersCanFree,
+      appUrl,
     }) => {
       setLoading(true);
       const fd = new FormData();
@@ -76,15 +78,18 @@ export default function NewAppModal({ open, setOpen }: TProps) {
         defaultAccessProfileOpen.toString()
       );
       fd.append("usersCanFree", usersCanFree.toString());
-
+      fd.append("appUrl", appUrl);
       http
         .createApp(fd)
         .then((response) => {
           setApp(response.data.app);
           setOpen(false);
-        }).catch(e => {
-          console.log(e)
-showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || ''))
+        })
+        .catch((e) => {
+          showSnackbar(
+            "error",
+            "Cannot create the app " + (e.response?.data?.error || "")
+          );
         })
         .finally(() => setLoading(false));
     },
@@ -112,7 +117,7 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
   };
   return (
     <Dialog onClose={onClose} open={open}>
-      <Box sx={{ padding: 1, minWidth: 500 }}>
+      <Box sx={{ padding: 1, }}>
         <IconButton
           sx={{ position: "absolute", top: 0, right: 0 }}
           disabled={loading}
@@ -136,7 +141,7 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                 value={formik.values.appName}
               />
             </Box>
-            <Box>
+            {/* <Box>
               <TextField
                 sx={{ width: "100%" }}
                 margin="dense"
@@ -147,57 +152,141 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                 onBlur={formik.handleBlur}
                 value={formik.values.appGoogleId}
               />
+            </Box> */}
+            <Box>
+              <TextField
+                sx={{ width: "100%" }}
+                margin="dense"
+                label="App Url"
+                name="appUrl"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.appUrl}
+                error={!!formik.touched.appUrl && !!formik.errors.appUrl}
+              />
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}
+            >
               <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <FormControlLabel
-                  checked={formik.values.defaultAccessProfileOpen}
-                  name="Default Access Profile Open"
-                  control={
-                    <Checkbox
-                      onChange={(e) =>
-                        formik.setFieldValue(
-                          "defaultAccessProfileOpen",
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label={"Default Access Profile Open"}
-                  labelPlacement="end"
-                  onChange={formik.handleChange}
-                />
-                <FormControlLabel
-                  checked={formik.values.defaultAccessAssetsOpen}
-                  name="Default Access Assets Open"
-                  control={
-                    <Checkbox
-                      onChange={(e) =>
-                        formik.setFieldValue(
-                          "defaultAccessAssetsOpen",
-                          e.target.checked
-                        )
-                      }
-                    />
-                  }
-                  label={"Default Access Assets Open"}
-                  labelPlacement="end"
-                />
-                <FormControlLabel
-                  checked={formik.values.usersCanFree}
-                  name="Users can free"
-                  control={
-                    <Checkbox
-                      onChange={(e) =>
-                        formik.setFieldValue("usersCanFree", e.target.checked)
-                      }
-                    />
-                  }
-                  label={"Users can free"}
-                  labelPlacement="end"
-                />
+                <Box>
+                  <Typography sx={{ fontWeight: "bold", fontSize: 14 }}>
+                    Default Permissions
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    These are the default permissions to be applied to all Users
+                    created in your App. Keep the recommended settings if you are not sure and you
+                    can come back to this later.
+                  </Typography>
+                 
+                </Box>
+                <Box>
+                  <FormControlLabel
+                    checked={formik.values.defaultAccessProfileOpen}
+                    name="defaultAccessProfileOpen"
+                    control={
+                      <Checkbox
+                        onChange={(e) =>
+                          formik.setFieldValue(
+                            "defaultAccessProfileOpen",
+                            e.target.checked
+                          )
+                        }
+                      />
+                    }
+                    label={
+                      <Typography sx={{ fontWeight: "bold", fontSize: 14, }}>
+                        Profiles Open ("defaultAccessProfileOpen")
+                      </Typography>
+                    }
+                    labelPlacement="end"
+                    onChange={formik.handleChange}
+                  />
+                  <Typography sx={{ fontSize: 10 }}>
+                    If enabled, your users profiles can be viewed by any other
+                    users and automated agents who follow a correct permanent
+                    link.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    This is better for social discovery and social commerce but
+                    you can disable this if you prefer a tighter security.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    This is a default setting for all newly created users. Users
+                    will be able to change this later themselves.
+                  </Typography>
+                </Box>
+                <Box>
+                  <FormControlLabel
+                    checked={formik.values.defaultAccessAssetsOpen}
+                    name="defaultAccessAssetsOpen"
+                    control={
+                      <Checkbox
+                        onChange={(e) =>
+                          formik.setFieldValue(
+                            "defaultAccessAssetsOpen",
+                            e.target.checked
+                          )
+                        }
+                      />
+                    }
+                    label={
+                      <Typography sx={{ fontWeight: "bold", fontSize: 14 }}>
+                        Assets Visible ("defaultAccessAssetsOpen")
+                      </Typography>
+                    }
+                    labelPlacement="end"
+                  />
+
+                  <Typography sx={{ fontSize: 10 }}>
+                    If enabled, all of your users assets (such as Tokens,
+                    Documents and Data) can be viewed by any other users and
+                    automated agents who are able to read your user's profile.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    If disabled, your user needs to explicitly share each asset
+                    via a special link.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    This is a default setting for all newly created users. Users
+                    will be able to change this later themselves.
+                  </Typography>
+                </Box>
+                <Box>
+                  <FormControlLabel
+                    checked={formik.values.usersCanFree}
+                    name="usersCanFree"
+                    control={
+                      <Checkbox
+                        onChange={(e) =>
+                          formik.setFieldValue("usersCanFree", e.target.checked)
+                        }
+                      />
+                    }
+                    label={
+                      <Typography sx={{ fontWeight: "bold", fontSize: 14 }}>
+                        Self-Sovereignty ("usersCanFree")
+                      </Typography>
+                    }
+                    labelPlacement="end"
+                  />
+
+                  <Typography sx={{ fontSize: 10 }}>
+                    If enabled, your users can take over management of their own
+                    account and make it decoupled from your App.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    Most business applications will prefer this switched off so
+                    that users account and wallet only works within your App.
+                  </Typography>
+                  <Typography sx={{ fontSize: 10 }}>
+                    This is a default setting for all newly created users. Users
+                    will be able to change this later themselves.
+                  </Typography>
+                </Box>
               </Box>
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
@@ -227,7 +316,7 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                       src={preview}
                       style={{
                         width: 200,
-                        height: '100%',
+                        height: "100%",
                         objectFit: "cover",
                         borderRadius: 10,
                       }}
@@ -242,7 +331,7 @@ showSnackbar('error', 'Cannot create the app ' +( e.response?.data?.error || '')
                     upload image
                   </Button>
                 )}
-              </Box>
+              </Box> */}
             </Box>
             <LoadingButton
               loading={loading}

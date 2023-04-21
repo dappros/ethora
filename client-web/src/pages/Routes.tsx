@@ -46,7 +46,7 @@ const ChangeBackground = React.lazy(
 );
 
 const mockAcl = {
-  result: {
+  result: [{
     network: {
       netStats: {
         read: true,
@@ -91,15 +91,16 @@ const mockAcl = {
         disabled: ["create", "update", "delete"],
       },
     },
-  },
+  }],
 };
 
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
-
   const setACL = useStoreState((state) => state.setACL);
   const setDocuments = useStoreState((state) => state.setDocuments);
+  const apps = useStoreState((state) => state.apps);
+
   const getAcl = async () => {
     try {
       if (user?.ACL?.ownerAccess) {
@@ -107,7 +108,7 @@ export const Routes = () => {
         return;
       }
       const res = await getMyAcl();
-      setACL({ result: res.data.result[0] });
+      setACL({ result: res.data.result });
     } catch (error) {
       console.log(error);
     }
@@ -151,6 +152,9 @@ export const Routes = () => {
       getDocuments(user.walletAddress);
     }
   }, [userId]);
+  useEffect(() => {
+    getAcl()
+  }, [apps.length])
 
   useEffect(() => {
     onMessageListener()

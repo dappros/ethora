@@ -288,7 +288,7 @@ const _useStore = create<IStore>()(
             isAgreeWithTerms: false,
           },
           ACL: {
-            result: {
+            result: [{
               application: {
                 appCreate: {},
                 appPush: {},
@@ -304,7 +304,7 @@ const _useStore = create<IStore>()(
               userId: "",
               _id: "",
               appId: "",
-            },
+            }],
           },
           oldTokens: {
             token: "",

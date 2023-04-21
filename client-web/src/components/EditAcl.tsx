@@ -8,8 +8,11 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { Button, Checkbox, Typography } from "@mui/material";
 import {
+  ACL,
   getUserAcl,
   IAclBody,
+  IOtherUserACL,
+  IUser,
   IUserAcl,
   TPermission,
   updateUserAcl,
@@ -17,10 +20,12 @@ import {
 import { Box } from "@mui/system";
 import { FullPageSpinner } from "./FullPageSpinner";
 import { useStoreState } from "../store";
+import { useSnackbar } from "../context/SnackbarContext";
 
 export interface IEditAcl {
-  userId: string;
-  updateData?(user: IUserAcl): void;
+  updateData?(user: IOtherUserACL): void;
+  onAclError?: () => void;
+  user: IUser;
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -54,7 +59,7 @@ const Row = ({
     keyToChange: TKeys
   ) => void;
 }) => {
-  const isOwner = useStoreState((state) => state.user?.ACL.ownerAccess);
+  const isOwner = useStoreState((state) => state.user?.ACL?.ownerAccess);
   return (
     <TableRow
       sx={{
@@ -151,38 +156,33 @@ const Row = ({
   );
 };
 
-export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
-  const [userAcl, setUserAcl] = useState<IUserAcl>();
+export const EditAcl: React.FC<IEditAcl> = ({
+  updateData,
+  onAclError,
+  user,
+}) => {
+  const [userAcl, setUserAcl] = useState<IOtherUserACL>({ result: user.acl });
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
   >([]);
   const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>(
     []
   );
-  const myAcl = useStoreState((state) => state.ACL);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    console.log("userAclApplicationKeys ", userAclApplicationKeys);
-  }, [userAclApplicationKeys]);
-
-  const getAcl = async () => {
-    setLoading(true);
-    try {
-      const { data } = await getUserAcl(userId);
-      console.log("getAcl ", data);
-      setUserAcl(data);
-      const appKeys = Object.keys(data.result.application) as TKeys[];
-      const networkKeys = Object.keys(data.result.network) as TKeys[];
-
-      setUserAclApplicationKeys(appKeys);
-      setUserAclNetworkKeys(networkKeys);
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
+  const acl = useStoreState((state) =>
+    state.ACL.result.find((a) => a.appId === userAcl?.result?.appId)
+  );
+  const myAcl = {
+    result: acl,
   };
-
+  const [loading, setLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const getAcl = async () => {
+    setUserAcl({ result: user.acl });
+    const appKeys = Object.keys(userAcl.result.application) as TKeys[];
+    const networkKeys = Object.keys(userAcl.result.network) as TKeys[];
+    setUserAclApplicationKeys(appKeys);
+    setUserAclNetworkKeys(networkKeys);
+  };
   const onApplicationAclChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     keyToChange: TKeys
@@ -220,16 +220,20 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
 
   const updateAcl = async () => {
     setLoading(true);
+    let application: ACL = JSON.parse(JSON.stringify(userAcl!.result!.application));
+    let network: ACL = JSON.parse(JSON.stringify(userAcl!.result!.network));
+
     try {
       const filteredApplication = Object.fromEntries(
-        Object.entries(userAcl!.result!.application).map((item) => {
+        Object.entries(application).map((item) => {
           delete item[1].disabled;
           return item;
         })
       );
       const filteredNetwork = Object.fromEntries(
-        Object.entries(userAcl!.result!.network).map((item) => {
+        Object.entries(network).map((item) => {
           delete item[1].disabled;
+
           return item;
         })
       );
@@ -239,19 +243,28 @@ export const EditAcl: React.FC<IEditAcl> = ({ userId, updateData }) => {
         network: filteredNetwork,
       } as IAclBody;
 
-      const aclRes = await updateUserAcl(userId, body);
-      const updatedUserAcl = aclRes.data as IUserAcl;
+      const aclRes = await updateUserAcl(user._id, user.appId, body);
+      const updatedUserAcl = aclRes.data as IOtherUserACL;
       if (updateData) {
         updateData(updatedUserAcl);
       }
+      showSnackbar("success", "ACL updated successfully");
     } catch (error) {
+      showSnackbar(
+        "error",
+        "Cannot change ACL " +
+          error?.response?.data?.error?.details[0]?.message || ""
+      );
       console.log(error);
     }
     setLoading(false);
   };
+
   useEffect(() => {
-    getAcl();
-  }, []);
+    if (user) {
+      getAcl();
+    }
+  }, [user]);
 
   if (loading) {
     return <FullPageSpinner />;
