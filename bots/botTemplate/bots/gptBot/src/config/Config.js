@@ -3,7 +3,7 @@ require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
 
 const botInitData = () => {
-    return {
+    const botData = {
         username: process.env.APP_USERNAME,
         password: process.env.PASSWORD,
         tokenJWT: process.env.TOKEN,
@@ -11,6 +11,14 @@ const botInitData = () => {
         botImg: process.env.AVATAR,
         useTyping: true,
         connectionRooms: process.env.ROOMS.split(',')
+    }
+
+    const openaiData = {
+        token: process.env.OPENAI_API_KEY
+    }
+    return {
+        botData,
+        openaiData
     }
 }
 
