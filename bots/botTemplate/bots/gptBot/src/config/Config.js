@@ -8,7 +8,6 @@ const botInitData = () => {
         password: process.env.PASSWORD,
         tokenJWT: process.env.TOKEN,
         botName: process.env.BOT_NAME,
-        botImg: process.env.AVATAR,
         useTyping: true,
         connectionRooms: process.env.ROOMS.split(',')
     }
