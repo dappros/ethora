@@ -63,6 +63,7 @@ export type TLoginSuccessResponse = {
 
 export interface IUser {
   ACL: { ownerAccess: boolean };
+  acl: ACL,
   appId: string;
   createdAt: Date;
   defaultWallet: {

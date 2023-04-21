@@ -122,9 +122,12 @@ export default function UsersTable() {
   const [showNewUser, setShowNewUser] = useState(false);
   const [users, setUsers] = useState<IUser[]>([]);
   const [currentApp, setCurrentApp] = useState<string>(apps[0]?._id);
-  const [aclEditData, setAclEditData] = useState({
+  const [aclEditData, setAclEditData] = useState<{
+    modalOpen: boolean;
+    user: IUser | null;
+  }>({
     modalOpen: false,
-    userId: "",
+    user: null,
   });
   const [hasAdmin, setHasAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -194,18 +197,19 @@ export default function UsersTable() {
     );
   };
 
-  const handleAclEditOpen = (userId: string) => {
-    setAclEditData({ modalOpen: true, userId: userId });
+  const handleAclEditOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>,user: IUser) => {
+    e.stopPropagation()
+    setAclEditData({ modalOpen: true, user });
     handleMenuClose();
   };
 
   const handleAclEditClose = () =>
-    setAclEditData({ modalOpen: false, userId: "" });
+    setAclEditData({ modalOpen: false, user: null });
 
   const updateUserDataAfterAclChange = (user: IOtherUserACL) => {
     const oldUsers = users;
     const indexToUpdate = oldUsers.findIndex(
-      (item) => item._id === aclEditData.userId
+      (item) => item._id === aclEditData.user._id
     );
     if (indexToUpdate !== -1) {
     }
@@ -302,9 +306,12 @@ export default function UsersTable() {
             </FormControl>
           )}
           {canCreateUsers && (
-            <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
-             
-              <AddCircleIcon fontSize="large"  color="primary" />
+            <IconButton
+              onClick={() => setShowNewUser(true)}
+              size="large"
+              sx={{ marginLeft: "auto" }}
+            >
+              <AddCircleIcon fontSize="large" color="primary" />
             </IconButton>
           )}
         </Box>
@@ -363,8 +370,12 @@ export default function UsersTable() {
             </FormControl>
           )}
           {canCreateUsers && (
-            <IconButton onClick={() => setShowNewUser(true)} size="large" sx={{marginLeft: 'auto'}}>
-              <AddCircleIcon fontSize="large"  color="primary" />
+            <IconButton
+              onClick={() => setShowNewUser(true)}
+              size="large"
+              sx={{ marginLeft: "auto" }}
+            >
+              <AddCircleIcon fontSize="large" color="primary" />
             </IconButton>
           )}
         </Box>
@@ -452,7 +463,7 @@ export default function UsersTable() {
                             },
                           }}
                         >
-                          <MenuItem onClick={() => handleAclEditOpen(row._id)}>
+                          <MenuItem onClick={(e) => handleAclEditOpen(e, row)}>
                             Edit Acl
                           </MenuItem>
                         </Menu>
@@ -497,7 +508,6 @@ export default function UsersTable() {
         setUsers={setUsers}
         setOpen={setShowNewUser}
         appId={currentApp}
-
       />
       <Modal
         open={aclEditData.modalOpen}
@@ -520,8 +530,8 @@ export default function UsersTable() {
         >
           <EditAcl
             updateData={updateUserDataAfterAclChange}
-            userId={aclEditData.userId}
             onAclError={handleAclEditClose}
+            user={aclEditData.user}
           />
           <IconButton
             onClick={handleAclEditClose}

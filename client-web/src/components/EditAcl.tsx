@@ -12,6 +12,7 @@ import {
   getUserAcl,
   IAclBody,
   IOtherUserACL,
+  IUser,
   IUserAcl,
   TPermission,
   updateUserAcl,
@@ -22,9 +23,9 @@ import { useStoreState } from "../store";
 import { useSnackbar } from "../context/SnackbarContext";
 
 export interface IEditAcl {
-  userId: string;
   updateData?(user: IOtherUserACL): void;
   onAclError?: () => void;
+  user: IUser;
 }
 
 const label = { inputProps: { "aria-label": "Checkbox" } };
@@ -58,7 +59,7 @@ const Row = ({
     keyToChange: TKeys
   ) => void;
 }) => {
-  const isOwner = useStoreState((state) => state.user?.ACL.ownerAccess);
+  const isOwner = useStoreState((state) => state.user?.ACL?.ownerAccess);
   return (
     <TableRow
       sx={{
@@ -156,11 +157,11 @@ const Row = ({
 };
 
 export const EditAcl: React.FC<IEditAcl> = ({
-  userId,
   updateData,
   onAclError,
+  user,
 }) => {
-  const [userAcl, setUserAcl] = useState<IOtherUserACL>();
+  const [userAcl, setUserAcl] = useState<IOtherUserACL>({ result: user.acl });
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
   >([]);
@@ -170,7 +171,6 @@ export const EditAcl: React.FC<IEditAcl> = ({
   const acl = useStoreState((state) =>
     state.ACL.result.find((a) => a.appId === userAcl?.result?.appId)
   );
-  console.log(acl, 'sfjkdsfdsjkfldsf')
   const myAcl = {
     result: acl,
   };
@@ -178,29 +178,12 @@ export const EditAcl: React.FC<IEditAcl> = ({
   const { showSnackbar } = useSnackbar();
 
   const getAcl = async () => {
-    setLoading(true);
-    try {
-      const { data } = await getUserAcl(userId);
-      console.log("getAcl ", data);
-      setUserAcl(data);
-      const appKeys = Object.keys(data.result.application) as TKeys[];
-      const networkKeys = Object.keys(data.result.network) as TKeys[];
+    const appKeys = Object.keys(userAcl.result.application) as TKeys[];
+    const networkKeys = Object.keys(userAcl.result.network) as TKeys[];
 
-      setUserAclApplicationKeys(appKeys);
-      setUserAclNetworkKeys(networkKeys);
-    } catch (error) {
-      showSnackbar(
-        "error",
-        "Cannot get user ACL " + error?.response?.data?.errors[0]?.msg || ""
-      );
-      if (onAclError) {
-        onAclError();
-      }
-      console.log(error);
-    }
-    setLoading(false);
+    setUserAclApplicationKeys(appKeys);
+    setUserAclNetworkKeys(networkKeys);
   };
-
   const onApplicationAclChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     keyToChange: TKeys
@@ -257,7 +240,7 @@ export const EditAcl: React.FC<IEditAcl> = ({
         network: filteredNetwork,
       } as IAclBody;
 
-      const aclRes = await updateUserAcl(userId, body);
+      const aclRes = await updateUserAcl(user._id, body);
       const updatedUserAcl = aclRes.data as IOtherUserACL;
       if (updateData) {
         updateData(updatedUserAcl);
@@ -267,9 +250,12 @@ export const EditAcl: React.FC<IEditAcl> = ({
     }
     setLoading(false);
   };
+  
   useEffect(() => {
-    getAcl();
-  }, []);
+    if (user) {
+      getAcl();
+    }
+  }, [user]);
 
   if (loading) {
     return <FullPageSpinner />;

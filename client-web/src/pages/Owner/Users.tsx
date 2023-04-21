@@ -55,9 +55,12 @@ export default function Users() {
   const [showNewUser, setShowNewUser] = useState(false);
   const [users, setUsers] = useState<http.IUser[]>([]);
   const [currentApp, setCurrentApp] = useState<string>();
-  const [aclEditData, setAclEditData] = useState({
+  const [aclEditData, setAclEditData] = useState<{
+    modalOpen: boolean;
+    user: http.IUser | null;
+  }>({
     modalOpen: false,
-    userId: "",
+    user: null,
   });
   const [hasAdmin, setHasAdmin] = useState(false);
   const ACL = useStoreState((state) => state.ACL.result.find(item => item.appId === currentApp));
@@ -133,16 +136,16 @@ export default function Users() {
     );
   };
 
-  const handleAclEditOpen = (userId: string) =>
-    setAclEditData({ modalOpen: true, userId: userId });
+  const handleAclEditOpen = (user: http.IUser) =>
+    setAclEditData({ modalOpen: true, user });
 
   const handleAclEditClose = () =>
-    setAclEditData({ modalOpen: false, userId: "" });
+    setAclEditData({ modalOpen: false, user: null });
 
   const updateUserDataAfterAclChange = (user: http.IOtherUserACL) => {
     const oldUsers = users;
     const indexToUpdate = oldUsers.findIndex(
-      (item) => item._id === aclEditData.userId
+      (item) => item._id === aclEditData.user._id
     );
     if (indexToUpdate !== -1) {
     }
@@ -239,7 +242,7 @@ export default function Users() {
                           cursor: "pointer",
                           textDecoration: "underline",
                         }}
-                        onClick={() => handleAclEditOpen(user._id)}
+                        onClick={() => handleAclEditOpen(user)}
                       >
                         Edit ACL
                       </Typography>
@@ -277,7 +280,7 @@ export default function Users() {
         <Box sx={boxStyle}>
           <EditAcl
             updateData={updateUserDataAfterAclChange}
-            userId={aclEditData.userId}
+            user={aclEditData.user}
           />
           <IconButton
             onClick={handleAclEditClose}
