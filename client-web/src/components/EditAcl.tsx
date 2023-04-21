@@ -176,11 +176,10 @@ export const EditAcl: React.FC<IEditAcl> = ({
   };
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
-
   const getAcl = async () => {
+    setUserAcl({ result: user.acl });
     const appKeys = Object.keys(userAcl.result.application) as TKeys[];
     const networkKeys = Object.keys(userAcl.result.network) as TKeys[];
-
     setUserAclApplicationKeys(appKeys);
     setUserAclNetworkKeys(networkKeys);
   };
@@ -221,16 +220,20 @@ export const EditAcl: React.FC<IEditAcl> = ({
 
   const updateAcl = async () => {
     setLoading(true);
+    let application: ACL = JSON.parse(JSON.stringify(userAcl!.result!.application));
+    let network: ACL = JSON.parse(JSON.stringify(userAcl!.result!.network));
+
     try {
       const filteredApplication = Object.fromEntries(
-        Object.entries(userAcl!.result!.application).map((item) => {
+        Object.entries(application).map((item) => {
           delete item[1].disabled;
           return item;
         })
       );
       const filteredNetwork = Object.fromEntries(
-        Object.entries(userAcl!.result!.network).map((item) => {
+        Object.entries(network).map((item) => {
           delete item[1].disabled;
+
           return item;
         })
       );
@@ -240,17 +243,23 @@ export const EditAcl: React.FC<IEditAcl> = ({
         network: filteredNetwork,
       } as IAclBody;
 
-      const aclRes = await updateUserAcl(user._id, body);
+      const aclRes = await updateUserAcl(user._id, user.appId, body);
       const updatedUserAcl = aclRes.data as IOtherUserACL;
       if (updateData) {
         updateData(updatedUserAcl);
       }
+      showSnackbar("success", "ACL updated successfully");
     } catch (error) {
+      showSnackbar(
+        "error",
+        "Cannot change ACL " +
+          error?.response?.data?.error?.details[0]?.message || ""
+      );
       console.log(error);
     }
     setLoading(false);
   };
-  
+
   useEffect(() => {
     if (user) {
       getAcl();

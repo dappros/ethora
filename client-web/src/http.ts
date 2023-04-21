@@ -63,7 +63,7 @@ export type TLoginSuccessResponse = {
 
 export interface IUser {
   ACL: { ownerAccess: boolean };
-  acl: ACL,
+  acl: ACL;
   appId: string;
   createdAt: Date;
   defaultWallet: {
@@ -113,10 +113,10 @@ export interface ACL {
   appId?: string;
 }
 export interface IOtherUserACL {
-  result: ACL
+  result: ACL;
 }
 export interface IUserAcl {
-  result: ACL[]
+  result: ACL[];
 }
 
 const http = axios.create({
@@ -490,11 +490,11 @@ export interface IAclBody {
     netStats: TPermission;
   };
 }
-export function updateUserAcl(userId: string, body: IAclBody) {
+export function updateUserAcl(userId: string, appid: string, body: IAclBody) {
   const owner = useStoreState.getState().user;
 
   return http.put<IOtherUserACL>(
-    "/users/acl/" + userId,
+    "/users/acl/" + appid + "/" + userId,
     body,
 
     { headers: { Authorization: owner.token } }

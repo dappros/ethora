@@ -213,7 +213,7 @@ export default function UsersTable() {
     );
     if (indexToUpdate !== -1) {
     }
-    oldUsers[indexToUpdate]._id = user.result.userId;
+    oldUsers[indexToUpdate].acl = user.result;
     setUsers(oldUsers);
   };
 
