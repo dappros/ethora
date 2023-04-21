@@ -1,9 +1,8 @@
-import * as dotenv from 'dotenv'
-import path from "path";
+const path = require("path")
+require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
-dotenv.config({path: path.join(__dirname, '../../.env')})
 
-export const botInitData = () => {
+const botInitData = () => {
     return {
         username: process.env.APP_USERNAME,
         password: process.env.PASSWORD,
@@ -14,3 +13,7 @@ export const botInitData = () => {
         connectionRooms: process.env.ROOMS.split(',')
     }
 }
+
+module.exports = {
+    botInitData,
+};
