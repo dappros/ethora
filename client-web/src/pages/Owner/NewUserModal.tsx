@@ -39,8 +39,7 @@ export default function NewUserModal({
     initialValues: {
       firstName: "",
       lastName: "",
-      username: "",
-      password: "",
+      email: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -53,26 +52,22 @@ export default function NewUserModal({
         errors.lastName = "Required";
       }
 
-      if (!values.username) {
-        errors.username = "Required";
-      }
-
-      if (!values.password) {
-        errors.password = "Required";
+      if (!values.email) {
+        errors.email = "Required";
       }
 
       return errors;
     },
     onSubmit: async (
-      { username, firstName, lastName, password },
+      { email, firstName, lastName },
       { resetForm, setSubmitting }
     ) => {
       setSubmitting(true);
       const app = apps.find((el) => el._id === appId);
       try {
-        const result = await http.registerUsername(
-          username,
-          password,
+        const result = await http.registerNewUser(
+          appId,
+          email,
           firstName,
           lastName,
           app?.appToken
@@ -125,7 +120,12 @@ export default function NewUserModal({
     <Dialog onClose={() => setOpen(false)} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
-          sx={{ display: "flex", justifyContent: "space-between", padding: 1, m: 0 }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 1,
+            m: 0,
+          }}
         >
           New User
           <IconButton
@@ -181,42 +181,20 @@ export default function NewUserModal({
               <TextField
                 fullWidth
                 error={
-                  formik.touched.lastName && formik.errors.username
-                    ? true
-                    : false
+                  formik.touched.lastName && formik.errors.email ? true : false
                 }
                 helperText={
-                  formik.touched.username && formik.errors.username
-                    ? formik.errors.username
+                  formik.touched.email && formik.errors.email
+                    ? formik.errors.email
                     : ""
                 }
                 margin="dense"
-                label="Username"
-                name="username"
+                label="Email"
+                name="email"
                 variant="standard"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                value={formik.values.username}
-              />
-              <TextField
-                fullWidth
-                error={
-                  formik.touched.password && formik.errors.password
-                    ? true
-                    : false
-                }
-                helperText={
-                  formik.touched.password && formik.errors.password
-                    ? formik.errors.password
-                    : ""
-                }
-                margin="dense"
-                label="Password"
-                name="password"
-                variant="standard"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
+                value={formik.values.email}
               />
             </Box>
             <Box
