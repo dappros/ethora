@@ -13,7 +13,7 @@ import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
-import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
+import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
 import Subscriptions from "./Payments";
 
@@ -191,7 +191,7 @@ export const Routes = () => {
         </Route>
         <Route path={"/explorer"} component={Explorer} exact />
         <Route path={"/resetPassword/:token"} component={ResetPassword} exact />
-        <Route path={"/verifyEmail/:token"} component={VerifyEmail} exact />
+        <Route path={"/tempPassword/"} component={ChangeTempPassword} exact />
         <Route
           path={"/explorer/block/:blockNumber"}
           component={BlockDetails}
