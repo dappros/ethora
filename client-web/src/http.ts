@@ -223,6 +223,7 @@ http.interceptors.response.use(undefined, (error) => {
         return Promise.reject(error);
       });
   }
+  return Promise.reject(error)
 });
 
 export const loginUsername = (username: string, password: string) => {
@@ -265,7 +266,23 @@ export const registerUsername = (
     { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
   );
 };
-
+export const registerNewUser = (
+  appId: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  appJwt?: string
+) => {
+  return http.post(
+    "/users/create-with-app-id/" + appId,
+    {
+      email,
+      firstName,
+      lastName,
+    },
+    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
+  );
+};
 export async function deployNfmt(
   type: string,
   name: string,
@@ -419,7 +436,7 @@ export function registerByEmail(
 
 export function loginEmail(email: string, password: string) {
   return http.post<TLoginSuccessResponse>(
-    "/users/login",
+    "/users/login-with-email",
     {
       email,
       password,
