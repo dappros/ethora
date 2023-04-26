@@ -96,8 +96,7 @@ export const ChangeTempPassword: React.FC<IChangeTempPassword> = ({}) => {
             password: password,
           }
         );
-        console.log(res.data)
-        history.push("/");
+        history.push({pathname: '/signIn', search: `?email=${email}`});
         showSnackbar("success", "Password changed successfully");
       } catch (error) {
         showSnackbar("error", "Cannot change password " + error?.response?.data?.error || '');
