@@ -35,7 +35,7 @@ export default function BasicTable() {
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
   const isEnoughCoinsToCreateApp =
-    +mainCoinBalance.balance >= COINS_TO_CREATE_APP;
+    +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showRotate, setShowRotate] = useState(false);

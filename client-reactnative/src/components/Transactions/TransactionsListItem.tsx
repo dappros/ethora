@@ -15,6 +15,7 @@ import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {TransactionsListitemDate} from './TransactionsListItemDate';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import { truncateString } from '../../helpers/chat/chatUtils';
 
 interface TransactionListProps {
   showDate: string;
@@ -30,7 +31,7 @@ interface TransactionListProps {
   transactionReceiver: string;
   transactionOwnerWalletAddress: string;
   from: string;
-  to: string;
+  to: string; 
 }
 
 export const TransactionsListItem = (props: TransactionListProps) => {
@@ -79,7 +80,7 @@ export const TransactionsListItem = (props: TransactionListProps) => {
             <VStack ml={'2'}>
               <Box>
                 <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
-                  {name}
+                  {truncateString(name, 1)}
                 </Text>
               </Box>
               <Box>

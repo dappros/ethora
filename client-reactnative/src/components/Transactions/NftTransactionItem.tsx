@@ -71,7 +71,7 @@ const UserBlock = ({name, balance, total}:IUserBlock) => {
           </Text>
         </Box>
       </VStack>
-      <VStack ml={'2'}>
+      <VStack ml={'2'} style={{width: wp('30%')}}>
         <Box>
           <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
             {name}

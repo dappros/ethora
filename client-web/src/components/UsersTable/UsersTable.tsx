@@ -197,8 +197,11 @@ export default function UsersTable() {
     );
   };
 
-  const handleAclEditOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>,user: IUser) => {
-    e.stopPropagation()
+  const handleAclEditOpen = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    user: IUser
+  ) => {
+    e.stopPropagation();
     setAclEditData({ modalOpen: true, user });
     handleMenuClose();
   };
