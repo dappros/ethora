@@ -81,7 +81,7 @@ export default function NewUserModal({
       } catch (error) {
         showSnackbar(
           "error",
-          "Cannot create user " + error.response?.data?.errors[0]?.msg || ""
+          "Cannot create user " + (error.response?.data?.errors?.[0]?.msg ??  "")
         );
       }
 
