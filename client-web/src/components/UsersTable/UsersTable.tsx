@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -132,6 +132,7 @@ export default function UsersTable() {
   });
   const [hasAdmin, setHasAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const maxPage = useRef(0);
 
   const ACL = useStoreState((state) =>
     state.ACL.result.find((i) => i.appId === currentApp)
@@ -150,7 +151,7 @@ export default function UsersTable() {
 
   const getUsers = async (
     appId: string | null,
-    limit: number = 10,
+    limit: number = ROWS_PER_PAGE,
     offset: number = 0
   ) => {
     try {
@@ -162,7 +163,6 @@ export default function UsersTable() {
           offset: data.offset,
           total: data.total,
         });
-        setUsers(data.items);
 
         return data.items;
       }
@@ -172,27 +172,35 @@ export default function UsersTable() {
     return [];
   };
 
+  const getInitialUsers = async (appId: string) => {
+    const allUsers = await getUsers(appId);
+    setUsers(allUsers);
+  };
+
   useEffect(() => {
     if (currentApp) {
-      getUsers(currentApp);
+      getInitialUsers(currentApp);
     }
   }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
-    getUsers(e.target.value);
+    getInitialUsers(e.target.value);
   };
 
-  const onPagination = (event: React.ChangeEvent<unknown>, page: number) => {
-    let offset = 0;
-    setPage(page);
-    if (page - 1 > 0) {
-      offset = (page - 1) * (pagination?.limit || 10);
+  const onPagination = (
+    event: React.ChangeEvent<unknown>,
+    tablePage: number
+  ) => {
+    const limit = ROWS_PER_PAGE;
+    const offset = tablePage * limit;
+    setPage(tablePage);
+    if (maxPage.current < tablePage) {
+      maxPage.current = tablePage;
+      getUsers(currentApp, limit, offset).then((u) => {
+        setUsers((p) => [...users, ...u]);
+      });
     }
-
-    getUsers(currentApp || null, pagination?.limit || 10, offset).then(
-      (users) => setUsers(users)
-    );
   };
 
   const handleAclEditOpen = (
@@ -274,7 +282,7 @@ export default function UsersTable() {
     setUsersActionModal((p) => ({ ...p, open: false }));
   };
   const updateUsersData = async () => {
-    await getUsers(currentApp);
+    await getInitialUsers(currentApp);
   };
 
   const isSelected = (id: string) =>
@@ -443,10 +451,24 @@ export default function UsersTable() {
                       <TableCell align="right">{row.firstName}</TableCell>
                       <TableCell align="right">{row.lastName}</TableCell>
                       <TableCell align="center">
-                        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center'}}>
-                        {row.tags.map((tag, i) => {
-                          return <Chip variant={'filled'} color="primary" label={tag} key={i} />;
-                        })}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {row.tags.map((tag, i) => {
+                            return (
+                              <Chip
+                                variant={"filled"}
+                                color="primary"
+                                label={tag}
+                                key={i}
+                              />
+                            );
+                          })}
                         </Box>
                       </TableCell>
                       <TableCell align="right">
@@ -501,7 +523,7 @@ export default function UsersTable() {
         </TableContainer>
         <TablePagination
           component="div"
-          count={users.length}
+          count={pagination.total}
           rowsPerPage={ROWS_PER_PAGE}
           page={page}
           onPageChange={onPagination}

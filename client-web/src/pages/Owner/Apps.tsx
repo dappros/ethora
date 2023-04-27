@@ -34,8 +34,10 @@ export default function BasicTable() {
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
-  const isEnoughCoinsToCreateApp =
-    +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
+  // const isEnoughCoinsToCreateApp =
+  //   +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
+  const isEnoughCoinsToCreateApp = true
+  
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showRotate, setShowRotate] = useState(false);
