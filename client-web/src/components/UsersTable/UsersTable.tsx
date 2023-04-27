@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
+  Chip,
   FormControl,
   IconButton,
   InputLabel,
@@ -441,7 +442,13 @@ export default function UsersTable() {
                       </TableCell>
                       <TableCell align="right">{row.firstName}</TableCell>
                       <TableCell align="right">{row.lastName}</TableCell>
-                      <TableCell align="right">{row.username}</TableCell>
+                      <TableCell align="center">
+                        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center'}}>
+                        {row.tags.map((tag, i) => {
+                          return <Chip variant={'filled'} color="primary" label={tag} key={i} />;
+                        })}
+                        </Box>
+                      </TableCell>
                       <TableCell align="right">
                         {row.email || "No Email"}
                       </TableCell>

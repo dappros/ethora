@@ -49,10 +49,10 @@ const headCells: readonly HeadCell[] = [
     label: "Last Name",
   },
   {
-    id: "username",
+    id: "tags",
     numeric: true,
     disablePadding: false,
-    label: "User Name",
+    label: "User Tags",
   },
   {
     id: "email",
@@ -102,7 +102,7 @@ export function UsersTableHead(props: UsersTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
+            align={headCell.numeric ? "center" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >

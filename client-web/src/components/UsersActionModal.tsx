@@ -13,6 +13,7 @@ import {
   removeTagFromUser,
   resetUsersPasswords,
   sendTokens,
+  setUserTags,
 } from "../http";
 import { coinsMainName } from "../config/config";
 
@@ -29,7 +30,7 @@ type TProps = {
   open: boolean;
   type: ModalType;
   selectedUsers: TSelectedIds[];
-  updateData:() =>  Promise<void>
+  updateData: () => Promise<void>;
   onClose: () => void;
 };
 
@@ -46,6 +47,7 @@ export function UsersActionModal({
 
   const { showSnackbar } = useSnackbar();
   const selectedUsersIds = selectedUsers.map((i) => i._id);
+  const appId = selectedUsers?.[0]?.appId;
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
@@ -61,34 +63,41 @@ export function UsersActionModal({
 
   const addTag = async () => {
     setLoaging(true);
+    const tags = inputValue.trim().split(",");
     try {
-      await addTagToUser(inputValue, selectedUsersIds);
+      await addTagToUser(appId, tags, selectedUsersIds);
+      await updateData();
       showSnackbar("success", "Tag added");
+      closeModal();
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
     setLoaging(false);
   };
-  const sendTokensToUsers = async () => {
-    setLoaging(true);
-    const totalAmount = +inputValue * selectedUsers.length;
-    const usersForTransfer: TTransferToUser[] = selectedUsers.map((u) => ({
-      walletAddress: u.walletAddress,
-      amount: inputValue,
-    }));
-    try {
-      await sendTokens(usersForTransfer, totalAmount, coinsMainName);
-      showSnackbar("success", "Tokens sent");
-    } catch (error) {
-      showSnackbar("error", "Something went wrong");
-    }
-    setLoaging(false);
-  };
-  const removeTag = async (removeAll: boolean) => {
+
+  const removeTag = async () => {
+    const tags = inputValue.trim().split(",");
+
     setLoaging(true);
     try {
-      await removeTagFromUser(inputValue, selectedUsersIds, removeAll);
+      await removeTagFromUser(appId, tags, selectedUsersIds);
+      await updateData();
+
       showSnackbar("success", "Tag removed");
+      closeModal();
+    } catch (error) {
+      showSnackbar("error", "Something went wrong");
+    }
+    setLoaging(false);
+  };
+  const removeAllTags = async () => {
+    setLoaging(true);
+    try {
+      await setUserTags(appId, [], selectedUsersIds);
+      await updateData();
+
+      showSnackbar("success", "All tags removed");
+      closeModal();
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
@@ -96,13 +105,11 @@ export function UsersActionModal({
   };
   const resetPasswords = async () => {
     setLoaging(true);
-    const appId = selectedUsers[0].appId;
 
     try {
       await resetUsersPasswords(appId, selectedUsersIds);
       showSnackbar("success", "Passwords reseted");
-      closeModal()
-
+      closeModal();
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
@@ -110,13 +117,11 @@ export function UsersActionModal({
   };
   const deletePickedUsers = async () => {
     setLoaging(true);
-    const appId = selectedUsers[0].appId;
     try {
       await deleteUsers(appId, selectedUsersIds);
-      await updateData()
+      await updateData();
       showSnackbar("success", "Users deleted");
-      closeModal()
-
+      closeModal();
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
@@ -140,18 +145,10 @@ export function UsersActionModal({
 
           return;
         }
-        return removeTag(false);
+        return removeTag();
 
       case "removeAllTags":
-        return removeTag(true);
-
-      case "sendTokens":
-        if (!inputValue) {
-          setInputError(true);
-
-          return;
-        }
-        return sendTokensToUsers();
+        return removeAllTags();
 
       case "resetPassword":
         return resetPasswords();
@@ -182,7 +179,7 @@ export function UsersActionModal({
                 error={inputError}
                 fullWidth
                 margin="dense"
-                label="Tags"
+                label="Provide tags separated by comma"
                 name="tags"
                 type="tags"
                 variant="outlined"
@@ -212,7 +209,7 @@ export function UsersActionModal({
                 error={inputError}
                 fullWidth
                 margin="dense"
-                label="Tags"
+                label="Provide tags separated by comma"
                 name="tags"
                 type="tags"
                 variant="outlined"
@@ -228,7 +225,8 @@ export function UsersActionModal({
             <DialogTitle
               style={{ display: "flex", justifyContent: "space-between" }}
             >
-              Are you sure you want to remove all Tags?
+              Are you sure you want to remove all tags from{" "}
+              {selectedUsers.length} users?
             </DialogTitle>
           </Box>
         );
@@ -238,7 +236,8 @@ export function UsersActionModal({
             <DialogTitle
               style={{ display: "flex", justifyContent: "space-between" }}
             >
-              Are you sure you want to delete user?
+              Are you sure you want to delete {selectedUsers.length}{" "}
+              {selectedUsers.length > 1 ? "users" : "user"}?
             </DialogTitle>
           </Box>
         );
@@ -253,36 +252,7 @@ export function UsersActionModal({
             </DialogTitle>
           </Box>
         );
-      case "sendTokens":
-        return (
-          <Box style={{ width: "350px" }}>
-            <DialogTitle
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              Send Tokens
-            </DialogTitle>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-                pl: 3,
-                pr: 3,
-              }}
-            >
-              <TextField
-                error={inputError}
-                fullWidth
-                margin="dense"
-                label="Number of tokens"
-                name="tokens"
-                type="tokens"
-                variant="outlined"
-                onChange={handleChangeInput}
-                value={inputValue}
-              />
-            </Box>
-          </Box>
-        );
+
       default:
         return null;
     }
@@ -300,12 +270,7 @@ export function UsersActionModal({
         <Button disabled={loading} onClick={closeModal}>
           {"Cancel"}
         </Button>
-        <Button
-            disabled={loading}
-          onClick={onSubmit}
-          autoFocus
-          color={"error"}
-        >
+        <Button disabled={loading} onClick={onSubmit} autoFocus color={"error"}>
           {"Submit"}
         </Button>
       </DialogActions>

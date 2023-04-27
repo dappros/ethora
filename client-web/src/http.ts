@@ -630,8 +630,11 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
-export function addTagToUser(tag: string, userIds: string[]) {
-  return httpWithAuth().post(`/users/tags`, { tag, userId: userIds });
+export function addTagToUser(appId: string, tags: string[], userIds: string[]) {
+  return httpWithAuth().post(`/users/tags-add/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
 }
 export type TTransferToUser = {
   amount: number | string;
@@ -649,11 +652,24 @@ export function sendTokens(
   });
 }
 export function removeTagFromUser(
-  tag: string,
+  appId: string,
+  tags: string[],
   userIds: string[],
-  removeAll = false
 ) {
-  return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
+  return httpWithAuth().post(`/users/tags-delete/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
+}
+export function setUserTags(
+  appId: string,
+  tags: string[],
+  userIds: string[],
+) {
+  return httpWithAuth().post(`/users/tags-set/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
 }
 export function resetUsersPasswords(appId: string, usersIds: string[]) {
   return httpWithAuth().post(`/users/reset-passwords-with-app-id/` + appId, {

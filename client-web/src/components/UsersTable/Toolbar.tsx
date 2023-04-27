@@ -92,9 +92,9 @@ export function UsersTableToolbar({
             Reset Passwords
           </Button>
 
-          <Tooltip title="Delete">
+          <Tooltip title="Delete users">
             <IconButton onClick={() => onButtonClick("deleteUser")}>
-              <DeleteIcon />
+              <DeleteIcon color="error" />
             </IconButton>
           </Tooltip>
         </Box>
