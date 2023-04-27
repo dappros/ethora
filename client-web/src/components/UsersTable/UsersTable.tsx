@@ -96,7 +96,7 @@ function hasACLAdmin(acl: ACL): boolean {
 
 const ITEM_HEIGHT = 48;
 const ROWS_PER_PAGE = 10;
-type TSelectedIds = { walletAddress: string; _id: string };
+type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 export default function UsersTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
@@ -161,6 +161,7 @@ export default function UsersTable() {
           offset: data.offset,
           total: data.total,
         });
+        setUsers(data.items);
 
         return data.items;
       }
@@ -172,17 +173,13 @@ export default function UsersTable() {
 
   useEffect(() => {
     if (currentApp) {
-      getUsers(currentApp).then((users) => {
-        setUsers(users);
-      });
+      getUsers(currentApp);
     }
   }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
-    getUsers(e.target.value).then((users) => {
-      setUsers(users);
-    });
+    getUsers(e.target.value);
   };
 
   const onPagination = (event: React.ChangeEvent<unknown>, page: number) => {
@@ -237,6 +234,7 @@ export default function UsersTable() {
       const newSelected = users.map((n) => ({
         _id: n._id,
         walletAddress: n.defaultWallet.walletAddress,
+        appId: n.appId,
       }));
       setSelectedIds(newSelected);
       return;
@@ -251,6 +249,7 @@ export default function UsersTable() {
     const mappedUser: TSelectedIds = {
       _id: user._id,
       walletAddress: user.defaultWallet.walletAddress,
+      appId: user.appId,
     };
     let newSelected: TSelectedIds[] = [];
 
@@ -268,6 +267,13 @@ export default function UsersTable() {
     }
 
     setSelectedIds(newSelected);
+  };
+
+  const closeUsersActionModal = async () => {
+    setUsersActionModal((p) => ({ ...p, open: false }));
+  };
+  const updateUsersData = async () => {
+    await getUsers(currentApp);
   };
 
   const isSelected = (id: string) =>
@@ -503,8 +509,9 @@ export default function UsersTable() {
       <UsersActionModal
         type={userActionModal.type}
         open={userActionModal.open}
-        onClose={() => setUsersActionModal((p) => ({ ...p, open: false }))}
+        onClose={closeUsersActionModal}
         selectedUsers={selectedIds}
+        updateData={updateUsersData}
       />
       <NewUserModal
         open={showNewUser}

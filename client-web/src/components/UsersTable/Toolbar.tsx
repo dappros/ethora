@@ -8,7 +8,7 @@ import {
   alpha,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-type TSelectedIds = { walletAddress: string; _id: string };
+type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 
 interface UsersTableToolbarProps {
   selected:  TSelectedIds[];
@@ -51,13 +51,13 @@ export function UsersTableToolbar({
           {selected.length} selected
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexDirection:  { xs: 'row', md: 'row' }, flexWrap: 'wrap' }}>
-          <Button
+          {/* <Button
             variant={"outlined"}
             onClick={() => onButtonClick("sendTokens")}
             sx={{minWidth: 'max-content'}}
           >
             Send Tokens
-          </Button>
+          </Button> */}
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("addTag")}

@@ -223,7 +223,7 @@ http.interceptors.response.use(undefined, (error) => {
         return Promise.reject(error);
       });
   }
-  return Promise.reject(error)
+  return Promise.reject(error);
 });
 
 export const loginUsername = (username: string, password: string) => {
@@ -416,22 +416,25 @@ export function loginSignature(
 
 export function registerByEmail(
   email: string,
-  password: string,
   firstName: string,
   lastName: string,
   signUpPlan?: string
 ) {
-  return http.post(
-    "/users",
-    {
-      email,
-      password,
-      firstName,
-      lastName,
-      signupPlan: signUpPlan,
-    },
-    { headers: { Authorization: APP_JWT } }
-  );
+  const body = signUpPlan
+    ? {
+        email,
+        firstName,
+        lastName,
+        signupPlan: signUpPlan,
+      }
+    : {
+        email,
+        firstName,
+        lastName,
+      };
+  return http.post("/users/sign-up-with-email", body, {
+    headers: { Authorization: APP_JWT },
+  });
 }
 
 export function loginEmail(email: string, password: string) {
@@ -652,11 +655,15 @@ export function removeTagFromUser(
 ) {
   return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
 }
-export function resetUsersPasswords(userIds: string[]) {
-  return httpWithAuth().post(`/users/resetPassword`, { userId: userIds });
+export function resetUsersPasswords(appId: string, usersIds: string[]) {
+  return httpWithAuth().post(`/users/reset-passwords-with-app-id/` + appId, {
+    usersIdList: usersIds,
+  });
 }
-export function deleteUsers(userIds: string[]) {
-  return httpWithAuth().delete(`/users/` + userIds);
+export function deleteUsers(appId: string, userIds: string[]) {
+  return httpWithAuth().post(`/users/delete-many-with-app-id/` + appId, {
+    usersIdList: userIds,
+  });
 }
 export function updateProfile(fd: FormData, id?: string) {
   const path = id ? `/users/${id}` : "/users";

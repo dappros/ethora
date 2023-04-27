@@ -23,12 +23,13 @@ type ModalType =
   | "removeAllTags"
   | "sendTokens"
   | "resetPassword";
-type TSelectedIds = { walletAddress: string; _id: string };
+type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 
 type TProps = {
   open: boolean;
   type: ModalType;
   selectedUsers: TSelectedIds[];
+  updateData:() =>  Promise<void>
   onClose: () => void;
 };
 
@@ -36,6 +37,7 @@ export function UsersActionModal({
   open,
   onClose,
   type,
+  updateData,
   selectedUsers,
 }: TProps) {
   const [inputValue, setInputValue] = useState("");
@@ -94,9 +96,13 @@ export function UsersActionModal({
   };
   const resetPasswords = async () => {
     setLoaging(true);
+    const appId = selectedUsers[0].appId;
+
     try {
-      await resetUsersPasswords(selectedUsersIds);
+      await resetUsersPasswords(appId, selectedUsersIds);
       showSnackbar("success", "Passwords reseted");
+      closeModal()
+
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
@@ -104,9 +110,13 @@ export function UsersActionModal({
   };
   const deletePickedUsers = async () => {
     setLoaging(true);
+    const appId = selectedUsers[0].appId;
     try {
-      await deleteUsers(selectedUsersIds);
+      await deleteUsers(appId, selectedUsersIds);
+      await updateData()
       showSnackbar("success", "Users deleted");
+      closeModal()
+
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
