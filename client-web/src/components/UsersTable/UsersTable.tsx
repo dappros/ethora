@@ -33,6 +33,7 @@ import { useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
+import { dateToHumanReadableFormat } from "../../utils";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -163,7 +164,6 @@ export default function UsersTable() {
           offset: data.offset,
           total: data.total,
         });
-
         return data.items;
       }
     } catch (e) {
@@ -474,6 +474,13 @@ export default function UsersTable() {
                       <TableCell align="right">
                         {row.email || "No Email"}
                       </TableCell>
+                      <TableCell align="center">
+                        <p style={{width: 150}}>{dateToHumanReadableFormat(row.createdAt)}</p>
+                        <p>{row.lastSeen ? dateToHumanReadableFormat(row.lastSeen) : ''}</p>
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.authMethod || ''}
+                      </TableCell>
                       <TableCell align="right">
                         <IconButton
                           disabled={!hasAdmin}
@@ -498,6 +505,7 @@ export default function UsersTable() {
                             style: {
                               maxHeight: ITEM_HEIGHT * 4.5,
                               width: "20ch",
+                              boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.05)'
                             },
                           }}
                         >

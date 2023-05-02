@@ -66,10 +66,12 @@ export interface IUser {
   acl: ACL;
   appId: string;
   createdAt: Date;
+  lastSeen?: string;
   defaultWallet: {
     walletAddress: string;
   };
   emails: [];
+  authMethod?: string;
   email?: string;
   firstName: string;
   isAssetsOpen: true;

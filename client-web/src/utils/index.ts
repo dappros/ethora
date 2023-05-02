@@ -131,6 +131,14 @@ export type IMessagePosition = {
   separator?: string;
 };
 
+export const dateToHumanReadableFormat = (date: string | Date) => {
+  try {
+    return format(new Date(date), "yyyy MMMM dd MM:ss");
+  } catch (error) {
+    console.log(error);
+    return ''
+  }
+};
 export const getPosition = (
   arr: TMessageHistory[],
   message: TMessageHistory,

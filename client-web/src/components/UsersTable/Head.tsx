@@ -27,6 +27,7 @@ interface HeadCell {
   id: keyof IUser | "actions";
   label: string;
   numeric: boolean;
+  width?: number
 }
 
 const headCells: readonly HeadCell[] = [
@@ -35,36 +36,61 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: true,
     label: "App Id",
+    width: 100
   },
   {
     id: "firstName",
     numeric: true,
     disablePadding: false,
     label: "First Name",
+    width: 100
+
   },
   {
     id: "lastName",
     numeric: true,
     disablePadding: false,
     label: "Last Name",
+    width: 100
+
   },
   {
     id: "tags",
     numeric: true,
     disablePadding: false,
     label: "User Tags",
+    width: 100
+
   },
   {
     id: "email",
     numeric: true,
     disablePadding: false,
     label: "Email",
+    width: 100
+
+  },
+  {
+    id: "lastSeen",
+    numeric: true,
+    disablePadding: false,
+    label: "Created/Seen",
+    width: 400
+  },
+  {
+    id: "authMethod",
+    numeric: true,
+    disablePadding: false,
+    label: "Auth method",
+    width: 400
   },
   {
     id: "actions",
     numeric: true,
     disablePadding: false,
     label: "Actions",
+    width: 100
+
   },
 ];
 export function UsersTableHead(props: UsersTableProps) {
