@@ -9,8 +9,9 @@
 
 [![Discord](https://img.shields.io/badge/%3Cethora%3E-%237289DA.svg?style=flat&logo=discord&logoColor=white)](https://discord.gg/bn2WqqRU) [![Twitter URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2Fdappros%2Fethora)](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fdappros%2Fethora%2F&via=tarasfilatov&text=check%20out%20Ethora%20%23web3%20%23social%20app%20engine&hashtags=lowcode%2Creactnative%2Copensource%2Cnocode) [![Website](https://img.shields.io/website?url=https%3A%2F%2Fethora.com%2F)](https://www.ethora.com/) [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCRvrXwMOU0WBkRZyFlU7V_g)](https://www.youtube.com/channel/UCRvrXwMOU0WBkRZyFlU7V_g)
 
-# ethora: open-source low-code web3 app engine (iOS/Android, ERC-20/NFT, messaging/push/calls)
+# ethora: open-source low-code web3 app engine
 Mobile 📱 + Web/desktop 💻 web3 🔗🌐 social 💬 platform for your community 👥👥. 
+iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification
 
 ---
 
