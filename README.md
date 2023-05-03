@@ -30,6 +30,8 @@ Some things you can create with Ethora engine
 
 Many startups and businesses come to use Ethora engine so they can deliver their MVP quickly (within DAYS vs months/years). Most often they stay and keep using it, it's perfectly good for production and allows you to focus on your core business. Free tier is fully supported. Paid enterprise grade SLA offered for larger businesses. Cloud (default) and Self hosted (AWS Marketplace) backend options available.
 
+---
+
 ### Flutter (iOS/Android) version
 
 Flutter version is in development as of April'23.
@@ -37,8 +39,6 @@ Flutter version is in development as of April'23.
 ---
 
 ### React.js (Web/desktop) version
-
----
 
 Web version is available for testing here: https://app-dev.ethora.com/
 
