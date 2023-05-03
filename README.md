@@ -34,7 +34,11 @@ Many startups and businesses come to use Ethora engine so they can deliver their
 
 Flutter version is in development as of April'23.
 
+---
+
 ### React.js (Web/desktop) version
+
+---
 
 Web version is available for testing here: https://app-dev.ethora.com/
 
