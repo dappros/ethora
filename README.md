@@ -16,7 +16,7 @@ Mobile 📱 + Web/desktop 💻 web3 🔗🌐 social 💬 platform for your commu
 
 ---
 
-### Intro + mobile (React Native) version
+### About the project. React Native (iOS/Android) version
 <img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
 
 Some things you can create with Ethora engine
@@ -30,10 +30,13 @@ Some things you can create with Ethora engine
 
 Many startups and businesses come to use Ethora engine so they can deliver their MVP quickly (within DAYS vs months/years). Most often they stay and keep using it, it's perfectly good for production and allows you to focus on your core business. Free tier is fully supported. Paid enterprise grade SLA offered for larger businesses. Cloud (default) and Self hosted (AWS Marketplace) backend options available.
 
----
+### Flutter (iOS/Android) version
 
-**UPD (August'22)**: 
-**Numerous updates, UX improvements, better NFT & digital assets support, bots, MetaMast/WalletConnect integration etc.**
+Flutter version is in development as of April'23.
+
+### React.js (Web/desktop) version
+
+Web version is available for testing here: https://app-dev.ethora.com/
 
 ---
 
