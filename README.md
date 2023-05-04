@@ -16,8 +16,7 @@ Mobile 📱 + Web/desktop 💻 web3 🔗🌐 social 💬 platform for your commu
 
 ---
 
-### About the project. React Native (iOS/Android) version
-<img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
+### All the things you can do 
 
 Some things you can create with Ethora engine
 * a social / community app with chat rooms
@@ -31,7 +30,13 @@ Some things you can create with Ethora engine
 * DAO / charity managing community where users can cast votes and crowd-fund initiatives via chat bots, governance tokens and DAO smart contracts
 * NFT / QR pass app
 
-Many startups and businesses come to use Ethora engine so they can deliver their MVP quickly (within DAYS vs months/years). Most often they stay and keep using it, it's perfectly good for production and allows you to focus on your core business. Free tier is fully supported. Paid enterprise grade SLA offered for larger businesses. Cloud (default) and Self hosted (AWS Marketplace) backend options available.
+Startups, communities and enterprises come to use Ethora engine so they can deliver their MVP (minimum viable product) app quickly, within DAYS as opposed to months or even years when building similar functionality from scratch. Most often they stay and keep using it. This engine is fully production ready, powering multiple live projects. Free tier is fully supported. Paid enterprise grade SLA offered for larger businesses. Cloud (default) and Self hosted (AWS Marketplace) backend options available.
+
+---
+
+### React Native (iOS/Android) version
+
+<img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
 
 ---
 
