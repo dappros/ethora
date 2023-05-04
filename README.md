@@ -16,12 +16,12 @@ Mobile 📱 + Web/desktop 💻 web3 🔗🌐 social 💬 platform for your commu
 
 ---
 
-### All the things you can do 
+### All the things you can do! 😎 🚀
 
-Some things you can create with Ethora engine
-* a social / community app with chat rooms
-* a wallet app for digital assets (NFTs) or documents (PDF, health reports etc)
-* loyalty points / rewards app
+Some ideas of what you can build with Ethora engine:
+⭐ a social / community app with chat rooms
+⭐ a wallet app for digital assets (NFTs) or documents (PDF, health reports etc)
+⭐ loyalty points / rewards app
 * chat bot / ChatGPT consulting app
 * p2p social commerce app
 * gamificaiton of [anything] app
@@ -30,7 +30,7 @@ Some things you can create with Ethora engine
 * DAO / charity managing community where users can cast votes and crowd-fund initiatives via chat bots, governance tokens and DAO smart contracts
 * NFT / QR pass app
 
-Startups, communities and enterprises come to use Ethora engine so they can deliver their MVP (minimum viable product) app quickly, within DAYS as opposed to months or even years when building similar functionality from scratch. Most often they stay and keep using it. This engine is fully production ready, powering multiple live projects. Free tier is fully supported. Paid enterprise grade SLA offered for larger businesses. Cloud (default) and Self hosted (AWS Marketplace) backend options available.
+Startups, communities and enterprises come to use Ethora engine so they can deliver their MVP (minimum viable product) app quickly, within DAYS as opposed to months or even years when building a similar functionality from scratch. This engine is fully production ready too, powering multiple projects live in Apple and Google appstores. Backend: comes with a generous free tier (Dappros Platform). Self-hosted (AWS marketplace) and enterprise-grade SLA options available. Experimental 'no backend' (Ethereum and Polygon) versions available too.
 
 ---
 
