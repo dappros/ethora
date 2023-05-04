@@ -22,6 +22,9 @@ type TProps = {
 export default function NewAppModal({ open, setOpen }: TProps) {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const setApp = useStoreState((state) => state.setApp);
+  const setUser = useStoreState((state) => state.setUser);
+  const user = useStoreState((state) => state.user);
+
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string>("");
   const { showSnackbar } = useSnackbar();
@@ -84,6 +87,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
         .then((response) => {
           setApp(response.data.app);
           setOpen(false);
+          setUser({...user, homeScreen: ''})
         })
         .catch((e) => {
           showSnackbar(

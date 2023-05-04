@@ -38,6 +38,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
       isAllowedNewAppCreate: loginData.isAllowedNewAppCreate,
       isAgreeWithTerms: loginData.user.isAgreeWithTerms,
       stripeCustomerId: loginData.user.stripeCustomerId,
+      homeScreen:  loginData.user.homeScreen,
     });
   };
 

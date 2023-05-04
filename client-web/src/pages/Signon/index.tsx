@@ -52,7 +52,7 @@ export default function Signon() {
         history.push(`/payments`);
         return;
       }
-      history.push(`/profile/${user.walletAddress}`);
+      history.push(`/home`);
       return;
     }
     if (user.firstName && !user.xmppPassword) {
@@ -180,7 +180,8 @@ export default function Signon() {
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
       company: res.data.result,
-      appId: loginData.user.appId
+      appId: loginData.user.appId,
+      homeScreen: loginData.user.homeScreen
     });
   };
 

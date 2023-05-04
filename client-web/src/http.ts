@@ -16,6 +16,8 @@ const { APP_JWT = "", API_URL = "" } = config;
 export type TDefaultWallet = {
   walletAddress: string;
 };
+export type THomeScreen = 'appCreate' | 'profile' | ''
+
 export interface ICompany {
   name: string;
   address: string;
@@ -50,6 +52,7 @@ export type TUser = {
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
   company?: ICompany[];
+  homeScreen: THomeScreen
 };
 
 export type TLoginSuccessResponse = {
