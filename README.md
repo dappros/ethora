@@ -19,9 +19,9 @@ Mobile 📱 + Web/desktop 💻 web3 🔗🌐 social 💬 platform for your commu
 ### All the things you can do! 😎 🚀
 
 Some ideas of what you can build with Ethora engine:
-⭐ a social / community app with chat rooms
-⭐ a wallet app for digital assets (NFTs) or documents (PDF, health reports etc)
-⭐ loyalty points / rewards app
+* a social / community app with chat rooms
+* a wallet app for digital assets (NFTs) or documents (PDF, health reports etc)
+* loyalty points / rewards app
 * chat bot / ChatGPT consulting app
 * p2p social commerce app
 * gamificaiton of [anything] app
@@ -36,7 +36,11 @@ Startups, communities and enterprises come to use Ethora engine so they can deli
 
 ### React Native (iOS/Android) version
 
+Standard UI:
 <img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
+
+Branded (customized) UI:
+<img width="622" alt="Screenshot 2023-05-04 at 17 31 05" src="https://user-images.githubusercontent.com/328787/236267243-d0c8f324-4a27-4743-a547-702351385a21.png">
 
 ---
 
