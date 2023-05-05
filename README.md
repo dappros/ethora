@@ -67,6 +67,69 @@ Sharing a chat room via QR or hyperlink<br />
 <img width="400" alt="Screenshot 2023-05-05 at 10 29 13" src="https://user-images.githubusercontent.com/328787/236423115-f2274576-b99f-4513-a371-292867374079.png">
 
 
+---
+
+### Chat bots (ChatGPT, DAO voting, NFT minting, bookings/reminders, commerce etc)
+
+You can easily extend your Ethora-based app with chat bots. This is a fantastic way to implement additional functionality without changing a single line of code in the engine itself.
+
+We use XMPP protocol and this means you can easily connect to chat rooms, interact with your Users and digital assets via your own chat bots logic. Your chat bots can be written in Python, Node.js or anything really that is capable to interact with XMPP. In this repo (https://github.com/dappros/ethora/tree/main/bots section)  you will find some sample bots built using Ethora Bots Framework. This Framework is a scaffolding (currently in Node.js but more languages coming) that absctracts away the mundande tasks allowing you to focus on the core logic of your bots. 
+
+ChatGPT bot<br />
+<img width="400" alt="Screenshot 2023-05-05 at 11 01 10" src="https://user-images.githubusercontent.com/328787/236429436-a1046904-b342-44e8-98a9-c269eb42857b.png">
+
+A standard OpenAI / ChatGPT integration is demonstrated in our /bots/ section. With customizations, you can add a ChatGPT / LLM powered bot specialized in your project topic. 
+
+Translate bot<br />
+<img width="400" alt="Screenshot 2023-05-05 at 11 03 15" src="https://user-images.githubusercontent.com/328787/236429833-26d10fd6-88c2-4e46-a1c5-be3f273071ea.png">
+
+An example of an interpreter bot that translates to/from English and Spanish so that users can chat each in their own language and still understand each other.
+
+---
+
+### Branding and customization
+
+Ethora offers many branding options for app owners. You can easily change things such as your app name, logo, theme colours, Coin name and symbol etc. These things you can change using our App builder UI without even having to code.
+
+For further customizations, you can dive into the code of Ethora engine and make modifications as your project requires.
+
+Another plane for content ownership and customizations is at Users level. Users have a variety of options to customize Chat rooms they own/admin, their Profiles and asset collections. As project owner, you can disable or enable some of these features depending on your project requirements.
+
+Custom chat background<br />
+<img width="400" alt="Screenshot 2023-05-05 at 11 04 28" src="https://user-images.githubusercontent.com/328787/236430051-2c24e3e8-5006-41f6-b035-0dfe1f0a3c9a.png">
+
+
+---
+
+### Threads
+
+For chats with lots of conversations, threads mechanism is supported meaning that groups of users can continue discussing threads which are relevant to them without spamming the main room with all the follow-up messages:<br />
+<img width="400" alt="Screenshot 2023-05-05 at 11 08 53" src="https://user-images.githubusercontent.com/328787/236430928-5e371c86-d346-48df-ad18-9aa64d2ec05e.png">
+
+
+---
+
+### Gamification, referrals and rewards
+
+Ethora is all for sticky, long-lasting and self-supporting communities. 
+There are gamification features that work out of the box, for example:
+* Coin - your own project coin based on secure ERC-20 crypto protocol - BTW you can call it anything you want so it can be 'stars', 'points', 'credits' or whatever you like. 
+* Sign up bonus - 100 Coins (by default) for all users who join your app
+* Daily activity bonus - 5 Coins (by default) for all users who check in at least once per day
+* Referral bonus - 25 Coins each for User and their friend who join the app using their invite code
+
+
+Referrals<br />
+<img width="400" alt="Screenshot 2023-05-05 at 11 35 46" src="https://user-images.githubusercontent.com/328787/236436264-e8f57960-6995-41dd-a708-f66d7ff4fc41.png">
+
+Somewhat related to gamification, digital collectibles and token economy options available and fully supported by Ethora via digital assets (handled via smart contracts and NFT collections). This is covered in detail in a separate section. 
+
+And last, but not least, you can build your own custom gamification mechanics via adding your own backend or bots logic. 
+Ethora already offers some gamification bots such as:
+
+* Prison - you can play Prisoner Dilemma with other players or a chat bot for Coin
+* Raffle bot - you can pay for a raffle ticket and have a chance to win a prize
+* Hut, hut - Users can hide their assets (NFTs or Documents) in a Hut. Other Users can pay Coin for a chance to find such items
 
 ---
 
