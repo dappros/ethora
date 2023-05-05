@@ -85,11 +85,11 @@ export default function BasicTable() {
   useEffect(() => {
     getUserApps()
   }, [])
- useEffect(() => {
-    if(user.homeScreen === 'appCreate') {
-      onAddApp()
-    }
-  }, [user.homeScreen])
+//  useEffect(() => {
+//     if(user.homeScreen === 'appCreate') {
+//       onAddApp()
+//     }
+//   }, [user.homeScreen])
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>

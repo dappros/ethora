@@ -10,6 +10,8 @@ import {
 import { useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
+import xmpp from "./xmpp";
+import { history } from "./utils/history";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
@@ -198,7 +200,12 @@ export function refresh() {
       });
   });
 }
-
+const onLogout = () => {
+  useStoreState.getState().clearUser();
+  xmpp.stop();
+  localStorage.clear()
+  history.push("/");
+};
 http.interceptors.response.use(undefined, (error) => {
   const user = useStoreState.getState().user;
 
@@ -211,7 +218,8 @@ http.interceptors.response.use(undefined, (error) => {
       error.config.url === "/users/login/refresh" ||
       error.config.url === "/users/login"
     ) {
-      return Promise.reject(error);
+      onLogout()
+      // return Promise.reject(error);
     }
 
     const request = error.config;
