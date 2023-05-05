@@ -133,10 +133,22 @@ Ethora already offers some gamification bots such as:
 
 ---
 
-### Check out our Youtube demo (1.5 minutes):
-(note: enable subtitles to see explanations)
+### Rewarding Users with Coin and digital collectibles (video demo, 1.5 minutes):
 
+(enable subtitles to see explanations)<br />
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
+
+This video demo shows how Users can reward each other with Coin or digital collectibles. 
+Another user has shared some useful information? Just long tap on their message and choose to reward them with Coins or a send them an NFT item.
+
+In group / public chat rooms, this mechanism doubles as 'likes' or 'merit' social metric. Messages that are more useful to the community will receive more rewards and attention.
+
+Note: Coins are based on ERC-20 tokens and items/collectibles are NFTs (ERC-1155). Coins, Items and Documents in Ethora are all protected by blockchain (EVM) technology - same technology as global digital currencies, cryptographically protected provenance trail for all transactions and so on.
+
+Depending on your project and whether your user base is savvy in web3 technology, you may:
+a) Keep it simple. Only use this for gamification and peer-to-peer 'merit' mechanics.
+b) Allow your users to purchase or trade features, items and collectibles internally using their earned Coin and items.
+c) Allow your users to export/import Coins and assets to/from external world via blockchain, enabling a global token economy for your project.
 
 ---
 
@@ -144,7 +156,7 @@ Ethora already offers some gamification bots such as:
 Visit https://ethora.com/ for latest information regarding the project. 
 The Launchpad https://ethora.com/wiki/Launchpad section lists some sample projects that use Ethora engine in production. 
 
-*Note: Some information below might be outdated as we update the above website most often.* 
+*Note: Some information might be outdated - we try to update documentation here and in the website as often as possible, but if you're not sure please feel free to contact us.* 
 
 ## How to BUIDL 🛠️
 Please check this Step by Step build guide - it shows how to build a new app using Ethora engine within 30 minutes: https://ethora.com/wiki/Step_By_Step_Guide
@@ -164,13 +176,13 @@ You will need environment set up for iOS or Android development.
 * Push notifications
 * Audio, Video messages and calls
 
-## License and Open-source roadmap ⚖️
+## Authors, License and Governance ⚖️
 
 AUTHORS. Ethora and its server infrastructure (Dappros Platform, chat & push services etc) have been developed since 2018 by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. The team is lead by Taras Filatov, a Ukrainian-born and UK based tech entrepreneur.
 
 LICENSE. The project codebase of Ethora developed by the project contributors is released under AGPL license which facilitates open-source distribution and contributions. Other licenses (commercial closed source, SaaS, perpetual etc) can be obtained from the authors. 
 
-GOVERNANCE. The project is currently governed and commercialized by Dappros Ltd (UK). In the long term, we aim to transform the platform into an open protocol funded through an infrastructure utility token economy, governed via an open DAO and developed by contributors worldwide via a system of open R&D grants. You can help fulfil this vision by promoting the project and becoming one of the contributors.
+GOVERNANCE. The project is currently governed and commercialized by Dappros Ltd (Watford, UK). In the long term, we aim to transform the platform into an open protocol funded through an infrastructure utility token economy, governed via an open DAO and developed by contributors worldwide via a system of open R&D grants. You can help fulfil this vision by promoting the project and becoming one of the contributors.
 
 BACKEND. The server-side functionality of Ethora is provided by Dappros Platform API and DeepX RTC infrastructure. Under the bonnet, it consists of Ethereum blockchain network, an API wrapper and caching layer interacting with Ethereum nodes and S3/IPFS storage (built with Node.js, Apache Kafka, Reddit and MongoDB), as well as XMPP-based Ejabberd messaging server with our own custom-built services (such as Push Notifications, blockchain identities integration etc) built with Erlang, Mnesia, MySQL and Cassandra. 
 
@@ -178,11 +190,11 @@ When using Ethora engine, your default backend option is to <a href="https://www
 
 ## Commercial model 🛒
 
-*  Client-side: free, open-source.
-*  Server-side: freemium (free plan + optional paid SLA plans for medium/large businesses)
+Ethora distribution model is similar to Linux RedHat or MySQL - i.e. a free open-source version that you can use in 'DIY' mode for your project. 
+Additionally, paid enterprise level SLA, hosting and customization options are available from us and our integration partners which ensure the product is enterprise friendly and helps to maintain further R&D efforts to make it better.
 
-We intend to forever support a generous free tier of Dappros Platform for startups, small businesses and non-profit organizations.
-Additionally, AWS Marketplace self-hosted option is also available for those who prefer to host the whole solution independently. 
+*  Client-side: free, open-source. Closed-source commercial license option available. 
+*  Server-side: freemium (generous free plan + optional paid SLA plans for medium/large businesses). Self-hosted AWS Marketplace option available. 
 
 ## Contact 💬
 
