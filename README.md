@@ -38,8 +38,9 @@ Startups, communities and enterprises come to use Ethora engine so they can deli
 
 Standard UI:
 <img width="736" alt="collage_ethora_ 2022-08-31" src="https://user-images.githubusercontent.com/328787/187653868-456026a8-ef7e-498c-9088-1d545dc9f818.png">
-
---
+  
+  
+  
 Branded (customized) UI:
 <img width="622" alt="Screenshot 2023-05-04 at 17 31 05" src="https://user-images.githubusercontent.com/328787/236267243-d0c8f324-4a27-4743-a547-702351385a21.png">
 
@@ -53,11 +54,19 @@ Flutter version is in development as of April'23.
 
 ### React.js (Web/desktop) version
 
-Web version is available for testing here: https://app-dev.ethora.com/
+You can test web version here: https://app-dev.ethora.com/
 
 <img width="840" alt="Screenshot 2023-05-05 at 10 17 52" src="https://user-images.githubusercontent.com/328787/236420767-1dc1b851-a0ba-4a22-b0ff-3364b3ce21ab.png">
+Users profile
 
 <img width="854" alt="Screenshot 2023-05-05 at 10 18 34" src="https://user-images.githubusercontent.com/328787/236420894-e07b1367-aee3-4c9d-be43-f64a8b719370.png">
+Chat screen
+
+<img width="737" alt="Screenshot 2023-05-05 at 10 29 31" src="https://user-images.githubusercontent.com/328787/236423172-8e5168be-65ae-4915-9bed-5b7d9c80019e.png">
+Minimized view
+
+<img width="738" alt="Screenshot 2023-05-05 at 10 29 13" src="https://user-images.githubusercontent.com/328787/236423115-f2274576-b99f-4513-a371-292867374079.png">
+Sharing a chat room via QR or hyperlink
 
 
 ---
