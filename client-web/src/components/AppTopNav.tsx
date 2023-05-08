@@ -143,7 +143,7 @@ const AppTopNav = () => {
   }, [rooms]);
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
+      <Box sx={{width: '100%', padding: '0 20px'}}>
         <Toolbar disableGutters>
           <Box
             sx={{
@@ -208,7 +208,7 @@ const AppTopNav = () => {
             )}
           </Box>
         </Toolbar>
-      </Container>
+      </Box>
     </AppBar>
   );
 };

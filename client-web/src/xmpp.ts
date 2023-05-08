@@ -584,7 +584,7 @@ export class XmppClass {
         to: to + CONFERENCEDOMAIN,
         from: this.client.jid?.toString(),
         id: "setOwner",
-        type: "get",
+        type: "set",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
     );

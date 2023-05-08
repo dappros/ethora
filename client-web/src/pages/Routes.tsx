@@ -17,6 +17,7 @@ import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
 import Subscriptions from "./Payments";
 import { Home } from "./Home/Home";
+import AppBuilder from "./AppBuilder/AppBuilder";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -188,6 +189,7 @@ export const Routes = () => {
         <AuthRoute path="/payments" component={Subscriptions} />
         <AuthRoute path="/home" component={Home} />
 
+        <AuthRoute path="/appbuilder" component={AppBuilder} />
         <Route path="/profile/:wallet">
           <Profile />
         </Route>
