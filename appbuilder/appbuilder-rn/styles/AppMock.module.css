@@ -1,0 +1,74 @@
+.rightSection {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #EDEDED;
+    background: linear-gradient(45deg, #ffffff, #e6e6e6);
+}
+
+.statusBar {
+    height: 30px;
+    width: 300px;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+    background-color: #000;
+    display: flex;
+    flex-direction: row;
+    color: white;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 15px;
+    justify-content: space-between;
+}
+
+
+.statusbar__left {
+    display: flex;
+    align-items: center;
+}
+
+.statusbar__right {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.batteryIcon {
+    color: white;
+    font-size: 1em;
+}
+
+
+
+@media (max-width: 768px) {
+
+    .rightSection {
+        width: 100%;
+    }
+
+    .mobileDesign {
+        width: 200px;
+        height: 400px;
+    }
+
+    .mobileScreen {
+        width: 150px;
+        height: 300px;
+    }
+
+    .coinSymbol {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .coinName {
+        font-size: 16px;
+    }
+
+    .input {
+        margin-bottom: 10px;
+    }
+}
