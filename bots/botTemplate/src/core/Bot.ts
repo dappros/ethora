@@ -29,7 +29,7 @@ export default class Bot implements IBot {
     constructor(data: IBotData) {
         Config.init(this._collectConfigurationData(data));
 
-        this.connector = new Connector(data.username, data.password).listen();
+        this.connector = new Connector(data.email, data.password).listen();
         //Processing a received message
         this.connector.on(ConnectorEvent.receiveMessage, this.processMessage.bind(this));
         //Handling received presence
@@ -309,7 +309,7 @@ export default class Bot implements IBot {
             filteredPresenceTimer = data.presenceTimer;
         }
         return {
-            botName: data.botName ? data.botName : data.username,
+            botName: data.botName ? data.botName : data.email,
             tokenJWT: data.tokenJWT,
             isProduction: data.isProduction ? data.isProduction : false,
             botImg: data.botImg ? data.botImg : '',

@@ -63,8 +63,8 @@ interface IDeployNFMT {
 }
 
 export interface IApplicationAPI {
-    userAuthorization(username: string, password: string): Promise<IAuthorization>;
-    userRegistration(username: string, password: string): Promise<IAuthData>;
+    userAuthorization(email: string, password: string): Promise<IAuthorization>;
+    userRegistration(email: string, password: string): Promise<IAuthData>;
     transferToken(amount: number, wallet: string): Promise<any>;
     getBalance(): Promise<any>;
     getTransactions(walletAddress: string): Promise<ITransactions>;

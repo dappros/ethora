@@ -9,7 +9,7 @@ export enum ConnectorEvent {
 }
 
 export interface IConnector {
-    username: string;
+    email: string;
     password: string;
     stanza: any;
     botAuthData: IAuthorization | undefined;

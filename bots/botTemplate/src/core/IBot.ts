@@ -19,7 +19,7 @@ export interface IBotContext {
 }
 
 export interface IBotData {
-    username: string;
+    email: string;
     password: string;
     tokenJWT: string;
     botName?: string;

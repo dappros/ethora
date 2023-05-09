@@ -20,16 +20,16 @@ import {XmppRoom} from "../client/XmppRoom";
 import {IApplicationAPI, ITransaction} from "../api/IApplicationAPI";
 
 export default class Connector extends EventEmitter implements IConnector {
-    username: string;
+    email: string;
     password: string;
     stanza: any;
     botAuthData: IAuthorization | undefined;
     xmpp: any;
     appAPI: IApplicationAPI
 
-    constructor(username: string, password: string) {
+    constructor(email: string, password: string) {
         super();
-        this.username = username;
+        this.email = email;
         this.password = password;
         this.xmpp = XmppClient;
         this.appAPI = new ApplicationAPI();
@@ -158,10 +158,10 @@ export default class Connector extends EventEmitter implements IConnector {
         return Promise.resolve();
     }
 
-    botRegistration(username: string, password: string): any {
-        Logger.warn(`The user is not found, starting registration. ( ${username} )`);
+    botRegistration(email: string, password: string): any {
+        Logger.warn(`The user is not found, starting registration. ( ${email} )`);
 
-        return this.appAPI.userRegistration(username, password).then(result => {
+        return this.appAPI.userRegistration(email, password).then(result => {
             Logger.info(`User ${result.firstName} has been successfully created, starting authorization.`);
             return this.listen();
         }).catch(error => {
@@ -185,12 +185,7 @@ export default class Connector extends EventEmitter implements IConnector {
 
 
     listen(): any {
-        this.appAPI.userAuthorization(this.username, this.password).then(botAuthData => {
-
-            //If authorization is not successful with "User do not found" registration is started
-            if (!botAuthData.success) {
-                return this.botRegistration(this.username, this.password);
-            }
+        this.appAPI.userAuthorization(this.email, this.password).then(botAuthData => {
 
             if (botAuthData.data.botJID === 'undefined' || botAuthData.data.xmppPassword === 'undefined') {
                 throw Logger.error(new Error('Authorization error, perhaps the login or password is incorrect, and the JWT token could also be out of date.'));

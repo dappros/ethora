@@ -30,10 +30,10 @@ export default class ApplicationAPI implements IApplicationAPI {
         return wallet.replace(/([A-Z])/g, '_$1').toLowerCase();
     }
 
-    async userAuthorization(username: string, password: string): Promise<IAuthorization> {
+    async userAuthorization(email: string, password: string): Promise<IAuthorization> {
         try {
-            const request = await this.http.post('users/login', {
-                username: username,
+            const request = await this.http.post('users/login-with-email', {
+                email: email,
                 password: password
             }, {
                 headers: {
@@ -67,12 +67,12 @@ export default class ApplicationAPI implements IApplicationAPI {
         }
     }
 
-    async userRegistration(username: string, password: string): Promise<IAuthData> {
+    async userRegistration(email: string, password: string): Promise<IAuthData> {
         try {
             const request = await this.http.post('users', {
-                username: username,
+                email: email,
                 password: password,
-                firstName: username.charAt(0).toUpperCase() + username.slice(1),
+                firstName: email,
                 lastName: 'Bot'
             }, {
                 headers: {
