@@ -95,7 +95,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
     );
   }
   return (
-    <Box style={{ marginTop: "10px", marginRight: "10px" }}>
+    <Box sx={{ marginTop: "10px", marginRight: "10px", width: 250 }}>
       <Card
         sx={{
           display: "flex",
@@ -112,9 +112,9 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             src={user.profileImage || defUserImage}
           />
         </Box>
-        <Box>
+        <Box sx={{width: '100%'}}>
           {!!user.firstName && (
-            <>
+            <Box>
               <Box
                 sx={{
                   fontWeight: "bold",
@@ -132,7 +132,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
                 </IconButton>
               </Box>
               {user?.description && <Box>Description: {user?.description}</Box>}
-            </>
+            </Box>
           )}
         </Box>
 

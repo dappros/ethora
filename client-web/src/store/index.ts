@@ -5,7 +5,7 @@ import * as http from "../http";
 import { TCombinedMimeType } from "../constants";
 import { stat } from "fs";
 import type { Stripe } from "stripe";
-
+import { THomeScreen } from "../http";
 
 
 
@@ -32,7 +32,8 @@ export type TUser = {
   stripeCustomerId?: string;
   subscriptions?: { data: Stripe.Subscription[] };
   paymentMethods?: { data: Stripe.PaymentMethod[] };
-  company?: http.ICompany[]
+  company?: http.ICompany[];
+  homeScreen: THomeScreen
 };
 
 type TMode = "light" | "dark";
@@ -286,6 +287,7 @@ const _useStore = create<IStore>()(
             profileImage: "",
             isAllowedNewAppCreate: false,
             isAgreeWithTerms: false,
+            homeScreen: ''
           },
           ACL: {
             result: [{
@@ -429,6 +431,7 @@ const _useStore = create<IStore>()(
                 profileImage: "",
                 isAllowedNewAppCreate: false,
                 isAgreeWithTerms: false,
+                homeScreen: ''
               };
             }),
           clearOwner: () =>
@@ -444,6 +447,8 @@ const _useStore = create<IStore>()(
                 profileImage: "",
                 isAllowedNewAppCreate: false,
                 isAgreeWithTerms: false,
+                homeScreen: ''
+
               };
               state.apps = [];
               state.appUsers = [];

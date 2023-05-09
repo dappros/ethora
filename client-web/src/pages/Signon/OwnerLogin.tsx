@@ -66,8 +66,8 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
             walletAddress: response.data.user.defaultWallet.walletAddress,
             ACL: response.data.user.ACL,
             isAllowedNewAppCreate: response.data.isAllowedNewAppCreate,
-            isAgreeWithTerms: response.data.user.isAgreeWithTerms
-
+            isAgreeWithTerms: response.data.user.isAgreeWithTerms,
+            homeScreen: response.data.user.homeScreen
           });
           setApps(response.data.apps);
           history.push("/owner");

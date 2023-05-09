@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Input from "@mui/material/Input";
@@ -11,9 +11,10 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useFormik } from "formik";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { loginEmail, TLoginSuccessResponse } from "../../http";
 import { useStoreState } from "../../store";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {};
@@ -40,13 +41,17 @@ type TProps = {
 
 export function EmailSingInForm(props: TProps) {
   const history = useHistory();
-  const setUser = useStoreState((state) => state.setUser);
+  const { search } = useLocation();
+
+  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
+  const email = searchParams.get('email')
+
   const [disable, setDisable] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
-      email: "",
+      email: email || '',
       password: "",
     },
     validate,
@@ -54,20 +59,32 @@ export function EmailSingInForm(props: TProps) {
       setDisable(true);
       loginEmail(values.email, values.password)
         .then((resp) => {
+          if (resp.status === 204) {
+            history.push({
+              pathname: "/tempPassword",
+              search: `?email=${values.email}&tempPassword=${values.password}`,
+            });
+            return;
+          }
           const user = resp.data.user;
           props.updateUser(resp.data);
-
           props.closeModal();
         })
         .catch((error) => {
           console.log(error);
+          showSnackbar("error", "Cannot sign in");
         })
         .finally(() => setDisable(false));
     },
   });
 
   return (
-    <form onSubmit={formik.handleSubmit}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        formik.handleSubmit(e);
+      }}
+    >
       <TextField
         error={formik.touched.email && formik.errors.email ? true : false}
         helperText={

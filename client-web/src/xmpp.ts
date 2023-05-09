@@ -4,6 +4,7 @@ import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
 import { useStoreState } from "./store";
 import { walletToUsername } from "./utils/walletManipulation";
 import { XmppHandler } from "./xmppHandler";
+import { defaultChats } from "./config/config";
 
 const xmppMessagesHandler = new XmppHandler();
 
@@ -27,7 +28,10 @@ export class XmppClass {
 
     this.client.start();
 
-    this.client.on("online", (jid) => xmppMessagesHandler.getListOfRooms(this));
+    this.client.on("online", (jid) => {
+      xmppMessagesHandler.getListOfRooms(this)
+      this.subscribeToDefaultChats()
+    });
     this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onRealtimeMessage(stanza)
@@ -118,6 +122,13 @@ export class XmppClass {
       })
     );
     this.client.send(message);
+  };
+  subscribeToDefaultChats = () => {
+    Object.entries(defaultChats).forEach(([key]) => {
+      const jid = key + CONFERENCEDOMAIN;
+      
+      this.subsribe(jid);
+    });
   };
   subsribe(address: string) {
     const message = xml(
@@ -573,7 +584,7 @@ export class XmppClass {
         to: to + CONFERENCEDOMAIN,
         from: this.client.jid?.toString(),
         id: "setOwner",
-        type: "get",
+        type: "set",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
     );

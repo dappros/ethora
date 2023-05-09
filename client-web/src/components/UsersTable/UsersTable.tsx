@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Box,
   Checkbox,
+  Chip,
   FormControl,
   IconButton,
   InputLabel,
@@ -32,6 +33,7 @@ import { useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
+import { dateToHumanReadableFormat } from "../../utils";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -96,7 +98,7 @@ function hasACLAdmin(acl: ACL): boolean {
 
 const ITEM_HEIGHT = 48;
 const ROWS_PER_PAGE = 10;
-type TSelectedIds = { walletAddress: string; _id: string };
+type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 export default function UsersTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
@@ -131,6 +133,7 @@ export default function UsersTable() {
   });
   const [hasAdmin, setHasAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const maxPage = useRef(0);
 
   const ACL = useStoreState((state) =>
     state.ACL.result.find((i) => i.appId === currentApp)
@@ -149,7 +152,7 @@ export default function UsersTable() {
 
   const getUsers = async (
     appId: string | null,
-    limit: number = 10,
+    limit: number = ROWS_PER_PAGE,
     offset: number = 0
   ) => {
     try {
@@ -161,7 +164,6 @@ export default function UsersTable() {
           offset: data.offset,
           total: data.total,
         });
-
         return data.items;
       }
     } catch (e) {
@@ -170,35 +172,42 @@ export default function UsersTable() {
     return [];
   };
 
+  const getInitialUsers = async (appId: string) => {
+    const allUsers = await getUsers(appId);
+    setUsers(allUsers);
+  };
+
   useEffect(() => {
     if (currentApp) {
-      getUsers(currentApp).then((users) => {
-        setUsers(users);
-      });
+      getInitialUsers(currentApp);
     }
   }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     setCurrentApp(e.target.value);
-    getUsers(e.target.value).then((users) => {
-      setUsers(users);
-    });
+    getInitialUsers(e.target.value);
   };
 
-  const onPagination = (event: React.ChangeEvent<unknown>, page: number) => {
-    let offset = 0;
-    setPage(page);
-    if (page - 1 > 0) {
-      offset = (page - 1) * (pagination?.limit || 10);
+  const onPagination = (
+    event: React.ChangeEvent<unknown>,
+    tablePage: number
+  ) => {
+    const limit = ROWS_PER_PAGE;
+    const offset = tablePage * limit;
+    setPage(tablePage);
+    if (maxPage.current < tablePage) {
+      maxPage.current = tablePage;
+      getUsers(currentApp, limit, offset).then((u) => {
+        setUsers((p) => [...users, ...u]);
+      });
     }
-
-    getUsers(currentApp || null, pagination?.limit || 10, offset).then(
-      (users) => setUsers(users)
-    );
   };
 
-  const handleAclEditOpen = (e: React.MouseEvent<HTMLElement, MouseEvent>,user: IUser) => {
-    e.stopPropagation()
+  const handleAclEditOpen = (
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
+    user: IUser
+  ) => {
+    e.stopPropagation();
     setAclEditData({ modalOpen: true, user });
     handleMenuClose();
   };
@@ -234,6 +243,7 @@ export default function UsersTable() {
       const newSelected = users.map((n) => ({
         _id: n._id,
         walletAddress: n.defaultWallet.walletAddress,
+        appId: n.appId,
       }));
       setSelectedIds(newSelected);
       return;
@@ -248,6 +258,7 @@ export default function UsersTable() {
     const mappedUser: TSelectedIds = {
       _id: user._id,
       walletAddress: user.defaultWallet.walletAddress,
+      appId: user.appId,
     };
     let newSelected: TSelectedIds[] = [];
 
@@ -265,6 +276,13 @@ export default function UsersTable() {
     }
 
     setSelectedIds(newSelected);
+  };
+
+  const closeUsersActionModal = async () => {
+    setUsersActionModal((p) => ({ ...p, open: false }));
+  };
+  const updateUsersData = async () => {
+    await getInitialUsers(currentApp);
   };
 
   const isSelected = (id: string) =>
@@ -432,9 +450,36 @@ export default function UsersTable() {
                       </TableCell>
                       <TableCell align="right">{row.firstName}</TableCell>
                       <TableCell align="right">{row.lastName}</TableCell>
-                      <TableCell align="right">{row.username}</TableCell>
+                      <TableCell align="center">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {row.tags.map((tag, i) => {
+                            return (
+                              <Chip
+                                variant={"filled"}
+                                color="primary"
+                                label={tag}
+                                key={i}
+                              />
+                            );
+                          })}
+                        </Box>
+                      </TableCell>
                       <TableCell align="right">
                         {row.email || "No Email"}
+                      </TableCell>
+                      <TableCell align="center">
+                        <p style={{width: 150}}>{dateToHumanReadableFormat(row.createdAt)}</p>
+                        <p>{row.lastSeen ? dateToHumanReadableFormat(row.lastSeen) : ''}</p>
+                      </TableCell>
+                      <TableCell align="center">
+                        {row.authMethod || ''}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
@@ -460,6 +505,7 @@ export default function UsersTable() {
                             style: {
                               maxHeight: ITEM_HEIGHT * 4.5,
                               width: "20ch",
+                              boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.05)'
                             },
                           }}
                         >
@@ -485,7 +531,7 @@ export default function UsersTable() {
         </TableContainer>
         <TablePagination
           component="div"
-          count={users.length}
+          count={pagination.total}
           rowsPerPage={ROWS_PER_PAGE}
           page={page}
           onPageChange={onPagination}
@@ -500,8 +546,9 @@ export default function UsersTable() {
       <UsersActionModal
         type={userActionModal.type}
         open={userActionModal.open}
-        onClose={() => setUsersActionModal((p) => ({ ...p, open: false }))}
+        onClose={closeUsersActionModal}
         selectedUsers={selectedIds}
+        updateData={updateUsersData}
       />
       <NewUserModal
         open={showNewUser}

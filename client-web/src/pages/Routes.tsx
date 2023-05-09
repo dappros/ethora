@@ -13,9 +13,12 @@ import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
-import { VerifyEmail } from "./VerifyEmail/VerifyEmail";
+import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
 import Subscriptions from "./Payments";
+import { Home } from "./Home/Home";
+import AppBuilder from "./AppBuilder/AppBuilder";
+import { AppEdit } from "./AppEdit/AppEdit";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -175,6 +178,8 @@ export const Routes = () => {
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />
+        <AuthRoute path="/editApp/:appId" component={AppEdit} />
+
         <AuthRoute path="/owner" component={Owner} />
         <AuthRoute path="/users" component={UsersPage} />
         <AuthRoute path="/dashboard" component={Dashboard} />
@@ -185,13 +190,15 @@ export const Routes = () => {
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
         <AuthRoute path="/organizations" component={Organizations} />
         <AuthRoute path="/payments" component={Subscriptions} />
+        <AuthRoute path="/home" component={Home} />
 
+        <AuthRoute path="/appbuilder" component={AppBuilder} />
         <Route path="/profile/:wallet">
           <Profile />
         </Route>
         <Route path={"/explorer"} component={Explorer} exact />
         <Route path={"/resetPassword/:token"} component={ResetPassword} exact />
-        <Route path={"/verifyEmail/:token"} component={VerifyEmail} exact />
+        <Route path={"/tempPassword/"} component={ChangeTempPassword} exact />
         <Route
           path={"/explorer/block/:blockNumber"}
           component={BlockDetails}

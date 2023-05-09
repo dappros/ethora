@@ -22,6 +22,9 @@ type TProps = {
 export default function NewAppModal({ open, setOpen }: TProps) {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const setApp = useStoreState((state) => state.setApp);
+  const setUser = useStoreState((state) => state.setUser);
+  const user = useStoreState((state) => state.user);
+
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState<string>("");
   const { showSnackbar } = useSnackbar();
@@ -68,22 +71,23 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       if (file) {
         fd.append("file", file);
       }
-
       fd.append("appName", appName);
-      fd.append("appDescription", appDescription);
-      fd.append("appGoogleId", appGoogleId);
+      appDescription && fd.append("appDescription", appDescription.toString());
+      appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
       fd.append(
         "defaultAccessProfileOpen",
         defaultAccessProfileOpen.toString()
       );
       fd.append("usersCanFree", usersCanFree.toString());
-      fd.append("appUrl", appUrl);
+      appUrl && fd.append("appUrl", appUrl.toString());
+
       http
         .createApp(fd)
         .then((response) => {
           setApp(response.data.app);
           setOpen(false);
+          setUser({ ...user, homeScreen: "" });
         })
         .catch((e) => {
           showSnackbar(
@@ -117,7 +121,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
   };
   return (
     <Dialog onClose={onClose} open={open}>
-      <Box sx={{ padding: 1, }}>
+      <Box sx={{ padding: 1 }}>
         <IconButton
           sx={{ position: "absolute", top: 0, right: 0 }}
           disabled={loading}
@@ -176,10 +180,9 @@ export default function NewAppModal({ open, setOpen }: TProps) {
                   </Typography>
                   <Typography sx={{ fontSize: 10 }}>
                     These are the default permissions to be applied to all Users
-                    created in your App. Keep the recommended settings if you are not sure and you
-                    can come back to this later.
+                    created in your App. Keep the recommended settings if you
+                    are not sure and you can come back to this later.
                   </Typography>
-                 
                 </Box>
                 <Box>
                   <FormControlLabel
@@ -196,7 +199,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
                       />
                     }
                     label={
-                      <Typography sx={{ fontWeight: "bold", fontSize: 14, }}>
+                      <Typography sx={{ fontWeight: "bold", fontSize: 14 }}>
                         Profiles Open ("defaultAccessProfileOpen")
                       </Typography>
                     }

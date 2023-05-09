@@ -29,13 +29,18 @@ export default function BasicTable() {
   const setApps = useStoreState((state) => state.setApps);
 
   const user = useStoreState((state) => state.user);
+  const ACL = useStoreState((state) => state.ACL);
+
   const [open, setOpen] = useState(false);
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
   const isEnoughCoinsToCreateApp =
-    +mainCoinBalance.balance >= COINS_TO_CREATE_APP;
+    +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
+    const currentAcl = ACL.result.find(item => item.appId === user.appId) 
+    const canCreateApp = currentAcl.application.appCreate.create;
+
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showRotate, setShowRotate] = useState(false);
@@ -83,7 +88,11 @@ export default function BasicTable() {
   useEffect(() => {
     getUserApps()
   }, [])
-
+//  useEffect(() => {
+//     if(user.homeScreen === 'appCreate') {
+//       onAddApp()
+//     }
+//   }, [user.homeScreen])
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
@@ -94,12 +103,12 @@ export default function BasicTable() {
           title={
             !isEnoughCoinsToCreateApp
               ? "You don't have enough coins to create the app."
-              : ""
+              : !canCreateApp ? "You don't have permission to create app" : ''
           }
         >
           <span style={{marginLeft: 'auto'}}>
             <IconButton
-              disabled={!isEnoughCoinsToCreateApp}
+              disabled={!isEnoughCoinsToCreateApp || !canCreateApp}
               onClick={onAddApp}
               size="large"
               color="primary"

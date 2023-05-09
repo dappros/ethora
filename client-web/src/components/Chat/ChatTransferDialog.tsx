@@ -67,7 +67,7 @@ export function ChatTransferDialog({
   const userJid = useMemo(() => walletToUsername(user.walletAddress) + DOMAIN, []);
   const isSameUser = userJid === messageJid;
   const coinData = balance.filter(
-    (el) => !el.tokenType && el.contractAddress.length > 10
+    (el) => !el?.tokenType && el?.contractAddress?.length > 10
   );
 
   const openThreadView = () => {

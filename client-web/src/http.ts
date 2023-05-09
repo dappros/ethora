@@ -10,12 +10,16 @@ import {
 import { useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
+import xmpp from "./xmpp";
+import { history } from "./utils/history";
 
 const { APP_JWT = "", API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;
 };
+export type THomeScreen = 'appCreate' | 'profile' | ''
+
 export interface ICompany {
   name: string;
   address: string;
@@ -50,6 +54,7 @@ export type TUser = {
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
   company?: ICompany[];
+  homeScreen: THomeScreen
 };
 
 export type TLoginSuccessResponse = {
@@ -66,10 +71,12 @@ export interface IUser {
   acl: ACL;
   appId: string;
   createdAt: Date;
+  lastSeen?: string;
   defaultWallet: {
     walletAddress: string;
   };
   emails: [];
+  authMethod?: string;
   email?: string;
   firstName: string;
   isAssetsOpen: true;
@@ -193,7 +200,12 @@ export function refresh() {
       });
   });
 }
-
+const onLogout = () => {
+  useStoreState.getState().clearUser();
+  xmpp.stop();
+  localStorage.clear()
+  history.push("/");
+};
 http.interceptors.response.use(undefined, (error) => {
   const user = useStoreState.getState().user;
 
@@ -206,7 +218,8 @@ http.interceptors.response.use(undefined, (error) => {
       error.config.url === "/users/login/refresh" ||
       error.config.url === "/users/login"
     ) {
-      return Promise.reject(error);
+      onLogout()
+      // return Promise.reject(error);
     }
 
     const request = error.config;
@@ -223,6 +236,7 @@ http.interceptors.response.use(undefined, (error) => {
         return Promise.reject(error);
       });
   }
+  return Promise.reject(error);
 });
 
 export const loginUsername = (username: string, password: string) => {
@@ -265,7 +279,23 @@ export const registerUsername = (
     { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
   );
 };
-
+export const registerNewUser = (
+  appId: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  appJwt?: string
+) => {
+  return http.post(
+    "/users/create-with-app-id/" + appId,
+    {
+      email,
+      firstName,
+      lastName,
+    },
+    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
+  );
+};
 export async function deployNfmt(
   type: string,
   name: string,
@@ -399,27 +429,30 @@ export function loginSignature(
 
 export function registerByEmail(
   email: string,
-  password: string,
   firstName: string,
   lastName: string,
   signUpPlan?: string
 ) {
-  return http.post(
-    "/users",
-    {
-      email,
-      password,
-      firstName,
-      lastName,
-      signupPlan: signUpPlan,
-    },
-    { headers: { Authorization: APP_JWT } }
-  );
+  const body = signUpPlan
+    ? {
+        email,
+        firstName,
+        lastName,
+        signupPlan: signUpPlan,
+      }
+    : {
+        email,
+        firstName,
+        lastName,
+      };
+  return http.post("/users/sign-up-with-email", body, {
+    headers: { Authorization: APP_JWT },
+  });
 }
 
 export function loginEmail(email: string, password: string) {
   return http.post<TLoginSuccessResponse>(
-    "/users/login",
+    "/users/login-with-email",
     {
       email,
       password,
@@ -610,8 +643,11 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
-export function addTagToUser(tag: string, userIds: string[]) {
-  return httpWithAuth().post(`/users/tags`, { tag, userId: userIds });
+export function addTagToUser(appId: string, tags: string[], userIds: string[]) {
+  return httpWithAuth().post(`/users/tags-add/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
 }
 export type TTransferToUser = {
   amount: number | string;
@@ -629,17 +665,34 @@ export function sendTokens(
   });
 }
 export function removeTagFromUser(
-  tag: string,
+  appId: string,
+  tags: string[],
   userIds: string[],
-  removeAll = false
 ) {
-  return httpWithAuth().put(`/users/tags`, { tag, userId: userIds, removeAll });
+  return httpWithAuth().post(`/users/tags-delete/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
 }
-export function resetUsersPasswords(userIds: string[]) {
-  return httpWithAuth().post(`/users/resetPassword`, { userId: userIds });
+export function setUserTags(
+  appId: string,
+  tags: string[],
+  userIds: string[],
+) {
+  return httpWithAuth().post(`/users/tags-set/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
 }
-export function deleteUsers(userIds: string[]) {
-  return httpWithAuth().delete(`/users/` + userIds);
+export function resetUsersPasswords(appId: string, usersIds: string[]) {
+  return httpWithAuth().post(`/users/reset-passwords-with-app-id/` + appId, {
+    usersIdList: usersIds,
+  });
+}
+export function deleteUsers(appId: string, userIds: string[]) {
+  return httpWithAuth().post(`/users/delete-many-with-app-id/` + appId, {
+    usersIdList: userIds,
+  });
 }
 export function updateProfile(fd: FormData, id?: string) {
   const path = id ? `/users/${id}` : "/users";

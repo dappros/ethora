@@ -23,7 +23,7 @@ const styles = {
 export function MyProfile() {
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] =
-    useState<ExplorerRespose<ITransaction[]>>();
+    useState<ExplorerRespose<ITransaction[]>>({items: [], limit: 0, offset: 0, total: 0});
   const user = useStoreState((store) => store.user);
   const items = useStoreState((state) => state.balance);
   const documents = useStoreState((state) => state.documents);
@@ -47,7 +47,7 @@ export function MyProfile() {
       <Box sx={{ margin: "auto", width: "200px" }}>
         <UserCard />
       </Box>
-      <Typography
+     {!!items.filter(filterNftBalances).length &&  <Typography
         variant="h6"
         style={{
           margin: "16px",
@@ -57,7 +57,7 @@ export function MyProfile() {
         }}
       >
         <span>Items</span>
-      </Typography>
+      </Typography>}
       <ItemsTable
         balance={items.filter(filterNftBalances)}
         walletAddress={user.walletAddress}
@@ -82,7 +82,7 @@ export function MyProfile() {
         </>
       )}
 
-      {!!transactions && (
+      {!!transactions.items.length && (
         <Box>
           <Typography variant="h6" style={{ margin: "16px" }}>
             Transactions
