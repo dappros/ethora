@@ -46,7 +46,7 @@ export class Session implements ISession {
             }
         } else {
             let textMsg = message;
-            configStatuses.useNameInMsg ? textMsg = `${this.getUsername()} \n ${message}` : null;
+            configStatuses.useNameInMsg ? textMsg = `${this.getUsername()}\n${message}` : null;
             return this.bot.connector.send(textMsg, keyboard);
         }
     }
