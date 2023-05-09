@@ -4,7 +4,7 @@ require('dotenv').config({path: path.join(__dirname, '../../.env')})
 
 const botInitData = () => {
     const botData = {
-        username: process.env.APP_USERNAME,
+        email: process.env.EMAIL,
         password: process.env.PASSWORD,
         tokenJWT: process.env.TOKEN,
         botName: process.env.BOT_NAME,
