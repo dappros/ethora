@@ -123,7 +123,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                 <Typography sx={{ fontWeight: "bold" }}>
                   Default chat rooms
                 </Typography>
-                <Box sx={{ mb: 2 }}>
+                <Box sx={{ mb: 4 }}>
                   {defaultChatRooms.map((item, i) => {
                     return (
                       <Box
@@ -155,6 +155,13 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                       </Box>
                     );
                   })}
+                  <Typography sx={{ fontSize: 12 }}>
+                    Specify from 1 to 3 chat rooms your users will be subscribed
+                    to by default.
+                  </Typography>
+                  <Typography sx={{ fontSize: 12 }}>
+                    "Pinned" means users won't be able to remove them.
+                  </Typography>
                 </Box>
               </Box>
               <Box>
