@@ -2,32 +2,42 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import { useStoreState } from "../../store";
 import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import { Button, Container, StepContent } from "@mui/material";
+import { Container, Tab, Tabs, Typography } from "@mui/material";
 import { Appearance } from "./Appearance";
 import { UserDefaults } from "./UserDefaults";
 import { Services } from "./Services";
 import { Backend } from "./Backend";
 
-const steps = ["Appearance", "User defaults", "Services", "Backend"];
-const stepsCount = steps.length - 1;
-interface IStepper {
-  activeStep: number;
-}
+const tabs = ["Appearance", "User defaults", "Services", "Backend"];
 
-export default function HorizontalStepper({ activeStep }: IStepper) {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
   return (
-    <Box sx={{ width: "100%" }}>
-      <Stepper activeStep={activeStep}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-    </Box>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
   );
 }
 export const AppEdit = () => {
@@ -35,26 +45,8 @@ export const AppEdit = () => {
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
 
-  const nextStep = () => {
-    setActiveStep((s) => (s += 1));
-  };
-  const previousStep = () => {
-    setActiveStep((s) => (s -= 1));
-  };
-
-  const getPage = () => {
-    switch (activeStep) {
-      case 0:
-        return <Appearance />;
-      case 1:
-        return <UserDefaults />;
-      case 2:
-        return <Services />;
-      case 3:
-        return <Backend />;
-      default:
-        return null;
-    }
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveStep(newValue);
   };
 
   return (
@@ -62,33 +54,30 @@ export const AppEdit = () => {
       maxWidth={"xl"}
       sx={{ marginTop: 2, minHeight: "70vh", paddingBottom: 5 }}
     >
-      <HorizontalStepper activeStep={activeStep} />
-      <Box sx={{ mt: 2 }}>{getPage()}</Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          width: "100%",
-          justifyContent: "flex-end",
-          mt: 2,
-        }}
-      >
-        <Button
-          disabled={activeStep === 0}
-          variant="contained"
-          color={"secondary"}
-          onClick={previousStep}
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={activeStep}
+          onChange={handleChange}
+          aria-label="basic tabs example"
         >
-          Previous
-        </Button>
-        <Button
-          disabled={activeStep === stepsCount}
-          variant="contained"
-          onClick={nextStep}
-        >
-          Next
-        </Button>
+          {tabs.map((tab, i) => {
+            return <Tab label={tab} {...a11yProps(i)} />;
+          })}
+        </Tabs>
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        <TabPanel value={activeStep} index={0}>
+          <Appearance />
+        </TabPanel>
+        <TabPanel value={activeStep} index={1}>
+          <UserDefaults />
+        </TabPanel>
+        <TabPanel value={activeStep} index={2}>
+          <Services />
+        </TabPanel>
+        <TabPanel value={activeStep} index={3}>
+          <Backend />
+        </TabPanel>
       </Box>
     </Container>
   );

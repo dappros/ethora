@@ -120,7 +120,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box>
-                <Typography sx={{ fontWeight: "bold" }}>
+                <Typography sx={{ fontWeight: "bold", }}>
                   Default chat rooms
                 </Typography>
                 <Box sx={{ mb: 4 }}>
@@ -165,10 +165,10 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                 </Box>
               </Box>
               <Box>
-                <Typography sx={{ fontWeight: "bold" }}>
+                <Typography sx={{ fontWeight: "bold", }}>
                   Default profile security settings
                 </Typography>
-                <Typography sx={{ fontSize: 10 }}>
+                <Typography sx={{ fontSize: 10 ,}}>
                   These are the default permissions to be applied to all Users
                   created in your App. Keep the recommended settings if you are
                   not sure and you can come back to this later.

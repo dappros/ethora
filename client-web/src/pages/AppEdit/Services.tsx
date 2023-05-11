@@ -25,7 +25,7 @@ export const Services: React.FC<IServices> = ({}) => {
   });
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  
+
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadCertificate = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -43,7 +43,7 @@ export const Services: React.FC<IServices> = ({}) => {
 
   return (
     <Box>
-      <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Typography>Push Notifications certificate (Apple)</Typography>
         <input
           onChange={uploadCertificate}
@@ -52,11 +52,8 @@ export const Services: React.FC<IServices> = ({}) => {
           accept="*/*"
           style={{ display: "none" }}
         />
-        <Button
-          variant="outlined"
-          onClick={() => fileRef.current?.click()}
-        >
-          {certificate.originalname || 'Upload Certificate'}
+        <Button variant="outlined" onClick={() => fileRef.current?.click()}>
+          {certificate.originalname || "Upload"}
         </Button>
       </Box>
       <Box>
@@ -76,7 +73,7 @@ export const Services: React.FC<IServices> = ({}) => {
         <TextField
           sx={{ width: "100%" }}
           margin="dense"
-          label="Google App Id (Firebase)"
+          label="Google Id (Firebase)"
           name="appUrl"
           variant="outlined"
           // onChange={formik.handleChange}
@@ -85,6 +82,11 @@ export const Services: React.FC<IServices> = ({}) => {
           // error={!!formik.touched.appUrl && !!formik.errors.appUrl}
         />
       </Box>
+      <Typography sx={{ fontSize: 12 }}>
+        On Free plan, you use our default Ethora integrations. To publish to
+        Appstore, you need to register your own accounts in these services and
+        upgrade.
+      </Typography>
     </Box>
   );
 };

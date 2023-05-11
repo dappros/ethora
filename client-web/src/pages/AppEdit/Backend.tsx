@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { useParams } from "react-router";
@@ -16,7 +16,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
   const updateApp = useStoreState((state) => state.updateApp);
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const formik = useFormik({
     initialValues: {
@@ -54,7 +54,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
     try {
       const res = await rotateAppJwt(app._id);
       updateApp(res.data.app);
-      showSnackbar('success', 'JWT rotated')
+      showSnackbar("success", "JWT rotated");
     } catch (e) {
       console.log(e);
     }
@@ -64,7 +64,6 @@ export const Backend: React.FC<IBackend> = ({}) => {
   return (
     <Box>
       <Box sx={sectionStyle}>
-       
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
           <Box>
             <Typography sx={{ fontWeight: "bold" }}>JWT Token</Typography>
@@ -81,17 +80,33 @@ export const Backend: React.FC<IBackend> = ({}) => {
               gap: 2,
             }}
           >
-            <Button disabled={loading} variant="outlined" onClick={downloadJWT}>
-              Download
-            </Button>
-            <Button
-              disabled={loading}
-              variant="outlined"
-              color={loading ? "secondary" : "error"}
-              onClick={rotateJWT}
+            <Tooltip
+              title={
+                "Download your Application JWT token. This is needed for your applications to access our API and your Application data."
+              }
             >
-              Rotate
-            </Button>
+              <Button
+                disabled={loading}
+                variant="outlined"
+                onClick={downloadJWT}
+              >
+                Download
+              </Button>
+            </Tooltip>
+            <Tooltip
+              title={
+                "Rotate your Application JWT token. Warning: your applications using the old JWT token will stop working!"
+              }
+            >
+              <Button
+                disabled={loading}
+                variant="outlined"
+                color={loading ? "secondary" : "error"}
+                onClick={rotateJWT}
+              >
+                Rotate
+              </Button>
+            </Tooltip>
           </Box>
         </Box>
       </Box>
