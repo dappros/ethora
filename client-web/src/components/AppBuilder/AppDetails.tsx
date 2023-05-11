@@ -23,7 +23,7 @@ const textInputStyle = {
   boxShadow: "4px 4px 12px #c5c5c5,\n        -4px -4px 12px #ffffff",
   transition: "0.3s",
 } as CSSProperties;
-const label = { display: "flex", flexDirection: "column" }as CSSProperties;
+const label = { display: "flex", flexDirection: "column" } as CSSProperties;
 //interfaces
 interface TAppDetails {
   appName: string;
@@ -54,10 +54,10 @@ interface TAppDetails {
   handleClear: (screenIndex: number) => void;
   logo: File;
   loginScreenBackground: File;
-  coinLogo?:File
+  coinLogo?: File;
 }
 
-export default function AppDetails(props: TAppDetails) {
+export default function AppDetails(props: any) {
   const {
     appName,
     appTitle,
@@ -87,7 +87,6 @@ export default function AppDetails(props: TAppDetails) {
   } = props;
 
   //handle to clear form data for a given screen
-  
 
   //Component for displaying form in the first screen
   const screen0 = () => {
@@ -121,32 +120,7 @@ export default function AppDetails(props: TAppDetails) {
             )}
           </label>
         </div>
-        <br />
-        <label style={label}>
-          Email
-          <input
-            className={"emailTextInput"}
-            placeholder="abc@xyz.com"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-          {emailEmpty && (
-            <div className="error-message">Email is a required field.</div>
-          )}
-          {emailInvalid && <div className="error-message">Invalid email</div>}
-        </label>
-        <br />
-        <label style={label}>
-          App Title
-          <input
-            style={textInputStyle}
-            placeholder="My App"
-            type="text"
-            value={appTitle}
-            onChange={(event) => setAppTitle(event.target.value)}
-          />
-        </label>
+
         <br />
         <div className="rowAppName">
           <label style={label}>

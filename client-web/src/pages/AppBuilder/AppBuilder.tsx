@@ -1,80 +1,52 @@
-import { useState } from "react";
-import { ActionStrip } from "../../components/AppBuilder/ActionStrip";
-import AppDetails from "../../components/AppBuilder/AppDetails";
+import { useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
-import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
-import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
-import { Box, Button, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 //interfaces
 export interface TCustomDetails {
-  appTitle: string;
   primaryColor: string;
   secondaryColor: string;
   coinSymbol: string;
   coinName: string;
   currentScreenIndex: number;
+  changeScreen: (i: number) => void;
+
   logo: File | null;
   loginScreenBackground: File | null;
   coinLogo: File | null;
 }
 
-//font
-
-const screenSet = [
-  { screenName: "login", index: 0 },
-  { screenName: "profile", index: 1 },
-];
-const emailValidRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
 export default function AppBuilder() {
-  const [appTitle, setAppTitle] = useState<string>("");
-  const [appName, setAppName] = useState<string>("");
-  const [bundleId, setBundleId] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [appName, setAppName] = useState("");
+  const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState<string>("");
-  const [secondaryColor, setSecondaryColor] = useState<string>("");
+  const [primaryColor, setPrimaryColor] = useState("");
+  const [secondaryColor, setSecondaryColor] = useState("");
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
-  const [coinSymbol, setCoinSymbol] = useState<string>("");
-  const [coinName, setCoinName] = useState<string>("");
-  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
-  const [emailEmpty, setEmailEmpty] = useState<boolean>(false);
-  const [emailInvalid, setEmailInvalid] = useState<boolean>(false);
-  const [appNameEmpty, setAppNameEmpty] = useState<boolean>(false);
-  const [bundleIdEmpty, setBundleIdEmpty] = useState<boolean>(false);
+  const [coinSymbol, setCoinSymbol] = useState("");
+  const [coinName, setCoinName] = useState("");
+  const [domain, setDomain] = useState("");
+
+  const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+  const appLogoRef = useRef<HTMLInputElement>(null);
+  const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
   //handle to set logo file
   const handleLogoChange = (event: any) => {
-    setAppTitle("");
     setLogo(event.target.files[0]);
   };
 
   //handle to set app title
-  const handleAppTitle = (value: string) => {
-    setLogo(null);
-    setAppTitle(value);
-  };
-
-  const handleAppName = (value: string) => {
-    setAppName(value);
-    if (!value) {
-      setAppNameEmpty(true);
-    } else {
-      setAppNameEmpty(false);
-    }
-  };
-
-  const handleBundleId = (value: string) => {
-    setBundleId(value);
-    if (!value) {
-      setBundleIdEmpty(true);
-    } else {
-      setBundleIdEmpty(false);
-    }
-  };
 
   //handle to set login screen background
   const handleLoginScreenBackgroundChange = (event: any) => {
@@ -87,51 +59,8 @@ export default function AppBuilder() {
   };
 
   //handle for previous button in action strip
-  const handlePrevClick = () => {
-    setCurrentScreenIndex(currentScreenIndex - 1);
-  };
-
-  //handle for next button in action strip
-  const handleNextClick = () => {
-    setCurrentScreenIndex(currentScreenIndex + 1);
-  };
-
-  //handle email change
-  const handleEmail = (value: any) => {
-    setEmail(value);
-
-    if (!value) {
-      setEmailEmpty(true);
-      setEmailInvalid(false);
-    } else {
-      setEmailEmpty(false);
-      if (!value.match(emailValidRegex)) {
-        setEmailInvalid(true);
-      } else {
-        setEmailInvalid(false);
-      }
-    }
-  };
 
   //handle to clear data
-  const handleClear = (screenIndex: number) => {
-    if (screenIndex === 0) {
-      setAppName("");
-      setAppTitle("");
-      setLogo(null);
-      setLoginScreenBackground(null);
-      setEmail("");
-      setBundleId("");
-    }
-
-    if (screenIndex === 1) {
-      setPrimaryColor("");
-      setSecondaryColor("");
-      setCoinName("");
-      setCoinSymbol("");
-      setCoinLogo(null);
-    }
-  };
 
   //handle to submit data
   const handleSubmit = () => {
@@ -148,146 +77,203 @@ export default function AppBuilder() {
     // loginScreenBackgroundImage
     // coinLogoImage
 
-    if (!email) {
-      setEmailEmpty(true);
-    } else {
-      setEmailEmpty(false);
-    }
+    if (bundleId) {
+      const data = new FormData();
+      data.append("bundleId", bundleId);
+      data.append("appName", appName);
+      data.append("primaryColor", primaryColor);
+      data.append("secondaryColor", secondaryColor);
+      data.append("coinSymbol", coinSymbol);
+      data.append("coinName", coinName);
+      data.append("coinLogoImage", coinLogo as Blob);
+      data.append("logoImage", logo as Blob);
+      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
 
-    if (!appName) {
-      setAppNameEmpty(true);
-    } else {
-      setAppNameEmpty(false);
-    }
-
-    if (!bundleId) {
-      setBundleIdEmpty(true);
-    } else {
-      setBundleIdEmpty(false);
-    }
-
-    if (email && appTitle && bundleId) {
-      if (email.match(emailValidRegex)) {
-        const data = new FormData();
-        data.append("appTitle", appTitle);
-        data.append("bundleId", bundleId);
-        data.append("appName", appName);
-        data.append("email", email);
-        data.append("primaryColor", primaryColor);
-        data.append("secondaryColor", secondaryColor);
-        data.append("coinSymbol", coinSymbol);
-        data.append("coinName", coinName);
-        data.append("coinLogoImage", coinLogo as Blob);
-        data.append("logoImage", logo as Blob);
-        data.append(
-          "loginScreenBackgroundImage",
-          loginScreenBackground as Blob
-        );
-
-        const requestOptions = {
-          method: "POST",
-          body: data,
-        };
-        fetch("http://localhost:3001/buildapp", requestOptions)
-          .then((response) => response.text())
-          .then((result) => console.log(result))
-          .catch((error) => console.log("error", error));
-      } else {
-        setEmailInvalid(true);
-      }
+      const requestOptions = {
+        method: "POST",
+        body: data,
+      };
+      fetch("http://localhost:3001/buildapp", requestOptions)
+        .then((response) => response.text())
+        .then((result) => console.log(result))
+        .catch((error) => console.log("error", error));
     }
   };
 
   return (
     <main>
-      <div
-        style={{ display: "flex", flexDirection: "column" }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: {sm: 'column', md: 'row'} ,
+          justifyContent: "center",
+          gap: 10,
+          // justifyContent: "space-between",
+        }}
       >
-        <div
-          style={{ display: "flex",  flexDirection: "row", justifyContent: 'space-between' }}
-        >
-          <Box>
-            <AppDetails
-              appName={appName}
-              appTitle={appTitle}
-              bundleId={bundleId}
-              email={email}
-              primaryColor={primaryColor}
-              secondaryColor={secondaryColor}
-              coinSymbol={coinSymbol}
-              coinName={coinName}
-              setAppName={handleAppName}
-              setAppTitle={handleAppTitle}
-              setBundleId={handleBundleId}
-              setEmail={handleEmail}
-              handleLogoChange={handleLogoChange}
-              handleLoginScreenBackgroundChange={
-                handleLoginScreenBackgroundChange
-              }
-              setPrimaryColor={setPrimaryColor}
-              setSecondaryColor={setSecondaryColor}
-              handleCoinLogoChange={handleCoinLogoChange}
-              setCoinSymbol={setCoinSymbol}
-              setCoinName={setCoinName}
-              currentScreenIndex={currentScreenIndex}
-              logo={logo}
-              loginScreenBackground={loginScreenBackground}
-              coinLogo={coinLogo}
-              handleClear={handleClear}
-              emailEmpty={emailEmpty}
-              emailInvalid={emailInvalid}
-              appNameEmpty={appNameEmpty}
-              bundleIdEmpty={bundleIdEmpty}
-            />
-            <Box sx={{ ml: 3, display: 'flex' }}>
+        <Box>
+          <Typography sx={{ fontWeight: "bold", mb: 2 }}>
+            General Appearence
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              columnGap: 3,
+            }}
+          >
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="App Name"
+                name="appName"
+                variant="outlined"
+                value={appName}
+                onChange={(e) => setAppName(e.target.value)}
+              />
+            </Box>
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Main Color"
+                name="mainColor"
+                variant="outlined"
+                placeholder="#ffffff"
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+              />
+            </Box>
+
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Secondary Color"
+                name="secondaryColor"
+                variant="outlined"
+                placeholder="#ffffff"
+                value={secondaryColor}
+                onChange={(e) => setSecondaryColor(e.target.value)}
+              />
+            </Box>
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Coin Name"
+                name="coinName"
+                variant="outlined"
+                value={coinName}
+                onChange={(e) => setCoinName(e.target.value)}
+              />
+            </Box>
+            <Box sx={{ gridColumn: "1/3" }}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Coin symbol (3-4 letters)"
+                name="coinSymbol"
+                variant="outlined"
+                value={coinSymbol}
+                onChange={(e) => setCoinSymbol(e.target.value)}
+              />
+            </Box>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <Typography>App Logo</Typography>
+
+              <input
+                onChange={handleLogoChange}
+                ref={appLogoRef}
+                type="file"
+                style={{ display: "none" }}
+              />
               <Button
-                variant={"outlined"}
-                onClick={() => handleClear(currentScreenIndex)}
+                // disabled={loading}
+                color="primary"
+                variant="outlined"
+                onClick={() => appLogoRef?.current?.click()}
               >
-                Clear
+                {logo?.name || "Upload File"}
               </Button>
-              <Box sx={{ marginLeft: 3 }}>
-                <IconButton
-                  onClick={handlePrevClick}
-                  disabled={currentScreenIndex === 0}
-                >
-                  <ArrowCircleLeftIcon
-                    color={currentScreenIndex === 0 ? "disabled" : "primary"}
-                  />
-                </IconButton>
-                <IconButton
-                  onClick={handleNextClick}
-                  disabled={currentScreenIndex === 1}
-                >
-                  <ArrowCircleRightIcon
-                    color={currentScreenIndex === 1 ? "disabled" : "primary"}
-                  />
-                </IconButton>
-              </Box>
+            </Box>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <input
+                onChange={handleLoginScreenBackgroundChange}
+                ref={loginScreenBgRef}
+                type="file"
+                style={{ display: "none" }}
+              />
+              <Typography>Login Screen Background</Typography>
+              <Button
+                // disabled={loading}
+                color="primary"
+                variant="outlined"
+                onClick={() => loginScreenBgRef?.current?.click()}
+              >
+                {loginScreenBackground?.name || "Upload File"}
+              </Button>
             </Box>
           </Box>
+          <Box>
+            <Typography sx={{ fontWeight: "bold", mb: 2 }}>
+              Mobile App
+            </Typography>
+          </Box>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Bundle ID"
+                name="bundleId"
+                variant="outlined"
+                onChange={(e) => setBundleId(e.target.value)}
+                value={bundleId}
+              />
+              <Button variant="contained">Prepare React Native build</Button>
+            </Box>
+          </Box>
+          <Box>
+            <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
+          </Box>
+          <Box>
+            <Box>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Domain</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={domain}
+                  label="Domain"
+                  onChange={(e) => setDomain(e.target.value)}
+                >
+                  <MenuItem value={".apps.ethora.com"}>
+                    apps.ethora.com
+                  </MenuItem>
+                  <MenuItem disabled value={"app.YOURDOMAIN.com"}>
+                    app.YOURDOMAIN.com
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Box>
+        </Box>
 
-          <AppMock
-            appTitle={appTitle}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
-            logo={logo}
-            loginScreenBackground={loginScreenBackground}
-            coinLogo={coinLogo}
-            coinSymbol={coinSymbol}
-            coinName={coinName}
-            currentScreenIndex={currentScreenIndex}
-          />
-        </div>
-
-        {/* <ActionStrip
+        <AppMock
+          primaryColor={primaryColor}
+          secondaryColor={secondaryColor}
+          logo={logo}
+          loginScreenBackground={loginScreenBackground}
+          coinLogo={coinLogo}
+          coinSymbol={coinSymbol}
+          coinName={coinName}
           currentScreenIndex={currentScreenIndex}
-          screenSet={screenSet}
-          handleNextClick={handleNextClick}
-          handlePrevClick={handlePrevClick}
-          handleSubmit={handleSubmit}
-        /> */}
-      </div>
+          changeScreen={setCurrentScreenIndex}
+
+        />
+      </Box>
     </main>
   );
 }

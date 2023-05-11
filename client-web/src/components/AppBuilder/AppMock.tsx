@@ -6,13 +6,13 @@ import profilePic from "../../assets/images/profilepic.png";
 
 export default function AppMock(props: TCustomDetails) {
   const {
-    appTitle,
     primaryColor,
     secondaryColor,
     currentScreenIndex,
     coinLogo,
     logo,
     loginScreenBackground,
+    changeScreen
   } = props;
 
   const backgroundImage = loginScreenBackground
@@ -41,34 +41,15 @@ export default function AppMock(props: TCustomDetails) {
   //Component to display Title or Logo if provided else will show default
   const LogoTitle = () => {
     const appTitleColor = primaryColor ? primaryColor : "#003E9C";
-    if (appTitle || logo) {
-      if (appTitle) {
-        return (
-          <div>
-            <h1 className={`h1 text-5xl  uppercase lg:text-[${appTitleColor}]`}>
-              {appTitle}
-            </h1>
-            <style>
-              {`
-                                .h1{
-                                    font-size:48px;
-                                    text-transform: uppercase;
-                                    color:${appTitleColor}
-                                }
-                                `}
-            </style>
-          </div>
-        );
-      } else {
-        return (
-          <img
-            src={URL.createObjectURL(logo as Blob)}
-            alt="Logo"
-            width={200}
-            height={100}
-          />
-        );
-      }
+    if (logo) {
+      return (
+        <img
+          src={URL.createObjectURL(logo as Blob)}
+          alt="Logo"
+          width={200}
+          height={100}
+        />
+      );
     } else {
       return <img src={defaultLogo} alt="Logo" width={200} height={100} />;
     }
@@ -77,7 +58,7 @@ export default function AppMock(props: TCustomDetails) {
   //Component to show form in 1st screen
   const screen0 = () => {
     return (
-      <div className="loginScreen">
+      <div className="loginScreen" onClick={() => changeScreen(0)}>
         <LogoTitle />
         <SocialButton color="#4D6DA4" />
         <SocialButton color="#FFFF" />
@@ -100,13 +81,9 @@ export default function AppMock(props: TCustomDetails) {
               flex-direction: column;
               align-items: center;
               justify-content: center;
+              cursor: pointer;
             }
-            @media (max-width: 768px) {
-              .loginScreen {
-                width: 150px;
-                height: 250px;
-              }
-            }
+           
           `}
         </style>
       </div>
@@ -152,12 +129,8 @@ export default function AppMock(props: TCustomDetails) {
   //Component to show form in 2nd screen
   const screen1 = () => {
     return (
-      <div className="profileScreen">
+      <div className="profileScreen" onClick={() => changeScreen(1)}>
         <div className="primaryHeader">
-          {/* <FontAwesomeIcon className={styles.batteryIcon} icon={faBars} />
-                    <FontAwesomeIcon className={styles.batteryIcon} icon={faStar} />
-                    <FontAwesomeIcon className={styles.batteryIcon} icon={faUserGroup} />
-                    <FontAwesomeIcon className={styles.batteryIcon} icon={faCompass} /> */}
           <BalanceButton />
         </div>
         <div className="secondaryHeader"></div>
@@ -174,6 +147,7 @@ export default function AppMock(props: TCustomDetails) {
               border-bottom-right-radius: 20px;
               display: flex;
               flex-direction: column;
+              cursor: pointer;
               background-color: ${secondaryColor ? secondaryColor : "#2775EA"};
             }
             .primaryHeader {
@@ -282,10 +256,7 @@ export default function AppMock(props: TCustomDetails) {
               background-color: #fff;
             }
 
-            @media (max-width: 768px) {
-              width: 201px;
-              height: 500px;
-            }
+           
           `}
         </style>
       </div>
@@ -309,7 +280,7 @@ export default function AppMock(props: TCustomDetails) {
           zIndex: currentScreenIndex === 0 ? 10 : 0,
           display: "flex",
           alignItems: "flex-start",
-          height: '100%'
+          height: "100%",
         }}
       >
         <MobileOutline screenIndex={0} />
