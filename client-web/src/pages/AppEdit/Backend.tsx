@@ -64,24 +64,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
   return (
     <Box>
       <Box sx={sectionStyle}>
-        <Typography sx={{ fontWeight: "bold" }}>API</Typography>
-        <Box>
-          <TextField
-            sx={{ width: "100%" }}
-            margin="dense"
-            label="Dappros Platform URL"
-            name="dpApi"
-            variant="outlined"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.dpApi}
-            error={!!formik.touched.dpApi && !!formik.errors.dpApi}
-          />
-          <Typography sx={{ fontSize: 12 }}>
-            Dappros Platform Api is used for many core features of your
-            application to make web3 transactions faster
-          </Typography>
-        </Box>
+       
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
           <Box>
             <Typography sx={{ fontWeight: "bold" }}>JWT Token</Typography>
