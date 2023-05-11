@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import * as http from "../../http";
+import { useParams } from "react-router";
+import { useStoreState } from "../../store";
 
 export interface IServices {}
 
@@ -21,6 +23,9 @@ export const Services: React.FC<IServices> = ({}) => {
     updatedAt: "",
     userId: "",
   });
+  const { appId } = useParams<{ appId: string }>();
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadCertificate = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -44,7 +49,7 @@ export const Services: React.FC<IServices> = ({}) => {
           onChange={uploadCertificate}
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="*/*"
           style={{ display: "none" }}
         />
         <Button

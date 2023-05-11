@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import { Button, Container } from "@mui/material";
+import { Button, Container, StepContent } from "@mui/material";
 import { Appearance } from "./Appearance";
 import { UserDefaults } from "./UserDefaults";
 import { Services } from "./Services";
@@ -31,8 +31,8 @@ export default function HorizontalStepper({ activeStep }: IStepper) {
   );
 }
 export const AppEdit = () => {
-  const { appId } = useParams<{ appId: string }>();
   const [activeStep, setActiveStep] = useState(0);
+  const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
 
   const nextStep = () => {
@@ -58,11 +58,12 @@ export const AppEdit = () => {
   };
 
   return (
-    <Container maxWidth={"xl"} sx={{ marginTop: 2, minHeight: '70vh'}}>
+    <Container
+      maxWidth={"xl"}
+      sx={{ marginTop: 2, minHeight: "70vh", paddingBottom: 5 }}
+    >
       <HorizontalStepper activeStep={activeStep} />
-      <Box sx={{mt: 2}}>
-      {getPage()}
-      </Box>
+      <Box sx={{ mt: 2 }}>{getPage()}</Box>
       <Box
         sx={{
           display: "flex",
@@ -70,13 +71,13 @@ export const AppEdit = () => {
           gap: 2,
           width: "100%",
           justifyContent: "flex-end",
-          mt: 2
+          mt: 2,
         }}
       >
         <Button
           disabled={activeStep === 0}
           variant="contained"
-          color={"warning"}
+          color={"secondary"}
           onClick={previousStep}
         >
           Previous

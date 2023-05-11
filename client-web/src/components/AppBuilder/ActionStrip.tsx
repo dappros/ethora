@@ -43,11 +43,11 @@ export function ActionStrip(props: TActionStrip) {
                     </button>
                 </div>
             </div>
-            <div className={"rightActionStrip"}>
+            {/* <div className={"rightActionStrip"}>
                 <button className="submitButton" onClick={() => handleSubmit()}>
                     <p>Submit and Build</p>
                 </button>
-            </div>
+            </div> */}
             <style>
                 {
                     `

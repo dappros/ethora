@@ -87,43 +87,7 @@ export default function AppDetails(props: TAppDetails) {
   } = props;
 
   //handle to clear form data for a given screen
-  const ClearButton = (props: { screenIndex: number }) => {
-    return (
-      <>
-        <button
-          onClick={() => handleClear(props.screenIndex)}
-          className="clearButton"
-        >
-          Clear
-        </button>
-        <style>
-          {`
-            .clearButton {
-              margin-left: 10px;
-              color: #090909;
-              padding: 0.7em 1.7em;
-              font-size: 18px;
-              border-radius: 0.5em;
-              background: #e8e8e8;
-              border: 1px solid #e8e8e8;
-              transition: all .3s;
-              box-shadow: 6px 6px 12px #c5c5c5,
-                         -6px -6px 12px #ffffff;
-            }
-            
-            .clearButton:hover {
-              border: 1px solid #2775EA;
-            }
-            
-            .clearButton:active {
-              box-shadow: 4px 4px 12px #c5c5c5,
-                         -4px -4px 12px #ffffff;
-            }
-            `}
-        </style>
-      </>
-    );
-  };
+  
 
   //Component for displaying form in the first screen
   const screen0 = () => {
@@ -206,7 +170,6 @@ export default function AppDetails(props: TAppDetails) {
           </label>
         </div>
         <br />
-        <ClearButton screenIndex={0} />
         <style>
           {`
             .rowAppName{
@@ -327,14 +290,13 @@ export default function AppDetails(props: TAppDetails) {
             `}
         </style>
         <br />
-        <ClearButton screenIndex={1} />
       </>
     );
   };
 
   return (
     <div className={"leftSection"}>
-      <h1 className="h1">Customize Your App</h1>
+      {/* <h1 className="h1">Customize Your App</h1> */}
       <div className="detailsSection">
         {currentScreenIndex === 0 ? screen0() : null}
         {currentScreenIndex === 1 ? screen1() : null}
@@ -353,14 +315,14 @@ export default function AppDetails(props: TAppDetails) {
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
-            background-color: #EDEDED;
-            background: linear-gradient(315deg, #ffffff, #e6e6e6);
+            // background-color: #EDEDED;
+            // background: linear-gradient(315deg, #ffffff, #e6e6e6);
             color: #000;
             padding:20px;
-            padding-left:50px;
+            // padding-left:50px;
           }
           .detailsSection{
-            flex-basis: 70%;
+            // flex-basis: 70%;
             display:flex;
             flex-direction: column;
             align-items: flex-start;

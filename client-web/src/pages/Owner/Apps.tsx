@@ -19,9 +19,10 @@ import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
 import { getApps } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CloseIcon from '@mui/icons-material/Close';
-
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CloseIcon from "@mui/icons-material/Close";
+import { useHistory } from "react-router";
+import SettingsIcon from "@mui/icons-material/Settings";
 const COINS_TO_CREATE_APP = 10;
 
 export default function BasicTable() {
@@ -30,7 +31,7 @@ export default function BasicTable() {
 
   const user = useStoreState((state) => state.user);
   const ACL = useStoreState((state) => state.ACL);
-
+  const history = useHistory();
   const [open, setOpen] = useState(false);
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
   const mainCoinBalance = useStoreState((state) =>
@@ -38,8 +39,8 @@ export default function BasicTable() {
   );
   const isEnoughCoinsToCreateApp =
     +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
-    const currentAcl = ACL.result.find(item => item.appId === user.appId) 
-    const canCreateApp = currentAcl.application.appCreate.create;
+  const currentAcl = ACL.result.find((item) => item.appId === user.appId);
+  const canCreateApp = currentAcl.application.appCreate.create;
 
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -57,10 +58,10 @@ export default function BasicTable() {
   const getUserApps = async () => {
     try {
       const apps = await getApps();
-      const notNullApps = apps.data.apps.filter(a => !!a);
+      const notNullApps = apps.data.apps.filter((a) => !!a);
       setApps(notNullApps);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       showSnackbar("error", "Cannot get user apps");
     }
   };
@@ -71,6 +72,7 @@ export default function BasicTable() {
 
   const onEdit = (app: any) => {
     setCurrentApp(app);
+    history.push("/editApp/" + app._id);
     setShowEdit(true);
   };
 
@@ -86,13 +88,13 @@ export default function BasicTable() {
     setOpen(true);
   };
   useEffect(() => {
-    getUserApps()
-  }, [])
-//  useEffect(() => {
-//     if(user.homeScreen === 'appCreate') {
-//       onAddApp()
-//     }
-//   }, [user.homeScreen])
+    getUserApps();
+  }, []);
+  //  useEffect(() => {
+  //     if(user.homeScreen === 'appCreate') {
+  //       onAddApp()
+  //     }
+  //   }, [user.homeScreen])
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
@@ -103,10 +105,12 @@ export default function BasicTable() {
           title={
             !isEnoughCoinsToCreateApp
               ? "You don't have enough coins to create the app."
-              : !canCreateApp ? "You don't have permission to create app" : ''
+              : !canCreateApp
+              ? "You don't have permission to create app"
+              : ""
           }
         >
-          <span style={{marginLeft: 'auto'}}>
+          <span style={{ marginLeft: "auto" }}>
             <IconButton
               disabled={!isEnoughCoinsToCreateApp || !canCreateApp}
               onClick={onAddApp}
@@ -154,71 +158,36 @@ export default function BasicTable() {
                 <TableCell component="th" scope="row">
                   {app.appName}
                 </TableCell>
-                  <TableCell align="center">
-                  {app.defaultAccessProfileOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
+                <TableCell align="center">
+                  {app.defaultAccessProfileOpen ? (
+                    <CheckCircleIcon color={"success"} />
+                  ) : (
+                    <CloseIcon color={"error"} />
+                  )}
                 </TableCell>
                 <TableCell align="center">
-                  
-                  {app.defaultAccessAssetsOpen ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
+                  {app.defaultAccessAssetsOpen ? (
+                    <CheckCircleIcon color={"success"} />
+                  ) : (
+                    <CloseIcon color={"error"} />
+                  )}
                 </TableCell>
-              
+
                 <TableCell align="center">
-                  {app.usersCanFree ? <CheckCircleIcon color={'success'} />  : <CloseIcon color={'error'} />}
+                  {app.usersCanFree ? (
+                    <CheckCircleIcon color={"success"} />
+                  ) : (
+                    <CloseIcon color={"error"} />
+                  )}
                 </TableCell>
                 <TableCell align="right">
                   {new Date(app.createdAt).toDateString()}
                 </TableCell>
                 <TableCell align="right">
                   <Box style={{ display: "flex", flexDirection: "column" }}>
-                    <a
-                      href="/"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onDelete(app);
-                      }}
-                    >
-                      Delete
-                    </a>
-                    <a
-                      href={`data:text/json;chatset=utf-8,${encodeURIComponent(
-                        JSON.stringify({ appJwt: app.appToken })
-                      )}`}
-                      style={{ display: "none" }}
-                      download="data.json"
-                      id={`app-jwt-${app._id}`}
-                    >
-                      download jwt
-                    </a>
-                    <a
-                      href="/"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        const el = document.querySelector(
-                          `#app-jwt-${app._id}`
-                        ) as HTMLElement;
-                        el?.click();
-                      }}
-                    >
-                      Download App JWT
-                    </a>
-                    <a
-                      href="/"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onRotateJwt(app);
-                      }}
-                    >
-                      Rotate App Jwt
-                    </a>
-                    <a
-                      href="/"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onEdit(app);
-                      }}
-                    >
-                      Edit
-                    </a>
+                    <IconButton  onClick={() => onEdit(app)}>
+                      <SettingsIcon color="primary" />
+                    </IconButton>
                   </Box>
                 </TableCell>
               </TableRow>

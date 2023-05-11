@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ActionStrip } from "../../components/AppBuilder/ActionStrip";
 import AppDetails from "../../components/AppBuilder/AppDetails";
 import AppMock from "../../components/AppBuilder/AppMock";
-
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import { Box, Button, IconButton } from "@mui/material";
 //interfaces
 export interface TCustomDetails {
   appTitle: string;
@@ -181,7 +183,6 @@ export default function AppBuilder() {
           "loginScreenBackgroundImage",
           loginScreenBackground as Blob
         );
-       
 
         const requestOptions = {
           method: "POST",
@@ -200,43 +201,72 @@ export default function AppBuilder() {
   return (
     <main>
       <div
-        style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+        style={{ display: "flex", flexDirection: "column" }}
       >
         <div
-          style={{ display: "flex", flexBasis: "90%", flexDirection: "row" }}
+          style={{ display: "flex",  flexDirection: "row", justifyContent: 'space-between' }}
         >
-          <AppDetails
-            appName={appName}
-            appTitle={appTitle}
-            bundleId={bundleId}
-            email={email}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
-            coinSymbol={coinSymbol}
-            coinName={coinName}
-            setAppName={handleAppName}
-            setAppTitle={handleAppTitle}
-            setBundleId={handleBundleId}
-            setEmail={handleEmail}
-            handleLogoChange={handleLogoChange}
-            handleLoginScreenBackgroundChange={
-              handleLoginScreenBackgroundChange
-            }
-            setPrimaryColor={setPrimaryColor}
-            setSecondaryColor={setSecondaryColor}
-            handleCoinLogoChange={handleCoinLogoChange}
-            setCoinSymbol={setCoinSymbol}
-            setCoinName={setCoinName}
-            currentScreenIndex={currentScreenIndex}
-            logo={logo}
-            loginScreenBackground={loginScreenBackground}
-            coinLogo={coinLogo}
-            handleClear={handleClear}
-            emailEmpty={emailEmpty}
-            emailInvalid={emailInvalid}
-            appNameEmpty={appNameEmpty}
-            bundleIdEmpty={bundleIdEmpty}
-          />
+          <Box>
+            <AppDetails
+              appName={appName}
+              appTitle={appTitle}
+              bundleId={bundleId}
+              email={email}
+              primaryColor={primaryColor}
+              secondaryColor={secondaryColor}
+              coinSymbol={coinSymbol}
+              coinName={coinName}
+              setAppName={handleAppName}
+              setAppTitle={handleAppTitle}
+              setBundleId={handleBundleId}
+              setEmail={handleEmail}
+              handleLogoChange={handleLogoChange}
+              handleLoginScreenBackgroundChange={
+                handleLoginScreenBackgroundChange
+              }
+              setPrimaryColor={setPrimaryColor}
+              setSecondaryColor={setSecondaryColor}
+              handleCoinLogoChange={handleCoinLogoChange}
+              setCoinSymbol={setCoinSymbol}
+              setCoinName={setCoinName}
+              currentScreenIndex={currentScreenIndex}
+              logo={logo}
+              loginScreenBackground={loginScreenBackground}
+              coinLogo={coinLogo}
+              handleClear={handleClear}
+              emailEmpty={emailEmpty}
+              emailInvalid={emailInvalid}
+              appNameEmpty={appNameEmpty}
+              bundleIdEmpty={bundleIdEmpty}
+            />
+            <Box sx={{ ml: 3, display: 'flex' }}>
+              <Button
+                variant={"outlined"}
+                onClick={() => handleClear(currentScreenIndex)}
+              >
+                Clear
+              </Button>
+              <Box sx={{ marginLeft: 3 }}>
+                <IconButton
+                  onClick={handlePrevClick}
+                  disabled={currentScreenIndex === 0}
+                >
+                  <ArrowCircleLeftIcon
+                    color={currentScreenIndex === 0 ? "disabled" : "primary"}
+                  />
+                </IconButton>
+                <IconButton
+                  onClick={handleNextClick}
+                  disabled={currentScreenIndex === 1}
+                >
+                  <ArrowCircleRightIcon
+                    color={currentScreenIndex === 1 ? "disabled" : "primary"}
+                  />
+                </IconButton>
+              </Box>
+            </Box>
+          </Box>
+
           <AppMock
             appTitle={appTitle}
             primaryColor={primaryColor}
@@ -250,13 +280,13 @@ export default function AppBuilder() {
           />
         </div>
 
-        <ActionStrip
+        {/* <ActionStrip
           currentScreenIndex={currentScreenIndex}
           screenSet={screenSet}
           handleNextClick={handleNextClick}
           handlePrevClick={handlePrevClick}
           handleSubmit={handleSubmit}
-        />
+        /> */}
       </div>
     </main>
   );

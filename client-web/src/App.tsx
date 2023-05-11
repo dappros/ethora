@@ -19,6 +19,8 @@ const darkTheme = createTheme({
 const lightTheme = createTheme({
   palette: {
     mode: "light",
+    secondary: {main: 'rgb(168, 173, 170)'}
+
   },
 });
 

@@ -28,7 +28,7 @@ export default function AppMock(props: TCustomDetails) {
           {`
                     .socialButton{
                         height: 40px;
-                        width: 250px;
+                        width: 90%;
                         border-radius: 3px;
                         margin:5px;
                     }
@@ -87,8 +87,8 @@ export default function AppMock(props: TCustomDetails) {
         <style>
           {`
             .loginScreen {
-              width: 300px;
-              height: 600px;
+              width: 250px;
+              height: 500px;
               padding: 20px;
               backgroun-color: #fff;
               border-bottom-left-radius: 20px;
@@ -104,7 +104,7 @@ export default function AppMock(props: TCustomDetails) {
             @media (max-width: 768px) {
               .loginScreen {
                 width: 150px;
-                height: 300px;
+                height: 250px;
               }
             }
           `}
@@ -168,8 +168,8 @@ export default function AppMock(props: TCustomDetails) {
         <style>
           {`
             .profileScreen {
-              width: 300px;
-              height: 600px;
+              width: 250px;
+              height: 500px;
               border-bottom-left-radius: 20px;
               border-bottom-right-radius: 20px;
               display: flex;
@@ -177,7 +177,7 @@ export default function AppMock(props: TCustomDetails) {
               background-color: ${secondaryColor ? secondaryColor : "#2775EA"};
             }
             .primaryHeader {
-              width: 300px;
+              width: 250px;
               height: 60px;
               background-color: ${primaryColor ? primaryColor : "#003E9C"};
               display: flex;
@@ -186,7 +186,7 @@ export default function AppMock(props: TCustomDetails) {
               padding: 15px;
             }
             .secondaryHeader {
-              width: 300px;
+              width: 250px;
               height: 100px;
               background-color: ${secondaryColor ? secondaryColor : "#2775EA"};
             }
@@ -210,7 +210,7 @@ export default function AppMock(props: TCustomDetails) {
               background-position: center;
             }
             .profileBody {
-              width: 300px;
+              width: 250px;
               height: 100%;
               background-color: #fff;
               border-radius: 20px;
@@ -225,20 +225,20 @@ export default function AppMock(props: TCustomDetails) {
   //Component to display mock mobile outline
   const MobileOutline = (props: { screenIndex: number }) => {
     const { screenIndex } = props;
-    const scaleValue = currentScreenIndex === screenIndex ?1 : 0.8;
-    const isRightScreen = currentScreenIndex == 1;
+    const scaleValue = currentScreenIndex === screenIndex ? 1 : 0.9;
+    const isRightScreen = currentScreenIndex === 1;
     return (
       <div
         className={"mobileOutline"}
         style={{
-            transition: "scale .5s ease",
+          transition: "scale .5s ease",
           transform: `scale(${scaleValue})`,
         }}
       >
         <div
           style={{
             height: "30px",
-            width: "300px",
+            width: "250px",
             borderTopRightRadius: "20px",
             borderTopLeftRadius: "20px",
             backgroundColor: "#000",
@@ -271,8 +271,8 @@ export default function AppMock(props: TCustomDetails) {
             .mobileOutline {
            
               border: 1px solid #d9d9d9;
-              width: 301px;
-              height: 600px;
+              width: 250px;
+              height: 500px;
               border-radius: 20px;
               display: flex;
               flex-direction: column;
@@ -284,7 +284,7 @@ export default function AppMock(props: TCustomDetails) {
 
             @media (max-width: 768px) {
               width: 201px;
-              height: 400px;
+              height: 500px;
             }
           `}
         </style>
@@ -295,19 +295,31 @@ export default function AppMock(props: TCustomDetails) {
   return (
     <div
       style={{
-        width: "50%",
+        // width: "50%",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
-        alignItems: "center",
-        backgroundColor: "#EDEDED",
-        background: "linear-gradient(45deg, #ffffff, #e6e6e6)",
+        // alignItems: "center",
+        // backgroundColor: "#EDEDED",
+        // background: "linear-gradient(45deg, #ffffff, #e6e6e6)",
       }}
     >
-      <div style={{ zIndex: currentScreenIndex === 0 ? 10 : 0}}>
+      <div
+        style={{
+          zIndex: currentScreenIndex === 0 ? 10 : 0,
+          display: "flex",
+          alignItems: "flex-start",
+          height: '100%'
+        }}
+      >
         <MobileOutline screenIndex={0} />
       </div>
-      <div style={{transform: 'translateX(-100px)', zIndex: currentScreenIndex === 1 ? 10 : 0}}>
+      <div
+        style={{
+          transform: "translateX(-100px)",
+          zIndex: currentScreenIndex === 1 ? 10 : 0,
+        }}
+      >
         <MobileOutline screenIndex={1} />
       </div>
     </div>

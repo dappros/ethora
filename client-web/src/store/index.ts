@@ -149,7 +149,7 @@ type TApp = {
   updatedAt: string;
   defaultAccessAssetsOpen: boolean;
   defaultAccessProfileOpen: boolean;
-  usersCanFree: string;
+  usersCanFree: boolean;
   appGoogleId?: string;
   appLogo?: string;
 };

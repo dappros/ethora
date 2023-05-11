@@ -785,7 +785,7 @@ export const setOwner = (from: string, to: string, xmpp: any) => {
       to: to + CONFERENCEDOMAIN,
       from: from + '@' + DOMAIN,
       id: XMPP_TYPES.setOwner,
-      type: 'get',
+      type: 'set',
     },
     xml('query', {xmlns: 'http://jabber.org/protocol/muc#owner'}),
   );
