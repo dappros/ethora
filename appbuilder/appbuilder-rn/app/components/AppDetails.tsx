@@ -11,6 +11,7 @@ interface TAppDetails extends TCustomDetails {
   emailInvalid: boolean
   appNameEmpty: boolean
   bundleIdEmpty: boolean
+  appToken: string
   setAppName: (value: string) => void
   setAppTitle: (value: string) => void
   setBundleId: (value: string) => void
@@ -23,6 +24,7 @@ interface TAppDetails extends TCustomDetails {
   setCoinSymbol: (value: string) => void
   setCoinName: (value: string) => void
   handleClear: (screenIndex: number) => void
+  setAppToken: (value: string) => void
 }
 
 export default function AppDetails(props: TAppDetails) {
@@ -41,6 +43,7 @@ export default function AppDetails(props: TAppDetails) {
     emailInvalid,
     appNameEmpty,
     bundleIdEmpty,
+    appToken,
     setAppName,
     setAppTitle,
     setBundleId,
@@ -52,7 +55,8 @@ export default function AppDetails(props: TAppDetails) {
     handleCoinLogoChange,
     setCoinSymbol,
     setCoinName,
-    handleClear
+    handleClear,
+    setAppToken
   } = props;
 
 
@@ -117,8 +121,8 @@ export default function AppDetails(props: TAppDetails) {
         </label>
         <br />
         <label className={styles.label}>
-          App Title
-          <input className={styles.textInput} placeholder='My App' type="text" value={appTitle} onChange={(event) => setAppTitle(event.target.value)} />
+          App Token
+          <input className={"emailTextInput"} placeholder='Application token' type="text" value={appToken} onChange={(event) => setAppToken(event.target.value)} />
         </label>
         <br />
         <div className='rowAppName'>

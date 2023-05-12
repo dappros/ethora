@@ -114,6 +114,7 @@ app.post('/buildapp', upload.fields([
     secondaryColor,
     coinSymbol,
     coinName,
+    appToken
   } = req.body;
   const logoPath = req.files['logoImage'] ? req.files['logoImage'][0].path : null;
   const loginScreenBackgroundImagePath = req.files['loginScreenBackgroundImage'] ? req.files['loginScreenBackgroundImage'][0].path : null;
@@ -139,7 +140,7 @@ app.post('/buildapp', upload.fields([
     removeFiles(filesToDelete);
 
     //get the custom config template
-    const customConfig = createCustomConfig({ appTitle, primaryColor, secondaryColor, coinName, coinSymbol });
+    const customConfig = createCustomConfig({ appTitle, primaryColor, secondaryColor, coinName, coinSymbol, appToken });
     //replace the custom config with the existing default config file of the app
     fs.writeFileSync(projectDir + '/docs/config.ts', customConfig)
 
@@ -206,7 +207,7 @@ app.listen(port, config.hostname, () => {
 
 //this function will return updated custom config file the the details provided by the user
 function createCustomConfig(data) {
-  const { appTitle, primaryColor, secondaryColor, coinSymbol, coinName } = data;
+  const { appTitle, primaryColor, secondaryColor, coinSymbol, coinName, appToken } = data;
 
   const customConfig = `// Master switches
   /*
@@ -941,9 +942,9 @@ function createCustomConfig(data) {
   type TTokensMode = 'DEV' | 'QA' | 'PROD';
   
   const TOKENS: Record<TTokensMode, string> = {
-    DEV: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlzVXNlckRhdGFFbmNyeXB0ZWQiOmZhbHNlLCJwYXJlbnRBcHBJZCI6bnVsbCwiX2lkIjoiNjNiZmVlNTEzNTM2NjkxYTdhMWNhYzVlIiwiYXBwTmFtZSI6InRlc3QgZW5jIiwiYXBwRGVzY3JpcHRpb24iOiIiLCJhcHBMb2dvIjoiIiwiY3JlYXRvcklkIjoiNjNiZmVlMzUzNTM2NjkxYTdhMWNhYzRhIiwiYXBwR29vZ2xlSWQiOiI5NzI5MzM0NzAwNTQtaGJzZjI5b2hwYXRvNzZ0aWwyanRmNmpnZzFiNDM3NGMuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJkZWZhdWx0QWNjZXNzUHJvZmlsZU9wZW4iOmZhbHNlLCJkZWZhdWx0QWNjZXNzQXNzZXRzT3BlbiI6ZmFsc2UsInVzZXJzQ2FuRnJlZSI6ZmFsc2UsImNyZWF0ZWRBdCI6IjIwMjMtMDEtMTJUMTE6MjY6MDkuMjE0WiIsInVwZGF0ZWRBdCI6IjIwMjMtMDEtMTJUMTE6MjY6MDkuMjE0WiIsIl9fdiI6MH0sImlhdCI6MTY3MzUyMjc4MX0.IAMqvnGFTb9HIE1nSsh6ykH8bYvi8yOAFGnY9NEf52w',
-    QA: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjYxZTU1YzlkOTBlYTk5NTk0YmM3ZTZhMiIsImFwcE5hbWUiOiJFdGhvcmEiLCJhcHBEZXNjcmlwdGlvbiI6InVuZGVmaW5lZCIsImFwcFVybCI6InVuZGVmaW5lZCIsImFwcExvZ29IYXNoIjpudWxsLCJjcmVhdG9ySWQiOiI2MWU1NWM4OTkwZWE5OTU5NGJjN2U2NTYiLCJjcmVhdGVkQXQiOiIyMDIyLTAxLTE3VDEyOjEwOjA1Ljk2N1oiLCJfX3YiOjAsInJhbmRvbVN0cmluZyI6ImluemlURmMyU0VOZFp6KzRqRW9rSmI0UWlxbVlYQ0wrbHkwOExxMDNObVlES1JyUDd4UU11V0dmdGNFSkdpaFlkZVVyaS8zU2FlS0FPTGF0T1U1UThuNWo3U3Ezd0FaMWo3cUo1YkdlZVF1VEVrV2gifSwiaWF0IjoxNjQyNDIxNDE5fQ.9xYd1WmPesYrBkF9fUQFMBeXHBFSCOdFWX-CBIzyjmU',
-    PROD: 'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlzVXNlckRhdGFFbmNyeXB0ZWQiOmZhbHNlLCJwYXJlbnRBcHBJZCI6bnVsbCwiX2lkIjoiNjNjNmE4YjdlNGI5ZDIyZTAwMTZlODU3IiwiYXBwTmFtZSI6IkV0aG9yYSIsImFwcERlc2NyaXB0aW9uIjoiIiwiYXBwTG9nbyI6IiIsImNyZWF0b3JJZCI6IjYzYzZhODk4ZTRiOWQyMmUwMDE2ZTgyZiIsImFwcEdvb2dsZUlkIjoiIiwiZGVmYXVsdEFjY2Vzc1Byb2ZpbGVPcGVuIjp0cnVlLCJkZWZhdWx0QWNjZXNzQXNzZXRzT3BlbiI6dHJ1ZSwidXNlcnNDYW5GcmVlIjp0cnVlLCJjcmVhdGVkQXQiOiIyMDIzLTAxLTE3VDEzOjU1OjAzLjA5M1oiLCJ1cGRhdGVkQXQiOiIyMDIzLTAxLTE3VDEzOjU1OjAzLjA5M1oiLCJfX3YiOjB9LCJpYXQiOjE2NzM5NjM3MTl9.jORqppQYgirljdwgMDtWDxNdZDtec7Wm93g-ewPQ3Fk',
+    DEV: '${appToken}',
+    QA: '${appToken}',
+    PROD: '${appToken}',
   };
   
   const APP_TOKEN = TOKENS[appEndpoint];

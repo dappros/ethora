@@ -30,6 +30,7 @@ export default function Home() {
   const [appTitle, setAppTitle] = useState<string>('');
   const [appName, setAppName] = useState<string>('');
   const [bundleId, setBundleId] = useState<string>('');
+  const [appToken, setAppToken] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] = useState<File | null>(null);
@@ -172,12 +173,13 @@ export default function Home() {
       setBundleIdEmpty(false)
     }
 
-    if (email && appTitle && bundleId) {
+    if (email && appName && bundleId) {
       if (email.match(emailValidRegex)) {
         const data = new FormData();
-        data.append('appTitle', appTitle);
+        data.append('appTitle', appName);
         data.append('bundleId', bundleId);
         data.append('appName', appName);
+        data.append('appToken', appToken);
         data.append('email', email);
         data.append('primaryColor', primaryColor);
         data.append('secondaryColor', secondaryColor);
@@ -241,6 +243,8 @@ export default function Home() {
             emailInvalid={emailInvalid}
             appNameEmpty={appNameEmpty}
             bundleIdEmpty={bundleIdEmpty}
+            appToken={appToken}
+            setAppToken={setAppToken}
           />
           <AppMock
             appTitle={appTitle}
