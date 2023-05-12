@@ -98,7 +98,12 @@ function hasACLAdmin(acl: ACL): boolean {
 
 const ITEM_HEIGHT = 48;
 const ROWS_PER_PAGE = 10;
-type TSelectedIds = { walletAddress: string; _id: string; appId: string };
+export type TSelectedIds = {
+  walletAddress: string;
+  _id: string;
+  appId: string;
+  tags: string[];
+};
 export default function UsersTable() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
@@ -175,6 +180,18 @@ export default function UsersTable() {
   const getInitialUsers = async (appId: string) => {
     const allUsers = await getUsers(appId);
     setUsers(allUsers);
+    if (selectedIds.length) {
+      const updatedIds = selectedIds.map((u) => {
+        const updatedUser = allUsers.find((i) => i._id === u._id);
+        return {
+          _id: updatedUser._id,
+          walletAddress: updatedUser.defaultWallet.walletAddress,
+          appId: updatedUser.appId,
+          tags: updatedUser.tags,
+        };
+      });
+      setSelectedIds(updatedIds);
+    }
   };
 
   useEffect(() => {
@@ -240,10 +257,11 @@ export default function UsersTable() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = users.map((n) => ({
+      const newSelected: TSelectedIds[] = users.map((n) => ({
         _id: n._id,
         walletAddress: n.defaultWallet.walletAddress,
         appId: n.appId,
+        tags: n.tags,
       }));
       setSelectedIds(newSelected);
       return;
@@ -259,6 +277,7 @@ export default function UsersTable() {
       _id: user._id,
       walletAddress: user.defaultWallet.walletAddress,
       appId: user.appId,
+      tags: user.tags,
     };
     let newSelected: TSelectedIds[] = [];
 
@@ -475,11 +494,17 @@ export default function UsersTable() {
                         {row.email || "No Email"}
                       </TableCell>
                       <TableCell align="center">
-                        <p style={{width: 150}}>{dateToHumanReadableFormat(row.createdAt)}</p>
-                        <p>{row.lastSeen ? dateToHumanReadableFormat(row.lastSeen) : ''}</p>
+                        <p style={{ width: 150 }}>
+                          {dateToHumanReadableFormat(row.createdAt)}
+                        </p>
+                        <p>
+                          {row.lastSeen
+                            ? dateToHumanReadableFormat(row.lastSeen)
+                            : ""}
+                        </p>
                       </TableCell>
                       <TableCell align="center">
-                        {row.authMethod || ''}
+                        {row.authMethod || ""}
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
@@ -505,7 +530,7 @@ export default function UsersTable() {
                             style: {
                               maxHeight: ITEM_HEIGHT * 4.5,
                               width: "20ch",
-                              boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.05)'
+                              boxShadow: "5px 5px 10px 0px rgba(0,0,0,0.05)",
                             },
                           }}
                         >
