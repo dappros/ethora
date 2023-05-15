@@ -40,7 +40,7 @@ export default function BasicTable() {
   const isEnoughCoinsToCreateApp =
     +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
   const currentAcl = ACL.result.find((item) => item.appId === user.appId);
-  const canCreateApp = currentAcl.application.appCreate.create;
+  const canCreateApp = currentAcl?.application?.appCreate?.create;
 
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);

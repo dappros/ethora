@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
 import {
   Box,
@@ -10,7 +10,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-//interfaces
+import { httpWithAuth } from "../../http";
+import { useParams } from "react-router";
+import {
+  intervalToDuration,
+  millisecondsToHours,
+  millisecondsToMinutes,
+} from "date-fns";
+import { LoadingButton } from "@mui/lab";
+import { useSnackbar } from "../../context/SnackbarContext";
+
 export interface TCustomDetails {
   primaryColor: string;
   secondaryColor: string;
@@ -24,7 +33,18 @@ export interface TCustomDetails {
   coinLogo: File | null;
 }
 
+type BuildStage = "prepare" | "preparing" | "download";
+
+function isValidHexCode(str: string) {
+  if(!str) {
+    return true
+  }
+  let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
+  return regex.test(str) === true;
+}
+
 export default function AppBuilder() {
+  const { appId } = useParams<{ appId: string }>();
   const [appName, setAppName] = useState("");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
@@ -36,68 +56,117 @@ export default function AppBuilder() {
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
   const [domain, setDomain] = useState("");
-
+  const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
+  const [buildStage, setBuildStage] = useState<BuildStage>("prepare");
+  const [fileTimeToLive, setFileTimeToLive] = useState<Duration>({
+    hours: 0,
+    minutes: 0,
+  });
+  const {showSnackbar} = useSnackbar()
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
-  //handle to set logo file
   const handleLogoChange = (event: any) => {
     setLogo(event.target.files[0]);
   };
 
-  //handle to set app title
+  const checkBuild = async () => {
+    setLoading(true);
 
-  //handle to set login screen background
+    try {
+      const res = await httpWithAuth().get("/mobile/check-custom-src/" + appId);
+
+      if (res.data?.isExists) {
+        const expiryDate = new Date(res.data.fileStats.birthtime);
+        expiryDate.setDate(expiryDate.getDate() + 1);
+        const timeToLive = intervalToDuration({
+          start: 0,
+          end: expiryDate.getTime() - new Date().getTime(),
+        });
+        if (!timeToLive.hours && !timeToLive.minutes && !timeToLive.seconds) {
+          setBuildStage("prepare");
+          return;
+        }
+        setBuildStage("download");
+
+        setFileTimeToLive(timeToLive);
+      }
+    } catch (error) {
+      showSnackbar('error', 'Cannot make build' + (error?.response?.data?.error || ''))
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
+  const getBuild = async () => {
+    setLoading(true);
+
+    try {
+      const res = await httpWithAuth().get("/mobile/get-custom-src/" + appId, {
+        responseType: "blob",
+      });
+      let fileUrl = window.URL.createObjectURL(new Blob([res.data]));
+      const fileName = "client-reactnative.zip";
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileName;
+      link.click();
+      link.remove();
+    } catch (error) {
+      showSnackbar('error', 'Cannot make build' + (error?.response?.data?.error || ''))
+
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    checkBuild();
+  }, []);
   const handleLoginScreenBackgroundChange = (event: any) => {
     setLoginScreenBackground(event.target.files[0]);
   };
 
-  //handle to set coin image
   const handleCoinLogoChange = (event: any) => {
     setCoinLogo(event.target.files[0]);
   };
 
-  //handle for previous button in action strip
-
-  //handle to clear data
-
-  //handle to submit data
-  const handleSubmit = () => {
-    //accepted data by the backend
-    // appName - required
-    // bundleId - required
-    // email - required
-    // appTitle
-    // primaryColor
-    // secondaryColor
-    // coinSymbol
-    // coinName
-    // logoImage
-    // loginScreenBackgroundImage
-    // coinLogoImage
-
-    if (bundleId) {
-      const data = new FormData();
-      data.append("bundleId", bundleId);
-      data.append("appName", appName);
-      data.append("primaryColor", primaryColor);
-      data.append("secondaryColor", secondaryColor);
-      data.append("coinSymbol", coinSymbol);
-      data.append("coinName", coinName);
-      data.append("coinLogoImage", coinLogo as Blob);
-      data.append("logoImage", logo as Blob);
-      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
-
-      const requestOptions = {
-        method: "POST",
-        body: data,
-      };
-      fetch("http://localhost:3001/buildapp", requestOptions)
-        .then((response) => response.text())
-        .then((result) => console.log(result))
-        .catch((error) => console.log("error", error));
+  const handleSubmit = async () => {
+    if(!bundleId || !isValidHexCode(primaryColor) || !isValidHexCode(secondaryColor)) {
+      return
     }
+    setBuildStage("preparing");
+    setLoading(true);
+
+      const data = new FormData();
+      bundleId && data.append("bundleId", bundleId);
+      appName && data.append("appName", appName);
+      primaryColor && data.append("primaryColor", primaryColor);
+      secondaryColor && data.append("secondaryColor", secondaryColor);
+      coinSymbol && data.append("coinSymbol", coinSymbol);
+      coinName && data.append("coinName", coinName);
+      coinLogo && data.append("coinLogoImage", coinLogo as Blob);
+      logo && data.append("logoImage", logo as Blob);
+      loginScreenBackground &&
+        data.append(
+          "loginScreenBackgroundImage",
+          loginScreenBackground as Blob
+        );
+
+      try {
+        const res = await httpWithAuth().post(
+          "/mobile/src-builder/" + appId,
+          data
+        );
+        await checkBuild();
+        setBuildStage("download");
+
+        console.log(res.data);
+      } catch (error) {
+        setBuildStage("prepare");
+        console.log(error);
+      }
+      setLoading(false);
   };
 
   return (
@@ -105,7 +174,7 @@ export default function AppBuilder() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: {sm: 'column', md: 'row'} ,
+          flexDirection: { sm: "column", md: "row" },
           justifyContent: "center",
           gap: 10,
           // justifyContent: "space-between",
@@ -142,6 +211,8 @@ export default function AppBuilder() {
                 variant="outlined"
                 placeholder="#ffffff"
                 value={primaryColor}
+                error={!isValidHexCode(primaryColor)}
+
                 onChange={(e) => setPrimaryColor(e.target.value)}
               />
             </Box>
@@ -155,6 +226,7 @@ export default function AppBuilder() {
                 variant="outlined"
                 placeholder="#ffffff"
                 value={secondaryColor}
+                error={!isValidHexCode(secondaryColor)}
                 onChange={(e) => setSecondaryColor(e.target.value)}
               />
             </Box>
@@ -232,7 +304,40 @@ export default function AppBuilder() {
                 onChange={(e) => setBundleId(e.target.value)}
                 value={bundleId}
               />
-              <Button variant="contained">Prepare React Native build</Button>
+              {buildStage === "download" ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    position: 'relative'
+                  }}
+                >
+                  <Button
+                    onClick={getBuild}
+                    variant="contained"
+                    color={"success"}
+                    sx={{ width: 300, height: 50 }}
+                  >
+                    Download React Native build
+                  </Button>
+                  <Typography sx={{ fontSize: 12, position: 'absolute', bottom: -20 }}>
+                    Expires in {fileTimeToLive && fileTimeToLive.hours + "h"}{" "}
+                    {fileTimeToLive && fileTimeToLive.minutes + "m"}
+                  </Typography>
+                </Box>
+              ) : (
+                <LoadingButton
+                  loading={loading}
+                  disabled={buildStage === "preparing"}
+                  onClick={handleSubmit}
+                  sx={{ width: 300, height: 50 }}
+                  variant="contained"
+                >
+                  {buildStage === "preparing" ? "Preparing" : "Prepare"} React
+                  Native build
+                </LoadingButton>
+              )}
             </Box>
           </Box>
           <Box>
@@ -271,7 +376,6 @@ export default function AppBuilder() {
           coinName={coinName}
           currentScreenIndex={currentScreenIndex}
           changeScreen={setCurrentScreenIndex}
-
         />
       </Box>
     </main>
