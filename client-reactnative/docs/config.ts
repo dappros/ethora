@@ -774,7 +774,7 @@ const appVersion = DeviceInfo.getVersion();
 //universal link url
 //@ts-ignore
 let env = appEndpoint === 'PROD' ? 'p' : 'd';
-const unv_url = `https://www.eto.li/go?env=${env}&c=`;
+const unv_url = "https://www.eto.li/go?env="+env+"&c=";
 const appLinkingUrl = 'https://www.eto.li/go';
 
 //Application token
