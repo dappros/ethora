@@ -51,7 +51,7 @@ export const Install = () => {
           />
         </div>
         <div className="my-2">
-          <p className="font-bold">Api address</p>
+          <p className="font-bold">API address</p>
           <Input
             {...register("apiAddress", {required: true})}
             label='your URL / domain name for API endpoints, e.g. "api.ethora.com"'
