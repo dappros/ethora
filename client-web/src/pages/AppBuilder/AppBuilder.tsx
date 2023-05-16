@@ -50,8 +50,8 @@ export default function AppBuilder() {
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("");
-  const [secondaryColor, setSecondaryColor] = useState("");
+  const [primaryColor, setPrimaryColor] = useState('#2559b6');
+  const [secondaryColor, setSecondaryColor] = useState("#278b8b");
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
@@ -206,10 +206,23 @@ export default function AppBuilder() {
               <TextField
                 margin="dense"
                 fullWidth
+                label="Coin Name"
+                name="coinName"
+                variant="outlined"
+                value={coinName}
+                onChange={(e) => setCoinName(e.target.value)}
+              />
+            </Box>
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
                 label="Main Color"
                 name="mainColor"
                 variant="outlined"
                 placeholder="#ffffff"
+                InputLabelProps={{shrink: true}}
+                type={'color'}
                 value={primaryColor}
                 error={!isValidHexCode(primaryColor)}
 
@@ -223,24 +236,17 @@ export default function AppBuilder() {
                 fullWidth
                 label="Secondary Color"
                 name="secondaryColor"
-                variant="outlined"
+                variant={'outlined'}
+                type={'color'}
+                InputLabelProps={{shrink: true}}
+
                 placeholder="#ffffff"
                 value={secondaryColor}
                 error={!isValidHexCode(secondaryColor)}
                 onChange={(e) => setSecondaryColor(e.target.value)}
               />
             </Box>
-            <Box>
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Coin Name"
-                name="coinName"
-                variant="outlined"
-                value={coinName}
-                onChange={(e) => setCoinName(e.target.value)}
-              />
-            </Box>
+           
             <Box sx={{ gridColumn: "1/3" }}>
               <TextField
                 fullWidth
