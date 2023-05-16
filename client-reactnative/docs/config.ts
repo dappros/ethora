@@ -724,12 +724,57 @@ const endPoints: ['DEV', 'QA', 'PROD'] = ['DEV', 'QA', 'PROD'];
 type TappEndpoint = 'DEV' | 'QA' | 'PROD';
 const appEndpoint: TappEndpoint = endPoints[0];
 
+export interface IAPImodes{
+  DEV:string
+  PROD:string
+  QA:string
+}
+
+interface IxmppEndpointsValues{
+  DOMAIN: string;
+  SERVICE: string;
+  CONFERENCEDOMAIN: string;
+  CONFERENCEDOMAIN_WITHOUT: string;
+}
+
+export interface IxmppEndpoints{
+  DEV: IxmppEndpointsValues
+  PROD: IxmppEndpointsValues
+  QA: IxmppEndpointsValues
+}
+
+const xmppEndpoints:IxmppEndpoints = {
+  DEV: {
+    DOMAIN: 'dev.dxmpp.com',
+    SERVICE: 'wss://dev.dxmpp.com:5443/ws',
+    CONFERENCEDOMAIN: '@conference.dev.dxmpp.com',
+    CONFERENCEDOMAIN_WITHOUT: 'conference.dev.dxmpp.com',
+  },
+  QA: {
+    DOMAIN: 'dev.dxmpp.com',
+    SERVICE: 'wss://dev.dxmpp.com:5443/ws',
+    CONFERENCEDOMAIN: '@conference.dev.dxmpp.com',
+    CONFERENCEDOMAIN_WITHOUT: 'conference.dev.dxmpp.com',
+  },
+  PROD: {
+    DOMAIN: 'dxmpp.com',
+    SERVICE: 'wss://dxmpp.com:5443/ws',
+    CONFERENCEDOMAIN: '@conference.dxmpp.com',
+    CONFERENCEDOMAIN_WITHOUT: 'conference.dxmpp.com',
+  },
+};
+const apiModes:IAPImodes = {
+  DEV: 'https://app-dev.dappros.com/v1',
+  PROD: 'https://app.dappros.com/v1',
+  QA: 'https://app-dev.dappros.com/v1',
+}
+
 const appVersion = DeviceInfo.getVersion();
 
 //universal link url
 //@ts-ignore
 let env = appEndpoint === 'PROD' ? 'p' : 'd';
-const unv_url = `https://www.eto.li/go?env=${env}&c=`;
+const unv_url = "https://www.eto.li/go?env="+env+"&c=";
 const appLinkingUrl = 'https://www.eto.li/go';
 
 //Application token
@@ -823,4 +868,6 @@ export {
   metamaskSignIn,
   regularLoginUsername,
   defaultChatBackgroundTheme,
+  xmppEndpoints,
+  apiModes
 };

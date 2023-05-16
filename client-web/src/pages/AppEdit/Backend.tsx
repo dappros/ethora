@@ -64,7 +64,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
   return (
     <Box>
       <Box sx={sectionStyle}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, justifyContent: 'center' }}>
           <Box>
             <Typography sx={{ fontWeight: "bold" }}>JWT Token</Typography>
             <Typography sx={{ fontSize: 12 }}>
@@ -110,7 +110,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
           </Box>
         </Box>
       </Box>
-      <Box sx={sectionStyle}>
+      {/* <Box sx={sectionStyle}>
         <Typography sx={{ fontWeight: "bold" }}>Web App and Links</Typography>
         <Box>
           <TextField
@@ -231,7 +231,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
         <Typography sx={{ fontSize: 12 }}>
           IPFS is used for decentralized storage.
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
