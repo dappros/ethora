@@ -19,6 +19,7 @@ import {
 } from "date-fns";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { time } from "console";
 
 export interface TCustomDetails {
   primaryColor: string;
@@ -36,8 +37,8 @@ export interface TCustomDetails {
 type BuildStage = "prepare" | "preparing" | "download";
 
 function isValidHexCode(str: string) {
-  if(!str) {
-    return true
+  if (!str) {
+    return true;
   }
   let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
   return regex.test(str) === true;
@@ -50,7 +51,7 @@ export default function AppBuilder() {
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState('#2559b6');
+  const [primaryColor, setPrimaryColor] = useState("#2559b6");
   const [secondaryColor, setSecondaryColor] = useState("#278b8b");
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
@@ -64,7 +65,7 @@ export default function AppBuilder() {
     hours: 0,
     minutes: 0,
   });
-  const {showSnackbar} = useSnackbar()
+  const { showSnackbar } = useSnackbar();
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
   const handleLogoChange = (event: any) => {
@@ -80,20 +81,27 @@ export default function AppBuilder() {
       if (res.data?.isExists) {
         const expiryDate = new Date(res.data.fileStats.birthtime);
         expiryDate.setDate(expiryDate.getDate() + 1);
-        const timeToLive = intervalToDuration({
-          start: 0,
-          end: expiryDate.getTime() - new Date().getTime(),
-        });
-        if (!timeToLive.hours && !timeToLive.minutes && !timeToLive.seconds) {
+        const diffInMs = expiryDate.getTime() - new Date().getTime();
+        if (diffInMs <= 0) {
+    setLoading(false);
+
           setBuildStage("prepare");
           return;
         }
+        const timeToLive = intervalToDuration({
+          start: 0,
+          end: diffInMs,
+        });
+
         setBuildStage("download");
 
         setFileTimeToLive(timeToLive);
       }
     } catch (error) {
-      showSnackbar('error', 'Cannot make build' + (error?.response?.data?.error || ''))
+      showSnackbar(
+        "error",
+        "Cannot make build" + (error?.response?.data?.error || "")
+      );
       console.log(error);
     }
     setLoading(false);
@@ -114,7 +122,10 @@ export default function AppBuilder() {
       link.click();
       link.remove();
     } catch (error) {
-      showSnackbar('error', 'Cannot make build' + (error?.response?.data?.error || ''))
+      showSnackbar(
+        "error",
+        "Cannot make build" + (error?.response?.data?.error || "")
+      );
 
       console.log(error);
     }
@@ -132,41 +143,42 @@ export default function AppBuilder() {
   };
 
   const handleSubmit = async () => {
-    if(!bundleId || !isValidHexCode(primaryColor) || !isValidHexCode(secondaryColor)) {
-      return
+    if (
+      !bundleId ||
+      !isValidHexCode(primaryColor) ||
+      !isValidHexCode(secondaryColor)
+    ) {
+      return;
     }
     setBuildStage("preparing");
     setLoading(true);
 
-      const data = new FormData();
-      bundleId && data.append("bundleId", bundleId);
-      appName && data.append("appName", appName);
-      primaryColor && data.append("primaryColor", primaryColor);
-      secondaryColor && data.append("secondaryColor", secondaryColor);
-      coinSymbol && data.append("coinSymbol", coinSymbol);
-      coinName && data.append("coinName", coinName);
-      coinLogo && data.append("coinLogoImage", coinLogo as Blob);
-      logo && data.append("logoImage", logo as Blob);
-      loginScreenBackground &&
-        data.append(
-          "loginScreenBackgroundImage",
-          loginScreenBackground as Blob
-        );
+    const data = new FormData();
+    bundleId && data.append("bundleId", bundleId);
+    appName && data.append("appName", appName);
+    primaryColor && data.append("primaryColor", primaryColor);
+    secondaryColor && data.append("secondaryColor", secondaryColor);
+    coinSymbol && data.append("coinSymbol", coinSymbol);
+    coinName && data.append("coinName", coinName);
+    coinLogo && data.append("coinLogoImage", coinLogo as Blob);
+    logo && data.append("logoImage", logo as Blob);
+    loginScreenBackground &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
 
-      try {
-        const res = await httpWithAuth().post(
-          "/mobile/src-builder/" + appId,
-          data
-        );
-        await checkBuild();
-        setBuildStage("download");
+    try {
+      const res = await httpWithAuth().post(
+        "/mobile/src-builder/" + appId,
+        data
+      );
+      await checkBuild();
+      setBuildStage("download");
 
-        console.log(res.data);
-      } catch (error) {
-        setBuildStage("prepare");
-        console.log(error);
-      }
-      setLoading(false);
+      console.log(res.data);
+    } catch (error) {
+      setBuildStage("prepare");
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   return (
@@ -221,11 +233,10 @@ export default function AppBuilder() {
                 name="mainColor"
                 variant="outlined"
                 placeholder="#ffffff"
-                InputLabelProps={{shrink: true}}
-                type={'color'}
+                InputLabelProps={{ shrink: true }}
+                type={"color"}
                 value={primaryColor}
                 error={!isValidHexCode(primaryColor)}
-
                 onChange={(e) => setPrimaryColor(e.target.value)}
               />
             </Box>
@@ -236,17 +247,16 @@ export default function AppBuilder() {
                 fullWidth
                 label="Secondary Color"
                 name="secondaryColor"
-                variant={'outlined'}
-                type={'color'}
-                InputLabelProps={{shrink: true}}
-
+                variant={"outlined"}
+                type={"color"}
+                InputLabelProps={{ shrink: true }}
                 placeholder="#ffffff"
                 value={secondaryColor}
                 error={!isValidHexCode(secondaryColor)}
                 onChange={(e) => setSecondaryColor(e.target.value)}
               />
             </Box>
-           
+
             <Box sx={{ gridColumn: "1/3" }}>
               <TextField
                 fullWidth
@@ -309,6 +319,7 @@ export default function AppBuilder() {
                 variant="outlined"
                 onChange={(e) => setBundleId(e.target.value)}
                 value={bundleId}
+                disabled
               />
               {buildStage === "download" ? (
                 <Box
@@ -316,7 +327,7 @@ export default function AppBuilder() {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-end",
-                    position: 'relative'
+                    position: "relative",
                   }}
                 >
                   <Button
@@ -327,7 +338,9 @@ export default function AppBuilder() {
                   >
                     Download React Native build
                   </Button>
-                  <Typography sx={{ fontSize: 12, position: 'absolute', bottom: -20 }}>
+                  <Typography
+                    sx={{ fontSize: 12, position: "absolute", bottom: -20 }}
+                  >
                     Expires in {fileTimeToLive && fileTimeToLive.hours + "h"}{" "}
                     {fileTimeToLive && fileTimeToLive.minutes + "m"}
                   </Typography>
