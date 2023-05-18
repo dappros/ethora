@@ -20,6 +20,8 @@ import {
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { time } from "console";
+import { useStoreState } from "../../store";
+import { replaceNotAllowedCharactersInDomain } from "../../utils";
 
 export interface TCustomDetails {
   primaryColor: string;
@@ -46,7 +48,8 @@ function isValidHexCode(str: string) {
 
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
-  const [appName, setAppName] = useState("");
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  const [appName, setAppName] = useState(app.appName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
@@ -56,7 +59,7 @@ export default function AppBuilder() {
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
-  const [domain, setDomain] = useState("");
+  const [domain, setDomain] = useState("app.ethora.com");
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
@@ -65,6 +68,7 @@ export default function AppBuilder() {
     hours: 0,
     minutes: 0,
   });
+  const [domainNameError, setDomainNameError] = useState(false);
   const { showSnackbar } = useSnackbar();
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
@@ -83,7 +87,7 @@ export default function AppBuilder() {
         expiryDate.setDate(expiryDate.getDate() + 1);
         const diffInMs = expiryDate.getTime() - new Date().getTime();
         if (diffInMs <= 0) {
-    setLoading(false);
+          setLoading(false);
 
           setBuildStage("prepare");
           return;
@@ -140,6 +144,27 @@ export default function AppBuilder() {
 
   const handleCoinLogoChange = (event: any) => {
     setCoinLogo(event.target.files[0]);
+  };
+
+  const validateDomainName = async (d: string) => {
+    setDomainNameError(true);
+  };
+  const saveSettings = () => {
+
+  }
+
+  const handleAppNameChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    setAppName(value);
+
+    const transformedDomain = replaceNotAllowedCharactersInDomain(
+      value.toLowerCase().split(" ").join("")
+    );
+    validateDomainName(transformedDomain);
+    try {
+    } catch (error) {}
   };
 
   const handleSubmit = async () => {
@@ -211,7 +236,7 @@ export default function AppBuilder() {
                 name="appName"
                 variant="outlined"
                 value={appName}
-                onChange={(e) => setAppName(e.target.value)}
+                onChange={handleAppNameChange}
               />
             </Box>
             <Box>
@@ -363,25 +388,31 @@ export default function AppBuilder() {
             <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
           </Box>
           <Box>
-            <Box>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Domain</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={domain}
-                  label="Domain"
-                  onChange={(e) => setDomain(e.target.value)}
-                >
-                  <MenuItem value={".apps.ethora.com"}>
-                    apps.ethora.com
-                  </MenuItem>
-                  <MenuItem disabled value={"app.YOURDOMAIN.com"}>
-                    app.YOURDOMAIN.com
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
+            <TextField
+              margin="dense"
+              fullWidth
+              label="Domain Name"
+              name="domain"
+              variant="outlined"
+              onChange={(e) => setDomain(e.target.value)}
+              value={domain}
+              error={domainNameError}
+              helperText={
+                domainNameError
+                  ? "❌ name not available, please fill in something more unique here"
+                  : "✅ available"
+              }
+            />
+          </Box>
+          <Box sx={{display: 'flex', justifyContent: 'center'}}>
+            <LoadingButton
+              loading={loading}
+              disabled={loading || domainNameError}
+              onClick={saveSettings}
+              variant="contained"
+            >
+           Save
+            </LoadingButton>
           </Box>
         </Box>
 
