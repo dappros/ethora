@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect, Route, Switch } from "react-router";
 
 import { useStoreState } from "../store";
@@ -11,7 +11,6 @@ import { configDocuments } from "../config/config";
 import { Snackbar } from "../components/Snackbar";
 import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
-import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
 import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
@@ -19,6 +18,9 @@ import Subscriptions from "./Payments";
 import { Home } from "./Home/Home";
 import AppBuilder from "./AppBuilder/AppBuilder";
 import { AppEdit } from "./AppEdit/AppEdit";
+import AppTopNav from "../components/AppTopNav";
+import AppTopNavAuth from "../components/AppTopNavAuth";
+import AppTopNavOwner from "../components/AppTopNavOwner";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -49,62 +51,67 @@ const ChangeBackground = React.lazy(
 );
 
 const mockAcl = {
-  result: [{
-    network: {
-      netStats: {
-        read: true,
-        disabled: ["create", "update", "delete", "admin"],
+  result: [
+    {
+      network: {
+        netStats: {
+          read: true,
+          disabled: ["create", "update", "delete", "admin"],
+        },
+      },
+      application: {
+        appCreate: {
+          create: true,
+          disabled: ["read", "update", "delete", "admin"],
+        },
+        appSettings: {
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["create", "delete"],
+        },
+        appUsers: {
+          create: true,
+          read: true,
+          update: true,
+          delete: true,
+          admin: true,
+        },
+        appTokens: {
+          create: true,
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["delete"],
+        },
+        appPush: {
+          create: true,
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["delete"],
+        },
+        appStats: {
+          read: true,
+          admin: true,
+          disabled: ["create", "update", "delete"],
+        },
       },
     },
-    application: {
-      appCreate: {
-        create: true,
-        disabled: ["read", "update", "delete", "admin"],
-      },
-      appSettings: {
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["create", "delete"],
-      },
-      appUsers: {
-        create: true,
-        read: true,
-        update: true,
-        delete: true,
-        admin: true,
-      },
-      appTokens: {
-        create: true,
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["delete"],
-      },
-      appPush: {
-        create: true,
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["delete"],
-      },
-      appStats: {
-        read: true,
-        admin: true,
-        disabled: ["create", "update", "delete"],
-      },
-    },
-  }],
+  ],
 };
 
 export const Routes = () => {
   const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
   const setACL = useStoreState((state) => state.setACL);
+  const setConfig = useStoreState((state) => state.setConfig);
+  const [loading, setLoading] = useState(false);
   const setDocuments = useStoreState((state) => state.setDocuments);
   const apps = useStoreState((state) => state.apps);
 
   const getAcl = async () => {
+    setLoading(true);
     try {
       if (user?.ACL?.ownerAccess) {
         setACL(mockAcl);
@@ -115,7 +122,10 @@ export const Routes = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   };
+
+
 
   const getDocuments = async (walletAddress: string) => {
     try {
@@ -148,6 +158,7 @@ export const Routes = () => {
     }
     return "/signIn";
   };
+ 
   useEffect(() => {
     if (userId) {
       checkNotificationsStatus();
@@ -156,20 +167,15 @@ export const Routes = () => {
     }
   }, [userId]);
   useEffect(() => {
-    getAcl()
-  }, [apps.length])
+    getAcl();
+  }, [apps.length]);
 
-  useEffect(() => {
-    onMessageListener()
-      .then((payload) => {
-        console.log(payload);
-        sendBrowserNotification(payload.notification.body, () => {});
-      })
-      .catch((err) => console.log("failed: ", err));
-  }, []);
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
+      {!user.firstName && <AppTopNavAuth />}
+      {user.firstName && user.xmppPassword && <AppTopNav />}
+      {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
       <Switch>
         <Route path={["/signIn/"]} exact>
           <Signon />

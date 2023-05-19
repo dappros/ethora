@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { config } from "../config";
 import { useSnackbar } from "../context/SnackbarContext";
 import { httpWithToken } from "../http";
+import { useStoreState } from "../store";
 
 export interface IForgotPasswordModal {
   open: boolean;
@@ -28,6 +29,7 @@ export const ForgotPasswordModal: React.FC<IForgotPasswordModal> = ({
   onClose,
 }) => {
   const { showSnackbar } = useSnackbar();
+  const appToken = useStoreState(s => s.config.appToken)
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -36,7 +38,7 @@ export const ForgotPasswordModal: React.FC<IForgotPasswordModal> = ({
     onSubmit: async ({ email }, { setSubmitting, resetForm }) => {
       setSubmitting(true);
       try {
-        const res = await httpWithToken(config.APP_JWT).post<{ msg: string }>(
+        const res = await httpWithToken(appToken).post<{ msg: string }>(
           "/users/forgot",
           {
             email,

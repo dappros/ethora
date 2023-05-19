@@ -183,6 +183,23 @@ export type TRoomRoles = {
   role: string;
 };
 
+export interface IConfig {
+  REACT_APP_FIREBASE_API_KEY: string
+  REACT_APP_FIREBASE_AUTH_DOMAIN: string
+  REACT_APP_FIREBASE_PROJECT_ID: string
+  REACT_APP_FIREBASE_STORAGE_BUCKET: string
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string
+  REACT_APP_FIREBASE_APP_ID: string
+  REACT_APP_FIREBASE_MEASURMENT_ID: string
+  REACT_APP_STRIPE_PUBLISHABLE_KEY: string
+  REACT_APP_STRIPE_SECRET_KEY: string
+  primaryColor: string;
+  secondaryColor: string;
+  coinSymbol: string;
+  coinName: string;
+  appToken: string;
+}
+
 export type TActiveRoomFilter =
   | "official"
   | "meta"
@@ -197,6 +214,7 @@ export type replaceMessageListItemProps = {
 
 interface IStore {
   user: TUser;
+  config: IConfig;
   oldTokens?: {
     token: string;
     refreshToken: string;
@@ -217,6 +235,7 @@ interface IStore {
   updateUserDocumentsPermission: (value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
   setOwner: (owner: TUser) => void;
+  setConfig: (config: IConfig) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
@@ -288,6 +307,22 @@ const _useStore = create<IStore>()(
             isAllowedNewAppCreate: false,
             isAgreeWithTerms: false,
             homeScreen: ''
+          },
+          config: {
+            REACT_APP_FIREBASE_API_KEY: '',
+            REACT_APP_FIREBASE_AUTH_DOMAIN: '',
+            REACT_APP_FIREBASE_PROJECT_ID: '',
+            REACT_APP_FIREBASE_STORAGE_BUCKET: '',
+            REACT_APP_FIREBASE_MESSAGING_SENDER_ID: '',
+            REACT_APP_FIREBASE_APP_ID: '',
+            REACT_APP_FIREBASE_MEASURMENT_ID: '',
+            REACT_APP_STRIPE_PUBLISHABLE_KEY: '',
+            REACT_APP_STRIPE_SECRET_KEY: '',
+            primaryColor: '',
+            secondaryColor: '',
+            coinSymbol: '',
+            coinName: '',
+            appToken: '',
           },
           ACL: {
             result: [{
@@ -361,6 +396,11 @@ const _useStore = create<IStore>()(
           setShowHeaderError(value) {
             set((state) => {
               state.showHeaderError = value;
+            });
+          },
+          setConfig(config) {
+            set((state) => {
+              state.config = config;
             });
           },
           setDocuments: (documents: http.IDocument[]) =>
