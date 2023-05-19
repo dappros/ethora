@@ -78,7 +78,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       if (file) {
         fd.append("file", file);
       }
-      fd.append("appName", appName);
+      fd.append("displayName", appName);
       appDescription && fd.append("appDescription", appDescription.toString());
       appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
