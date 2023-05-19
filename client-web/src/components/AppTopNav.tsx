@@ -32,8 +32,9 @@ import { ethers } from "ethers";
 import { DOMAIN } from "../constants";
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
 import { walletToUsername } from "../utils/walletManipulation";
+import { firebase } from "../services/firebase";
 
-const coinImg = '/coin.png'
+const coinImg = "/coin.png";
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
@@ -45,14 +46,15 @@ const roomFilters = [
 ];
 
 const AppTopNav = () => {
- 
-
   const user = useStoreState((state) => state.user);
 
   const history = useHistory();
   const location = useLocation();
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
+  );
+  const firebaseAppId = useStoreState(
+    (s) => s.config.REACT_APP_FIREBASE_APP_ID
   );
 
   const setBalance = useStoreState((state) => state.setBalance);
@@ -83,8 +85,15 @@ const AppTopNav = () => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
-    subscribeForXmppNotifications();
+
   }, []);
+
+  useEffect(() => {
+    if (firebaseAppId) {
+    subscribeForXmppNotifications();
+
+    }
+  }, [firebaseAppId]);
 
   useEffect(() => {
     xmpp.init(user.walletAddress, user?.xmppPassword as string);
@@ -143,7 +152,7 @@ const AppTopNav = () => {
   }, [rooms]);
   return (
     <AppBar position="static">
-      <Box sx={{width: '100%', padding: '0 20px'}}>
+      <Box sx={{ width: "100%", padding: "0 20px" }}>
         <Toolbar disableGutters>
           <Box
             sx={{

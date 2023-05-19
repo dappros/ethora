@@ -1,4 +1,4 @@
-import { FirebaseApp, initializeApp } from "firebase/app";
+import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
@@ -9,7 +9,7 @@ import { useStoreState } from "../store";
 
 class Firebase {
   firebaseApp: FirebaseApp = null;
-
+  firebaseConfig: FirebaseOptions  = null
   init() {
     const firebaseConfig = {
       apiKey: useStoreState.getState().config.REACT_APP_FIREBASE_API_KEY,
@@ -24,6 +24,7 @@ class Firebase {
       measurementId:
         useStoreState.getState().config.REACT_APP_FIREBASE_MEASURMENT_ID,
     };
+    this.firebaseConfig = firebaseConfig
     this.firebaseApp = initializeApp(firebaseConfig);
   }
 }

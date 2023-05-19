@@ -21,6 +21,8 @@ import { AppEdit } from "./AppEdit/AppEdit";
 import AppTopNav from "../components/AppTopNav";
 import AppTopNavAuth from "../components/AppTopNavAuth";
 import AppTopNavOwner from "../components/AppTopNavOwner";
+import { firebase } from "../services/firebase";
+import { onMessageListener } from "../services/firebaseMessaging";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -106,12 +108,13 @@ export const Routes = () => {
   const user = useStoreState((state) => state.user);
   const setACL = useStoreState((state) => state.setACL);
   const setConfig = useStoreState((state) => state.setConfig);
-  const [loading, setLoading] = useState(false);
   const setDocuments = useStoreState((state) => state.setDocuments);
   const apps = useStoreState((state) => state.apps);
+  const [loading, setLoading] = useState(true);
 
   const getAcl = async () => {
     setLoading(true);
+   
     try {
       if (user?.ACL?.ownerAccess) {
         setACL(mockAcl);
@@ -124,8 +127,6 @@ export const Routes = () => {
     }
     setLoading(false);
   };
-
-
 
   const getDocuments = async (walletAddress: string) => {
     try {
@@ -158,7 +159,7 @@ export const Routes = () => {
     }
     return "/signIn";
   };
- 
+
   useEffect(() => {
     if (userId) {
       checkNotificationsStatus();
@@ -170,6 +171,37 @@ export const Routes = () => {
     getAcl();
   }, [apps.length]);
 
+  const getAppConfig = async () => {
+    setLoading(true);
+    try {
+      const config = await http.getConfig();
+      setConfig(config.data.result);
+      firebase.init();
+      // if ("serviceWorker" in navigator) {
+      //   navigator.serviceWorker
+      //     .register("firebase-messaging-sw.js")
+      //     .then((register) => {
+      //       console.log("registered");
+
+      //       register.installing.postMessage(firebase.firebaseConfig);
+      //     });
+      // } else {
+      //   console.log("Service Worker not supported");
+      // }
+      const payload = await onMessageListener();
+      sendBrowserNotification(payload.notification.body, () => {});
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    getAppConfig();
+  }, []);
+
+  if(loading) {
+    return <FullPageSpinner />
+  }
 
   return (
     <React.Suspense fallback={<FullPageSpinner />}>

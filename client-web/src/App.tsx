@@ -11,6 +11,7 @@ import { onMessageListener } from "./services/firebaseMessaging";
 import { sendBrowserNotification } from "./utils";
 import { getConfig } from "./http";
 import { useState, useEffect } from "react";
+import { FullPageSpinner } from "./components/FullPageSpinner";
 
 const darkTheme = createTheme({
   palette: {
@@ -23,33 +24,17 @@ function App() {
 
   const primaryColor = useStoreState((s) => s.config.primaryColor);
   const secondaryColor = useStoreState((s) => s.config.secondaryColor);
-  const [loading, setLoading] = useState(true);
+  
 
-  const getAppConfig = async () => {
-    setLoading(true);
-    try {
-      const config = await getConfig();
-      setConfig(config.data.result);
-      firebase.init();
-      const payload = await onMessageListener();
-      sendBrowserNotification(payload.notification.body, () => {});
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
-  };
-  useEffect(() => {
-    getAppConfig();
-  }, []);
-
- 
   const lightTheme = createTheme({
     palette: {
       mode: "light",
-      primary: { main: primaryColor },
-      secondary: { main: secondaryColor },
+      primary: { main: primaryColor || "#ffffff" },
+      secondary: { main: secondaryColor || "#ffffff" },
     },
   });
+
+  
   return (
     <Router history={history}>
       <SnackbarContextProvider>
