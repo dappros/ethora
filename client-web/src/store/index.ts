@@ -143,6 +143,7 @@ export type TUserChatRooms = {
 
 type TApp = {
   _id: string;
+  displayName: string;
   appName: string;
   appToken: string;
   createdAt: string;

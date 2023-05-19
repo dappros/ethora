@@ -141,7 +141,7 @@ export default function BasicTable() {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell width={200}>Application Name</TableCell>
+              <TableCell width={200}>Display Name</TableCell>
               <TableCell align="center">Profile Open</TableCell>
               <TableCell align="center">Assets Visible</TableCell>
               <TableCell align="center">Self-Sovereignty</TableCell>
@@ -156,7 +156,7 @@ export default function BasicTable() {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {app.appName}
+                  {app.displayName}
                 </TableCell>
                 <TableCell align="center">
                   {app.defaultAccessProfileOpen ? (
