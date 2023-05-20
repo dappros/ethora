@@ -335,7 +335,7 @@ export default function UsersTable() {
                 {apps.map((app) => {
                   return (
                     <MenuItem key={app._id} value={app._id}>
-                      {app.appName}
+                      {app.displayName}
                     </MenuItem>
                   );
                 })}
@@ -399,7 +399,7 @@ export default function UsersTable() {
                 {apps.map((app) => {
                   return (
                     <MenuItem key={app._id} value={app._id}>
-                      {app.appName}
+                      {app.displayName}
                     </MenuItem>
                   );
                 })}
