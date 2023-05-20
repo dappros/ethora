@@ -51,18 +51,19 @@ const rootDomain = "ethoradev.com"
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
   const app: any = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const [appName, setAppName] = useState(app.appName || "");
+  // const [appName, setAppName] = useState(app.appName || "");
+  const [displayName, setDisplayName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#2559b6");
-  const [secondaryColor, setSecondaryColor] = useState("#278b8b");
+  const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
+  const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
 
-  const [domain, setDomain] = useState(app.domainName + '.ethoradev.com');
+  const [domain, setDomain] = useState(app.domainName);
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
@@ -152,7 +153,32 @@ export default function AppBuilder() {
   const validateDomainName = async (d: string) => {
     setDomainNameError(true);
   };
-  const saveSettings = () => {
+
+  const saveSettings = async () => {
+    const data = new FormData();
+
+    bundleId && data.append("bundleId", bundleId);
+    displayName && data.append("displayName", displayName);
+    domain && data.append("domainName", domain);
+    primaryColor && data.append("primaryColor", primaryColor);
+    secondaryColor && data.append("secondaryColor", secondaryColor);
+    coinSymbol && data.append("coinSymbol", coinSymbol);
+    coinName && data.append("coinName", coinName);
+    coinLogo && data.append("coinLogoImage", coinLogo as Blob);
+    logo && data.append("logoImage", logo as Blob);
+    loginScreenBackground &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
+
+    try {
+      const res = await httpWithAuth().put(
+        "/apps/" + appId,
+        data
+      );
+
+      console.log({res})
+    } catch (error) {
+      console.log({error})
+    }
 
   }
 
@@ -160,7 +186,7 @@ export default function AppBuilder() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = e.target.value;
-    setAppName(value);
+    setDisplayName(value);
 
     const transformedDomain = replaceNotAllowedCharactersInDomain(
       value.toLowerCase().split(" ").join("")
@@ -183,7 +209,7 @@ export default function AppBuilder() {
 
     const data = new FormData();
     bundleId && data.append("bundleId", bundleId);
-    appName && data.append("appName", appName);
+    displayName && data.append("displayName", displayName);
     primaryColor && data.append("primaryColor", primaryColor);
     secondaryColor && data.append("secondaryColor", secondaryColor);
     coinSymbol && data.append("coinSymbol", coinSymbol);
@@ -235,10 +261,10 @@ export default function AppBuilder() {
               <TextField
                 margin="dense"
                 fullWidth
-                label="App Name"
-                name="appName"
+                label="Display Name"
+                name="displayName"
                 variant="outlined"
-                value={appName}
+                value={displayName}
                 onChange={handleAppNameChange}
               />
             </Box>
@@ -390,7 +416,7 @@ export default function AppBuilder() {
           <Box>
             <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
           </Box>
-          <Box>
+          <Box style={{display: 'flex'}}>
             <TextField
               margin="dense"
               fullWidth
@@ -399,13 +425,27 @@ export default function AppBuilder() {
               variant="outlined"
               onChange={(e) => setDomain(e.target.value)}
               value={domain}
-              error={domainNameError}
-              helperText={
-                domainNameError
-                  ? "❌ name not available, please fill in something more unique here"
-                  : "✅ available"
-              }
             />
+            <p>
+              {'.' + rootDomain}
+            </p>
+            {/* <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Domain Name"
+                name="domain"
+                variant="outlined"
+                onChange={(e) => setDomain(e.target.value)}
+                value={domain}
+                error={domainNameError}
+                helperText={
+                  domainNameError
+                    ? "❌ name not available, please fill in something more unique here"
+                    : "✅ available"
+                }
+              />
+            </Box> */}
           </Box>
           <Box sx={{display: 'flex', justifyContent: 'center'}}>
             <LoadingButton
