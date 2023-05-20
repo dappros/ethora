@@ -46,9 +46,11 @@ function isValidHexCode(str: string) {
   return regex.test(str) === true;
 }
 
+const rootDomain = "ethoradev.com"
+
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  const app: any = useStoreState((s) => s.apps.find((app) => app._id === appId));
   const [appName, setAppName] = useState(app.appName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
@@ -59,7 +61,8 @@ export default function AppBuilder() {
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
-  const [domain, setDomain] = useState("app.ethora.com");
+
+  const [domain, setDomain] = useState(app.domainName + '.ethoradev.com');
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
