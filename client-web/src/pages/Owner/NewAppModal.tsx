@@ -33,9 +33,9 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       appName: "",
       appDescription: "",
       appGoogleId: "",
-      defaultAccessProfileOpen: false,
-      defaultAccessAssetsOpen: false,
-      usersCanFree: false,
+      defaultAccessProfileOpen: true,
+      defaultAccessAssetsOpen: true,
+      usersCanFree: true,
       newUserTokenGift: 0,
       coinsDayliBonus: 0,
       appUrl: "",
@@ -74,12 +74,12 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       fd.append("displayName", appName);
       appDescription && fd.append("appDescription", appDescription.toString());
       appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
-      // fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      // fd.append(
-      //   "defaultAccessProfileOpen",
-      //   defaultAccessProfileOpen.toString()
-      // );
-      // fd.append("usersCanFree", usersCanFree.toString());
+      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
+      fd.append(
+        "defaultAccessProfileOpen",
+        defaultAccessProfileOpen.toString()
+      );
+      fd.append("usersCanFree", usersCanFree.toString());
       appUrl && fd.append("appUrl", appUrl.toString());
 
       http
