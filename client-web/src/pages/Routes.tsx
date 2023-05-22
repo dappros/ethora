@@ -24,6 +24,7 @@ import AppTopNavOwner from "../components/AppTopNavOwner";
 import { firebase } from "../services/firebase";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { Box, Typography } from "@mui/material";
+import { useSnackbar } from "../context/SnackbarContext";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
@@ -110,11 +111,13 @@ export const Routes = () => {
   const setACL = useStoreState((state) => state.setACL);
   const setConfig = useStoreState((state) => state.setConfig);
   const setDocuments = useStoreState((state) => state.setDocuments);
+  const clearUser = useStoreState((state) => state.clearUser);
+
   const apps = useStoreState((state) => state.apps);
 
   const [loading, setLoading] = useState(true);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
-
+  const {showSnackbar} = useSnackbar()
   const getAcl = async () => {
     setLoading(true);
 
@@ -194,7 +197,10 @@ export const Routes = () => {
       const payload = await onMessageListener();
       sendBrowserNotification(payload.notification.body, () => {});
     } catch (error) {
-      setIsAppConfigError(true);
+      clearUser();
+      useStoreState.persist.clearStorage()
+      // setIsAppConfigError(true);
+      showSnackbar('error', 'Cannot get app config')
       console.log(error);
     }
     setLoading(false);
