@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { Redirect, Route, Switch } from "react-router";
 
 import { useStoreState } from "../store";
@@ -25,12 +25,12 @@ import { firebase } from "../services/firebase";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { Box, Typography } from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
-
+import Owner from "./Owner";
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
-const Owner = React.lazy(() => import("./Owner"));
+// const Owner = React.lazy(() => import("./Owner"));
 const BlockDetails = React.lazy(() => import("./Explorer/BlockDetails"));
 const Explorer = React.lazy(() => import("./Explorer/Explorer"));
 const UsersPage = React.lazy(() => import("./UsersPage"));
@@ -115,10 +115,10 @@ export const Routes = () => {
 
   const apps = useStoreState((state) => state.apps);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
   const getAcl = async () => {
-    setLoading(true);
+    // setLoading(true);
 
     try {
       if (user?.ACL?.ownerAccess) {
@@ -130,7 +130,7 @@ export const Routes = () => {
     } catch (error) {
       console.log(error);
     }
-    setLoading(false);
+    // setLoading(false);
   };
 
   const getDocuments = async (walletAddress: string) => {
@@ -164,48 +164,41 @@ export const Routes = () => {
     }
     return "/signIn";
   };
-
   useEffect(() => {
-    if (userId) {
+    getAppConfig();
+  }, []);
+  useEffect(() => {
+    if (user.walletAddress) {
       checkNotificationsStatus();
       getAcl();
       getDocuments(user.walletAddress);
     }
-  }, [userId]);
+  }, [user.walletAddress]);
   useEffect(() => {
     getAcl();
   }, [apps.length]);
-
   const getAppConfig = async () => {
     setLoading(true);
     try {
       const config = await http.getConfig();
       setConfig(config.data.result);
       firebase.init();
-      // if ("serviceWorker" in navigator) {
-      //   navigator.serviceWorker
-      //     .register("firebase-messaging-sw.js")
-      //     .then((register) => {
-      //       console.log("registered");
-
-      //       register.installing.postMessage(firebase.firebaseConfig);
-      //     });
-      // } else {
-      //   console.log("Service Worker not supported");
-      // }
-      const payload = await onMessageListener();
-      sendBrowserNotification(payload.notification.body, () => {});
     } catch (error) {
       clearUser();
-      useStoreState.persist.clearStorage()
+      useStoreState.persist.clearStorage();
       setIsAppConfigError(true);
       console.log(error);
     }
+
     setLoading(false);
+    try {
+      const payload = await onMessageListener();
+      sendBrowserNotification(payload.notification.body, () => {});
+    } catch (error) {
+      console.log(error)
+    }
+
   };
-  useEffect(() => {
-    getAppConfig();
-  }, []);
 
   if (isAppConfigError) {
     return (
@@ -224,11 +217,11 @@ export const Routes = () => {
       </Box>
     );
   }
-  if(loading) {
-    return <FullPageSpinner />
+  if (loading) {
+    return <FullPageSpinner />;
   }
   return (
-    <React.Suspense fallback={<FullPageSpinner />}>
+    <Suspense fallback={<FullPageSpinner />}>
       {!user.firstName && <AppTopNavAuth />}
       {user.firstName && user.xmppPassword && <AppTopNav />}
       {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
@@ -288,6 +281,6 @@ export const Routes = () => {
         </Route>
       </Switch>
       <Snackbar />
-    </React.Suspense>
+    </Suspense>
   );
 };
