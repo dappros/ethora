@@ -32,7 +32,6 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       disabled: i === 0,
     }))
   );
-  const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   const formik = useFormik({
@@ -47,61 +46,34 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       coinsDayliBonus: 0,
       appUrl: "",
     },
-    validate: (values) => {
-      const errors: Record<string, string> = {};
 
-      if (!values.appName) {
-        errors.appName = "Required";
-      }
-
-      return errors;
-    },
-    onSubmit: ({
-      appName,
-      appDescription,
-      appGoogleId,
-      defaultAccessAssetsOpen,
-      defaultAccessProfileOpen,
-      usersCanFree,
-      appUrl,
-    }) => {
-      setLoading(true);
+    onSubmit: async (
+      { defaultAccessAssetsOpen, defaultAccessProfileOpen, usersCanFree },
+      { setSubmitting }
+    ) => {
+      setSubmitting(true);
       const fd = new FormData();
-      let file;
-      if (fileRef.current) {
-        const files = fileRef.current.files;
-        if (files) {
-          file = files[0];
-        }
-      }
+      console.log(defaultAccessAssetsOpen, defaultAccessProfileOpen, usersCanFree)
 
-      if (file) {
-        fd.append("file", file);
-      }
-      fd.append("displayName", appName);
-      appDescription && fd.append("appDescription", appDescription.toString());
-      appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
+      fd.append("displayName", app.displayName);
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
       fd.append(
         "defaultAccessProfileOpen",
         defaultAccessProfileOpen.toString()
       );
       fd.append("usersCanFree", usersCanFree.toString());
-      appUrl && fd.append("appUrl", appUrl.toString());
+      try {
+        const res = await http.httpWithAuth().put("/apps/" + appId, fd);
+        setUser({ ...user, homeScreen: "" });
+        console.log(res.data);
+      } catch (error) {
+        showSnackbar(
+          "error",
+          "Cannot update the app " + (error.response?.data?.error || "")
+        );
+      }
 
-      http
-        .createApp(fd)
-        .then((response) => {
-          setApp(response.data.app);
-          setUser({ ...user, homeScreen: "" });
-        })
-        .catch((e) => {
-          showSnackbar(
-            "error",
-            "Cannot create the app " + (e.response?.data?.error || "")
-          );
-        })
-        .finally(() => setLoading(false));
+      setSubmitting(false);
     },
   });
 
@@ -120,7 +92,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box>
-                <Typography sx={{ fontWeight: "bold", }}>
+                <Typography sx={{ fontWeight: "bold" }}>
                   Default chat rooms
                 </Typography>
                 <Box sx={{ mb: 4 }}>
@@ -165,10 +137,10 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                 </Box>
               </Box>
               <Box>
-                <Typography sx={{ fontWeight: "bold", }}>
+                <Typography sx={{ fontWeight: "bold" }}>
                   Default profile security settings
                 </Typography>
-                <Typography sx={{ fontSize: 10 ,}}>
+                <Typography sx={{ fontSize: 10 }}>
                   These are the default permissions to be applied to all Users
                   created in your App. Keep the recommended settings if you are
                   not sure and you can come back to this later.
@@ -287,17 +259,16 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
               </Box>
             </Box>
           </Box>
-          {/* <Box sx={{ justifyContent: "center", display: "flex" }}>
+          <Box sx={{ justifyContent: "center", display: "flex" }}>
             <LoadingButton
-              loading={loading}
+              loading={formik.isSubmitting}
+              disabled={formik.isSubmitting}
+              onClick={() => formik.handleSubmit()}
               variant="contained"
-              style={{ marginTop: "15px" }}
-              type="submit"
-              disabled={loading}
             >
-              Create App
+              Save
             </LoadingButton>
-          </Box> */}
+          </Box>
         </form>
       </Box>
     </Box>
