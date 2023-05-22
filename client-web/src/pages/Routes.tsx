@@ -117,7 +117,6 @@ export const Routes = () => {
 
   const [loading, setLoading] = useState(true);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
-  const {showSnackbar} = useSnackbar()
   const getAcl = async () => {
     setLoading(true);
 
@@ -199,8 +198,7 @@ export const Routes = () => {
     } catch (error) {
       clearUser();
       useStoreState.persist.clearStorage()
-      // setIsAppConfigError(true);
-      showSnackbar('error', 'Cannot get app config')
+      setIsAppConfigError(true);
       console.log(error);
     }
     setLoading(false);
