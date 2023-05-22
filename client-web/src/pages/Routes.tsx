@@ -117,7 +117,7 @@ export const Routes = () => {
 
   const getAcl = async () => {
     setLoading(true);
-   
+
     try {
       if (user?.ACL?.ownerAccess) {
         setACL(mockAcl);
@@ -194,7 +194,7 @@ export const Routes = () => {
       const payload = await onMessageListener();
       sendBrowserNotification(payload.notification.body, () => {});
     } catch (error) {
-      setIsAppConfigError(true)
+      setIsAppConfigError(true);
       console.log(error);
     }
     setLoading(false);
@@ -203,14 +203,26 @@ export const Routes = () => {
     getAppConfig();
   }, []);
 
+  if (isAppConfigError) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100vh",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>
+          Error, App not found
+        </Typography>
+      </Box>
+    );
+  }
   if(loading) {
     return <FullPageSpinner />
   }
-if(isAppConfigError) {
-  return <Box sx={{display: 'flex', justifyContent:'center', alignItems: 'center', width: '100%', height: '100vh'}}>
-    <Typography sx={{fontWeight: 'bold', fontSize: '24px'}}>Error, App not found</Typography>
-  </Box>
-}
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
       {!user.firstName && <AppTopNavAuth />}

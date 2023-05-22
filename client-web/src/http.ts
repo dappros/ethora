@@ -13,7 +13,7 @@ import type { Stripe } from "stripe";
 import xmpp from "./xmpp";
 import { history } from "./utils/history";
 
-const { APP_JWT = "", API_URL = "" } = config;
+const { API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;

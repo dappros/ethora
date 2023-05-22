@@ -22,6 +22,7 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { time } from "console";
 import { useStoreState } from "../../store";
 import { replaceNotAllowedCharactersInDomain } from "../../utils";
+import { config } from "../../config";
 
 export interface TCustomDetails {
   primaryColor: string;
@@ -49,7 +50,7 @@ function isValidHexCode(str: string) {
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const [appName, setAppName] = useState(app.appName || "");
+  const [appName, setAppName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
@@ -59,7 +60,9 @@ export default function AppBuilder() {
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
-  const [domain, setDomain] = useState("app.ethora.com");
+  const [domain, setDomain] = useState(
+    `${app.domainName}.${config.DOMAIN_NAME}`
+  );
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
@@ -146,12 +149,19 @@ export default function AppBuilder() {
     setCoinLogo(event.target.files[0]);
   };
 
-  const validateDomainName = async (d: string) => {
-    setDomainNameError(true);
+  const validateDomainName = async (domainName: string) => {
+    try {
+      const res = await httpWithAuth().post("apps/check-domain-name", {
+        domainName,
+      });
+      console.log(res);
+      setDomain(`${domainName}.${config.DOMAIN_NAME}`)
+    } catch (error) {
+      console.log(error);
+      setDomainNameError(true);
+    }
   };
-  const saveSettings = () => {
-
-  }
+  const saveSettings = () => {};
 
   const handleAppNameChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -404,14 +414,14 @@ export default function AppBuilder() {
               }
             />
           </Box>
-          <Box sx={{display: 'flex', justifyContent: 'center'}}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <LoadingButton
               loading={loading}
               disabled={loading || domainNameError}
               onClick={saveSettings}
               variant="contained"
             >
-           Save
+              Save
             </LoadingButton>
           </Box>
         </Box>
