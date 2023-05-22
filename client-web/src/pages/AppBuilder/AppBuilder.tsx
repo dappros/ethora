@@ -36,7 +36,7 @@ function isValidHexCode(str: string) {
 
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
-  const app: any = useStoreState((s) =>
+  const app = useStoreState((s) =>
     s.apps.find((app) => app._id === appId)
   );
   const [displayName, setDisplayName] = useState(app.displayName || "");
@@ -157,7 +157,10 @@ export default function AppBuilder() {
       setDomainNameError(false);
     } catch (error) {
       console.log(error);
-      setDomainNameError(true);
+      if(domainName !== app.domainName) {
+
+        setDomainNameError(true);
+      }
     }
   };
 
@@ -441,10 +444,10 @@ export default function AppBuilder() {
               helperText={
                 domainNameError
                   ? "❌ name not available, please fill in something more unique here"
-                  : "✅ available"
+                  : app.domainName === domain ? '' : "✅ available"
               }
             />
-            <Typography style={{ marginBottom: "20px" }}>
+            <Typography style={{ marginBottom: app.domainName !== domain ?  "20px" : 0 }}>
               {"." + config.DOMAIN_NAME}
             </Typography>
           </Box>
