@@ -1,28 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { httpWithAuth } from "../../http";
 import { useParams } from "react-router";
-import {
-  intervalToDuration,
-  millisecondsToHours,
-  millisecondsToMinutes,
-} from "date-fns";
+import { intervalToDuration } from "date-fns";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { time } from "console";
 import { useStoreState } from "../../store";
 import { replaceNotAllowedCharactersInDomain } from "../../utils";
 import { config } from "../../config";
+import useDebounce from "../../hooks/useDebounce";
 
 export interface TCustomDetails {
   primaryColor: string;
@@ -49,20 +36,22 @@ function isValidHexCode(str: string) {
 
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const [appName, setAppName] = useState(app.displayName || "");
+  const app: any = useStoreState((s) =>
+    s.apps.find((app) => app._id === appId)
+  );
+  const [displayName, setDisplayName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#2559b6");
-  const [secondaryColor, setSecondaryColor] = useState("#278b8b");
+  const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
+  const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
   const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
-  const [domain, setDomain] = useState(
-    `${app.domainName}.${config.DOMAIN_NAME}`
-  );
+
+  const [domain, setDomain] = useState(`${app.domainName}`);
+  const debouncedDomain = useDebounce<string>(domain, 500);
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const appLogoRef = useRef<HTMLInputElement>(null);
@@ -78,6 +67,15 @@ export default function AppBuilder() {
   const handleLogoChange = (event: any) => {
     setLogo(event.target.files[0]);
   };
+
+  useEffect(
+    () => {
+      if (debouncedDomain) {
+        validateDomainName(debouncedDomain);
+      }
+    },
+    [debouncedDomain] // Only call effect if debounced search term changes
+  );
 
   const checkBuild = async () => {
     setLoading(true);
@@ -155,29 +153,63 @@ export default function AppBuilder() {
         domainName,
       });
       console.log(res);
-      setDomain(`${domainName}.${config.DOMAIN_NAME}`)
+      // setDomain(`${domainName}`);
+      setDomainNameError(false);
     } catch (error) {
       console.log(error);
       setDomainNameError(true);
     }
   };
-  const saveSettings = () => {};
+
+  const saveSettings = async () => {
+    const data = new FormData();
+
+    bundleId && data.append("bundleId", bundleId);
+    displayName && data.append("displayName", displayName);
+    domain && data.append("domainName", domain);
+    primaryColor && data.append("primaryColor", primaryColor);
+    secondaryColor && data.append("secondaryColor", secondaryColor);
+    coinSymbol && data.append("coinSymbol", coinSymbol);
+    coinName && data.append("coinName", coinName);
+    coinLogo && data.append("coinLogoImage", coinLogo as Blob);
+    logo && data.append("logoImage", logo as Blob);
+    loginScreenBackground &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
+    setLoading(true);
+    try {
+      const res = await httpWithAuth().put("/apps/" + appId, data);
+
+      console.log({ res });
+    } catch (error) {
+      console.log({ error });
+    }
+    setLoading(false);
+  };
 
   const handleAppNameChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const value = e.target.value;
-    setAppName(value);
+    setDisplayName(value);
 
     const transformedDomain = replaceNotAllowedCharactersInDomain(
       value.toLowerCase().split(" ").join("")
     );
-    validateDomainName(transformedDomain);
+    setDomain(transformedDomain)
+    try {
+    } catch (error) {}
+  };
+  const handleDomainNameChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    setDomain(value);
+
     try {
     } catch (error) {}
   };
 
-  const handleSubmit = async () => {
+  const prepareRnBuild = async () => {
     if (
       !bundleId ||
       !isValidHexCode(primaryColor) ||
@@ -190,7 +222,7 @@ export default function AppBuilder() {
 
     const data = new FormData();
     bundleId && data.append("bundleId", bundleId);
-    appName && data.append("appName", appName);
+    displayName && data.append("displayName", displayName);
     primaryColor && data.append("primaryColor", primaryColor);
     secondaryColor && data.append("secondaryColor", secondaryColor);
     coinSymbol && data.append("coinSymbol", coinSymbol);
@@ -242,10 +274,10 @@ export default function AppBuilder() {
               <TextField
                 margin="dense"
                 fullWidth
-                label="App Name"
-                name="appName"
+                label="Display Name"
+                name="displayName"
                 variant="outlined"
-                value={appName}
+                value={displayName}
                 onChange={handleAppNameChange}
               />
             </Box>
@@ -384,7 +416,7 @@ export default function AppBuilder() {
                 <LoadingButton
                   loading={loading}
                   disabled={buildStage === "preparing"}
-                  onClick={handleSubmit}
+                  onClick={prepareRnBuild}
                   sx={{ width: 300, height: 50 }}
                   variant="contained"
                 >
@@ -397,14 +429,13 @@ export default function AppBuilder() {
           <Box>
             <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
           </Box>
-          <Box>
+          <Box style={{ display: "flex", alignItems: "center" }}>
             <TextField
               margin="dense"
-              fullWidth
               label="Domain Name"
               name="domain"
               variant="outlined"
-              onChange={(e) => setDomain(e.target.value)}
+              onChange={handleDomainNameChange}
               value={domain}
               error={domainNameError}
               helperText={
@@ -413,6 +444,9 @@ export default function AppBuilder() {
                   : "✅ available"
               }
             />
+            <Typography style={{ marginBottom: "20px" }}>
+              {"." + config.DOMAIN_NAME}
+            </Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <LoadingButton
