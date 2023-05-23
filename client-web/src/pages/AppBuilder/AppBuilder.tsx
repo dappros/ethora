@@ -247,6 +247,7 @@ export default function AppBuilder() {
     } catch (error) {
       setBuildStage("prepare");
       console.log(error);
+      showSnackbar('error', 'Something went wrong')
     }
     setLoading(false);
   };
