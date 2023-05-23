@@ -54,84 +54,19 @@ const ChangeBackground = React.lazy(
   () => import("./ChatRoomDetails/ChangeBackground")
 );
 
-const mockAcl = {
-  result: [
-    {
-      network: {
-        netStats: {
-          read: true,
-          disabled: ["create", "update", "delete", "admin"],
-        },
-      },
-      application: {
-        appCreate: {
-          create: true,
-          disabled: ["read", "update", "delete", "admin"],
-        },
-        appSettings: {
-          read: true,
-          update: true,
-          admin: true,
-          disabled: ["create", "delete"],
-        },
-        appUsers: {
-          create: true,
-          read: true,
-          update: true,
-          delete: true,
-          admin: true,
-        },
-        appTokens: {
-          create: true,
-          read: true,
-          update: true,
-          admin: true,
-          disabled: ["delete"],
-        },
-        appPush: {
-          create: true,
-          read: true,
-          update: true,
-          admin: true,
-          disabled: ["delete"],
-        },
-        appStats: {
-          read: true,
-          admin: true,
-          disabled: ["create", "update", "delete"],
-        },
-      },
-    },
-  ],
-};
+
 
 export const Routes = () => {
-  const userId = useStoreState((state) => state.user._id);
+
   const user = useStoreState((state) => state.user);
-  const setACL = useStoreState((state) => state.setACL);
   const setConfig = useStoreState((state) => state.setConfig);
   const setDocuments = useStoreState((state) => state.setDocuments);
   const clearUser = useStoreState((state) => state.clearUser);
 
-  const apps = useStoreState((state) => state.apps);
 
   const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
-  const getAcl = async () => {
-    // setLoading(true);
 
-    try {
-      if (user?.ACL?.ownerAccess) {
-        setACL(mockAcl);
-        return;
-      }
-      const res = await getMyAcl();
-      setACL({ result: res.data.result });
-    } catch (error) {
-      console.log(error);
-    }
-    // setLoading(false);
-  };
 
   const getDocuments = async (walletAddress: string) => {
     try {
@@ -170,13 +105,10 @@ export const Routes = () => {
   useEffect(() => {
     if (user.walletAddress) {
       checkNotificationsStatus();
-      getAcl();
       getDocuments(user.walletAddress);
     }
   }, [user.walletAddress]);
-  useEffect(() => {
-    getAcl();
-  }, [apps.length]);
+ 
   const getAppConfig = async () => {
     setLoading(true);
     try {
