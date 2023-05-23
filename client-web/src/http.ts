@@ -11,9 +11,8 @@ import { useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
 import xmpp from "./xmpp";
-import { history } from "./utils/history";
+import { http } from "./api/interceptors";
 
-const { API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;
@@ -126,9 +125,7 @@ export interface IUserAcl {
   result: ACL[];
 }
 
-const http = axios.create({
-  baseURL: API_URL,
-});
+
 
 export const httpWithAuth = () => {
   const user = useStoreState.getState().user;
@@ -178,66 +175,7 @@ export interface IDocument {
   locations: Array<string>;
 }
 
-export function refresh() {
-  return new Promise((resolve, reject) => {
-    const state = useStoreState.getState();
-    console.log("post to refresh ", state.user.refreshToken);
-    http
-      .post(
-        "/users/login/refresh",
-        {},
-        { headers: { Authorization: state.user.refreshToken } }
-      )
-      .then((response) => {
-        useStoreState.setState((state) => {
-          state.user.token = response.data.token;
-          state.user.refreshToken = response.data.refreshToken;
-          resolve(response);
-        });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-const onLogout = () => {
-  useStoreState.getState().clearUser();
-  xmpp.stop();
-  localStorage.clear();
-  history.push("/");
-};
-http.interceptors.response.use(undefined, (error) => {
-  const user = useStoreState.getState().user;
 
-  if (user.firstName) {
-    if (!error.response || error.response.status !== 401) {
-      return Promise.reject(error);
-    }
-
-    if (
-      error.config.url === "/users/login/refresh" ||
-      error.config.url === "/users/login"
-    ) {
-      onLogout();
-      // return Promise.reject(error);
-    }
-
-    const request = error.config;
-
-    return refresh()
-      .then(() => {
-        return new Promise((resolve) => {
-          const user = useStoreState.getState().user;
-          request.headers["Authorization"] = user.token;
-          resolve(http(request));
-        });
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
-  }
-  return Promise.reject(error);
-});
 
 export const loginUsername = (username: string, password: string) => {
   const appToken = useStoreState.getState().config.appToken;
@@ -280,7 +218,7 @@ export const registerUsername = (
       firstName,
       lastName,
     },
-    { headers: { Authorization: appToken} }
+    { headers: { Authorization: appToken } }
   );
 };
 export const registerNewUser = (
