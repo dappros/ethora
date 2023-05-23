@@ -563,16 +563,7 @@ export function ChatInRoom() {
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
-      {!!currentPickedRoom && (
-        <Helmet>
-          <title>{appName + ': ' + currentPickedRoom.name}</title>
-          <meta
-            property="og:title"
-            content={currentPickedRoom.name}
-          />
-          <meta name="description" content={currentPickedRoom.description} />
-        </Helmet>
-      )}
+     
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />

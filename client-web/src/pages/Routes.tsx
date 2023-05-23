@@ -25,7 +25,10 @@ import { firebase } from "../services/firebase";
 import { onMessageListener } from "../services/firebaseMessaging";
 import { Box, Typography } from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
+import { Helmet } from "react-helmet";
+
 import Owner from "./Owner";
+
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
 const Profile = React.lazy(() => import("./Profile"));
@@ -54,19 +57,16 @@ const ChangeBackground = React.lazy(
   () => import("./ChatRoomDetails/ChangeBackground")
 );
 
-
-
 export const Routes = () => {
-
   const user = useStoreState((state) => state.user);
   const setConfig = useStoreState((state) => state.setConfig);
+  const appConfig = useStoreState((state) => state.config);
+
   const setDocuments = useStoreState((state) => state.setDocuments);
   const clearUser = useStoreState((state) => state.clearUser);
 
-
   const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
-
 
   const getDocuments = async (walletAddress: string) => {
     try {
@@ -108,7 +108,7 @@ export const Routes = () => {
       getDocuments(user.walletAddress);
     }
   }, [user.walletAddress]);
- 
+
   const getAppConfig = async () => {
     setLoading(true);
     try {
@@ -127,9 +127,8 @@ export const Routes = () => {
       const payload = await onMessageListener();
       sendBrowserNotification(payload.notification.body, () => {});
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
   };
 
   if (isAppConfigError) {
@@ -157,6 +156,13 @@ export const Routes = () => {
       {!user.firstName && <AppTopNavAuth />}
       {user.firstName && user.xmppPassword && <AppTopNav />}
       {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
+      <Helmet>
+        <title>{appConfig.displayName || "Dappros Platform"}</title>
+        <meta
+          property="og:title"
+          content={appConfig.displayName || "Dappros Platform"}
+        />
+      </Helmet>
       <Switch>
         <Route path={["/signIn/"]} exact>
           <Signon />

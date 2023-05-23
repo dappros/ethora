@@ -218,6 +218,8 @@ export interface IConfig {
   coinSymbol: string;
   coinName: string;
   appToken: string;
+  displayName: string;
+  domainName: string;
 }
 
 export type TActiveRoomFilter =
@@ -343,6 +345,8 @@ const _useStore = create<IStore>()(
             coinSymbol: "",
             coinName: "",
             appToken: "",
+            displayName: '',
+            domainName: ''
           },
           ACL: {
             result: [
