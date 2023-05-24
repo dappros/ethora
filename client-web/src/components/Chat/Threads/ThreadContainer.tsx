@@ -11,7 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Message } from "../Messages/Message";
 import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
 import xmpp from "../../../xmpp";
-import * as DOMPurify from "dompurify";
+import DOMPurify from "dompurify";
 import { SystemMessage } from "../Messages/SystemMessage";
 import CustomMessageInput from "./CustomMessageInput";
 import { TProfile } from "../../../pages/Profile/types";
