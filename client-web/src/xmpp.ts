@@ -25,7 +25,7 @@ export class XmppClass {
       username: walletToUsername(walletAddress),
       password,
     });
-
+    this.client.setMaxListeners(20)
     this.client.start();
 
     this.client.on("online", (jid) => {
