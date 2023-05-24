@@ -139,7 +139,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     if (!chatId) {
       setCurrentMetaRoom(emptyMetaRoom);
     }
-    if (chatId) {
+    if (chatId && chatId !== 'none') {
       getCurrentRoom();
     }
   }, [chatId]);
