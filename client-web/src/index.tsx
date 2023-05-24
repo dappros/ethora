@@ -7,6 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Web3ReactProvider } from "@web3-react/core";
 import { providers } from "ethers";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import { config } from "./config";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -16,7 +17,7 @@ function getLibrary(provider: any) {
   return new providers.Web3Provider(provider);
 }
 
-if (process.env.REACT_APP_DISABLE_STRICT) {
+if (config.DISABLE_STRICT) {
   root.render(
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
