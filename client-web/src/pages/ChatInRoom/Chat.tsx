@@ -15,7 +15,6 @@ import {
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
 import { format, formatDistance, subDays } from "date-fns";
-import * as DOMPurify from "dompurify";
 
 import {
   MainContainer,
@@ -68,6 +67,7 @@ import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
 import {Helmet} from 'react-helmet'
 import { createMainMessageForThread } from "../../utils/createMessage";
+import Dompurify from "dompurify";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -306,7 +306,7 @@ export function ChatInRoom() {
       if (profile?.profileImage) {
         userAvatar = profile?.profileImage;
       }
-      const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
+      const clearMessageFromHtml = Dompurify.sanitize(myMessage);
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
 
       if (finalMessageTxt.trim().length > 0) {
