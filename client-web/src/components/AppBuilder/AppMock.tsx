@@ -12,12 +12,10 @@ export default function AppMock(props: TCustomDetails) {
     coinLogo,
     logo,
     loginScreenBackground,
-    changeScreen
+    changeScreen,
   } = props;
 
-  const backgroundImage = loginScreenBackground
-    ? URL.createObjectURL(loginScreenBackground)
-    : defaultLoginBackground;
+  const backgroundImage = loginScreenBackground || defaultLoginBackground;
 
   //Component to display social button
   function SocialButton(props: { color: string }) {
@@ -42,14 +40,7 @@ export default function AppMock(props: TCustomDetails) {
   const LogoTitle = () => {
     const appTitleColor = primaryColor ? primaryColor : "#003E9C";
     if (logo) {
-      return (
-        <img
-          src={logo}
-          alt="Logo"
-          width={200}
-          height={100}
-        />
-      );
+      return <img src={logo} alt="Logo" width={200} height={100} />;
     } else {
       return <img src={defaultLogo} alt="Logo" width={200} height={100} />;
     }
@@ -92,7 +83,7 @@ export default function AppMock(props: TCustomDetails) {
 
   //Component for balance button
   const BalanceButton = () => {
-    const coinPath = coinLogo ? URL.createObjectURL(coinLogo) : defaultCoinPath;
+    const coinPath = coinLogo || defaultCoinPath;
     return (
       <div className="balance">
         <img

@@ -173,6 +173,9 @@ type TApp = {
   primaryColor: string;
   secondaryColor: string;
   logoImage?: string;
+  loginScreenBackgroundImage?: string;
+  coinImage?: string;
+
 };
 
 type TAppUser = {

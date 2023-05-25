@@ -20,11 +20,16 @@ export interface TCustomDetails {
   changeScreen: (i: number) => void;
 
   logo: string;
-  loginScreenBackground: File | null;
-  coinLogo: File | null;
+  loginScreenBackground: string;
+  coinLogo: string;
 }
 
 type BuildStage = "prepare" | "preparing" | "download";
+
+type IFile = {
+  file?: File;
+  url: string;
+};
 
 function isValidHexCode(str: string) {
   if (!str) {
@@ -36,19 +41,23 @@ function isValidHexCode(str: string) {
 
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) =>
-    s.apps.find((app) => app._id === appId)
-  );
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
   const [displayName, setDisplayName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
-  const [logo, setLogo] = useState<File | null>(null);
-  const [logoUrl, setLogoUrl] = useState(app?.logoImage || '');
-
-  const [loginScreenBackground, setLoginScreenBackground] =
-    useState<File | null>(null);
+  const [logo, setLogo] = useState<IFile>({
+    file: undefined,
+    url: app.logoImage || "",
+  });
+  const [loginScreenBackground, setLoginScreenBackground] = useState<IFile>({
+    file: undefined,
+    url: app?.loginScreenBackgroundImage || "",
+  });
+  const [coinLogo, setCoinLogo] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
   const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
   const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
-  const [coinLogo, setCoinLogo] = useState<File | null>(null);
   const [coinSymbol, setCoinSymbol] = useState("");
   const [coinName, setCoinName] = useState("");
 
@@ -67,9 +76,8 @@ export default function AppBuilder() {
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
   const handleLogoChange = (event: any) => {
-    const l = event.target.files[0]
-    setLogo(l);
-    setLogoUrl(URL.createObjectURL(l))
+    const l = event.target.files[0];
+    setLogo({ file: l, url: URL.createObjectURL(l) });
   };
 
   useEffect(
@@ -144,11 +152,13 @@ export default function AppBuilder() {
     checkBuild();
   }, []);
   const handleLoginScreenBackgroundChange = (event: any) => {
-    setLoginScreenBackground(event.target.files[0]);
+    const l = event.target.files[0];
+    setLoginScreenBackground({ file: l, url: URL.createObjectURL(l) });
   };
 
   const handleCoinLogoChange = (event: any) => {
-    setCoinLogo(event.target.files[0]);
+    const l = event.target.files[0];
+    setCoinLogo({ file: l, url: URL.createObjectURL(l) });
   };
 
   const validateDomainName = async (domainName: string) => {
@@ -161,8 +171,7 @@ export default function AppBuilder() {
       setDomainNameError(false);
     } catch (error) {
       console.log(error);
-      if(domainName !== app.domainName) {
-
+      if (domainName !== app.domainName) {
         setDomainNameError(true);
       }
     }
@@ -178,17 +187,17 @@ export default function AppBuilder() {
     secondaryColor && data.append("secondaryColor", secondaryColor);
     coinSymbol && data.append("coinSymbol", coinSymbol);
     coinName && data.append("coinName", coinName);
-    coinLogo && data.append("coinLogoImage", coinLogo as Blob);
-    logo && data.append("logoImage", logo as Blob);
-    loginScreenBackground &&
-      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
+    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
+    logo.file && data.append("logoImage", logo.file);
+    loginScreenBackground.file &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
     setLoading(true);
     try {
       const res = await httpWithAuth().put("/apps/" + appId, data);
 
       console.log({ res });
     } catch (error) {
-      showSnackbar('error', 'Cannot save settings')
+      showSnackbar("error", "Cannot save settings");
       console.log({ error });
     }
     setLoading(false);
@@ -203,7 +212,7 @@ export default function AppBuilder() {
     const transformedDomain = replaceNotAllowedCharactersInDomain(
       value.toLowerCase().split(" ").join("")
     );
-    setDomain(transformedDomain)
+    setDomain(transformedDomain);
     try {
     } catch (error) {}
   };
@@ -235,10 +244,10 @@ export default function AppBuilder() {
     secondaryColor && data.append("secondaryColor", secondaryColor);
     coinSymbol && data.append("coinSymbol", coinSymbol);
     coinName && data.append("coinName", coinName);
-    coinLogo && data.append("coinLogoImage", coinLogo as Blob);
-    logo && data.append("logoImage", logo as Blob);
-    loginScreenBackground &&
-      data.append("loginScreenBackgroundImage", loginScreenBackground as Blob);
+    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
+    logo.file && data.append("logoImage", logo.file);
+    loginScreenBackground.file &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
 
     try {
       const res = await httpWithAuth().post(
@@ -252,11 +261,11 @@ export default function AppBuilder() {
     } catch (error) {
       setBuildStage("prepare");
       console.log(error);
-      showSnackbar('error', 'Something went wrong')
+      showSnackbar("error", "Something went wrong");
     }
     setLoading(false);
   };
-console.log(app)
+  console.log(app);
   return (
     <main>
       <Box
@@ -359,7 +368,7 @@ console.log(app)
                 variant="outlined"
                 onClick={() => appLogoRef?.current?.click()}
               >
-                {logo?.name || "Upload File"}
+                {logo?.file?.name || "Upload File"}
               </Button>
             </Box>
             <Box sx={{ mb: 2, mt: 1 }}>
@@ -375,8 +384,9 @@ console.log(app)
                 color="primary"
                 variant="outlined"
                 onClick={() => loginScreenBgRef?.current?.click()}
+                sx={{ maxWidth: "200px" }}
               >
-                {loginScreenBackground?.name || "Upload File"}
+                {loginScreenBackground?.file?.name || "Upload File"}
               </Button>
             </Box>
           </Box>
@@ -450,10 +460,14 @@ console.log(app)
               helperText={
                 domainNameError
                   ? "❌ name not available, please fill in something more unique here"
-                  : app.domainName === domain ? '' : "✅ available"
+                  : app.domainName === domain
+                  ? ""
+                  : "✅ available"
               }
             />
-            <Typography style={{ marginBottom: app.domainName !== domain ?  "20px" : 0 }}>
+            <Typography
+              style={{ marginBottom: app.domainName !== domain ? "20px" : 0 }}
+            >
               {"." + config.DOMAIN_NAME}
             </Typography>
           </Box>
@@ -472,9 +486,9 @@ console.log(app)
         <AppMock
           primaryColor={primaryColor}
           secondaryColor={secondaryColor}
-          logo={logoUrl}
-          loginScreenBackground={loginScreenBackground}
-          coinLogo={coinLogo}
+          logo={logo.url}
+          loginScreenBackground={loginScreenBackground.url}
+          coinLogo={coinLogo.url}
           coinSymbol={coinSymbol}
           coinName={coinName}
           currentScreenIndex={currentScreenIndex}
