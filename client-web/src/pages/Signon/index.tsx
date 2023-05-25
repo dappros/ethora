@@ -31,6 +31,8 @@ import { Typography } from "@mui/material";
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
+  const config = useStoreState((state) => state.config);
+
   const query = useQuery();
   const history = useHistory();
   const { search } = useLocation();
@@ -276,7 +278,7 @@ export default function Signon() {
             containerStyle={{ padding: 0, width: "100%" }}
           />
         )}
-        {googleSignIn && (
+        {googleSignIn && !!config.REACT_APP_FIREBASE_API_KEY && (
           <Button
             onClick={onGoogleClick}
             sx={{ margin: 1 }}

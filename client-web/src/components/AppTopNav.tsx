@@ -125,7 +125,6 @@ const AppTopNav = () => {
   const subscribeForXmppNotifications = async () => {
     try {
       const token = await getFirebaseMesagingToken();
-      console.log(token)
       const res = await subscribeForPushNotifications(
         token,
         walletToUsername(user.walletAddress) + DOMAIN
