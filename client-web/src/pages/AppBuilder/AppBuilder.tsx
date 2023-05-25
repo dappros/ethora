@@ -184,6 +184,7 @@ export default function AppBuilder() {
 
       console.log({ res });
     } catch (error) {
+      showSnackbar('error', 'Cannot save settings')
       console.log({ error });
     }
     setLoading(false);

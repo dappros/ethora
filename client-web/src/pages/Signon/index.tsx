@@ -183,7 +183,7 @@ export default function Signon() {
       subscriptions: loginData.subscriptions,
       company: res.data.result,
       appId: loginData.user.appId,
-      homeScreen: loginData.user.homeScreen
+      homeScreen: loginData.user.homeScreen,
     });
   };
 
@@ -252,6 +252,9 @@ export default function Signon() {
           justifyContent: "center",
         }}
       >
+        {config.logoImage && (
+          <img src={config.logoImage} style={{ width: "100%", height: 200, marginBottom: 10 }} />
+        )}
         {facebookSignIn && (
           <FacebookLogin
             appId="1172938123281314"

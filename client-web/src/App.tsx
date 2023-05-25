@@ -6,12 +6,6 @@ import { Routes } from "./pages/Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
 import { SnackbarContextProvider } from "./context/SnackbarContext";
-import { firebase } from "./services/firebase";
-import { onMessageListener } from "./services/firebaseMessaging";
-import { sendBrowserNotification } from "./utils";
-import { getConfig } from "./http";
-import { useState, useEffect } from "react";
-import { FullPageSpinner } from "./components/FullPageSpinner";
 
 const darkTheme = createTheme({
   palette: {
