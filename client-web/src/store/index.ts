@@ -172,6 +172,7 @@ type TApp = {
   parentAppId?: string;
   primaryColor: string;
   secondaryColor: string;
+  logoImage?: string;
 };
 
 type TAppUser = {

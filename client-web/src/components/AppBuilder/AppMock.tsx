@@ -44,7 +44,7 @@ export default function AppMock(props: TCustomDetails) {
     if (logo) {
       return (
         <img
-          src={URL.createObjectURL(logo as Blob)}
+          src={logo}
           alt="Logo"
           width={200}
           height={100}

@@ -19,7 +19,7 @@ export interface TCustomDetails {
   currentScreenIndex: number;
   changeScreen: (i: number) => void;
 
-  logo: File | null;
+  logo: string;
   loginScreenBackground: File | null;
   coinLogo: File | null;
 }
@@ -42,6 +42,8 @@ export default function AppBuilder() {
   const [displayName, setDisplayName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<File | null>(null);
+  const [logoUrl, setLogoUrl] = useState(app?.logoImage || '');
+
   const [loginScreenBackground, setLoginScreenBackground] =
     useState<File | null>(null);
   const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
@@ -65,7 +67,9 @@ export default function AppBuilder() {
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
 
   const handleLogoChange = (event: any) => {
-    setLogo(event.target.files[0]);
+    const l = event.target.files[0]
+    setLogo(l);
+    setLogoUrl(URL.createObjectURL(l))
   };
 
   useEffect(
@@ -252,7 +256,7 @@ export default function AppBuilder() {
     }
     setLoading(false);
   };
-
+console.log(app)
   return (
     <main>
       <Box
@@ -468,7 +472,7 @@ export default function AppBuilder() {
         <AppMock
           primaryColor={primaryColor}
           secondaryColor={secondaryColor}
-          logo={logo}
+          logo={logoUrl}
           loginScreenBackground={loginScreenBackground}
           coinLogo={coinLogo}
           coinSymbol={coinSymbol}
