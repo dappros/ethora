@@ -112,7 +112,7 @@ export const Routes = () => {
   const getAppConfig = async () => {
     setLoading(true);
     try {
-      const config = await http.getConfig('tettt');
+      const config = await http.getConfig();
       setConfig(config.data.result);
       firebase.init();
     } catch (error) {

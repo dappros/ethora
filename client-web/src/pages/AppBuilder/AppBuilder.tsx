@@ -56,6 +56,14 @@ export default function AppBuilder() {
     file: undefined,
     url: app?.coinImage || "",
   });
+  const [googleServisesJson, setGoogleServisesJson] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
+  const [googleServisesPlist, setGoogleServisesPlist] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
   const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
   const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
   const [coinSymbol, setCoinSymbol] = useState("");
@@ -65,7 +73,6 @@ export default function AppBuilder() {
   const debouncedDomain = useDebounce<string>(domain, 500);
   const [loading, setLoading] = useState(true);
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-  const appLogoRef = useRef<HTMLInputElement>(null);
   const [buildStage, setBuildStage] = useState<BuildStage>("prepare");
   const [fileTimeToLive, setFileTimeToLive] = useState<Duration>({
     hours: 0,
@@ -74,11 +81,9 @@ export default function AppBuilder() {
   const [domainNameError, setDomainNameError] = useState(false);
   const { showSnackbar } = useSnackbar();
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
-
-  const handleLogoChange = (event: any) => {
-    const l = event.target.files[0];
-    setLogo({ file: l, url: URL.createObjectURL(l) });
-  };
+  const appLogoRef = useRef<HTMLInputElement>(null);
+  const googleServisesJsonRef = useRef<HTMLInputElement>(null);
+  const googleServisesPlistRef = useRef<HTMLInputElement>(null);
 
   useEffect(
     () => {
@@ -151,12 +156,29 @@ export default function AppBuilder() {
   useEffect(() => {
     checkBuild();
   }, []);
-  const handleLoginScreenBackgroundChange = (event: any) => {
+  const handleLoginScreenBackgroundChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const l = event.target.files[0];
     setLoginScreenBackground({ file: l, url: URL.createObjectURL(l) });
   };
-
-  const handleCoinLogoChange = (event: any) => {
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const l = event.target.files[0];
+    setLogo({ file: l, url: URL.createObjectURL(l) });
+  };
+  const handleGoogleServisesJsonChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const l = event.target.files[0];
+    setGoogleServisesJson({ file: l, url: URL.createObjectURL(l) });
+  };
+  const handleGoogleServisesPlistChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const l = event.target.files[0];
+    setGoogleServisesPlist({ file: l, url: URL.createObjectURL(l) });
+  };
+  const handleCoinLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const l = event.target.files[0];
     setCoinLogo({ file: l, url: URL.createObjectURL(l) });
   };
@@ -191,6 +213,10 @@ export default function AppBuilder() {
     logo.file && data.append("logoImage", logo.file);
     loginScreenBackground.file &&
       data.append("loginScreenBackgroundImage", loginScreenBackground.file);
+    googleServisesJson.file &&
+      data.append("googleServicesJson", googleServisesJson.file);
+    googleServisesPlist.file &&
+      data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
     setLoading(true);
     try {
       const res = await httpWithAuth().put("/apps/" + appId, data);
@@ -248,7 +274,10 @@ export default function AppBuilder() {
     logo.file && data.append("logoImage", logo.file);
     loginScreenBackground.file &&
       data.append("loginScreenBackgroundImage", loginScreenBackground.file);
-
+    googleServisesJson.file &&
+      data.append("googleServicesJson", googleServisesJson.file);
+    googleServisesPlist.file &&
+      data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
     try {
       const res = await httpWithAuth().post(
         "/mobile/src-builder/" + appId,
@@ -387,6 +416,43 @@ export default function AppBuilder() {
                 sx={{ maxWidth: "200px" }}
               >
                 {loginScreenBackground?.file?.name || "Upload File"}
+              </Button>
+            </Box>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <Typography>Google Services JSON</Typography>
+
+              <input
+                onChange={handleGoogleServisesJsonChange}
+                ref={googleServisesJsonRef}
+                type="file"
+                accept=".json"
+                style={{ display: "none" }}
+              />
+              <Button
+                // disabled={loading}
+                color="primary"
+                variant="outlined"
+                onClick={() => googleServisesJsonRef?.current?.click()}
+              >
+                {googleServisesJson?.file?.name || "Upload File"}
+              </Button>
+            </Box>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <Typography>Google Services PLIST</Typography>
+              <input
+                onChange={handleGoogleServisesPlistChange}
+                ref={googleServisesPlistRef}
+                type="file"
+                accept=".plist"
+                style={{ display: "none" }}
+              />
+              <Button
+                // disabled={loading}
+                color="primary"
+                variant="outlined"
+                onClick={() => googleServisesPlistRef?.current?.click()}
+              >
+                {googleServisesPlist?.file?.name || "Upload File"}
               </Button>
             </Box>
           </Box>
