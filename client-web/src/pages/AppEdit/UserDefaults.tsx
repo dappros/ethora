@@ -21,7 +21,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const setApp = useStoreState((state) => state.setApp);
+  const updateApp = useStoreState((state) => state.updateApp);
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
   const [defaultChatRooms, setDefaultChatRooms] = useState(() =>
@@ -53,7 +53,11 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
     ) => {
       setSubmitting(true);
       const fd = new FormData();
-      console.log(defaultAccessAssetsOpen, defaultAccessProfileOpen, usersCanFree)
+      console.log(
+        defaultAccessAssetsOpen,
+        defaultAccessProfileOpen,
+        usersCanFree
+      );
 
       fd.append("displayName", app.displayName);
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
@@ -63,9 +67,9 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       );
       fd.append("usersCanFree", usersCanFree.toString());
       try {
-        const res = await http.httpWithAuth().put("/apps/" + appId, fd);
+        const res = await http.updateAppSettings(appId, fd);
         setUser({ ...user, homeScreen: "" });
-        console.log(res.data);
+        updateApp(res.data.result);
       } catch (error) {
         showSnackbar(
           "error",

@@ -7,7 +7,7 @@ import {
   ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
-import { useStoreState } from "./store";
+import { TApp, useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
 import xmpp from "./xmpp";
@@ -471,6 +471,11 @@ export function getMyAcl() {
 export function getConfig(domainName = "ethora") {
   return http.get("apps/get-config?domainName=" + domainName);
 }
+type TAppResponse = {result: TApp}
+export function updateAppSettings( appId: string, data: FormData) {
+  return httpWithAuth().put<TAppResponse>("/apps/" + appId, data)
+}
+
 export interface IAclBody {
   application: {
     appCreate?: TPermission;

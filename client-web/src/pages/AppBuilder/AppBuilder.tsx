@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
 import { Box, Button, TextField, Typography } from "@mui/material";
-import { httpWithAuth } from "../../http";
+import { httpWithAuth, updateAppSettings } from "../../http";
 import { useParams } from "react-router";
 import { intervalToDuration } from "date-fns";
 import { LoadingButton } from "@mui/lab";
@@ -42,6 +42,8 @@ function isValidHexCode(str: string) {
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  const updateApp = useStoreState((s) => s.updateApp);
+
   const [displayName, setDisplayName] = useState(app.displayName || "");
   const [bundleId, setBundleId] = useState("com.ethora");
   const [logo, setLogo] = useState<IFile>({
@@ -87,7 +89,7 @@ export default function AppBuilder() {
 
   useEffect(
     () => {
-      if (debouncedDomain) {
+      if (debouncedDomain && debouncedDomain !== app.domainName) {
         validateDomainName(debouncedDomain);
       }
     },
@@ -219,7 +221,8 @@ export default function AppBuilder() {
       data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
     setLoading(true);
     try {
-      const res = await httpWithAuth().put("/apps/" + appId, data);
+      const res = await updateAppSettings(appId, data);
+      updateApp(res.data.result);
 
       console.log({ res });
     } catch (error) {

@@ -139,7 +139,7 @@ export type TUserChatRooms = {
   group?: TActiveRoomFilter;
 };
 
-type TApp = {
+export type TApp = {
   _id: string;
   displayName: string;
   appName: string;
