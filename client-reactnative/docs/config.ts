@@ -91,6 +91,8 @@ const textStyles = {
   thinFont: 'Poppins-Thin',
 }; //done
 
+export const googleWebClientId =  '972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com';
+
 const defaultChatBackgroundTheme = [
   {
     value:
