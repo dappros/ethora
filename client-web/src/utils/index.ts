@@ -69,6 +69,13 @@ export const produceNfmtItems = (array = []) => {
   }
   return result;
 };
+export function isValidHexCode(str: string) {
+  if (!str) {
+    return true;
+  }
+  let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
+  return regex.test(str) === true;
+}
 export function replaceNotAllowedCharactersInDomain(domain: string) {
   // Define the regex pattern for disallowed characters
   const disallowedPattern = /[^a-zA-Z0-9\-]/g;

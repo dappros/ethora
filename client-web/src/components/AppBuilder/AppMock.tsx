@@ -3,6 +3,7 @@ import { TCustomDetails } from "../../pages/AppBuilder/AppBuilder";
 import defaultLoginBackground from "../../assets/images/login_background.png";
 import defaultCoinPath from "../../assets/images/coin.png";
 import profilePic from "../../assets/images/profilepic.png";
+import { isValidHexCode } from "../../utils";
 
 export default function AppMock(props: TCustomDetails) {
   const {
@@ -14,7 +15,8 @@ export default function AppMock(props: TCustomDetails) {
     loginScreenBackground,
     changeScreen,
   } = props;
-
+  const isLoginBgColor =
+    loginScreenBackground && isValidHexCode(loginScreenBackground);
   const backgroundImage = loginScreenBackground || defaultLoginBackground;
 
   //Component to display social button
@@ -39,44 +41,45 @@ export default function AppMock(props: TCustomDetails) {
   //Component to display Title or Logo if provided else will show default
   const LogoTitle = () => {
     const appTitleColor = primaryColor ? primaryColor : "#003E9C";
-    if (logo) {
-      return <img src={logo} alt="Logo" width={200} height={100} />;
-    } else {
-      return <img src={defaultLogo} alt="Logo" width={200} height={100} />;
-    }
+    const appLogo = logo || defaultLogo;
+
+    return (
+      <div style={{ border: logo ? "none" : "1px solid black" }}>
+        <img src={appLogo} alt="Logo" width={200} height={100} />
+      </div>
+    );
   };
 
   //Component to show form in 1st screen
   const screen0 = () => {
     return (
-      <div className="loginScreen" onClick={() => changeScreen(0)}>
+      <div
+        className="loginScreen"
+        style={{
+          width: "250px",
+          height: "500px",
+          padding: "20px",
+          backgroundColor: "#fff",
+          borderBottomLeftRadius: "20px",
+          borderBottomRightRadius: "20px",
+          background: isLoginBgColor
+            ? loginScreenBackground
+            : `url(${backgroundImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+        onClick={() => changeScreen(0)}
+      >
         <LogoTitle />
         <SocialButton color="#4D6DA4" />
         <SocialButton color="#FFFF" />
         <SocialButton color="#000000" />
         <SocialButton color="#cc6228" />
-
-        <style>
-          {`
-            .loginScreen {
-              width: 250px;
-              height: 500px;
-              padding: 20px;
-              backgroun-color: #fff;
-              border-bottom-left-radius: 20px;
-              border-bottom-right-radius: 20px;
-              background-image: url(${backgroundImage});
-              background-size: cover;
-              background-position: center;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-            }
-           
-          `}
-        </style>
       </div>
     );
   };

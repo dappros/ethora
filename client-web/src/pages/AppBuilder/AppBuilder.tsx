@@ -7,7 +7,10 @@ import { intervalToDuration } from "date-fns";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useStoreState } from "../../store";
-import { replaceNotAllowedCharactersInDomain } from "../../utils";
+import {
+  isValidHexCode,
+  replaceNotAllowedCharactersInDomain,
+} from "../../utils";
 import { config } from "../../config";
 import useDebounce from "../../hooks/useDebounce";
 
@@ -31,14 +34,6 @@ type IFile = {
   url: string;
 };
 
-function isValidHexCode(str: string) {
-  if (!str) {
-    return true;
-  }
-  let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
-  return regex.test(str) === true;
-}
-
 export default function AppBuilder() {
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
@@ -50,26 +45,19 @@ export default function AppBuilder() {
     file: undefined,
     url: app.logoImage || "",
   });
-  const [loginScreenBackground, setLoginScreenBackground] = useState<IFile>({
+  const [loginScreenBackground, setLoginScreenBackground] = useState({
     file: undefined,
-    url: app?.loginScreenBackgroundImage || "",
+    value: app?.loginScreenBackgroundImage || "",
   });
   const [coinLogo, setCoinLogo] = useState<IFile>({
     file: undefined,
     url: app?.coinImage || "",
   });
-  const [googleServisesJson, setGoogleServisesJson] = useState<IFile>({
-    file: undefined,
-    url: app?.coinImage || "",
-  });
-  const [googleServisesPlist, setGoogleServisesPlist] = useState<IFile>({
-    file: undefined,
-    url: app?.coinImage || "",
-  });
+
   const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
   const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
   const [coinSymbol, setCoinSymbol] = useState("");
-  const [coinName, setCoinName] = useState("");
+  const [coinName, setCoinName] = useState("Coin");
 
   const [domain, setDomain] = useState(`${app.domainName}`);
   const debouncedDomain = useDebounce<string>(domain, 500);
@@ -84,8 +72,6 @@ export default function AppBuilder() {
   const { showSnackbar } = useSnackbar();
   const loginScreenBgRef = useRef<HTMLInputElement>(null);
   const appLogoRef = useRef<HTMLInputElement>(null);
-  const googleServisesJsonRef = useRef<HTMLInputElement>(null);
-  const googleServisesPlistRef = useRef<HTMLInputElement>(null);
 
   useEffect(
     () => {
@@ -162,24 +148,15 @@ export default function AppBuilder() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const l = event.target.files[0];
-    setLoginScreenBackground({ file: l, url: URL.createObjectURL(l) });
+    setLoginScreenBackground({ file: l, value: URL.createObjectURL(l) });
+    event.target.files = null;
+    event.target.value = null;
   };
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const l = event.target.files[0];
     setLogo({ file: l, url: URL.createObjectURL(l) });
   };
-  const handleGoogleServisesJsonChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const l = event.target.files[0];
-    setGoogleServisesJson({ file: l, url: URL.createObjectURL(l) });
-  };
-  const handleGoogleServisesPlistChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const l = event.target.files[0];
-    setGoogleServisesPlist({ file: l, url: URL.createObjectURL(l) });
-  };
+
   const handleCoinLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const l = event.target.files[0];
     setCoinLogo({ file: l, url: URL.createObjectURL(l) });
@@ -190,7 +167,7 @@ export default function AppBuilder() {
       const res = await httpWithAuth().post("apps/check-domain-name", {
         domainName,
       });
-      console.log(res);
+      // console.log(res);
       // setDomain(`${domainName}`);
       setDomainNameError(false);
     } catch (error) {
@@ -215,16 +192,13 @@ export default function AppBuilder() {
     logo.file && data.append("logoImage", logo.file);
     loginScreenBackground.file &&
       data.append("loginScreenBackgroundImage", loginScreenBackground.file);
-    googleServisesJson.file &&
-      data.append("googleServicesJson", googleServisesJson.file);
-    googleServisesPlist.file &&
-      data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
+    loginScreenBackground.value &&
+      isValidHexCode(loginScreenBackground.value) &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
     setLoading(true);
     try {
       const res = await updateAppSettings(appId, data);
       updateApp(res.data.result);
-
-      console.log({ res });
     } catch (error) {
       showSnackbar("error", "Cannot save settings");
       console.log({ error });
@@ -277,10 +251,9 @@ export default function AppBuilder() {
     logo.file && data.append("logoImage", logo.file);
     loginScreenBackground.file &&
       data.append("loginScreenBackgroundImage", loginScreenBackground.file);
-    googleServisesJson.file &&
-      data.append("googleServicesJson", googleServisesJson.file);
-    googleServisesPlist.file &&
-      data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
+    loginScreenBackground.value &&
+      isValidHexCode(loginScreenBackground.value) &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
     try {
       const res = await httpWithAuth().post(
         "/mobile/src-builder/" + appId,
@@ -288,8 +261,6 @@ export default function AppBuilder() {
       );
       await checkBuild();
       setBuildStage("download");
-
-      console.log(res.data);
     } catch (error) {
       setBuildStage("prepare");
       console.log(error);
@@ -297,7 +268,6 @@ export default function AppBuilder() {
     }
     setLoading(false);
   };
-  console.log(app);
   return (
     <main>
       <Box
@@ -311,7 +281,7 @@ export default function AppBuilder() {
       >
         <Box>
           <Typography sx={{ fontWeight: "bold", mb: 2 }}>
-            General Appearence
+            General Appearance
           </Typography>
           <Box
             sx={{
@@ -320,28 +290,6 @@ export default function AppBuilder() {
               columnGap: 3,
             }}
           >
-            <Box>
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Display Name"
-                name="displayName"
-                variant="outlined"
-                value={displayName}
-                onChange={handleAppNameChange}
-              />
-            </Box>
-            <Box>
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Coin Name"
-                name="coinName"
-                variant="outlined"
-                value={coinName}
-                onChange={(e) => setCoinName(e.target.value)}
-              />
-            </Box>
             <Box>
               <TextField
                 margin="dense"
@@ -362,6 +310,18 @@ export default function AppBuilder() {
               <TextField
                 margin="dense"
                 fullWidth
+                label="Display Name"
+                name="displayName"
+                variant="outlined"
+                value={displayName}
+                onChange={handleAppNameChange}
+              />
+            </Box>
+
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
                 label="Secondary Color"
                 name="secondaryColor"
                 variant={"outlined"}
@@ -373,8 +333,21 @@ export default function AppBuilder() {
                 onChange={(e) => setSecondaryColor(e.target.value)}
               />
             </Box>
-
-            <Box sx={{ gridColumn: "1/3" }}>
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Coin Name"
+                name="coinName"
+                variant="outlined"
+                value={coinName}
+                onChange={(e) => setCoinName(e.target.value)}
+                helperText={
+                  "Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure."
+                }
+              />
+            </Box>
+            {/* <Box sx={{ gridColumn: "1/3" }}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -384,8 +357,8 @@ export default function AppBuilder() {
                 value={coinSymbol}
                 onChange={(e) => setCoinSymbol(e.target.value)}
               />
-            </Box>
-            <Box sx={{ mb: 2, mt: 1 }}>
+            </Box> */}
+            <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
               <Typography>App Logo</Typography>
 
               <input
@@ -402,61 +375,55 @@ export default function AppBuilder() {
               >
                 {logo?.file?.name || "Upload File"}
               </Button>
+              <Typography
+                sx={{ fontSize: 12, position: "absolute", bottom: 10,color: 'rgba(0, 0, 0, 0.6)' }}
+              >
+                Recommended size: 500px x 500px
+              </Typography>
             </Box>
             <Box sx={{ mb: 2, mt: 1 }}>
               <input
-                onChange={handleLoginScreenBackgroundChange}
+                onInput={handleLoginScreenBackgroundChange}
                 ref={loginScreenBgRef}
                 type="file"
                 style={{ display: "none" }}
               />
               <Typography>Login Screen Background</Typography>
-              <Button
-                // disabled={loading}
-                color="primary"
-                variant="outlined"
-                onClick={() => loginScreenBgRef?.current?.click()}
-                sx={{ maxWidth: "200px" }}
-              >
-                {loginScreenBackground?.file?.name || "Upload File"}
-              </Button>
-            </Box>
-            <Box sx={{ mb: 2, mt: 1 }}>
-              <Typography>Google Services JSON</Typography>
-
-              <input
-                onChange={handleGoogleServisesJsonChange}
-                ref={googleServisesJsonRef}
-                type="file"
-                accept=".json"
-                style={{ display: "none" }}
-              />
-              <Button
-                // disabled={loading}
-                color="primary"
-                variant="outlined"
-                onClick={() => googleServisesJsonRef?.current?.click()}
-              >
-                {googleServisesJson?.file?.name || "Upload File"}
-              </Button>
-            </Box>
-            <Box sx={{ mb: 2, mt: 1 }}>
-              <Typography>Google Services PLIST</Typography>
-              <input
-                onChange={handleGoogleServisesPlistChange}
-                ref={googleServisesPlistRef}
-                type="file"
-                accept=".plist"
-                style={{ display: "none" }}
-              />
-              <Button
-                // disabled={loading}
-                color="primary"
-                variant="outlined"
-                onClick={() => googleServisesPlistRef?.current?.click()}
-              >
-                {googleServisesPlist?.file?.name || "Upload File"}
-              </Button>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Button
+                  // disabled={loading}
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => loginScreenBgRef?.current?.click()}
+                  sx={{ maxWidth: "200px", minWidth: 150 }}
+                >
+                  {loginScreenBackground?.file?.name || "Upload File"}
+                </Button>
+                <Typography>OR</Typography>
+                <TextField
+                  margin="dense"
+                  fullWidth
+                  label="Login Screen Color"
+                  name="loginScreenColor"
+                  variant={"outlined"}
+                  type={"color"}
+                  InputLabelProps={{ shrink: true }}
+                  placeholder="#ffffff"
+                  value={
+                    isValidHexCode(loginScreenBackground.value)
+                      ? loginScreenBackground.value
+                      : "#fffff"
+                  }
+                  error={!isValidHexCode(secondaryColor)}
+                  onChange={(e) =>
+                    setLoginScreenBackground({
+                      file: undefined,
+                      value: e.target.value,
+                    })
+                  }
+                  sx={{ minWidth: 150 }}
+                />
+              </Box>
             </Box>
           </Box>
           <Box>
@@ -465,7 +432,7 @@ export default function AppBuilder() {
             </Typography>
           </Box>
           <Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 3 }}>
               <TextField
                 margin="dense"
                 fullWidth
@@ -474,7 +441,9 @@ export default function AppBuilder() {
                 variant="outlined"
                 onChange={(e) => setBundleId(e.target.value)}
                 value={bundleId}
-                disabled
+                helperText={
+                  "Bundle ID should be unique to identify your app for Appstore and other purposes."
+                }
               />
               {buildStage === "download" ? (
                 <Box
@@ -483,6 +452,7 @@ export default function AppBuilder() {
                     flexDirection: "column",
                     alignItems: "flex-end",
                     position: "relative",
+                    mt: 1
                   }}
                 >
                   <Button
@@ -494,7 +464,7 @@ export default function AppBuilder() {
                     Download React Native build
                   </Button>
                   <Typography
-                    sx={{ fontSize: 12, position: "absolute", bottom: -20 }}
+                    sx={{ fontSize: 12,color: 'rgba(0, 0, 0, 0.6)'}}
                   >
                     Expires in {fileTimeToLive && fileTimeToLive.hours + "h"}{" "}
                     {fileTimeToLive && fileTimeToLive.minutes + "m"}
@@ -540,12 +510,13 @@ export default function AppBuilder() {
               {"." + config.DOMAIN_NAME}
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box sx={{ display: "flex", mt: 2 }}>
             <LoadingButton
               loading={loading}
               disabled={loading || domainNameError}
               onClick={saveSettings}
               variant="contained"
+              sx={{ padding: "10px 40px" }}
             >
               Save
             </LoadingButton>
@@ -556,7 +527,7 @@ export default function AppBuilder() {
           primaryColor={primaryColor}
           secondaryColor={secondaryColor}
           logo={logo.url}
-          loginScreenBackground={loginScreenBackground.url}
+          loginScreenBackground={loginScreenBackground.value}
           coinLogo={coinLogo.url}
           coinSymbol={coinSymbol}
           coinName={coinName}

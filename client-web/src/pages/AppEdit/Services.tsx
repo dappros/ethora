@@ -8,7 +8,10 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { LoadingButton } from "@mui/lab";
 
 export interface IServices {}
-
+type IFile = {
+  file?: File;
+  url: string;
+};
 export const Services: React.FC<IServices> = ({}) => {
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState({
@@ -32,6 +35,17 @@ export const Services: React.FC<IServices> = ({}) => {
 
   const fileRef = useRef<HTMLInputElement>(null);
   const { showSnackbar } = useSnackbar();
+  const [googleServisesJson, setGoogleServisesJson] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
+  const [googleServisesPlist, setGoogleServisesPlist] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
+  const googleServisesJsonRef = useRef<HTMLInputElement>(null);
+  const googleServisesPlistRef = useRef<HTMLInputElement>(null);
+
   const uploadCertificate = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     try {
@@ -45,13 +59,27 @@ export const Services: React.FC<IServices> = ({}) => {
     setLoading(false);
   };
 
+  const handleGoogleServisesJsonChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const l = event.target.files[0];
+    setGoogleServisesJson({ file: l, url: URL.createObjectURL(l) });
+  };
+  const handleGoogleServisesPlistChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const l = event.target.files[0];
+    setGoogleServisesPlist({ file: l, url: URL.createObjectURL(l) });
+  };
+
   const formik = useFormik({
     initialValues: {
       REACT_APP_FIREBASE_API_KEY: app.REACT_APP_FIREBASE_API_KEY,
       REACT_APP_FIREBASE_AUTH_DOMAIN: app.REACT_APP_FIREBASE_AUTH_DOMAIN,
       REACT_APP_FIREBASE_PROJECT_ID: app.REACT_APP_FIREBASE_PROJECT_ID,
       REACT_APP_FIREBASE_STORAGE_BUCKET: app.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: app.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+      REACT_APP_FIREBASE_MESSAGING_SENDER_ID:
+        app.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
       REACT_APP_FIREBASE_APP_ID: app.REACT_APP_FIREBASE_APP_ID,
       REACT_APP_FIREBASE_MEASURMENT_ID: app.REACT_APP_FIREBASE_MEASURMENT_ID,
     },
@@ -102,10 +130,14 @@ export const Services: React.FC<IServices> = ({}) => {
           "REACT_APP_FIREBASE_MEASURMENT_ID",
           REACT_APP_FIREBASE_MEASURMENT_ID
         );
+      googleServisesJson.file &&
+        data.append("googleServicesJson", googleServisesJson.file);
+      googleServisesPlist.file &&
+        data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
       setSubmitting(true);
       try {
         const res = await http.updateAppSettings(appId, data);
-        updateApp(res.data.result)
+        updateApp(res.data.result);
       } catch (error) {
         showSnackbar("error", "Cannot save settings");
         console.log({ error });
@@ -128,6 +160,45 @@ export const Services: React.FC<IServices> = ({}) => {
         <Button variant="outlined" onClick={() => fileRef.current?.click()}>
           {certificate.originalname || "Upload"}
         </Button>
+      </Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 4, mt: 1, mb: 1 }}>
+        <Box >
+          <Typography>Google Services JSON</Typography>
+
+          <input
+            onChange={handleGoogleServisesJsonChange}
+            ref={googleServisesJsonRef}
+            type="file"
+            accept=".json"
+            style={{ display: "none" }}
+          />
+          <Button
+            // disabled={loading}
+            color="primary"
+            variant="outlined"
+            onClick={() => googleServisesJsonRef?.current?.click()}
+          >
+            {googleServisesJson?.file?.name || "Upload"}
+          </Button>
+        </Box>
+        <Box >
+          <Typography>Google Services PLIST</Typography>
+          <input
+            onChange={handleGoogleServisesPlistChange}
+            ref={googleServisesPlistRef}
+            type="file"
+            accept=".plist"
+            style={{ display: "none" }}
+          />
+          <Button
+            // disabled={loading}
+            color="primary"
+            variant="outlined"
+            onClick={() => googleServisesPlistRef?.current?.click()}
+          >
+            {googleServisesPlist?.file?.name || "Upload"}
+          </Button>
+        </Box>
       </Box>
       <Box>
         <TextField
