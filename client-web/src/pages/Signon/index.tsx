@@ -227,6 +227,18 @@ export default function Signon() {
     setLoading(false);
   };
 
+  const isGoogleLoginAvailable = () => {
+    return !!(
+      config.REACT_APP_FIREBASE_API_KEY &&
+      config.REACT_APP_FIREBASE_APP_ID &&
+      config.REACT_APP_FIREBASE_AUTH_DOMAIN &&
+      config.REACT_APP_FIREBASE_MEASURMENT_ID &&
+      config.REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
+      config.REACT_APP_FIREBASE_PROJECT_ID &&
+      config.REACT_APP_FIREBASE_STORAGE_BUCKET
+    );
+  };
+
   if (loading) {
     return <FullPageSpinner />;
   }
@@ -253,7 +265,10 @@ export default function Signon() {
         }}
       >
         {config.logoImage && (
-          <img src={config.logoImage} style={{ width: "100%", height: 200, marginBottom: 10 }} />
+          <img
+            src={config.logoImage}
+            style={{ width: "100%", height: 200, marginBottom: 10 }}
+          />
         )}
         {facebookSignIn && (
           <FacebookLogin
@@ -281,7 +296,7 @@ export default function Signon() {
             containerStyle={{ padding: 0, width: "100%" }}
           />
         )}
-        {googleSignIn && !!config.REACT_APP_FIREBASE_API_KEY && (
+        {googleSignIn && isGoogleLoginAvailable() && (
           <Button
             onClick={onGoogleClick}
             sx={{ margin: 1 }}
