@@ -69,4 +69,6 @@ export interface IApplicationAPI {
     getBalance(): Promise<any>;
     getTransactions(walletAddress: string): Promise<ITransactions>;
     deployNfmt(data: IDeployNFMT): Promise<any>;
+
+    getFilteredDataApi(data: any): Promise<any>;
 }

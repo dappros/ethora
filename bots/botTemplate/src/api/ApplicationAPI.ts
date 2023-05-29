@@ -146,6 +146,21 @@ export default class ApplicationAPI implements IApplicationAPI {
         }
     }
 
+    async getFilteredDataApi(params): Promise<any> {
+        try {
+            const result = await this.http.get('data', {params}, {
+                // headers: {
+                //     'Content-Type': 'application/json',
+                //     Authorization: this.authData.token,
+                // },
+            });
+            return result.data;
+        } catch (error) {
+            console.log(JSON.stringify(error))
+            throw error;
+        }
+    }
+
     async getTransactions(walletAddress: string): Promise<ITransactions> {
         try {
             const request = await this.http.get('explorer/transactions', {
