@@ -30,7 +30,7 @@ export const Install = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const response = await http.post("/setup");
+      const response = await http.post("/setup", data);
       console.log(response.data);
     } catch (error) {
       console.log(error);
