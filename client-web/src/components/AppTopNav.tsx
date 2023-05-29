@@ -14,6 +14,7 @@ import StarRateIcon from "@mui/icons-material/StarRate";
 import {
   getApps,
   getBalance,
+  getMyAcl,
   httpWithAuth,
   subscribeForPushNotifications,
 } from "../http";
@@ -32,8 +33,9 @@ import { ethers } from "ethers";
 import { DOMAIN } from "../constants";
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
 import { walletToUsername } from "../utils/walletManipulation";
+import { firebase } from "../services/firebase";
 
-const coinImg = '/coin.png'
+const coinImg = "/coin.png";
 function firstLetersFromName(fN: string, lN: string) {
   return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
 }
@@ -44,15 +46,68 @@ const roomFilters = [
   { name: ROOMS_FILTERS.meta, Icon: ExploreIcon },
 ];
 
+const mockAcl = {
+  result: [
+    {
+      network: {
+        netStats: {
+          read: true,
+          disabled: ["create", "update", "delete", "admin"],
+        },
+      },
+      application: {
+        appCreate: {
+          create: true,
+          disabled: ["read", "update", "delete", "admin"],
+        },
+        appSettings: {
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["create", "delete"],
+        },
+        appUsers: {
+          create: true,
+          read: true,
+          update: true,
+          delete: true,
+          admin: true,
+        },
+        appTokens: {
+          create: true,
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["delete"],
+        },
+        appPush: {
+          create: true,
+          read: true,
+          update: true,
+          admin: true,
+          disabled: ["delete"],
+        },
+        appStats: {
+          read: true,
+          admin: true,
+          disabled: ["create", "update", "delete"],
+        },
+      },
+    },
+  ],
+};
 const AppTopNav = () => {
- 
-
   const user = useStoreState((state) => state.user);
-
+  const apps = useStoreState((state) => state.apps);
+  const userId = useStoreState((state) => state.user._id);
+  const setACL = useStoreState((state) => state.setACL);
   const history = useHistory();
   const location = useLocation();
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
+  );
+  const firebaseAppId = useStoreState(
+    (s) => s.config.REACT_APP_FIREBASE_APP_ID
   );
 
   const setBalance = useStoreState((state) => state.setBalance);
@@ -74,17 +129,39 @@ const AppTopNav = () => {
         token,
         walletToUsername(user.walletAddress) + DOMAIN
       );
-      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
   };
+  const getAcl = async () => {
+    // setLoading(true);
+
+    try {
+      if (user?.ACL?.ownerAccess) {
+        setACL(mockAcl);
+        return;
+      }
+      const res = await getMyAcl();
+      setACL({ result: res.data.result });
+    } catch (error) {
+      console.log(error);
+    }
+    // setLoading(false);
+  };
+  useEffect(() => {
+    getAcl();
+  }, [apps.length, user.walletAddress]);
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance);
     });
-    subscribeForXmppNotifications();
   }, []);
+
+  useEffect(() => {
+    if (firebaseAppId) {
+      subscribeForXmppNotifications();
+    }
+  }, [firebaseAppId]);
 
   useEffect(() => {
     xmpp.init(user.walletAddress, user?.xmppPassword as string);
@@ -143,7 +220,7 @@ const AppTopNav = () => {
   }, [rooms]);
   return (
     <AppBar position="static">
-      <Box sx={{width: '100%', padding: '0 20px'}}>
+      <Box sx={{ width: "100%", padding: "0 20px" }}>
         <Toolbar disableGutters>
           <Box
             sx={{

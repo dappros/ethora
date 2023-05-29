@@ -136,7 +136,7 @@ export const Menu: React.FC<IMenu> = ({}) => {
   const onLogout = () => {
     clearUser();
     xmpp.stop();
-    localStorage.clear()
+    useStoreState.persist.rehydrate()
     if (active) {
       deactivate();
     }

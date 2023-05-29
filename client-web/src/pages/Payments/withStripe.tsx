@@ -7,6 +7,7 @@ import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { config } from "../../config";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { httpWithAuth } from "../../http";
+import { useStoreState } from "../../store";
 
 interface ISecret {
   clientSecret: string;
@@ -15,11 +16,11 @@ interface ISecret {
 export const withStripe = (Component: React.FC<ISecret>) => () => {
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const STRIPE_PUBLISHABLE_KEY = useStoreState(s => s.config.REACT_APP_STRIPE_PUBLISHABLE_KEY)
   const { showSnackbar } = useSnackbar();
   const history = useHistory();
   const stripePromise = useMemo(
-    () => loadStripe(config.STRIPE_PUBLISHABLE_KEY),
+    () => loadStripe(STRIPE_PUBLISHABLE_KEY),
     []
   );
   const stripeOptions: StripeElementsOptions = useMemo(

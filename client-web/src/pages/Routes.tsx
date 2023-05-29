@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Redirect, Route, Switch } from "react-router";
+import React, { useEffect, useState, Suspense, useRef } from "react";
+import { Redirect, Route, Switch, useHistory } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
@@ -11,7 +11,6 @@ import { configDocuments } from "../config/config";
 import { Snackbar } from "../components/Snackbar";
 import AuthRoute from "../components/AuthRoute";
 import * as http from "../http";
-import { onMessageListener } from "../services/firebaseMessaging";
 import { ResetPassword } from "./ResetPassword/ResetPassword";
 import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
@@ -19,12 +18,22 @@ import Subscriptions from "./Payments";
 import { Home } from "./Home/Home";
 import AppBuilder from "./AppBuilder/AppBuilder";
 import { AppEdit } from "./AppEdit/AppEdit";
+import AppTopNav from "../components/AppTopNav";
+import AppTopNavAuth from "../components/AppTopNavAuth";
+import AppTopNavOwner from "../components/AppTopNavOwner";
+import { firebase } from "../services/firebase";
+import { onMessageListener } from "../services/firebaseMessaging";
+import { Box, Typography } from "@mui/material";
+import { useSnackbar } from "../context/SnackbarContext";
+import { Helmet } from "react-helmet";
+
+import Owner from "./Owner";
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"));
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"));
 const Profile = React.lazy(() => import("./Profile"));
 const Signon = React.lazy(() => import("./Signon"));
-const Owner = React.lazy(() => import("./Owner"));
+// const Owner = React.lazy(() => import("./Owner"));
 const BlockDetails = React.lazy(() => import("./Explorer/BlockDetails"));
 const Explorer = React.lazy(() => import("./Explorer/Explorer"));
 const UsersPage = React.lazy(() => import("./UsersPage"));
@@ -48,75 +57,19 @@ const ChangeBackground = React.lazy(
   () => import("./ChatRoomDetails/ChangeBackground")
 );
 
-const mockAcl = {
-  result: [{
-    network: {
-      netStats: {
-        read: true,
-        disabled: ["create", "update", "delete", "admin"],
-      },
-    },
-    application: {
-      appCreate: {
-        create: true,
-        disabled: ["read", "update", "delete", "admin"],
-      },
-      appSettings: {
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["create", "delete"],
-      },
-      appUsers: {
-        create: true,
-        read: true,
-        update: true,
-        delete: true,
-        admin: true,
-      },
-      appTokens: {
-        create: true,
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["delete"],
-      },
-      appPush: {
-        create: true,
-        read: true,
-        update: true,
-        admin: true,
-        disabled: ["delete"],
-      },
-      appStats: {
-        read: true,
-        admin: true,
-        disabled: ["create", "update", "delete"],
-      },
-    },
-  }],
-};
-
 export const Routes = () => {
-  const userId = useStoreState((state) => state.user._id);
   const user = useStoreState((state) => state.user);
-  const setACL = useStoreState((state) => state.setACL);
+  const setConfig = useStoreState((state) => state.setConfig);
+  const appConfig = useStoreState((state) => state.config);
+
   const setDocuments = useStoreState((state) => state.setDocuments);
-  const apps = useStoreState((state) => state.apps);
+  const clearUser = useStoreState((state) => state.clearUser);
 
-  const getAcl = async () => {
-    try {
-      if (user?.ACL?.ownerAccess) {
-        setACL(mockAcl);
-        return;
-      }
-      const res = await getMyAcl();
-      setACL({ result: res.data.result });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [loading, setLoading] = useState(false);
+  const [isAppConfigError, setIsAppConfigError] = useState(false);
+  const lastAuthUrl = useRef("");
 
+  const history = useHistory();
   const getDocuments = async (walletAddress: string) => {
     try {
       const docs = await http.httpWithAuth().get(`/docs/${walletAddress}`);
@@ -148,28 +101,99 @@ export const Routes = () => {
     }
     return "/signIn";
   };
-  useEffect(() => {
-    if (userId) {
-      checkNotificationsStatus();
-      getAcl();
-      getDocuments(user.walletAddress);
-    }
-  }, [userId]);
-  useEffect(() => {
-    getAcl()
-  }, [apps.length])
+  if (
+    history.location.pathname !== "/signIn" &&
+    history.location.pathname !== "/" &&
+    !user.walletAddress
+  ) {
+    lastAuthUrl.current = history.location.pathname;
+  }
 
   useEffect(() => {
-    onMessageListener()
-      .then((payload) => {
-        console.log(payload);
-        sendBrowserNotification(payload.notification.body, () => {});
-      })
-      .catch((err) => console.log("failed: ", err));
+    getAppConfig();
   }, []);
 
+  useEffect(() => {
+    if (user.walletAddress) {
+      checkNotificationsStatus();
+      getDocuments(user.walletAddress);
+    }
+    if (user.firstName && user.xmppPassword) {
+      if (user.stripeCustomerId && !user.company.length) {
+        history.push(`/organizations`);
+        return;
+      }
+      if (user.stripeCustomerId && !user.paymentMethods.data.length) {
+        history.push(`/payments`);
+        return;
+      }
+      if (lastAuthUrl.current) {
+        history.push(lastAuthUrl.current);
+        return;
+      }
+      history.push(`/home`);
+      return;
+    }
+    if (user.firstName && !user.xmppPassword) {
+      history.push("/owner");
+      return;
+    }
+  }, [user]);
+
+  const getAppConfig = async () => {
+    setLoading(true);
+    try {
+      const config = await http.getConfig();
+      setConfig(config.data.result);
+      firebase.init();
+    } catch (error) {
+      clearUser();
+      useStoreState.persist.clearStorage();
+      setIsAppConfigError(true);
+      console.log(error);
+    }
+
+    setLoading(false);
+    try {
+      const payload = await onMessageListener();
+      sendBrowserNotification(payload.notification.body, () => {});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (isAppConfigError) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "100vh",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold", fontSize: "24px" }}>
+          Error, App not found
+        </Typography>
+      </Box>
+    );
+  }
+  if (loading) {
+    return <FullPageSpinner />;
+  }
   return (
-    <React.Suspense fallback={<FullPageSpinner />}>
+    <Suspense fallback={<FullPageSpinner />}>
+      {!user.firstName && <AppTopNavAuth />}
+      {user.firstName && user.xmppPassword && <AppTopNav />}
+      {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
+      <Helmet>
+        <title>{appConfig.displayName || "Dappros Platform"}</title>
+        <meta
+          property="og:title"
+          content={appConfig.displayName || "Dappros Platform"}
+        />
+      </Helmet>
       <Switch>
         <Route path={["/signIn/"]} exact>
           <Signon />
@@ -226,6 +250,6 @@ export const Routes = () => {
         </Route>
       </Switch>
       <Snackbar />
-    </React.Suspense>
+    </Suspense>
   );
 };

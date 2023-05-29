@@ -31,6 +31,8 @@ import { Typography } from "@mui/material";
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
+  const config = useStoreState((state) => state.config);
+
   const query = useQuery();
   const history = useHistory();
   const { search } = useLocation();
@@ -42,24 +44,7 @@ export default function Signon() {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const { showSnackbar } = useSnackbar();
   const signUpPlan = new URLSearchParams(search).get("signUpPlan");
-  useEffect(() => {
-    if (user.firstName && user.xmppPassword) {
-      if (user.stripeCustomerId && !user.company.length) {
-        history.push(`/organizations`);
-        return;
-      }
-      if (user.stripeCustomerId && !user.paymentMethods.data.length) {
-        history.push(`/payments`);
-        return;
-      }
-      history.push(`/home`);
-      return;
-    }
-    if (user.firstName && !user.xmppPassword) {
-      history.push("/owner");
-      return;
-    }
-  }, [user]);
+  
 
   const onMetamaskLogin = () => {
     activate(injected);
@@ -102,7 +87,7 @@ export default function Signon() {
 
             updateUserInfo(resp.data);
 
-            history.push(`/profile/${user.defaultWallet.walletAddress}`);
+            // history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
           .catch((error) => {
             console.log(error);
@@ -181,7 +166,7 @@ export default function Signon() {
       subscriptions: loginData.subscriptions,
       company: res.data.result,
       appId: loginData.user.appId,
-      homeScreen: loginData.user.homeScreen
+      homeScreen: loginData.user.homeScreen,
     });
   };
 
@@ -225,6 +210,18 @@ export default function Signon() {
     setLoading(false);
   };
 
+  const isGoogleLoginAvailable = () => {
+    return !!(
+      config.REACT_APP_FIREBASE_API_KEY &&
+      config.REACT_APP_FIREBASE_APP_ID &&
+      config.REACT_APP_FIREBASE_AUTH_DOMAIN &&
+      config.REACT_APP_FIREBASE_MEASURMENT_ID &&
+      config.REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
+      config.REACT_APP_FIREBASE_PROJECT_ID &&
+      config.REACT_APP_FIREBASE_STORAGE_BUCKET
+    );
+  };
+
   if (loading) {
     return <FullPageSpinner />;
   }
@@ -250,6 +247,12 @@ export default function Signon() {
           justifyContent: "center",
         }}
       >
+        {config.logoImage && (
+          <img
+            src={config.logoImage}
+            style={{ width: "100%", height: 200, marginBottom: 10 }}
+          />
+        )}
         {facebookSignIn && (
           <FacebookLogin
             appId="1172938123281314"
@@ -276,7 +279,7 @@ export default function Signon() {
             containerStyle={{ padding: 0, width: "100%" }}
           />
         )}
-        {googleSignIn && (
+        {googleSignIn && isGoogleLoginAvailable() && (
           <Button
             onClick={onGoogleClick}
             sx={{ margin: 1 }}

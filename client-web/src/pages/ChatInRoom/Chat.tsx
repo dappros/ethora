@@ -15,7 +15,6 @@ import {
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
 import { format, formatDistance, subDays } from "date-fns";
-import * as DOMPurify from "dompurify";
 
 import {
   MainContainer,
@@ -68,6 +67,7 @@ import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
 import {Helmet} from 'react-helmet'
 import { createMainMessageForThread } from "../../utils/createMessage";
+import Dompurify from "dompurify";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -302,13 +302,9 @@ export function ChatInRoom() {
 
   const sendMessage = (button: any) => {
     if (myMessage.trim().length > 0) {
-      let userAvatar = "";
-      if (profile?.profileImage) {
-        userAvatar = profile?.profileImage;
-      }
-      const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
+      let userAvatar = user.profileImage;
+      const clearMessageFromHtml = Dompurify.sanitize(myMessage);
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
-
       if (finalMessageTxt.trim().length > 0) {
         if (isEditing) {
           const data = {
@@ -563,16 +559,7 @@ export function ChatInRoom() {
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
-      {!!currentPickedRoom && (
-        <Helmet>
-          <title>{appName + ': ' + currentPickedRoom.name}</title>
-          <meta
-            property="og:title"
-            content={currentPickedRoom.name}
-          />
-          <meta name="description" content={currentPickedRoom.description} />
-        </Helmet>
-      )}
+     
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />

@@ -263,6 +263,7 @@ export class LoginStore {
       body,
       this.stores.apiStore.defaultToken,
     );
+    console.log(response.data)
     if (response.data.success) {
       this.loginHandler(response, '');
     }
@@ -284,15 +285,21 @@ export class LoginStore {
       this.isFetching = true;
     });
     const url =  loginURL;
+
+    console.log('test', ssoUserData)
     try {
       const response: any = await httpPost(url, bodyData, token);
+
       if (response.data.success) {
+
         this.loginHandler(response, ssoUserData.photo);
       } else {
         this.error = true;
         this.errorMessage = response.data.msg;
       }
     } catch (error: any) {
+      console.log('hellp')
+      console.log(error)
       this.error = true;
       this.errorMessage = error.response;
     }

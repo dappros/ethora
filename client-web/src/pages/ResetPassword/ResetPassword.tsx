@@ -17,6 +17,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { httpWithToken } from "../../http";
 import { config } from "../../config";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { useStoreState } from "../../store";
 
 export interface IResetPassword {}
 interface FormValues {
@@ -53,6 +54,7 @@ export const ResetPassword: React.FC<IResetPassword> = ({}) => {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleClickShowRepeatedPassword = () =>
     setShowRepeatedPassword((show) => !show);
+    const appToken = useStoreState(s => s.config.appToken)
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -74,7 +76,7 @@ export const ResetPassword: React.FC<IResetPassword> = ({}) => {
     onSubmit: async ({ password }, { setSubmitting }) => {
       setSubmitting(true);
       try {
-        const res = await httpWithToken(config.APP_JWT).post("/users/reset", {
+        const res = await httpWithToken(appToken).post("/users/reset", {
           token,
           password: password,
         });

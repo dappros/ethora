@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import logo from "../assets/images/dpp.png";
 import { mobileEthoraBaseUrl } from "../constants";
 import { ILineChartData } from "../pages/Profile/types";
-import { TMessageHistory } from "../store";
+import { TMessageHistory, useStoreState } from "../store";
 
 export function useQuery() {
   const { search } = useLocation();
@@ -69,7 +69,22 @@ export const produceNfmtItems = (array = []) => {
   }
   return result;
 };
+export function isValidHexCode(str: string) {
+  if (!str) {
+    return true;
+  }
+  let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
+  return regex.test(str) === true;
+}
+export function replaceNotAllowedCharactersInDomain(domain: string) {
+  // Define the regex pattern for disallowed characters
+  const disallowedPattern = /[^a-zA-Z0-9\-]/g;
 
+  // Replace disallowed characters with an empty string
+  const cleanedDomain = domain.replace(disallowedPattern, "");
+
+  return cleanedDomain;
+}
 export const filterNftBalances = (item) => {
   return (
     (item.tokenType === "NFT" || item.tokenType === "NFMT") &&
@@ -84,6 +99,7 @@ interface IProfileLink {
   walletAddress: string;
   xmppId: string;
   linkToken?: string;
+  domainName: string;
 }
 
 export const generateProfileLink = ({
@@ -93,14 +109,17 @@ export const generateProfileLink = ({
   xmppId,
   linkToken,
 }: IProfileLink) => {
+  const domainName = useStoreState.getState().config.domainName;
   return `${mobileEthoraBaseUrl}=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
     linkToken ?? ""
-  }`;
+  }&app=${domainName}`;
 };
 export const generateChatLink = ({ roomAddress }: { roomAddress: string }) => {
   if (!roomAddress) return "";
   const splitedAddress = roomAddress.split("@")[0];
-  return `${mobileEthoraBaseUrl}${splitedAddress}`;
+  const domainName = useStoreState.getState().config.domainName;
+
+  return `${mobileEthoraBaseUrl}${splitedAddress}&app=${domainName}`;
 };
 interface IDocLink {
   linkToken: string;
@@ -136,7 +155,7 @@ export const dateToHumanReadableFormat = (date: string | Date) => {
     return format(new Date(date), "yyyy MMMM dd MM:ss");
   } catch (error) {
     console.log(error);
-    return ''
+    return "";
   }
 };
 export const getPosition = (

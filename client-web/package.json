@@ -28,10 +28,11 @@
     "bootstrap": "^5.2.1",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
-    "dompurify": "^2.4.1",
+    "dompurify": "^3.0.3",
     "ethers": "^5.7.1",
     "firebase": "^9.12.1",
     "formik": "^2.2.9",
+    "immer": "^10.0.2",
     "js-sha256": "^0.9.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
@@ -47,7 +48,6 @@
     "react-qr-code": "^2.0.8",
     "react-router": "^5.3.3",
     "react-router-dom": "^5.3.3",
-    "react-scripts": "5.0.1",
     "recharts": "^2.1.14",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4",
@@ -55,12 +55,10 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
     "build-prod": "BUILD_PATH='./build-prod' react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "build:disableSourceMaps": "GENERATE_SOURCEMAP=false react-scripts build"
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -85,9 +83,13 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/stripe": "^8.0.417",
     "@types/xmpp__client": "^0.13.0",
+    "@vitejs/plugin-react": "^4.0.0",
     "sass": "^1.57.1",
     "simple-zustand-devtools": "^1.1.0",
     "source-map-explorer": "^2.5.3",
+    "vite": "^4.3.8",
+    "vite-plugin-svgr": "^3.2.0",
+    "vite-tsconfig-paths": "^4.2.0",
     "webpack-bundle-analyzer": "^4.7.0"
   }
 }

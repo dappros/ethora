@@ -16,6 +16,7 @@ import {
   setUserTags,
 } from "../http";
 import { coinsMainName } from "../config/config";
+import { TSelectedIds } from "./UsersTable/UsersTable";
 
 type ModalType =
   | "deleteUser"
@@ -24,7 +25,6 @@ type ModalType =
   | "removeAllTags"
   | "sendTokens"
   | "resetPassword";
-type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 
 type TProps = {
   open: boolean;
@@ -42,7 +42,7 @@ export function UsersActionModal({
   selectedUsers,
 }: TProps) {
   const [inputValue, setInputValue] = useState("");
-  const [loading, setLoaging] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState(false);
 
   const { showSnackbar } = useSnackbar();
@@ -55,15 +55,24 @@ export function UsersActionModal({
 
   const closeModal = () => {
     setInputValue("");
-    setLoaging(false);
+    setLoading(false);
     setInputError(false);
 
     onClose();
   };
 
   const addTag = async () => {
-    setLoaging(true);
     const tags = inputValue.trim().split(",");
+
+    const isTagsRepeated = selectedUsers.some((u) => {
+      return u.tags.some((t) => tags.includes(t));
+    });
+    if (isTagsRepeated) {
+      showSnackbar("error", "Tags cannot repeat");
+      return;
+    }
+    setLoading(true);
+
     try {
       await addTagToUser(appId, tags, selectedUsersIds);
       await updateData();
@@ -72,13 +81,15 @@ export function UsersActionModal({
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
-    setLoaging(false);
+    await updateData();
+
+    setLoading(false);
   };
 
   const removeTag = async () => {
     const tags = inputValue.trim().split(",");
 
-    setLoaging(true);
+    setLoading(true);
     try {
       await removeTagFromUser(appId, tags, selectedUsersIds);
       await updateData();
@@ -88,10 +99,10 @@ export function UsersActionModal({
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
-    setLoaging(false);
+    setLoading(false);
   };
   const removeAllTags = async () => {
-    setLoaging(true);
+    setLoading(true);
     try {
       await setUserTags(appId, [], selectedUsersIds);
       await updateData();
@@ -101,10 +112,10 @@ export function UsersActionModal({
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
-    setLoaging(false);
+    setLoading(false);
   };
   const resetPasswords = async () => {
-    setLoaging(true);
+    setLoading(true);
 
     try {
       await resetUsersPasswords(appId, selectedUsersIds);
@@ -113,10 +124,10 @@ export function UsersActionModal({
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
-    setLoaging(false);
+    setLoading(false);
   };
   const deletePickedUsers = async () => {
-    setLoaging(true);
+    setLoading(true);
     try {
       await deleteUsers(appId, selectedUsersIds);
       await updateData();
@@ -125,7 +136,7 @@ export function UsersActionModal({
     } catch (error) {
       showSnackbar("error", "Something went wrong");
     }
-    setLoaging(false);
+    setLoading(false);
   };
 
   const onSubmit = () => {

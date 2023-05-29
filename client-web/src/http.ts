@@ -7,18 +7,17 @@ import {
   ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
-import { useStoreState } from "./store";
+import { TApp, useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
 import xmpp from "./xmpp";
-import { history } from "./utils/history";
+import { http } from "./api/interceptors";
 
-const { APP_JWT = "", API_URL = "" } = config;
 
 export type TDefaultWallet = {
   walletAddress: string;
 };
-export type THomeScreen = 'appCreate' | 'profile' | ''
+export type THomeScreen = "appCreate" | "profile" | "";
 
 export interface ICompany {
   name: string;
@@ -54,7 +53,7 @@ export type TUser = {
   stripeCustomerId?: string;
   defaultWallet: TDefaultWallet;
   company?: ICompany[];
-  homeScreen: THomeScreen
+  homeScreen: THomeScreen;
 };
 
 export type TLoginSuccessResponse = {
@@ -126,9 +125,7 @@ export interface IUserAcl {
   result: ACL[];
 }
 
-const http = axios.create({
-  baseURL: API_URL,
-});
+
 
 export const httpWithAuth = () => {
   const user = useStoreState.getState().user;
@@ -178,72 +175,15 @@ export interface IDocument {
   locations: Array<string>;
 }
 
-export function refresh() {
-  return new Promise((resolve, reject) => {
-    const state = useStoreState.getState();
-    console.log("post to refresh ", state.user.refreshToken);
-    http
-      .post(
-        "/users/login/refresh",
-        {},
-        { headers: { Authorization: state.user.refreshToken } }
-      )
-      .then((response) => {
-        useStoreState.setState((state) => {
-          state.user.token = response.data.token;
-          state.user.refreshToken = response.data.refreshToken;
-          resolve(response);
-        });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-const onLogout = () => {
-  useStoreState.getState().clearUser();
-  xmpp.stop();
-  localStorage.clear()
-  history.push("/");
-};
-http.interceptors.response.use(undefined, (error) => {
-  const user = useStoreState.getState().user;
 
-  if (user.firstName) {
-    if (!error.response || error.response.status !== 401) {
-      return Promise.reject(error);
-    }
-
-    if (
-      error.config.url === "/users/login/refresh" ||
-      error.config.url === "/users/login"
-    ) {
-      onLogout()
-      // return Promise.reject(error);
-    }
-
-    const request = error.config;
-
-    return refresh()
-      .then(() => {
-        return new Promise((resolve) => {
-          const user = useStoreState.getState().user;
-          request.headers["Authorization"] = user.token;
-          resolve(http(request));
-        });
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
-  }
-  return Promise.reject(error);
-});
 
 export const loginUsername = (username: string, password: string) => {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post<TLoginSuccessResponse>(
     "/users/login",
     { username, password },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 };
 
@@ -268,6 +208,8 @@ export const registerUsername = (
   lastName: string,
   appJwt?: string
 ) => {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -276,7 +218,7 @@ export const registerUsername = (
       firstName,
       lastName,
     },
-    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 };
 export const registerNewUser = (
@@ -286,6 +228,8 @@ export const registerNewUser = (
   lastName: string,
   appJwt?: string
 ) => {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users/create-with-app-id/" + appId,
     {
@@ -293,7 +237,7 @@ export const registerNewUser = (
       firstName,
       lastName,
     },
-    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 };
 export async function deployNfmt(
@@ -374,10 +318,12 @@ export function getTransactionDetails(transactionHash: string) {
   return http.get<ITransaction>(`/explorer/transactions/` + transactionHash);
 }
 export function checkExtWallet(walletAddress: string) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     `/users/checkExtWallet`,
     { walletAddress },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 interface ISubscriptionResponse {
@@ -396,6 +342,8 @@ export function registerSignature(
   firstName: string,
   lastName: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -406,7 +354,7 @@ export function registerSignature(
       firstName,
       lastName,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
@@ -415,6 +363,8 @@ export function loginSignature(
   signature: string,
   msg: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users/login",
     {
@@ -423,7 +373,7 @@ export function loginSignature(
       signature,
       msg,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
@@ -433,6 +383,8 @@ export function registerByEmail(
   lastName: string,
   signUpPlan?: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   const body = signUpPlan
     ? {
         email,
@@ -446,18 +398,20 @@ export function registerByEmail(
         lastName,
       };
   return http.post("/users/sign-up-with-email", body, {
-    headers: { Authorization: APP_JWT },
+    headers: { Authorization: appToken },
   });
 }
 
 export function loginEmail(email: string, password: string) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post<TLoginSuccessResponse>(
     "/users/login-with-email",
     {
       email,
       password,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 export function agreeWithTerms(company: string) {
@@ -473,6 +427,8 @@ export function loginSocial(
   loginType: string,
   authToken: string = "authToken"
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
@@ -481,15 +437,17 @@ export function loginSocial(
       loginType,
       authToken,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
 export function checkEmailExist(email: string) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.get(
     "/users/checkEmail/" + email,
 
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 export function getUserAcl(userId: string) {
@@ -510,6 +468,14 @@ export function getMyAcl() {
     { headers: { Authorization: user.token } }
   );
 }
+export function getConfig(domainName = "ethora") {
+  return http.get("apps/get-config?domainName=" + domainName);
+}
+type TAppResponse = {result: TApp}
+export function updateAppSettings( appId: string, data: FormData) {
+  return httpWithAuth().put<TAppResponse>("/apps/" + appId, data)
+}
+
 export interface IAclBody {
   application: {
     appCreate?: TPermission;
@@ -541,6 +507,8 @@ export function registerSocial(
   loginType: string,
   signUpPlan?: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -550,7 +518,7 @@ export function registerSocial(
       authToken: authToken,
       signupPlan: signUpPlan,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 export function uploadFile(formData: FormData) {
@@ -667,18 +635,14 @@ export function sendTokens(
 export function removeTagFromUser(
   appId: string,
   tags: string[],
-  userIds: string[],
+  userIds: string[]
 ) {
   return httpWithAuth().post(`/users/tags-delete/` + appId, {
     usersIdList: userIds,
     tagsList: tags,
   });
 }
-export function setUserTags(
-  appId: string,
-  tags: string[],
-  userIds: string[],
-) {
+export function setUserTags(appId: string, tags: string[], userIds: string[]) {
   return httpWithAuth().post(`/users/tags-set/` + appId, {
     usersIdList: userIds,
     tagsList: tags,

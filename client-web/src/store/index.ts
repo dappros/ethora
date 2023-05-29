@@ -7,8 +7,6 @@ import { stat } from "fs";
 import type { Stripe } from "stripe";
 import { THomeScreen } from "../http";
 
-
-
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -33,7 +31,7 @@ export type TUser = {
   subscriptions?: { data: Stripe.Subscription[] };
   paymentMethods?: { data: Stripe.PaymentMethod[] };
   company?: http.ICompany[];
-  homeScreen: THomeScreen
+  homeScreen: THomeScreen;
 };
 
 type TMode = "light" | "dark";
@@ -141,17 +139,43 @@ export type TUserChatRooms = {
   group?: TActiveRoomFilter;
 };
 
-type TApp = {
+export type TApp = {
   _id: string;
+  displayName: string;
   appName: string;
   appToken: string;
   createdAt: string;
   updatedAt: string;
   defaultAccessAssetsOpen: boolean;
   defaultAccessProfileOpen: boolean;
-  usersCanFree: string;
+  usersCanFree: boolean;
   appGoogleId?: string;
   appLogo?: string;
+  REACT_APP_FIREBASE_API_KEY: string;
+  REACT_APP_FIREBASE_APP_ID: string;
+  REACT_APP_FIREBASE_AUTH_DOMAIN: string;
+  REACT_APP_FIREBASE_MEASURMENT_ID: string;
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string;
+  REACT_APP_FIREBASE_PROJECT_ID: string;
+  REACT_APP_FIREBASE_STORAGE_BUCKET: string;
+  REACT_APP_STRIPE_PUBLISHABLE_KEY: string;
+  REACT_APP_STRIPE_SECRET_KEY: string;
+
+  bundleId: string;
+  coinName: string;
+  coinSymbol: string;
+  creatorId: string;
+  domainName: string;
+  isAllowedNewAppCreate: boolean;
+  isBaseApp: boolean;
+  isUserDataEncrypted: boolean;
+  parentAppId?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  logoImage?: string;
+  loginScreenBackgroundImage?: string;
+  coinImage?: string;
+
 };
 
 type TAppUser = {
@@ -183,6 +207,26 @@ export type TRoomRoles = {
   role: string;
 };
 
+export interface IConfig {
+  REACT_APP_FIREBASE_API_KEY: string;
+  REACT_APP_FIREBASE_AUTH_DOMAIN: string;
+  REACT_APP_FIREBASE_PROJECT_ID: string;
+  REACT_APP_FIREBASE_STORAGE_BUCKET: string;
+  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string;
+  REACT_APP_FIREBASE_APP_ID: string;
+  REACT_APP_FIREBASE_MEASURMENT_ID: string;
+  REACT_APP_STRIPE_PUBLISHABLE_KEY: string;
+  REACT_APP_STRIPE_SECRET_KEY: string;
+  primaryColor: string;
+  secondaryColor: string;
+  coinSymbol: string;
+  coinName: string;
+  appToken: string;
+  displayName: string;
+  domainName: string;
+  logoImage: string;
+}
+
 export type TActiveRoomFilter =
   | "official"
   | "meta"
@@ -197,6 +241,7 @@ export type replaceMessageListItemProps = {
 
 interface IStore {
   user: TUser;
+  config: IConfig;
   oldTokens?: {
     token: string;
     refreshToken: string;
@@ -217,6 +262,7 @@ interface IStore {
   updateUserDocumentsPermission: (value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
   setOwner: (owner: TUser) => void;
+  setConfig: (config: IConfig) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
@@ -287,26 +333,47 @@ const _useStore = create<IStore>()(
             profileImage: "",
             isAllowedNewAppCreate: false,
             isAgreeWithTerms: false,
-            homeScreen: ''
+            homeScreen: "",
+          },
+          config: {
+            REACT_APP_FIREBASE_API_KEY: "",
+            REACT_APP_FIREBASE_AUTH_DOMAIN: "",
+            REACT_APP_FIREBASE_PROJECT_ID: "",
+            REACT_APP_FIREBASE_STORAGE_BUCKET: "",
+            REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "",
+            REACT_APP_FIREBASE_APP_ID: "",
+            REACT_APP_FIREBASE_MEASURMENT_ID: "",
+            REACT_APP_STRIPE_PUBLISHABLE_KEY: "",
+            REACT_APP_STRIPE_SECRET_KEY: "",
+            primaryColor: "",
+            secondaryColor: "",
+            coinSymbol: "",
+            coinName: "",
+            appToken: "",
+            displayName: '',
+            domainName: '',
+            logoImage: ''
           },
           ACL: {
-            result: [{
-              application: {
-                appCreate: {},
-                appPush: {},
-                appSettings: {},
-                app: {},
-                appStats: {},
-                appTokens: {},
-                appUsers: {},
+            result: [
+              {
+                application: {
+                  appCreate: {},
+                  appPush: {},
+                  appSettings: {},
+                  app: {},
+                  appStats: {},
+                  appTokens: {},
+                  appUsers: {},
+                },
+                network: { netStats: {} },
+                createdAt: "",
+                updatedAt: "",
+                userId: "",
+                _id: "",
+                appId: "",
               },
-              network: { netStats: {} },
-              createdAt: "",
-              updatedAt: "",
-              userId: "",
-              _id: "",
-              appId: "",
-            }],
+            ],
           },
           oldTokens: {
             token: "",
@@ -361,6 +428,11 @@ const _useStore = create<IStore>()(
           setShowHeaderError(value) {
             set((state) => {
               state.showHeaderError = value;
+            });
+          },
+          setConfig(config) {
+            set((state) => {
+              state.config = config;
             });
           },
           setDocuments: (documents: http.IDocument[]) =>
@@ -431,7 +503,7 @@ const _useStore = create<IStore>()(
                 profileImage: "",
                 isAllowedNewAppCreate: false,
                 isAgreeWithTerms: false,
-                homeScreen: ''
+                homeScreen: "",
               };
             }),
           clearOwner: () =>
@@ -447,8 +519,7 @@ const _useStore = create<IStore>()(
                 profileImage: "",
                 isAllowedNewAppCreate: false,
                 isAgreeWithTerms: false,
-                homeScreen: ''
-
+                homeScreen: "",
               };
               state.apps = [];
               state.appUsers = [];

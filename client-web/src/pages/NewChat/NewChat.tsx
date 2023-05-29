@@ -38,7 +38,9 @@ const NewChat: React.FC<INewChat> = ({}) => {
     },
     onSubmit: async ({ chatName, description, chatImage }) => {
       setLoading(true);
-      const roomHash = sha256(chatName);
+      const randomNumber = Math.round(Math.random()*100000)
+      const name = chatName + new Date().getTime() + randomNumber;
+      const roomHash = sha256(name);
       xmpp.createNewRoom(roomHash);
 
       xmpp.setOwner(roomHash);

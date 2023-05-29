@@ -1,263 +1,540 @@
-import { useState } from "react";
-import { ActionStrip } from "../../components/AppBuilder/ActionStrip";
-import AppDetails from "../../components/AppBuilder/AppDetails";
+import { useEffect, useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { httpWithAuth, updateAppSettings } from "../../http";
+import { useParams } from "react-router";
+import { intervalToDuration } from "date-fns";
+import { LoadingButton } from "@mui/lab";
+import { useSnackbar } from "../../context/SnackbarContext";
+import { useStoreState } from "../../store";
+import {
+  isValidHexCode,
+  replaceNotAllowedCharactersInDomain,
+} from "../../utils";
+import { config } from "../../config";
+import useDebounce from "../../hooks/useDebounce";
 
-//interfaces
 export interface TCustomDetails {
-  appTitle: string;
   primaryColor: string;
   secondaryColor: string;
   coinSymbol: string;
   coinName: string;
   currentScreenIndex: number;
-  logo: File | null;
-  loginScreenBackground: File | null;
-  coinLogo: File | null;
+  changeScreen: (i: number) => void;
+
+  logo: string;
+  loginScreenBackground: string;
+  coinLogo: string;
 }
 
-//font
+type BuildStage = "prepare" | "preparing" | "download";
 
-const screenSet = [
-  { screenName: "login", index: 0 },
-  { screenName: "profile", index: 1 },
-];
-const emailValidRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+type IFile = {
+  file?: File;
+  url: string;
+};
 
 export default function AppBuilder() {
-  const [appTitle, setAppTitle] = useState<string>("");
-  const [appName, setAppName] = useState<string>("");
-  const [bundleId, setBundleId] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [logo, setLogo] = useState<File | null>(null);
-  const [loginScreenBackground, setLoginScreenBackground] =
-    useState<File | null>(null);
-  const [primaryColor, setPrimaryColor] = useState<string>("");
-  const [secondaryColor, setSecondaryColor] = useState<string>("");
-  const [coinLogo, setCoinLogo] = useState<File | null>(null);
-  const [coinSymbol, setCoinSymbol] = useState<string>("");
-  const [coinName, setCoinName] = useState<string>("");
-  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(0);
-  const [emailEmpty, setEmailEmpty] = useState<boolean>(false);
-  const [emailInvalid, setEmailInvalid] = useState<boolean>(false);
-  const [appNameEmpty, setAppNameEmpty] = useState<boolean>(false);
-  const [bundleIdEmpty, setBundleIdEmpty] = useState<boolean>(false);
+  const { appId } = useParams<{ appId: string }>();
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  const updateApp = useStoreState((s) => s.updateApp);
 
-  //handle to set logo file
-  const handleLogoChange = (event: any) => {
-    setAppTitle("");
-    setLogo(event.target.files[0]);
-  };
+  const [displayName, setDisplayName] = useState(app.displayName || "");
+  const [bundleId, setBundleId] = useState("com.ethora");
+  const [logo, setLogo] = useState<IFile>({
+    file: undefined,
+    url: app.logoImage || "",
+  });
+  const [loginScreenBackground, setLoginScreenBackground] = useState({
+    file: undefined,
+    value: app?.loginScreenBackgroundImage || "",
+  });
+  const [coinLogo, setCoinLogo] = useState<IFile>({
+    file: undefined,
+    url: app?.coinImage || "",
+  });
 
-  //handle to set app title
-  const handleAppTitle = (value: string) => {
-    setLogo(null);
-    setAppTitle(value);
-  };
+  const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
+  const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
+  const [coinSymbol, setCoinSymbol] = useState("");
+  const [coinName, setCoinName] = useState("Coin");
 
-  const handleAppName = (value: string) => {
-    setAppName(value);
-    if (!value) {
-      setAppNameEmpty(true);
-    } else {
-      setAppNameEmpty(false);
+  const [domain, setDomain] = useState(`${app.domainName}`);
+  const debouncedDomain = useDebounce<string>(domain, 500);
+  const [loading, setLoading] = useState(true);
+  const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+  const [buildStage, setBuildStage] = useState<BuildStage>("prepare");
+  const [fileTimeToLive, setFileTimeToLive] = useState<Duration>({
+    hours: 0,
+    minutes: 0,
+  });
+  const [domainNameError, setDomainNameError] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const loginScreenBgRef = useRef<HTMLInputElement>(null);
+  const appLogoRef = useRef<HTMLInputElement>(null);
+
+  useEffect(
+    () => {
+      if (debouncedDomain && debouncedDomain !== app.domainName) {
+        validateDomainName(debouncedDomain);
+      }
+    },
+    [debouncedDomain] // Only call effect if debounced search term changes
+  );
+
+  const checkBuild = async () => {
+    setLoading(true);
+
+    try {
+      const res = await httpWithAuth().get("/mobile/check-custom-src/" + appId);
+
+      if (res.data?.isExists) {
+        const expiryDate = new Date(res.data.fileStats.birthtime);
+        expiryDate.setDate(expiryDate.getDate() + 1);
+        const diffInMs = expiryDate.getTime() - new Date().getTime();
+        if (diffInMs <= 0) {
+          setLoading(false);
+
+          setBuildStage("prepare");
+          return;
+        }
+        const timeToLive = intervalToDuration({
+          start: 0,
+          end: diffInMs,
+        });
+
+        setBuildStage("download");
+
+        setFileTimeToLive(timeToLive);
+      }
+    } catch (error) {
+      showSnackbar(
+        "error",
+        "Cannot make build" + (error?.response?.data?.error || "")
+      );
+      console.log(error);
     }
+    setLoading(false);
   };
 
-  const handleBundleId = (value: string) => {
-    setBundleId(value);
-    if (!value) {
-      setBundleIdEmpty(true);
-    } else {
-      setBundleIdEmpty(false);
+  const getBuild = async () => {
+    setLoading(true);
+
+    try {
+      const res = await httpWithAuth().get("/mobile/get-custom-src/" + appId, {
+        responseType: "blob",
+      });
+      let fileUrl = window.URL.createObjectURL(new Blob([res.data]));
+      const fileName = "client-reactnative.zip";
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileName;
+      link.click();
+      link.remove();
+    } catch (error) {
+      showSnackbar(
+        "error",
+        "Cannot make build" + (error?.response?.data?.error || "")
+      );
+
+      console.log(error);
     }
+    setLoading(false);
+  };
+  useEffect(() => {
+    checkBuild();
+  }, []);
+  const handleLoginScreenBackgroundChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const l = event.target.files[0];
+    setLoginScreenBackground({ file: l, value: URL.createObjectURL(l) });
+    event.target.files = null;
+    event.target.value = null;
+  };
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const l = event.target.files[0];
+    setLogo({ file: l, url: URL.createObjectURL(l) });
   };
 
-  //handle to set login screen background
-  const handleLoginScreenBackgroundChange = (event: any) => {
-    setLoginScreenBackground(event.target.files[0]);
+  const handleCoinLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const l = event.target.files[0];
+    setCoinLogo({ file: l, url: URL.createObjectURL(l) });
   };
 
-  //handle to set coin image
-  const handleCoinLogoChange = (event: any) => {
-    setCoinLogo(event.target.files[0]);
-  };
-
-  //handle for previous button in action strip
-  const handlePrevClick = () => {
-    setCurrentScreenIndex(currentScreenIndex - 1);
-  };
-
-  //handle for next button in action strip
-  const handleNextClick = () => {
-    setCurrentScreenIndex(currentScreenIndex + 1);
-  };
-
-  //handle email change
-  const handleEmail = (value: any) => {
-    setEmail(value);
-
-    if (!value) {
-      setEmailEmpty(true);
-      setEmailInvalid(false);
-    } else {
-      setEmailEmpty(false);
-      if (!value.match(emailValidRegex)) {
-        setEmailInvalid(true);
-      } else {
-        setEmailInvalid(false);
+  const validateDomainName = async (domainName: string) => {
+    try {
+      const res = await httpWithAuth().post("apps/check-domain-name", {
+        domainName,
+      });
+      // console.log(res);
+      // setDomain(`${domainName}`);
+      setDomainNameError(false);
+    } catch (error) {
+      console.log(error);
+      if (domainName !== app.domainName) {
+        setDomainNameError(true);
       }
     }
   };
 
-  //handle to clear data
-  const handleClear = (screenIndex: number) => {
-    if (screenIndex === 0) {
-      setAppName("");
-      setAppTitle("");
-      setLogo(null);
-      setLoginScreenBackground(null);
-      setEmail("");
-      setBundleId("");
-    }
+  const saveSettings = async () => {
+    const data = new FormData();
 
-    if (screenIndex === 1) {
-      setPrimaryColor("");
-      setSecondaryColor("");
-      setCoinName("");
-      setCoinSymbol("");
-      setCoinLogo(null);
+    bundleId && data.append("bundleId", bundleId);
+    displayName && data.append("displayName", displayName);
+    domain && data.append("domainName", domain);
+    primaryColor && data.append("primaryColor", primaryColor);
+    secondaryColor && data.append("secondaryColor", secondaryColor);
+    coinSymbol && data.append("coinSymbol", coinSymbol);
+    coinName && data.append("coinName", coinName);
+    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
+    logo.file && data.append("logoImage", logo.file);
+    loginScreenBackground.file &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
+    loginScreenBackground.value &&
+      isValidHexCode(loginScreenBackground.value) &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
+    setLoading(true);
+    try {
+      const res = await updateAppSettings(appId, data);
+      updateApp(res.data.result);
+    } catch (error) {
+      showSnackbar("error", "Cannot save settings");
+      console.log({ error });
     }
+    setLoading(false);
   };
 
-  //handle to submit data
-  const handleSubmit = () => {
-    //accepted data by the backend
-    // appName - required
-    // bundleId - required
-    // email - required
-    // appTitle
-    // primaryColor
-    // secondaryColor
-    // coinSymbol
-    // coinName
-    // logoImage
-    // loginScreenBackgroundImage
-    // coinLogoImage
+  const handleAppNameChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    setDisplayName(value);
 
-    if (!email) {
-      setEmailEmpty(true);
-    } else {
-      setEmailEmpty(false);
-    }
+    const transformedDomain = replaceNotAllowedCharactersInDomain(
+      value.toLowerCase().split(" ").join("")
+    );
+    setDomain(transformedDomain);
+    try {
+    } catch (error) {}
+  };
+  const handleDomainNameChange = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    setDomain(value);
 
-    if (!appName) {
-      setAppNameEmpty(true);
-    } else {
-      setAppNameEmpty(false);
-    }
-
-    if (!bundleId) {
-      setBundleIdEmpty(true);
-    } else {
-      setBundleIdEmpty(false);
-    }
-
-    if (email && appTitle && bundleId) {
-      if (email.match(emailValidRegex)) {
-        const data = new FormData();
-        data.append("appTitle", appTitle);
-        data.append("bundleId", bundleId);
-        data.append("appName", appName);
-        data.append("email", email);
-        data.append("primaryColor", primaryColor);
-        data.append("secondaryColor", secondaryColor);
-        data.append("coinSymbol", coinSymbol);
-        data.append("coinName", coinName);
-        data.append("coinLogoImage", coinLogo as Blob);
-        data.append("logoImage", logo as Blob);
-        data.append(
-          "loginScreenBackgroundImage",
-          loginScreenBackground as Blob
-        );
-       
-
-        const requestOptions = {
-          method: "POST",
-          body: data,
-        };
-        fetch("http://localhost:3001/buildapp", requestOptions)
-          .then((response) => response.text())
-          .then((result) => console.log(result))
-          .catch((error) => console.log("error", error));
-      } else {
-        setEmailInvalid(true);
-      }
-    }
+    try {
+    } catch (error) {}
   };
 
+  const prepareRnBuild = async () => {
+    if (
+      !bundleId ||
+      !isValidHexCode(primaryColor) ||
+      !isValidHexCode(secondaryColor)
+    ) {
+      return;
+    }
+    setBuildStage("preparing");
+    setLoading(true);
+
+    const data = new FormData();
+    bundleId && data.append("bundleId", bundleId);
+    displayName && data.append("displayName", displayName);
+    primaryColor && data.append("primaryColor", primaryColor);
+    secondaryColor && data.append("secondaryColor", secondaryColor);
+    coinSymbol && data.append("coinSymbol", coinSymbol);
+    coinName && data.append("coinName", coinName);
+    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
+    logo.file && data.append("logoImage", logo.file);
+    loginScreenBackground.file &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
+    loginScreenBackground.value &&
+      isValidHexCode(loginScreenBackground.value) &&
+      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
+    try {
+      const res = await httpWithAuth().post(
+        "/mobile/src-builder/" + appId,
+        data
+      );
+      await checkBuild();
+      setBuildStage("download");
+    } catch (error) {
+      setBuildStage("prepare");
+      console.log(error);
+      showSnackbar("error", "Something went wrong");
+    }
+    setLoading(false);
+  };
   return (
     <main>
-      <div
-        style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { sm: "column", md: "row" },
+          justifyContent: "center",
+          gap: 10,
+          // justifyContent: "space-between",
+        }}
       >
-        <div
-          style={{ display: "flex", flexBasis: "90%", flexDirection: "row" }}
-        >
-          <AppDetails
-            appName={appName}
-            appTitle={appTitle}
-            bundleId={bundleId}
-            email={email}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
-            coinSymbol={coinSymbol}
-            coinName={coinName}
-            setAppName={handleAppName}
-            setAppTitle={handleAppTitle}
-            setBundleId={handleBundleId}
-            setEmail={handleEmail}
-            handleLogoChange={handleLogoChange}
-            handleLoginScreenBackgroundChange={
-              handleLoginScreenBackgroundChange
-            }
-            setPrimaryColor={setPrimaryColor}
-            setSecondaryColor={setSecondaryColor}
-            handleCoinLogoChange={handleCoinLogoChange}
-            setCoinSymbol={setCoinSymbol}
-            setCoinName={setCoinName}
-            currentScreenIndex={currentScreenIndex}
-            logo={logo}
-            loginScreenBackground={loginScreenBackground}
-            coinLogo={coinLogo}
-            handleClear={handleClear}
-            emailEmpty={emailEmpty}
-            emailInvalid={emailInvalid}
-            appNameEmpty={appNameEmpty}
-            bundleIdEmpty={bundleIdEmpty}
-          />
-          <AppMock
-            appTitle={appTitle}
-            primaryColor={primaryColor}
-            secondaryColor={secondaryColor}
-            logo={logo}
-            loginScreenBackground={loginScreenBackground}
-            coinLogo={coinLogo}
-            coinSymbol={coinSymbol}
-            coinName={coinName}
-            currentScreenIndex={currentScreenIndex}
-          />
-        </div>
+        <Box>
+          <Typography sx={{ fontWeight: "bold", mb: 2 }}>
+            General Appearance
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              columnGap: 3,
+            }}
+          >
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Main Color"
+                name="mainColor"
+                variant="outlined"
+                placeholder="#ffffff"
+                InputLabelProps={{ shrink: true }}
+                type={"color"}
+                value={primaryColor}
+                error={!isValidHexCode(primaryColor)}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+              />
+            </Box>
 
-        <ActionStrip
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Display Name"
+                name="displayName"
+                variant="outlined"
+                value={displayName}
+                onChange={handleAppNameChange}
+              />
+            </Box>
+
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Secondary Color"
+                name="secondaryColor"
+                variant={"outlined"}
+                type={"color"}
+                InputLabelProps={{ shrink: true }}
+                placeholder="#ffffff"
+                value={secondaryColor}
+                error={!isValidHexCode(secondaryColor)}
+                onChange={(e) => setSecondaryColor(e.target.value)}
+              />
+            </Box>
+            <Box>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Coin Name"
+                name="coinName"
+                variant="outlined"
+                value={coinName}
+                onChange={(e) => setCoinName(e.target.value)}
+                helperText={
+                  "Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure."
+                }
+              />
+            </Box>
+            {/* <Box sx={{ gridColumn: "1/3" }}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Coin symbol (3-4 letters)"
+                name="coinSymbol"
+                variant="outlined"
+                value={coinSymbol}
+                onChange={(e) => setCoinSymbol(e.target.value)}
+              />
+            </Box> */}
+            <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
+              <Typography>App Logo</Typography>
+
+              <input
+                onChange={handleLogoChange}
+                ref={appLogoRef}
+                type="file"
+                style={{ display: "none" }}
+              />
+              <Button
+                // disabled={loading}
+                color="primary"
+                variant="outlined"
+                onClick={() => appLogoRef?.current?.click()}
+              >
+                {logo?.file?.name || "Upload File"}
+              </Button>
+              <Typography
+                sx={{ fontSize: 12, position: "absolute", bottom: 10,color: 'rgba(0, 0, 0, 0.6)' }}
+              >
+                Recommended size: 500px x 500px
+              </Typography>
+            </Box>
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <input
+                onInput={handleLoginScreenBackgroundChange}
+                ref={loginScreenBgRef}
+                type="file"
+                style={{ display: "none" }}
+              />
+              <Typography>Login Screen Background</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Button
+                  // disabled={loading}
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => loginScreenBgRef?.current?.click()}
+                  sx={{ maxWidth: "200px", minWidth: 150 }}
+                >
+                  {loginScreenBackground?.file?.name || "Upload File"}
+                </Button>
+                <Typography>OR</Typography>
+                <TextField
+                  margin="dense"
+                  fullWidth
+                  label="Login Screen Color"
+                  name="loginScreenColor"
+                  variant={"outlined"}
+                  type={"color"}
+                  InputLabelProps={{ shrink: true }}
+                  placeholder="#ffffff"
+                  value={
+                    isValidHexCode(loginScreenBackground.value)
+                      ? loginScreenBackground.value
+                      : "#fffff"
+                  }
+                  error={!isValidHexCode(secondaryColor)}
+                  onChange={(e) =>
+                    setLoginScreenBackground({
+                      file: undefined,
+                      value: e.target.value,
+                    })
+                  }
+                  sx={{ minWidth: 150 }}
+                />
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Typography sx={{ fontWeight: "bold", mb: 2 }}>
+              Mobile App
+            </Typography>
+          </Box>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 3 }}>
+              <TextField
+                margin="dense"
+                fullWidth
+                label="Bundle ID"
+                name="bundleId"
+                variant="outlined"
+                onChange={(e) => setBundleId(e.target.value)}
+                value={bundleId}
+                helperText={
+                  "Bundle ID should be unique to identify your app for Appstore and other purposes."
+                }
+              />
+              {buildStage === "download" ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
+                    position: "relative",
+                    mt: 1
+                  }}
+                >
+                  <Button
+                    onClick={getBuild}
+                    variant="contained"
+                    color={"success"}
+                    sx={{ width: 300, height: 50 }}
+                  >
+                    Download React Native build
+                  </Button>
+                  <Typography
+                    sx={{ fontSize: 12,color: 'rgba(0, 0, 0, 0.6)'}}
+                  >
+                    Expires in {fileTimeToLive && fileTimeToLive.hours + "h"}{" "}
+                    {fileTimeToLive && fileTimeToLive.minutes + "m"}
+                  </Typography>
+                </Box>
+              ) : (
+                <LoadingButton
+                  loading={loading}
+                  disabled={buildStage === "preparing"}
+                  onClick={prepareRnBuild}
+                  sx={{ width: 300, height: 50 }}
+                  variant="contained"
+                >
+                  {buildStage === "preparing" ? "Preparing" : "Prepare"} React
+                  Native build
+                </LoadingButton>
+              )}
+            </Box>
+          </Box>
+          <Box>
+            <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
+          </Box>
+          <Box style={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              margin="dense"
+              label="Domain Name"
+              name="domain"
+              variant="outlined"
+              onChange={handleDomainNameChange}
+              value={domain}
+              error={domainNameError}
+              helperText={
+                domainNameError
+                  ? "❌ name not available, please fill in something more unique here"
+                  : app.domainName === domain
+                  ? ""
+                  : "✅ available"
+              }
+            />
+            <Typography
+              style={{ marginBottom: app.domainName !== domain ? "20px" : 0 }}
+            >
+              {"." + config.DOMAIN_NAME}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", mt: 2 }}>
+            <LoadingButton
+              loading={loading}
+              disabled={loading || domainNameError}
+              onClick={saveSettings}
+              variant="contained"
+              sx={{ padding: "10px 40px" }}
+            >
+              Save
+            </LoadingButton>
+          </Box>
+        </Box>
+
+        <AppMock
+          primaryColor={primaryColor}
+          secondaryColor={secondaryColor}
+          logo={logo.url}
+          loginScreenBackground={loginScreenBackground.value}
+          coinLogo={coinLogo.url}
+          coinSymbol={coinSymbol}
+          coinName={coinName}
           currentScreenIndex={currentScreenIndex}
-          screenSet={screenSet}
-          handleNextClick={handleNextClick}
-          handlePrevClick={handlePrevClick}
-          handleSubmit={handleSubmit}
+          changeScreen={setCurrentScreenIndex}
         />
-      </div>
+      </Box>
     </main>
   );
 }
