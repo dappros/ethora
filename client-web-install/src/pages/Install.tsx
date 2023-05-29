@@ -18,14 +18,30 @@ export const Install = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({defaultValues: {
-    webAddress: 'app.ethora.com',
+    webAddress: 'ethora.com',
     apiAddress: 'api.ethora.com',
     databaseName: 'dappros_platform',
     chatServer: 'chat.ethora.com',
     ipfsUrl: 'ipfs.ethora.com',
 
   }});
-  const onSubmit = handleSubmit((data) => console.log(data));
+  
+  const onSubmit = handleSubmit(async (data) => {
+    const url = new URL(window.location.href)
+    const origin = url.origin
+
+    let response = await fetch(`${origin}/setup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(data)
+    })
+
+    let result = await response.json();
+    
+    console.log(result)
+  });
 
   return (
     <form onSubmit={onSubmit}>
@@ -44,6 +60,13 @@ export const Install = () => {
           <p>You will be able to modify most of these later.</p>
         </div>
         <div className="my-2">
+          <p className="font-bold">Root domain</p>
+          <Input
+            {...register("webAddress", {required: true})}
+            label=''
+          />
+        </div>
+        {/* <div className="my-2">
           <p className="font-bold">Web app address</p>
           <Input
             {...register("webAddress", {required: true})}
@@ -55,8 +78,8 @@ export const Install = () => {
           <Input
             {...register("apiAddress", {required: true})}
             label='your URL / domain name for API endpoints, e.g. "api.ethora.com"'
-          />
-        </div>
+          /> */}
+        {/* </div> */}
         <div className="my-2">
           <p className="font-bold">Database name</p>
           <Input
