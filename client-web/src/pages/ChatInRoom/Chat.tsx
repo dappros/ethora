@@ -302,13 +302,9 @@ export function ChatInRoom() {
 
   const sendMessage = (button: any) => {
     if (myMessage.trim().length > 0) {
-      let userAvatar = "";
-      if (profile?.profileImage) {
-        userAvatar = profile?.profileImage;
-      }
+      let userAvatar = user.profileImage;
       const clearMessageFromHtml = Dompurify.sanitize(myMessage);
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
-
       if (finalMessageTxt.trim().length > 0) {
         if (isEditing) {
           const data = {
