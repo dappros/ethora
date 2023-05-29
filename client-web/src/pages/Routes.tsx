@@ -1,5 +1,5 @@
-import React, { useEffect, useState, Suspense } from "react";
-import { Redirect, Route, Switch } from "react-router";
+import React, { useEffect, useState, Suspense, useRef } from "react";
+import { Redirect, Route, Switch, useHistory } from "react-router";
 
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
@@ -67,7 +67,9 @@ export const Routes = () => {
 
   const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
+  const lastAuthUrl = useRef("");
 
+  const history = useHistory();
   const getDocuments = async (walletAddress: string) => {
     try {
       const docs = await http.httpWithAuth().get(`/docs/${walletAddress}`);
@@ -99,15 +101,44 @@ export const Routes = () => {
     }
     return "/signIn";
   };
+  if (
+    history.location.pathname !== "/signIn" &&
+    history.location.pathname !== "/" &&
+    !user.walletAddress
+  ) {
+    lastAuthUrl.current = history.location.pathname;
+  }
+
   useEffect(() => {
     getAppConfig();
   }, []);
+
   useEffect(() => {
     if (user.walletAddress) {
       checkNotificationsStatus();
       getDocuments(user.walletAddress);
     }
-  }, [user.walletAddress]);
+    if (user.firstName && user.xmppPassword) {
+      if (user.stripeCustomerId && !user.company.length) {
+        history.push(`/organizations`);
+        return;
+      }
+      if (user.stripeCustomerId && !user.paymentMethods.data.length) {
+        history.push(`/payments`);
+        return;
+      }
+      if (lastAuthUrl.current) {
+        history.push(lastAuthUrl.current);
+        return;
+      }
+      history.push(`/home`);
+      return;
+    }
+    if (user.firstName && !user.xmppPassword) {
+      history.push("/owner");
+      return;
+    }
+  }, [user]);
 
   const getAppConfig = async () => {
     setLoading(true);

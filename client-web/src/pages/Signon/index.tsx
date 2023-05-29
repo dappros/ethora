@@ -44,24 +44,7 @@ export default function Signon() {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const { showSnackbar } = useSnackbar();
   const signUpPlan = new URLSearchParams(search).get("signUpPlan");
-  useEffect(() => {
-    if (user.firstName && user.xmppPassword) {
-      if (user.stripeCustomerId && !user.company.length) {
-        history.push(`/organizations`);
-        return;
-      }
-      if (user.stripeCustomerId && !user.paymentMethods.data.length) {
-        history.push(`/payments`);
-        return;
-      }
-      history.push(`/home`);
-      return;
-    }
-    if (user.firstName && !user.xmppPassword) {
-      history.push("/owner");
-      return;
-    }
-  }, [user]);
+  
 
   const onMetamaskLogin = () => {
     activate(injected);
@@ -104,7 +87,7 @@ export default function Signon() {
 
             updateUserInfo(resp.data);
 
-            history.push(`/profile/${user.defaultWallet.walletAddress}`);
+            // history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
           .catch((error) => {
             console.log(error);
