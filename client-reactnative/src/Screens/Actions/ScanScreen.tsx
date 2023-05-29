@@ -18,7 +18,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {PNG} from 'pngjs/browser';
 import JpegDecoder from 'jpeg-js';
 import jsQR from 'jsqr';
-import {commonColors, textStyles} from '../../../docs/config';
+import {appLinkingUrl, commonColors, textStyles} from '../../../docs/config';
 import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
 import {showToast} from '../../components/Toast/toast';
 import parseChatLink from '../../helpers/parseChatLink';
@@ -86,7 +86,7 @@ const ScanScreen = () => {
       return;
     }
     if (e.data.includes('profileLink')) {
-      const params = e.data.split('https://www.eto.li/go')[1];
+      const params = e.data.split(appLinkingUrl)[1];
       const queryParams = new URLSearchParams(params);
       const firstName: string = queryParams.get('firstName') as string;
       const lastName: string = queryParams.get('lastName') as string;
