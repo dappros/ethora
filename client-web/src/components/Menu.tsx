@@ -136,6 +136,8 @@ export const Menu: React.FC<IMenu> = ({}) => {
   const onLogout = () => {
     clearUser();
     xmpp.stop();
+    useStoreState.getState().clearMessageHistory();
+    useStoreState.getState().clearUserChatRooms();
     useStoreState.persist.rehydrate()
     if (active) {
       deactivate();
