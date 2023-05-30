@@ -14,11 +14,11 @@ Mobile 📱 + Web/desktop 💻 web3 🌐 social 💬 platform for your community
 
 [ iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification ]
 
-Simply:
-(1) clone this repo OR use our web builder
-(2) change logo, colors, things like Firebase ID
-(3) get your own iOS, Android and Web apps ready to fly! 
-
+Simply:<br />
+(1) clone this repo OR use our web builder<br />
+(2) change logo, colors, things like Firebase ID<br />
+(3) get your own iOS, Android and Web apps ready to fly!<br /> 
+<br />
 Coding experience is optional, but those experienced in React Native or React.js are welcome to dive deeper and adjust any functionality for your needs.
 
 ---
