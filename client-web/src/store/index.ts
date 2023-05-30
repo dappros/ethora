@@ -424,7 +424,7 @@ const _useStore = create<IStore>()(
           appUsers: [],
           documents: [],
           blackList: [],
-          activeRoomFilter: "",
+          activeRoomFilter: 'official',
           setShowHeaderError(value) {
             set((state) => {
               state.showHeaderError = value;
