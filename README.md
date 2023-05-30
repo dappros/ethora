@@ -14,9 +14,16 @@ Mobile 📱 + Web/desktop 💻 web3 🌐 social 💬 platform for your community
 
 [ iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification ]
 
+Simply:
+(1) clone this repo OR use our web builder
+(2) change logo, colors, things like Firebase ID
+(3) get your own iOS, Android and Web apps ready to fly! 
+
+Coding experience is optional, but those experienced in React Native or React.js are welcome to dive deeper and adjust any functionality for your needs.
+
 ---
 
-### All the things you can do! 😎 🚀
+### 💡 All the things you can do! 
 
 Some ideas of what you can build with Ethora engine:
 * a social / community app with chat rooms
