@@ -100,10 +100,10 @@ export function OtherProfile({ walletAddress }: TProps) {
               alt=""
               src={defUserImage}
             />
-            <Typography sx={{ fontWeight: "bold" }}>
+            <Typography sx={{ fontWeight: "bold", margin: '8px 0' }}>
               User does not exist.
             </Typography>
-            <Typography>
+            <Typography sx={{mb: 3}}>
               The account you are trying to access has been deleted or does not
               exist.
             </Typography>
