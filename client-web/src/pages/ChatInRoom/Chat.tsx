@@ -563,7 +563,7 @@ export function ChatInRoom() {
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
-          <ConversationList loading={false}>
+          <ConversationList loading={loaderArchive}>
             {filterChatRooms(userChatRooms, activeRoomFilter).map((room) => (
               <Conversation
                 active={room.jid === currentRoom}
@@ -649,7 +649,7 @@ export function ChatInRoom() {
                 backgroundRepeat: "no-repeat",
                 backgroundSize: "100% 100%",
               }}
-              loadingMore={false}
+              loadingMore={loaderArchive || isFileUploading}
               onYReachStart={onYReachStart}
               disableOnYReachWhenNoScroll={true}
               typingIndicator={
