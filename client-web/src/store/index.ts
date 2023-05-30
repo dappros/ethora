@@ -232,6 +232,7 @@ export type TActiveRoomFilter =
   | "meta"
   | "groups"
   | "favourite"
+  | "private"
   | "";
 
 export type replaceMessageListItemProps = {

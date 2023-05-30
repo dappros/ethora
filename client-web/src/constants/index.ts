@@ -20,7 +20,7 @@ export const PUSH_URL = "https://" + BASEDOMAIN + ":7777/api/v1";
 export const CONFERENCEDOMAIN = "@conference." + BASEDOMAIN;
 export const DOMAIN = "@" + BASEDOMAIN;
 export const SERVICE = `wss://${BASEDOMAIN}:5443/ws`;
-export const mobileEthoraBaseUrl = "https://eto.li/go?c=";
+export const mobileEthoraBaseUrl = "https://eto.li?c=";
 
 export type TImageMimeType = "image/png" | "image/jpeg" | "image/jpg";
 export type TVideoMimeType = "video/mp4";

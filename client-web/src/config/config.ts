@@ -99,6 +99,7 @@ export const defaultMetaRoom = {
 
 export const ROOMS_FILTERS: Record<string, TActiveRoomFilter> = {
   official: 'official',
+  private: 'private',
   groups: 'groups',
   meta: 'meta',
   favourite: 'favourite'
