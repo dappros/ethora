@@ -13,11 +13,15 @@ import React, { useState } from "react";
 import { ITransaction } from "../Profile/types";
 
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import BackupTableIcon from "@mui/icons-material/BackupTable";
 import { format } from "date-fns";
 import { useStoreState } from "../../store";
 import { useHistory } from "react-router";
-const coin = '/coin.png'
+
+const coin = "/coin.png";
 
 export interface ITransactions {
   transactions: ITransaction[];
@@ -27,13 +31,32 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
   const theme = useTheme();
   const walletAddress = useStoreState((state) => state.user.walletAddress);
   const isSender = item.from === walletAddress;
+  const isTokenCreation = item.type === "Token Creation";
   const [expanded, setExpanded] = useState(false);
   const history = useHistory();
 
   if (!item.fromFirstName) {
     return null;
   }
+  const getArrowIcon = () => {
+    if (isTokenCreation) {
+      return <CloudUploadOutlinedIcon color={"primary"} fontSize={"small"} />;
+    }
+    if (isSender) {
+      return <ArrowUpwardIcon color={"error"} fontSize={"small"} />;
+    }
+    return <ArrowDownwardIcon color={"success"} fontSize={"small"} />;
+  };
 
+  const getEndIcon = () => {
+    if (item.tokenId === "Doc") {
+      return <ArticleOutlinedIcon color={"primary"} fontSize={"small"} />;
+    }
+    if (item.tokenId === "NFT") {
+      return <BackupTableIcon color={"primary"} fontSize={"small"} />;
+    }
+    return <img src={coin} style={{ width: 20, height: 20 }} alt={"coin"} />;
+  };
   return (
     <>
       <ListItem key={item.transactionHash}>
@@ -52,15 +75,13 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              gap:1
             }}
           >
-            {isSender ? (
-              <ArrowUpwardIcon fontSize={"small"} color={"error"} />
-            ) : (
-              <ArrowDownwardIcon color={"success"} fontSize={"small"} />
-            )}
+            {getArrowIcon()}
             <span>{item.value}</span>
-            <img src={coin} style={{ width: 20, height: 20 }} alt={"coin"} />
+
+            {getEndIcon()}
           </Box>
         </ListItemButton>
       </ListItem>

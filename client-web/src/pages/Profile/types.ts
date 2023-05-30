@@ -23,6 +23,9 @@ export interface ILineChartData {
   x: Date[] | string[];
   y: number[];
 }
+type TTransactionTypes = 'Token Creation' | 'Transfer' | ''
+type TTransactionIds = 'NFT' | 'Doc' | "ERC20"
+
 export interface ITransaction {
   blockHash: string;
   blockNumber: number;
@@ -42,12 +45,13 @@ export interface ITransaction {
   toLastName: string;
   tokenName: string;
   transactionIndex: string;
-  type: string;
+  type: TTransactionTypes;
+  nftPreview?: string;
   v: string;
   value: string;
   transactionHash: string;
   _id: string;
-  tokenId: string;
+  tokenId: TTransactionIds;
   receiverFirstName?: string;
   receiverLastName?: string;
   senderFirstName?: string;
