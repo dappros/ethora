@@ -118,26 +118,7 @@ export const Routes = () => {
       checkNotificationsStatus();
       getDocuments(user.walletAddress);
     }
-    if (user.firstName && user.xmppPassword) {
-      if (user.stripeCustomerId && !user.company.length) {
-        history.push(`/organizations`);
-        return;
-      }
-      if (user.stripeCustomerId && !user.paymentMethods.data.length) {
-        history.push(`/payments`);
-        return;
-      }
-      if (lastAuthUrl.current) {
-        history.push(lastAuthUrl.current);
-        return;
-      }
-      history.push(`/home`);
-      return;
-    }
-    if (user.firstName && !user.xmppPassword) {
-      history.push("/owner");
-      return;
-    }
+   
   }, [user]);
 
   const getAppConfig = async () => {
