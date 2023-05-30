@@ -34,7 +34,8 @@ export function ChatAudioMessageDialog({
         }
 
         result.data.results.map(async (item: any) => {
-          const data = {
+          
+          let data = {
             firstName: user.firstName,
             lastName: user.lastName,
             walletAddress: user.walletAddress,
@@ -56,6 +57,7 @@ export function ChatAudioMessageDialog({
             waveForm: "",
             attachmentId: item._id,
             wrappable: true,
+            roomJid: currentRoom
           };
           xmpp.sendMediaMessageStanza(currentRoom, data);
         });
