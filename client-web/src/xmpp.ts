@@ -98,6 +98,7 @@ export class XmppClass {
   stop() {
     if (this.client) {
       this.client.stop();
+      this.client = undefined;
       return;
     }
   }
