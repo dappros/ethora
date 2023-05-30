@@ -99,7 +99,6 @@ interface IProfileLink {
   walletAddress: string;
   xmppId: string;
   linkToken?: string;
-  domainName: string;
 }
 
 export const generateProfileLink = ({

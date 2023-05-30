@@ -73,11 +73,15 @@ export class XmppHandler {
         const messageId = Number(msg.data?.mainMessage?.id);
         useStoreState.getState().setNumberOfReplies(messageId);
       }
-      useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
       useStoreState.getState().updateMessageHistory(msg);
-      sendBrowserNotification(msg.body, () => {
-        history.push("/chat/" + msg.roomJID.split("@")[0]);
-      });
+      const isCurrentUser = msg.data.senderWalletAddress === useStoreState.getState().user.walletAddress;
+
+      if(!isCurrentUser) {
+        useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+        sendBrowserNotification(msg.body, () => {
+          history.push("/chat/" + msg.roomJID.split("@")[0]);
+        });
+      }
     }
   };
 
@@ -173,7 +177,7 @@ export class XmppHandler {
           !this.isGettingFirstMessages &&
           data.attrs.roomJid
         ) {
-          useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+          // useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         }
         if (data.attrs.isReply) {
           const messageid = msg.data.mainMessage?.id;

@@ -1,5 +1,7 @@
 import axios from "axios";
-const baseURL = 'https://app-dev.dappros.com/v1'
+
+const url = new URL(window.location.href)
+const baseURL = url.origin
 export const http = axios.create({
     baseURL: baseURL
 })

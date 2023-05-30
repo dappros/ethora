@@ -1,6 +1,7 @@
 import React from "react";
 import { Input } from "../components/Input";
 import { useForm } from "react-hook-form";
+import { http } from "../api/api";
 
 type FormData = {
   webAddress: string;
@@ -17,15 +18,24 @@ export const Install = () => {
     setValue,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({defaultValues: {
-    webAddress: 'app.ethora.com',
-    apiAddress: 'api.ethora.com',
-    databaseName: 'dappros_platform',
-    chatServer: 'chat.ethora.com',
-    ipfsUrl: 'ipfs.ethora.com',
+  } = useForm<FormData>({
+    defaultValues: {
+      webAddress: "ethora.com",
+      apiAddress: "api.ethora.com",
+      databaseName: "dappros_platform",
+      chatServer: "chat.ethora.com",
+      ipfsUrl: "ipfs.ethora.com",
+    },
+  });
 
-  }});
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      const response = await http.post("/setup", data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   return (
     <form onSubmit={onSubmit}>
@@ -44,6 +54,10 @@ export const Install = () => {
           <p>You will be able to modify most of these later.</p>
         </div>
         <div className="my-2">
+          <p className="font-bold">Root domain</p>
+          <Input {...register("webAddress", { required: true })} label="" />
+        </div>
+        {/* <div className="my-2">
           <p className="font-bold">Web app address</p>
           <Input
             {...register("webAddress", {required: true})}
@@ -55,12 +69,12 @@ export const Install = () => {
           <Input
             {...register("apiAddress", {required: true})}
             label='your URL / domain name for API endpoints, e.g. "api.ethora.com"'
-          />
-        </div>
+          /> */}
+        {/* </div> */}
         <div className="my-2">
           <p className="font-bold">Database name</p>
           <Input
-            {...register("databaseName", {required: true})}
+            {...register("databaseName", { required: true })}
             label='database that will be used for DP set up - simply keep "dappros _platform" here if unsure'
           />
         </div>
@@ -68,7 +82,7 @@ export const Install = () => {
           <p className="font-bold">Chat server</p>
           <Input
             disabled
-            {...register("chatServer", {required: true})}
+            {...register("chatServer", { required: true })}
             label='XMPP server address, this is used for messaging. Example: "chat.ethora.com". Replace "ethora.com" with your domain name.'
           />
         </div>
@@ -76,21 +90,21 @@ export const Install = () => {
           <p className="font-bold">IPFS url</p>
           <Input
             disabled
-            {...register("ipfsUrl", {required: true})}
+            {...register("ipfsUrl", { required: true })}
             label='IPFS gateway address, used for files storage (e.g. "etofs.com")'
           />
         </div>
         <div className="my-2">
           <p className="font-bold">SuperAdmin e-mail</p>
           <Input
-            {...register("adminEmail", {required: true})}
+            {...register("adminEmail", { required: true })}
             label="your e-mail (also used as login) as a super user"
           />
         </div>
         <div className="my-2">
           <p className="font-bold">SuperAdmin password</p>
           <Input
-            {...register("adminPassword", {required: true})}
+            {...register("adminPassword", { required: true })}
             label="your password as a super user"
           />
         </div>
