@@ -27,6 +27,7 @@ import { signInWithGoogle } from "../../services/firebase";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { ForgotPasswordModal } from "../../components/ForgotPasswordModal";
 import { Typography } from "@mui/material";
+import xmpp from "../../xmpp";
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser);
@@ -44,7 +45,7 @@ export default function Signon() {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const { showSnackbar } = useSnackbar();
   const signUpPlan = new URLSearchParams(search).get("signUpPlan");
-  
+
 
   const onMetamaskLogin = () => {
     activate(injected);
@@ -168,6 +169,7 @@ export default function Signon() {
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     });
+    xmpp.init(loginData.user.defaultWallet.walletAddress, loginData?.user.xmppPassword as string);
   };
 
   const onFacebookClick = async (info: any) => {
