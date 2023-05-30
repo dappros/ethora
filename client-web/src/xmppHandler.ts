@@ -177,7 +177,7 @@ export class XmppHandler {
           !this.isGettingFirstMessages &&
           data.attrs.roomJid
         ) {
-          useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+          // useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         }
         if (data.attrs.isReply) {
           const messageid = msg.data.mainMessage?.id;
