@@ -16,10 +16,10 @@ Mobile 📱 + Web/desktop 💻 web3 🌐 social 💬 platform for your community
 
 Simply:<br />
 (1) clone this repo OR use our web builder<br />
-(2) change logo, colors, things like Firebase ID<br />
-(3) get your own iOS, Android and Web apps ready to fly!<br /> 
+(2) change app name, logo, colors, things like Firebase ID (optional)<br />
+🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
-Coding experience is optional, but those experienced in React Native or React.js are welcome to dive deeper and adjust any functionality for your needs.
+Coding experience is optional. React Native and React.js developers can make deeper changes altering or extending any of the functionalities. 
 
 ---
 
