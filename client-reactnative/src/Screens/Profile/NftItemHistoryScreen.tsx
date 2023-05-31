@@ -29,7 +29,7 @@ import {
 import {HomeStackNavigationProp} from '../../navigation/types';
 
 const NftItemHistoryScreen = (props: any) => {
-  const {item, userWalletAddress} = props.route.params.params;
+  const {item, userWalletAddress} = props.route.params;
 
   const {loginStore, walletStore} = useStores();
 

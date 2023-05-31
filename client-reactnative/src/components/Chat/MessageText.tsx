@@ -196,7 +196,7 @@ export const MessageText = observer((props: any) => {
       "https://app-dev.dappros.com/v1/docs/share/"
     )
   ) {
-    const chatLink = props.currentMessage.text.match(ethoraLinkRegex)[0];
+    const chatLink = props?.currentMessage?.text.match(ethoraLinkRegex)[0];
     const chatJid =
       chatLink?.split("=")[1] + apiStore.xmppDomains.CONFERENCEDOMAIN;
 
