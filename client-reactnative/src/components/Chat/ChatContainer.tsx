@@ -202,6 +202,8 @@ const styles = StyleSheet.create({
 //styles
 
 //main component
+const audioRecorderPlayer = new AudioRecorderPlayer();
+
 const ChatContainer = observer((props: ChatContainerProps) => {
   //props
   const {
@@ -212,6 +214,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     currentThreadMessage,
   } = props;
   //props
+
 
   //mobx stores
   const {loginStore, debugStore, chatStore, walletStore, apiStore} =
@@ -262,7 +265,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   //local variables
   const mediaButtonAnimation = new Animated.Value(1);
-  const audioRecorderPlayer = new AudioRecorderPlayer();
   const path = Platform.select({
     ios: 'audio.m4a',
     android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
@@ -306,10 +308,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   //get Waveform
   const getWaveformArray = async (url: string) => {
-    if (Platform.OS !== 'ios') {
-      let ddd = await NativeModules.Waveform.getWaveformArray(url);
 
-      const data = JSON.parse(ddd);
+    if (Platform.OS !== 'ios') {
+      let res = await NativeModules.Waveform.getWaveformArray(url);
+      const data = JSON.parse(res);
       return data;
     } else {
       const res = await NativeModules.RNWaveform.loadAudioFile();
@@ -361,7 +363,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       audioSet,
       true,
     );
-    console.log(result);
+    console.log(result, 'fileResult');
   };
 
   //handle to stop audio recording, get the recorded details and send as a message
@@ -753,7 +755,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     //navigate to thread screen with current message details.
     //@ts-ignore
     navigation.navigate('ThreadScreen', {
-      currentMessage: message ? message : onTapMessageObject,
+      currentMessage: onTapMessageObject,
       chatJid: roomDetails.jid,
       chatName: roomDetails.name,
     });
@@ -1101,13 +1103,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       textStyle: {fontWeight: 'bold', color: 'blue'}, // The mention style in the input
     },
   ];
-
   //component to render the UI for main message or the message to which replies and threads are created. This is shown in thread view
   const RenderMainMessageSection: React.FC = () => {
     const firstName = currentThreadMessage?.user.name.split(' ')[0] || 'N/A';
     const lastName = currentThreadMessage?.user.name.split(' ')[1] || 'N/A';
     //@ts-ignore
-    const parentDate = new Date(currentThreadMessage?.createdAt * 1000);
+
+    const parentDate = new Date(currentThreadMessage?.createdAt);
     const parentTime = parentDate.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
@@ -1161,7 +1163,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       </HStack>
     );
   };
-
   //component to render Action items of each menu
   type ActionItemType = 'edit' | 'delete' | 'reply' | 'copy' | 'thread';
   const ActionItems = (type: ActionItemType) => {
@@ -1179,7 +1180,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     // const handleOnPress = () => {
     switch (type) {
       case 'reply':
-        handleOnPress = () => handleReply();
+        handleOnPress = () => handleReply(currentThreadMessage);
         itemTitle = 'Reply';
         iconName = 'reply';
         break;

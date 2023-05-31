@@ -17,14 +17,13 @@ const ThreadScreen = observer((props: any) => {
         item?.mainMessage?.id === currentMessage._id,
     )
     .sort((a: any, b: any) => b._id - a._id);
-
   return (
     <>
       <ChatContainer
         containerType="thread"
         messages={messages}
         roomDetails={room as roomListProps}
-        currentMessageThreadMessage={currentMessage}
+        currentThreadMessage={currentMessage}
       />
     </>
   );
