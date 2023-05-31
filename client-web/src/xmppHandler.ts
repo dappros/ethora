@@ -74,9 +74,11 @@ export class XmppHandler {
         useStoreState.getState().setNumberOfReplies(messageId);
       }
       useStoreState.getState().updateMessageHistory(msg);
-      const isCurrentUser = msg.data.senderWalletAddress === useStoreState.getState().user.walletAddress;
+      const isCurrentUser =
+        msg.data.senderWalletAddress ===
+        useStoreState.getState().user.walletAddress;
 
-      if(!isCurrentUser) {
+      if (!isCurrentUser) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         sendBrowserNotification(msg.body, () => {
           history.push("/chat/" + msg.roomJID.split("@")[0]);
@@ -206,11 +208,12 @@ export class XmppHandler {
       stanza.attrs.id === "paginatedArchive" ||
       stanza.attrs.id === "GetArchive"
     ) {
+      const loader = useStoreState.getState().loaderArchive;
       this.lastMsgId = String(
         stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
       );
 
-      if (this.isGettingMessages) {
+      if (loader) {
         useStoreState.getState().updateMessageHistory(this.temporaryMessages);
         this.isGettingMessages = false;
 
@@ -231,7 +234,6 @@ export class XmppHandler {
             .getState()
             .replaceMessage(item.replaceMessageId, item.replaceMessageText);
         });
-
         useStoreState.getState().setLoaderArchive(false);
         this.temporaryMessages = [];
         this.isGettingFirstMessages = false;
