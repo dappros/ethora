@@ -88,9 +88,12 @@ export class XmppClass {
     );
 
     this.client.on("offline", () => console.log("offline"));
+
     this.client.on("error", (error) => {
       console.log("xmmpp on error ", error);
-      this.stop();
+      // this.stop();
+      useStoreState.getState().setLoaderArchive(false);
+
       console.log("xmmpp error, terminating collection");
     });
   }
@@ -99,6 +102,7 @@ export class XmppClass {
     if (this.client) {
       this.client.stop();
       this.client = undefined;
+      useStoreState.getState().setLoaderArchive(false);
       return;
     }
   }
