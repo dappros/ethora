@@ -15,7 +15,7 @@ import { ITransaction } from "../Profile/types";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import BackupTableIcon from "@mui/icons-material/BackupTable";
 import { format } from "date-fns";
 import { useStoreState } from "../../store";
@@ -32,6 +32,7 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
   const walletAddress = useStoreState((state) => state.user.walletAddress);
   const isSender = item.from === walletAddress;
   const isTokenCreation = item.type === "Token Creation";
+  const value = isTokenCreation && item.tokenId === "Doc" ? "1" : item.value;
   const [expanded, setExpanded] = useState(false);
   const history = useHistory();
 
@@ -75,11 +76,11 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              gap:1
+              gap: 1,
             }}
           >
             {getArrowIcon()}
-            <span>{item.value}</span>
+            <span>{value}</span>
 
             {getEndIcon()}
           </Box>
@@ -146,7 +147,7 @@ const TransactionItems: React.FC<{ item: ITransaction }> = ({ item }) => {
           </ListItem>
           <ListItem disablePadding disableGutters style={{ paddingLeft: 25 }}>
             <span style={{ fontWeight: "bold" }}>Value:</span>
-            {item.value}
+            {value}
           </ListItem>
           <ListItem disablePadding disableGutters style={{ paddingLeft: 25 }}>
             <span style={{ fontWeight: "bold" }}>Transaction Hash:</span>
