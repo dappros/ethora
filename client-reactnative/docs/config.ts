@@ -778,8 +778,8 @@ const domain = "ethora";
 //universal link url
 //@ts-ignore
 let env = appEndpoint === "PROD" ? "p" : "d";
-const unv_url = "https://eto.li/go?env=" + env + "&app=" + domain + "&c=";
-const appLinkingUrl = "https://eto.li/go";
+const unv_url = "https://eto.li?env=" + env + "&app=" + domain + "&c=";
+const appLinkingUrl = "https://eto.li";
 
 //Application token
 

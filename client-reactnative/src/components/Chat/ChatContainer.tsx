@@ -1361,12 +1361,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           parsePatterns={linkStyle => [
             {
               pattern:
-                /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+                /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
               style: linkStyle,
               onPress: handleChatLinks,
             },
             {
-              pattern: /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm,
+              pattern: /\bhttps:\/\/www\.eto\.li\?c=[0-9a-f]+/gm,
               style: linkStyle,
               onPress: handleChatLinks,
             },
