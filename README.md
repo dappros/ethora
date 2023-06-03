@@ -50,9 +50,19 @@ Branded (customized) UI<br />
 
 ---
 
-### Flutter (iOS/Android) version
+### No-code (App builder) option
 
-Flutter version is in development as of April'23.
+The fastest way to get your app running is to use our "Apps" web interface that takes care of the following:
+1. Allows you to customize your app (name, logo, colors etc)
+2. Launches your web app at the URL (subdomain) you choose
+3. Generates the React Native codebase for your iOS & Android mobile app (already pre-populated with your logo, colors etc)
+
+This gets you running within MINUTES. 
+
+You can always customize later either via web UI or directly via code. Your web app will be hosted in our cloud by default. Alternatively, you can check out the React.js code from this repository and self host it, or get our full backend from AWS Marketplace and self host both app and API too. 
+
+<img width="2992" alt="Screenshot 2023-06-03 at 05 09 12" src="https://github.com/dappros/ethora/assets/328787/23d999c6-d423-4699-8f6e-a93a153bea4e">
+
 
 ---
 
