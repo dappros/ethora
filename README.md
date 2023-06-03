@@ -36,7 +36,7 @@ Some ideas of what you can build with Ethora engine:
 * DAO / charity governance - voting and crowd-funding via bots, governance tokens and DAO smart contracts
 * digital identity / KYC / pass app (NFT / QR based)
 
-Startups, communities and enterprises come to use Ethora engine so they can deliver their MVP (minimum viable product) app quickly, within DAYS as opposed to months or even years when building a similar functionality from scratch. This engine is fully production ready too, powering multiple projects live in Apple and Google appstores. Backend: comes with a generous free tier (Dappros Platform). Self-hosted (AWS marketplace) and enterprise-grade SLA options available. Experimental 'no backend' (Ethereum and Polygon) versions available too.
+Startups, communities and enterprises come to use Ethora engine so they can deliver their MVP (minimum viable product) app quickly, within DAYS as opposed to months or even years when building a similar functionality from scratch. This engine is fully production ready too, powering multiple projects live in Apple and Google appstores.
 
 ---
 
