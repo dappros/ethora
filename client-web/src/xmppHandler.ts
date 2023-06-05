@@ -208,12 +208,17 @@ export class XmppHandler {
       stanza.attrs.id === "paginatedArchive" ||
       stanza.attrs.id === "GetArchive"
     ) {
-      const loader = useStoreState.getState().loaderArchive;
       this.lastMsgId = String(
         stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
       );
 
-      if (loader) {
+      if(stanza.attrs.type === "error" || stanza.name === "iq"){
+        useStoreState.getState().setLoaderArchive(false);
+        console.log("ERROR: ",stanza.attrs.type, stanza)
+      }
+
+      if (stanza.getChild("fin")) {
+      // if (!this.isGettingMessages) {
         useStoreState.getState().updateMessageHistory(this.temporaryMessages);
         this.isGettingMessages = false;
 
@@ -329,7 +334,7 @@ export class XmppHandler {
     if (stanza.attrs.id === "getUserRooms") {
       if (stanza.getChild("query")?.children) {
         this.isGettingFirstMessages = true;
-        useStoreState.getState().setLoaderArchive(true);
+        // useStoreState.getState().setLoaderArchive(true);
         let roomJID: string = "";
         stanza.getChild("query")?.children.forEach((result: any) => {
           const currentChatRooms = useStoreState.getState().userChatRooms;
