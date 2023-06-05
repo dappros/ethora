@@ -96,7 +96,7 @@ const adminSection = (user: TUser) => ({
   items: [
     { name: "Statistics", id: "/statistics", visible: user?.ACL?.masterAccess },
     {
-      name: "Create New App",
+      name: "Apps",
       id: "/owner",
       visible: user.isAllowedNewAppCreate,
     },

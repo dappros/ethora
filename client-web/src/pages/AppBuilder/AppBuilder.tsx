@@ -273,7 +273,7 @@ export default function AppBuilder() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: { sm: "column", md: "row" },
+          flexDirection: { xs: "column", sm: 'column', md: "row" },
           justifyContent: "center",
           gap: 10,
           // justifyContent: "space-between",
@@ -286,7 +286,7 @@ export default function AppBuilder() {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: {xs: '1fr', lg: "1fr 1fr"},
               columnGap: 3,
             }}
           >
@@ -372,11 +372,12 @@ export default function AppBuilder() {
                 color="primary"
                 variant="outlined"
                 onClick={() => appLogoRef?.current?.click()}
+                sx={{minWidth: 150}}
               >
                 {logo?.file?.name || "Upload File"}
               </Button>
               <Typography
-                sx={{ fontSize: 12, position: "absolute", bottom: 10,color: 'rgba(0, 0, 0, 0.6)' }}
+                sx={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.6)' }}
               >
                 Recommended size: 500px x 500px
               </Typography>
