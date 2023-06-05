@@ -30,7 +30,7 @@ const ytubeLinkRegEx =
   /\b(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gi;
 const WWW_URL_PATTERN = /^www\./i;
 
-const ethoraLinkRegex = /\bhttps:\/\/eto\.li\/go\?c=0x[0-9a-f]+/gm;
+const ethoraLinkRegex = /\bhttps:\/\/eto\.li\?c=0x[0-9a-f]+/gm;
 
 const textStyle = {
   fontSize: 16,
