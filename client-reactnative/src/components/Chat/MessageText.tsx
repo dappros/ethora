@@ -6,12 +6,7 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useState } from "react";
-import {
-  appLinkingUrl,
-  commonColors,
-  textStyles,
-  unv_url,
-} from "../../../docs/config";
+import { commonColors, textStyles, unv_url } from "../../../docs/config";
 import ParsedText from "react-native-parsed-text";
 import { Linking, StyleSheet, TouchableOpacity } from "react-native";
 import Communications from "react-native-communications";
@@ -285,7 +280,7 @@ export const MessageText = observer((props: any) => {
     props.currentMessage.text.includes(unv_url) &&
     props.currentMessage.text.includes("profileLink")
   ) {
-    const params = props.currentMessage.text.split(appLinkingUrl)[1];
+    const params = props.currentMessage.text.split(unv_url)[1];
     const queryParams = new URLSearchParams(params);
     const firstName: string = queryParams.get("firstName");
     const lastName: string = queryParams.get("lastName");

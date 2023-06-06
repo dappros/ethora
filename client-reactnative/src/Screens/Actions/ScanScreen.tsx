@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -6,35 +6,35 @@ import {
   Platform,
   ActivityIndicator,
   TouchableOpacity,
-} from 'react-native';
-import QRCodeScanner from 'react-native-qrcode-scanner';
+} from "react-native";
+import QRCodeScanner from "react-native-qrcode-scanner";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+} from "react-native-responsive-screen";
 
-import {useNavigation} from '@react-navigation/native';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {PNG} from 'pngjs/browser';
-import JpegDecoder from 'jpeg-js';
-import jsQR from 'jsqr';
-import {appLinkingUrl, commonColors, textStyles} from '../../../docs/config';
-import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
-import {showToast} from '../../components/Toast/toast';
-import parseChatLink from '../../helpers/parseChatLink';
-import {underscoreManipulation} from '../../helpers/underscoreLogic';
-import {useStores} from '../../stores/context';
-import {retrieveOtherUserVcard, subscribeToRoom} from '../../xmpp/stanzas';
-import {HomeStackNavigationProp} from '../../navigation/types';
-import { ImageLibraryOptions } from 'react-native-image-picker';
+import { useNavigation } from "@react-navigation/native";
+import { launchImageLibrary } from "react-native-image-picker";
+import { PNG } from "pngjs/browser";
+import JpegDecoder from "jpeg-js";
+import jsQR from "jsqr";
+import { appLinkingUrl, commonColors, textStyles } from "../../../docs/config";
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
+import { showToast } from "../../components/Toast/toast";
+import parseChatLink from "../../helpers/parseChatLink";
+import { underscoreManipulation } from "../../helpers/underscoreLogic";
+import { useStores } from "../../stores/context";
+import { retrieveOtherUserVcard, subscribeToRoom } from "../../xmpp/stanzas";
+import { HomeStackNavigationProp } from "../../navigation/types";
+import { ImageLibraryOptions } from "react-native-image-picker";
 
 declare var global: any;
-const Buffer = require('buffer').Buffer;
+const Buffer = require("buffer").Buffer;
 global.Buffer = Buffer; // very important
 
 //interface and types
 const options: ImageLibraryOptions = {
-  mediaType: 'photo',
+  mediaType: "photo",
   includeBase64: true,
   maxHeight: 200,
   maxWidth: 200,
@@ -44,23 +44,22 @@ const options: ImageLibraryOptions = {
 //handle decode data from a qr image
 function createImageData(base64ImageData: any, imageType: string) {
   let decodedData: any = {};
-  const bufferFrom = Buffer.from(base64ImageData, 'base64');
-  if (imageType === 'image/jpeg') {
-    decodedData = JpegDecoder.decode(bufferFrom, {useTArray: true});
-  } else if (imageType === 'image/png') {
+  const bufferFrom = Buffer.from(base64ImageData, "base64");
+  if (imageType === "image/jpeg") {
+    decodedData = JpegDecoder.decode(bufferFrom, { useTArray: true });
+  } else if (imageType === "image/png") {
     decodedData = PNG.sync.read(bufferFrom);
   }
   return jsQR(
     Uint8ClampedArray.from(decodedData.data),
     decodedData.width,
-    decodedData.height,
+    decodedData.height
   );
 }
 
 const ScanScreen = () => {
-
   //mobx stores
-  const {loginStore, chatStore, apiStore} = useStores();
+  const { loginStore, chatStore, apiStore } = useStores();
   //mobx stores
 
   //local states
@@ -69,7 +68,7 @@ const ScanScreen = () => {
 
   //local variables
   const manipulatedWalletAddress = underscoreManipulation(
-    loginStore.initialData.walletAddress,
+    loginStore.initialData.walletAddress
   );
   const username = loginStore.initialData.username;
   //local variables
@@ -81,25 +80,27 @@ const ScanScreen = () => {
   //handle to subscribe and open chat room from given QR code image
   const onSuccess = (e: any) => {
     if (!e) {
-      showToast('error', 'Error', 'Invalid QR', 'top');
+      showToast("error", "Error", "Invalid QR", "top");
       setIsLoading(false);
       return;
     }
-    if (e.data.includes('profileLink')) {
-      const params = e.data.split(appLinkingUrl)[1];
+    if (e.data.includes("profileLink")) {
+      const params = e.data.split("https://www.eto.li/go")[1];
       const queryParams = new URLSearchParams(params);
-      const firstName: string = queryParams.get('firstName') as string;
-      const lastName: string = queryParams.get('lastName') as string;
-      const xmppId: string = queryParams.get('xmppId') as string;
-      const walletAddressFromLink: string = queryParams.get('walletAddress') as string;
+      const firstName: string = queryParams.get("firstName") as string;
+      const lastName: string = queryParams.get("lastName") as string;
+      const xmppId: string = queryParams.get("xmppId") as string;
+      const walletAddressFromLink: string = queryParams.get(
+        "walletAddress"
+      ) as string;
 
       if (loginStore.initialData.walletAddress === walletAddressFromLink) {
-        navigation.navigate('ProfileScreen');
+        navigation.navigate("ProfileScreen");
       } else {
         retrieveOtherUserVcard(
           loginStore.initialData.xmppUsername,
           xmppId,
-          chatStore.xmpp,
+          chatStore.xmpp
         );
 
         loginStore.setOtherUserDetails({
@@ -108,10 +109,9 @@ const ScanScreen = () => {
           anotherUserLastSeen: {},
           anotherUserWalletAddress: walletAddressFromLink,
         });
-        navigation.navigate('OtherUserProfileScreen');
+        navigation.navigate("OtherUserProfileScreen");
       }
     } else {
-
       if (e) {
         const jid = parseChatLink(e.data);
 
@@ -119,18 +119,18 @@ const ScanScreen = () => {
           subscribeToRoom(
             jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
             manipulatedWalletAddress,
-            chatStore.xmpp,
+            chatStore.xmpp
           );
           setIsLoading(false);
-          navigation.navigate('ChatScreen', {
+          navigation.navigate("ChatScreen", {
             chatJid: jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
           });
         } else {
-          showToast('error', 'Error', 'Invalid QR', 'top');
+          showToast("error", "Error", "Invalid QR", "top");
           setIsLoading(false);
         }
       } else {
-        showToast('error', 'Error', 'Invalid QR', 'top');
+        showToast("error", "Error", "Invalid QR", "top");
         setIsLoading(false);
       }
     }
@@ -139,20 +139,20 @@ const ScanScreen = () => {
   //launch image gallery
   const openGallery = () => {
     setIsLoading(true);
-    launchImageLibrary(options, async (response:any) => {
+    launchImageLibrary(options, async (response: any) => {
       if (response.didCancel) {
         setIsLoading(false);
-        console.log('User cancelled image picker');
+        console.log("User cancelled image picker");
       } else if (response.error) {
         setIsLoading(false);
-        console.log('ImagePicker Error: ', response.error);
+        console.log("ImagePicker Error: ", response.error);
       } else if (response.customButton) {
         setIsLoading(false);
-        console.log('User tapped custom button: ', response.customButton);
+        console.log("User tapped custom button: ", response.customButton);
       } else {
         const res = createImageData(
           response.assets[0].base64,
-          response.assets[0].type,
+          response.assets[0].type
         );
         console.log(JSON.stringify(res));
         onSuccess(res);
@@ -162,28 +162,29 @@ const ScanScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{zIndex: Platform.OS === 'android' ? +1 : 0, flex: 0.2}}>
+      <View style={{ zIndex: Platform.OS === "android" ? +1 : 0, flex: 0.2 }}>
         <SecondaryHeader title="Scan" />
       </View>
       {isLoading ? (
-        <ActivityIndicator size="large" color={'black'} animating={isLoading} />
+        <ActivityIndicator size="large" color={"black"} animating={isLoading} />
       ) : (
         <QRCodeScanner
           showMarker={true}
-          topViewStyle={{flex: 0}}
-          containerStyle={{flex: 1}}
+          topViewStyle={{ flex: 0 }}
+          containerStyle={{ flex: 1 }}
           cameraStyle={{
-            flex: Platform.OS === 'android' ? 0.8 : 1,
-            height: hp('40%'),
-            width: '100%',
-            justifyContent: 'flex-start',
+            flex: Platform.OS === "android" ? 0.8 : 1,
+            height: hp("40%"),
+            width: "100%",
+            justifyContent: "flex-start",
           }}
-          bottomViewStyle={{flex: 1}}
-          onRead={e => onSuccess(e)}
+          bottomViewStyle={{ flex: 1 }}
+          onRead={(e) => onSuccess(e)}
           bottomContent={
             <TouchableOpacity
               onPress={openGallery}
-              style={styles.buttonTouchable}>
+              style={styles.buttonTouchable}
+            >
               <Text style={styles.buttonTextStyle}>Upload from gallery.</Text>
             </TouchableOpacity>
           }
@@ -195,7 +196,6 @@ const ScanScreen = () => {
 
 export default ScanScreen;
 
-
 //styles
 const styles = StyleSheet.create({
   container: {
@@ -206,15 +206,14 @@ const styles = StyleSheet.create({
     backgroundColor: commonColors.primaryColor,
     marginTop: 32,
     borderRadius: 5,
-    width: wp('53.33%'),
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: hp('6.03%'),
+    width: wp("53.33%"),
+    justifyContent: "center",
+    alignItems: "center",
+    height: hp("6.03%"),
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontFamily: textStyles.regularFont,
   },
 });
 //styles
-

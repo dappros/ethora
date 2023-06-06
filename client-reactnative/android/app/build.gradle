@@ -153,8 +153,8 @@ android {
         applicationId "com.ethora"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "22.12"
+        versionCode 11
+        versionName "23.06"
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy "store", "play"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()

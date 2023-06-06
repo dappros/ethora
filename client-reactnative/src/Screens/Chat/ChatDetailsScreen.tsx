@@ -5,18 +5,18 @@ import {
   Text,
   useDisclose,
   View,
-} from 'native-base';
-import React, {useState, useEffect} from 'react';
-import {textStyles} from '../../../docs/config';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {Alert} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {useStores} from '../../stores/context';
+} from "native-base";
+import React, { useState, useEffect } from "react";
+import { textStyles } from "../../../docs/config";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useStores } from "../../stores/context";
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from '../../helpers/underscoreLogic';
-import {observer} from 'mobx-react-lite';
+} from "../../helpers/underscoreLogic";
+import { observer } from "mobx-react-lite";
 import {
   assignModerator,
   banUserr,
@@ -30,19 +30,19 @@ import {
   unAssignModerator,
   unbanUser,
   unsubscribeFromChatXmpp,
-} from '../../xmpp/stanzas';
-import {deleteChatRoom} from '../../components/realmModels/chatList';
-import {uploadFiles} from '../../helpers/uploadFiles';
-import {fileUpload} from '../../config/routesConstants';
-import DocumentPicker from 'react-native-document-picker';
-import {renameTheRoom} from '../../helpers/RoomList/renameRoom';
-import ChangeRoomNameModal from '../../components/Modals/Chat/ChangeRoomNameModal';
-import ChangeRoomDescriptionModal from '../../components/Modals/Chat/ChangeRoomDescriptionModal';
-import {roomListProps, roomMemberInfoProps} from '../../stores/chatStore';
-import RoomDetailsCard from '../../components/Chat/ChatDetails/RoomDetailsCard';
-import ChatDetailHeader from '../../components/Chat/ChatDetails/ChatDetailHeader';
-import ChatDetailMemebersList from '../../components/Chat/ChatDetails/ChatDetailMembersList';
-import {HomeStackNavigationProp} from '../../navigation/types';
+} from "../../xmpp/stanzas";
+import { deleteChatRoom } from "../../components/realmModels/chatList";
+import { uploadFiles } from "../../helpers/uploadFiles";
+import { fileUpload } from "../../config/routesConstants";
+import DocumentPicker from "react-native-document-picker";
+import { renameTheRoom } from "../../helpers/RoomList/renameRoom";
+import ChangeRoomNameModal from "../../components/Modals/Chat/changeRoomNameModal";
+import ChangeRoomDescriptionModal from "../../components/Modals/Chat/changeRoomDescriptionModal";
+import { roomListProps, roomMemberInfoProps } from "../../stores/chatStore";
+import RoomDetailsCard from "../../components/Chat/ChatDetails/RoomDetailsCard";
+import ChatDetailHeader from "../../components/Chat/ChatDetails/ChatDetailHeader";
+import ChatDetailMemebersList from "../../components/Chat/ChatDetails/ChatDetailMembersList";
+import { HomeStackNavigationProp } from "../../navigation/types";
 
 interface longTapUserProps {
   ban_status: string;
@@ -69,30 +69,30 @@ export interface IuploadedImage {
   userId: string;
 }
 
-const ChatDetailsScreen = observer(({route}: any) => {
-  const {chatStore, loginStore, apiStore} = useStores();
+const ChatDetailsScreen = observer(({ route }: any) => {
+  const { chatStore, loginStore, apiStore } = useStores();
   const currentRoomDetail = chatStore.getRoomDetails(
-    route.params.roomJID,
+    route.params.roomJID
   ) as roomListProps;
 
   const roomJID = currentRoomDetail?.jid;
-  const {isOpen, onOpen, onClose} = useDisclose();
+  const { isOpen, onOpen, onClose } = useDisclose();
 
   const [longTapUser, setLongTapUser] = useState<longTapUserProps>({
-    ban_status: '',
-    jid: '',
-    last_active: '',
-    name: '',
-    profile: '',
-    role: '',
+    ban_status: "",
+    jid: "",
+    last_active: "",
+    name: "",
+    profile: "",
+    role: "",
   });
   const [kickUserItem, setKickUserItem] = useState<longTapUserProps>({
-    ban_status: '',
-    jid: '',
-    last_active: '',
-    name: '',
-    profile: '',
-    role: '',
+    ban_status: "",
+    jid: "",
+    last_active: "",
+    name: "",
+    profile: "",
+    role: "",
   });
 
   const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid);
@@ -115,12 +115,12 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const unsubscribeFromRoom = () => {
     unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-    chatStore.updateRoomInfo(roomJID, {muted: true});
+    chatStore.updateRoomInfo(roomJID, { muted: true });
   };
 
   const subscribeRoom = () => {
     subscribeToRoom(roomJID, manipulatedWalletAddress, chatStore.xmpp);
-    chatStore.updateRoomInfo(roomJID, {muted: false});
+    chatStore.updateRoomInfo(roomJID, { muted: false });
   };
 
   useEffect(() => {
@@ -129,7 +129,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
     getListOfBannedUserInRoom(
       manipulatedWalletAddress,
       roomJID,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
   }, []);
 
@@ -142,7 +142,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
       manipulatedWalletAddress,
       roomJID,
       walletAddress,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
     unsubscribeFromRoom();
     await deleteChatRoom(roomJID);
@@ -152,13 +152,13 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const deleteRoomDialog = async () => {
-    Alert.alert('Delete', 'Do you want to delete this room?', [
+    Alert.alert("Delete", "Do you want to delete this room?", [
       {
-        text: 'Cancel',
-        onPress: () => console.log('canceled'),
+        text: "Cancel",
+        onPress: () => console.log("canceled"),
       },
       {
-        text: 'Yes',
+        text: "Yes",
         onPress: () => leaveTheRoom(),
       },
     ]);
@@ -173,10 +173,10 @@ const ChatDetailsScreen = observer(({route}: any) => {
   const onUserAvatarPress = (props: roomMemberInfoProps) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = props.jid.split('@')[0];
+    const xmppID = props.jid.split("@")[0];
     const userWalletAddress = reverseUnderScoreManipulation(xmppID);
     if (userWalletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate('ProfileScreen');
+      navigation.navigate("ProfileScreen");
       return;
     } else {
       chatStore.getOtherUserDetails({
@@ -184,7 +184,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
         avatar: props.profile,
         name: props.name,
       });
-      navigation.navigate('OtherUserProfileScreen');
+      navigation.navigate("OtherUserProfileScreen");
     }
   };
 
@@ -197,19 +197,19 @@ const ChatDetailsScreen = observer(({route}: any) => {
 
   const handleLongTapMenu = (type: number) => {
     if (type === 0) {
-      if (longTapUser.ban_status === 'clear') {
+      if (longTapUser.ban_status === "clear") {
         banUserr(
           manipulatedWalletAddress,
           longTapUser.jid,
           currentRoomDetail.jid,
-          chatStore.xmpp,
+          chatStore.xmpp
         );
       } else {
         unbanUser(
           manipulatedWalletAddress,
           longTapUser.jid,
           currentRoomDetail.jid,
-          chatStore.xmpp,
+          chatStore.xmpp
         );
       }
       getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
@@ -217,17 +217,17 @@ const ChatDetailsScreen = observer(({route}: any) => {
     }
 
     if (type === 1) {
-      if (longTapUser.role === 'none' || 'participant') {
+      if (longTapUser.role === "none" || "participant") {
         assignModerator(
           manipulatedWalletAddress,
           longTapUser.jid,
-          chatStore.xmpp,
+          chatStore.xmpp
         );
       } else {
         unAssignModerator(
           manipulatedWalletAddress,
           longTapUser.jid,
-          chatStore.xmpp,
+          chatStore.xmpp
         );
       }
     }
@@ -239,19 +239,19 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const handleKick = () => {
-    if (kickUserItem.ban_status === 'clear') {
+    if (kickUserItem.ban_status === "clear") {
       banUserr(
         manipulatedWalletAddress,
         kickUserItem.jid,
         currentRoomDetail.jid,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     } else {
       unbanUser(
         manipulatedWalletAddress,
         kickUserItem.jid,
         currentRoomDetail.jid,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     }
     getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
@@ -267,27 +267,27 @@ const ChatDetailsScreen = observer(({route}: any) => {
   };
 
   const [uploadedImage, setUploadedImage] = useState<IuploadedImage>({
-    _id: '',
-    createdAt: '',
+    _id: "",
+    createdAt: "",
     expiresAt: 0,
-    filename: '',
+    filename: "",
     isVisible: true,
-    location: '',
-    locationPreview: '',
-    mimetype: '',
-    originalname: '',
-    ownerKey: '',
+    location: "",
+    locationPreview: "",
+    mimetype: "",
+    originalname: "",
+    ownerKey: "",
     size: 0,
-    updatedAt: '',
-    userId: '',
+    updatedAt: "",
+    userId: "",
   });
 
   const sendFiles = async (data: any) => {
     const userJid =
       underscoreManipulation(loginStore.initialData.walletAddress) +
-      '@' +
+      "@" +
       apiStore.xmppDomains.DOMAIN;
-    const {jid, roomBackground} = currentRoomDetail;
+    const { jid, roomBackground } = currentRoomDetail;
     try {
       const url = fileUpload;
       const response = await uploadFiles(data, loginStore.userToken, url);
@@ -297,9 +297,9 @@ const ChatDetailsScreen = observer(({route}: any) => {
         userJid,
         jid,
         file.location,
-        roomBackground ? roomBackground : 'none',
-        'icon',
-        chatStore.xmpp,
+        roomBackground ? roomBackground : "none",
+        "icon",
+        chatStore.xmpp
       );
     } catch (error) {
       console.log(error);
@@ -313,7 +313,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
           type: [DocumentPicker.types.images],
         });
         const formData = new FormData();
-        formData.append('files', {
+        formData.append("files", {
           name: res.name,
           type: res.type,
           uri: res.uri,
@@ -331,7 +331,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
       manipulatedWalletAddress,
       roomJID,
       newDescription,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
   };
 
@@ -344,20 +344,20 @@ const ChatDetailsScreen = observer(({route}: any) => {
         roomName: newRoomName,
       },
       chatStore.xmpp,
-      chatStore.updateRoomInfo,
+      chatStore.updateRoomInfo
     );
   };
 
   return (
-    <View bg={'white'} flex={1}>
-      <View justifyContent={'flex-start'}>
+    <View bg={"white"} flex={1}>
+      <View justifyContent={"flex-start"}>
         <ChatDetailHeader
           deleteRoomDialog={deleteRoomDialog}
           toggleFavourite={toggleFavourite}
           currentRoomDetail={currentRoomDetail}
         />
       </View>
-      <View flex={0.4} justifyContent={'center'}>
+      <View flex={0.4} justifyContent={"center"}>
         <RoomDetailsCard
           room={{
             jid: currentRoomDetail.jid,
@@ -372,7 +372,7 @@ const ChatDetailsScreen = observer(({route}: any) => {
           toggleNotification={toggleNotification}
         />
       </View>
-      <View justifyContent={'center'} flex={0.6}>
+      <View justifyContent={"center"} flex={0.6}>
         <ChatDetailMemebersList
           currentRoomDetail={currentRoomDetail}
           handleKickDialog={handleKickDialog}
@@ -387,19 +387,21 @@ const ChatDetailsScreen = observer(({route}: any) => {
             onPress={() => handleLongTapMenu(0)}
             _text={{
               fontFamily: textStyles.mediumFont,
-              color: 'red.500',
-            }}>
-            {longTapUser.ban_status === 'clear' ? 'Ban' : 'Unban'}
+              color: "red.500",
+            }}
+          >
+            {longTapUser.ban_status === "clear" ? "Ban" : "Unban"}
           </Actionsheet.Item>
 
           <Actionsheet.Item
             onPress={() => handleLongTapMenu(1)}
             _text={{
               fontFamily: textStyles.mediumFont,
-            }}>
-            {longTapUser.role === 'none' || 'participant'
-              ? 'Assign Moderator'
-              : 'Unassign Moderator'}
+            }}
+          >
+            {longTapUser.role === "none" || "participant"
+              ? "Assign Moderator"
+              : "Unassign Moderator"}
           </Actionsheet.Item>
         </Actionsheet.Content>
       </Actionsheet>
@@ -407,21 +409,22 @@ const ChatDetailsScreen = observer(({route}: any) => {
       <AlertDialog
         leastDestructiveRef={cancelRef}
         isOpen={isShowKickDialog}
-        onClose={handleCloseKickDialog}>
+        onClose={handleCloseKickDialog}
+      >
         <AlertDialog.Content>
           <AlertDialog.CloseButton />
           <AlertDialog.Header>
-            <Text fontSize={hp('2%')} fontFamily={textStyles.boldFont}>
-              {kickUserItem.ban_status === 'clear'
-                ? 'Kick user'
-                : 'Un-Kick user'}
+            <Text fontSize={hp("2%")} fontFamily={textStyles.boldFont}>
+              {kickUserItem.ban_status === "clear"
+                ? "Kick user"
+                : "Un-Kick user"}
             </Text>
           </AlertDialog.Header>
           <AlertDialog.Body>
-            <Text fontSize={hp('1.5%')} fontFamily={textStyles.regularFont}>
-              {kickUserItem.ban_status === 'clear'
-                ? 'This will block the user from sending any messages to the room. You will be able to ‘un-kick’ them later.'
-                : 'This will un-block the user.'}
+            <Text fontSize={hp("1.5%")} fontFamily={textStyles.regularFont}>
+              {kickUserItem.ban_status === "clear"
+                ? "This will block the user from sending any messages to the room. You will be able to ‘un-kick’ them later."
+                : "This will un-block the user."}
             </Text>
           </AlertDialog.Body>
           <AlertDialog.Footer>
@@ -430,17 +433,19 @@ const ChatDetailsScreen = observer(({route}: any) => {
                 variant="unstyled"
                 colorScheme="coolGray"
                 onPress={handleCloseKickDialog}
-                ref={cancelRef}>
-                <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
+                ref={cancelRef}
+              >
+                <Text fontSize={hp("1.5%")} fontFamily={textStyles.boldFont}>
                   Cancel
                 </Text>
               </Button>
               <Button colorScheme="danger" onPress={handleKick}>
                 <Text
-                  fontSize={hp('1.5%')}
-                  color={'white'}
-                  fontFamily={textStyles.boldFont}>
-                  {kickUserItem.ban_status === 'clear' ? 'Kick' : 'Un-kick'}
+                  fontSize={hp("1.5%")}
+                  color={"white"}
+                  fontFamily={textStyles.boldFont}
+                >
+                  {kickUserItem.ban_status === "clear" ? "Kick" : "Un-kick"}
                 </Text>
               </Button>
             </Button.Group>

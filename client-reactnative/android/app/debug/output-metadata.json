@@ -5,7 +5,7 @@
     "kind": "Directory"
   },
   "applicationId": "com.ethora",
-  "variantName": "release",
+  "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
@@ -13,7 +13,7 @@
       "attributes": [],
       "versionCode": 12,
       "versionName": "23.06",
-      "outputFile": "app-release.apk"
+      "outputFile": "app-debug.apk"
     }
   ],
   "elementType": "File"
