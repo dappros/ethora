@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { LoadingButton } from "@mui/lab";
 import InfoIcon from "@mui/icons-material/Info";
+import { getFirebaseConfigFromString } from "../../utils";
 
 export interface IServices {}
 type IFile = {
@@ -23,10 +24,6 @@ const firebaseConfigExample = `{
   appId: "1:972933470054:web:d4682e76ef02fd9b9cdaa7",
   measurementId: "G-WHM7XRZ4C8"
 }`;
-function preprocessInputKeysToJson(input: string) {
-  // Add double quotes around the keys
-  return input.replace(/([\{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3');
-}
 export const Services: React.FC<IServices> = ({}) => {
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState({
@@ -46,6 +43,7 @@ export const Services: React.FC<IServices> = ({}) => {
   });
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+
   const updateApp = useStoreState((s) => s.updateApp);
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -89,62 +87,18 @@ export const Services: React.FC<IServices> = ({}) => {
 
   const formik = useFormik({
     initialValues: {
-      REACT_APP_FIREBASE_API_KEY: app.REACT_APP_FIREBASE_API_KEY,
-      REACT_APP_FIREBASE_AUTH_DOMAIN: app.REACT_APP_FIREBASE_AUTH_DOMAIN,
-      REACT_APP_FIREBASE_PROJECT_ID: app.REACT_APP_FIREBASE_PROJECT_ID,
-      REACT_APP_FIREBASE_STORAGE_BUCKET: app.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID:
-        app.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-      REACT_APP_FIREBASE_APP_ID: app.REACT_APP_FIREBASE_APP_ID,
-      REACT_APP_FIREBASE_MEASURMENT_ID: app.REACT_APP_FIREBASE_MEASURMENT_ID,
+      firebaseWebConfigString: app.firebaseWebConfigString || "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
 
       return errors;
     },
-    onSubmit: async (
-      {
-        REACT_APP_FIREBASE_API_KEY,
-        REACT_APP_FIREBASE_AUTH_DOMAIN,
-        REACT_APP_FIREBASE_PROJECT_ID,
-        REACT_APP_FIREBASE_STORAGE_BUCKET,
-        REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-        REACT_APP_FIREBASE_APP_ID,
-        REACT_APP_FIREBASE_MEASURMENT_ID,
-      },
-      { setSubmitting }
-    ) => {
+    onSubmit: async ({ firebaseWebConfigString }, { setSubmitting }) => {
       const data = new FormData();
-      REACT_APP_FIREBASE_API_KEY &&
-        data.append("REACT_APP_FIREBASE_API_KEY", REACT_APP_FIREBASE_API_KEY);
-      REACT_APP_FIREBASE_AUTH_DOMAIN &&
-        data.append(
-          "REACT_APP_FIREBASE_AUTH_DOMAIN",
-          REACT_APP_FIREBASE_AUTH_DOMAIN
-        );
-      REACT_APP_FIREBASE_PROJECT_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_PROJECT_ID",
-          REACT_APP_FIREBASE_PROJECT_ID
-        );
-      REACT_APP_FIREBASE_STORAGE_BUCKET &&
-        data.append(
-          "REACT_APP_FIREBASE_STORAGE_BUCKET",
-          REACT_APP_FIREBASE_STORAGE_BUCKET
-        );
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_MESSAGING_SENDER_ID",
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID
-        );
-      REACT_APP_FIREBASE_APP_ID &&
-        data.append("REACT_APP_FIREBASE_APP_ID", REACT_APP_FIREBASE_APP_ID);
-      REACT_APP_FIREBASE_MEASURMENT_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_MEASURMENT_ID",
-          REACT_APP_FIREBASE_MEASURMENT_ID
-        );
+
+      firebaseWebConfigString &&
+        data.append("firebaseWebConfigString", firebaseWebConfigString);
       googleServisesJson.file &&
         data.append("googleServicesJson", googleServisesJson.file);
       googleServisesPlist.file &&
@@ -160,6 +114,14 @@ export const Services: React.FC<IServices> = ({}) => {
       setSubmitting(false);
     },
   });
+
+  const handleFirebaseConfigChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    const config = getFirebaseConfigFromString(value);
+    console.log(config)
+  };
 
   return (
     <Box>
@@ -210,16 +172,12 @@ export const Services: React.FC<IServices> = ({}) => {
           <TextField
             fullWidth
             id="outlined-configuration"
+            name={'firebaseWebConfigString'}
             placeholder={firebaseConfigExample}
-            onChange={(e) => {
-              const preprocessedValue = preprocessInputKeysToJson(
-                e.target.value
-              );
-              console.log(JSON.parse(preprocessedValue));
-              // console.log(preprocessedValue)
-            }}
+            onChange={formik.handleChange}
+            value={formik.values.firebaseWebConfigString}
             multiline
-            rows={10}
+            rows={15}
           />
         </Box>
       </Box>
