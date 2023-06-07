@@ -4,7 +4,11 @@ import { Redirect, Route, Switch, useHistory } from "react-router";
 import { useStoreState } from "../store";
 import { getMyAcl } from "../http";
 import { FullPageSpinner } from "../components/FullPageSpinner";
-import { checkNotificationsStatus, sendBrowserNotification } from "../utils";
+import {
+  checkNotificationsStatus,
+  getFirebaseConfigFromString,
+  sendBrowserNotification,
+} from "../utils";
 import { MintNft } from "./MintNft/MintNft";
 import { RegularSignIn } from "./Signon/RegularSignIn";
 import { configDocuments } from "../config/config";
@@ -118,14 +122,17 @@ export const Routes = () => {
       checkNotificationsStatus();
       getDocuments(user.walletAddress);
     }
-   
   }, [user]);
 
   const getAppConfig = async () => {
     setLoading(true);
     try {
-      const config = await http.getConfig();
-      setConfig(config.data.result);
+      const res = await http.getConfig();
+      const firebaseConfig = getFirebaseConfigFromString(
+        res.data.result.firebaseWebConfigString
+      );
+      const config = { ...res.data.result, firebaseConfig };
+      setConfig(config);
       firebase.init();
     } catch (error) {
       clearUser();

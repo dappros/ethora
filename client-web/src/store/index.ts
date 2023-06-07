@@ -151,15 +151,7 @@ export type TApp = {
   usersCanFree: boolean;
   appGoogleId?: string;
   appLogo?: string;
-  REACT_APP_FIREBASE_API_KEY: string;
-  REACT_APP_FIREBASE_APP_ID: string;
-  REACT_APP_FIREBASE_AUTH_DOMAIN: string;
-  REACT_APP_FIREBASE_MEASURMENT_ID: string;
-  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string;
-  REACT_APP_FIREBASE_PROJECT_ID: string;
-  REACT_APP_FIREBASE_STORAGE_BUCKET: string;
-  REACT_APP_STRIPE_PUBLISHABLE_KEY: string;
-  REACT_APP_STRIPE_SECRET_KEY: string;
+  firebaseWebConfigString?: string;
 
   bundleId: string;
   coinName: string;
@@ -175,7 +167,6 @@ export type TApp = {
   logoImage?: string;
   loginScreenBackgroundImage?: string;
   coinImage?: string;
-
 };
 
 type TAppUser = {
@@ -206,17 +197,19 @@ export type TRoomRoles = {
   roomJID: string;
   role: string;
 };
+interface IFirebaseConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  measurementId: string;
+}
 
 export interface IConfig {
-  REACT_APP_FIREBASE_API_KEY: string;
-  REACT_APP_FIREBASE_AUTH_DOMAIN: string;
-  REACT_APP_FIREBASE_PROJECT_ID: string;
-  REACT_APP_FIREBASE_STORAGE_BUCKET: string;
-  REACT_APP_FIREBASE_MESSAGING_SENDER_ID: string;
-  REACT_APP_FIREBASE_APP_ID: string;
-  REACT_APP_FIREBASE_MEASURMENT_ID: string;
-  REACT_APP_STRIPE_PUBLISHABLE_KEY: string;
-  REACT_APP_STRIPE_SECRET_KEY: string;
+  firebaseWebConfigString?: string;
+  firebaseConfig?: IFirebaseConfig;
   primaryColor: string;
   secondaryColor: string;
   coinSymbol: string;
@@ -337,23 +330,15 @@ const _useStore = create<IStore>()(
             homeScreen: "",
           },
           config: {
-            REACT_APP_FIREBASE_API_KEY: "",
-            REACT_APP_FIREBASE_AUTH_DOMAIN: "",
-            REACT_APP_FIREBASE_PROJECT_ID: "",
-            REACT_APP_FIREBASE_STORAGE_BUCKET: "",
-            REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "",
-            REACT_APP_FIREBASE_APP_ID: "",
-            REACT_APP_FIREBASE_MEASURMENT_ID: "",
-            REACT_APP_STRIPE_PUBLISHABLE_KEY: "",
-            REACT_APP_STRIPE_SECRET_KEY: "",
+            firebaseWebConfigString: "",
             primaryColor: "",
             secondaryColor: "",
             coinSymbol: "",
             coinName: "",
             appToken: "",
-            displayName: '',
-            domainName: '',
-            logoImage: ''
+            displayName: "",
+            domainName: "",
+            logoImage: "",
           },
           ACL: {
             result: [
@@ -425,7 +410,7 @@ const _useStore = create<IStore>()(
           appUsers: [],
           documents: [],
           blackList: [],
-          activeRoomFilter: 'official',
+          activeRoomFilter: "official",
           setShowHeaderError(value) {
             set((state) => {
               state.showHeaderError = value;

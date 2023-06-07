@@ -9,22 +9,19 @@ import { useStoreState } from "../store";
 
 class Firebase {
   firebaseApp: FirebaseApp = null;
-  firebaseConfig: FirebaseOptions  = null
+  firebaseConfig: FirebaseOptions = null;
   init() {
+    const config = useStoreState.getState().config.firebaseConfig;
     const firebaseConfig = {
-      apiKey: useStoreState.getState().config.REACT_APP_FIREBASE_API_KEY,
-      authDomain:
-        useStoreState.getState().config.REACT_APP_FIREBASE_AUTH_DOMAIN,
-      projectId: useStoreState.getState().config.REACT_APP_FIREBASE_PROJECT_ID,
-      storageBucket:
-        useStoreState.getState().config.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId:
-        useStoreState.getState().config.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-      appId: useStoreState.getState().config.REACT_APP_FIREBASE_APP_ID,
-      measurementId:
-        useStoreState.getState().config.REACT_APP_FIREBASE_MEASURMENT_ID,
+      apiKey: config.apiKey,
+      authDomain: config.authDomain,
+      projectId: config.projectId,
+      storageBucket: config.storageBucket,
+      messagingSenderId: config.messagingSenderId,
+      appId: config.appId,
+      measurementId: config.measurementId,
     };
-    this.firebaseConfig = firebaseConfig
+    this.firebaseConfig = firebaseConfig;
     this.firebaseApp = initializeApp(firebaseConfig);
   }
 }

@@ -189,7 +189,10 @@ export default function Signon() {
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     });
-    xmpp.init(loginData.user.defaultWallet.walletAddress, loginData?.user.xmppPassword as string);
+    xmpp.init(
+      loginData.user.defaultWallet.walletAddress,
+      loginData?.user.xmppPassword as string
+    );
   };
 
   const onFacebookClick = async (info: any) => {
@@ -233,15 +236,7 @@ export default function Signon() {
   };
 
   const isGoogleLoginAvailable = () => {
-    return !!(
-      config.REACT_APP_FIREBASE_API_KEY &&
-      config.REACT_APP_FIREBASE_APP_ID &&
-      config.REACT_APP_FIREBASE_AUTH_DOMAIN &&
-      config.REACT_APP_FIREBASE_MEASURMENT_ID &&
-      config.REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
-      config.REACT_APP_FIREBASE_PROJECT_ID &&
-      config.REACT_APP_FIREBASE_STORAGE_BUCKET
-    );
+    return !!config.firebaseWebConfigString;
   };
 
   if (loading) {

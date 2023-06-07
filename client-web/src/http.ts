@@ -7,7 +7,7 @@ import {
   ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
-import { TApp, useStoreState } from "./store";
+import { IConfig, TApp, useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
 import xmpp from "./xmpp";
@@ -469,7 +469,7 @@ export function getMyAcl() {
   );
 }
 export function getConfig(domainName = "ethora") {
-  return http.get("apps/get-config?domainName=" + domainName);
+  return http.get<{result:Omit<IConfig, 'firebaseConfig'>}>("apps/get-config?domainName=" + domainName);
 }
 type TAppResponse = {result: TApp}
 export function updateAppSettings( appId: string, data: FormData) {
