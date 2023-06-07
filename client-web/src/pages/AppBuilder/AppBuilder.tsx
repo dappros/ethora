@@ -47,7 +47,7 @@ export default function AppBuilder() {
   });
   const [loginScreenBackground, setLoginScreenBackground] = useState({
     file: undefined,
-    value: app?.loginScreenBackgroundImage || "",
+    value: app?.loginScreenBackgroundImage || app.loginBackgroundColor || "",
   });
   const [coinLogo, setCoinLogo] = useState<IFile>({
     file: undefined,
@@ -178,7 +178,7 @@ export default function AppBuilder() {
     }
   };
 
-  const saveSettings = async () => {
+  const createFormData = () => {
     const data = new FormData();
 
     bundleId && data.append("bundleId", bundleId);
@@ -190,11 +190,21 @@ export default function AppBuilder() {
     coinName && data.append("coinName", coinName);
     coinLogo.file && data.append("coinLogoImage", coinLogo.file);
     logo.file && data.append("logoImage", logo.file);
-    loginScreenBackground.file &&
+    if (loginScreenBackground.file) {
       data.append("loginScreenBackgroundImage", loginScreenBackground.file);
-    loginScreenBackground.value &&
-      isValidHexCode(loginScreenBackground.value) &&
-      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
+    }
+    if (
+      !loginScreenBackground.file &&
+      isValidHexCode(loginScreenBackground.value)
+    ) {
+      data.append("loginBackgroundColor", loginScreenBackground.value);
+    }
+    return data;
+  };
+
+  const saveSettings = async () => {
+    const data = createFormData();
+
     setLoading(true);
     try {
       const res = await updateAppSettings(appId, data);
@@ -240,20 +250,8 @@ export default function AppBuilder() {
     setBuildStage("preparing");
     setLoading(true);
 
-    const data = new FormData();
-    bundleId && data.append("bundleId", bundleId);
-    displayName && data.append("displayName", displayName);
-    primaryColor && data.append("primaryColor", primaryColor);
-    secondaryColor && data.append("secondaryColor", secondaryColor);
-    coinSymbol && data.append("coinSymbol", coinSymbol);
-    coinName && data.append("coinName", coinName);
-    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
-    logo.file && data.append("logoImage", logo.file);
-    loginScreenBackground.file &&
-      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
-    loginScreenBackground.value &&
-      isValidHexCode(loginScreenBackground.value) &&
-      data.append("loginScreenBackgroundImage", loginScreenBackground.value);
+    const data = createFormData();
+
     try {
       const res = await httpWithAuth().post(
         "/mobile/src-builder/" + appId,
@@ -273,7 +271,7 @@ export default function AppBuilder() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", sm: 'column', md: "row" },
+          flexDirection: { xs: "column", sm: "column", md: "row" },
           justifyContent: "center",
           gap: 10,
           // justifyContent: "space-between",
@@ -286,7 +284,7 @@ export default function AppBuilder() {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: {xs: '1fr', lg: "1fr 1fr"},
+              gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
               columnGap: 3,
             }}
           >
@@ -372,13 +370,11 @@ export default function AppBuilder() {
                 color="primary"
                 variant="outlined"
                 onClick={() => appLogoRef?.current?.click()}
-                sx={{minWidth: 150}}
+                sx={{ minWidth: 150 }}
               >
                 {logo?.file?.name || "Upload File"}
               </Button>
-              <Typography
-                sx={{ fontSize: 12, color: 'rgba(0, 0, 0, 0.6)' }}
-              >
+              <Typography sx={{ fontSize: 12, color: "rgba(0, 0, 0, 0.6)" }}>
                 Recommended size: 500px x 500px
               </Typography>
             </Box>
@@ -453,7 +449,7 @@ export default function AppBuilder() {
                     flexDirection: "column",
                     alignItems: "flex-end",
                     position: "relative",
-                    mt: 1
+                    mt: 1,
                   }}
                 >
                   <Button
@@ -465,7 +461,7 @@ export default function AppBuilder() {
                     Download React Native build
                   </Button>
                   <Typography
-                    sx={{ fontSize: 12,color: 'rgba(0, 0, 0, 0.6)'}}
+                    sx={{ fontSize: 12, color: "rgba(0, 0, 0, 0.6)" }}
                   >
                     Expires in {fileTimeToLive && fileTimeToLive.hours + "h"}{" "}
                     {fileTimeToLive && fileTimeToLive.minutes + "m"}

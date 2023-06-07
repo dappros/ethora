@@ -166,6 +166,7 @@ export type TApp = {
   secondaryColor: string;
   logoImage?: string;
   loginScreenBackgroundImage?: string;
+  loginBackgroundColor?: string;
   coinImage?: string;
 };
 
@@ -210,6 +211,7 @@ interface IFirebaseConfig {
 export interface IConfig {
   firebaseWebConfigString?: string;
   firebaseConfig?: IFirebaseConfig;
+  loginBackgroundColor?: string;
   primaryColor: string;
   secondaryColor: string;
   coinSymbol: string;
