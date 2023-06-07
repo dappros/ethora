@@ -225,6 +225,34 @@ export const stripHtml = (html: string) => {
   return doc.body.textContent || "";
 };
 
+export function preprocessInputKeysToJson(input: string) {
+  // Add double quotes around the keys
+  return input.replace(/([\{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3');
+}
+
+export function findObjectInString(input: string) {
+  const regex = /{([^}]+)}/g;
+  const matches = [...input.matchAll(regex)];
+  if (matches) {
+    return matches.map(match => match[0]);
+  }
+
+  return [];
+}
+function findFirebaseConfig(input: string[]) {
+  return input.find(i => {
+    return i.includes('authDomain') ||  i.includes('apiKey')
+  })
+}
+
+export function getFirebaseConfigFromString(input: string) {
+  const objects = findObjectInString(input);
+  const configString = findFirebaseConfig(objects)
+  const configJson = preprocessInputKeysToJson(configString);
+  const configObject = JSON.parse(configJson);
+  return configObject;
+}
+
 export function getTnc(
   company: string,
   fname: string,
