@@ -16,13 +16,13 @@ type IFile = {
 };
 
 const firebaseConfigExample = `{
-  apiKey: "AIzaSyDQdkvvxKKx4-WrjLQoYf08GFARgi_qO4g",
+  apiKey: "AIzaassdcefSyDgasd.-WrjLQadoYf0ads12dscxzsi_qO4g",
   authDomain: "ethora-668e9.firebaseapp.com",
   projectId: "ethora-668e9",
   storageBucket: "ethora-668e9.appspot.com",
   messagingSenderId: "972933470054",
-  appId: "1:972933470054:web:d4682e76ef02fd9b9cdaa7",
-  measurementId: "G-WHM7XRZ4C8"
+  appId: "1:972933470054:web:d4682e76ef02fdasdawdasd9b9cdaa7",
+  measurementId: "G-WHMasd7asdxcvX4asdC8"
 }`;
 export const Services: React.FC<IServices> = ({}) => {
   const [loading, setLoading] = useState(false);
