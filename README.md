@@ -15,7 +15,7 @@ Mobile 📱 + Web/desktop 💻 web3 🌐 social 💬 platform for your community
 [ iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification ]
 
 Simply:<br />
-(1) clone this repo OR use our web builder<br />
+(1) clone this repo OR use our [web builder](#app-builder)<br />
 (2) change app name, logo, colors, things like Firebase ID (optional)<br />
 🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
