@@ -21,7 +21,7 @@ import jsQR from "jsqr";
 import { appLinkingUrl, commonColors, textStyles } from "../../../docs/config";
 import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
 import { showToast } from "../../components/Toast/toast";
-import parseChatLink from "../../helpers/parseChatLink";
+import parseLink from "../../helpers/parseLink";
 import { underscoreManipulation } from "../../helpers/underscoreLogic";
 import { useStores } from "../../stores/context";
 import { retrieveOtherUserVcard, subscribeToRoom } from "../../xmpp/stanzas";
@@ -113,17 +113,18 @@ const ScanScreen = () => {
       }
     } else {
       if (e) {
-        const jid = parseChatLink(e.data);
+        const parsedLink = parseLink(e.data);
 
-        if (jid) {
+        if (parsedLink) {
+          const chatId = parsedLink.searchParams.get("c");
           subscribeToRoom(
-            jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
+            chatId + apiStore.xmppDomains.CONFERENCEDOMAIN,
             manipulatedWalletAddress,
             chatStore.xmpp
           );
           setIsLoading(false);
           navigation.navigate("ChatScreen", {
-            chatJid: jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
+            chatJid: chatId + apiStore.xmppDomains.CONFERENCEDOMAIN,
           });
         } else {
           showToast("error", "Error", "Invalid QR", "top");

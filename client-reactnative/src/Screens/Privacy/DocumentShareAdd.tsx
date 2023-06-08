@@ -1,20 +1,20 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {HStack, Input, Text, View} from 'native-base';
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet } from "react-native";
+import { HStack, Input, Text, View } from "native-base";
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {Select} from 'native-base';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { Select } from "native-base";
 
-import {observer} from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {commonColors, textStyles} from '../../../docs/config';
-import QRCodeGenerator from '../../components/QRCodeGenerator';
-import {httpPost} from '../../config/apiService';
-import {shareLink} from '../../config/routesConstants';
-import {generateDocumentLink} from '../../helpers/generateDocumentLink';
-import {useStores} from '../../stores/context';
-import {Button} from '../../components/Button';
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { commonColors, textStyles } from "../../../docs/config";
+import QRCodeGenerator from "../../components/QRCodeGenerator";
+import { httpPost } from "../../config/apiService";
+import { shareLink } from "../../config/routesConstants";
+import { generateDocumentLink } from "../../helpers/generateDocumentLink";
+import { useStores } from "../../stores/context";
+import { Button } from "../../components/Button";
 
 export interface IDocumentShareAdd {}
 
@@ -36,22 +36,22 @@ interface ISharedLink {
 }
 
 export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
-  const [memo, setMemo] = useState('');
-  const [expiration, setExpiration] = useState('-1');
-  const [documentId, setDocumentId] = useState('');
+  const [memo, setMemo] = useState("");
+  const [expiration, setExpiration] = useState("-1");
+  const [documentId, setDocumentId] = useState("");
 
   const [createdLink, setCreatedLink] = useState<ISharedLink>({
-    _id: '',
-    expiration: '',
-    memo: '',
-    resource: '',
-    token: '',
-    updatedAt: '',
-    userId: '',
-    walletAddress: '',
+    _id: "",
+    expiration: "",
+    memo: "",
+    resource: "",
+    token: "",
+    updatedAt: "",
+    userId: "",
+    walletAddress: "",
   });
   const [loading, setLoading] = useState(false);
-  const {loginStore, walletStore} = useStores();
+  const { loginStore, walletStore } = useStores();
   const inputRef = useRef();
 
   useEffect(() => {
@@ -60,14 +60,17 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
 
   const generateLink = async () => {
     const body = {
-      expiration: new Date().getTime() + +expiration * 1000,
+      expiration:
+        expiration !== "-1"
+          ? new Date().getTime() + +expiration * 1000
+          : +expiration,
       memo: memo,
-      resource: 'document',
+      resource: "document",
       documentId: documentId,
     };
     setLoading(true);
     try {
-      const {data} = await httpPost(shareLink, body, loginStore.userToken);
+      const { data } = await httpPost(shareLink, body, loginStore.userToken);
       setCreatedLink(data.sharelinkData);
     } catch (error) {
       console.log(error);
@@ -76,8 +79,8 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
   };
   if (!walletStore.documents.length) {
     return (
-      <View style={{marginHorizontal: 20}}>
-        <Text style={[styles.title, {textAlign: 'center'}]}>
+      <View style={{ marginHorizontal: 20 }}>
+        <Text style={[styles.title, { textAlign: "center" }]}>
           You have no documents to share. Please, create one
         </Text>
       </View>
@@ -85,9 +88,10 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
   }
   return (
     <KeyboardAwareScrollView
-      style={{backgroundColor: 'white', paddingHorizontal: 20, flex: 1}}>
-      <View style={{marginTop: 10}}>
-        <HStack justifyContent={'space-between'}>
+      style={{ backgroundColor: "white", paddingHorizontal: 20, flex: 1 }}
+    >
+      <View style={{ marginTop: 10 }}>
+        <HStack justifyContent={"space-between"}>
           <Text style={styles.title}>Create a Document Sharing link</Text>
         </HStack>
         <Text style={styles.description}>
@@ -114,7 +118,8 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
           borderColor={commonColors.primaryColor}
           color={commonColors.primaryColor}
           mt={1}
-          onValueChange={itemValue => setExpiration(itemValue)}>
+          onValueChange={(itemValue) => setExpiration(itemValue)}
+        >
           <Select.Item label="No Expiration" value={(-1).toString()} />
           <Select.Item label="1 hour" value={HOUR.toString()} />
           <Select.Item label="1 day" value={DAY.toString()} />
@@ -137,8 +142,9 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
           borderColor={commonColors.primaryColor}
           color={commonColors.primaryColor}
           mt={1}
-          onValueChange={itemValue => setDocumentId(itemValue)}>
-          {walletStore.documents.map(item => {
+          onValueChange={(itemValue) => setDocumentId(itemValue)}
+        >
+          {walletStore.documents.map((item) => {
             return (
               <Select.Item
                 key={item._id}
@@ -160,11 +166,11 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
           marginBottom={2}
           marginTop={1}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           onChangeText={setMemo}
           value={memo}
-          placeholder={'shared with Alice'}
+          placeholder={"shared with Alice"}
           placeholderTextColor={commonColors.primaryColor}
           borderColor={commonColors.primaryColor}
         />
@@ -191,9 +197,9 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
         />
       ) : (
         <Button
-          style={{marginBottom: 30}}
+          style={{ marginBottom: 30 }}
           loading={loading}
-          title={'Generate Link'}
+          title={"Generate Link"}
           onPress={generateLink}
         />
       )}
@@ -203,24 +209,24 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,
-    color: 'black',
+    color: "black",
     fontSize: 18,
     marginVertical: 10,
   },
   description: {
     fontFamily: textStyles.regularFont,
-    color: 'black',
+    color: "black",
   },
   shareText: {
-    color: '#fff',
+    color: "#fff",
     fontFamily: textStyles.mediumFont,
     // textAlign: 'center',
     fontSize: 18,
   },
   note: {
-    color: 'black',
+    color: "black",
     marginTop: 5,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: 12,
   },
 });
