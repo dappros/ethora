@@ -5,7 +5,7 @@ import { appLinkingUrl, unv_url } from "../../docs/config";
 import { MainHeader } from "../components/MainHeader/MainHeader";
 import { useStores } from "../stores/context";
 import { Linking } from "react-native";
-import parseChatLink from "../helpers/parseChatLink";
+import parseChatLink from "../helpers/parseLink";
 import openChatFromChatLink from "../helpers/chat/openChatFromChatLink";
 import { useNavigation } from "@react-navigation/native";
 import { getLastMessageArchive, retrieveOtherUserVcard } from "../xmpp/stanzas";
@@ -120,20 +120,22 @@ export const HomeStackScreen = observer(() => {
             });
           }
         } else {
-          const parsedChatId = parseChatLink(url);
-          if (parsedChatId) {
-            const chatJID =
-              parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
-            setTimeout(() => {
-              openChatFromChatLink(
-                chatJID,
-                initialData.walletAddress,
-                navigation,
-                chatStore.xmpp
-              );
-            }, 2000);
-          } else {
-            showToast("error", "Error", "Invalid QR", "top");
+          const parseLink = parseChatLink(url);
+          if (parseLink) {
+            const chatId = parseLink.searchParams.get("c");
+            if (chatId) {
+              const chatJID = chatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+              setTimeout(() => {
+                openChatFromChatLink(
+                  chatJID,
+                  initialData.walletAddress,
+                  navigation,
+                  chatStore.xmpp
+                );
+              }, 2000);
+            } else {
+              showToast("error", "Error", "Invalid QR", "top");
+            }
           }
         }
       }

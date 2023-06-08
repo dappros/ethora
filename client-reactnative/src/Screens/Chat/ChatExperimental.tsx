@@ -36,7 +36,7 @@ import { ChatMediaModal } from "../../components/Modals/ChatMediaModal";
 import { Actionsheet, useDisclose, View } from "native-base";
 import { modalTypes } from "../../constants/modalTypes";
 import { systemMessage } from "../../helpers/systemMessage";
-import parseChatLink from "../../helpers/parseChatLink";
+import parseLink from "../../helpers/parseLink";
 import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
@@ -602,9 +602,11 @@ const ChatScreen = observer(({ route, navigation }: any) => {
   };
 
   const handleChatLinks = (chatLink: string) => {
-    const parsedChatId = parseChatLink(chatLink);
-    if (parsedChatId) {
-      const chatJID = parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+    const parsedLink = parseLink(chatLink);
+    if (parsedLink) {
+      const chatJID =
+        parsedLink.searchParams.get("c") +
+        apiStore.xmppDomains.CONFERENCEDOMAIN;
       // navigation.navigate(ROUTES.ROOMSLIST);
       // // getUserRoomsStanza(
       // //   underscoreManipulation(loginStore.walletAddress),
@@ -1033,8 +1035,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           // onInputTextChanged={()=>{alert('hhh')}}
           parsePatterns={(linkStyle) => [
             {
-              pattern:
-                /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              pattern: /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
               style: linkStyle,
               onPress: handleChatLinks,
             },

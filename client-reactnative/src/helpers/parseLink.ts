@@ -5,13 +5,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { unv_url, unv_url1 } from "../../docs/config";
+import { unv_url } from "../../docs/config";
 
-const parseChatLink = (url: string) => {
+const parseLink = (url: string): URL | false => {
   if (url.includes(unv_url)) {
     const urlparse = new URL(url);
 
-    return urlparse.searchParams.get("c");
+    return urlparse;
   } else return false;
 };
-export default parseChatLink;
+export default parseLink;

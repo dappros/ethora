@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Actions, GiftedChat, Send} from 'react-native-gifted-chat';
-import {AudioSendButton} from './AudioSendButton';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Actions, GiftedChat, Send } from "react-native-gifted-chat";
+import { AudioSendButton } from "./AudioSendButton";
 import {
   ActivityIndicator,
   Alert,
@@ -11,51 +11,51 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-} from 'react-native';
+} from "react-native";
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
-} from 'react-native-audio-recorder-player';
-import RNFetchBlob from 'react-native-blob-util';
-import {fileUpload} from '../../config/routesConstants';
-import {normalizeData} from '../../helpers/normalizeData';
-import {useStores} from '../../stores/context';
-import {httpUpload} from '../../config/apiService';
-import {showToast} from '../Toast/toast';
-import {Actionsheet, HStack, Text, View, useDisclose} from 'native-base';
+} from "react-native-audio-recorder-player";
+import RNFetchBlob from "react-native-blob-util";
+import { fileUpload } from "../../config/routesConstants";
+import { normalizeData } from "../../helpers/normalizeData";
+import { useStores } from "../../stores/context";
+import { httpUpload } from "../../config/apiService";
+import { showToast } from "../Toast/toast";
+import { Actionsheet, HStack, Text, View, useDisclose } from "native-base";
 import {
   allowIsTyping,
   commonColors,
   defaultBotsList,
   defaultChatBackgroundTheme,
   textStyles,
-} from '../../../docs/config';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import IonIcons from 'react-native-vector-icons/Ionicons';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {IMessage, roomListProps} from '../../stores/chatStore';
-import MessageBody from './MessageBody';
-import {ImageMessage} from './ImageMessage';
-import {VideoMessage} from './VideoMessage';
-import {AudioMessage} from './AudioMessage';
-import {PdfMessage} from './PdfMessage';
-import {FileMessage} from './FileMessage';
-import {downloadFile} from '../../helpers/downloadFile';
-import {ChatComposer} from './Composer';
-import {MentionSuggestionsProps} from '../../helpers/chat/inputTypes';
-import {useNavigation} from '@react-navigation/native';
-import RenderChatFooter from './RenderChatFooter';
-import DocumentPicker from 'react-native-document-picker';
+} from "../../../docs/config";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import IonIcons from "react-native-vector-icons/Ionicons";
+import Entypo from "react-native-vector-icons/Entypo";
+import { IMessage, roomListProps } from "../../stores/chatStore";
+import MessageBody from "./MessageBody";
+import { ImageMessage } from "./ImageMessage";
+import { VideoMessage } from "./VideoMessage";
+import { AudioMessage } from "./AudioMessage";
+import { PdfMessage } from "./PdfMessage";
+import { FileMessage } from "./FileMessage";
+import { downloadFile } from "../../helpers/downloadFile";
+import { ChatComposer } from "./Composer";
+import { MentionSuggestionsProps } from "../../helpers/chat/inputTypes";
+import { useNavigation } from "@react-navigation/native";
+import RenderChatFooter from "./RenderChatFooter";
+import DocumentPicker from "react-native-document-picker";
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from '../../helpers/underscoreLogic';
+} from "../../helpers/underscoreLogic";
 import {
   IMessageToSend,
   createMainMessageForThread,
-} from '../../helpers/chat/createMessageObject';
+} from "../../helpers/chat/createMessageObject";
 import {
   deleteMessageStanza,
   isComposing,
@@ -64,37 +64,37 @@ import {
   sendMediaMessageStanza,
   sendMessageStanza,
   sendReplaceMessageStanza,
-} from '../../xmpp/stanzas';
-import SecondaryHeader from '../SecondaryHeader/SecondaryHeader';
-import parseChatLink from '../../helpers/parseChatLink';
-import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
-import {mentionRegEx, parseValue} from '../../helpers/chat/inputUtils';
+} from "../../xmpp/stanzas";
+import SecondaryHeader from "../SecondaryHeader/SecondaryHeader";
+import parseLink from "../../helpers/parseLink";
+import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
+import { mentionRegEx, parseValue } from "../../helpers/chat/inputUtils";
 //@ts-ignore
-import matchAll from 'string.prototype.matchall';
-import AudioPlayer from '../AudioPlayer/AudioPlayer';
-import {ChatLongTapModal} from '../Modals/Chat/ChatLongTapModal';
-import {QRModal} from '../Modals/QR/QRModal';
-import {ChatMediaModal} from '../Modals/ChatMediaModal';
-import {MetaNavigation} from './MetaNavigation';
-import {NftItemGalleryModal} from '../../../NftItemGalleryModal';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {IDataForTransfer} from '../Modals/Chat/types';
-import {observer} from 'mobx-react-lite';
-import {systemMessage} from '../../helpers/systemMessage';
-import {banSystemMessage} from '../../helpers/banSystemMessage';
-import {useDebounce} from '../../hooks/useDebounce';
+import matchAll from "string.prototype.matchall";
+import AudioPlayer from "../AudioPlayer/AudioPlayer";
+import { ChatLongTapModal } from "../Modals/Chat/ChatLongTapModal";
+import { QRModal } from "../Modals/QR/QRModal";
+import { ChatMediaModal } from "../Modals/ChatMediaModal";
+import { MetaNavigation } from "./MetaNavigation";
+import { NftItemGalleryModal } from "../../../NftItemGalleryModal";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { IDataForTransfer } from "../Modals/Chat/types";
+import { observer } from "mobx-react-lite";
+import { systemMessage } from "../../helpers/systemMessage";
+import { banSystemMessage } from "../../helpers/banSystemMessage";
+import { useDebounce } from "../../hooks/useDebounce";
 import {
   isImageMimetype,
   isVideoMimetype,
   isAudioMimetype,
   isPdfMimetype,
-} from '../../helpers/checkMimetypes';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {HomeStackNavigationProp} from '../../navigation/types';
-import {TCombinedMimeType} from '../../constants/mimeTypes';
+} from "../../helpers/checkMimetypes";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { HomeStackNavigationProp } from "../../navigation/types";
+import { TCombinedMimeType } from "../../constants/mimeTypes";
 
 //interfaces and types
-export type containerType = 'main' | 'thread';
+export type containerType = "main" | "thread";
 interface ChatContainerProps {
   containerType: containerType;
   roomDetails: roomListProps;
@@ -145,30 +145,30 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   attachmentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   attachmentActionContainer: {
-    width: hp('4%'),
-    height: hp('4%'),
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: hp("4%"),
+    height: hp("4%"),
+    alignItems: "center",
+    justifyContent: "center",
   },
   nameTextStyle: {
     fontFamily: textStyles.boldFont,
-    fontSize: hp('2'),
-    color: 'white',
+    fontSize: hp("2"),
+    color: "white",
   },
   usernameTextStyle: {
-    fontSize: hp('2.216%'),
+    fontSize: hp("2.216%"),
     fontFamily: textStyles.boldFont,
-    color: '#ffff',
-    fontWeight: Platform.OS === 'ios' ? 'bold' : 'normal',
+    color: "#ffff",
+    fontWeight: Platform.OS === "ios" ? "bold" : "normal",
   },
   suggestionsContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 43,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     left: 0,
     padding: 10,
     borderRadius: 10,
@@ -179,24 +179,24 @@ const styles = StyleSheet.create({
   },
   suggestionsTextStyle: {
     fontFamily: textStyles.semiBoldFont,
-    color: '#000',
+    color: "#000",
   },
   parentTimeStyle: {
-    fontSize: hp('1.5%'),
+    fontSize: hp("1.5%"),
     fontFamily: textStyles.mediumFont,
-    color: '#ffff',
+    color: "#ffff",
     marginLeft: 3,
   },
   currentThreadMessageTextStyle: {
-    fontSize: hp('2%'),
+    fontSize: hp("2%"),
     fontFamily: textStyles.mediumFont,
-    color: '#ffff',
+    color: "#ffff",
   },
   renderAttachmentContainerStyle: {
-    position: 'relative',
+    position: "relative",
   },
   activityIndicatorContainerStyle: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
 });
 //styles
@@ -215,9 +215,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   } = props;
   //props
 
-
   //mobx stores
-  const {loginStore, debugStore, chatStore, walletStore, apiStore} =
+  const { loginStore, debugStore, chatStore, walletStore, apiStore } =
     useStores();
   //mobx stores
 
@@ -226,12 +225,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [fileUploadProgress, setFileUploadProgress] = useState<number>(0);
   const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] =
     useState<boolean>(false);
-  const [text, setText] = useState<string>('');
-  const [selection, setSelection] = useState({start: 0, end: 0});
+  const [text, setText] = useState<string>("");
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
   const [isEditing, setIsEditing] = useState(false);
   const [onTapMessageObject, setOnTapMessageObject] = useState<IMessage>();
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [composingUsername, setComposingUsername] = useState<string>('');
+  const [composingUsername, setComposingUsername] = useState<string>("");
   const [showQrModal, setShowQrModal] = useState(false);
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
@@ -239,6 +238,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [showEditOption, setShowEditOption] = useState(true);
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
   const [showInChannel, setShowInChannel] = useState<boolean>(false);
+  const [initialLoadCompleted, setInitialLoadCompleted] = useState(false);
   const [mediaModal, setMediaModal] = useState<{
     open: boolean;
     url: string | undefined;
@@ -251,22 +251,22 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     message: undefined,
   });
   const [dataForLongTapModal, setDataForLongTapModal] = useState<
-    IDataForTransfer & {open: boolean}
+    IDataForTransfer & { open: boolean }
   >({
-    name: '',
-    message_id: '',
-    senderName: '',
-    walletFromJid: '',
-    chatJid: '',
+    name: "",
+    message_id: "",
+    senderName: "",
+    walletFromJid: "",
+    chatJid: "",
     open: false,
   });
-  const {isOpen, onOpen, onClose} = useDisclose();
+  const { isOpen, onOpen, onClose } = useDisclose();
   //local states
 
   //local variables
   const mediaButtonAnimation = new Animated.Value(1);
   const path = Platform.select({
-    ios: 'audio.m4a',
+    ios: "audio.m4a",
     android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
   });
 
@@ -279,9 +279,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const giftedRef = useRef(null);
   const navigation = useNavigation<HomeStackNavigationProp>();
   const manipulatedWalletAddress: string = underscoreManipulation(
-    senderDetails.senderWalletAddress,
+    senderDetails.senderWalletAddress
   );
-  const {tokenTransferSuccess} = walletStore;
+  const { tokenTransferSuccess } = walletStore;
   const debouncedChatText = useDebounce(text, 500);
   //local variables
 
@@ -308,8 +308,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   //get Waveform
   const getWaveformArray = async (url: string) => {
-
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       let res = await NativeModules.Waveform.getWaveformArray(url);
       const data = JSON.parse(res);
       return data;
@@ -328,7 +327,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       .map((_, i) =>
         arr
           .slice(i * blockSize, (i + 1) * blockSize)
-          .reduce((sum: number, val: number) => sum + Math.abs(val), 0),
+          .reduce((sum: number, val: number) => sum + Math.abs(val), 0)
       );
 
     return res;
@@ -338,7 +337,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const getAudioData = async (url?: string) => {
     const audioPath =
       (url as string) ||
-      (Platform.OS === 'ios'
+      (Platform.OS === "ios"
         ? `${RNFetchBlob.fs.dirs.CacheDir}/audio.m4a`
         : (path as string));
     const data = await getWaveformArray(audioPath);
@@ -361,9 +360,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     const result = await audioRecorderPlayer.startRecorder(
       path,
       audioSet,
-      true,
+      true
     );
-    console.log(result, 'fileResult');
+    console.log(result, "fileResult");
   };
 
   //handle to stop audio recording, get the recorded details and send as a message
@@ -374,7 +373,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     const result = await audioRecorderPlayer.stopRecorder();
 
     const filesApiURL = fileUpload;
-    const FormData = require('form-data');
+    const FormData = require("form-data");
     let data = new FormData();
     const waveform = await getAudioData();
     // let correctpath = '';
@@ -382,17 +381,17 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     // const str2 = res.uri;
     // correctpath = str2.replace(str1, '');
 
-    data.append('files', {
+    data.append("files", {
       uri: result,
-      type: 'audio/mpeg',
-      name: 'sound.mp3',
+      type: "audio/mpeg",
+      name: "sound.mp3",
     });
     try {
       const response = await httpUpload(
         filesApiURL,
         data,
         loginStore.userToken,
-        setFileUploadProgress,
+        setFileUploadProgress
       );
       setFileUploadProgress(0);
 
@@ -402,12 +401,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           response.data.results,
           roomDetails,
           chatStore.xmpp,
-          waveform,
+          waveform
         );
       }
     } catch (error) {
       console.log(error);
-      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
+      showToast("error", "Error", "Cannot upload file, try again later", "top");
     }
   };
 
@@ -416,9 +415,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     mediaListArray: IMediaProps[],
     roomDetail: roomListProps,
     xmpp: any,
-    waveForm?: any,
+    waveForm?: any
   ) => {
-    mediaListArray.map(async item => {
+    mediaListArray.map(async (item) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
       const data: IMessageToSend = {
         senderFirstName: senderDetails.senderFirstName,
@@ -433,7 +432,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         push: true,
         mucname: roomDetail.name,
         roomJid: roomDetail.jid as string,
-        receiverMessageId: '0',
+        receiverMessageId: "0",
         fileName: item.filename,
         size: item.size.toString(),
         duration: item?.duration,
@@ -445,7 +444,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         manipulatedWalletAddress,
         roomDetail.jid,
         data,
-        xmpp,
+        xmpp
       );
     });
   };
@@ -457,12 +456,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to scroll to the top of the list of messages
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
-      item => item._id === currentMessage?.mainMessage?.id,
+      (item) => item._id === currentMessage?.mainMessage?.id
     );
     console.log(
       //@ts-ignore
       giftedRef.current?._messageContainerRef?.current?.scrollToIndex,
-      'parent Index',
+      "parent Index"
     );
     //@ts-ignore
     giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
@@ -474,18 +473,18 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to pick attachment and send
   const sendAttachment = async (
     userToken: string,
-    roomDetail: roomListProps,
+    roomDetail: roomListProps
   ) => {
     const xmpp = chatStore.xmpp;
     const filesApiURL = apiStore.defaultUrl + fileUpload;
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
-        copyTo: 'cachesDirectory',
+        copyTo: "cachesDirectory",
       });
-      const FormData = require('form-data');
+      const FormData = require("form-data");
       let data = new FormData();
-      data.append('files', {
+      data.append("files", {
         uri: res[0].uri,
         type: res[0].type,
         name: res[0].name,
@@ -495,12 +494,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         filesApiURL,
         data,
         userToken,
-        setFileUploadProgress,
+        setFileUploadProgress
       );
       setFileUploadProgress(0);
 
       if (response.data.results?.length) {
-        if (response.data.results[0].mimetype === 'audio/mpeg') {
+        if (response.data.results[0].mimetype === "audio/mpeg") {
           let wave = await getAudioData(absolutePath);
           submitMediaMessage(response.data.results, roomDetail, xmpp, wave);
         } else {
@@ -510,7 +509,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     } catch (err) {
       console.log(err);
       // User cancelled the picker, exit any dialogs or menus and move on
-      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
+      showToast("error", "Error", "Cannot upload file, try again later", "top");
       console.log(err);
     }
   };
@@ -534,9 +533,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       mucname: roomDetails.name,
       photoURL: loginStore.userAvatar,
       roomJid: roomDetails.jid,
-      isReply: containerType === 'thread' || false,
+      isReply: containerType === "thread" || false,
       mainMessage:
-        containerType === 'thread' &&
+        containerType === "thread" &&
         createMainMessageForThread(currentThreadMessage as IMessage),
       showInChannel: showInChannel,
       push: true,
@@ -549,43 +548,47 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         messageText as string,
         onTapMessageObject?._id as string,
         data,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
       setIsEditing(false);
     } else {
       const parsedext = parseValue(
         messageText as string,
-        partTypes as any,
+        partTypes as any
       ).plainText;
-      const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
+      const matches = Array.from(matchAll(messageText ?? "", mentionRegEx));
       matches.forEach((match: any) =>
         sendInvite(
           manipulatedWalletAddress,
           roomDetails.jid,
           match[4],
-          chatStore.xmpp,
-        ),
+          chatStore.xmpp
+        )
       );
       sendMessageStanza(
         manipulatedWalletAddress,
         roomDetails.jid,
         parsedext,
         data,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     }
   };
 
   //handle to open rooms from chatlink
   const handleChatLinks = (chatLink: string) => {
-    const chatJID =
-      parseChatLink(chatLink) + apiStore.xmppDomains.CONFERENCEDOMAIN;
-    openChatFromChatLink(
-      chatJID,
-      loginStore.initialData.walletAddress,
-      navigation,
-      chatStore.xmpp,
-    );
+    const parsedChatId = parseLink(chatLink);
+    if (parsedChatId) {
+      const chatJID = parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+      openChatFromChatLink(
+        chatJID,
+        loginStore.initialData.walletAddress,
+        navigation,
+        chatStore.xmpp
+      );
+    } else {
+      showToast("error", "Error", "Invalid QR", "top");
+    }
   };
 
   //handle to send nft items as message
@@ -605,36 +608,41 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       wrappable: true,
       push: true,
       roomJid: roomDetails.jid,
-      receiverMessageId: '0',
+      receiverMessageId: "0",
     };
 
     sendMediaMessageStanza(
       manipulatedWalletAddress,
       roomDetails.jid,
       data,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
     setIsNftItemGalleryVisible(false);
   };
 
   const closeMediaModal = () => {
-    setMediaModal({type: undefined, open: false, url: '', message: undefined});
+    setMediaModal({
+      type: undefined,
+      open: false,
+      url: "",
+      message: undefined,
+    });
   };
 
   //function to copy text
   const handleCopyText = () => {
     Clipboard.setString(onTapMessageObject?.text as string);
-    showToast('success', 'Info', 'Message copied', 'top');
+    showToast("success", "Info", "Message copied", "top");
     return onClose();
   };
 
   const closeLongTapModal = () => {
     setDataForLongTapModal({
-      name: '',
-      message_id: '',
-      senderName: '',
-      walletFromJid: '',
-      chatJid: '',
+      name: "",
+      message_id: "",
+      senderName: "",
+      walletFromJid: "",
+      chatJid: "",
       open: false,
     });
   };
@@ -654,41 +662,41 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to initiate delete process
   const handleDelete = () => {
     Alert.alert(
-      'Delete Message',
-      'Are you sure you want to delete this message',
+      "Delete Message",
+      "Are you sure you want to delete this message",
       [
         {
-          text: 'Delete',
+          text: "Delete",
           onPress: () => {
             deleteMessageStanza(
               onTapMessageObject?.user._id as string,
               onTapMessageObject?.roomJid as string,
               onTapMessageObject?._id as string,
-              chatStore.xmpp,
+              chatStore.xmpp
             );
             onClose();
           },
         },
         {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
         },
-      ],
+      ]
     );
   };
 
   //handle to send is typing to xmpp server when user inputs keywords in the message composer section
   const handleInputChange = (inputText: string) => {
     setText(inputText);
-    const {firstName, lastName} = loginStore.initialData;
-    const fullName = firstName + ' ' + lastName;
+    const { firstName, lastName } = loginStore.initialData;
+    const fullName = firstName + " " + lastName;
     setTimeout(() => {
       isComposing(
         manipulatedWalletAddress,
         roomDetails.jid,
         fullName,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     }, 2000);
   };
@@ -697,9 +705,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const onMediaMessagePress = (
     type: TCombinedMimeType | undefined,
     url: string | undefined,
-    message: IMessage,
+    message: IMessage
   ) => {
-    setMediaModal({open: true, type, url, message});
+    setMediaModal({ open: true, type, url, message });
   };
 
   const handleOnLongPress = (message: IMessage) => {
@@ -709,7 +717,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     if (
       !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
     ) {
-      const jid = message.user._id.split('@' + apiStore.xmppDomains.DOMAIN)[0];
+      const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
 
       setDataForLongTapModal({
@@ -717,7 +725,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         message_id: message._id,
         senderName:
           loginStore.initialData.firstName +
-          ' ' +
+          " " +
           loginStore.initialData.lastName,
         walletFromJid: walletFromJid,
         chatJid: roomDetails.jid,
@@ -734,10 +742,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   }) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = avatarProps._id.split('@')[0];
+    const xmppID = avatarProps._id.split("@")[0];
     const walletAddress = reverseUnderScoreManipulation(xmppID);
     if (walletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate('ProfileScreen');
+      navigation.navigate("ProfileScreen");
       return;
     } else {
       chatStore.getOtherUserDetails({
@@ -745,7 +753,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         avatar: avatarProps.avatar,
         name: avatarProps.name,
       });
-      navigation.navigate('OtherUserProfileScreen');
+      navigation.navigate("OtherUserProfileScreen");
     }
   };
 
@@ -754,7 +762,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     setShowViewThread(false);
     //navigate to thread screen with current message details.
     //@ts-ignore
-    navigation.navigate('ThreadScreen', {
+    navigation.navigate("ThreadScreen", {
       currentMessage: onTapMessageObject,
       chatJid: roomDetails.jid,
       chatName: roomDetails.name,
@@ -818,7 +826,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         roomDetails.jid,
         messageText,
         data,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     },
     [
@@ -830,7 +838,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       manipulatedWalletAddress,
       roomDetails.jid,
       roomDetails.name,
-    ],
+    ]
   );
 
   //local functions
@@ -883,7 +891,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   useEffect(() => {
     if (chatStore.userBanData.success) {
-      const message = banSystemMessage({...chatStore.userBanData});
+      const message = banSystemMessage({ ...chatStore.userBanData });
       //@ts-ignore
       sendSystemMessage(message);
       chatStore.clearUserBanData();
@@ -934,7 +942,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     return (
       <Send {...sendProps}>
         <View style={[styles.sendButton]}>
-          <IonIcons name="ios-send" color={'white'} size={hp('3%')} />
+          <IonIcons name="ios-send" color={"white"} size={hp("3%")} />
         </View>
       </Send>
     );
@@ -944,33 +952,34 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const renderAttachment = () => {
     const options = walletStore.nftItems.length
       ? {
-          'Upload File': async () =>
+          "Upload File": async () =>
             await sendAttachment(loginStore.userToken, roomDetails),
-          'Display an Item': async () => await displayNftItems(),
+          "Display an Item": async () => await displayNftItems(),
           Cancel: () => {
-            console.log('Cancel');
+            console.log("Cancel");
           },
         }
       : {
-          'Upload File': async () =>
+          "Upload File": async () =>
             await sendAttachment(loginStore.userToken, roomDetails),
           Cancel: () => {
-            console.log('Cancel');
+            console.log("Cancel");
           },
         };
     return (
       <View style={styles.renderAttachmentContainerStyle}>
         <View
           accessibilityLabel="Choose attachment"
-          style={styles.attachmentContainer}>
+          style={styles.attachmentContainer}
+        >
           <Actions
             containerStyle={styles.attachmentActionContainer}
             icon={() => (
               <Entypo
                 accessibilityLabel="Send Attachment"
                 name="attachment"
-                color={'black'}
-                size={hp('3%')}
+                color={"black"}
+                size={hp("3%")}
               />
             )}
             options={options}
@@ -1006,7 +1015,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       try {
         parsedWaveform = JSON.parse(waveForm);
       } catch (error) {
-        console.log('cant parse wave');
+        console.log("cant parse wave");
       }
     }
     if (isImageMimetype(mimetype as string)) {
@@ -1039,7 +1048,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       );
     } else if (isPdfMimetype(mimetype as string)) {
       const pdfImage =
-        'https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw';
+        "https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw";
       return (
         <PdfMessage
           url={preview || pdfImage}
@@ -1082,14 +1091,15 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     return (
       <View style={styles.suggestionsContainer}>
         {defaultBotsList
-          .filter(one =>
-            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
+          .filter((one) =>
+            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
           )
-          .map(one => (
+          .map((one) => (
             <Pressable
               key={one.id}
               onPress={() => onSuggestionPress(one)}
-              style={styles.suggestionsPressableStyle}>
+              style={styles.suggestionsPressableStyle}
+            >
               <Text style={styles.suggestionsTextStyle}>{one.name}</Text>
             </Pressable>
           ))}
@@ -1098,43 +1108,45 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
   const partTypes = [
     {
-      trigger: '@', // Should be a single character like '@' or '#'
+      trigger: "@", // Should be a single character like '@' or '#'
       renderSuggestions,
-      textStyle: {fontWeight: 'bold', color: 'blue'}, // The mention style in the input
+      textStyle: { fontWeight: "bold", color: "blue" }, // The mention style in the input
     },
   ];
   //component to render the UI for main message or the message to which replies and threads are created. This is shown in thread view
   const RenderMainMessageSection: React.FC = () => {
-    const firstName = currentThreadMessage?.user.name.split(' ')[0] || 'N/A';
-    const lastName = currentThreadMessage?.user.name.split(' ')[1] || 'N/A';
+    const firstName = currentThreadMessage?.user.name.split(" ")[0] || "N/A";
+    const lastName = currentThreadMessage?.user.name.split(" ")[1] || "N/A";
     //@ts-ignore
 
     const parentDate = new Date(currentThreadMessage?.createdAt);
     const parentTime = parentDate.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     });
     return (
       <HStack
         shadow="5"
         borderRadius={10}
         bg={commonColors.primaryColor}
-        margin={2}>
+        margin={2}
+      >
         <View flex={0.19} alignItems="center" paddingTop={2}>
           <View
-            width={hp('5.46%')}
-            height={hp('5.46%')}
-            justifyContent={'center'}
-            alignItems={'center'}
+            width={hp("5.46%")}
+            height={hp("5.46%")}
+            justifyContent={"center"}
+            alignItems={"center"}
             bgColor={commonColors.primaryDarkColor}
-            borderRadius={hp('5.46%') / 2}>
+            borderRadius={hp("5.46%") / 2}
+          >
             {currentThreadMessage?.user.avatar ? (
               <Image
-                source={{uri: currentThreadMessage.user.avatar}}
+                source={{ uri: currentThreadMessage.user.avatar }}
                 style={{
-                  height: hp('5.46%'),
-                  width: hp('5.46%'),
-                  borderRadius: hp('5.46%') / 2,
+                  height: hp("5.46%"),
+                  width: hp("5.46%"),
+                  borderRadius: hp("5.46%") / 2,
                 }}
               />
             ) : (
@@ -1145,7 +1157,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           </View>
         </View>
 
-        <View flex={0.9} padding={2} justifyContent={'flex-start'}>
+        <View flex={0.9} padding={2} justifyContent={"flex-start"}>
           <HStack>
             <Text style={styles.usernameTextStyle}>
               {currentThreadMessage?.user.name}
@@ -1164,73 +1176,75 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     );
   };
   //component to render Action items of each menu
-  type ActionItemType = 'edit' | 'delete' | 'reply' | 'copy' | 'thread';
+  type ActionItemType = "edit" | "delete" | "reply" | "copy" | "thread";
   const ActionItems = (type: ActionItemType) => {
     type TIconName =
-      | 'delete'
-      | 'edit'
-      | 'text-snippet'
-      | 'content-copy'
-      | 'reply'
-      | '';
-    type TItemTitle = 'Delete' | 'Edit' | 'View thread' | 'Copy' | 'Reply' | '';
+      | "delete"
+      | "edit"
+      | "text-snippet"
+      | "content-copy"
+      | "reply"
+      | "";
+    type TItemTitle = "Delete" | "Edit" | "View thread" | "Copy" | "Reply" | "";
     let handleOnPress = () => onClose();
-    let itemTitle: TItemTitle = '';
-    let iconName: TIconName = '';
+    let itemTitle: TItemTitle = "";
+    let iconName: TIconName = "";
     // const handleOnPress = () => {
     switch (type) {
-      case 'reply':
+      case "reply":
         handleOnPress = () => handleReply(currentThreadMessage);
-        itemTitle = 'Reply';
-        iconName = 'reply';
+        itemTitle = "Reply";
+        iconName = "reply";
         break;
 
-      case 'thread':
+      case "thread":
         handleOnPress = () => handleReply();
-        itemTitle = 'View thread';
-        iconName = 'text-snippet';
+        itemTitle = "View thread";
+        iconName = "text-snippet";
         break;
 
-      case 'copy':
+      case "copy":
         handleOnPress = () => handleCopyText();
-        itemTitle = 'Copy';
-        iconName = 'content-copy';
+        itemTitle = "Copy";
+        iconName = "content-copy";
         break;
 
-      case 'delete':
+      case "delete":
         handleOnPress = () => handleDelete();
-        itemTitle = 'Delete';
-        iconName = 'delete';
+        itemTitle = "Delete";
+        iconName = "delete";
         break;
 
-      case 'edit':
+      case "edit":
         handleOnPress = () => handleEdit();
-        itemTitle = 'Edit';
-        iconName = 'edit';
+        itemTitle = "Edit";
+        iconName = "edit";
         break;
 
       default:
         handleOnPress = () => onClose();
-        itemTitle = '';
-        iconName = '';
+        itemTitle = "";
+        iconName = "";
     }
 
     return (
       <Actionsheet.Item onPress={handleOnPress}>
         <HStack
-          alignItems={'center'}
-          w={'full'}
-          justifyContent={'space-evenly'}>
-          <View flex={0.5} justifyContent={'center'} alignItems={'flex-start'}>
+          alignItems={"center"}
+          w={"full"}
+          justifyContent={"space-evenly"}
+        >
+          <View flex={0.5} justifyContent={"center"} alignItems={"flex-start"}>
             <Text
-              fontSize={hp('2%')}
-              fontWeight={'bold'}
-              fontFamily={textStyles.mediumFont}>
+              fontSize={hp("2%")}
+              fontWeight={"bold"}
+              fontFamily={textStyles.mediumFont}
+            >
               {itemTitle}
             </Text>
           </View>
-          <View flex={0.5} justifyContent={'center'} alignItems={'flex-end'}>
-            <MaterialIcons size={hp('3%')} name={iconName} />
+          <View flex={0.5} justifyContent={"center"} alignItems={"flex-end"}>
+            <MaterialIcons size={hp("3%")} name={iconName} />
           </View>
         </HStack>
       </Actionsheet.Item>
@@ -1241,11 +1255,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const ActionSheetContent: React.FC = () => {
     return (
       <Actionsheet.Content>
-        {ActionItems('copy')}
-        {showReplyOption ? ActionItems('reply') : null}
-        {showViewThread ? ActionItems('thread') : null}
-        {showEditOption && ActionItems('edit')}
-        {isShowDeleteOption && ActionItems('delete')}
+        {ActionItems("copy")}
+        {showReplyOption ? ActionItems("reply") : null}
+        {showViewThread ? ActionItems("thread") : null}
+        {showEditOption && ActionItems("edit")}
+        {isShowDeleteOption && ActionItems("delete")}
       </Actionsheet.Content>
     );
   };
@@ -1254,13 +1268,14 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   return (
     <>
       <ImageBackground
-        style={{width: '100%', height: '100%', zIndex: 0}}
+        style={{ width: "100%", height: "100%", zIndex: 0 }}
         source={{
           uri: roomDetails.roomBackground
             ? roomDetails.roomBackground
             : defaultChatBackgroundTheme[0].value,
-        }}>
-        {containerType === 'main' ? (
+        }}
+      >
+        {containerType === "main" ? (
           <SecondaryHeader
             roomJID={roomDetails.jid}
             title={chatStore.roomsInfoMap[roomDetails.jid]?.name}
@@ -1275,7 +1290,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         {isAudioMimetype(mediaModal.type) && (
           <AudioPlayer audioUrl={mediaModal.url} />
         )}
-        {containerType === 'thread' && (
+        {containerType === "thread" && (
           <View bg={commonColors.primaryDarkColor}>
             <RenderMainMessageSection />
           </View>
@@ -1303,7 +1318,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           renderMessage={renderMessage}
           //@ts-ignore
-          renderMessageImage={renderMessageImageProps =>
+          renderMessageImage={(renderMessageImageProps) =>
             renderMedia(renderMessageImageProps.currentMessage)
           }
           renderComposer={renderComposer}
@@ -1317,7 +1332,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               isEditing={isEditing}
               setIsEditing={handleSetIsEditing}
               onTapMessageObject={onTapMessageObject}
-              closeReply={() => handleReply('close')}
+              closeReply={() => handleReply("close")}
               replyMessage={onTapMessageObject?.text}
               replyUserName={onTapMessageObject?.user?.name}
               allowIsTyping={allowIsTyping}
@@ -1325,24 +1340,24 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               fileUploadProgress={fileUploadProgress}
               isTyping={isTyping}
               showInChannel={showInChannel}
-              showAlsoSendInRoom={containerType === 'thread' && true}
+              showAlsoSendInRoom={containerType === "thread" && true}
               setFileUploadProgress={setFileUploadProgress}
             />
           )}
-          placeholder={'Type a message'}
+          placeholder={"Type a message"}
           listViewProps={{
             onEndReached: onLoadEarlier && onLoadEarlier,
             onEndReachedThreshold: 0.05,
           }}
           // onLoadEarlier={onLoadEarlier}
           // textInputProps={{onSelectionChange: e => console.log(e)}}
-          keyboardShouldPersistTaps={'handled'}
+          keyboardShouldPersistTaps={"handled"}
           //@ts-ignore
-          onSend={messageString => handleSendMessage(messageString)}
+          onSend={(messageString) => handleSendMessage(messageString)}
           user={{
             _id:
               loginStore.initialData.xmppUsername +
-              '@' +
+              "@" +
               apiStore.xmppDomains.DOMAIN,
             name: loginStore.initialData.username,
           }}
@@ -1350,18 +1365,17 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           alwaysShowSend
           showUserAvatar
           textInputProps={{
-            color: 'black',
-            onSelectionChange: (e: {nativeEvent: {selection: any}}) =>
+            color: "black",
+            onSelectionChange: (e: { nativeEvent: { selection: any } }) =>
               setSelection(e.nativeEvent.selection),
           }}
           onLongPress={(message: any) => handleOnLongPress(message)}
           onTap={(message: any) => onMessageBubbleTap(message)}
           handleReply={handleReply}
           // onInputTextChanged={()=>{alert('hhh')}}
-          parsePatterns={linkStyle => [
+          parsePatterns={(linkStyle) => [
             {
-              pattern:
-                /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              pattern: /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
               style: linkStyle,
               onPress: handleChatLinks,
             },
@@ -1385,11 +1399,12 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             setIsShowDeleteOption(true);
             setShowReplyOption(true);
             setShowViewThread(false);
-          }}>
+          }}
+        >
           <ActionSheetContent />
         </Actionsheet>
         <MetaNavigation
-          chatId={roomDetails.jid.split('@')[0]}
+          chatId={roomDetails.jid.split("@")[0]}
           open={showMetaNavigation || chatStore.showMetaNavigation}
           onClose={() => {
             setShowMetaNavigation(false);
@@ -1408,7 +1423,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         <QRModal
           open={showQrModal}
           onClose={() => setShowQrModal(false)}
-          title={'Chatroom'}
+          title={"Chatroom"}
           link={roomDetails.jid}
         />
         <ChatLongTapModal

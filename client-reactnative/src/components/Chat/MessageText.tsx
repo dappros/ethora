@@ -6,9 +6,16 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { useState } from "react";
-import { commonColors, textStyles, unv_url } from "../../../docs/config";
+import {
+  apiModes,
+  appEndpoint,
+  commonColors,
+  textStyles,
+  unv_url,
+} from "../../../docs/config";
 import ParsedText from "react-native-parsed-text";
 import { Linking, StyleSheet, TouchableOpacity } from "react-native";
+//@ts-ignore
 import Communications from "react-native-communications";
 import { getYoutubeMetadata } from "../../helpers/getYoutubeMetadata";
 import { getChatLinkInfo, retrieveOtherUserVcard } from "../../xmpp/stanzas";
@@ -19,13 +26,12 @@ import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProp } from "../../navigation/types";
 import { homeStackRoutes } from "../../navigation/routes";
+import parseChatLink from "../../helpers/parseLink";
 
 const DEFAULT_OPTION_TITLES = ["Call", "Text", "Cancel"];
 const ytubeLinkRegEx =
   /\b(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gi;
 const WWW_URL_PATTERN = /^www\./i;
-
-const ethoraLinkRegex = /\bhttps:\/\/eto\.li\?c=0x[0-9a-f]+/gm;
 
 const textStyle = {
   fontSize: 16,
@@ -35,7 +41,7 @@ const textStyle = {
   marginLeft: 10,
   marginRight: 10,
 };
-const styles = {
+const styles: any = {
   left: StyleSheet.create({
     container: {},
     text: {
@@ -60,8 +66,14 @@ const styles = {
   }),
 };
 
+function extractUrls(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urls = text.match(urlRegex);
+  return urls || false;
+}
+
 export const MessageText = observer((props: any) => {
-  const [youtubeMetaData, setYoutubeMetaData] = useState({});
+  const [youtubeMetaData, setYoutubeMetaData] = useState<any>({});
 
   const { loginStore, apiStore, chatStore } = useStores();
 
@@ -91,35 +103,19 @@ export const MessageText = observer((props: any) => {
       });
     }
   };
-  const onPhonePress = (phone) => {
+  const onPhonePress = (phone: any) => {
     const { optionTitles } = props;
     const options =
       optionTitles && optionTitles.length > 0
         ? optionTitles.slice(0, 3)
         : DEFAULT_OPTION_TITLES;
-    const cancelButtonIndex = options.length - 1;
-    // this.context.actionSheet().showActionSheetWithOptions({
-    //     options,
-    //     cancelButtonIndex,
-    // }, (buttonIndex) => {
-    //     switch (buttonIndex) {
-    //         case 0:
-    //             Communications.phonecall(phone, true);
-    //             break;
-    //         case 1:
-    //             Communications.text(phone);
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // });
   };
   const onEmailPress = (email: string) =>
     Communications.email([email], null, null, null, null);
 
   if (props.currentMessage.text.match(ytubeLinkRegEx)) {
     getYoutubeMetadata(props.currentMessage.text.match(ytubeLinkRegEx)[0]).then(
-      (resp) => {
+      (resp: any) => {
         setYoutubeMetaData(resp.data);
       }
     );
@@ -188,55 +184,64 @@ export const MessageText = observer((props: any) => {
   } else if (
     props.currentMessage.text.includes(unv_url) &&
     !props.currentMessage.text.includes(
-      "https://app-dev.dappros.com/v1/docs/share/"
-    )
+      `${apiModes[appEndpoint]}/docs/share/`
+    ) &&
+    !props.currentMessage.text.includes("profileLink")
   ) {
-    const chatLink = props?.currentMessage?.text?.match(ethoraLinkRegex)?.[0];
-    const chatJid =
-      chatLink?.split("=")[1] + apiStore.xmppDomains.CONFERENCEDOMAIN;
+    const extractedUrl = extractUrls(props.currentMessage.text);
+    const parsedLink = extractedUrl && parseChatLink(extractedUrl[0]);
+    if (parsedLink) {
+      const chatJID =
+        parsedLink.searchParams.get("c") +
+        apiStore.xmppDomains.CONFERENCEDOMAIN;
+      if (chatJID) {
+        getChatLinkInfo(manipulatedWalletAddress, chatJID, chatStore.xmpp);
 
-    getChatLinkInfo(manipulatedWalletAddress, chatJid, chatStore.xmpp);
+        const handleChatLink = () => {
+          openChatFromChatLink(
+            chatJID,
+            manipulatedWalletAddress,
+            navigation,
+            chatStore.xmpp
+          );
+        };
 
-    const handleChatLink = () => {
-      openChatFromChatLink(
-        chatJid,
-        manipulatedWalletAddress,
-        navigation,
-        chatStore.xmpp
-      );
-    };
-
-    return (
-      <Button
-        alignItems={"center"}
-        onPress={handleChatLink}
-        shadow={2}
-        margin={3}
-        backgroundColor={commonColors.primaryColor}
-      >
-        <Text
-          textAlign={"center"}
-          // textDecorationLine={"underline"}
-          color={"white"}
-          fontSize={hp("2%")}
-          fontFamily={textStyles.boldFont}
-        >
-          🔗💬{chatStore.chatLinkInfo[chatJid]}
-        </Text>
-        <Text
-          textAlign={"center"}
-          color={"white"}
-          fontSize={hp("1.3%")}
-          fontFamily={textStyles.lightFont}
-        >
-          (tap to open room)
-        </Text>
-      </Button>
-    );
+        return (
+          <Button
+            alignItems={"center"}
+            onPress={handleChatLink}
+            shadow={2}
+            margin={3}
+            backgroundColor={commonColors.primaryColor}
+          >
+            <Text
+              textAlign={"center"}
+              // textDecorationLine={"underline"}
+              color={"white"}
+              fontSize={hp("2%")}
+              fontFamily={textStyles.boldFont}
+            >
+              🔗💬{chatStore.chatLinkInfo[chatJID]}
+            </Text>
+            <Text
+              textAlign={"center"}
+              color={"white"}
+              fontSize={hp("1.3%")}
+              fontFamily={textStyles.lightFont}
+            >
+              (tap to open room)
+            </Text>
+          </Button>
+        );
+      }
+    } else {
+      return null;
+    }
+    // const chatLink = props?.currentMessage?.text?.match(ethoraLinkRegex)?.[0];
+    // const chatJid =
+    //   chatLink?.split("=")[1] + apiStore.xmppDomains.CONFERENCEDOMAIN;
   } else if (
-    props.currentMessage.text.includes(
-      "https://app-dev.dappros.com/v1/docs/share/"
-    )
+    props.currentMessage.text.includes(`${apiModes[appEndpoint]}/docs/share/`)
   ) {
     const doclink = props.currentMessage.text;
     return (
@@ -255,9 +260,6 @@ export const MessageText = observer((props: any) => {
         >
           (tap to view document)
         </Text>
-        {/* <Text
-        fontFamily={textStyles.regularFont}
-        >{props.currentMessage.text}</Text> */}
         <ParsedText
           style={[
             styles[props.position].text,
@@ -282,15 +284,17 @@ export const MessageText = observer((props: any) => {
   ) {
     const params = props.currentMessage.text.split(unv_url)[1];
     const queryParams = new URLSearchParams(params);
-    const firstName: string = queryParams.get("firstName");
-    const lastName: string = queryParams.get("lastName");
-    const xmppId: string = queryParams.get("xmppId");
-    const walletAddressFromLink: string = queryParams.get("walletAddress");
+    const firstName: string = queryParams.get("firstName") as string;
+    const lastName: string = queryParams.get("lastName") as string;
+    const xmppId: string = queryParams.get("xmppId") as string;
+    const walletAddressFromLink: string = queryParams.get(
+      "walletAddress"
+    ) as string;
     const linkToken = queryParams.get("linkToken");
 
     const handleProfileOpen = () => {
       if (loginStore.initialData.walletAddress === walletAddressFromLink) {
-        navigation.navigate(homeStackRoutes.ProfileScreen);
+        navigation.navigate(homeStackRoutes.ProfileScreen as never);
       } else {
         setTimeout(() => {
           retrieveOtherUserVcard(
@@ -359,4 +363,5 @@ export const MessageText = observer((props: any) => {
       </ParsedText>
     );
   }
+  return null;
 });
