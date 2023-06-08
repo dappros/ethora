@@ -71,6 +71,9 @@ You can always customize later either via web UI or directly via code.
 
 <img width="1216" alt="Screenshot 2023-06-08 at 09 59 55" src="https://github.com/dappros/ethora/assets/328787/0b944697-c4be-49c7-b952-c8da0d3900e1">
 
+<br>**Q: How do I create an account and play with this builder?**
+<br>A: Sign up for a Free account here: https://www.dappros.com/pricing/, sign in & go into "Apps" section the menu. 
+
 ---
 
 ### React.js (Web/desktop) version
