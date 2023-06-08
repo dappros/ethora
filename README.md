@@ -64,12 +64,12 @@ You can always customize later either via web UI or directly via code.
 **Q: How is this hosted? Can I self-host?**
 <br />A: Your web app will be hosted in our cloud (Free tier) by default. Alternatively, you can check out the React.js code from this repository and self host it, or get our full backend from AWS Marketplace and get both app and API backend running in your own infrastructure.
 
-<img width="2992" alt="Screenshot 2023-06-03 at 05 09 12" src="https://github.com/dappros/ethora/assets/328787/23d999c6-d423-4699-8f6e-a93a153bea4e">
+<img width="800" alt="Screenshot 2023-06-03 at 05 09 12" src="https://github.com/dappros/ethora/assets/328787/23d999c6-d423-4699-8f6e-a93a153bea4e">
 
 <br/>**Q: Can I use my own Push Notifications and Firebase if I use your free cloud backend?**
 <br />A: Absolutely, you just need to specify your Firebase credentials and upload your iOS push notifications certificate in the "Services" tab in your App Settings:
 
-<img width="1216" alt="Screenshot 2023-06-08 at 09 59 55" src="https://github.com/dappros/ethora/assets/328787/0b944697-c4be-49c7-b952-c8da0d3900e1">
+<img width="800" alt="Screenshot 2023-06-08 at 09 59 55" src="https://github.com/dappros/ethora/assets/328787/0b944697-c4be-49c7-b952-c8da0d3900e1">
 
 <br>**Q: How do I create an account and play with this builder?**
 <br>A: Sign up for a Free account here: https://www.dappros.com/pricing/, sign in & go into "Apps" section the menu. 
