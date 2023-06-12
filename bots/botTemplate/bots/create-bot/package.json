@@ -1,0 +1,16 @@
+{
+  "name": "create-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_PATH=. nodemon --watch 'src/**/*.ts' --exec 'ts-node' ./src/test.ts",
+    "build": "tsc"
+  },
+  "author": "Dappros",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "web3": "^1.9.0"
+  }
+}

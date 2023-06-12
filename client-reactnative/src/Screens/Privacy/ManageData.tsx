@@ -1,34 +1,30 @@
 import React, {useState} from 'react';
 import {VStack} from 'native-base';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-import {textStyles} from '../../../docs/config';
-import {Button} from '../../components/Button';
-import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {showError, showSuccess} from '../../components/Toast/toast';
-import {httpDelete, httpGet} from '../../config/apiService';
-import {changeUserData} from '../../config/routesConstants';
-import {useStores} from '../../stores/context';
-import {downloadFile} from '../../helpers/downloadFile';
+
 import Share from 'react-native-share';
 import RNFS, {
   DocumentDirectoryPath,
   DownloadDirectoryPath,
 } from 'react-native-fs';
-import {PERMISSIONS, request} from 'react-native-permissions'
+import {textStyles} from '../../../docs/config';
+import {DeleteDialog} from '../../components/Modals/DeleteDialog';
+import {showSuccess, showError} from '../../components/Toast/toast';
+import {httpDelete, httpGet} from '../../config/apiService';
+import {changeUserData} from '../../config/routesConstants';
+import {useStores} from '../../stores/context';
+import {Button} from '../../components/Button';
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
-  const {loginStore, apiStore} = useStores();
+  const {loginStore} = useStores();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const deleteAccount = async () => {
     setLoading(true);
     try {
-      await httpDelete(
-        apiStore.defaultUrl + changeUserData,
-        loginStore.userToken,
-      );
+      await httpDelete(changeUserData, loginStore.userToken);
       showSuccess('Success', 'Account deleted successfully');
       loginStore.logOut();
     } catch (error) {
@@ -48,7 +44,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
       android: DownloadDirectoryPath,
     });
 
-    const fPath = aPath + '/data' + new Date().getTime() + '.json';
+    const fPath = aPath + '/' + 'data' + new Date().getTime() + '.json';
     try {
       // console.log(base64)
       await RNFS.writeFile(fPath, data, 'utf8');
@@ -63,10 +59,7 @@ export const ManageData: React.FC<IManageData> = ({}) => {
     setLoading(true);
 
     try {
-      const {data} = await httpGet(
-        apiStore.defaultUrl + '/users/exportData',
-        loginStore.userToken,
-      );
+      const {data} = await httpGet('/users/exportData', loginStore.userToken);
       const dataString = JSON.stringify(data);
       await writeFile(dataString);
     } catch (error) {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { BlocksTable } from "../../componets/BlocksTable";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
+import { BlocksTable } from "../../components/BlocksTable";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
 import { getExplorerBlocks } from "../../http";
 import { ExplorerRespose, IBlock } from "../Profile/types";
 
 export interface IBlocksProps {}
 
-export const Blocks = (props: IBlocksProps) => {
+const Blocks = (props: IBlocksProps) => {
   const [blocks, setBlocks] = useState<ExplorerRespose<IBlock[]>>({
     total: 0,
     limit: 0,
@@ -19,15 +19,16 @@ export const Blocks = (props: IBlocksProps) => {
     try {
       const { data } = await getExplorerBlocks();
       setBlocks(data);
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
     setLoading(false);
   };
   useEffect(() => {
-    getData()
-  }, [])
+    getData();
+  }, []);
   if (loading) return <FullPageSpinner />;
   return <BlocksTable blocks={blocks.items} />;
 };
+export default Blocks;

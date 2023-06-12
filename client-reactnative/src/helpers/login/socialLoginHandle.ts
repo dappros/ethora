@@ -20,13 +20,13 @@ import {v4 as uuid} from 'uuid';
 
 export const loginOrRegisterSocialUser = async (
   user: any,
-  defaultUrl: string,
+
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
   loginType: string,
 ) => {
-  const url = defaultUrl + checkEmailExist + user.email;
+  const url = checkEmailExist + user.email;
   try {
     const response = await httpGet(url, defaultToken);
     if (!response.data.success) {
@@ -66,7 +66,6 @@ export const loginOrRegisterSocialUser = async (
 };
 
 export const handleFaceBookLogin = async (
-  defaultUrl: string,
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
@@ -115,7 +114,6 @@ export const handleFaceBookLogin = async (
 
   loginOrRegisterSocialUser(
     user,
-    defaultUrl,
     defaultToken,
     loginUser,
     registerSocialUser,
@@ -151,7 +149,6 @@ const signInGoogle = (googleCredential: any, callback: any) => {
 };
 
 export const handleGoogleLogin = async (
-  defaultUrl: string,
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
@@ -187,7 +184,6 @@ export const handleGoogleLogin = async (
 
   await loginOrRegisterSocialUser(
     user,
-    defaultUrl,
     defaultToken,
     loginUser,
     registerSocialUser,
@@ -196,7 +192,6 @@ export const handleGoogleLogin = async (
 };
 
 export const handleAppleLogin = async (
-  defaultUrl: string,
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,

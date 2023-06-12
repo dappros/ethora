@@ -37,7 +37,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
       const formData = new FormData();
       formData.append('isProfileOpen', profileState);
       const {data} = await httpUploadPut(
-        apiStore.defaultUrl + changeUserData,
+        changeUserData,
         formData,
         loginStore.userToken,
         console.log,
@@ -58,7 +58,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
       const formData = new FormData();
       formData.append('isAssetsOpen', assetsState);
       const {data} = await httpUploadPut(
-        apiStore.defaultUrl + changeUserData,
+        changeUserData,
         formData,
         loginStore.userToken,
         console.log,

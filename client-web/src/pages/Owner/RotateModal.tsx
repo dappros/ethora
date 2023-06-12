@@ -43,7 +43,7 @@ export default function RotateModal(props: TProps) {
       <Dialog
         fullScreen={fullScreen}
         open={props.open}
-        onClose={() => {}}
+        onClose={() => props.setOpen(false)}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">

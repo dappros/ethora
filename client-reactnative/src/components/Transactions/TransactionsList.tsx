@@ -8,7 +8,7 @@ Note: linked open-source libraries and components may be subject to their own li
 import {observer} from 'mobx-react-lite';
 import React, {useState} from 'react';
 // import {FlatList} from 'react-native-gesture-handler';
-import {useStores} from '../../stores/context';
+// import {useStores} from '../../stores/context';
 import {TransactionFilter} from './TransactionFilter';
 import {TransactionsListItem} from './TransactionsListItem';
 import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
@@ -18,32 +18,21 @@ import {appWallets} from '../../../docs/config';
 
 const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
   const {
-    tokenId,
     from,
     to,
-    tokenName,
     value,
-    type,
     timestamp,
     senderFirstName,
     senderLastName,
     receiverFirstName,
     receiverLastName,
-    senderBalance,
-    receiverBalance,
-    createdAt,
-    updatedAt,
     blockNumber,
     transactionHash,
-    fromFirstName,
-    fromLastName,
-    toFirstName,
-    toLastName,
     showDate,
     formattedDate,
     balance,
   } = item;
-  const isApp = appWallets.find(item => item === from);
+  const isApp = appWallets.find(wallet => wallet === from);
   const name =
     to === transactionOwnerWalletAddress
       ? isApp
@@ -116,7 +105,7 @@ const TransactionsList = observer(
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(getFilteredTransactions())}
-          keyExtractor={item => item.transactionHash}
+          keyExtractor={item => item?.transactionHash}
         />
       </Box>
     );

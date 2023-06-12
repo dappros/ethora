@@ -1,10 +1,10 @@
 import {Text} from 'native-base';
 import React, {useMemo, useState} from 'react';
-import {commonColors, textStyles} from '../../../docs/config';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
-import { DocumentShareAdd } from './DocumentShareAdd';
-import { DocumentShareManage } from './DocumentShareManage';
+import {DocumentShareAdd} from './DocumentShareAdd';
+import {DocumentShareManage} from './DocumentShareManage';
+import {textStyles, commonColors} from '../../../docs/config';
 
 export interface IDocumentShares {}
 
@@ -37,7 +37,7 @@ export const DocumentShares = () => {
       manage: () => <DocumentShareManage onAddPress={setRouteIndex} />,
       add: () => <DocumentShareAdd />,
     });
-  }, [routeIndex]);
+  }, []);
 
   return (
     <TabView

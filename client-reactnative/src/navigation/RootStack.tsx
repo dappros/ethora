@@ -2,13 +2,13 @@ import React, {useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {useStores} from '../stores/context';
 import HomeStack from './HomeStack';
-import {ROUTES} from '../constants/routes';
 import AuthStack from './AuthStack';
 import {observer} from 'mobx-react-lite';
 import {Center, Spinner, View} from 'native-base';
-import { SafeAreaView } from 'react-native';
+import {SafeAreaView} from 'react-native';
+import {RootStackParamList} from './types';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootStack = observer(() => {
   const {loginStore} = useStores();
@@ -37,22 +37,22 @@ const RootStack = observer(() => {
           </Center>
         </View>
       ) : (
-        <SafeAreaView style={{flex:1}}>
-        <Stack.Navigator>
-          {userToken ? (
-            <Stack.Screen
-              options={{headerShown: false}}
-              name={ROUTES.HOMESTACK}
-              component={HomeStack}
-            />
-          ) : (
-            <Stack.Screen
-              options={{headerShown: false}}
-              name={ROUTES.AUTHSTACK}
-              component={AuthStack}
-            />
-          )}
-        </Stack.Navigator>
+        <SafeAreaView style={{flex: 1}}>
+          <Stack.Navigator>
+            {userToken ? (
+              <Stack.Screen
+                options={{headerShown: false}}
+                name={'HomeStackScreen'}
+                component={HomeStack}
+              />
+            ) : (
+              <Stack.Screen
+                options={{headerShown: false}}
+                name={'AuthStackScreen'}
+                component={AuthStack}
+              />
+            )}
+          </Stack.Navigator>
         </SafeAreaView>
       )}
     </>

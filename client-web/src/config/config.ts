@@ -1,5 +1,7 @@
 // Master switches
 
+import { TActiveRoomFilter } from "../store";
+
 /*
 START SCREEN switch.
 This specifies which screen is going to be the default one for Users. See options below.
@@ -59,12 +61,14 @@ export const facebookSignIn = true; // social sign on with existing Facebook acc
 export const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
 export const regularLogin = true; // custom login+password - users have to register first
 export const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
-export const regularLoginUsername = true;
+export const regularLoginUsername = false;
 
 export const coinsMainSymbol = "DPT"; //done
 export const coinsMainName = "Dappros Platform Token"; //done
 export const coinReplacedSymbol = "ETO"; //done
 export const coinReplacedName = "Ethora Coin"; //done
+export const appName = "Ethora"; //done
+
 
 export const defaultChats = {
   '5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d': {
@@ -79,6 +83,12 @@ export const defaultChats = {
     stickyOrder: false,
     removable: false,
   },
+  dc635d74fb77f53701d48899d86175c3a62a3e8a2a76e9f5ea0e9a3918cf6152: {
+    name: 'NFT Factory',
+    premiumOnly: true,
+    stickyOrder: false,
+    removable: false,
+  },
 };
 
 export const defaultMetaRoom = {
@@ -87,11 +97,64 @@ export const defaultMetaRoom = {
 };
 
 
-export const ROOMS_FILTERS = {
+export const ROOMS_FILTERS: Record<string, TActiveRoomFilter> = {
   official: 'official',
   private: 'private',
-  meta: 'meta'
+  groups: 'groups',
+  meta: 'meta',
+  favourite: 'favourite'
 }
+
+export const defaultChatBackgroundThemes = [
+  {
+    value:
+      'https://etofs.com/ipfs/QmaRpkWFgMhxjp6kkugCYNTF9rE4vmXdfHE4DVNDvzwTvK',
+    isSelected: false,
+    alt: 'Default',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmWcAQtoz3RaSy9LXDuUu4fqtWKygnF13pDD3XbkdYW6Mn',
+    isSelected: false,
+    alt: '#00C49F',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmVZRCSBPrKRuKtESQWAXseP6EWkqPEiUFXMZKxAPjraay',
+    isSelected: false,
+    alt: '#85BACD',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmWwxZcpFsU4hQiZfpwiCRB2VZf29iULy45HiBQnjg4MPS',
+    isSelected: false,
+    alt: '#D6A4A6',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmbtsYaGpTHVmwC4Ch622hA8DCaCbeyWNagTYUz8GHpWP9',
+    isSelected: false,
+    alt: 'Colourful',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmWqq6YZ4b7stmH5YiuVWF72emVzSk26vd1vSvBs1mitoY',
+    isSelected: false,
+    alt: 'Pattern',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmXV6XgrHhVcKpY73nxvpF6YTyqKhfywixbPXbFCTEUEUT',
+    isSelected: false,
+    alt: 'Pillars of creation',
+  },
+  {
+    value:
+      'https://etofs.com/ipfs/QmXzK3H1MpMTdjUQ2fffENKW5bDxjocbwt7qMZNBFsLkV4',
+    isSelected: false,
+    alt: 'Tech Doodle',
+  },
+];
 // TO BE DEPRECATED
 
 // images for tutorial screens

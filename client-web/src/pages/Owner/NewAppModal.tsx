@@ -7,10 +7,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useFormik } from "formik";
 import TextField from "@mui/material/TextField";
 import { useStoreState } from "../../store";
-import LoadingButton from '@mui/lab/LoadingButton';
-import * as http from '../../http'
+import LoadingButton from "@mui/lab/LoadingButton";
+import * as http from "../../http";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { Button, Typography } from "@mui/material";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type TProps = {
   open: boolean;
@@ -20,18 +22,23 @@ type TProps = {
 export default function NewAppModal({ open, setOpen }: TProps) {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const setApp = useStoreState((state) => state.setApp);
-  const [loading, setLoading] = useState(false)
+  const setUser = useStoreState((state) => state.setUser);
+  const user = useStoreState((state) => state.user);
 
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string>("");
+  const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
       appName: "",
       appDescription: "",
       appGoogleId: "",
-      defaultAccessProfileOpen: false,
-      defaultAccessAssetsOpen: false,
-      usersCanFree: false,
+      defaultAccessProfileOpen: true,
+      defaultAccessAssetsOpen: true,
+      usersCanFree: true,
       newUserTokenGift: 0,
       coinsDayliBonus: 0,
+      appUrl: "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
@@ -48,7 +55,8 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       appGoogleId,
       defaultAccessAssetsOpen,
       defaultAccessProfileOpen,
-      usersCanFree
+      usersCanFree,
+      appUrl,
     }) => {
       setLoading(true);
       const fd = new FormData();
@@ -63,126 +71,116 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       if (file) {
         fd.append("file", file);
       }
-
-      fd.append("appName", appName);
-      fd.append("appDescription", appDescription);
-      fd.append("appGoogleId", appGoogleId);
+      fd.append("displayName", appName);
+      appDescription && fd.append("appDescription", appDescription.toString());
+      appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString());
+      fd.append(
+        "defaultAccessProfileOpen",
+        defaultAccessProfileOpen.toString()
+      );
       fd.append("usersCanFree", usersCanFree.toString());
+      appUrl && fd.append("appUrl", appUrl.toString());
 
-      http.createApp(fd)
-        .then(response => {
-          setApp(response.data.app)
-          setOpen(false)
+      http
+        .createApp(fd)
+        .then((response) => {
+          setApp(response.data.app);
+          setOpen(false);
+          setUser({ ...user, homeScreen: "" });
         })
-        .finally(() => setLoading(false))
-    }
+        .catch((e) => {
+          showSnackbar(
+            "error",
+            "Cannot create the app " + (e.response?.data?.error || "")
+          );
+        })
+        .finally(() => setLoading(false));
+    },
   });
 
-  return (
-    <Dialog onClose={() => {}} open={open}>
-      <Box>
-        <DialogTitle
-          style={{ display: "flex", justifyContent: "space-between" }}
-        >
-          New App
-          <IconButton disabled={loading} onClick={() => setOpen(false)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <Box sx={{ width: "100%", typography: "body1", padding: 1 }}>
-        <form onSubmit={formik.handleSubmit}>
-          <Box>
-            <TextField
-              error={
-                formik.touched.appName && formik.errors.appName ? true : false
-              }
-              helperText={
-                formik.touched.appName && formik.errors.appName
-                  ? formik.errors.appName
-                  : ""
-              }
-              margin="dense"
-              label="App Name"
-              name="appName"
-              variant="standard"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.appName}
-            />
-          </Box>
-          <Box>
-            <TextField
-              margin="dense"
-              label="Google Client Id"
-              name="appGoogleId"
-              variant="standard"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.appGoogleId}
-            />
-          </Box>
-          <Box style={{ display: "inline-flex", flexDirection: "column" }}>
-            <FormControlLabel
-              checked={formik.values.defaultAccessProfileOpen}
-              name="defaultAccessProfileOpen"
-              control={
-                <Checkbox
-                  onChange={(e) =>
-                    formik.setFieldValue(
-                      "defaultAccessProfileOpen",
-                      e.target.checked
-                    )
-                  }
-                />
-              }
-              label="defaultAccessProfileOpen"
-              labelPlacement="end"
-              onChange={formik.handleChange}
-            />
-            <FormControlLabel
-              checked={formik.values.defaultAccessAssetsOpen}
-              name="defaultAccessAssetsOpen"
-              control={
-                <Checkbox
-                  onChange={(e) =>
-                    formik.setFieldValue(
-                      "defaultAccessAssetsOpen",
-                      e.target.checked
-                    )
-                  }
-                />
-              }
-              label="defaultAccessAssetsOpen"
-              labelPlacement="end"
-            />
-            <FormControlLabel
-              checked={formik.values.usersCanFree}
-              name="usersCanFree"
-              control={
-                <Checkbox
-                  onChange={(e) =>
-                    formik.setFieldValue("usersCanFree", e.target.checked)
-                  }
-                />
-              }
-              label="usersCanFree"
-              labelPlacement="end"
-            />
+  const onImage = (event: any) => {
+    const input = event.target as HTMLInputElement;
 
-            <input ref={fileRef} type="file" accept="image/*"></input>
+    if (input.files) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        if (e) {
+          if (e.target?.result) {
+            setPreview(e.target.result as string);
+          }
+        }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  };
+  const onClose = () => {
+    setOpen(false);
+    setPreview("");
+  };
+  return (
+    <Dialog onClose={onClose} open={open} >
+      <Box sx={{ padding: 1,}}>
+        <IconButton
+          sx={{ position: "absolute", top: 0, right: 0 }}
+          disabled={loading}
+          onClick={() => setOpen(false)}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogTitle sx={{ padding: 1 }}>New App</DialogTitle>
+        <Box sx={{ width:  '100%', padding: 1 }}>
+          <form onSubmit={formik.handleSubmit} style={{ width: "300px" }}>
+            <Box>
+              <TextField
+              fullWidth
+                error={!!formik.touched.appName && !!formik.errors.appName}
+                margin="dense"
+                label="App Name"
+                name="appName"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.appName}
+              />
+            </Box>
+            {/* <Box>
+              <TextField
+                sx={{ width: "100%" }}
+                margin="dense"
+                label="Google Client Id"
+                name="appGoogleId"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.appGoogleId}
+              />
+            </Box> */}
+            {/* <Box>
+              <TextField
+                sx={{ width: "100%" }}
+                margin="dense"
+                label="App Url"
+                name="appUrl"
+                variant="outlined"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.appUrl}
+                error={!!formik.touched.appUrl && !!formik.errors.appUrl}
+              />
+            </Box> */}
+           
             <LoadingButton
               loading={loading}
               variant="contained"
-              style={{ marginTop: "15px" }}
+              style={{ marginTop: "15px", width: "100%" }}
               type="submit"
               disabled={loading}
             >
               Create App
             </LoadingButton>
-          </Box>
-        </form>
+          </form>
         </Box>
       </Box>
     </Dialog>

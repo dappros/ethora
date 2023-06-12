@@ -23,7 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
          android:requestLegacyExternalStorage="true"
         android:allowBackup="false"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:networkSecurityConfig="@xml/network_security_config">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -74,10 +75,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                 <data android:scheme="http" />
-        <data android:scheme="https" />
-        <data android:host="www.eto.li" />
-        <data android:pathPrefix="/go" />
+                <data
+                android:scheme="https"
+                android:host="eto.li" />
+
             </intent-filter>
         </activity>
     </application>

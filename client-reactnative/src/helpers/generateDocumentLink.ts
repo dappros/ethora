@@ -1,7 +1,9 @@
+import { apiModes, appEndpoint } from "../../docs/config";
+
 interface ILink {
   linkToken: string;
 }
 
-export const generateDocumentLink = ({linkToken}: ILink) => {
-  return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
+export const generateDocumentLink = ({ linkToken }: ILink) => {
+  return `${apiModes[appEndpoint]}/docs/share/${linkToken}`;
 };

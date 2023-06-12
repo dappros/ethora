@@ -1,51 +1,63 @@
-import {client, xml} from '@xmpp/client';
-import {format} from 'date-fns';
-import {makeAutoObservable, runInAction, toJS} from 'mobx';
+//@ts-ignore
+import { client, xml } from "@xmpp/client";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import {
   defaultChatBackgroundTheme,
   defaultChats,
   IMetaRoom,
   metaRooms,
-} from '../../docs/config';
+} from "../../docs/config";
 import {
   addChatRoom,
   getChatRoom,
   getRoomList,
-} from '../components/realmModels/chatList';
+} from "../components/realmModels/chatList";
 import {
   getAllMessages,
   insertMessages,
   updateMessageToWrapped,
   updateNumberOfReplies,
   updateTokenAmount,
-  updateMessageText
-} from '../components/realmModels/messages';
-import {showToast} from '../components/Toast/toast';
-import {httpPost} from '../config/apiService';
-import {asyncStorageConstants} from '../constants/asyncStorageConstants';
-import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
-import {createMessageObject} from '../helpers/chat/createMessageObject';
-import {playCoinSound} from '../helpers/chat/playCoinSound';
-import {underscoreManipulation} from '../helpers/underscoreLogic';
+  updateMessageText,
+  deleteMessageObject,
+} from "../components/realmModels/messages";
+import { showToast } from "../components/Toast/toast";
+import { httpPost } from "../config/apiService";
+import { asyncStorageConstants } from "../constants/asyncStorageConstants";
+import { asyncStorageGetItem } from "../helpers/cache/asyncStorageGetItem";
+import { asyncStorageSetItem } from "../helpers/cache/asyncStorageSetItem";
+import {
+  createMessageObject,
+  IMainMessage,
+} from "../helpers/chat/createMessageObject";
+import { playCoinSound } from "../helpers/chat/playCoinSound";
+import {
+  reverseUnderScoreManipulation,
+  underscoreManipulation,
+} from "../helpers/underscoreLogic";
 import {
   getBlackList,
   getRoomInfo,
   getUserRoomsStanza,
   presenceStanza,
+  retrieveOtherUserVcard,
   subscribeStanza,
   subscribeToRoom,
   updateVCard,
   vcardRetrievalRequest,
-} from '../xmpp/stanzas';
-import {XMPP_TYPES} from '../xmpp/xmppConstants';
-import {RootStore} from './context';
+} from "../xmpp/stanzas";
+import { XMPP_TYPES } from "../xmpp/xmppConstants";
+import { RootStore } from "./context";
+import { Results } from "realm";
+import { checkIsDefaultChat } from "../helpers/chat/checkIsDefaultChat";
+import { TCombinedMimeType } from "../constants/mimeTypes";
 const ROOM_KEYS = {
-  official: 'official',
-  private: 'private',
-  groups: 'groups',
+  official: "official",
+  private: "private",
+  groups: "groups",
 };
 
+//interfaces and types
 interface recentRealtimeChatProps {
   avatar?: string;
   createdAt: any;
@@ -66,7 +78,7 @@ interface recentRealtimeChatProps {
   waveForm?: any;
 }
 
-interface roomListProps {
+export interface roomListProps {
   name: string;
   participants: number;
   avatar: string;
@@ -78,6 +90,9 @@ interface roomListProps {
   priority?: number;
   muted?: boolean;
   isFavourite?: boolean;
+  roomThumbnail?: string;
+  roomBackground?: string;
+  roomBackgroundIndex?: number;
 }
 
 interface isComposingProps {
@@ -87,20 +102,7 @@ interface isComposingProps {
   chatJID: string;
 }
 
-interface defaultChatProps {
-  name: string;
-  premiumOnly: boolean;
-  stickyOrder: boolean;
-  removable: boolean;
-}
-
-interface replyProps {
-  messageID: string;
-  message: string;
-  isReply: boolean;
-}
-
-interface roomMemberInfoProps {
+export interface roomMemberInfoProps {
   ban_status: string;
   jid: string;
   last_active: string;
@@ -115,27 +117,89 @@ export interface BlackListUser {
   name: string;
 }
 
+export interface replaceMessageListItemProps {
+  replaceMessageId: string;
+  replaceMessageText: string;
+}
+
+export interface IMessage {
+  imageLocationPreview?: any;
+  imageLocation?: any;
+  _id: string;
+  text?: string;
+  createdAt: string | number | Date;
+  system: boolean;
+  tokenAmount?: number;
+  user: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
+  image?: string;
+  realImageURL?: string;
+  localURL?: string;
+  isStoredFile?: boolean;
+  mimetype?: TCombinedMimeType;
+  duration?: string;
+  size?: string;
+  waveForm?: string;
+  roomJid: string;
+  receiverMessageId: string;
+  quickReplies: string;
+  attachmentId?: string;
+  wrappable: boolean;
+  nftId?: string;
+  nftName?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  fileName?: string;
+  originalName?: string;
+  isReply?: boolean;
+  mainMessage?: IMainMessage;
+  numberOfReplies?: number;
+  showInChannel?: boolean;
+  preview?: string;
+  isReplace?: boolean;
+  replaceMessageId?: string;
+  isEdited?: boolean;
+}
+
+export interface User {
+  _id: string;
+  avatar: string;
+  name: string;
+}
+
+export interface IbackgroundTheme {
+  value: string;
+  isSelected: boolean;
+  alt: string;
+}
+//interfaces and types
+
+let temporaryArchiveMessages: IMessage[];
 export class ChatStore {
-  messages: any = [];
+  messages: IMessage[] = [];
   xmpp: any = null;
-  xmppError: any = '';
-  roomList: roomListProps | [] = [];
-  stores: RootStore | {} = {};
-  roomsInfoMap: any = {isUpdated: 0};
+  xmppError: any = "";
+  roomList: roomListProps[] | [] = [];
+  stores: RootStore;
+  roomsInfoMap: any = { isUpdated: 0 };
   chatLinkInfo: any = {};
   blackList: BlackListUser[] = [];
   allMessagesArrived: boolean = false;
+  replaceMessageList: replaceMessageListItemProps[] = [];
   metaRooms: IMetaRoom[] = [];
   recentRealtimeChat: recentRealtimeChatProps = {
     createdAt: undefined,
-    message_id: '',
-    room_name: '',
-    text: '',
+    message_id: "",
+    room_name: "",
+    text: "",
     system: false,
     shouldUpdateChatScreen: false,
   };
   shouldCount: boolean = true;
-  roomRoles = {};
+  roomRoles: any = [];
   isOnline = false;
   showMetaNavigation = false;
 
@@ -143,30 +207,73 @@ export class ChatStore {
   activeChats = ROOM_KEYS.official;
   isComposing: isComposingProps = {
     state: false,
-    username: '',
-    manipulatedWalletAddress: '',
-    chatJID: '',
+    username: "",
+    manipulatedWalletAddress: "",
+    chatJID: "",
   };
   listOfThreads = [];
-  roomMemberInfo = [];
+  roomMemberInfo: roomMemberInfoProps[] = [];
   unreadMessagesForGroups = {
     [ROOM_KEYS.official]: 0,
     [ROOM_KEYS.private]: 0,
     [ROOM_KEYS.groups]: 0,
   };
-  backgroundTheme = defaultChatBackgroundTheme;
+  backgroundTheme: IbackgroundTheme[] = defaultChatBackgroundTheme;
   selectedBackgroundIndex = 0;
+  userBanData = {
+    success: false,
+    senderName: "",
+    name: "",
+  };
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
     this.stores = stores;
   }
 
+  setInitialState = () => {
+    runInAction(() => {
+      this.messages = [];
+      this.xmpp = null;
+      this.xmppError = "";
+      this.roomList = [];
+      this.roomsInfoMap = {};
+      this.allMessagesArrived = false;
+      this.recentRealtimeChat = {
+        createdAt: undefined,
+        message_id: "",
+        room_name: "",
+        text: "",
+        system: false,
+        shouldUpdateChatScreen: false,
+      };
+      this.shouldCount = true;
+      this.roomRoles = [];
+      this.isComposing = {
+        state: false,
+        username: "",
+        manipulatedWalletAddress: "",
+        chatJID: "",
+      };
+      this.listOfThreads = [];
+      this.backgroundTheme = defaultChatBackgroundTheme;
+      this.selectedBackgroundIndex = 0;
+      this.userBanData = {
+        success: false,
+        senderName: "",
+        name: "",
+      };
+      this.replaceMessageList = [];
+    });
+  };
+
+  //actions
   toggleShouldCount = (value: boolean) => {
     runInAction(() => {
       this.shouldCount = value;
     });
   };
+
   toggleMetaNavigation = (value: boolean) => {
     runInAction(() => {
       this.showMetaNavigation = value;
@@ -183,42 +290,71 @@ export class ChatStore {
     });
   };
 
-  setInitialState = () => {
+  //insert edited message into list of edited messages
+  addToReplaceMessageList = (
+    replaceMessageId: any,
+    replaceMessageText: string
+  ) => {
+    const replaceMessageListItem: replaceMessageListItemProps = {
+      replaceMessageId: replaceMessageId,
+      replaceMessageText: replaceMessageText,
+    };
     runInAction(() => {
-      this.messages = [];
-      this.xmpp = null;
-      this.xmppError = '';
-      this.roomList = [];
-      this.roomsInfoMap = {};
-      this.allMessagesArrived = false;
-      this.recentRealtimeChat = {
-        createdAt: undefined,
-        message_id: '',
-        room_name: '',
-        text: '',
-        system: false,
-        shouldUpdateChatScreen: false,
-      };
-      this.shouldCount = true;
-      this.roomRoles = {};
-      this.isComposing = {
-        state: false,
-        username: '',
-        manipulatedWalletAddress: '',
-        chatJID: '',
-      };
-      this.listOfThreads = [];
-      this.backgroundTheme = defaultChatBackgroundTheme;
-      this.selectedBackgroundIndex = 0;
+      this.replaceMessageList.push(replaceMessageListItem);
     });
   };
 
+  //remove an edited message from the list of edited messages
+  removeFromReplaceMessageList = (replaceMessageId: string) => {
+    const messageIndex = this.replaceMessageList.findIndex(
+      (item) => item.replaceMessageId === replaceMessageId
+    );
+    if (messageIndex)
+      runInAction(() => {
+        this.replaceMessageList.splice(messageIndex, 1);
+      });
+  };
+
+  //save user ban related data
+  setUserBanData = (senderName: string, name: string) => {
+    runInAction(() => {
+      this.userBanData.name = name;
+      this.userBanData.senderName = senderName;
+    });
+  };
+
+  //set if user ban is success or not
+  setUserBanSuccess = (value: boolean) => {
+    runInAction(() => {
+      this.userBanData.success = value;
+    });
+  };
+
+  //clear any data in user ban
+  clearUserBanData = () => {
+    runInAction(() => {
+      this.userBanData.success = false;
+      this.userBanData.name = "";
+      this.userBanData.senderName = "";
+    });
+  };
+
+  //set roles associated to the provided room in store
   setRoomRoles = (jid: string, role: string) => {
     runInAction(() => {
       this.roomRoles[jid] = role;
     });
   };
 
+  //check if user is a moderator or admin
+  checkIsModerator = (roomJid: string) => {
+    return (
+      this.roomRoles[roomJid] === "moderator" ||
+      this.roomRoles[roomJid] === "admin"
+    );
+  };
+
+  //function to start a new xmpp connection
   xmppConnect = (username: string, password: string) => {
     runInAction(() => {
       this.xmpp = client({
@@ -230,23 +366,33 @@ export class ChatStore {
     });
     this.xmpp.start().catch(console.log);
   };
+
+  //to get list of rooms from realm/cache
   getRoomsFromCache = async () => {
     try {
-      const rooms: roomListProps = await getRoomList();
+      const rooms: Results<Realm.Object> = await getRoomList();
       runInAction(() => {
+        //@ts-ignore
         this.roomList = rooms;
       });
     } catch (error) {}
   };
+
+  //get list of messages from Realm/cache
   getCachedMessages = async () => {
     const messages = await getAllMessages();
+    //@ts-ignore
+    temporaryArchiveMessages = messages;
     runInAction(() => {
+      //@ts-ignore
       this.messages = messages;
     });
   };
+
+  //get cached room info from async
   getCachedRoomsInfo = async () => {
     const res = await asyncStorageGetItem(
-      asyncStorageConstants.roomsListHashMap,
+      asyncStorageConstants.roomsListHashMap
     );
     if (res) {
       runInAction(() => {
@@ -255,40 +401,67 @@ export class ChatStore {
     }
   };
 
+  //set unread messages
   setUnreadMessages = (unreadMessagesObject: any) => {
     runInAction(() => {
       this.unreadMessagesForGroups = unreadMessagesObject;
     });
   };
 
+  //handle to get user details
+  getOtherUserDetails = (props: {
+    avatar: string;
+    name: string;
+    jid: string;
+  }) => {
+    const { avatar, name, jid } = props;
+    const anotherUserFirstname = name.split(" ")[0];
+    const anotherUserLastname = name.split(" ")[1];
+    const xmppID = jid.split("@")[0];
+    const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
+    //this will get the other user's Avatar and description
+    retrieveOtherUserVcard(
+      this.stores.loginStore.initialData.xmppUsername,
+      xmppID,
+      this.xmpp
+    );
+
+    this.stores.loginStore.setOtherUserDetails({
+      anotherUserFirstname: anotherUserFirstname,
+      anotherUserLastname: anotherUserLastname,
+      anotherUserLastSeen: {},
+      anotherUserWalletAddress: anotherUserWalletAddress,
+      anotherUserAvatar: avatar,
+    });
+  };
+
+  //to update message counter badge
   updateCounter = () => {
     const notificationsCount: Record<string, number> = {
       official: 0,
       private: 0,
       groups: 0,
     };
-    this.roomList?.forEach(item => {
-      const splitedJid = item?.jid?.split('@')[0];
+    this.roomList?.forEach((item) => {
+      const splitedJid = item?.jid?.split("@")[0];
+      const isDefaultChat = checkIsDefaultChat(splitedJid);
       if (
         item.participants < 3 &&
-        !defaultChats[splitedJid] &&
+        !isDefaultChat &&
         !this.roomsInfoMap[item.jid]?.isFavourite
       ) {
         notificationsCount[ROOM_KEYS.private] +=
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
 
-      if (
-        defaultChats[splitedJid] ||
-        this.roomsInfoMap[item.jid]?.isFavourite
-      ) {
+      if (isDefaultChat || this.roomsInfoMap[item.jid]?.isFavourite) {
         notificationsCount[ROOM_KEYS.official] +=
           this.roomsInfoMap[item.jid]?.counter || 0;
       }
 
       if (
         item.participants > 2 &&
-        !defaultChats[splitedJid] &&
+        !isDefaultChat &&
         !this.roomsInfoMap[item.jid]?.isFavourite
       ) {
         notificationsCount[ROOM_KEYS.groups] +=
@@ -297,54 +470,72 @@ export class ChatStore {
     });
     this.setUnreadMessages(notificationsCount);
   };
+
+  //update room info/details
   updateRoomInfo = async (jid: string, data: any) => {
     runInAction(() => {
-      this.roomsInfoMap[jid] = {...this.roomsInfoMap[jid], ...data};
+      this.roomsInfoMap[jid] = { ...this.roomsInfoMap[jid], ...data };
       if (data?.isFavourite !== undefined) {
         this.roomsInfoMap.isUpdated += 1;
       }
     });
     await asyncStorageSetItem(
       asyncStorageConstants.roomsListHashMap,
-      this.roomsInfoMap,
+      this.roomsInfoMap
     );
   };
+
+  //set current active chat tab
   changeActiveChats = (type: string) => {
     runInAction(() => {
       this.activeChats = type;
     });
   };
 
+  //add a new message object in to the message store
   addMessage = (message: any) => {
-    if (!this.messages.some(msg => msg._id === message._id)) {
+    if (!this.messages.some((msg: { _id: any }) => msg._id === message._id)) {
       runInAction(() => {
         this.messages.push(message);
       });
     }
   };
 
-  editMessage = (replaceMessageId: any, messageString) => {
-    const indexOfMessage = this.messages.findIndex(item => item._id === replaceMessageId)
-    console.log(this.messages.find(item => item._id === replaceMessageId))
-    if(indexOfMessage !== -1){
-      runInAction(() => {
-        const message = this.messages[indexOfMessage]
-        message.text = messageString;
-        this.messages[indexOfMessage] = message;
-      })
-    }
-  }
+  //delete a message object from the message store.
+  deleteMessage = (messageId: string) => {
+    //delete from Mobx store
+    runInAction(() => {
+      const index = this.messages.findIndex((item) => item._id === messageId);
+      if (index !== -1) {
+        this.messages.splice(index, 1);
+      }
+    });
 
-  addThreadMessage = (message: any) => {
-    runInAction(() => {
-      this.listOfThreads.push(message);
+    //delete from realm store
+    deleteMessageObject(messageId).then((success) => {
+      console.log("Message deleted from realm", success);
     });
   };
-  addRoom = (room: any) => {
-    runInAction(() => {
-      this.roomList.push(room);
-    });
+
+  //edit message text, this called when messages are edited
+  editMessage = (replaceMessageId: any, messageString: string) => {
+    const indexOfMessage = this.messages.findIndex(
+      (item: { _id: any }) => item._id === replaceMessageId
+    );
+    if (indexOfMessage !== -1) {
+      const messages = toJS(this.messages);
+      const message = {
+        ...JSON.parse(JSON.stringify(messages[indexOfMessage])),
+        ["text"]: messageString,
+        ["isEdited"]: true,
+      };
+      message.text = messageString;
+      runInAction(() => {
+        this.messages[indexOfMessage] = message;
+      });
+    }
   };
+
   setRooms = async (roomsArray: any) => {
     const rooms = await this.checkMetaRooms(roomsArray);
     runInAction(() => {
@@ -352,31 +543,46 @@ export class ChatStore {
     });
   };
 
+  //update message reply counter
   updateMessageReplyNumbers = (messageId: any) => {
     const messages = toJS(this.messages);
-    const index = messages.findIndex(item => item._id === messageId);
+    const index = messages.findIndex(
+      (item: { _id: any }) => item._id === messageId
+    );
     if (index !== -1) {
-      const message = {
-        ...JSON.parse(JSON.stringify(messages[index])),
-        ['numberOfReplies']: messages[index]['numberOfReplies'] + 1,
-      };
-
-      runInAction(() => {
-        this.messages[index] = message;
-      });
+      if (messages[index].numberOfReplies) {
+        const message = {
+          ...JSON.parse(JSON.stringify(messages[index])),
+          numberOfReplies: (messages[index].numberOfReplies as number) + 1,
+        };
+        runInAction(() => {
+          this.messages[index] = message;
+        });
+      }
     }
   };
 
-  updateMessageProperty = (messageId, property, value) => {
+  //update any property of message object, for eg:- update token count number when new tokens received for the message
+  updateMessageProperty = (
+    messageId: string | undefined,
+    property: keyof IMessage,
+    value: string | number
+  ) => {
+    if (!messageId || !value) {
+      return;
+    }
+
     const messages = toJS(this.messages);
-    const index = messages.findIndex(item => item._id === messageId);
+    const index = messages.findIndex(
+      (item: { _id: string }) => item._id === messageId
+    );
 
     if (index !== -1) {
       const message = {
         ...JSON.parse(JSON.stringify(messages[index])),
         [property]:
-          property === 'tokenAmount' || 'numberOfReplies'
-            ? messages[index][property] + value
+          typeof value === "number" && property === "tokenAmount"
+            ? (messages[index][property] as number) + value
             : value,
       };
       runInAction(() => {
@@ -385,16 +591,17 @@ export class ChatStore {
     }
   };
 
-  updateBadgeCounter = (roomJid: string, type: 'CLEAR' | 'UPDATE') => {
-    this.roomList.map((item: any, index: number) => {
+  //update the message badge counter
+  updateBadgeCounter = (roomJid: string, type: "CLEAR" | "UPDATE") => {
+    this.roomList.map((item: any) => {
       if (item.jid === roomJid) {
-        if (type === 'CLEAR') {
+        if (type === "CLEAR") {
           runInAction(() => {
             item.counter = 0;
             this.roomsInfoMap[roomJid].counter = 0;
           });
         }
-        if (type === 'UPDATE') {
+        if (type === "UPDATE") {
           runInAction(() => {
             item.counter++;
             this.roomsInfoMap[roomJid].counter = item.counter;
@@ -405,6 +612,7 @@ export class ChatStore {
     this.updateCounter();
   };
 
+  //update the state of typing when user starts typing
   updateMessageComposingState = (props: isComposingProps) => {
     runInAction(() => {
       this.isComposing = props;
@@ -412,13 +620,15 @@ export class ChatStore {
   };
 
   updateAllRoomsInfo = async () => {
-    let map = {isUpdated: 0};
-    this.roomList.forEach(item => {
+    let map: any = { isUpdated: 0 };
+    this.roomList.forEach((item) => {
       const latestMessage = this.messages
-        .filter(message => item.jid === message.roomJid)
+        .filter((message: { roomJid: string }) => item.jid === message.roomJid)
         .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          (
+            a: { createdAt: string | number | Date },
+            b: { createdAt: string | number | Date }
+          ) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )[0];
 
       if (latestMessage) {
@@ -441,51 +651,58 @@ export class ChatStore {
     });
     await asyncStorageSetItem(
       asyncStorageConstants.roomsListHashMap,
-      this.roomsInfoMap,
+      this.roomsInfoMap
     );
   };
-  setChatMessagesLoading = value => {
+
+  //loading state update when previous messages are loading.
+  setChatMessagesLoading = (value: boolean) => {
     runInAction(() => {
       this.isLoadingEarlierMessages = value;
     });
   };
+
+  //subscribes to all default chats mestioned in config
   subscribeToDefaultChats = () => {
-    Object.entries(defaultChats).forEach(([key, value]) => {
+    Object.entries(defaultChats).forEach(([key]) => {
       const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
       const manipulatedWalletAddress = underscoreManipulation(
-        this.stores.loginStore.initialData.walletAddress,
+        this.stores.loginStore.initialData.walletAddress
       );
       subscribeToRoom(jid, manipulatedWalletAddress, this.xmpp);
     });
   };
+
+  //subscribes to all metaRooms mentioned in config
   subscribeToMetaRooms = async () => {
-    const cachedRooms = await asyncStorageGetItem('metaRooms');
+    const cachedRooms = await asyncStorageGetItem("metaRooms");
     const allRooms = cachedRooms || metaRooms;
     if (allRooms) {
-      allRooms.forEach(room => {
+      allRooms.forEach((room: { idAddress: string }) => {
         subscribeToRoom(
           room.idAddress + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN,
           underscoreManipulation(
-            this.stores.loginStore.initialData.walletAddress,
+            this.stores.loginStore.initialData.walletAddress
           ),
-          this.xmpp,
+          this.xmpp
         );
       });
     }
   };
-  checkMetaRooms = async (rooms = []) => {
+
+  checkMetaRooms = async (rooms: any[] = []) => {
     const roomsCopy = rooms;
-    const roomJids = roomsCopy.map(item => item.jid.split('@')[0]);
+    const roomJids = roomsCopy.map((item) => item.jid.split("@")[0]);
     try {
-      const body = {jids: roomJids};
+      const body = { jids: roomJids };
       const res = await httpPost(
-        this.stores.apiStore.defaultUrl + '/room/check-for-meta-room',
+        "/room/check-for-meta-room",
         body,
-        this.stores.loginStore.userToken,
+        this.stores.loginStore.userToken
       );
       for (const item of res.data.results) {
         const roomIndex = roomsCopy.findIndex(
-          r => r.jid.split('@')[0] === item,
+          (r) => r.jid.split("@")[0] === item
         );
         if (roomIndex !== -1) {
           roomsCopy[roomIndex].meta = true;
@@ -497,92 +714,115 @@ export class ChatStore {
       return rooms;
     }
   };
+
+  getRoomDetails = (roomJid: string) => {
+    return this.roomList.find((item) => item.jid === roomJid);
+  };
+  //actions
+
+  //xmpp listeners
   xmppListener = async () => {
     let archiveRequestedCounter = 0;
     const xmppUsername = underscoreManipulation(
-      this.stores.loginStore.initialData.walletAddress,
+      this.stores.loginStore.initialData.walletAddress
     );
     // xmpp.reconnect.start();
-    this.xmpp.on('stanza', async (stanza: any) => {
-      //capture room info
-      if (stanza.attrs.id === 'roomInfo') {
+    this.xmpp.on("stanza", async (stanza: any) => {
+      //capture room info/details
+      if (stanza.attrs.id === "roomInfo") {
         const featureList = stanza.children[0].children.find(
-          item => item.attrs.xmlns === 'jabber:x:data',
+          (item: { attrs: { xmlns: string } }) =>
+            item.attrs.xmlns === "jabber:x:data"
         );
-        this.updateRoomInfo(stanza.attrs.from, {
-          roomDescription: featureList.children.find(
-            item => item.attrs.var === 'muc#roominfo_description',
-          ).children[0].children[0],
-        });
+        featureList.children &&
+          this.updateRoomInfo(stanza.attrs.from, {
+            roomDescription: featureList.children.find(
+              (item: { attrs: { var: string } }) =>
+                item.attrs.var === "muc#roominfo_description"
+            ).children[0].children[0],
+          });
       }
 
       if (stanza.attrs.id === XMPP_TYPES.chatLinkInfo) {
-        runInAction(() => {
-          this.chatLinkInfo[stanza.attrs.from] =
-            stanza.children[0].children[0].attrs.name;
-        });
+        console.log(stanza.attrs.type === "error", "getinfo stanza");
+        if (stanza.attrs.type !== "error") {
+          runInAction(() => {
+            this.chatLinkInfo[stanza.attrs.from] =
+              stanza.children[0].children[0].attrs.name;
+          });
+        } else {
+          showToast("error", "Error", "Chat link info xmpp error", "top");
+        }
       }
 
+      //when room description change success response
       if (stanza.attrs.id === XMPP_TYPES.changeRoomDescription) {
-        const walletAddress = stanza.attrs.to.split('@')[0];
+        const walletAddress = stanza.attrs.to.split("@")[0];
         getRoomInfo(walletAddress, stanza.attrs.from, this.xmpp);
-        showToast('success', 'Success', 'Description changed', 'top');
+        showToast("success", "Success", "Description changed", "top");
       }
 
+      //set room image success response
       if (stanza.attrs.id === XMPP_TYPES.setRoomImage) {
         console.log(
           stanza.children[0].attrs,
           stanza.children[0].children,
-          stanza,
+          stanza
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
-        showToast('success', 'Success', 'Chat icon set successfully', 'bottom');
+        showToast("success", "Success", "Chat icon set successfully", "bottom");
       }
 
+      //set room background image success response
       if (stanza.attrs.id === XMPP_TYPES.setRoomBackgroundImage) {
         console.log(
           stanza.children[0].attrs,
           stanza.children[0].children,
-          stanza,
+          stanza
         );
         getUserRoomsStanza(xmppUsername, this.xmpp);
         showToast(
-          'success',
-          'Success',
-          'Chat background set successfully',
-          'bottom',
+          "success",
+          "Success",
+          "Chat background set successfully",
+          "bottom"
         );
       }
 
       this.stores.debugStore.addLogsXmpp(stanza);
+
+      //get users vcard details
       if (stanza.attrs.id === XMPP_TYPES.otherUserVCardRequest) {
-        let anotherUserAvatar = '';
-        let anotherUserDescription = '';
+        let anotherUserAvatar = "";
+        let anotherUserDescription = "";
         stanza.children[0].children.map((item: any) => {
-          if (item.name === 'DESC') {
+          if (item.name === "DESC") {
             anotherUserDescription = item.children[0];
           }
-          if (item.name === 'PHOTO') {
+          if (item.name === "PHOTO") {
             anotherUserAvatar = item.children[0].children[0];
           }
         });
         this.stores.otherUserStore.setDataFromVCard(
           anotherUserDescription,
-          anotherUserAvatar,
+          anotherUserAvatar
         );
       }
+
+      //response when last message of the stack arrived
       if (
         stanza.attrs.id === XMPP_TYPES.paginatedArchive &&
-        stanza.children[0].name === 'fin'
+        stanza.children[0].name === "fin"
       ) {
         runInAction(() => {
           this.isLoadingEarlierMessages = false;
         });
       }
 
+      //response when last message arrived
       if (
-        stanza.attrs.id === 'GetArchive' &&
-        stanza.children[0].name === 'fin'
+        stanza.attrs.id === "GetArchive" &&
+        stanza.children[0].name === "fin"
       ) {
         archiveRequestedCounter += 1;
         if (archiveRequestedCounter === this.roomList.length) {
@@ -592,137 +832,149 @@ export class ChatStore {
         this.getCachedMessages();
       }
 
+      //response to request vcard of the current user
       if (stanza.attrs.id === XMPP_TYPES.vCardRequest) {
-        const {photo, firstName, lastName} = this.stores.loginStore.initialData;
-        let fullName = firstName + ' ' + lastName;
+        const { photo, firstName, lastName } =
+          this.stores.loginStore.initialData;
+        let fullName = firstName + " " + lastName;
         let profilePhoto = photo;
-        let profileDescription = 'No description';
+        let profileDescription = "No description";
         if (!stanza.children[0].children.length) {
           updateVCard(photo, profileDescription, fullName, this.xmpp);
         } else {
           stanza.children[0].children.map((item: any) => {
-            if (item.name === 'DESC') {
+            if (item.name === "DESC") {
               profileDescription = item.children[0];
             }
-            if (item.name === 'URL') {
+            if (item.name === "URL") {
               profilePhoto = item.children[0];
             }
-            if (item.name === 'FN') {
+            if (item.name === "FN") {
               fullName = item.children[0];
             }
           });
           this.stores.loginStore.updateUserPhotoAndDescription(
             profilePhoto,
-            profileDescription,
+            profileDescription
           );
 
           this.stores.loginStore.updateUserName(fullName);
         }
       }
 
+      //response to request get current room member details
       if (stanza.attrs.id === XMPP_TYPES.roomMemberInfo) {
         if (stanza.children[0].children.length) {
           runInAction(() => {
             this.roomMemberInfo = stanza.children[0].children.map(
-              item => item.attrs,
+              (item: any) => item.attrs
             );
           });
         }
       }
 
+      //response to presence request, we set roles for each room here
       if (stanza.attrs.id === XMPP_TYPES.roomPresence) {
-        let roomJID = stanza.attrs.from.split('/')[0];
-        let userJID = stanza.attrs.from.split('/')[1];
+        let roomJID = stanza.attrs.from.split("/")[0];
 
         let role = stanza.children[1].children[0].attrs.role;
         this.setRoomRoles(roomJID, role);
       }
 
+      //response to request to update vcard details. We then request vcard for updated results
       if (stanza.attrs.id === XMPP_TYPES.updateVCard) {
-        if (stanza.attrs.type === 'result') {
+        if (stanza.attrs.type === "result") {
           vcardRetrievalRequest(xmppUsername, this.xmpp);
         }
       }
 
       //to catch error
-      if (stanza.attrs.type === 'error') {
-        stanza.children.filter(item => {
-          if (item.name === 'error') {
-            console.log(item.children, 'stanza error==============');
-            item.children.filter(subItem => {
-              if (subItem.name === 'text') {
-                console.log(subItem.children[0]);
-                if (subItem.children[0] === 'You are banned in this room!') {
-                  showToast(
-                    'error',
-                    'Banned!',
-                    'You have been banned from this room.',
-                    'top',
-                  );
-                }
-                if (subItem.children[0] === 'Traffic rate limit is exceeded') {
-                  showToast(
-                    'error',
-                    'XMPP: Too much traffic!',
-                    'Traffic rate limit is exceeded',
-                    'top',
-                  );
+      if (stanza.attrs.type === "error") {
+        stanza.children.filter((item: { name: string; children: any[] }) => {
+          if (item.name === "error") {
+            console.log(item.children, "stanza error==============");
+            item.children.filter(
+              (subItem: { name: string; children: string[] }) => {
+                if (subItem.name === "text") {
+                  console.log(subItem.children[0]);
+                  if (subItem.children[0] === "You are banned in this room!") {
+                    showToast(
+                      "error",
+                      "Banned!",
+                      "You have been banned from this room.",
+                      "top"
+                    );
+                  }
+                  if (
+                    subItem.children[0] === "Traffic rate limit is exceeded"
+                  ) {
+                    // showToast(
+                    //   'error',
+                    //   'XMPP: Too much traffic!',
+                    //   'Traffic rate limit is exceeded',
+                    //   'top',
+                    // );
+                  }
                 }
               }
-            });
+            );
           }
         });
       }
 
-      // if(stanza.attrs.id === XMPP_TYPES.getBannedUserListOfRoom){
-      //   console.log(stanza.children[0].children, 'banned user list of a room')
-      // }
-
+      //response to request ban user
       if (stanza.attrs.id === XMPP_TYPES.ban) {
-        console.log(stanza.children[0].children, 'dfsdsdsdsd');
-        if (stanza.children[0].children[0].attrs.status === 'success') {
-          showToast('success', 'Success', 'User banned!', 'top');
+        if (stanza.children[0].children[0].attrs.status === "success") {
+          showToast("success", "Success", "User banned!", "top");
         }
       }
 
+      //response to request ban user
+      if (stanza.attrs.id === "ban_user") {
+        this.setUserBanSuccess(true);
+        showToast(
+          "success",
+          "Success",
+          `${this.userBanData.name} removed by ${this.userBanData.senderName}`,
+          "top"
+        );
+      }
+
+      //response to create new room request
       if (stanza.attrs.id === XMPP_TYPES.createRoom) {
         getUserRoomsStanza(xmppUsername, this.xmpp);
       }
 
-      if (stanza.attrs.id === 'activity') {
-        console.log(stanza.children[0].children, 'activityyyy');
-      }
-
-      if (stanza.attrs.id === XMPP_TYPES.roomConfig) {
-        // console.log(stanza,"roooooom config")
-      }
-
+      //response to get user room request
       if (stanza.attrs.id === XMPP_TYPES.getUserRooms) {
         const roomsArray: any = [];
         const rosterFromXmpp = stanza.children[0].children;
         rosterFromXmpp.forEach((item: any) => {
+          if (!item.attrs.name) {
+            return;
+          }
           const rosterObject = {
             name: item.attrs.name,
             jid: item.attrs.jid,
             participants: +item.attrs.users_cnt,
-            avatar: 'https://placeimg.com/140/140/any',
+            avatar: "https://placeimg.com/140/140/any",
             counter: 0,
-            lastUserText: '',
-            lastUserName: '',
+            lastUserText: "",
+            lastUserName: "",
             createdAt: new Date(),
             priority: 0,
             roomThumbnail:
-              item.attrs.room_thumbnail === 'none'
-                ? ''
+              item.attrs.room_thumbnail === "none"
+                ? ""
                 : item.attrs.room_thumbnail,
             roomBackground:
-              item.attrs.room_background === 'none'
-                ? ''
+              item.attrs.room_background === "none"
+                ? ""
                 : item.attrs.room_background,
           };
 
           presenceStanza(xmppUsername, item.attrs.jid, this.xmpp);
-          getChatRoom(item.attrs.jid).then(cachedChat => {
+          getChatRoom(item.attrs.jid).then((cachedChat: any) => {
             if (!cachedChat) {
               addChatRoom(rosterObject);
               this.updateRoomInfo(item.attrs.jid, {
@@ -750,37 +1002,59 @@ export class ChatStore {
         await this.setRooms(roomsArray);
         // await AsyncStorage.setItem('roomsArray', JSON.stringify(roomsArray));
       }
+
+      //response to get blacklist user request
       if (stanza.attrs.id === XMPP_TYPES.getBlackList) {
-        const blackList = stanza.children[0].children.map(item => ({
-          userJid: item.attrs.user,
-          date: +item.attrs.date * 1000,
-          name: item.attrs.fullname,
-        }));
+        const blackList = stanza.children[0].children.map(
+          (item: {
+            attrs: { user: any; date: string | number; fullname: any };
+          }) => ({
+            userJid: item.attrs.user,
+            date: +item.attrs.date * 1000,
+            name: item.attrs.fullname,
+          })
+        );
         runInAction(() => {
           this.blackList = blackList;
         });
       }
+
+      //response to add to or remove from blacklist, here we call request black list for updated results
       if (
         stanza.attrs.id === XMPP_TYPES.addToBlackList ||
         stanza.attrs.id === XMPP_TYPES.removeFromBlackList
       ) {
         getBlackList(xmppUsername, this.xmpp);
       }
+
+      //response to delete message request
       if (stanza.attrs.id === XMPP_TYPES.deleteMessage) {
-        console.log(stanza.children, '1');
+        console.log(stanza.children, "1");
+        const deleteMessageId = stanza.children.find(
+          (item: {
+            attrs: { xmlns?: any; id?: string };
+            children: any[];
+            name: string;
+          }) => item.name === "delete"
+        ).attrs.id;
+        this.deleteMessage(deleteMessageId);
       }
-      if (stanza.is('iq') && stanza.attrs.id === XMPP_TYPES.newSubscription) {
+
+      //response to subscribe to room request
+      if (stanza.is("iq") && stanza.attrs.id === XMPP_TYPES.newSubscription) {
         presenceStanza(xmppUsername, stanza.attrs.from, this.xmpp);
         const room = await getChatRoom(stanza.attrs.from);
         if (!room) {
           getUserRoomsStanza(xmppUsername, this.xmpp);
         }
       }
-      if (stanza.is('message')) {
+
+      //if stanza is of message type
+      if (stanza.is("message")) {
         //capture message composing
         if (
           stanza?.children[0]?.children[0]?.children[0]?.children[2]
-            ?.children[0]?.name === 'invite'
+            ?.children[0]?.name === "invite"
         ) {
           let jid =
             stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
@@ -788,11 +1062,14 @@ export class ChatStore {
           subscribeStanza(xmppUsername, jid, this.xmpp);
           presenceStanza(xmppUsername, jid, this.xmpp);
         }
-        if (stanza?.children[2]?.children[0]?.name === 'invite') {
+
+        //response to invite request
+        if (stanza?.children[2]?.children[0]?.name === "invite") {
           const jid = stanza.children[3].attrs.jid;
           subscribeStanza(xmppUsername, jid, this.xmpp);
         }
 
+        //response to invite request
         if (stanza?.children[2]?.children[0]?.name === XMPP_TYPES.invite) {
           const jid = stanza.children[3].attrs.jid;
           subscribeStanza(xmppUsername, jid, this.xmpp);
@@ -800,85 +1077,97 @@ export class ChatStore {
         }
 
         //capture archived message of a room
-        if (stanza.children[0].attrs.xmlns === 'urn:xmpp:mam:2') {
+        if (stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2") {
           const singleMessageDetailArray =
             stanza.children[0].children[0].children[0].children;
 
           const message = createMessageObject(singleMessageDetailArray);
-
-          // const threadIndex = this.listOfThreads.findIndex(item => item.mainMessageId === message._id);
-          // if(threadIndex != -1){
-          //   // alert(threadIndex)
-          //   const threadMessage = {
-          //     ...JSON.parse(JSON.stringify(this.listOfThreads[threadIndex]))
-          //   };
-
-          //   this.addMessage(threadMessage);
-          //   await insertMessages(threadMessage);
-          //   this.listOfThreads.splice(threadIndex,1);
-          //   message.numberOfReplies = message.numberOfReplies + 1;
-          // }
-
-          // console.log(threadsOfCurrentMessage,"dsagfdskmsldvmcs")
-
-          const messageAlreadyExist = this.messages.findIndex(
-            x => x._id === message._id,
-          );
-          if (messageAlreadyExist === -1) {
-            if (
-              this.blackList.find(item => item.userJid === message.user._id)
-                ?.userJid
-            ) {
-              return;
-            }
-
-            if (message.system) {
-              if (message?.contractAddress) {
-                await updateMessageToWrapped(message.receiverMessageId, {
-                  nftId: message.nftId,
-                  contractAddress: message.contractAddress,
-                });
-              }
-              await updateTokenAmount(
-                message.receiverMessageId,
-                message.tokenAmount,
-              );
-            }
-
-            if (message.isReply) {
-              const threadIndex = this.listOfThreads.findIndex(
-                item => message._id === item._id,
-              );
-              if (threadIndex === -1) {
-                this.addThreadMessage(message);
-              }
-            }
-
-            const threadsOfCurrentMessage = this.listOfThreads.filter(
-              (item: any) => item.mainMessageId === message._id,
+          if (message._id === "1676444732726065") {
+            console.log(message);
+          }
+          //check if the stanza is a replace stanza
+          if (message.isReplace) {
+            this.addToReplaceMessageList(
+              message.replaceMessageId,
+              message.text as string
             );
-
-            if (threadsOfCurrentMessage) {
-              message.numberOfReplies = threadsOfCurrentMessage.length;
+          } else {
+            //check if the current stanza is an edited message.
+            const replaceMessageItem = this.replaceMessageList.find(
+              (item) => message._id === item.replaceMessageId
+            );
+            if (replaceMessageItem) {
+              message.text = replaceMessageItem.replaceMessageText;
+              message.isEdited = true;
+              this.removeFromReplaceMessageList(
+                replaceMessageItem.replaceMessageId
+              );
             }
-            await insertMessages(message);
-            this.addMessage(message);
+            // if(this.replaceMessageList.find(item => message._id === item.replaceMessageId)){
+            //     message.text = item.rep
+            // }
+            const messageAlreadyExist = this.messages.findIndex(
+              (x: { _id: string }) => x._id === message._id
+            );
+            if (messageAlreadyExist === -1) {
+              temporaryArchiveMessages.push(message);
+              if (
+                this.blackList.find((item) => item.userJid === message.user._id)
+                  ?.userJid
+              ) {
+                return;
+              }
+
+              if (message.system) {
+                if (message?.contractAddress && message.nftId) {
+                  await updateMessageToWrapped(message.receiverMessageId, {
+                    nftId: message.nftId,
+                    contractAddress: message.contractAddress,
+                  });
+                }
+
+                message.tokenAmount &&
+                  (await updateTokenAmount(
+                    message.receiverMessageId,
+                    message.tokenAmount
+                  ));
+              }
+
+              if (message.isReply && message.mainMessage?.id) {
+                const thread = temporaryArchiveMessages.filter(
+                  (item) => item.mainMessage?.id === message.mainMessage?.id
+                );
+                this.updateMessageProperty(
+                  message.mainMessage?.id,
+                  "numberOfReplies",
+                  thread.length
+                );
+                await updateNumberOfReplies(
+                  message.mainMessage.id,
+                  thread.length
+                );
+              }
+
+              await insertMessages(message);
+              this.addMessage(message);
+            }
           }
         }
 
+        //response to when a message is sent to a room
         if (stanza.attrs.id === XMPP_TYPES.sendMessage) {
           const messageDetails = stanza.children;
           const message = createMessageObject(messageDetails);
-          console.log(message,"Sdfsfsdf")
+          temporaryArchiveMessages.push(message);
           if (
-            this.blackList.find(item => item.userJid === message.user._id)
+            this.blackList.find((item) => item.userJid === message.user._id)
               ?.userJid
           ) {
-            console.log('finded user');
+            console.log("finded user");
             return;
           }
           if (this.shouldCount) {
-            this.updateBadgeCounter(message.roomJid, 'UPDATE');
+            this.updateBadgeCounter(message.roomJid, "UPDATE");
           }
           this.addMessage(message);
 
@@ -888,60 +1177,71 @@ export class ChatStore {
             lastMessageTime: message?.createdAt,
           });
           if (message.system) {
-            if (message?.contractAddress) {
+            if (message?.contractAddress && message.nftId) {
               await updateMessageToWrapped(message.receiverMessageId, {
                 nftId: message.nftId,
                 contractAddress: message.contractAddress,
               });
+
               this.updateMessageProperty(
                 message.receiverMessageId,
-                'nftId',
-                message.nftId,
+                "nftId",
+                message.nftId
               );
             }
-            this.updateMessageProperty(
-              message.receiverMessageId,
-              'tokenAmount',
-              message.tokenAmount,
-            );
-            await updateTokenAmount(
-              message.receiverMessageId,
-              message.tokenAmount,
-            );
-            playCoinSound(message.tokenAmount);
+            if (message.tokenAmount) {
+              this.updateMessageProperty(
+                message.receiverMessageId,
+                "tokenAmount",
+                message.tokenAmount
+              );
+              await updateTokenAmount(
+                message.receiverMessageId,
+                message.tokenAmount
+              );
+              playCoinSound(message.tokenAmount);
+            }
           }
-          if (message.isReply) {
-            this.updateMessageProperty(
-              message.mainMessageId,
-              'numberOfReplies',
-              1,
+          if (message.isReply && message.mainMessage?.id) {
+            const thread = temporaryArchiveMessages.filter(
+              (item) => item.mainMessage?.id === message.mainMessage?.id
             );
-            await updateNumberOfReplies(message.mainMessageId);
+            this.updateMessageProperty(
+              message.mainMessage?.id,
+              "numberOfReplies",
+              thread.length
+            );
+            await updateNumberOfReplies(
+              message?.mainMessage?.id,
+              thread.length
+            );
           }
           await insertMessages(message);
         }
 
-        if(stanza.attrs.id === XMPP_TYPES.replaceMessage){
+        //response to when a message is edited
+        if (stanza.attrs.id === XMPP_TYPES.replaceMessage) {
           // <message xmlns="jabber:client" xml:lang="en" to="olek@localhost/1216574346180782548712130" from="test_olek@conference.localhost/olek" type="groupchat" id="1635229272917013">
           //   <archived by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:mam:tmp"/>
           //   <stanza-id by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:sid:0"/>
           //   <replace xmlns="urn:xmpp:message-correct:0" id="1635229272917013"/>
           //   <body>Wow</body>
           // </message>
-          const replaceMessageId = stanza.children.find(item => item.name === 'replace').attrs.id;
-          const messageString = stanza.children.find(item => item.name === 'body').children[0]
-          console.log(stanza.children,"Asfdafaffa")
+          const replaceMessageId = stanza.children.find(
+            (item: { name: string }) => item.name === "replace"
+          ).attrs.id;
+          const messageString = stanza.children.find(
+            (item: { name: string }) => item.name === "body"
+          ).children[0];
+          // this.addToReplaceMessageList(replaceMessageId, messageString);
 
-          // this.editMessage(replaceMessageId,messageString)
-          // await updateMessageText(
-          //   replaceMessageId,
-          //   messageString
-          // )
+          this.editMessage(replaceMessageId, messageString);
+          await updateMessageText(replaceMessageId, messageString);
         }
 
         //capture message composing
         if (stanza.attrs.id === XMPP_TYPES.isComposing) {
-          const chatJID = stanza.attrs.from.split('/')[0];
+          const chatJID = stanza.attrs.from.split("/")[0];
 
           const fullName = stanza.children[1].attrs.fullName;
           const manipulatedWalletAddress =
@@ -956,29 +1256,45 @@ export class ChatStore {
 
         //capture message composing paused
         if (stanza.attrs.id === XMPP_TYPES.pausedComposing) {
-          const chatJID = stanza.attrs.from.split('/')[0];
+          const chatJID = stanza.attrs.from.split("/")[0];
           const manipulatedWalletAddress =
             stanza.children[1].attrs.manipulatedWalletAddress;
           this.updateMessageComposingState({
             state: false,
             manipulatedWalletAddress,
             chatJID,
-            username: '',
+            username: "",
           });
         }
       }
     });
 
-    this.xmpp.on('online', async address => {
+    //listener when xmpp is online
+    this.xmpp.on("online", async () => {
+      //set reconnect delay in ms
       this.xmpp.reconnect.delay = 2000;
-      this.xmpp.send(xml('presence'));
+
+      //send presence
+      this.xmpp.send(xml("presence"));
+
+      //subscribe to default chats mentioned in the config
       this.subscribeToDefaultChats();
+
+      //set online status true in the mobx store
       runInAction(() => {
         this.isOnline = true;
       });
+
+      //subscribe to meta rooms
       this.subscribeToMetaRooms();
+
+      //get blacklist
       getBlackList(xmppUsername, this.xmpp);
+
+      //retrive user vcard details for profile
       vcardRetrievalRequest(xmppUsername, this.xmpp);
+
+      //get list of rooms user subscribed to.
       getUserRoomsStanza(xmppUsername, this.xmpp);
     });
   };

@@ -14,17 +14,18 @@ import {textStyles} from '../../../docs/config';
 import Bubble from './MessageBubble';
 
 const {isSameUser, isSameDay} = utils;
-let count = 0;
 export default class Message extends React.Component {
   shouldComponentUpdate(nextProps) {
     const next = nextProps.currentMessage;
     const current = this.props.currentMessage;
 
     const nextPropsPreviousMessage = nextProps.previousMessage;
-    if(next.tokenAmount !== current.tokenAmount) return true
+    if (next.tokenAmount !== current.tokenAmount) return true;
 
-    if(next.numberOfReplies !== current.numberOfReplies) return true
-    
+    if (next.numberOfReplies !== current.numberOfReplies) return true;
+
+    if (next.text !== current.text) return true;
+
     return false;
   }
   getInnerComponentProps() {
@@ -61,7 +62,11 @@ export default class Message extends React.Component {
 
   renderAvatar() {
     const {containerStyle, ...props} = this.props;
-    return <Avatar {...props} />;
+    return (
+      <View accessibilityLabel="User photo (tap to view profile)">
+        <Avatar {...props} />
+      </View>
+    );
   }
 
   renderSystemMessage() {
@@ -73,12 +78,11 @@ export default class Message extends React.Component {
   }
 
   render() {
-
     const {currentMessage, nextMessage, position, containerStyle} = this.props;
     if (currentMessage) {
       const sameUser = isSameUser(currentMessage, nextMessage);
       return (
-        <View>
+        <View accessibilityLabel="Message (long tap to interact)">
           {this.renderDay()}
           {currentMessage.system ? (
             this.renderSystemMessage()

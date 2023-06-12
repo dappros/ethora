@@ -97,16 +97,20 @@ const NfmtItem = ({
             }}
           >
             {item.traits.map((trait) => {
-              return (
-                <Chip
-                  sx={{
-                    backgroundColor: NFMT_TRAITS[trait].color,
-                    marginRight: "5px",
-                  }}
-                  label={trait}
-                  key={trait}
-                />
-              );
+              if (NFMT_TRAITS[trait]) {
+                return (
+                  <Chip
+                    sx={{
+                      backgroundColor: NFMT_TRAITS[trait].color,
+                      marginRight: "5px",
+                    }}
+                    label={trait}
+                    key={trait}
+                  />
+                );
+              } else {
+                return null;
+              }
             })}
           </Box>
           <span style={{ textAlign: "left", width: 50 }}>
@@ -127,6 +131,7 @@ export default function ItemsTable({
 }) {
   const nftItems = balance.filter((item) => item.tokenType === "NFT");
   const nfmtItems = produceNfmtItems(balance);
+
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       {nftItems.map((item, i) => {

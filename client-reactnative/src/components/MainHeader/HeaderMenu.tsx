@@ -6,68 +6,108 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import {useNavigation} from '@react-navigation/native';
-import {Box, Divider, Menu, Text, View} from 'native-base';
+import {Box, Divider, Menu} from 'native-base';
 import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native';
-import {ROUTES} from '../../constants/routes';
 import Icon from 'react-native-vector-icons/Entypo';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {
   configDocuments,
   configNFT,
   itemsMintingAllowed,
-  textStyles,
 } from '../../../docs/config';
 import {useStores} from '../../stores/context';
 import SubMenu from './SubMenu';
+import {HomeStackNavigationProp} from '../../navigation/types';
+import {homeStackRoutes} from '../../navigation/routes';
 
+export interface IMenuItem {
+  value: string;
+  label: string;
+  visible: boolean;
+  testID: string;
+}
+[];
+
+const LOGOUT = 'LOGOUT';
 export const HeaderMenu = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const [open, setOpen] = useState(false);
 
   const {loginStore, debugStore} = useStores();
 
-  const AccountMenuItems = [
-    {value: ROUTES.PROFILE, label: 'My profile', visible: true},
-    {value: ROUTES.TRANSACTIONS, label: 'Transactions', visible: true},
-    // {value: ROUTES.ACCOUNT, label: 'E-mails', visible: true},
-    {value: ROUTES.INVITEFRIENDS, label: 'Referrals', visible: true},
-    {value: ROUTES.COINPURCHASESCREEN, label: 'Buy coins', visible: true},
-
+  const AccountMenuItems: IMenuItem[] = [
+    {value: homeStackRoutes.ProfileScreen, label: 'My profile', visible: true, testID: "itemProfileScreen"},
+    {
+      value: homeStackRoutes.TransactionsScreen,
+      label: 'Transactions',
+      visible: true,
+      testID: "itemTransaction"
+    },
+    // {value: homeStackRoutes.ACCOUNT, label: 'E-mails', visible: true},
+    {
+      value: homeStackRoutes.InviteFriendsScreen,
+      label: 'Referrals',
+      visible: true,
+      testID: "itemReferrals"
+    },
+    {
+      value: homeStackRoutes.CoinPurchaseScreen,
+      label: 'Buy coins',
+      visible: true,
+      testID: "itemBuyCoins"
+    },
   ];
 
-  const ActionsMenuItems = [
-    {value: ROUTES.NEWCHAT, label: 'New room', visible: true},
-    {value: ROUTES.SCAN, label: 'QR Scan', visible: true},
+  const ActionsMenuItems: IMenuItem[] = [
+    {value: homeStackRoutes.NewChatScreen, label: 'New room', visible: true, testID: "itemNewRoom"},
+    {value: homeStackRoutes.ScanScreen, label: 'QR Scan', visible: true, testID: "itemScanScreen"},
     {
-      value: ROUTES.MINT,
+      value: homeStackRoutes.MintScreen,
       label: 'Mint items',
       visible: itemsMintingAllowed && configNFT,
+      testID: "itemMintItems"
     },
     {
-      value: ROUTES.UPLOADDOCUMENTSSCREEN,
+      value: homeStackRoutes.UploadDocumentsScreen,
       label: 'Upload Document',
       visible: configDocuments,
+      testID: "itemUploadDocument"
     },
   ];
 
-  const SystemMenuItems = [
-    {value: ROUTES.PRIVACY, label: 'Privacy and Data', visible: true},
-    {value: ROUTES.AUTHENTICATIONSCREEN, label: 'Authentication', visible: true},
+  const SystemMenuItems: IMenuItem[] = [
+    {
+      value: homeStackRoutes.PrivacyAndDataScreen,
+      label: 'Privacy and Data',
+      visible: true,
+      testID: "itemPrivacyData"
+    },
+    {
+      value: homeStackRoutes.AuthenticationScreen,
+      label: 'Authentication',
+      visible: true,
+      testID: "itemAuthentication"
+    },
 
-    {value: ROUTES.DEBUG, label: 'Debug', visible: debugStore.debugMode},
-    {value: ROUTES.LOGOUT, label: 'Sign out', visible: true},
+    {
+      value: homeStackRoutes.DebugScreen,
+      label: 'Debug',
+      visible: debugStore.debugMode,
+      testID: "itemDebug"
+    },
+    {value: LOGOUT, label: 'Sign out', visible: true, testID: "itemTransaction"},
   ];
 
   const toggleMenu = () => {
     open ? setOpen(false) : setOpen(true);
   };
 
-  const onMenuItemPress = (value: any) => {
-    if (value === ROUTES.LOGOUT) {
+  const onMenuItemPress = (value: string) => {
+    if (value === LOGOUT) {
       loginStore.logOut();
     } else {
-      navigation.navigate(value);
+      navigation.navigate(value as never);
     }
   };
   return (
@@ -75,10 +115,22 @@ export const HeaderMenu = () => {
       h="100%"
       w={50}
       alignItems="center"
-      shadow={'9'}
+      style={{
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 6.27,
+
+        elevation: 10,
+      }}
       justifyContent={'center'}>
       <Menu
+        accessibilityLabel="Menu"
         w="190"
+        testID='mainHeaderMenu'
         isOpen={open}
         placement={'bottom'}
         onClose={() => setOpen(false)}
@@ -86,6 +138,7 @@ export const HeaderMenu = () => {
           return (
             <TouchableOpacity
               {...triggerProps}
+              testID='mainHeaderMenuButton'
               style={{zIndex: 99999}}
               onPress={() => toggleMenu()}
               accessibilityLabel="More options menu">

@@ -5,17 +5,14 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, } from 'react';
 import {observer} from 'mobx-react-lite';
-import {widthPercentageToDP} from 'react-native-responsive-screen';
-import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import {useStores} from '../../stores/context';
 import {RoomList} from './RoomList';
-import {commonColors, defaultChats, textStyles} from '../../../docs/config';
-import {Badge, Text} from 'native-base';
-import {useRoute} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
-import _ from 'lodash';
+import { checkIsDefaultChat } from '../../helpers/chat/checkIsDefaultChat';
+import { roomListProps } from '../../stores/chatStore';
+
+var _ = require('lodash');
 const ROOM_KEYS = {
   official: 'official',
   private: 'private',
@@ -24,13 +21,14 @@ const ROOM_KEYS = {
 
 export const RoomsTabBar = observer(() => {
   const {chatStore} = useStores();
-  const route = useRoute();
   const privateRooms = chatStore.roomList?.filter((item: any) => {
     const splitedJid = item?.jid?.split('@')[0];
 
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
+
     if (
       item.participants < 3 &&
-      !defaultChats[splitedJid] &&
+      !isDefaultChat &&
       !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
       !item.meta
     ) {
@@ -39,8 +37,9 @@ export const RoomsTabBar = observer(() => {
   });
   const official = chatStore.roomList.filter(item => {
     const splitedJid = item?.jid?.split('@')[0];
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
     if (
-      defaultChats[splitedJid] ||
+      isDefaultChat ||
       chatStore.roomsInfoMap[item.jid]?.isFavourite
     ) {
       return item;
@@ -48,10 +47,10 @@ export const RoomsTabBar = observer(() => {
   });
   const groups = chatStore.roomList.filter((item: any) => {
     const splitedJid = item?.jid?.split('@')[0];
-
+    const isDefaultChat = checkIsDefaultChat(splitedJid);
     if (
       item.participants > 2 &&
-      !defaultChats[splitedJid] &&
+      !isDefaultChat &&
       !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
       !item.meta
     ) {
@@ -73,29 +72,21 @@ export const RoomsTabBar = observer(() => {
 
     return _.orderBy(
       roomsWithDate,
-      el => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
+      (el:any) => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
       'desc',
-    ).concat(roomsWithoutDate);
+    ).concat(roomsWithoutDate) as roomListProps[];
   }, [
     chatStore.roomList,
     chatStore.activeChats,
     chatStore.roomsInfoMap.isUpdated,
   ]);
 
+
   useEffect(() => {
     if (chatStore.roomList) {
       chatStore.updateCounter();
     }
   }, [chatStore.roomList]);
-
-  // const roomList = useMemo(
-  //   () => filterRooms(),
-  //   [
-  //     chatStore.roomList,
-  //     chatStore.activeChats,
-  //     chatStore.roomsInfoMap.isUpdated,
-  //   ],
-  // );
 
   return <RoomList roomsList={getRooms()} />;
 });

@@ -5,50 +5,41 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { Box, Menu, Text, View } from 'native-base';
+import {Box, Menu, Text, View} from 'native-base';
 import React from 'react';
-import { textStyles } from '../../../docs/config';
-import { subMenuTitle } from '../../constants/subMenuTitle';
+import {textStyles} from '../../../docs/config';
+import { IMenuItem } from './HeaderMenu';
 
 interface SubMenuProps {
-    title:string,
-    menuItems:any,
-    onMenuItemPress:any
+  title: string;
+  menuItems: IMenuItem[];
+  onMenuItemPress: (value: string) => void;
 }
 const SubMenu = (props: SubMenuProps) => {
+  const {title, menuItems, onMenuItemPress} = props;
 
-    const { 
-        title,
-        menuItems,
-        onMenuItemPress
-    } = props
-
-    return(
-        <Box
-        padding={2}
-        width={"100%"}
-        >
-            <Text
-            fontFamily={textStyles.semiBoldFont}
-            >
-                {title}
-            </Text>
-            {menuItems.map((item:{value: string, label: string, visible: boolean}) => {
+  return (
+    <Box padding={2} width={'100%'}>
+      <Text fontFamily={textStyles.semiBoldFont}>{title}</Text>
+      {menuItems.map(
+        (item: {value: string; label: string; visible: boolean, testID:string}) => {
           if (!item.visible) return null;
           return (
             <Menu.Item
-            _text={{
-                fontFamily:textStyles.lightFont
-            }}
-            onPress={() => onMenuItemPress(item.value)}
-            key={item.label}>
-            {item.label}
+              accessibilityLabel={item.label}
+              _text={{
+                fontFamily: textStyles.lightFont,
+              }}
+              testID={item.testID}
+              onPress={() => onMenuItemPress(item.value)}
+              key={item.label}>
+              {item.label}
             </Menu.Item>
           );
-        })}
-        </Box>
-    )
-
+        },
+      )}
+    </Box>
+  );
 };
 
 export default SubMenu;

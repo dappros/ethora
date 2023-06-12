@@ -1,22 +1,12 @@
 import React, { useRef, useState } from "react";
-import LoadingButton from "@mui/lab/LoadingButton";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  FormHelperText,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, FormHelperText, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as http from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
 
 export interface IUploadDocument {}
 
-export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
+const UploadDocument: React.FC<IUploadDocument> = ({}) => {
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { showSnackbar } = useSnackbar();
@@ -176,3 +166,4 @@ export const UploadDocument: React.FC<IUploadDocument> = ({}) => {
     </Box>
   );
 };
+export default UploadDocument;

@@ -13,7 +13,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {TouchableOpacity} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {appVersion, commonColors, textStyles} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 interface SecondaryHeaderProps {
   title: string;
@@ -22,6 +22,7 @@ interface SecondaryHeaderProps {
   showVersion?: boolean;
   onQRPressed?: any;
   isChatRoomDetail?: boolean;
+  roomJID?: string;
   onBackPress?: () => void;
 }
 
@@ -32,9 +33,11 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   showVersion,
   onQRPressed,
   isChatRoomDetail,
+  roomJID,
   onBackPress,
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
+
   const onArrowClick = () => {
     if (onBackPress) {
       onBackPress();
@@ -46,6 +49,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
     <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
       <HStack>
         <TouchableOpacity
+          accessibilityLabel="Back button"
           style={{flex: 0.12, justifyContent: 'center', alignItems: 'center'}}
           onPress={onArrowClick}>
           <AntIcon
@@ -59,10 +63,14 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           style={{
             flex: 0.7,
           }}
+          accessibilityLabel="Screen title"
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
-            navigation.navigate(ROUTES.CHATDETAILS, {roomName: title})
+            navigation.navigate('ChatDetailsScreen', {
+              roomName: title,
+              roomJID: roomJID || '',
+            })
           }>
           <Text
             fontFamily={textStyles.semiBoldFont}
@@ -74,13 +82,15 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
 
         <View style={{marginLeft: 'auto', flex: 0.1}}>
           {isQR && (
-            <TouchableOpacity onPress={onQRPressed} style={{marginRight: 10}}>
+            <TouchableOpacity
+              accessibilityLabel="QR button"
+              onPress={onQRPressed}
+              style={{marginRight: 10}}>
               <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />
             </TouchableOpacity>
           )}
           {type === 'transaction' && (
             <TouchableOpacity
-              onPress={() => console.log('')}
               style={{flex: 0.2, alignItems: 'flex-end', marginRight: 10}}>
               <AntIcon name="filter" color="#FFFF" size={hp('3%')} />
             </TouchableOpacity>

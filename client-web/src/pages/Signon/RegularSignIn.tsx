@@ -7,16 +7,41 @@ import { OwnerRegistration } from "./OwnerRegistrationModal";
 import { UsernameModal } from "./UsernameModal";
 import OwnerLogin from "./OwnerLogin";
 import { regularLoginEmail, regularLoginUsername } from "../../config/config";
+import { useStoreState } from "../../store";
+import { TLoginSuccessResponse } from "../../http";
 
 export interface IRegularSignIn {}
 
 export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
+  const setUser = useStoreState((state) => state.setUser);
   const [openEmail, setOpenEmail] = useState(false);
   const [openUsername, setOpenUsername] = useState(false);
 
   const [ownerRegistration, setOwnerRegistration] = useState(false);
   const [ownerLogin, setOwnerLogin] = useState(false);
   const history = useHistory();
+  const updateUserInfo = (loginData: TLoginSuccessResponse) => {
+    setUser({
+      _id: loginData.user._id,
+      firstName: loginData.user.firstName,
+      lastName: loginData.user.lastName,
+      description: loginData.user.description,
+      xmppPassword: loginData.user.xmppPassword,
+      walletAddress: loginData.user.defaultWallet.walletAddress,
+      token: loginData.token,
+      refreshToken: loginData.refreshToken,
+      profileImage: loginData.user.profileImage,
+      isProfileOpen: loginData.user.isProfileOpen,
+      isAssetsOpen: loginData.user.isAssetsOpen,
+      ACL: loginData.user.ACL,
+      referrerId: loginData.user.referrerId || "",
+      isAllowedNewAppCreate: loginData.isAllowedNewAppCreate,
+      isAgreeWithTerms: loginData.user.isAgreeWithTerms,
+      stripeCustomerId: loginData.user.stripeCustomerId,
+      homeScreen:  loginData.user.homeScreen,
+    });
+  };
+
   return (
     <Container
       maxWidth="xl"
@@ -58,7 +83,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           </Button>
         )}
 
-        <Button
+        {/* <Button
           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth
           variant="contained"
@@ -66,8 +91,8 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           onClick={() => setOwnerRegistration(true)}
         >
           Owner Registration
-        </Button>
-        <Button
+        </Button> */}
+        {/* <Button
           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
           fullWidth
           variant="contained"
@@ -75,7 +100,7 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           onClick={() => setOwnerLogin(true)}
         >
           Owner Sign In
-        </Button>
+        </Button> */}
         <Button
           sx={{ margin: 1 }}
           fullWidth
@@ -86,8 +111,16 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
           Back
         </Button>
       </Box>
-      <EmailModal open={openEmail} setOpen={setOpenEmail} />
-      <UsernameModal open={openUsername} setOpen={setOpenUsername} />
+      <EmailModal
+        updateUser={updateUserInfo}
+        open={openEmail}
+        setOpen={setOpenEmail}
+      />
+      <UsernameModal
+        updateUser={updateUserInfo}
+        open={openUsername}
+        setOpen={setOpenUsername}
+      />
       <OwnerRegistration
         open={ownerRegistration}
         setOpen={setOwnerRegistration}

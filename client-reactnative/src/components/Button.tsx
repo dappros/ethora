@@ -28,12 +28,13 @@ export const Button: React.FC<ButtonProps> = ({
   title,
   style,
   textStyle,
-  disabled
+  disabled,
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={loading || disabled}
+      accessibilityLabel={title}
       style={[styles.submitButton, style]}>
       <View
         style={{

@@ -65,7 +65,7 @@ export default function TransferItemsModal({ open, setOpen, item }: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} open={open}>
+    <Dialog onClose={() => setOpen(false)} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

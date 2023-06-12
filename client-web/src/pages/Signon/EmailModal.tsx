@@ -7,25 +7,27 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { useQuery } from "../../utils";
-import {EmailSingInForm} from "./EmailSignInForm";
-import {EmailSignUpForm} from "./EmailSignUpForm";
+import { EmailSingInForm } from "./EmailSignInForm";
+import { EmailSignUpForm } from "./EmailSignUpForm";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { useLocation } from "react-router";
+import { TLoginSuccessResponse } from "../../http";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateUser: (data: TLoginSuccessResponse) => void;
 };
 
-export function EmailModal({ open, setOpen }: TProps) {
+export function EmailModal({ open, setOpen, updateUser }: TProps) {
   const [tab, setTab] = useState("1");
   const [message, setMessage] = useState("");
   const query = useQuery();
+ 
 
   const onClose = (e: any, reason: any) => {
-    if (reason === "backdropClick") {
-      return;
-    }
+    setOpen(false);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -38,7 +40,7 @@ export function EmailModal({ open, setOpen }: TProps) {
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}
         >
-          Continue with Username
+          Continue with Email
           <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -57,7 +59,7 @@ export function EmailModal({ open, setOpen }: TProps) {
             {/* SIGN IN */}
             <TabPanel value="1">
               <Box>{message}</Box>
-              <EmailSingInForm closeModal={() => setOpen(false)} />
+              <EmailSingInForm updateUser={updateUser} closeModal={() => setOpen(false)} />
             </TabPanel>
             {/* SIGN UP */}
             <TabPanel value="2">

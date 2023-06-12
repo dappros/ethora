@@ -6,15 +6,19 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default function PlayButton(props) {
+export default function PlayButton({
+  state,
+  onPress,
+}: {
+  state: 'play' | 'pause';
+  onPress: () => void;
+}) {
   return (
-    <TouchableOpacity
-      style={styles.playButtonContainer}
-      onPress={props.onPress}>
-      <FontAwesome name={props.state} size={25} color="black" />
+    <TouchableOpacity style={styles.playButtonContainer} onPress={onPress}>
+      <FontAwesome name={state} size={25} color="black" />
     </TouchableOpacity>
   );
 }

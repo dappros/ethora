@@ -65,6 +65,9 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
             _id: response.data.user._id,
             walletAddress: response.data.user.defaultWallet.walletAddress,
             ACL: response.data.user.ACL,
+            isAllowedNewAppCreate: response.data.isAllowedNewAppCreate,
+            isAgreeWithTerms: response.data.user.isAgreeWithTerms,
+            homeScreen: response.data.user.homeScreen
           });
           setApps(response.data.apps);
           history.push("/owner");
@@ -77,7 +80,7 @@ export default function OwnerLogin({ open, setOpen }: TProps) {
   });
 
   return (
-    <Dialog onClose={() => {}} maxWidth={false} open={open}>
+    <Dialog onClose={ () => setOpen(false)} maxWidth={false} open={open}>
       <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}

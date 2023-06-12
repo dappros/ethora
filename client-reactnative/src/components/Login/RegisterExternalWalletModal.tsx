@@ -10,20 +10,15 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
-  Image,
   ActivityIndicator,
 } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Modal from 'react-native-modal';
 
 import {commonColors, textStyles} from '../../../docs/config';
-import {Input, TextField} from 'native-base';
+import {Input} from 'native-base';
 import {useStores} from '../../stores/context';
 export const RegisterExternalWalletModal = ({
   closeModal,
@@ -76,7 +71,10 @@ export const RegisterExternalWalletModal = ({
           placeholder="Enter your lastname"
           placeholderTextColor={commonColors.primaryColor}
         />
-        <TouchableOpacity disabled={loading} style={styles.submitButton} onPress={onSubmit}>
+        <TouchableOpacity
+          disabled={loading}
+          style={styles.submitButton}
+          onPress={onSubmit}>
           {loading ? (
             <ActivityIndicator size={20} color={'white'} />
           ) : (

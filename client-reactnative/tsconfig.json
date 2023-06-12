@@ -40,9 +40,9 @@
     // "baseUrl": "./",                       /* Base directory to resolve non-absolute module names. */
     // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
-    // "typeRoots": [],                       /* List of folders to include type definitions from. */
-    // "types": [],                           /* Type declaration files to be included in compilation. */
-    "allowSyntheticDefaultImports": true,     /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
+    "typeRoots": ["./types", "./node_modules/@types"],                       /* List of folders to include type definitions from. */
+    "types": ["jest"],                           /* Type declaration files to be included in compilation. */
+    // "allowSyntheticDefaultImports": true,     /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
     "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
     // "preserveSymlinks": true,              /* Do not resolve the real path of symlinks. */
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
@@ -59,6 +59,7 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "exclude": [
-    "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"
-  ]
+    "node_modules", "babel.config.js", "metro.config.js", "jest.config.js", "**/*.spec.ts", "**/*.test.ts"
+  ],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

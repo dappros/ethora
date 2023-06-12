@@ -1,6 +1,6 @@
-import {makeAutoObservable, runInAction} from 'mobx';
-import {Alert} from 'react-native';
-import {httpGet, httpPost} from '../config/apiService';
+import { makeAutoObservable, runInAction } from "mobx";
+import { Alert } from "react-native";
+import { httpGet, httpPost } from "../config/apiService";
 import {
   docsURL,
   etherTransferURL,
@@ -12,77 +12,44 @@ import {
   tokenEtherBalanceURL,
   tokenTransferURL,
   transactionURL,
-} from '../config/routesConstants';
+} from "../config/routesConstants";
 import {
   addTransaction,
   getTransaction,
   queryAllTransactions,
-  insertTransaction,
-} from '../components/realmModels/transaction';
-import {RootStore} from './context';
-import {coinsMainName, commonColors} from '../../docs/config';
-import {showToast} from '../components/Toast/toast';
-import {weiToNormalUnits} from '../helpers/weiToNormalUnits';
+} from "../components/realmModels/transaction";
+import { RootStore } from "./context";
+import { coinsMainName, commonColors } from "../../docs/config";
+import { showToast } from "../components/Toast/toast";
+import { weiToNormalUnits } from "../helpers/weiToNormalUnits";
+import { IDocument, ITransation, TBalance } from "./types";
 
 export const NFMT_TYPES = {
-  '1': {type: 'free', color: 'chocolate'},
-  '2': {type: 'silver', color: 'grey'},
-  '3': {type: 'gold', color: 'orange'},
+  "1": { type: "free", color: "chocolate" },
+  "2": { type: "silver", color: "grey" },
+  "3": { type: "gold", color: "orange" },
 };
 
 export const NFMT_TRAITS = {
-  Free: {color: commonColors.primaryDarkColor},
-  Silver: {color: 'grey'},
-  Gold: {color: 'orange'},
-  Bronze: {color: 'chocolate'},
-  Rare: {color: 'lightgreen'},
-  'Unique!': {color: 'black'},
-  Diamond: {color: commonColors.primaryColor},
-  Copper: {color: 'brown'},
-  Steel: {color: 'lightgrey'},
-  Paper: {color: '#E0C9A6'}
+  Free: { color: commonColors.primaryDarkColor },
+  Silver: { color: "grey" },
+  Gold: { color: "orange" },
+  Bronze: { color: "chocolate" },
+  Rare: { color: "lightgreen" },
+  "Unique!": { color: "black" },
+  Diamond: { color: commonColors.primaryColor },
+  Copper: { color: "brown" },
+  Steel: { color: "lightgrey" },
+  Paper: { color: "#E0C9A6" },
 };
-export interface IFile {
-  _id: string;
-  createdAt: string;
-  expiresAt: number;
-  filename: string;
-  isVisible: true;
-  location: string;
-  locationPreview: string;
-  mimetype: string;
-  originalname: string;
-  ownerKey: string;
-  size: number;
-  updatedAt: string;
-  userId: string;
-}
-export interface IDocument {
-  _id: string;
-  admin: string;
-  contractAddress: string;
-  createdAt: Date;
-  documentName: 'Fff';
-  files: Array<string>;
-  hashes: Array<string>;
-  isBurnable: boolean;
-  isFilesMutableByAdmin: boolean;
-  isFilesMutableByOwner: boolean;
-  isSignable: boolean;
-  isSignatureRevoсable: boolean;
-  isTransferable: boolean;
-  owner: string;
-  updatedAt: Date;
-  userId: string;
-  file: IFile;
-}
 
-export const mapTransactions = (item, walletAddress) => {
-  if (item.tokenId === 'NFT') {
+// function to check transaction sender and receiver and modify balances to view them later in the Transaction tab
+export const mapTransactions = (item: any, walletAddress: string) => {
+  if (item.tokenId === "NFT") {
     if (item.from === walletAddress && item.from !== item.to) {
-      item.balance = item.senderBalance + '/' + item.nftTotal;
+      item.balance = item.senderBalance + "/" + item.nftTotal;
     } else {
-      item.balance = item.receiverBalance + '/' + item.nftTotal;
+      item.balance = item.receiverBalance + "/" + item.nftTotal;
     }
 
     return item;
@@ -97,35 +64,53 @@ export const mapTransactions = (item, walletAddress) => {
     return item;
   }
 };
-export const filterNftBalances = item => {
+// function for filtering coins from NFT or NFMT
+export const filterNftBalances = (item: {
+  tokenSymbol: string;
+  tokenType: string;
+  balance: number;
+}) => {
   return (
-    (item.tokenType === 'NFT' || item.tokenType === 'NFMT') && item.balance > 0
+    (item.tokenType === "NFT" || item.tokenType === "NFMT") && item.balance > 0
   );
 };
-export const filterNfts = item => {
+// function for filtering NFT or NFMT from other items like coins
+export const filterNfts = (item: {
+  tokenSymbol: string;
+  tokenType: string;
+}) => {
   return (
-    item.tokenSymbol !== 'ETHD' &&
-    item.tokenType !== 'NFT' &&
-    item.tokenType !== 'NFMT'
+    item.tokenSymbol !== "ETHD" &&
+    item.tokenType !== "NFT" &&
+    item.tokenType !== "NFMT"
   );
 };
+// function checks if item is NFMT, if so it will check its trait and add its total based on other items of same type
 
-export const produceNfmtItems = (array = []) => {
+export const produceNfmtItems = (array: any[]) => {
   const result = [];
   const rareTotal = 20;
   const uniqueTotal = 1;
 
   for (const item of array) {
-    if (item.tokenType === 'NFMT') {
+    if (
+      item.tokenType === "NFMT" &&
+      item.balances &&
+      item.contractTokenIds &&
+      item.maxSupplies &&
+      item.traits
+    ) {
       for (let i = 0; i < item.balances.length; i++) {
         const tokenBalance = item.balances[i];
         const tokenType = +item.contractTokenIds[i];
-        const total = item.maxSupplies.find((supply, i) => tokenType === i + 1);
-        const traits = item.traits.map(trait =>
-          trait.find((el, i) => tokenType === i + 1),
+        const total = item.maxSupplies.find(
+          (supply, index) => tokenType === index + 1
         );
-        total < rareTotal && traits.push('Rare');
-        total === uniqueTotal && traits.push('Unique!');
+        const traits = item.traits.map((trait) =>
+          trait.find((el, index) => tokenType === index + 1)
+        );
+        total && total < rareTotal && traits.push("Rare");
+        total && total === uniqueTotal && traits.push("Unique!");
         const resItem = {
           ...item,
           balance: tokenBalance,
@@ -140,10 +125,17 @@ export const produceNfmtItems = (array = []) => {
   return result;
 };
 
-export const generateCollections = item => {
-  const total = item.maxSupplies.reduce((acc, item) => (acc += item));
-  const minted = item.minted.reduce((acc, item) => (acc += item));
-  const costs = item.costs.map(cost => weiToNormalUnits(+cost));
+// function generates collections based on NFMT item
+
+export const generateCollections = (item: {
+  minted: number[];
+  maxSupplies: number[];
+  costs: number[];
+  _id: string;
+}) => {
+  const total = item.maxSupplies.reduce((acc, i) => (acc += i));
+  const minted = item.minted.reduce((acc, i) => (acc += i));
+  const costs = item.costs.map((cost) => weiToNormalUnits(+cost));
   return {
     ...item,
     isCollection: true,
@@ -156,7 +148,7 @@ export const generateCollections = item => {
 export class WalletStore {
   isFetching = false;
   error = false;
-  errorMessage = '';
+  errorMessage = "";
   transactions: any = [];
   anotherUserTransaction: [] = [];
   anotherUserBalance: [] = [];
@@ -165,7 +157,7 @@ export class WalletStore {
   offset = 0;
   limit = 10;
   total = 0;
-  nftItems = [];
+  nftItems: TBalance[] = [];
   collections = [];
   documents: IDocument[] = [];
   tokenTransferSuccess: {
@@ -173,33 +165,33 @@ export class WalletStore {
     senderName: string;
     receiverName: string;
     amount: number;
-    receiverMessageId: string;
+    receiverMessageId: string | null;
     tokenName: string;
     nftId?: string;
+    transaction: ITransation | null;
   } = {
     success: false,
-    senderName: '',
-    receiverName: '',
+    senderName: "",
+    receiverName: "",
     amount: 0,
-    receiverMessageId: '',
-    tokenName: '',
-    nftId: '',
+    receiverMessageId: "",
+    tokenName: "",
+    nftId: "",
+    transaction: null,
   };
-  stores: RootStore | {} = {};
-  defaultUrl = '';
+  stores: RootStore;
   coinBalance = 0;
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
     this.stores = stores;
-    this.defaultUrl = stores.apiStore.defaultUrl;
   }
 
   setInitialState() {
     runInAction(() => {
       this.isFetching = false;
       this.error = false;
-      this.errorMessage = '';
+
       this.transactions = [];
       this.anotherUserTransaction = [];
       this.collections = [];
@@ -213,50 +205,49 @@ export class WalletStore {
       this.nftItems = [];
       this.tokenTransferSuccess = {
         success: false,
-        senderName: '',
-        receiverName: '',
+        senderName: "",
+        receiverName: "",
         amount: 0,
-        receiverMessageId: '',
-        tokenName: '',
-        nftId: '',
+        receiverMessageId: "",
+        tokenName: "",
+        nftId: "",
+        transaction: null,
       };
-      this.defaultUrl = this.stores.apiStore.defaultUrl;
       this.coinBalance = 0;
     });
   }
-
-  getExternalBalanceMetadata = async items => {
+  // fetches metadata from external item (Metamask)
+  getExternalBalanceMetadata = async (items) => {
     const externalBalanceNft = [];
     try {
       for (const item of items) {
         const metadata = await httpGet(
-          item.tokenUri?.raw.replace('http://', 'https://'),
-          '',
+          item.tokenUri?.raw.replace("http://", "https://"),
+          ""
         );
-        const prefix = 'ipfs://';
-        const gateway = 'https://dapprossplatform.mypinata.cloud/ipfs/';
+        const prefix = "ipfs://";
+        const gateway = "https://dapprossplatform.mypinata.cloud/ipfs/";
         externalBalanceNft.push({
           balance: item.balance,
-          tokenName: item.title || metadata.data?.name || 'Title not found',
+          tokenName: item.title || metadata.data?.name || "Title not found",
           nftFileUrl:
             metadata.data?.image
-              .replace('http://', 'https://')
-              .replace(prefix, gateway) || '',
+              .replace("http://", "https://")
+              .replace(prefix, gateway) || "",
           total: item.balance,
           nftId: item.id.tokenId,
-          nftMimetype: 'image/png',
+          nftMimetype: "image/png",
           external: true,
         });
       }
       return externalBalanceNft;
     } catch (error) {
-      console.log(error?.response, 'dskfljdsfdkslfjlsd');
       return [];
     }
   };
-
+  // fetches user balance (items, coins)
   async fetchWalletBalance(token: string, isOwn: boolean) {
-    let url = this.defaultUrl + tokenEtherBalanceURL;
+    let url = tokenEtherBalanceURL;
     runInAction(() => {
       this.isFetching = true;
     });
@@ -268,9 +259,9 @@ export class WalletStore {
       });
       this.stores.debugStore.addLogsApi(response.data);
       const extBalance = response.data?.extBalance || [];
-      const externalBalanceNft = await this.getExternalBalanceMetadata(
-        extBalance,
-      );
+      // const externalBalanceNft = await this.getExternalBalanceMetadata(
+      //   extBalance,
+      // );
       if (isOwn) {
         runInAction(() => {
           this.balance = response.data.balance.filter(filterNfts);
@@ -281,8 +272,8 @@ export class WalletStore {
             .concat(extBalance)
 
             .reverse();
-          this.collections = response.data.nfmtContracts.map(item =>
-            generateCollections(item),
+          this.collections = response.data.nfmtContracts.map((item) =>
+            generateCollections(item)
           );
           this.coinBalance = response.data.balance
             .filter(filterNfts)
@@ -290,13 +281,13 @@ export class WalletStore {
               if (item.tokenName === coinsMainName) {
                 return item.balance;
               }
-            });
+            })[0];
         });
       } else {
         runInAction(() => {
           this.anotherUserBalance = response.data.balance;
           this.anotherUserNfmtCollections = response.data.nfmtContracts.map(
-            item => generateCollections(item),
+            (item) => generateCollections(item)
           );
         });
       }
@@ -309,18 +300,19 @@ export class WalletStore {
       });
     }
   }
+  setCoinBalance = (newBalance: number) => {
+    runInAction(() => {
+      this.coinBalance = newBalance;
+    });
+  };
+  // fetches other user balance (items, coins)
 
   async fetchOtherUserWalletBalance(
     walletAddress: string,
     token: string,
-    linkToken?: string,
+    linkToken?: string
   ) {
-    let url =
-      this.defaultUrl +
-      otherProfileBalance +
-      walletAddress +
-      '/' +
-      (linkToken || '');
+    let url = otherProfileBalance + walletAddress + "/" + (linkToken || "");
     console.log(url);
     runInAction(() => {
       this.isFetching = true;
@@ -332,18 +324,22 @@ export class WalletStore {
         this.isFetching = false;
       });
       this.stores.debugStore.addLogsApi(response.data);
-      const extBalance = response.data?.extBalance || [];
+      // const extBalance = response.data?.extBalance || [];
 
       runInAction(() => {
         this.anotherUserBalance = response.data.balances.balance;
         this.anotherUserNfmtCollections =
-          response.data.balances.nfmtContracts.map(item =>
-            generateCollections(item),
+          response.data.balances.nfmtContracts.map((item) =>
+            generateCollections(item)
           );
       });
     } catch (error: any) {
-      console.log(error);
       runInAction(() => {
+        this.anotherUserBalance = [];
+        this.anotherUserNfmtCollections = [];
+        this.anotherUserNfmtCollections = [];
+        console.log(this.anotherUserBalance, 'error in balanceceees');
+
         this.stores.debugStore.addLogsApi(error);
         this.isFetching = false;
         this.error = true;
@@ -355,45 +351,51 @@ export class WalletStore {
     runInAction(() => {
       this.tokenTransferSuccess = {
         success: false,
-        senderName: '',
-        receiverName: '',
+        senderName: "",
+        receiverName: "",
         amount: 0,
-        receiverMessageId: '',
-        tokenName: '',
-        nftId: '',
+        receiverMessageId: "",
+        tokenName: "",
+        nftId: "",
+        transaction: null,
       };
     });
   };
+  // fetches user documents
+
   async getDocuments(walletAddress: string) {
     try {
       const docs = await httpGet(
-        this.stores.apiStore.defaultUrl + docsURL + '/' + walletAddress,
-        this.stores.loginStore.userToken,
+        docsURL + "/" + walletAddress,
+        this.stores.loginStore.userToken
       );
       const documents = docs.data.results;
       const mappedDocuments = [];
       for (const item of documents) {
         try {
-          const {data: file} = await httpGet(
-            this.stores.apiStore.defaultUrl + fileUpload + item.files[0],
-            this.stores.loginStore.userToken,
+          const { data: file } = await httpGet(
+            fileUpload + item.files[0],
+            this.stores.loginStore.userToken
           );
           item.file = file;
           mappedDocuments.push(item);
-        } catch (error) {
-          console.log(item.files[0], 'sdjfkls');
-        }
+        } catch (error) {}
       }
       this.documents = mappedDocuments;
     } catch (error) {
-      console.log(error, '404');
+      console.log(error, "404");
     }
   }
-  async transferCollection(body, senderName, receiverName, tokenName) {
+  async transferCollection(
+    body: any,
+    senderName: string,
+    receiverName: string,
+    tokenName: string
+  ) {
     const response = await httpPost(
-      this.stores.apiStore.defaultUrl + nfmtCollectionTransferURL,
+      nfmtCollectionTransferURL,
       body,
-      this.stores.loginStore.userToken,
+      this.stores.loginStore.userToken
     );
 
     if (response.data.success) {
@@ -403,39 +405,42 @@ export class WalletStore {
           senderName,
           receiverName,
           amount: 1,
-          receiverMessageId: null,
+          receiverMessageId: "",
           tokenName: tokenName,
+          transaction: response.data?.transaction,
         };
       });
 
       this.fetchWalletBalance(this.stores.loginStore.userToken, true);
     }
   }
+
+  // transfer coins or nft items
   async transferTokens(
     bodyData: any,
     token: string,
     fromWallet: string,
     senderName: string,
     receiverName: string,
-    receiverMessageId: string,
-    itemUrl: string,
+    receiverMessageId: string | null,
+    itemUrl: boolean
   ) {
-    let url = '';
+    let url = "";
     if (bodyData.isNfmt) {
-      url = this.defaultUrl + nfmtTransferURL;
+      url = nfmtTransferURL;
     } else if (bodyData.tokenName && !itemUrl) {
-      url = this.defaultUrl + tokenTransferURL;
+      url = tokenTransferURL;
     } else if (itemUrl) {
-      url = this.defaultUrl + itemTransferURL;
+      url = itemTransferURL;
     } else {
-      url = this.defaultUrl + etherTransferURL;
+      url = etherTransferURL;
     }
 
     if (bodyData.nftId) {
       Alert.alert(
-        'item transfer',
+        "item transfer",
         `You have successfully sent ${bodyData.tokenName}. After confirming the blockchain transaction, it will appear in the recipient's profile.`,
-        [{text: 'Ok', onPress: () => console.log('ok')}],
+        [{ text: "Ok", onPress: () => console.log("ok") }]
       );
     }
 
@@ -459,7 +464,8 @@ export class WalletStore {
             amount: bodyData.amount,
             receiverMessageId,
             tokenName: bodyData.tokenName,
-            nftId: bodyData.nftId || '',
+            nftId: bodyData.nftId || "",
+            transaction: response.data?.transaction,
           };
         });
 
@@ -478,19 +484,18 @@ export class WalletStore {
         this.errorMessage = error;
       });
 
-      showToast('error', 'Error', JSON.stringify(error), 'top');
+      showToast("error", "Error", JSON.stringify(error), "top");
     }
   }
 
   fetchOwnTransactions = async (
     walletAddress: string,
-    limit: string,
-    offset: string,
+    limit: number | string,
+    offset: number | string
   ) => {
     const url =
-      this.defaultUrl +
       transactionURL +
-      'walletAddress=' +
+      "walletAddress=" +
       walletAddress +
       `&limit=${limit}&offset=${offset}`;
     if (!walletAddress) {
@@ -505,8 +510,8 @@ export class WalletStore {
           this.offset = this.offset + response.data.limit;
           this.total = response.data.total;
         });
-        const modifiedTransactions = response.data.items.map(item =>
-          mapTransactions(item, walletAddress),
+        const modifiedTransactions = response.data.items.map((item) =>
+          mapTransactions(item, walletAddress)
         );
         for (const item of modifiedTransactions) {
           const transaction = await getTransaction(item.transactionHash);
@@ -531,7 +536,7 @@ export class WalletStore {
     runInAction(() => {
       this.transactions = transactions.sort(
         (a, b) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
     });
   };
@@ -540,12 +545,11 @@ export class WalletStore {
     walletAddress: string,
 
     limit: number,
-    offset: number,
+    offset: number
   ) {
     let url =
-      this.defaultUrl +
       transactionURL +
-      'walletAddress=' +
+      "walletAddress=" +
       walletAddress +
       `&limit=${limit}&offset=${offset}`;
     if (!walletAddress) return;
@@ -561,7 +565,7 @@ export class WalletStore {
           this.anotherUserTransaction = [
             ...this.anotherUserTransaction,
             ...response.data.items,
-          ].map(item => mapTransactions(item, walletAddress));
+          ].map((item) => mapTransactions(item, walletAddress));
         });
       }
     } catch (error) {

@@ -5,7 +5,11 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {coinReplacedName, coinsMainName, coinsMainSymbol} from '../../docs/config';
+import {
+  coinReplacedName,
+  coinsMainName,
+  coinsMainSymbol,
+} from '../../docs/config';
 
 interface systemMessageProps {
   senderName: string;
@@ -13,7 +17,8 @@ interface systemMessageProps {
   tokenName: string;
   receiverMessageId: string;
   receiverName: string;
-  nftId?: string
+  nftId?: string;
+  transactionId: string | undefined;
 }
 
 export const systemMessage = (data: systemMessageProps) => {
@@ -27,11 +32,12 @@ export const systemMessage = (data: systemMessageProps) => {
         token || coinsMainSymbol
       } -> ${data.receiverName}`,
       createdAt: new Date(),
-      system: true,
+      system: true as true,
       tokenAmount: data.tokenAmount,
       receiverMessageId: data.receiverMessageId,
       tokenName: token,
-      nftId: data.nftId
+      nftId: data.nftId as string,
+      transactionId: data.transactionId as string,
     },
   ];
 };

@@ -5,28 +5,22 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Image} from 'native-base';
+import {Box} from 'native-base';
 import React from 'react';
-import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { formatBytes } from '../../helpers/chat/formatBytes';
-import { MessageSize } from './MessageSize';
+import {formatBytes} from '../../helpers/chat/formatBytes';
+import {MessageSize} from './MessageSize';
 
 interface FileMessageProps {
-  url: any;
-  size: any;
-  onLongPress?: any;
-  onPress: any;
+  url: string;
+  size: string;
+  onLongPress?: () => void;
+  onPress: () => void;
 }
 
-export const FileMessage = ({
-  url,
-  size,
-  onLongPress,
-  onPress,
-}: FileMessageProps) => {
+export const FileMessage = ({size, onLongPress, onPress}: FileMessageProps) => {
   const formatedSize = formatBytes(parseFloat(size), 2);
   return (
     <TouchableOpacity
@@ -50,7 +44,6 @@ export const FileMessage = ({
             borderColor: 'white',
           }}
           source={require('../../assets/fileIcon.png')}
-          alt={'File message'}
         />
       </Box>
     </TouchableOpacity>

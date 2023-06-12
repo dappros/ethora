@@ -151,9 +151,9 @@ export const sendReplaceMessageStanza = (
   from: string,
   to: string,
   replaceText: string,
-  messageId:string,
-  data:any,
-  xmpp: any
+  messageId: string,
+  data: any,
+  xmpp: any,
 ) => {
   //send edited message
   // <message from="olek@localhost" id="1635229272917013" to="test_olek@conference.localhost" type="groupchat">
@@ -166,25 +166,22 @@ export const sendReplaceMessageStanza = (
       from: from + '@' + DOMAIN,
       id: XMPP_TYPES.replaceMessage,
       type: 'groupchat',
-      to: to
+      to: to,
     },
     xml('body', {}, replaceText),
-    xml(
-      'replace',
-      {
-        id:messageId,
-        xmlns:"urn:xmpp:message-correct:0"
-      }
-    ),
+    xml('replace', {
+      id: messageId,
+      xmlns: 'urn:xmpp:message-correct:0',
+    }),
     xml('data', {
       xmlns: 'http://' + DOMAIN,
       senderJID: from + '@' + DOMAIN,
       ...data,
     }),
-  )
+  );
 
-  xmpp.send(message)
-}
+  xmpp.send(message);
+};
 
 export const sendMediaMessageStanza = async (
   from: string,
@@ -232,26 +229,10 @@ export const sendMediaMessageStanza = async (
       wrappable: data?.wrappable,
       nftId: data?.nftId,
       isReply: data?.isReply,
-      mainMessageText: data?.mainMessageText,
-      mainMessageId: data?.mainMessageId,
-      mainMessageUserName: data?.mainMessageUserName,
-      mainMessageCreatedAt: data?.mainMessageCreatedAt,
-      mainMessageFileName: data?.mainMessageFileName,
-      mainMessageImageLocation: data?.mainMessageImageLocation,
-      mainMessageImagePreview: data?.mainMessageImagePreview,
-      mainMessageMimeType: data?.mainMessageMimeType,
-      mainMessageOriginalName: data?.mainMessageOriginalName,
-      mainMessageSize: data?.mainMessageSize,
-      mainMessageDuration: data?.mainMessageDuration,
-      mainMessageWaveForm: data?.mainMessageWaveForm,
-      mainMessageAttachmentId: data?.mainMessageAttachmentId,
-      mainMessageWrappable: data?.mainMessageWrappable,
-      mainMessageNftId: data?.mainMessageNftId,
-      mainMessageNftActionType: data?.mainMessageNftActionType,
-      mainMessageContractAddress: data?.mainMessageContractAddress,
-      mainMessageRoomJid: data?.mainMessageRoomJid,
+      mainMessage: data?.mainMessage,
+
       showInChannel: data?.showInChannel,
-      nftName: data?.nftName
+      nftName: data?.nftName,
     }),
   );
 
@@ -296,7 +277,7 @@ export const getPaginatedArchive = (
         {xmlns: 'http://jabber.org/protocol/rsm'},
         xml('max', {}, 25),
         xml('before', {}, firstUserMessageID),
-      )
+      ),
     ),
   );
   xmpp.send(message);
@@ -401,7 +382,7 @@ export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
       xml(
         'set',
         {xmlns: 'http://jabber.org/protocol/rsm'},
-        xml('max', {}, 10),
+        xml('max', {}, 30),
         xml('before'),
       ),
     ),
@@ -671,25 +652,6 @@ export const discoverProfileSupport = (
   xmpp.send(message);
 };
 
-export const discoverChatStates = (
-  walletAddress: string,
-  chat_jid: string,
-  xmpp: any,
-) => {
-  //     <iq from='juliet@capulet.com/balcony'
-  //     id='disco1'
-  //     to='romeo@shakespeare.lit/orchard'
-  //     type='result'>
-  //   <query xmlns='http://jabber.org/protocol/disco#info'>
-  //     <feature var='http://jabber.org/protocol/chatstates'/>
-  //   </query>
-  // </iq>
-  // const message = xml('iq',{
-  //     'from': walletAddress + '@z.okey.com.ua',
-  //     'id': 'disco1'
-  // })
-};
-
 export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   //     <iq from='stpeter@jabber.org/roundabout'
   //     id='v1'
@@ -717,14 +679,17 @@ export const setRoomImage = (
   roomJid: string,
   roomThumbnail: string,
   roomBackground: string,
-  type:string,
+  type: string,
   xmpp: any,
 ) => {
   const message = xml(
     'iq',
     {
       from: userJid,
-      id: type==='icon'? XMPP_TYPES.setRoomImage:XMPP_TYPES.setRoomBackgroundImage,
+      id:
+        type === 'icon'
+          ? XMPP_TYPES.setRoomImage
+          : XMPP_TYPES.setRoomBackgroundImage,
       type: 'set',
     },
     xml('query', {
@@ -737,33 +702,25 @@ export const setRoomImage = (
   xmpp.send(message);
 };
 
+//stanza to delete message.
 export const deleteMessageStanza = (
   from: string,
   roomJid: string,
   messageId: string,
-  xmpp:any,
+  xmpp: any,
 ) => {
-  // <message
-  //   from="olek@localhost"
-  //   id="1635229272917013"
-  //   to="test_olek@conference.localhost"
-  //   type="groupchat">
-  //   <body>Wow</body>
-  //   <delete id="1635229272917013" />
-  // </message>;
-
   const stanza = xml(
     'message',
     {from: from, to: roomJid, id: XMPP_TYPES.deleteMessage, type: 'groupchat'},
-    xml('body', 'wow'),
+    xml('body', ''),
     xml('delete', {
       id: messageId,
     }),
   );
 
-
   xmpp.send(stanza);
 };
+
 export const updateVCard = (
   photoURL: string | null,
   desc: string | null,
@@ -805,7 +762,7 @@ export const retrieveOtherUserVcard = (
     xml('vCard', {xmlns: 'vcard-temp'}),
   );
 
-  xmpp.send(message);
+  xmpp?.send(message);
 };
 
 export const createNewRoom = (from: string, to: string, xmpp: any) => {
@@ -818,18 +775,17 @@ export const createNewRoom = (from: string, to: string, xmpp: any) => {
     },
     xml('x', 'http://jabber.org/protocol/muc'),
   );
-  // console.log(message.toString());
   xmpp.send(message);
 };
 
-export const setOwner = (from, to, xmpp) => {
+export const setOwner = (from: string, to: string, xmpp: any) => {
   const message = xml(
     'iq',
     {
       to: to + CONFERENCEDOMAIN,
       from: from + '@' + DOMAIN,
       id: XMPP_TYPES.setOwner,
-      type: 'get',
+      type: 'set',
     },
     xml('query', {xmlns: 'http://jabber.org/protocol/muc#owner'}),
   );
@@ -837,7 +793,12 @@ export const setOwner = (from, to, xmpp) => {
   xmpp.send(message);
 };
 
-export const roomConfig = (from, to, data, xmpp) => {
+export const roomConfig = (
+  from: string,
+  to: string,
+  data: {roomName: string; roomDescription: string},
+  xmpp: any,
+) => {
   const message = xml(
     'iq',
     {
@@ -933,19 +894,19 @@ export const banUser = (
 };
 
 export const banUserr = (
-  from:string,
-  banUserId:string,
-  roomJid:string,
-  xmpp:any
+  from: string,
+  banUserId: string,
+  roomJid: string,
+  xmpp: any,
 ) => {
   // <iq from="oleksiika@localhost" type="set" id="ban">
-  //   <query 
-  //       xmlns="ns:deepx:muc:user:ban" 
-  //       action="ban" 
-  //       user="user@server" 
-  //       type="room" // Can be room or all 
-  //       room="name@conference.server" 
-  //       time="300" // Time of ban in seconds 
+  //   <query
+  //       xmlns="ns:deepx:muc:user:ban"
+  //       action="ban"
+  //       user="user@server"
+  //       type="room" // Can be room or all
+  //       room="name@conference.server"
+  //       time="300" // Time of ban in seconds
   //       comment="Test ban" //Comment for ban
   //   />
   // </iq>
@@ -955,37 +916,34 @@ export const banUserr = (
     {
       from: from + '@' + DOMAIN,
       type: 'set',
-      id: XMPP_TYPES.ban
+      id: XMPP_TYPES.ban,
     },
-    xml(
-      'query',
-      {
-        xmlns:"ns:deepx:muc:user:ban",
-        action:"ban",
-        user:banUserId,
-        type:"room",
-        room:roomJid,
-        time:"2592000",
-        comment:"Ban"
-      }
-    )
-  )
+    xml('query', {
+      xmlns: 'ns:deepx:muc:user:ban',
+      action: 'ban',
+      user: banUserId,
+      type: 'room',
+      room: roomJid,
+      time: '2592000',
+      comment: 'Ban',
+    }),
+  );
 
   xmpp.send(message);
-}
+};
 
 export const unbanUser = (
-  from:string,
-  unbanUserId:string,
-  roomJid:string,
-  xmpp:any
+  from: string,
+  unbanUserId: string,
+  roomJid: string,
+  xmpp: any,
 ) => {
   // <iq from="user@server" type="set" id="unban">
-  // <query 
-  //     xmlns="ns:deepx:muc:user:ban" 
-  //     action="unban" 
-  //     user="user@server" 
-  //     type="room" 
+  // <query
+  //     xmlns="ns:deepx:muc:user:ban"
+  //     action="unban"
+  //     user="user@server"
+  //     type="room"
   //     room="name@conference.server"/>
   // </iq>
 
@@ -994,49 +952,44 @@ export const unbanUser = (
     {
       from: from + '@' + DOMAIN,
       type: 'set',
-      id: XMPP_TYPES.unBan
-    },
-    xml(
-      'query',
-      {
-        xmlns:"ns:deepx:muc:user:ban",
-        action:"unban",
-        user:unbanUserId,
-        type:'room',
-        room:roomJid
-      }
-    )
-  )
-
-  xmpp.send(message);
-}
-
-export const getListOfBannedUserInRoom = (
-  from:string,
-  roomJId:string,
-  xmpp:any
-) => {
-  const message = xml('iq', {
-        'from': from + '@' + DOMAIN,
-        type: 'set',
-        id: XMPP_TYPES.getBannedUserListOfRoom
+      id: XMPP_TYPES.unBan,
     },
     xml('query', {
-        'xmlns': "ns:deepx:muc:user:ban",
-        'action': 'get_list',
-        'type': 'room',
-        'room': roomJId,
-    })
+      xmlns: 'ns:deepx:muc:user:ban',
+      action: 'unban',
+      user: unbanUserId,
+      type: 'room',
+      room: roomJid,
+    }),
   );
 
-  xmpp.send(message)
-}
+  xmpp.send(message);
+};
 
-export const assignModerator = (
-  from:string,
-  to:string,
-  xmpp:any
+export const getListOfBannedUserInRoom = (
+  from: string,
+  roomJId: string,
+  xmpp: any,
 ) => {
+  const message = xml(
+    'iq',
+    {
+      from: from + '@' + DOMAIN,
+      type: 'set',
+      id: XMPP_TYPES.getBannedUserListOfRoom,
+    },
+    xml('query', {
+      xmlns: 'ns:deepx:muc:user:ban',
+      action: 'get_list',
+      type: 'room',
+      room: roomJId,
+    }),
+  );
+
+  xmpp.send(message);
+};
+
+export const assignModerator = (from: string, to: string, xmpp: any) => {
   // <iq from='crone1@shakespeare.lit/desktop'
   //     id='mod1'
   //     to='coven@chat.shakespeare.lit'
@@ -1053,79 +1006,55 @@ export const assignModerator = (
       from: from + '@' + DOMAIN,
       id: XMPP_TYPES.assignModerator,
       to: to,
-      type: 'set'
+      type: 'set',
     },
     xml(
       'query',
       {
-        xmlns:'http://jabber.org/protocol/muc#admin'
+        xmlns: 'http://jabber.org/protocol/muc#admin',
       },
-      xml(
-        'item',
-        {
-          nick:'Moderator',
-          role:'moderator'
-        }
-      )
-    )
-  )
+      xml('item', {
+        nick: 'Moderator',
+        role: 'moderator',
+      }),
+    ),
+  );
 
-  xmpp.send(message)
-  
-}
+  xmpp.send(message);
+};
 
-export const unAssignModerator = (
-  from:string,
-  to:string,
-  xmpp:any
-) => {
-//   <iq from='crone1@shakespeare.lit/desktop'
-//     id='mod2'
-//     to='coven@chat.shakespeare.lit'
-//     type='set'>
-//   <query xmlns='http://jabber.org/protocol/muc#admin'>
-//     <item nick='thirdwitch'
-//           role='participant'/>
-//   </query>
-// </iq>
+export const unAssignModerator = (from: string, to: string, xmpp: any) => {
+  //   <iq from='crone1@shakespeare.lit/desktop'
+  //     id='mod2'
+  //     to='coven@chat.shakespeare.lit'
+  //     type='set'>
+  //   <query xmlns='http://jabber.org/protocol/muc#admin'>
+  //     <item nick='thirdwitch'
+  //           role='participant'/>
+  //   </query>
+  // </iq>
 
-const message = xml(
-  'iq',
-  {
-    from: from + '@' + DOMAIN,
-    id: XMPP_TYPES.unAssignModerator,
-    to: to,
-    type:'set'
-  },
-  xml(
-    'query',
+  const message = xml(
+    'iq',
     {
-      xmlns:'http://jabber.org/protocol/muc#admin',
+      from: from + '@' + DOMAIN,
+      id: XMPP_TYPES.unAssignModerator,
+      to: to,
+      type: 'set',
     },
     xml(
-      'item',
+      'query',
       {
-        nick:'Participant',
-        role:'participant'
-      }
-    )
-  )
-)
+        xmlns: 'http://jabber.org/protocol/muc#admin',
+      },
+      xml('item', {
+        nick: 'Participant',
+        role: 'participant',
+      }),
+    ),
+  );
 
-xmpp.send(message);
-
-}
-
-export const reply = to => {
-  // <message to='anna@example.com' id='message-id2' type='chat'>
-  // <body>Great idea!</body>
-  // <reply to='anna@example.com/tablet' id='message-id1' xmlns='urn:xmpp:reply:0' />
-  // </message>
-
-  const message = xml('message', {
-    to: to,
-    id: 'reply',
-  });
+  xmpp.send(message);
 };
 
 export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
@@ -1150,44 +1079,12 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   xmpp.send(message);
 };
 
-export const changeRoomBackgroundStanza = (
-  from:string,
-  to:string,
-  roomThumbnail:string,
-  roomBackground:string
-) => {
-  // <iq from="user_jid" type="set" id="set_room_profile">
-  //   <query xmlns="ns:getrooms:setprofile" 
-  //       room_thumbnail="https://img.dxmpp.com/thumbnail.jpg" 
-  //       room_background="https://img.dxmpp.com/background.jpg" 
-  //       room="test12@conference.localhost"/>
-  // </iq>
-
-  const message = xml(
-    'iq',
-    {
-      from: from + '@' + DOMAIN,
-      type: 'set',
-      id: XMPP_TYPES.changeRoomBackground
-    },
-    xml(
-      'query',
-      {
-        xmlns:'ns:getrooms:setprofile',
-        room_thumbnail:roomThumbnail,
-        room_background:roomBackground,
-        room:to
-      },
-
-    )
-  )
-}
-
+//stanza to change room description.
 export const changeRoomDescription = (
-  from:string,
-  to:string,
-  desc:string,
-  xmpp:any
+  from: string,
+  to: string,
+  desc: string,
+  xmpp: any,
 ) => {
   const message = xml(
     'iq',
@@ -1208,14 +1105,10 @@ export const changeRoomDescription = (
           {var: 'FORM_TYPE'},
           xml('value', {}, 'http://jabber.org/protocol/muc#roomconfig'),
         ),
-        xml(
-          'field',
-          {var: 'muc#roomconfig_roomdesc'},
-          xml('value', {}, desc),
-        ),
+        xml('field', {var: 'muc#roomconfig_roomdesc'}, xml('value', {}, desc)),
       ),
     ),
   );
 
-  xmpp.send(message)
-}
+  xmpp.send(message);
+};

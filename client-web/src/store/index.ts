@@ -2,6 +2,10 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
+import { TCombinedMimeType } from "../constants";
+import { stat } from "fs";
+import type { Stripe } from "stripe";
+import { THomeScreen } from "../http";
 
 export type TUser = {
   firstName: string;
@@ -13,12 +17,21 @@ export type TUser = {
   token: string;
   refreshToken?: string;
   profileImage?: string;
+  referrerId?: string;
   ACL?: {
     ownerAccess: boolean;
+    masterAccess: boolean;
   };
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  isAllowedNewAppCreate: boolean;
   appId?: string;
+  isAgreeWithTerms: boolean;
+  stripeCustomerId?: string;
+  subscriptions?: { data: Stripe.Subscription[] };
+  paymentMethods?: { data: Stripe.PaymentMethod[] };
+  company?: http.ICompany[];
+  homeScreen: THomeScreen;
 };
 
 type TMode = "light" | "dark";
@@ -51,7 +64,29 @@ type TMessage = {
   wallet: string;
   from: string;
   room: string;
+  numberOfReplies?: number;
 };
+
+export interface IMainMessage {
+  text?: string;
+  id: number;
+  userName: string;
+  createdAt?: string | number | Date;
+  fileName?: string;
+  imageLocation?: string;
+  imagePreview?: string;
+  mimeType?: string;
+  originalName?: string;
+  size?: string;
+  duration?: string;
+  waveForm?: string;
+  attachmentId?: string;
+  wrappable?: string | boolean;
+  nftId?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  roomJid?: string;
+}
 
 export type TMessageHistory = {
   id: number;
@@ -71,13 +106,18 @@ export type TMessageHistory = {
     originalName?: string;
     location?: string;
     locationPreview?: string;
-    mimetype?: string;
+    mimetype?: TCombinedMimeType;
     xmlns: string;
+    isReply?: boolean;
+    mainMessage?: IMainMessage;
+    showInChannel: boolean;
+    isEdited?: boolean;
   };
   roomJID: string;
   date: string;
   key: number;
   coinsInMessage: number;
+  numberOfReplies?: number;
 };
 
 export type TUserBlackList = {
@@ -96,19 +136,38 @@ export type TUserChatRooms = {
   composing: string;
   toUpdate: boolean;
   description: string;
+  group?: TActiveRoomFilter;
 };
 
-type TApp = {
+export type TApp = {
   _id: string;
+  displayName: string;
   appName: string;
   appToken: string;
   createdAt: string;
   updatedAt: string;
   defaultAccessAssetsOpen: boolean;
   defaultAccessProfileOpen: boolean;
-  usersCanFree: string;
+  usersCanFree: boolean;
   appGoogleId?: string;
   appLogo?: string;
+  firebaseWebConfigString?: string;
+
+  bundleId: string;
+  coinName: string;
+  coinSymbol: string;
+  creatorId: string;
+  domainName: string;
+  isAllowedNewAppCreate: boolean;
+  isBaseApp: boolean;
+  isUserDataEncrypted: boolean;
+  parentAppId?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  logoImage?: string;
+  loginScreenBackgroundImage?: string;
+  loginBackgroundColor?: string;
+  coinImage?: string;
 };
 
 type TAppUser = {
@@ -139,17 +198,55 @@ export type TRoomRoles = {
   roomJID: string;
   role: string;
 };
+interface IFirebaseConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  measurementId: string;
+}
 
-export type TActiveRoomFilter = "official" | "meta" | "groups" | "";
+export interface IConfig {
+  firebaseWebConfigString?: string;
+  firebaseConfig?: IFirebaseConfig;
+  loginBackgroundColor?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  coinSymbol: string;
+  coinName: string;
+  appToken: string;
+  displayName: string;
+  domainName: string;
+  logoImage: string;
+}
+
+export type TActiveRoomFilter =
+  | "official"
+  | "meta"
+  | "groups"
+  | "favourite"
+  | "private"
+  | "";
+
+export type replaceMessageListItemProps = {
+  replaceMessageId: number;
+  replaceMessageText: string;
+};
 
 interface IStore {
   user: TUser;
+  config: IConfig;
   oldTokens?: {
     token: string;
     refreshToken: string;
   };
+  showHeaderError: boolean;
+  setShowHeaderError: (value: boolean) => void;
   ACL: http.IUserAcl;
   messages: TMessage[];
+  currentThreadViewMessage: TMessageHistory;
   viewMode: TMode;
   balance: TBalance[];
   apps: TApp[];
@@ -157,18 +254,23 @@ interface IStore {
   documents: http.IDocument[];
   toggleMode: () => void;
   setUser: (user: TUser) => void;
-  updateUserProfilePermission:(value: boolean) => void;
-  updateUserDocumentsPermission:(value: boolean) => void;
+  updateUserProfilePermission: (value: boolean) => void;
+  updateUserDocumentsPermission: (value: boolean) => void;
   setDocuments: (documents: http.IDocument[]) => void;
-
   setOwner: (owner: TUser) => void;
+  setConfig: (config: IConfig) => void;
   clearUser: () => void;
   clearOwner: () => void;
   setBalance: (balance: TBalance[]) => void;
   setNewMessage: (msg: TMessage) => void;
+  setNumberOfReplies: (messageId: number) => void;
+  replaceMessage: (messageId: number, messageText: string) => void;
+  setCurrentThreadViewMessage: (
+    currentThreadViewMessage: TMessageHistory
+  ) => void;
   historyMessages: TMessageHistory[];
   setNewMessageHistory: (msg: TMessageHistory) => void;
-  updateMessageHistory: (messages: TMessageHistory[]) => void;
+  updateMessageHistory: (messages: TMessageHistory[] | TMessageHistory) => void;
   removeAllInMessageHistory: (userJID: string) => void;
   updateCoinsInMessageHistory: (
     id: number,
@@ -207,6 +309,7 @@ interface IStore {
   setRoomRoles: (data: TRoomRoles) => void;
   activeRoomFilter: TActiveRoomFilter;
   setActiveRoomFilter: (filter: TActiveRoomFilter) => void;
+  deleteMessage: (messageId: number) => void;
 }
 
 const _useStore = create<IStore>()(
@@ -224,25 +327,41 @@ const _useStore = create<IStore>()(
             token: "",
             refreshToken: "",
             profileImage: "",
+            isAllowedNewAppCreate: false,
+            isAgreeWithTerms: false,
+            homeScreen: "",
+          },
+          config: {
+            firebaseWebConfigString: "",
+            primaryColor: "",
+            secondaryColor: "",
+            coinSymbol: "",
+            coinName: "",
+            appToken: "",
+            displayName: "",
+            domainName: "",
+            logoImage: "",
           },
           ACL: {
-            result: {
-              application: {
-                appCreate: {},
-                appPush: {},
-                appSettings: {},
-                app: {},
-                appStats: {},
-                appTokens: {},
-                appUsers: {},
+            result: [
+              {
+                application: {
+                  appCreate: {},
+                  appPush: {},
+                  appSettings: {},
+                  app: {},
+                  appStats: {},
+                  appTokens: {},
+                  appUsers: {},
+                },
+                network: { netStats: {} },
+                createdAt: "",
+                updatedAt: "",
+                userId: "",
+                _id: "",
+                appId: "",
               },
-              network: { netStats: {} },
-              createdAt: "",
-              updatedAt: "",
-              userId: "",
-              _id: "",
-              appId: "",
-            },
+            ],
           },
           oldTokens: {
             token: "",
@@ -252,6 +371,38 @@ const _useStore = create<IStore>()(
           balance: [],
           viewMode: "light",
           messages: [],
+          showHeaderError: true,
+          currentThreadViewMessage: {
+            id: 0,
+            body: "",
+            data: {
+              isSystemMessage: "",
+              photoURL: "",
+              quickReplies: "",
+              roomJid: "",
+              receiverMessageId: 0,
+              senderFirstName: "",
+              senderJID: "",
+              senderLastName: "",
+              senderWalletAddress: "",
+              tokenAmount: 0,
+              isMediafile: false,
+              originalName: "",
+              location: "",
+              locationPreview: "",
+              mimetype: null,
+              xmlns: "",
+              isReply: false,
+              mainMessage: undefined,
+              showInChannel: false,
+              isEdited: false,
+            },
+            roomJID: "",
+            date: "",
+            key: 0,
+            coinsInMessage: 0,
+            numberOfReplies: 0,
+          },
           historyMessages: [],
           loaderArchive: false,
           currentUntrackedChatRoom: "",
@@ -261,7 +412,17 @@ const _useStore = create<IStore>()(
           appUsers: [],
           documents: [],
           blackList: [],
-          activeRoomFilter: "",
+          activeRoomFilter: "official",
+          setShowHeaderError(value) {
+            set((state) => {
+              state.showHeaderError = value;
+            });
+          },
+          setConfig(config) {
+            set((state) => {
+              state.config = config;
+            });
+          },
           setDocuments: (documents: http.IDocument[]) =>
             set((state) => {
               state.documents = documents;
@@ -283,13 +444,13 @@ const _useStore = create<IStore>()(
               state.user = user;
             }),
           updateUserProfilePermission: (value: boolean) =>
-          set((state)=>{
-            state.user.isProfileOpen = value
-          }),
+            set((state) => {
+              state.user.isProfileOpen = value;
+            }),
           updateUserDocumentsPermission: (value: boolean) =>
-          set((state)=>{
-            state.user.isAssetsOpen = value
-          }),
+            set((state) => {
+              state.user.isAssetsOpen = value;
+            }),
           setOwner: (user: TUser) =>
             set((state) => {
               state.user = user;
@@ -328,6 +489,9 @@ const _useStore = create<IStore>()(
                 token: "",
                 refreshToken: "",
                 profileImage: "",
+                isAllowedNewAppCreate: false,
+                isAgreeWithTerms: false,
+                homeScreen: "",
               };
             }),
           clearOwner: () =>
@@ -341,6 +505,9 @@ const _useStore = create<IStore>()(
                 token: "",
                 refreshToken: "",
                 profileImage: "",
+                isAllowedNewAppCreate: false,
+                isAgreeWithTerms: false,
+                homeScreen: "",
               };
               state.apps = [];
               state.appUsers = [];
@@ -353,6 +520,32 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.messages.unshift(message);
             }),
+          setNumberOfReplies(messageId: number) {
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex(
+                (item) => item.id === messageId
+              );
+              if (!messageId || isNaN(messageId) || messageIndex === -1) {
+                return;
+              }
+              const threadMessages = state.historyMessages.filter(
+                (item) => item.data.mainMessage?.id === messageId
+              );
+              state.historyMessages[messageIndex].numberOfReplies =
+                threadMessages.length;
+            });
+          },
+          replaceMessage(messageId: number, messageText: string) {
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex(
+                (i) => i.id === messageId
+              );
+              if (messageIndex > -1) {
+                state.historyMessages[messageIndex].body = messageText;
+                state.historyMessages[messageIndex].data.isEdited = true;
+              }
+            });
+          },
           setNewMessageHistory: (historyMessages: TMessageHistory) =>
             set((state) => {
               state.historyMessages.unshift(historyMessages);
@@ -360,14 +553,37 @@ const _useStore = create<IStore>()(
                 (v, i, a) => a.findIndex((t) => t.id === v.id) === i
               );
             }),
-          updateMessageHistory: (messages: TMessageHistory[]) =>
+          setCurrentThreadViewMessage: (
+            currentThreadViewMessage: TMessageHistory
+          ) =>
             set((state) => {
+              state.currentThreadViewMessage = currentThreadViewMessage;
+            }),
+          updateMessageHistory: (
+            messages: TMessageHistory[] | TMessageHistory
+          ) =>
+            set((state) => {
+              if (!Array.isArray(messages)) {
+                state.historyMessages.push(messages);
+                console.log(messages);
+                return;
+              }
               state.historyMessages = [...state.historyMessages, ...messages];
               state.historyMessages = state.historyMessages.filter(
                 (v, i, a) => a.findIndex((t) => t.id === v.id) === i
               );
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
+          deleteMessage: (messageId: number) => {
+            set((state) => {
+              const messageIndex = state.historyMessages.findIndex(
+                (i) => i.id === messageId
+              );
+              if (messageIndex > -1) {
+                state.historyMessages.splice(messageIndex, 1);
+              }
+            });
+          },
           updateCoinsInMessageHistory: (
             id: number,
             userJID: string,
@@ -399,6 +615,7 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.historyMessages.sort((a: any, b: any) => a.id - b.id);
             }),
+
           setNewUserChatRoom: (userChatRooms: TUserChatRooms) =>
             set((state) => {
               state.userChatRooms.unshift(userChatRooms);
@@ -435,14 +652,10 @@ const _useStore = create<IStore>()(
                 (el) => el.jid === data.jid
               );
               if (state.userChatRooms[currentIndex]) {
-                state.userChatRooms[currentIndex].room_background =
-                  data.room_background;
-                state.userChatRooms[currentIndex].room_thumbnail =
-                  data.room_thumbnail;
-                state.userChatRooms[currentIndex].users_cnt = data.users_cnt;
-                state.userChatRooms[currentIndex].toUpdate = data.toUpdate;
-                state.userChatRooms[currentIndex].description =
-                  data.description;
+                state.userChatRooms[currentIndex] = {
+                  ...state.userChatRooms[currentIndex],
+                  ...data,
+                };
               }
             }),
           clearCounterChatRoom: (roomJID: string) =>
@@ -485,9 +698,9 @@ const _useStore = create<IStore>()(
               state.currentUntrackedChatRoom = roomJID;
             }),
           saveInBlackList: (list: TUserBlackList[]) =>
-              set((state) => {
-                state.blackList = list;
-              }),
+            set((state) => {
+              state.blackList = list;
+            }),
           clearBlackList: () =>
             set((state) => {
               state.blackList = [];
@@ -500,10 +713,10 @@ const _useStore = create<IStore>()(
 
 declare global {
   interface Window {
-    useState: any;
+    useStoreState: any;
   }
 }
 
-window.useState = _useStore;
+window.useStoreState = _useStore;
 
 export const useStoreState = _useStore;

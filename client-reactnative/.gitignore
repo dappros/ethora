@@ -29,6 +29,8 @@ build/
 local.properties
 *.iml
 *.hprof
+*.apk
+*.aab
 
 # node.js
 #
@@ -59,3 +61,7 @@ buck-out/
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
+
+# Jest
+#
+.jest/

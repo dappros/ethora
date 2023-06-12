@@ -5,18 +5,19 @@ import {
   getTransactions,
 } from "../../http";
 import { useStoreState } from "../../store";
-import { ExplorerChart } from "../../componets/ExplorerChart";
+import { ExplorerChart } from "../../components/ExplorerChart";
 import { format } from "date-fns";
 import {
   ExplorerRespose,
   IBlock,
-  IHistory,
+  ILineChartData,
   ITransaction,
 } from "../Profile/types";
-import { FullPageSpinner } from "../../componets/FullPageSpinner";
-import { ExplorerBlocks } from "../../componets/ExplorerBlocks";
+import { FullPageSpinner } from "../../components/FullPageSpinner";
+import { ExplorerBlocks } from "../../components/ExplorerBlocks";
 import { Box, styled, Typography } from "@mui/material";
 import { Transactions } from "../Transactions/Transactions";
+import { TChartData, transformDataForLineChart } from "../../utils";
 
 const Container = styled(Box)(({ theme }) => ({
   width: "100vw",
@@ -27,17 +28,8 @@ const Container = styled(Box)(({ theme }) => ({
   },
 }));
 
-export type TChartData = { date: string; y: number }[];
 
-const transformDataForChart = (data: IHistory): TChartData => {
-  const result: TChartData = [];
-  for (let index = 0; index < data.x.length; index++) {
-    const elementX = format(new Date(data.x[index]), "MMMM dd yyyy");
-    const elementY = data.y[index];
-    result.push({ date: elementX, y: elementY });
-  }
-  return result;
-};
+
 
 export default function Explorer() {
   const user = useStoreState((store) => store.user);
@@ -61,7 +53,7 @@ export default function Explorer() {
       const { data } = await getTransactions(user.walletAddress);
       const { data: history } = await getExplorerHistory();
       const { data: blocks } = await getExplorerBlocks();
-      const transformedHistory = transformDataForChart(history);
+      const transformedHistory = transformDataForLineChart(history);
       setExplorerHistory(transformedHistory);
       setTransactions(data);
       setExplorerBlocks(blocks);
@@ -81,9 +73,6 @@ export default function Explorer() {
     <Box>
       {!!user.token && (
         <Container>
-          <Box sx={{ maxWidth: 500 }}>
-            <ExplorerBlocks blocks={explorerBlocks.items} />
-          </Box>
           <Box sx={{ height: 300, width: "100%" }}>
             <ExplorerChart data={explorerHistory} />
           </Box>

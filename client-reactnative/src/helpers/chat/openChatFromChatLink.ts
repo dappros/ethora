@@ -5,15 +5,15 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {underscoreManipulation} from '../underscoreLogic';
-import {subscribeToRoom, getUserRoomsStanza} from '../../xmpp/stanzas';
-import {ROUTES} from '../../constants/routes';
+import { underscoreManipulation } from "../underscoreLogic";
+import { subscribeToRoom, getUserRoomsStanza } from "../../xmpp/stanzas";
+import { HomeStackNavigationProp } from "../../navigation/types";
 
 const openChatFromChatLink = (
   chatJID: string,
   walletAddress: string,
-  navigation: any,
-  xmpp: any,
+  navigation: HomeStackNavigationProp,
+  xmpp: any
 ) => {
   const manipulatedWalletAddress = underscoreManipulation(walletAddress);
 
@@ -22,6 +22,6 @@ const openChatFromChatLink = (
   // fetchStanzaRosterList(manipulatedWalletAddress, subscriptionsStanzaID);
   getUserRoomsStanza(manipulatedWalletAddress, xmpp);
 
-  navigation.push(ROUTES.CHAT, {chatJid: chatJID});
+  navigation.push("ChatScreen", { chatJid: chatJID });
 };
 export default openChatFromChatLink;

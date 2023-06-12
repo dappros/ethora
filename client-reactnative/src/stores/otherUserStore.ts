@@ -11,25 +11,25 @@ export class OtherUserStore {
     makeAutoObservable(this);
   }
 
-  setInitialState(){
-    runInAction(()=>{
+  setInitialState() {
+    runInAction(() => {
       this.userAvatar = '';
       this.description = '';
       this.firstName = '';
       this.lastName = '';
       this.anotherUserLastSeen = {};
       this.transactions = [];
-    })
+    });
   }
 
-  setDataFromVCard(description:string, avatar:string) {
+  setDataFromVCard(description: string, avatar: string) {
     runInAction(() => {
       this.userAvatar = avatar;
       this.description = description;
     });
   }
 
-  setUserData = (firstName:string, lastName:string, avatar:string) => {
+  setUserData = (firstName: string, lastName: string, avatar: string) => {
     runInAction(() => {
       this.userAvatar = avatar;
       this.firstName = firstName;

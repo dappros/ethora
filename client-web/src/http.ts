@@ -1,51 +1,81 @@
 import axios from "axios";
 import { config } from "./config";
+import { PUSH_URL } from "./constants";
 import {
   ExplorerRespose,
   IBlock,
-  IHistory,
+  ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
-import { useStoreState } from "./store";
+import { IConfig, TApp, useStoreState } from "./store";
+import qs from "qs";
+import type { Stripe } from "stripe";
+import xmpp from "./xmpp";
+import { http } from "./api/interceptors";
 
-const { APP_JWT = "", API_URL = "" } = config;
 
+export type TDefaultWallet = {
+  walletAddress: string;
+};
+export type THomeScreen = "appCreate" | "profile" | "";
+
+export interface ICompany {
+  name: string;
+  address: string;
+  town: string;
+  regionOrState: string;
+  postCode: string;
+  country: string;
+  phoneNumber: string;
+  registrationNumber: string;
+  payeReference: string;
+}
 export type TUser = {
-  defaultWallet: {
-    walletAddress: string;
-  };
-  description?: string;
-  tags: string[];
-  roles: string[];
-  _id: string;
   firstName: string;
   lastName: string;
-  userName: string;
-  ACL: {
+  description?: string;
+  xmppPassword?: string;
+  _id: string;
+  walletAddress: string;
+  token: string;
+  refreshToken?: string;
+  profileImage?: string;
+  referrerId?: string;
+  ACL?: {
     ownerAccess: boolean;
+    masterAccess: boolean;
   };
-  appId: string;
-  xmppPassword: string;
-  profileImage: string;
   isProfileOpen?: boolean;
   isAssetsOpen?: boolean;
+  isAllowedNewAppCreate: boolean;
+  appId?: string;
+  isAgreeWithTerms: boolean;
+  stripeCustomerId?: string;
+  defaultWallet: TDefaultWallet;
+  company?: ICompany[];
+  homeScreen: THomeScreen;
 };
 
 export type TLoginSuccessResponse = {
-  success: true;
   token: string;
   refreshToken: string;
   user: TUser;
+  subscriptions?: { data: Stripe.Subscription[] };
+  paymentMethods?: { data: Stripe.PaymentMethod[] };
+  isAllowedNewAppCreate: boolean;
 };
 
 export interface IUser {
   ACL: { ownerAccess: boolean };
+  acl: ACL;
   appId: string;
   createdAt: Date;
+  lastSeen?: string;
   defaultWallet: {
     walletAddress: string;
   };
   emails: [];
+  authMethod?: string;
   email?: string;
   firstName: string;
   isAssetsOpen: true;
@@ -70,36 +100,39 @@ export type TPermission = {
   disabled?: Array<string>;
 };
 
-export interface IUserAcl {
-  result: {
-    application: {
-      appCreate: TPermission;
-      appPush: TPermission;
-      appSettings: TPermission;
-      appStats: TPermission;
-      appTokens: TPermission;
-      appUsers: TPermission;
-    };
-    network: {
-      netStats: TPermission;
-    };
-    createdAt?: Date | string;
-    updatedAt?: Date | string;
-    userId?: string;
-    _id?: string;
-    appId?: string;
+export interface ACL {
+  application: {
+    appCreate: TPermission;
+    appPush: TPermission;
+    appSettings: TPermission;
+    appStats: TPermission;
+    appTokens: TPermission;
+    appUsers: TPermission;
   };
+  network: {
+    netStats: TPermission;
+  };
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  userId?: string;
+  _id?: string;
+  appId?: string;
+}
+export interface IOtherUserACL {
+  result: ACL;
+}
+export interface IUserAcl {
+  result: ACL[];
 }
 
-const http = axios.create({
-  baseURL: API_URL,
-});
+
 
 export const httpWithAuth = () => {
   const user = useStoreState.getState().user;
   http.defaults.headers.common["Authorization"] = user.token;
   return http;
 };
+export const xmppHttp = axios.create({ baseURL: PUSH_URL });
 
 export const httpWithToken = (token: string) => {
   http.defaults.headers.common["Authorization"] = token;
@@ -139,68 +172,33 @@ export interface IDocument {
   userId: string;
   file: IFile;
   location: string;
-  locations: Array<string>
-}
-export function refresh() {
-  return new Promise((resolve, reject) => {
-    const state = useStoreState.getState();
-    console.log("post to refresh ", state.user.refreshToken);
-    http
-      .post(
-        "/users/login/refresh",
-        {},
-        { headers: { Authorization: state.user.refreshToken } }
-      )
-      .then((response) => {
-        useStoreState.setState((state) => {
-          state.user.token = response.data.token;
-          state.user.refreshToken = response.data.refreshToken;
-          resolve(response);
-        });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
+  locations: Array<string>;
 }
 
-http.interceptors.response.use(undefined, (error) => {
-  const user = useStoreState.getState().user;
 
-  if (user.firstName) {
-    if (!error.response || error.response.status !== 401) {
-      return Promise.reject(error);
-    }
-
-    if (
-      error.config.url === "/users/login/refresh" ||
-      error.config.url === "/users/login"
-    ) {
-      return Promise.reject(error);
-    }
-
-    const request = error.config;
-
-    return refresh()
-      .then(() => {
-        return new Promise((resolve) => {
-          const user = useStoreState.getState().user;
-          request.headers["Authorization"] = user.token;
-          resolve(http(request));
-        });
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
-  }
-});
 
 export const loginUsername = (username: string, password: string) => {
-  return http.post(
+  const appToken = useStoreState.getState().config.appToken;
+
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     { username, password },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
+};
+
+export const subscribeForPushNotifications = (token: string, jid: string) => {
+  const body = {
+    appId: "Ethora",
+    deviceId: token,
+    deviceType: "12",
+    environment: "Production",
+    externalId: "",
+    isSubscribed: "1",
+    jid: jid,
+    screenName: "Ethora",
+  };
+  return xmppHttp.post("/subscriptions/deviceId/", qs.stringify(body));
 };
 
 export const registerUsername = (
@@ -210,6 +208,8 @@ export const registerUsername = (
   lastName: string,
   appJwt?: string
 ) => {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -218,10 +218,28 @@ export const registerUsername = (
       firstName,
       lastName,
     },
-    { headers: { Authorization: appJwt ? appJwt : APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 };
+export const registerNewUser = (
+  appId: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  appJwt?: string
+) => {
+  const appToken = useStoreState.getState().config.appToken;
 
+  return http.post(
+    "/users/create-with-app-id/" + appId,
+    {
+      email,
+      firstName,
+      lastName,
+    },
+    { headers: { Authorization: appToken } }
+  );
+};
 export async function deployNfmt(
   type: string,
   name: string,
@@ -288,7 +306,10 @@ export function getProvenanceTransacitons(walletAddress: string, nftId) {
   );
 }
 export function getExplorerHistory() {
-  return http.get<IHistory>(`/explorer/history`);
+  return http.get<ILineChartData>(`/explorer/history`);
+}
+export function getUserCompany(token: string) {
+  return httpWithToken(token).get<{ result: ICompany[] }>(`/company`);
 }
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber);
@@ -297,11 +318,21 @@ export function getTransactionDetails(transactionHash: string) {
   return http.get<ITransaction>(`/explorer/transactions/` + transactionHash);
 }
 export function checkExtWallet(walletAddress: string) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     `/users/checkExtWallet`,
     { walletAddress },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
+}
+interface ISubscriptionResponse {
+  paymentMethods: { data: Stripe.PaymentMethod[] };
+  subscriptions: { data: Stripe.Subscription[] };
+}
+
+export function getSubscriptions() {
+  return httpWithAuth().get<ISubscriptionResponse>("/stripe/subscriptions");
 }
 
 export function registerSignature(
@@ -311,6 +342,8 @@ export function registerSignature(
   firstName: string,
   lastName: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -321,7 +354,7 @@ export function registerSignature(
       firstName,
       lastName,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
@@ -330,6 +363,8 @@ export function loginSignature(
   signature: string,
   msg: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users/login",
     {
@@ -338,37 +373,52 @@ export function loginSignature(
       signature,
       msg,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
 export function registerByEmail(
   email: string,
-  password: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  signUpPlan?: string
 ) {
-  return http.post(
-    "/users",
-    {
-      email,
-      password,
-      firstName,
-      lastName,
-    },
-    { headers: { Authorization: APP_JWT } }
-  );
+  const appToken = useStoreState.getState().config.appToken;
+
+  const body = signUpPlan
+    ? {
+        email,
+        firstName,
+        lastName,
+        signupPlan: signUpPlan,
+      }
+    : {
+        email,
+        firstName,
+        lastName,
+      };
+  return http.post("/users/sign-up-with-email", body, {
+    headers: { Authorization: appToken },
+  });
 }
 
 export function loginEmail(email: string, password: string) {
-  return http.post(
-    "/users/login",
+  const appToken = useStoreState.getState().config.appToken;
+
+  return http.post<TLoginSuccessResponse>(
+    "/users/login-with-email",
     {
       email,
       password,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
+}
+export function agreeWithTerms(company: string) {
+  return httpWithAuth().post("/users/terms-and-conditions", {
+    isAgreeWithTerms: true,
+    company,
+  });
 }
 
 export function loginSocial(
@@ -377,7 +427,9 @@ export function loginSocial(
   loginType: string,
   authToken: string = "authToken"
 ) {
-  return http.post(
+  const appToken = useStoreState.getState().config.appToken;
+
+  return http.post<TLoginSuccessResponse>(
     "/users/login",
     {
       idToken,
@@ -385,21 +437,23 @@ export function loginSocial(
       loginType,
       authToken,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 
 export function checkEmailExist(email: string) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.get(
     "/users/checkEmail/" + email,
 
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 export function getUserAcl(userId: string) {
   const user = useStoreState.getState().user;
 
-  return http.get<IUserAcl>(
+  return http.get<IOtherUserACL>(
     "/users/acl/" + userId,
 
     { headers: { Authorization: user.token } }
@@ -414,6 +468,14 @@ export function getMyAcl() {
     { headers: { Authorization: user.token } }
   );
 }
+export function getConfig(domainName = "ethora") {
+  return http.get<{result:Omit<IConfig, 'firebaseConfig'>}>("apps/get-config?domainName=" + domainName);
+}
+type TAppResponse = {result: TApp}
+export function updateAppSettings( appId: string, data: FormData) {
+  return httpWithAuth().put<TAppResponse>("/apps/" + appId, data)
+}
+
 export interface IAclBody {
   application: {
     appCreate?: TPermission;
@@ -427,11 +489,11 @@ export interface IAclBody {
     netStats: TPermission;
   };
 }
-export function updateUserAcl(userId: string, body: IAclBody) {
+export function updateUserAcl(userId: string, appid: string, body: IAclBody) {
   const owner = useStoreState.getState().user;
 
-  return http.put<IUserAcl>(
-    "/users/acl/" + userId,
+  return http.put<IOtherUserACL>(
+    "/users/acl/" + appid + "/" + userId,
     body,
 
     { headers: { Authorization: owner.token } }
@@ -442,8 +504,11 @@ export function registerSocial(
   idToken: string,
   accessToken: string,
   authToken: string,
-  loginType: string
+  loginType: string,
+  signUpPlan?: string
 ) {
+  const appToken = useStoreState.getState().config.appToken;
+
   return http.post(
     "/users",
     {
@@ -451,8 +516,9 @@ export function registerSocial(
       accessToken,
       loginType,
       authToken: authToken,
+      signupPlan: signUpPlan,
     },
-    { headers: { Authorization: APP_JWT } }
+    { headers: { Authorization: appToken } }
   );
 }
 export function uploadFile(formData: FormData) {
@@ -501,10 +567,7 @@ export function loginOwner(email: string, password: string) {
 }
 
 export function getApps() {
-  const owner = useStoreState.getState().user;
-  return http.get("/apps", {
-    headers: { Authorization: owner.token },
-  });
+  return httpWithAuth().get("/apps");
 }
 
 export function createApp(fd: FormData) {
@@ -535,7 +598,7 @@ export function getAppUsers(
 ) {
   const owner = useStoreState.getState().user;
   return http.get<ExplorerRespose<IUser[]>>(
-    `/users?appId=${appId}&limit=${limit}&offset=${offset}`,
+    `/users/${appId}?&limit=${limit}&offset=${offset}`,
     {
       headers: { Authorization: owner.token },
     }
@@ -548,13 +611,64 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
-
+export function addTagToUser(appId: string, tags: string[], userIds: string[]) {
+  return httpWithAuth().post(`/users/tags-add/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
+}
+export type TTransferToUser = {
+  amount: number | string;
+  walletAddress: string;
+};
+export function sendTokens(
+  receivers: TTransferToUser[],
+  amount: number | string,
+  tokenName: string
+) {
+  return httpWithAuth().post(`/tokens/transfer`, {
+    tokenName,
+    amount,
+    reveiverArray: receivers,
+  });
+}
+export function removeTagFromUser(
+  appId: string,
+  tags: string[],
+  userIds: string[]
+) {
+  return httpWithAuth().post(`/users/tags-delete/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
+}
+export function setUserTags(appId: string, tags: string[], userIds: string[]) {
+  return httpWithAuth().post(`/users/tags-set/` + appId, {
+    usersIdList: userIds,
+    tagsList: tags,
+  });
+}
+export function resetUsersPasswords(appId: string, usersIds: string[]) {
+  return httpWithAuth().post(`/users/reset-passwords-with-app-id/` + appId, {
+    usersIdList: usersIds,
+  });
+}
+export function deleteUsers(appId: string, userIds: string[]) {
+  return httpWithAuth().post(`/users/delete-many-with-app-id/` + appId, {
+    usersIdList: userIds,
+  });
+}
 export function updateProfile(fd: FormData, id?: string) {
   const path = id ? `/users/${id}` : "/users";
   const user = useStoreState.getState().user;
   return http.put(path, fd, {
     headers: { Authorization: user.token },
   });
+}
+
+interface ITokenTransferResponse {
+  success: boolean;
+  transaction: ITransaction;
 }
 
 export function transferCoin(
@@ -565,7 +679,7 @@ export function transferCoin(
 ) {
   const path = "tokens/transfer";
   const user = useStoreState.getState().user;
-  return http.post(
+  return http.post<ITokenTransferResponse>(
     path,
     { tokenId, tokenName, amount, toWallet },
     {
@@ -574,76 +688,69 @@ export function transferCoin(
   );
 }
 
-export function changeUserData(
-  data: FormData
-  ){
+export function changeUserData(data: FormData) {
   const user = useStoreState.getState().user;
-  return http.put(
-    '/users/',
-    data,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Accept-Encoding': 'gzip, deflate, br',
-
-        'Content-Type': 'multipart/form-data',
-        Authorization: user.token,
-      }
-    },
-  )
-}
-
-export function getSharedLinksService(
-){
-  const user = useStoreState.getState().user;
-  return http.get('/shareLink/', {
+  return http.put("/users/", data, {
     headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Accept-Encoding": "gzip, deflate, br",
+
+      "Content-Type": "multipart/form-data",
       Authorization: user.token,
     },
   });
 }
 
-export function deleteSharedLink(linkToken:string){
+export function getSharedLinksService() {
   const user = useStoreState.getState().user;
-  return http.delete(`/shareLink/${linkToken}`,{
+  return http.get("/shareLink/", {
     headers: {
-      Authorization: user.token,
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
-    },
-  })
-}
-
-export function createSharedLink(data:any){
-  const user = useStoreState.getState().user;
-  return http.post('/shareLink/',data,{
-    headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
       Authorization: user.token,
     },
-  })
+  });
 }
 
-export function deleteAccountService(){
+export function deleteSharedLink(linkToken: string) {
   const user = useStoreState.getState().user;
-  return http.delete('/users/',{
+  return http.delete(`/shareLink/${linkToken}`, {
     headers: {
       Authorization: user.token,
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
     },
-  })
+  });
 }
 
-export function getDocuments(){
+export function createSharedLink(data: any) {
+  const user = useStoreState.getState().user;
+  return http.post("/shareLink/", data, {
+    headers: {
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
+      Authorization: user.token,
+    },
+  });
+}
+
+export function deleteAccountService() {
+  const user = useStoreState.getState().user;
+  return http.delete("/users/", {
+    headers: {
+      Authorization: user.token,
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+export function getDocuments() {
   const user = useStoreState.getState().user;
   return http.get(`/docs/${user.walletAddress}`, {
     headers: {
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Content-Type': 'application/json',
+      "Accept-Encoding": "gzip, deflate, br",
+      "Content-Type": "application/json",
       Authorization: user.token,
     },
   });

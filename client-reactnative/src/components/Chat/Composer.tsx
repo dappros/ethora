@@ -1,33 +1,38 @@
-import React, {useMemo, useState} from 'react';
-import {Composer, ComposerProps} from 'react-native-gifted-chat';
+import React, {useMemo} from 'react';
+import {Composer, ComposerProps,} from 'react-native-gifted-chat';
 import {
-  MentionInputProps,
   MentionPartType,
+  PartType,
+  Position,
   Suggestion,
 } from '../../helpers/chat/inputTypes';
 import {
-  defaultMentionTextStyle,
   generateValueFromPartsAndChangedText,
   generateValueWithAddedSuggestion,
   getMentionPartSuggestionKeywords,
   isMentionPartType,
-  mentionRegEx,
   parseValue,
 } from '../../helpers/chat/inputUtils';
 
-export const ChatComposer = ({
+interface IChatComposer extends ComposerProps {
+  partTypes: PartType[];
+  selection: Position;
+  onTextChanged: (text: string) => void;
+  text: string;
+}
+
+export const ChatComposer: React.FC<IChatComposer> = ({
   partTypes,
   onTextChanged,
   selection,
   text,
   ...props
-}: ComposerProps) => {
+}) => {
   const {plainText, parts} = useMemo(
     () => parseValue(text, partTypes),
     [text, partTypes],
   );
-  const onChangeInput = changedText => {
-
+  const onChangeInput = (changedText: string) => {
     onTextChanged(
       generateValueFromPartsAndChangedText(parts, plainText, changedText),
     );
@@ -77,7 +82,7 @@ export const ChatComposer = ({
       <Composer
         text={plainText}
         multiline={true}
-        onTextChanged={text => onChangeInput(text)}
+        onTextChanged={changedText => onChangeInput(changedText)}
         {...props}
       />
     </>

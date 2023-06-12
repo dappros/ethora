@@ -5,6 +5,6 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-export const pattern1 = /\bhttps:\/\/www\.eto\.li\/go\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm;
+export const pattern1 = /\bhttps:\/\eto\.li\\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm;
 
-export const pattern2 = /\bhttps:\/\/www\.eto\.li\/go\?c=[0-9a-f]+/gm;
+export const pattern2 = /\bhttps:\/\eto\.li\?c=[0-9a-f]+/gm;

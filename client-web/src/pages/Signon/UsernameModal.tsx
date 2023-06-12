@@ -10,13 +10,15 @@ import { UsernameSignInForm } from "./UsernameSignInForm";
 import { UsernameSignUpForm } from "./UsernameSignUpForm";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { TLoginSuccessResponse } from "../../http";
 
 type TProps = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateUser: (data: TLoginSuccessResponse) => void;
 };
 
-export function UsernameModal({ open, setOpen }: TProps) {
+export function UsernameModal({ open, setOpen, updateUser }: TProps) {
   const [tab, setTab] = useState("1");
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -53,11 +55,14 @@ export function UsernameModal({ open, setOpen }: TProps) {
             </Box>
             {/* SIGN IN */}
             <TabPanel value="1">
-              <UsernameSignInForm closeModal={() => setOpen(false)} />
+              <UsernameSignInForm
+                updateUser={updateUser}
+                closeModal={() => setOpen(false)}
+              />
             </TabPanel>
             {/* SIGN UP */}
             <TabPanel value="2">
-              <UsernameSignUpForm closeModal={() => setOpen(false)} />
+              <UsernameSignUpForm   updateUser={updateUser} closeModal={() => setOpen(false)} />
             </TabPanel>
           </TabContext>
         </Box>

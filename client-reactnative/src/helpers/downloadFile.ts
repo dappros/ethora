@@ -39,7 +39,6 @@ export const downloadFile = async (url: string, filename: string) => {
       if (Platform.OS === 'ios') {
         try {
           const base64 = await res.base64();
-          // console.log(base64)
           const resp = RNFetchBlob.fs
             .writeFile(configOptions.path, base64, 'base64')
             .then(a => {

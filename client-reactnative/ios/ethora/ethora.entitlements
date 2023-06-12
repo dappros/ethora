@@ -10,7 +10,7 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:www.eto.li</string>
+		<string>applinks:eto.li</string>
 	</array>
 </dict>
 </plist>

@@ -17,7 +17,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {imageMimetypes, videoMimetypes} from '../../constants/mimeTypes';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
   coinImagePath,
@@ -36,10 +35,12 @@ import {
   underscoreManipulation,
 } from '../../helpers/underscoreLogic';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import {ROUTES} from '../../constants/routes';
 import {botTypes} from '../../constants/botTypes';
 import {botStanza} from '../../xmpp/stanzas';
 import {formatBigNumber} from '../../helpers/formatBigNumber';
+import {isImageMimetype, isVideoMimetype} from '../../helpers/checkMimetypes';
+import {HomeStackNavigationProp} from '../../navigation/types';
+import {homeStackRoutes} from '../../navigation/routes';
 
 interface NftListItemProps {
   assetUrl: string;
@@ -48,7 +49,6 @@ interface NftListItemProps {
   name: string;
   onClick: any;
   nftId: string;
-  index: number;
   item: any;
   mimetype: string;
   itemSelected: boolean;
@@ -66,6 +66,7 @@ function truncateString(str, num) {
 export const NfmtTag = ({tag}: {tag: string}) => {
   return (
     <HStack
+      accessibilityLabel="Trait"
       style={{backgroundColor: NFMT_TRAITS?.[tag]?.color || 'green'}}
       paddingX={2}
       borderRadius={5}
@@ -85,7 +86,6 @@ export const NftListItem = (props: NftListItemProps) => {
     name,
     onClick,
     nftId,
-    index,
     item,
     mimetype,
     itemSelected,
@@ -93,7 +93,7 @@ export const NftListItem = (props: NftListItemProps) => {
     traitsEnabled,
   } = props;
   const {loginStore, apiStore, chatStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const route = useRoute();
 
   const onGetCollectionPress = async () => {
@@ -121,12 +121,12 @@ export const NftListItem = (props: NftListItemProps) => {
         data,
         chatStore.xmpp,
       );
-      navigation.navigate(ROUTES.CHAT, {chatJid: roomJid});
+      navigation.navigate('ChatScreen', {chatJid: roomJid});
     }, 3000);
   };
   return (
     <View
-      onPress={onClick}
+      accessibilityLabel={'NFT Item'}
       style={[
         styles.container,
         {backgroundColor: itemSelected ? 'rgba(0,0,0,0.15)' : '#F4F5F8'},
@@ -138,8 +138,10 @@ export const NftListItem = (props: NftListItemProps) => {
       <View style={styles.justifyAround}>
         <View style={styles.itemContainer}>
           <View style={styles.imageContainer}>
-            {imageMimetypes[mimetype] || videoMimetypes[mimetype] ? (
-              <TouchableWithoutFeedback onPress={onAssetPress}>
+            {isImageMimetype(mimetype) || isVideoMimetype(mimetype) ? (
+              <TouchableWithoutFeedback
+                accessibilityLabel="Item preview"
+                onPress={onAssetPress}>
                 <FastImage
                   style={styles.image}
                   source={{
@@ -164,7 +166,7 @@ export const NftListItem = (props: NftListItemProps) => {
             <View style={{alignItems: 'flex-start', paddingLeft: 20}}>
               <Text style={styles.itemName}>{truncateString(name, 15)}</Text>
               {item.isCollection &&
-                route.name === ROUTES.OTHERUSERPROFILESCREEN && (
+                route.name === homeStackRoutes.OtherUserProfileScreen && (
                   <HStack
                     justifyContent={'flex-end'}
                     alignItems={'center'}
@@ -194,6 +196,7 @@ export const NftListItem = (props: NftListItemProps) => {
 
         <TouchableWithoutFeedback onPress={onClick}>
           <View
+            accessibilityLabel="Rarity"
             style={[
               styles.itemCount,
               {minWidth: item.isCollection ? '25%' : '12%'},
@@ -251,7 +254,6 @@ const styles = StyleSheet.create({
   container: {
     height: hp('8.62%'),
     width: '100%',
-    // backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F4F5F8',
     backgroundColor: '#F4F5F8',
     borderRadius: 5,
     justifyContent: 'center',

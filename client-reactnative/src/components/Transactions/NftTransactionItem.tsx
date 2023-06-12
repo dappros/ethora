@@ -31,7 +31,6 @@ interface TransactionListProps {
   senderBalance: number;
   receiverBalance: number;
   value: string;
-  image: string;
   timestamp: string;
   transactionHash: string;
   transactionSender: string;
@@ -47,7 +46,12 @@ interface TransactionListProps {
   cost?: string;
 }
 
-const UserBlock = ({name, balance, total}) => {
+interface IUserBlock{
+  name:string;
+  balance:number;
+  total:string;
+}
+const UserBlock = ({name, balance, total}:IUserBlock) => {
   return (
     <HStack alignItems={'center'}>
       <VStack justifyContent={'center'} alignItems={'center'}>
@@ -67,7 +71,7 @@ const UserBlock = ({name, balance, total}) => {
           </Text>
         </Box>
       </VStack>
-      <VStack ml={'2'}>
+      <VStack ml={'2'} style={{width: wp('30%')}}>
         <Box>
           <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
             {name}
@@ -116,7 +120,7 @@ export const NftTransactionItem: React.FC<TransactionListProps> = ({
     if (type === tokenTypes.mint) {
       const allTotals = nftTotal ? nftTotal.split(',') : [];
 
-      const currentTotal = allTotals[+contractId - 1];
+      const currentTotal = allTotals[+parseInt(contractId as string) - 1];
 
       return (
         <HStack

@@ -1,5 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Box from "@mui/material/Box";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import xmpp from "../../xmpp";
 import {
   TActiveRoomFilter,
@@ -9,9 +14,7 @@ import {
 } from "../../store";
 import { getPublicProfile, uploadFile } from "../../http";
 import { TProfile } from "../Profile/types";
-import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import { format, formatDistance, subDays } from "date-fns";
-import * as DOMPurify from "dompurify";
 
 import {
   MainContainer,
@@ -27,8 +30,8 @@ import {
   TypingIndicator,
   MessageModel,
 } from "@chatscope/chat-ui-kit-react";
-import { Message } from "../../componets/Chat/Messages/Message";
-import { SystemMessage } from "../../componets/Chat/Messages/SystemMessage";
+import { Message } from "../../components/Chat/Messages/Message";
+import { SystemMessage } from "../../components/Chat/Messages/SystemMessage";
 import {
   Button,
   CircularProgress,
@@ -37,98 +40,124 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   useMediaQuery,
   useTheme,
+  Box,
+  Slide,
+  Stack,
+  Typography,
+  Divider,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { MetaNavigation } from "../../componets/MetaNavigation/MetaNavigation";
-import { defaultChats, ROOMS_FILTERS } from "../../config/config";
+import { MetaNavigation } from "../../components/MetaNavigation/MetaNavigation";
+import QrCodeIcon from "@mui/icons-material/QrCode";
+import { QrModal } from "../Profile/QrModal";
+import { CONFERENCEDOMAIN } from "../../constants";
+import { appName, ROOMS_FILTERS } from "../../config/config";
+import ThreadContainer from "../../components/Chat/Threads/ThreadContainer";
+import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
+import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
+import { ChatAudioMessageDialog } from "../../components/Chat/ChatAudioRecorder";
+import { generateChatLink, getPosition, stripHtml } from "../../utils";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import { DeleteDialog } from "../../components/DeleteDialog";
+import { useSnackbar } from "../../context/SnackbarContext";
+import {Helmet} from 'react-helmet'
+import { createMainMessageForThread } from "../../utils/createMessage";
+import Dompurify from "dompurify";
 
-type IMessagePosition = {
+export type IMessagePosition = {
   position: MessageModel["position"];
   type: string;
   separator?: string;
 };
 
-const getPosition = (
-  arr: TMessageHistory[],
-  message: TMessageHistory,
-  index: number
-) => {
-  const previousJID = arr[index - 1]?.data.senderJID?.split("/")[0];
-  const nextJID = arr[index + 1]?.data.senderJID?.split("/")[0];
-  const currentJID = message.data.senderJID?.split("/")[0];
+export interface IButtons {
+  name: string;
+  notDisplayedValue: string;
+  value: string;
+}
 
-  let result: IMessagePosition = {
-    position: "single",
-    type: "single",
-  };
-
-  if (arr[index - 1] && message) {
-    if (
-      format(new Date(arr[index - 1]?.date), "dd") !==
-      format(new Date(message.date), "dd")
-    ) {
-      result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy");
-    }
-  }
-
-  if (previousJID !== currentJID && nextJID !== currentJID) {
-    return result;
-  }
-
-  if (previousJID !== currentJID && nextJID === currentJID) {
-    result.position = "first";
-    result.type = "first";
-    return result;
-  }
-
-  if (previousJID === currentJID && nextJID === currentJID) {
-    result.position = "normal";
-    result.type = "normal";
-    return result;
-  }
-
-  if (
-    previousJID === currentJID &&
-    nextJID !== currentJID &&
-    arr[index - 1]?.data.isSystemMessage === "false"
-  ) {
-    result.position = "single";
-    result.type = "last";
-    return result;
-  }
-
-  return result;
-};
-
+const NO_ROOM_PICKED = "none" + CONFERENCEDOMAIN;
 const filterChatRooms = (
   rooms: TUserChatRooms[],
   filter: TActiveRoomFilter
 ) => {
-  if (filter === ROOMS_FILTERS.official) {
-    return rooms.filter((item) => {
-      const splitedJid = item?.jid?.split("@")[0];
-      return defaultChats[splitedJid];
-    });
+  if (filter === ROOMS_FILTERS.official || filter === ROOMS_FILTERS.favourite) {
+    return rooms.filter(
+      (item) =>
+        item.group === ROOMS_FILTERS.official ||
+        item.group === ROOMS_FILTERS.favourite
+    );
   }
-  return rooms;
+
+  return rooms.filter(
+    (item) =>
+      item.group !== ROOMS_FILTERS.official &&
+      item.group !== ROOMS_FILTERS.favourite
+  );
 };
 
 export function ChatInRoom() {
   const messages = useStoreState((state) => state.historyMessages);
   const user = useStoreState((store) => store.user);
   const userChatRooms = useStoreState((store) => store.userChatRooms);
+  const currentThreadViewMessage = useStoreState(
+    (store) => store.currentThreadViewMessage
+  );
+  const setCurrentThreadViewMessage = useStoreState(
+    (store) => store.setCurrentThreadViewMessage
+  );
   const loaderArchive = useStoreState((store) => store.loaderArchive);
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
   );
+  const { roomJID } = useParams<{ roomJID: string }>();
+
   const [profile, setProfile] = useState<TProfile>();
   const [myMessage, setMyMessage] = useState("");
+
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
+  const [isThreadView, setThreadView] = useState(false);
+  const [showInChannel, setShowInChannel] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [currentEditMessage, setCurrentEditMessage] =
+    React.useState<TMessageHistory>();
+  const [showDeleteDialog, setShowDeleteDialog] =
+    React.useState<boolean>(false);
+  const [currentDeleteMessage, setCurrentDeleteMessage] =
+    React.useState<TMessageHistory>();
+
+  const handleSetThreadView = (value: boolean) => setThreadView(value);
+  const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
+    setCurrentThreadViewMessage(threadMessage);
+  const handleShowInChannel = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setShowInChannel(event.target.checked);
+
+  const handleCurrentEditMessage = (message: TMessageHistory) =>
+    setCurrentEditMessage(message);
+
+  const handleSetCurrentDeleteMessage = (message: TMessageHistory) =>
+    setCurrentDeleteMessage(message);
+
+  const handleCloseDeleteMessageDialog = () => {
+    setShowDeleteDialog(false);
+    setCurrentDeleteMessage(null);
+  };
 
   const [currentRoom, setCurrentRoom] = useState("");
+  const currentPickedRoom = useMemo(() => {
+    return userChatRooms.find((item) => item.jid === currentRoom);
+  }, [userChatRooms, currentRoom]);
+  const mainWindowMessages = messages.filter(
+    (item: TMessageHistory) =>
+      item.data.roomJid === roomJID + CONFERENCEDOMAIN &&
+      (item.data.showInChannel || !item.data.isReply)
+  );
+
   const [roomData, setRoomData] = useState<{
     jid: string;
     name: string;
@@ -142,32 +171,40 @@ export function ChatInRoom() {
     room_thumbnail: "",
     users_cnt: "",
   });
-  const fileRef = useRef(null);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [openDialog, setOpenDialog] = useState(false);
-  const [showDialogTxt, setShowDialogTxt] = useState(false);
-  const [dialogTxt, setDialogTxt] = useState<{
-    headline: string;
-    description: string;
-  }>({ headline: "", description: "" });
-  // @ts-ignore
-  const { roomJID } = useParams();
-  const history = useHistory();
+
+
+  const [transferDialogData, setTransferDialogData] = useState<{
+    open: boolean;
+    message: TMessageHistory | null;
+  }>({ open: false, message: null });
+
+  const [mediaDialogData, setMediaDialogData] = useState<{
+    open: boolean;
+    message: TMessageHistory | null;
+  }>({ open: false, message: null });
+
+  const [isQrModalVisible, setQrModalVisible] = useState(false);
+
+  const [isFileUploading, setFileUploading] = useState(false);
+
   const [firstLoadMessages, setFirstLoadMessages] = useState(true);
   const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
   const setActiveRoomFilter = useStoreState(
     (state) => state.setActiveRoomFilter
   );
   const openLastMetaRoom = activeRoomFilter === ROOMS_FILTERS.meta;
-
+  const closeQrModal = () => {
+    setQrModalVisible(false);
+  };
+  const history = useHistory();
+  const fileRef = useRef(null);
+  const { showSnackbar } = useSnackbar();
   const onDrop = useCallback(
-    (acceptedFiles) => {
-      sendFile(acceptedFiles[0]);
+    (acceptedFiles: File[]) => {
+      sendFile(acceptedFiles[0], false);
     },
     [roomData]
   );
-
   const { getRootProps } = useDropzone({
     onDrop,
     noClick: true,
@@ -175,7 +212,7 @@ export function ChatInRoom() {
   });
   const onYReachStart = () => {
     const filteredMessages = messages.filter(
-      (item: any) => item.roomJID === currentRoom
+      (item: TMessageHistory) => item.roomJID === currentRoom
     );
 
     if (loaderArchive) {
@@ -199,11 +236,23 @@ export function ChatInRoom() {
     });
   }, []);
 
+  const toggleTransferDialog = (
+    value: boolean,
+    message: TMessageHistory = null
+  ) => {
+    setTransferDialogData({ open: value, message });
+  };
+  const toggleMediaModal = (
+    value: boolean,
+    message: TMessageHistory = null
+  ) => {
+    setMediaDialogData({ open: value, message });
+  };
+
   const chooseRoom = (jid: string) => {
     history.push("/chat/" + jid.split("@")[0]);
     loadMessages(jid);
   };
-
   const loadMessages = (jid: string) => {
     setCurrentRoom(jid);
     const currentRoomData = userChatRooms.filter((e) => e.jid === jid)[0];
@@ -212,7 +261,7 @@ export function ChatInRoom() {
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
 
     const filteredMessages = messages.filter(
-      (item: any) => item.roomJID === jid
+      (item: TMessageHistory) => item.roomJID === jid
     );
     setFirstLoadMessages(true);
 
@@ -228,7 +277,7 @@ export function ChatInRoom() {
 
   const getConversationInfo = (roomJID: string) => {
     const messagesInRoom = messages
-      .filter((item: any) => item.roomJID === roomJID)
+      .filter((item: TMessageHistory) => item.roomJID === roomJID)
       .slice(-1);
     if (loaderArchive && messagesInRoom.length <= 0) {
       return "Loading...";
@@ -242,120 +291,114 @@ export function ChatInRoom() {
 
   const getLastActiveTime = (roomJID: string) => {
     const messagesInRoom = messages
-      .filter((item: any) => item.roomJID === roomJID)
+      .filter((item: TMessageHistory) => item.roomJID === roomJID)
       .slice(-1);
     if (messagesInRoom.length <= 0) {
       return "";
     }
 
     return format(new Date(messagesInRoom[0].date), "H:mm");
-
-    // if (differenceInHours(new Date(), new Date(messagesInRoom[0].date)) > 1) {
-    //   return format(new Date(messagesInRoom[0].date), "hh:mm");
-    // } else {
-    //   return formatDistance(
-    //     subDays(new Date(messagesInRoom[0].date), 0),
-    //     new Date(),
-    //     { addSuffix: true }
-    //   );
-    // }
-  };
-
-  const stripHtml = (html: string) => {
-    let doc: any;
-    let str = html;
-
-    str = str.replace(/<br>/gi, "\n");
-    str = str.replace(/<p.*>/gi, "\n");
-    str = str.replace(/<(?:.|\s)*?>/g, "");
-
-    if (str.trim().length === 0) {
-      doc = new DOMParser().parseFromString(html, "text/html");
-    } else {
-      doc = new DOMParser().parseFromString(str, "text/html");
-    }
-    return doc.body.textContent || "";
   };
 
   const sendMessage = (button: any) => {
     if (myMessage.trim().length > 0) {
+      let userAvatar = user.profileImage;
+      const clearMessageFromHtml = Dompurify.sanitize(myMessage);
+      const finalMessageTxt = stripHtml(clearMessageFromHtml);
+      if (finalMessageTxt.trim().length > 0) {
+        if (isEditing) {
+          const data = {
+            senderFirstName: user.firstName,
+            senderLastName: user.lastName,
+            senderWalletAddress: user.walletAddress,
+            isSystemMessage: false,
+            tokenAmount: 0,
+            receiverMessageId: currentEditMessage.data.receiverMessageId,
+            mucname: roomData.name,
+            photoURL: userAvatar,
+            roomJid: roomJID,
+            isReply: false,
+            mainMessage: undefined,
+            push: true,
+          };
+          xmpp.sendReplaceMessageStanza(
+            currentUntrackedChatRoom,
+            finalMessageTxt,
+            currentEditMessage.id.toString(),
+            data
+          );
+          setIsEditing(false);
+        } else {
+          xmpp.sendMessage(
+            currentRoom,
+            user.firstName,
+            user.lastName,
+            userAvatar,
+            user.walletAddress,
+            typeof button === "object" ? button.value : finalMessageTxt,
+            typeof button === "object" ? button.notDisplayedValue : null
+          );
+        }
+      }
+    }
+  };
+  const sendFile = async (file: File, isReply: boolean) => {
+    const formData = new FormData();
+    formData.append("files", file);
+    setFileUploading(true);
+    try {
+      const result = await uploadFile(formData);
       let userAvatar = "";
       if (profile?.profileImage) {
         userAvatar = profile?.profileImage;
       }
-      const clearMessageFromHtml = DOMPurify.sanitize(myMessage);
-      const finalMessageTxt = stripHtml(clearMessageFromHtml);
 
-      if (finalMessageTxt.trim().length > 0) {
-        xmpp.sendMessage(
-          currentRoom,
-          user.firstName,
-          user.lastName,
-          userAvatar,
-          user.walletAddress,
-          typeof button === "object" ? button.value : finalMessageTxt,
-          typeof button === "object" ? button.notDisplayedValue : null
-        );
-      }
-    }
-  };
+      result.data.results.map(async (item: any) => {
+        let data = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          walletAddress: user.walletAddress,
+          chatName: roomData.name,
+          userAvatar: userAvatar,
+          createdAt: item.createdAt,
+          expiresAt: item.expiresAt,
+          fileName: item.filename,
+          isVisible: item.isVisible,
+          location: item.location,
+          locationPreview: item.locationPreview,
+          mimetype: item.mimetype,
+          originalName: item.originalname,
+          ownerKey: item.ownerKey,
+          size: item.size,
+          duration: item?.duration,
+          updatedAt: item.updatedAt,
+          userId: item.userId,
+          waveForm: "",
+          attachmentId: item._id,
+          wrappable: true,
+          roomJid: currentRoom
+        };
 
-  const sendFile = (file: File) => {
-    setDialogTxt({
-      headline: "File is loading, please wait...",
-      description: "",
-    });
-    setOpenDialog(true);
-
-    const formData = new FormData();
-    formData.append("files", file);
-
-    uploadFile(formData)
-      .then((result) => {
-        let userAvatar = "";
-        if (profile?.profileImage) {
-          userAvatar = profile?.profileImage;
-        }
-
-        result.data.results.map(async (item: any) => {
-          const data = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            walletAddress: user.walletAddress,
-            chatName: roomData.name,
-            userAvatar: userAvatar,
-            createdAt: item.createdAt,
-            expiresAt: item.expiresAt,
-            fileName: item.filename,
-            isVisible: item.isVisible,
-            location: item.location,
-            locationPreview: item.locationPreview,
-            mimetype: item.mimetype,
-            originalName: item.originalname,
-            ownerKey: item.ownerKey,
-            size: item.size,
-            duration: item?.duration,
-            updatedAt: item.updatedAt,
-            userId: item.userId,
-            waveForm: "",
-            attachmentId: item._id,
-            wrappable: true,
-          };
-          xmpp.sendMediaMessageStanza(currentRoom, data);
-          setOpenDialog(false);
+        const additionalDataForThread = {
+          isReply: isReply,
+          mainMessage: isReply
+            ? createMainMessageForThread(currentThreadViewMessage)
+            : undefined,
+          showInChannel: showInChannel,
+        };
+        xmpp.sendMediaMessageStanza(currentRoom, {
+          ...data,
+          ...additionalDataForThread,
         });
-      })
-      .catch((error) => {
-        console.log(error);
-        setDialogTxt({
-          headline: "Error",
-          description: "An error occurred while uploading the file",
-        });
-        setShowDialogTxt(true);
       });
+    } catch (error) {
+      showSnackbar("error", "Cannot upload file");
+    }
+
     if (fileRef.current) {
       fileRef.current.value = "";
     }
+    setFileUploading(false);
   };
 
   const setMessage = (value) => {
@@ -367,28 +410,33 @@ export function ChatInRoom() {
     );
   };
 
-  const handlePaste = (event) => {
-    // @ts-ignore
+  const handlePaste = (event: any) => {
     let item = Array.from(event.clipboardData.items).find((x: any) =>
       /^image\//.test(x.type)
     );
     if (item) {
       // @ts-ignore
       let blob = item.getAsFile();
-      sendFile(blob);
+      sendFile(blob, false);
     }
-  };
-
-  const handleChatDetailClick = () => {
-    history.push("/chatDetails/" + currentUntrackedChatRoom);
   };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      xmpp.pausedComposing(user.walletAddress, roomData.jid);
+      xmpp.pausedComposing(user.walletAddress, roomData?.jid);
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [myMessage]);
+
+  const onBlur = () => {
+    useStoreState.getState().setCurrentUntrackedChatRoom("");
+  };
+  const onFocus = () => {
+    if (currentRoom) {
+      useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
+      useStoreState.getState().clearCounterChatRoom(currentRoom);
+    }
+  };
 
   useEffect(() => {
     if (currentUntrackedChatRoom) {
@@ -401,7 +449,7 @@ export function ChatInRoom() {
         if (currentUntrackedChatRoom.split("@")[1]) {
           chooseRoom(currentUntrackedChatRoom);
         } else {
-          chooseRoom(currentUntrackedChatRoom + "@conference.dev.dxmpp.com");
+          chooseRoom(currentUntrackedChatRoom + CONFERENCEDOMAIN);
         }
       }
     }
@@ -415,23 +463,19 @@ export function ChatInRoom() {
       chooseRoom(roomJID);
     }
 
-    window.onblur = () => {
-      useStoreState.getState().setCurrentUntrackedChatRoom("");
-    };
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
 
-    window.onfocus = () => {
-      if (currentRoom) {
-        useStoreState.getState().setCurrentUntrackedChatRoom(currentRoom);
-        useStoreState.getState().clearCounterChatRoom(currentRoom);
-      }
+    return () => {
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
     };
   }, [currentRoom]);
 
   useEffect(() => {
     const filteredMessages = messages.filter(
-      (item: any) => item.roomJID === currentRoom
+      (item: TMessageHistory) => item.roomJID === currentRoom
     );
-
     if (
       !loaderArchive &&
       filteredMessages.length > 0 &&
@@ -461,10 +505,61 @@ export function ChatInRoom() {
         );
       }
     }
+    if (
+      filteredMessages.length === 0 &&
+      firstLoadMessages &&
+      xmpp.client.status === "online"
+    ) {
+      xmpp.getRoomArchiveStanza(currentRoom, 50);
+    }
   }, [messages]);
+
+  const handleChatDetailClick = () => {
+    history.push("/chatDetails/" + currentUntrackedChatRoom);
+  };
+
+  const onMenuThreadClick = () => {
+    setThreadView(true);
+    handleSetCurrentThreadViewMessage(transferDialogData.message);
+  };
+
+  const onMenuEditClick = (value: boolean, message: TMessageHistory) => {
+    setIsEditing(value);
+    handleCurrentEditMessage(message);
+  };
+
+  const onMessageThreadClick = (message: TMessageHistory) => {
+    setThreadView(true);
+    handleSetCurrentThreadViewMessage(message);
+  };
+
+  //set the message to be deleted and show delete confirmation dialogue
+  const onMessageDeleteClick = (value: boolean, message: TMessageHistory) => {
+    setShowDeleteDialog(value);
+    handleSetCurrentDeleteMessage(message);
+  };
+
+  //triggered when user clicks Delete button on delete confirmation dialogue
+  const deleteMessage = () => {
+    //remove the message from store
+    useStoreState.getState().deleteMessage(currentDeleteMessage.id);
+
+    //send delete request to xmpp server
+    xmpp.deleteMessageStanza(
+      currentUntrackedChatRoom,
+      currentDeleteMessage.id.toString()
+    );
+
+    handleCloseDeleteMessageDialog();
+  };
+
+  //Delete confirmation dialogue component
+
+  //component to render File upload dialog box
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
+     
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
@@ -474,15 +569,18 @@ export function ChatInRoom() {
                 active={room.jid === currentRoom}
                 key={room.jid}
                 unreadCnt={room.unreadMessages}
-                onClick={() => chooseRoom(room.jid)}
+                onClick={() => {
+                  chooseRoom(room.jid);
+                  setThreadView(false);
+                }}
                 name={room.name}
                 info={getConversationInfo(room.jid)}
                 lastActivityTime={getLastActiveTime(room.jid)}
               >
                 <Avatar
                   src={
-                    room.room_background !== "none"
-                      ? room.room_background
+                    room.room_thumbnail !== "none"
+                      ? room.room_thumbnail
                       : "https://icotar.com/initials/" + room.name
                   }
                 />
@@ -491,41 +589,67 @@ export function ChatInRoom() {
           </ConversationList>
         </Sidebar>
 
-        <div {...getRootProps()} style={{ width: "100%", height: "100%" }}>
+        <div
+          {...getRootProps()}
+          style={{
+            width: "100%",
+            height: "100%",
+            flexDirection: "row",
+            display: "flex",
+          }}
+        >
           <ChatContainer>
             {!!roomData && (
-              <ConversationHeader onClick={() => handleChatDetailClick()}>
+              <ConversationHeader
+                style={{
+                  height: "70px",
+                }}
+              >
                 <ConversationHeader.Back />
-                {messages.filter((item: any) => item.roomJID === currentRoom)
-                  .length > 0 && (
+                {mainWindowMessages.length > 0 && (
                   <ConversationHeader.Content
                     userName={roomData.name}
+                    onClick={handleChatDetailClick}
                     info={
+                      messages.filter(
+                        (item: TMessageHistory) => item.roomJID === currentRoom
+                      ).length > 0 &&
                       "Active " +
-                      formatDistance(
-                        subDays(
-                          new Date(
-                            messages
-                              .filter(
-                                (item: any) => item.roomJID === currentRoom
-                              )
-                              .slice(-1)[0].date
+                        formatDistance(
+                          subDays(
+                            new Date(mainWindowMessages.slice(-1)[0].date),
+                            0
                           ),
-                          0
-                        ),
-                        new Date(),
-                        { addSuffix: true }
-                      )
+                          new Date(),
+                          { addSuffix: true }
+                        )
                     }
                   />
                 )}
                 <ConversationHeader.Actions>
-                  <BookmarkRemoveIcon />
+                  <ChatAudioMessageDialog
+                    profile={profile}
+                    currentRoom={currentRoom}
+                    roomData={roomData}
+                  />
+                  <IconButton
+                    sx={{ color: "black" }}
+                    onClick={() => setQrModalVisible(true)}
+                  >
+                    <QrCodeIcon />
+                  </IconButton>
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
             <MessageList
-              loadingMore={loaderArchive}
+              style={{
+                backgroundImage: currentPickedRoom?.room_background
+                  ? `url(${currentPickedRoom.room_background})`
+                  : "white",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "100% 100%",
+              }}
+              loadingMore={loaderArchive || isFileUploading}
               onYReachStart={onYReachStart}
               disableOnYReachWhenNoScroll={true}
               typingIndicator={
@@ -541,35 +665,31 @@ export function ChatInRoom() {
                 )
               }
             >
-              {messages
-                .filter((item: any) => item.roomJID === currentRoom)
-                .map((message, index, arr) => {
-                  const position = getPosition(arr, message, index);
-                  if (message.data.isSystemMessage === "false") {
-                    return (
-                      <Message
-                        key={message.id}
-                        is={"Message"}
-                        position={position}
-                        message={message}
-                        userJid={xmpp.client?.jid?.toString()}
-                        buttonSender={sendMessage}
-                        chooseDirectRoom={chooseRoom}
-                      />
-                    );
-                  } else {
-                    return (
-                      <SystemMessage
-                        key={message.id}
-                        is={"Message"}
-                        message={message}
-                        userJid={xmpp.client?.jid?.toString()}
-                      />
-                    );
-                  }
-                })}
-              {messages.length <= 0 ||
-                (!currentRoom && (
+              {mainWindowMessages.map((message, index, arr) => {
+                const position = getPosition(arr, message, index);
+                return message.data.isSystemMessage === "false" ? (
+                  <Message
+                    onThreadClick={() => onMessageThreadClick(message)}
+                    key={message.id}
+                    is={"Message"}
+                    position={position}
+                    message={message}
+                    onMessageButtonClick={sendMessage}
+                    toggleTransferDialog={toggleTransferDialog}
+                    onMediaMessageClick={toggleMediaModal}
+                  />
+                ) : (
+                  <SystemMessage
+                    key={message.id}
+                    is={"Message"}
+                    message={message}
+                    userJid={xmpp.client?.jid?.toString()}
+                  />
+                );
+              })}
+              {mainWindowMessages.length <= 0 ||
+                !currentRoom ||
+                (currentRoom === NO_ROOM_PICKED && (
                   <MessageList.Content
                     style={{
                       display: "flex",
@@ -582,8 +702,9 @@ export function ChatInRoom() {
                   >
                     {!loaderArchive ? (
                       <span>
-                        {!currentRoom &&
-                          "To get started, please select a chat room."}
+                        {!currentRoom || currentRoom === NO_ROOM_PICKED
+                          ? "Choose a chat room or create one to start a conversation."
+                          : null}
                       </span>
                     ) : (
                       "Loading..."
@@ -592,8 +713,8 @@ export function ChatInRoom() {
                 ))}
               {!loaderArchive &&
                 currentRoom &&
-                messages.filter((item: any) => item.roomJID === currentRoom)
-                  .length <= 0 && (
+                currentRoom !== NO_ROOM_PICKED &&
+                mainWindowMessages.length <= 0 && (
                   <MessageList.Content
                     style={{
                       display: "flex",
@@ -610,6 +731,55 @@ export function ChatInRoom() {
             </MessageList>
             {!!roomData?.name && (
               <div is={"MessageInput"}>
+                {/* Edit message component */}
+                {isEditing && <Divider />}
+                <Slide direction="up" in={isEditing} mountOnEnter unmountOnExit>
+                  <Stack
+                    display={"flex"}
+                    height={"50px"}
+                    width={"100%"}
+                    direction={"row"}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.05",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <EditIcon color="info" />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.90",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <Typography color={"#1976d2"} fontWeight={"bold"}>
+                        Edit Message
+                      </Typography>
+                      <Typography>{currentEditMessage?.body}</Typography>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: "0.05",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <IconButton
+                        onClick={() => onMenuEditClick(false, undefined)}
+                        aria-label="close"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  </Stack>
+                </Slide>
+
                 <MessageInput
                   onPaste={handlePaste}
                   placeholder="Type message here"
@@ -621,42 +791,63 @@ export function ChatInRoom() {
                   type="file"
                   name="file"
                   id="file"
-                  onChange={(event) => sendFile(event.target.files[0])}
+                  onChange={(event) => sendFile(event.target.files[0], false)}
                   ref={fileRef}
                   style={{ display: "none" }}
                 />
               </div>
             )}
           </ChatContainer>
+          {isThreadView && (
+            <ThreadContainer
+              chooseRoom={chooseRoom}
+              currentPickedRoom={currentPickedRoom}
+              currentRoom={currentRoom}
+              handleSetThreadView={handleSetThreadView}
+              handleShowInChannel={handleShowInChannel}
+              isThreadView={isThreadView}
+              onYReachStart={onYReachStart}
+              profile={profile}
+              roomData={roomData}
+              sendFile={sendFile}
+              showInChannel={showInChannel}
+              toggleMediaModal={toggleMediaModal}
+              toggleTransferDialog={toggleTransferDialog}
+            />
+          )}
         </div>
       </MainContainer>
 
-      <Dialog
-        fullScreen={fullScreen}
-        open={openDialog}
-        onClose={() => setOpenDialog(true)}
-        aria-labelledby="responsive-dialog-title"
-      >
-        <DialogTitle id="responsive-dialog-title">
-          {dialogTxt.headline}
-        </DialogTitle>
-        <DialogContent>
-          {showDialogTxt && dialogTxt.description.length > 0 ? (
-            <DialogContentText>{dialogTxt.description}</DialogContentText>
-          ) : (
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        {showDialogTxt ? (
-          <DialogActions>
-            <Button onClick={() => setOpenDialog(false)} autoFocus>
-              Close
-            </Button>
-          </DialogActions>
-        ) : null}
-      </Dialog>
+      <ChatTransferDialog
+        open={transferDialogData.open}
+        onClose={() => toggleTransferDialog(false)}
+        loading={false}
+        onPrivateRoomClick={chooseRoom}
+        message={transferDialogData.message}
+        onThreadClick={onMenuThreadClick}
+        onEditClick={onMenuEditClick}
+        onDeleteClick={onMessageDeleteClick}
+      />
+      <ChatMediaModal
+        open={mediaDialogData.open}
+        onClose={() => toggleMediaModal(false)}
+        mimetype={mediaDialogData.message?.data?.mimetype}
+        url={mediaDialogData.message?.data?.location}
+      />
+
+      <DeleteDialog
+        open={showDeleteDialog}
+        onClose={handleCloseDeleteMessageDialog}
+        onDeletePress={deleteMessage}
+        description={"Are you sure you want to delete this message."}
+        title={"Delete message"}
+      />
+      <QrModal
+        open={isQrModalVisible}
+        link={generateChatLink({ roomAddress: currentPickedRoom?.jid })}
+        onClose={closeQrModal}
+        title={"Share Chatroom"}
+      />
       <MetaNavigation
         open={showMetaNavigation || openLastMetaRoom}
         chatId={currentRoom.split("@")[0]}

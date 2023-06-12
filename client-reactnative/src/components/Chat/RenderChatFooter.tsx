@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box,Checkbox, Divider, HStack, Text, View} from 'native-base';
+import {Box, Checkbox, Divider, HStack, Text, View} from 'native-base';
 import React, {useEffect} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import Animated, {
@@ -31,11 +31,11 @@ interface RenderChatFooterProps {
   replyUserName?: string;
   replyMessage?: string;
   closeReply?: any;
-  showAlsoSendInRoom?:boolean;
-  showInChannel?:boolean;
-  onTapMessageObject?:any
-  setShowInChannel?: React.Dispatch<React.SetStateAction<boolean>>
-  setIsEditing: (value:boolean) => void;
+  showAlsoSendInRoom?: boolean;
+  showInChannel?: boolean;
+  onTapMessageObject?: any;
+  setShowInChannel?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsEditing: (value: boolean) => void;
 }
 
 const RenderChatFooter = (props: RenderChatFooterProps) => {
@@ -51,7 +51,7 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
     showAlsoSendInRoom,
     onTapMessageObject,
     setShowInChannel,
-    setIsEditing
+    setIsEditing,
   } = props;
   const boxAnimation = useAnimatedStyle(() => {
     return {
@@ -78,9 +78,13 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
 
   return (
     <>
-    <Animated.View style={[boxAnimation]}>
+      <Animated.View style={[boxAnimation]}>
         <HStack height={hp('5.5%')} width={wp('100%')} bgColor={'transparent'}>
-          <View justifyContent={'flex-end'} bg={'transparent'} flex={0.6}>
+          <View
+            accessibilityLabel="Now Typing"
+            justifyContent={'flex-end'}
+            bg={'transparent'}
+            flex={0.6}>
             {allowIsTyping && isTyping ? (
               <HStack bg={'transparent'}>
                 <View bg={'transparent'} marginRight={30}>
@@ -106,56 +110,53 @@ const RenderChatFooter = (props: RenderChatFooterProps) => {
             ) : null}
           </View>
         </HStack>
-    </Animated.View>
-    {
-    isEditing&&
-    <View
-    height={hp('6.1%')}
-    justifyContent={"center"}
-    bg={"white"}
-    width={wp('100%')}>
-      <HStack width={wp("100%")} alignItems={"center"}>
-        <Box alignItems={"center"}
-        flex={0.15}
-        >
-          <MaterialIcons color={commonColors.primaryColor} name='edit' size={hp('3%')}/>
-        </Box>
-        <Box alignItems={"flex-start"} 
-        flex={0.7}
-        >
-          <Text
-          color={commonColors.primaryColor}
-          fontFamily={textStyles.boldFont}
-          >
-          Edit Message
-          </Text>
-          <Text
-          numberOfLines={1}
-          >
-          {onTapMessageObject.text}
-          </Text>
-        </Box>
-        <View alignItems={"center"} 
-        flex={0.15}
-        >
-        <TouchableOpacity
-        onPress={()=>setIsEditing(false)}>
-          <MaterialIcons name="close" size={hp('3%')} />
-        </TouchableOpacity>
+      </Animated.View>
+      {isEditing && (
+        <View
+          height={hp('6.1%')}
+          justifyContent={'center'}
+          bg={'white'}
+          width={wp('100%')}>
+          <HStack width={wp('100%')} alignItems={'center'}>
+            <Box alignItems={'center'} flex={0.15}>
+              <MaterialIcons
+                color={commonColors.primaryColor}
+                name="edit"
+                size={hp('3%')}
+              />
+            </Box>
+            <Box alignItems={'flex-start'} flex={0.7}>
+              <Text
+                color={commonColors.primaryColor}
+                fontFamily={textStyles.boldFont}>
+                Edit Message
+              </Text>
+              <Text numberOfLines={1}>{onTapMessageObject.text}</Text>
+            </Box>
+            <View alignItems={'center'} flex={0.15}>
+              <TouchableOpacity onPress={() => setIsEditing(false)}>
+                <MaterialIcons name="close" size={hp('3%')} />
+              </TouchableOpacity>
+            </View>
+          </HStack>
         </View>
-      </HStack>
-    </View>
-    }
-    {showAlsoSendInRoom&&
-    <>
-      <Divider/>
-      <View margin={2} justifyContent="center">
-        <Checkbox onChange={()=>setShowInChannel&&setShowInChannel(!showInChannel)} value='show' isChecked={showInChannel} colorScheme="green">
-          Also send to room
-        </Checkbox>
-      </View>
-    </>
-    }
+      )}
+      {showAlsoSendInRoom && (
+        <>
+          <Divider />
+          <View margin={2} justifyContent="center">
+            <Checkbox
+              onChange={() =>
+                setShowInChannel && setShowInChannel(!showInChannel)
+              }
+              value="show"
+              isChecked={showInChannel}
+              colorScheme="green">
+              Also send to room
+            </Checkbox>
+          </View>
+        </>
+      )}
     </>
   );
 };

@@ -5,75 +5,101 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-interface Reply {
-  title: string;
-  value: string;
-}
-interface createMessageObjectProps {
+import { IMessage } from "../../stores/chatStore";
+
+export interface IMessageToSend {
+  senderFirstName: string;
   imageLocationPreview?: any;
+  senderLastName: string;
+  senderWalletAddress: string;
+  isSystemMessage?: boolean;
+  mucname: string;
+  photoURL: string;
+  push: boolean;
   imageLocation?: any;
-  _id: string;
   text?: string;
-  createdAt: string | number | Date;
-  system: boolean;
-  tokenAmount?: string | number;
-  user: {
-    _id: string;
-    name: string;
-    avatar: string;
-  };
+  tokenAmount?: number;
+  location?: string;
+  locationPreview?: string;
   image?: string;
   realImageURL?: string;
-  localURL?: string;
-  isStoredFile?: boolean;
   mimetype?: string;
   duration?: string;
   size?: string;
   waveForm?: string;
   roomJid: string;
   receiverMessageId: string;
-  quickReplies: string;
+  quickReplies?: string;
   attachmentId?: string;
-  wrappable: boolean;
+  wrappable?: boolean;
   nftId?: string;
-  nftName?:string;
+  nftName?: string;
   nftActionType?: string;
   contractAddress?: string;
   fileName?: string;
   originalName?: string;
   isReply?: boolean;
-  mainMessageText?: string;
-  mainMessageId?: string;
-  mainMessageUserName?: string;
-  mainMessageCreatedAt?: string;
-  mainMessageFileName?: string;
-  mainMessageImageLocation?: string;
-  mainMessageImagePreview?: string;
-  mainMessageMimeType?: string;
-  mainMessageOriginalName?: string;
-  mainMessageSize?: string;
-  mainMessageDuration?: string;
-  mainMessageWaveForm?: string;
-  mainMessageAttachmentId?: string;
-  mainMessageWrappable?: boolean;
-  mainMessageNftId?: string;
-  mainMessageNftActionType?: string;
-  mainMessageContractAddress?: string;
-  mainMessageRoomJid?: string;
+  mainMessage?: string;
   numberOfReplies?: number;
   showInChannel?: boolean;
   preview?: string;
+  isReplace?: boolean;
+  replaceMessageId?: string;
+  isVisible?: boolean;
+  isEdited?: boolean;
+}
+export const createMainMessageForThread = (message: IMessage): string => {
+  const data = {
+    text: message.text,
+    id: message._id,
+    userName: message.user?.name,
+    createdAt: message.createdAt,
+    fileName: message.fileName,
+    imageLocation: message.image,
+    imagePreview: message.preview,
+    mimeType: message.mimetype,
+    originalName: message.originalName,
+    size: message.size,
+    duration: message?.duration,
+    waveForm: message.waveForm,
+    attachmentId: message.attachmentId,
+    wrappable: message.wrappable,
+    nftActionType: message.nftActionType,
+    contractAddress: message.contractAddress,
+    roomJid: message.roomJid,
+    nftId: message.nftId,
+  };
+  return JSON.stringify(data);
+};
+
+export interface IMainMessage {
+  text?: string;
+  id: string;
+  userName: string;
+  createdAt?: string | number | Date;
+  fileName?: string;
+  imageLocation?: string;
+  imagePreview?: string;
+  mimeType?: string;
+  originalName?: string;
+  size?: string;
+  duration?: string;
+  waveForm?: string;
+  attachmentId?: string;
+  wrappable?: string | boolean;
+  nftId?: string;
+  nftActionType?: string;
+  contractAddress?: string;
+  roomJid?: string;
 }
 
-export const createMessageObject = (
-  messageDetails: createMessageObjectProps,
-) => {
-  const message: createMessageObjectProps = {
+export const createMessageObject = (messageDetails = []) => {
+  const message: IMessage = {
     _id: '',
     text: '',
     createdAt: '',
     system: false,
-    tokenAmount: '',
+    tokenAmount: 0,
     user: {
       _id: '',
       name: '',
@@ -83,7 +109,7 @@ export const createMessageObject = (
     realImageURL: '',
     localURL: '',
     isStoredFile: false,
-    mimetype: '',
+    mimetype: undefined,
     duration: '',
     size: '',
     waveForm: '',
@@ -94,28 +120,28 @@ export const createMessageObject = (
     quickReplies: '',
     wrappable: true,
     nftId: '',
-    nftName:'',
+    nftName: '',
     nftActionType: '',
     contractAddress: '',
     fileName: '',
     originalName: '',
     isReply: false,
-    mainMessageText: '',
-    mainMessageId: '',
-    mainMessageUserName: '',
+    mainMessage: undefined,
     numberOfReplies: 0,
     showInChannel: false,
     preview: '',
+    isReplace: false,
+    replaceMessageId: '',
+    isEdited: false,
   };
   messageDetails.forEach((item: any) => {
     if (item.name === 'body') {
       message.text = item.children[0];
     }
     if (item.name === 'archived') {
-      console.log(item.attrs.id === '1672727007956177'&&item,"thisisitem")
       message._id = item.attrs.id;
       message.roomJid = item.attrs.by;
-      message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13)));
+      message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13))).toDateString();
     }
     if (item.name === 'data') {
       message.user.name =
@@ -143,31 +169,44 @@ export const createMessageObject = (
       message.contractAddress = item.attrs?.contractAddress;
       message.fileName = item.attrs.fileName || '';
       message.originalName = item.attrs.originalName || '';
-      message.mainMessageId = item.attrs.mainMessageId || '';
-      message.mainMessageText = item.attrs.mainMessageText || '';
       message.isReply = item.attrs.isReply === 'true' || false;
-      message.mainMessageUserName = item.attrs.mainMessageUserName || '';
-      message.mainMessageCreatedAt = item.attrs.mainMessageCreatedAt;
-      message.mainMessageFileName = item.attrs.mainMessageFileName;
-      message.mainMessageImageLocation = item.attrs.mainMessageImageLocation;
-      message.mainMessageImagePreview = item.attrs.mainMessageImagePreview;
-      message.mainMessageMimeType = item.attrs.mainMessageMimeType;
-      message.mainMessageOriginalName = item.attrs.mainMessageOriginalName;
-      message.mainMessageSize = item.attrs.mainMessageSize;
-      message.mainMessageDuration = item.attrs.mainMessageDuration;
-      message.mainMessageWaveForm = item.attrs.mainMessageWaveForm;
-      message.mainMessageAttachmentId = item.attrs.mainMessageAttachmentId;
-      message.mainMessageWrappable =
-        item.attrs.mainMessageWrappable === 'true' || false;
-      message.mainMessageNftId = item.attrs.mainMessageNftId;
-      message.mainMessageNftActionType = item.attrs.mainMessageNftActionType;
-      message.mainMessageContractAddress =
-        item.attrs.mainMessageContractAddress;
-      message.mainMessageRoomJid = item.attrs.mainMessageRoomJid;
+      if (item.attrs.mainMessage) {
+        try {
+          const parsedMessage = JSON.parse(item.attrs.mainMessage);
+          const mainMessage: IMainMessage = {
+            text: parsedMessage.text || '',
+            id: parsedMessage?.id,
+            userName: parsedMessage.userName || '',
+            createdAt: parsedMessage.createdAt,
+            fileName: parsedMessage.fileName,
+            imageLocation: parsedMessage.imageLocation,
+            imagePreview: parsedMessage.imagePreview,
+            mimeType: parsedMessage.mimeType,
+            originalName: parsedMessage.originalName,
+            size: parsedMessage.size,
+            duration: parsedMessage.duration,
+            waveForm: parsedMessage.waveForm,
+            attachmentId: parsedMessage.attachmentId,
+            wrappable: parsedMessage.wrappable === 'true' || false,
+            nftId: parsedMessage.mainMessageNftId,
+            nftActionType: parsedMessage.nftActionType,
+            contractAddress: parsedMessage.contractAddress,
+            roomJid: parsedMessage.roomJid,
+          };
+          message.mainMessage = mainMessage;
+        } catch (error) {
+          console.log(error, item.attrs.mainMessage);
+        }
+      }
+
       message.numberOfReplies = 0;
       message.showInChannel = item.attrs.showInChannel === 'true' || false;
       message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
+    }
+    if (item.name === 'replace') {
+      message.isReplace = true;
+      message.replaceMessageId = item.attrs.id;
     }
   });
   return message;

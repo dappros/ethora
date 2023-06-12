@@ -1,117 +1,134 @@
-import React, { useState } from "react";
-import { Avatar, Box, Button, Container, IconButton, Modal, TextField, Typography } from "@mui/material";
-import { useParams } from "react-router";
+import { useState } from "react";
+import { Box, Container, IconButton, Typography } from "@mui/material";
+import { useHistory, useParams } from "react-router";
 import { useStoreState } from "../../store";
 import xmpp from "../../xmpp";
 import EditIcon from "@mui/icons-material/Edit";
+import { DeleteDialog } from "../../components/DeleteDialog";
+import { ChangeRoomInfoModal } from "./ChangeRoomInfoModal";
+import { ChatAvatar } from "./ChatAvatar";
 
-export default function ChatDetailCard (){
-    const {roomJID}:any = useParams()
-    const [newDescription, setNewDescription] = useState<string>("");
-    const [showModal, setShowModal] = useState<boolean>(false);
-    const currentRoomData = useStoreState((store) => store.userChatRooms).filter((e) => e.jid === roomJID)[0];
-    const handleChangeDescription = (newDescription:string) => {
-        xmpp.changeRoomDescription(
-            roomJID,
-            newDescription
-        )
-      }
-    return(
-        <Container style={{justifyContent:"center", alignItems:"center", display:"flex", flexDirection:"column"}}>
-            <Box
-            sx={{
-            width: 300,
-            height: 300,
-            margin:5,
-            backgroundColor: 'primary.dark',
-            justifyContent:"center",
-            alignItems:"center",
-            display:"flex"
-            }}
-        >
-            {currentRoomData?.room_thumbnail&&currentRoomData?.room_thumbnail!=='none'?
-            <Avatar
-            sx={{
-                width: 300,
-                height: 300,
-            }}
-            variant="square"
-            src={currentRoomData.room_thumbnail}
-            />:
-            <Typography
-            color={"white"}
-            fontSize={'120px'}
-            >
-                {currentRoomData?.name[0]}
-            </Typography>
-            }
-        </Box>
-        <Typography
-        fontSize={"20px"}
-        fontWeight={"bold"}
-        >
-            {currentRoomData?.name}
+export default function ChatDetails() {
+  const { roomJID } = useParams<{ roomJID: string }>();
+
+  const [newDescription, setNewDescription] = useState("");
+  const [newRoomName, setNewRoomName] = useState("");
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false);
+  const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
+  const currentRoomData = useStoreState((store) => store.userChatRooms).find(
+    (e) => e?.jid === roomJID
+  );
+  const roomRoles = useStoreState((state) => state.roomRoles);
+
+  const history = useHistory();
+
+  const currentRoomRole = roomRoles.find(
+    (value) => value.roomJID === currentRoomData?.jid
+  )?.role;
+
+  const isAllowedToChangeData =
+    currentRoomRole === "moderator" ||
+    currentRoomRole === "owner" ||
+    currentRoomRole === "admin";
+
+  const handleChangeDescription = (newDescription: string) => {
+    xmpp.changeRoomDescription(roomJID, newDescription);
+  };
+
+  const handleChangeRoomName = (newRoomName: string) => {
+    xmpp.changeRoomName(roomJID, newRoomName);
+  };
+
+  const closeRoomDeleteDialog = () => {
+    setShowDeleteRoomDialog(false);
+  };
+  const leaveTheRoom = async () => {
+    xmpp.leaveTheRoom(roomJID);
+    xmpp.unsubscribe(roomJID);
+    closeRoomDeleteDialog();
+    history.push("/chat/none");
+  };
+
+  return (
+    <Container
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <ChatAvatar
+        roomJID={roomJID}
+        onDeleteRoomClick={() => setShowDeleteRoomDialog(true)}
+      />
+      <Box flexDirection={"row"} display="flex">
+        <Typography fontSize={"20px"} fontWeight={"bold"}>
+          {currentRoomData?.name}
         </Typography>
-        <Container style={{flexDirection:"row", justifyContent:"center", alignItems:"center", display:"flex"}}>
-            <Typography fontSize={"20px"}>
-                {currentRoomData?.description?currentRoomData.description:"No description set"}
-            </Typography>
-            <IconButton 
-            onClick={()=>setShowModal(true)}
+        {isAllowedToChangeData && (
+          <IconButton
+            onClick={() => setShowRoomRenameModal(true)}
             style={{
-                marginLeft:10
-            }}>
-                <EditIcon 
-                fontSize="small"/>
-            </IconButton>
-        </Container>
-        <Modal
-        open={showModal}
-        onClose={setShowModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-        >
-        <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-            Set new description
-            </Typography>
-            <TextField
-            onChange={(e) => setNewDescription(e.target.value)}
-            margin="normal"
-            id="outlined-basic"
-            label="Description" 
-            variant="outlined"/>
-            <Button
-            onClick={()=>{
-                setShowModal(false);
-                handleChangeDescription(newDescription)
+              marginLeft: 10,
             }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
+      <Container
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          display: "flex",
+        }}
+      >
+        <Typography fontSize={"20px"}>
+          {currentRoomData?.description
+            ? currentRoomData.description
+            : "No description"}
+        </Typography>
+        {isAllowedToChangeData && (
+          <IconButton
+            onClick={() => setShowDescriptionModal(true)}
             style={{
-                justifyContent:"center",
-                alignItems:"center",
-                display:"flex"
+              marginLeft: 10,
             }}
-             variant="outlined">
-            <Typography id="modal-modal-description" >
-                Submit
-            </Typography>
-            </Button>
-        </Box>
-        </Modal>
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        )}
       </Container>
-    )
+      <ChangeRoomInfoModal
+        title={"Set New Chat Name"}
+        open={showRoomRenameModal}
+        onClose={() => setShowRoomRenameModal(false)}
+        onChange={setNewRoomName}
+        onSubmit={() => {
+          setShowRoomRenameModal(false);
+          handleChangeRoomName(newRoomName);
+        }}
+      />
+      <ChangeRoomInfoModal
+        title={"Set New Chat Description"}
+        open={showDescriptionModal}
+        onClose={() => setShowDescriptionModal(false)}
+        onChange={setNewDescription}
+        onSubmit={() => {
+          setShowDescriptionModal(false);
+          handleChangeDescription(newDescription);
+        }}
+      />
+      <DeleteDialog
+        open={showDeleteRoomDialog}
+        title={"Delete"}
+        description={"Do you want to delete this room?"}
+        onDeletePress={leaveTheRoom}
+        onClose={closeRoomDeleteDialog}
+      />
+    </Container>
+  );
 }
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    justifyContent: "center",
-    flex:"display"
-};

@@ -6,25 +6,15 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableOpacityBase,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {
-  coinImagePath,
-  commonColors,
-  IMetaRoom,
-  ROOM_KEYS,
-  textStyles,
-} from '../../../docs/config';
-import {ROUTES} from '../../constants/routes';
+import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
 import {useStores} from '../../stores/context';
-import {CONFERENCEDOMAIN} from '../../xmpp/xmppConstants';
-import {MainHeader} from '../MainHeader/MainHeader';
 import {CreateNewChatButton} from './CreateNewChatButton';
 import {metaRooms as predefinedMeta} from '../../../docs/config';
 import {underscoreManipulation} from '../../helpers/underscoreLogic';
@@ -32,6 +22,8 @@ import {sendMessageStanza} from '../../xmpp/stanzas';
 
 import Share from 'react-native-share';
 import {httpGet, httpPost} from '../../config/apiService';
+import {homeStackRoutes} from '../../navigation/routes';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 type IRoom = {
   _id: string;
@@ -94,16 +86,6 @@ const getOpositeDirection = (direction: string) => {
   return OPOSITE_DIRECTIONS[direction];
 };
 
-const findRoom = (id: string | undefined, arr: IMetaRoom[]) => {
-  if (!id) {
-    return null;
-  }
-  const room = arr.find(item => item.idAddress === id);
-  if (!room) {
-    return null;
-  }
-  return room;
-};
 const CompassItem = ({
   room,
   name,
@@ -115,7 +97,7 @@ const CompassItem = ({
   chatId: string;
   setDirection: () => void;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const {apiStore} = useStores();
   if (!room) {
     return (
@@ -127,7 +109,7 @@ const CompassItem = ({
           disabled={!chatId}
           onPress={() => {
             setDirection();
-            navigation.navigate(ROUTES.CHAT, {
+            navigation.navigate('ChatScreen', {
               chatJid: '',
             });
           }}>
@@ -153,7 +135,7 @@ const CompassItem = ({
         onPress={() => {
           setDirection();
 
-          navigation.navigate(ROUTES.CHAT, {
+          navigation.navigate('ChatScreen', {
             chatJid: room.roomJid + apiStore.xmppDomains.CONFERENCEDOMAIN,
           });
         }}>
@@ -180,7 +162,7 @@ const MetaHeader = ({
   direction: string;
   previousRoom: IApiMetaRoom | undefined;
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   if (!room?.name) {
     return (
       <View style={[styles.top, styles.innerContainer]}>
@@ -195,7 +177,7 @@ const MetaHeader = ({
         </Text>
         <CreateNewChatButton
           onPress={() =>
-            navigation.navigate(ROUTES.NEWCHAT, {
+            navigation.navigate('NewChatScreen', {
               metaDirection: direction,
               metaRoom: previousRoom,
             })
@@ -246,15 +228,16 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
     setMetaRooms(rooms || predefinedMeta);
   };
 
+
+  // getting last rooms where user was
   const getCurrentRoom = async () => {
     setLoading(true);
     try {
       const res = await httpGet(
-        apiStore.defaultUrl + roomRoute + '/getRoom/' + chatId,
+        roomRoute + '/getRoom/' + chatId,
         loginStore.userToken,
       );
       setCurrentMetaRoom(res.data.result);
-      console.log(res.data.result.userNavLinks);
     } catch (error) {
       setCurrentMetaRoom(emptyMetaRoom);
       console.log(error);
@@ -316,9 +299,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       photoURL: loginStore.userAvatar,
       roomJid: jid,
       isReply: false,
-      mainMessageText: '',
-      mainMessageId: '',
-      mainMessageUserName: '',
+      mainMessage: undefined,
       push: false,
     };
 
@@ -330,18 +311,15 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       chatStore.xmpp,
     );
   };
+  // join request, sends every time when user entered to the room
   const sendRoomJoin = async () => {
     try {
-      const res = await httpPost(
-        apiStore.defaultUrl + roomRoute + '/join/' + chatId,
-        {},
-        loginStore.userToken,
-      );
-      console.log(res.data);
+      await httpPost(roomRoute + '/join/' + chatId, {}, loginStore.userToken);
     } catch (error) {
       console.log(error);
     }
   };
+  // sends leaving message to the room
   useEffect(() => {
     if (previousRoom?.name) {
       sendMessage(
@@ -351,6 +329,7 @@ export const MetaNavigation: React.FC<IMetaNavigation> = ({
       );
     }
   }, [previousRoom]);
+    // sends joining message to the room
   useEffect(() => {
     if (currentMetaRoom.name) {
       sendMessage(

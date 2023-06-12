@@ -5,18 +5,24 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, HStack, Pressable, Text} from 'native-base';
+import {HStack, Pressable, Text} from 'native-base';
 import React from 'react';
-import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import {commonColors} from '../../../docs/config';
 import {FILTERS} from '../../constants/transactionsFilter';
 
 const FilterButton = ({title, active, ...props}: any) => {
   const isButtonPressed = active.toLowerCase() === title.toLowerCase();
   return (
-    <Pressable bg={isButtonPressed ? 'gray.200' : 'white'} {...props}>
+    <Pressable
+      accessibilityLabel={title + 'Transactions'}
+      bg={isButtonPressed ? 'gray.200' : 'white'}
+      {...props}>
       <HStack
-        width={wp('100%')/3}
+        width={wp('100%') / 3}
         paddingY={'5'}
         justifyContent={'center'}
         alignItems={'center'}>

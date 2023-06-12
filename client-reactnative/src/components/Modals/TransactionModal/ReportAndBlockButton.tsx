@@ -23,7 +23,7 @@ interface ReportAndBlockButtonProps {
 const ReportAndBlockButton = (props: ReportAndBlockButtonProps) => {
   const iconName = 'block';
   return (
-    <TouchableOpacity onPress={props.onPress}>
+    <TouchableOpacity onPress={props.onPress} accessibilityLabel={props.text}>
       <View style={[styles.reportAndBlockContainer, props.style]}>
         <View style={styles.blockIcon}>
           <MaterialIcons name={iconName} size={15} color="#fff" />
@@ -54,6 +54,6 @@ const styles = StyleSheet.create({
   },
   blockIcon: {
     marginRight: 5,
-    marginBottom: 3
+    marginBottom: 3,
   },
 });

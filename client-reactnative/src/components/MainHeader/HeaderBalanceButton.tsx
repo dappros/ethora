@@ -10,27 +10,40 @@ import {useNavigation} from '@react-navigation/native';
 import {observer} from 'mobx-react-lite';
 import {Box, Image, Spinner, Text, VStack} from 'native-base';
 import {Pressable} from 'react-native';
-import {ROUTES} from '../../constants/routes';
 import {useStores} from '../../stores/context';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
+import {coinImagePath, textStyles} from '../../../docs/config';
+import {HomeStackNavigationProp} from '../../navigation/types';
 
 export const HeaderBalanceButton = observer(() => {
   const {walletStore} = useStores();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeStackNavigationProp>();
   const onButtonPress = () => {
-    navigation.navigate(ROUTES.PROFILE);
+    navigation.navigate('ProfileScreen');
   };
   return (
     <Box
       background={'white'}
-      shadow="7"
+      style={{
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.7,
+        shadowRadius: 6.27,
+
+        elevation: 10,
+      }}
       rounded={'sm'}
       alignItems={'center'}
       justifyContent={'center'}
       width={50}
       height={50}>
-      <Pressable style={{justifyContent: 'center', alignItems: 'center'}} onPress={onButtonPress}>
+      <Pressable
+        accessibilityLabel="Balance"
+        style={{justifyContent: 'center', alignItems: 'center'}}
+        onPress={onButtonPress}>
         <Box>
           <Image
             alt="coin icon"

@@ -1,30 +1,19 @@
 import React from 'react';
-import {Box, HStack, Text, Pressable, View} from 'native-base';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {Box, HStack, Text, View} from 'native-base';
+import {heightPercentageToDP as hp, widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {textStyles} from '../../../docs/config';
+import {TouchableOpacity} from 'react-native';
 
 export interface ICreateNewChatButton {
-  isPressed?: boolean;
-  onPressIn?: () => void;
-  onPressOut?: () => void;
   onPress: () => void;
 }
 
 export const CreateNewChatButton: React.FC<ICreateNewChatButton> = ({
-  isPressed,
-  onPressIn,
-  onPressOut,
   onPress,
 }) => {
   return (
-    <Pressable
-      onPress={onPress}
-      bg={isPressed ? 'coolGray.200' : 'transparent'}
-      padding={'2'}
-      paddingLeft={'4'}
-      onPressIn={onPressIn}
-      onPressOut={onPressOut}>
+    <TouchableOpacity onPress={onPress} style={{padding: 10, paddingLeft: 15, minHeight:hp("15%"), width:wp("100%")}}>
       <HStack alignItems={'center'}>
         <Box
           w={hp('5.5%')}
@@ -57,6 +46,6 @@ export const CreateNewChatButton: React.FC<ICreateNewChatButton> = ({
           </Text>
         </View>
       </HStack>
-    </Pressable>
+    </TouchableOpacity>
   );
 };

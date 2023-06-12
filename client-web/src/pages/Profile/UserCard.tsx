@@ -8,12 +8,12 @@ import { useStoreState } from "../../store";
 import EditProfileModal from "./EditProfileModal";
 import { Button, IconButton } from "@mui/material";
 import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
-import xmpp, { walletToUsername } from "../../xmpp";
 import { useHistory } from "react-router-dom";
 import { CONFERENCEDOMAIN } from "../../constants";
 import { generateProfileLink } from "../../utils";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "./QrModal";
+import { walletToUsername } from "../../utils/walletManipulation";
 
 type TProps = {
   profile?: TProfile;
@@ -32,26 +32,25 @@ export default function UserCard({ profile, walletAddress }: TProps) {
       walletAddress,
       user.firstName,
       profile.firstName,
-        '@conference.dev.dxmpp.com'
     )
       .then((result) => {
-          if(result.isNewRoom){
-              const temporaryRoomData = {
-                  jid: result.roomJid,
-                  name: result.roomName,
-                  room_background: "none",
-                  room_thumbnail: "none",
-                  users_cnt: "2",
-                  unreadMessages: 0,
-                  composing: "",
-                  toUpdate: true,
-                  description:""
-              }
-              useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
-              history.push("/chat/" + result.roomJid);
-          }else{
-              history.push("/chat/" + result.roomJid);
-          }
+        if (result.isNewRoom) {
+          const temporaryRoomData = {
+            jid: result.roomJid,
+            name: result.roomName,
+            room_background: "none",
+            room_thumbnail: "none",
+            users_cnt: "2",
+            unreadMessages: 0,
+            composing: "",
+            toUpdate: true,
+            description: "",
+          };
+          useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
+          history.push("/chat/" + result.roomJid);
+        } else {
+          history.push("/chat/" + result.roomJid);
+        }
       })
       .catch((error) => {
         console.log("openPrivateRoom Error: ", error);
@@ -85,16 +84,18 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             {profile?.description && (
               <Box>Description: {profile?.description}</Box>
             )}
-           {!!user.walletAddress && <Button onClick={openDirectChat} variant="contained" size="small">
-              Direct message
-            </Button>}
+            {!!user.walletAddress && (
+              <Button onClick={openDirectChat} variant="contained" size="small">
+                Direct message
+              </Button>
+            )}
           </Box>
         </Card>
       </Box>
     );
   }
   return (
-    <Box style={{ marginTop: "10px", marginRight: "10px" }}>
+    <Box sx={{ marginTop: "10px", marginRight: "10px", width: 250 }}>
       <Card
         sx={{
           display: "flex",
@@ -111,10 +112,17 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             src={user.profileImage || defUserImage}
           />
         </Box>
-        <Box>
+        <Box sx={{width: '100%'}}>
           {!!user.firstName && (
-            <>
-              <Box sx={{ fontWeight: "bold", display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Box>
+              <Box
+                sx={{
+                  fontWeight: "bold",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
                 {user?.firstName} {user?.lastName}
                 <IconButton
                   sx={{ color: "black" }}
@@ -124,7 +132,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
                 </IconButton>
               </Box>
               {user?.description && <Box>Description: {user?.description}</Box>}
-            </>
+            </Box>
           )}
         </Box>
 

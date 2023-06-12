@@ -47,7 +47,7 @@ const AssetItem = (props: AssetItemProps) => {
 
           justifyContent: 'center',
           marginBottom: 10,
-          padding: null,
+          padding: 0,
         }}>
         <View
           style={{
@@ -57,16 +57,9 @@ const AssetItem = (props: AssetItemProps) => {
           }}>
           <View
             style={{
-              // flex: 0.494,
               width: wp('100%'),
-
-              // maxWidth: '100%',
-              // backgroundColor: selectedItem.nftId === nftId ? 'rgba(190, 190, 181, 1)' : '#F4F5F8',
-
               flexDirection: 'row',
               alignItems: 'center',
-
-              textAlign: 'center',
             }}>
             <View
               style={{

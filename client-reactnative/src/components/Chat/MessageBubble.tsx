@@ -5,10 +5,8 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import PropTypes from 'prop-types';
-import React, {createRef, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
-  Clipboard,
   StyleSheet,
   Image,
   Animated,
@@ -16,69 +14,58 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {
-  widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {colors} from '../../constants/messageColors';
-import {
-  MessageImage,
-  Time,
-  utils,
-  MessageProps,
-} from 'react-native-gifted-chat';
+import {MessageImage, Time} from 'react-native-gifted-chat';
 import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
 import {QuickReplies} from './QuickReplies';
 import {MessageText} from './MessageText';
-import { HStack, Text, View } from 'native-base';
-import { observer } from 'mobx-react-lite';
+import {Box, HStack, Text, View} from 'native-base';
+import {observer} from 'mobx-react-lite';
+import {containerType} from './ChatContainer';
+import {IMessage, roomListProps} from '../../stores/chatStore';
+import {isSameDay, isSameUser} from '../../helpers/chat/chatUtils';
+import {useStores} from '../../stores/context';
 
-const {isSameUser, isSameDay, StylePropType} = utils;
+// const {isSameUser, isSameDay, StylePropType} = utils;
 
 interface BubbleProps {
-  onLongPress:any;
-  currentMessage:any;
-  onTap:any;
-  containerStyle?:any;
-  wrapperStyle?:any;
-  messageTextStyle?:any;
-  messageTextProps?:any;
-  renderMessageText?:any;
-  renderMessageImage?:any;
-  renderTicks?:any;
-  user:any;
-  tickStyle?:any;
-  renderUsername?:any;
-  renderTime?:any;
-  position?:any;
-  renderCustomView?:any;
-  nextMessage?:any;
-  containerToNextStyle?:any;
-  previousMessage?:any;
-  containerToPreviousStyle?:any;
-  isCustomViewBottom?:any;
-  image?:any;
-  bottomContainerStyle?:any;
-  touchableProps?:any;
-  timeProps?:any;
-  usernameProps?:any;
-  messageImageProps?:any;
-  type:'main'|'thread';
-  scrollToParentMessage:any;
-  handleReply:(message:any) => void
+  onLongPress: any;
+  currentMessage: IMessage;
+  onTap: (message: IMessage) => void;
+  containerStyle?: any;
+  wrapperStyle?: any;
+  messageTextStyle?: any;
+  messageTextProps?: any;
+  renderMessageText?: any;
+  renderMessageImage?: any;
+  renderTicks?: any;
+  user: any;
+  tickStyle?: any;
+  renderUsername?: any;
+  renderTime?: any;
+  position: 'left' | 'right';
+  renderCustomView?: any;
+  nextMessage?: any;
+  containerToNextStyle?: any;
+  previousMessage?: any;
+  containerToPreviousStyle?: any;
+  isCustomViewBottom?: any;
+  image?: any;
+  bottomContainerStyle?: any;
+  touchableProps?: any;
+  timeProps?: any;
+  usernameProps?: any;
+  messageImageProps?: any;
+  containerType: containerType;
+  scrollToParentMessage: any;
+  handleReply: (message: any) => void;
 }
 
-const Bubble = observer((props:BubbleProps)=> {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     initialAnimationValue: new Animated.Value(0),
-  //     width: 0,
-  //   };
-  //   this.onLongPress = this.onLongPress.bind(this);
-  //   this.onPressMessage = this.onPressMessage.bind(this);
-  // }
-
-  const [initialAnimationValue, setInitialAnimationValue] = useState(new Animated.Value(0));
+const Bubble = observer((props: BubbleProps) => {
+  const {chatStore} = useStores();
   const [width, setWidth] = useState(0);
 
   const {
@@ -91,9 +78,6 @@ const Bubble = observer((props:BubbleProps)=> {
     messageTextProps,
     renderMessageText,
     renderMessageImage,
-    renderTicks,
-    user,
-    tickStyle,
     renderUsername,
     renderTime,
     position,
@@ -103,29 +87,44 @@ const Bubble = observer((props:BubbleProps)=> {
     previousMessage,
     containerToPreviousStyle,
     isCustomViewBottom,
-    image,
     bottomContainerStyle,
-    touchableProps,
     timeProps,
     usernameProps,
     messageImageProps,
-    type,
     scrollToParentMessage,
-    handleReply
-  } = props
+    handleReply,
+  } = props;
 
+  const room: roomListProps = chatStore.roomList.find(
+    item => item.jid === currentMessage.roomJid,
+  ) || {
+    avatar: '',
+    counter: 0,
+    createdAt: '',
+    jid: currentMessage.roomJid,
+    lastUserName: '',
+    lastUserText: '',
+    name: '',
+    participants: 0,
+    isFavourite: false,
+    muted: false,
+    priority: 0,
+    roomBackground: '',
+    roomBackgroundIndex: 0,
+    roomThumbnail: '',
+  };
 
-  const onLongPressHandle= () =>{
+  const onLongPressHandle = () => {
     if (onLongPress) {
       onLongPress(currentMessage);
     }
-  }
+  };
 
   const onPressMessage = () => {
     onTap(currentMessage);
-  }
+  };
 
-  const renderMessageTextHandle = () =>{
+  const renderMessageTextHandle = () => {
     if (currentMessage.text) {
       if (renderMessageText) {
         return renderMessageText(messageTextProps);
@@ -141,100 +140,89 @@ const Bubble = observer((props:BubbleProps)=> {
       );
     }
     return null;
-  }
+  };
 
-  const renderMessageImageHandle=() =>{
-    if (
-      currentMessage.image ||
-      currentMessage.realImageUrl
-    ) {
+  const renderMessageImageHandle = () => {
+    if (currentMessage.image || currentMessage.realImageURL) {
       if (renderMessageImage) {
         return renderMessageImage(props);
       }
       return (
         <MessageImage
           {...messageImageProps}
-          imageStyle={[styles.slackImage, messageImageProps.imageStyle]}
+          imageStyle={[messageImageProps.imageStyle]}
         />
       );
     }
     return null;
-  }
+  };
 
-  const renderTicksHandle=() =>{
-    if (renderTicks) {
-      return renderTicks(currentMessage);
-    }
-    if (currentMessage.user._id !== user._id) {
-      return null;
-    }
-    if (currentMessage.sent || currentMessage.received) {
-      return (
-        <View style={[styles.headerItem, styles.tickView]}>
-          {currentMessage.sent && (
-            <Text
-              style={[styles.standardFont, styles.tick, tickStyle]}>
-              ✓
-            </Text>
-          )}
-          {currentMessage.received && (
-            <Text
-              style={[styles.standardFont, styles.tick, tickStyle]}>
-              ✓
-            </Text>
-          )}
-        </View>
-      );
-    }
-    return null;
-  }
+  // const renderTicksHandle = () => {
+  //   if (renderTicks) {
+  //     return renderTicks(currentMessage);
+  //   }
+  //   if (currentMessage.user._id !== user._id) {
+  //     return null;
+  //   }
+  //   if (currentMessage.sent || currentMessage.received) {
+  //     return (
+  //       <View style={[styles.headerItem, styles.tickView]}>
+  //         {currentMessage.sent && (
+  //           <Text style={[styles.standardFont, styles.tick, tickStyle]}>✓</Text>
+  //         )}
+  //         {currentMessage.received && (
+  //           <Text style={[styles.standardFont, styles.tick, tickStyle]}>✓</Text>
+  //         )}
+  //       </View>
+  //     );
+  //   }
+  //   return null;
+  // };
 
-  const renderUsernameHandle=() =>{
+  const renderUsernameHandle = () => {
     const username = currentMessage.user.name;
     if (username) {
       if (renderUsername) {
         return renderUsername(usernameProps);
       }
       return (
-        <View
-        style={styles.content.usernameView}>
+        <View style={styles.content.usernameView}>
           <Text
-          color={"white"}
-          fontSize={hp('2%')}
-          fontFamily={textStyles.lightFont}
-          >
+            color={'white'}
+            fontSize={hp('2%')}
+            fontFamily={textStyles.lightFont}>
             {username}
           </Text>
         </View>
       );
     }
     return null;
-  }
+  };
 
-  const renderTimeHandle=() =>{
+  const renderTimeHandle = () => {
     if (currentMessage.createdAt) {
       if (renderTime) {
         return renderTime(timeProps);
       }
       return (
+        //@ts-ignore
         <Time
           {...props}
-          containerStyle={{left: [styles.timeContainer]}}
-          textStyle={{
-            left: [
-              styles.standardFont,
-              styles.headerItem,
-              styles.time,
-              timeProps?.textStyle?timeProps.textStyle:null,
-            ],
+          timeTextStyle={{
+            left: {
+              fontFamily: textStyles.lightFont,
+            },
+            right: {
+              fontFamily: textStyles.lightFont,
+            },
           }}
         />
       );
     }
     return null;
-  }
+  };
 
-  const renderTokenCount=() => {
+  const renderTokenCount = () => {
     if (currentMessage.tokenAmount) {
       return (
         <View style={[styles[position].tokenContainerStyle]}>
@@ -249,59 +237,56 @@ const Bubble = observer((props:BubbleProps)=> {
         </View>
       );
     }
-  }
-
+  };
   const renderReplyCount = () => {
-
-    const replyConst = currentMessage.numberOfReplies>1?'replies':'reply'
-    
-    if(currentMessage.numberOfReplies){
-      let text = ' reply'
-      if(currentMessage.numberOfReplies > 1){
-        text = ' replies'
+    if (currentMessage.numberOfReplies) {
+      const replyConst =
+        currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
+      let text = ' reply';
+      if (currentMessage.numberOfReplies > 1) {
+        text = ' replies';
       }
-      return(
+      return (
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
-          <TouchableOpacity onPress={()=>handleReply(currentMessage)}>
-              <Text
+          <TouchableOpacity onPress={() => handleReply(currentMessage)}>
+            <Text
               fontFamily={textStyles.regularFont}
-              color={commonColors.primaryColor}
-              >
-                  {currentMessage.numberOfReplies} {replyConst} (tap to review)
-              </Text>
+              color={commonColors.primaryColor}>
+              {currentMessage.numberOfReplies} {replyConst} (tap to review)
+            </Text>
           </TouchableOpacity>
-      </HStack>
-      )
+        </HStack>
+      );
     }
-  }
-  const renderQuickReplies=() =>{
+  };
+  const renderQuickReplies = () => {
     if (currentMessage.quickReplies && width) {
       let quickReplies = [];
       try {
-        quickReplies = JSON.parse(currentMessage.quickReplies)
+        quickReplies = JSON.parse(currentMessage.quickReplies);
       } catch (error) {
-        console.log(error)
+        console.log(error, 'cannot parse quick replies');
       }
       return (
         <QuickReplies
           quickReplies={quickReplies}
           roomJid={currentMessage.roomJid}
-          roomName={currentMessage.mucname}
+          roomName={room.name}
           width={width}
           messageAuthor={currentMessage.user._id.split('@')[0]}
         />
       );
     }
-  }
+  };
 
-  const renderCustomViewHandle=() =>{
+  const renderCustomViewHandle = () => {
     if (renderCustomView) {
       return renderCustomView(props);
     }
     return null;
-  }
+  };
 
-  const styledBubbleToNext=() =>{
+  const styledBubbleToNext = () => {
     if (
       currentMessage &&
       nextMessage &&
@@ -315,9 +300,9 @@ const Bubble = observer((props:BubbleProps)=> {
       ];
     }
     return null;
-  }
+  };
 
-  const styledBubbleToPrevious=() =>{
+  const styledBubbleToPrevious = () => {
     if (
       currentMessage &&
       previousMessage &&
@@ -331,36 +316,12 @@ const Bubble = observer((props:BubbleProps)=> {
       ];
     }
     return null;
-  }
+  };
 
-  // need to work
-  // renderMessageVideo() {
-  //   if (this.props.currentMessage && this.props.currentMessage.video) {
-  //       const { containerStyle, wrapperStyle, ...messageVideoProps } = this.props;
-  //       if (this.props.renderMessageVideo) {
-  //           return this.props.renderMessageVideo(messageVideoProps);
-  //       }
-  //       return <MessageVideo {...messageVideoProps}/>;
-  //   }
-  //   return null;
-  // }
-  // renderMessageAudio() {
-  //     if (this.props.currentMessage && this.props.currentMessage.audio) {
-  //         const { containerStyle, wrapperStyle, ...messageAudioProps } = this.props;
-  //         if (this.props.renderMessageAudio) {
-  //             return this.props.renderMessageAudio(messageAudioProps);
-  //         }
-  //         return <MessageAudio {...messageAudioProps}/>;
-  //     }
-  //     return null;
-  // }
-
-  const renderBubbleContent=() =>{
+  const renderBubbleContent = () => {
     return isCustomViewBottom ? (
       <View>
         {renderMessageImageHandle()}
-        {/* {this.renderMessageVideo()}
-    {this.renderMessageAudio()} */}
         {!currentMessage.image && renderMessageTextHandle()}
 
         {renderCustomViewHandle()}
@@ -369,78 +330,84 @@ const Bubble = observer((props:BubbleProps)=> {
       <View>
         {renderCustomViewHandle()}
         {renderMessageImageHandle()}
-        {/* {this.renderMessageVideo()}
-      {this.renderMessageAudio()} */}
         {!currentMessage.image && renderMessageTextHandle()}
       </View>
     );
-  }
-  
-  const setBubbleWidth = (width:any) => {
-    setWidth(width)
-    // this.widthRef.current = width
   };
-    
+
+  const setBubbleWidth = (width: any) => {
+    setWidth(width);
+  };
+
   const AnimatedStyle = {
-    backgroundColor: initialAnimationValue.interpolate({
-      inputRange: [0, 100],
-      outputRange: [
-        position === 'left'
-          ? colors.leftBubbleBackground
-          : colors.defaultBlue,
-        '#F0B310',
-      ],
-    }),
+    backgroundColor:
+      position === 'left' ? colors.leftBubbleBackground : colors.defaultBlue,
   };
 
-    const replyComponent = () => {
-    return (
-    currentMessage.isReply?
-    <TouchableOpacity
-    onPress={()=>scrollToParentMessage(currentMessage)}
-    >
-      <HStack
-      style={styles[position].replyWrapper}
-      borderLeftColor={"green.100"}
-      minH={hp('6%')} w="100%" bg={"white"}>
-        {/* <Box borderRadius={15} bg={"green.600"} w={wp("0.4%")}>
+  const replyComponent = () => {
+    return currentMessage.isReply ? (
+      <TouchableOpacity onPress={() => scrollToParentMessage(currentMessage)}>
+        <HStack
+          style={styles[position].replyWrapper}
+          alignItems={'center'}
+          justifyContent={'flex-start'}
+          minH={hp('6%')}
+          w="100%"
+          bg={'white'}>
+          <View
+            margin={2}
+            borderRadius={5}
+            height={hp('4%')}
+            width={wp('2%')}
+            bg={
+              position === 'left'
+                ? colors.leftBubbleBackground
+                : colors.defaultBlue
+            }
+          />
+          <View justifyContent={'center'}>
+            <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
+              {currentMessage.mainMessage?.userName || 'N/A'}
+            </Text>
+            {currentMessage.mainMessage?.imagePreview ? (
+              <Image
+                source={{uri: currentMessage.mainMessage.imagePreview}}
+                style={{
+                  height: hp('10%'),
+                  width: hp('10%'),
+                }}
+              />
+            ) : null}
+            {!currentMessage.mainMessage?.imagePreview && (
+              <Text fontSize={hp('1.5%')} fontFamily={textStyles.mediumFont}>
+                {currentMessage?.mainMessage?.text}
+              </Text>
+            )}
+            <Text color={'blue.100'}>{currentMessage.showInChannel}</Text>
+          </View>
+        </HStack>
+      </TouchableOpacity>
+    ) : null;
+  };
 
-        </Box> */}
-        <View marginLeft={4}>
-          <Text
-          
-          fontSize={hp('1.5%')}
-          fontFamily={textStyles.boldFont}
-          >{currentMessage.mainMessageUserName?currentMessage.mainMessageUserName:'N/A'}</Text>
-          {
-            currentMessage.mainMessageImagePreview?
-            <Image
-            source={{uri:currentMessage.mainMessageImagePreview}}
-              style={{
-                height:hp("10%"),
-                width:hp('10%')
-              }}
-            />:null
-          }
-        {!currentMessage.mainMessageImagePreview&&
+  const isEditedComponent = () => {
+    return (
+      <Box
+        style={styles[position ? position : 'left'].editWraper}
+        alignItems={'flex-end'}>
         <Text
-        fontSize={hp('1.5%')}
-        fontFamily={textStyles.mediumFont}
-        >
-          {currentMessage.mainMessageText}
+          fontFamily={textStyles.lightFont}
+          fontSize={hp('1.2%')}
+          color={'white'}>
+          edited
         </Text>
-        }
-        <Text color={"blue.100"}>
-          {currentMessage.showInChannel}
-        </Text>
-        </View>
-      </HStack>
-    </TouchableOpacity>:null
-    )
-  }
+      </Box>
+    );
+  };
 
   return (
     <View
+      accessibilityLabel="Message Menu"
       onLayout={e => setBubbleWidth(e.nativeEvent.layout.width)}
       style={[
         styles[position].container,
@@ -456,13 +423,13 @@ const Bubble = observer((props:BubbleProps)=> {
           AnimatedStyle,
           // {maxWidth: 200}
         ]}>
-        {type==='main'? replyComponent():null}
+        {containerType === 'main' ? replyComponent() : null}
         {!isSameUser(currentMessage, previousMessage)
           ? renderUsernameHandle()
           : null}
         <TouchableWithoutFeedback
-          onPress={()=>onPressMessage()}
-          onLongPress={()=>onLongPressHandle()}
+          onPress={() => onPressMessage()}
+          onLongPress={() => onLongPressHandle()}
           accessibilityTraits="text"
           {...props.touchableProps}>
           <View>
@@ -476,24 +443,15 @@ const Bubble = observer((props:BubbleProps)=> {
                 style={{
                   flexDirection: position === 'left' ? 'row-reverse' : 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
                 }}>
+                {!!currentMessage.isEdited && isEditedComponent()}
+                {renderTokenCount()}
                 {renderTimeHandle()}
-                {renderTicksHandle()}
+                {/* {renderTicksHandle()} */}
               </View>
             </View>
 
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: position === 'left' ? 0 : null,
-                left: position === 'right' ? 0 : null,
-
-                // [position]: 0
-              }}>
-              {renderTokenCount()}
-            </View>
+            <View></View>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>
@@ -501,7 +459,7 @@ const Bubble = observer((props:BubbleProps)=> {
       {renderReplyCount()}
     </View>
   );
-})
+});
 
 export default Bubble;
 
@@ -510,16 +468,20 @@ export default Bubble;
 const styles = {
   left: StyleSheet.create({
     container: {
-      marginTop:2
+      marginTop: 2,
     },
-    replyWrapper:{
-      borderTopRightRadius: 15,
-      padding:2,
-      borderLeftWidth:2,
-      borderLeftColor:"green",
-      borderWidth:2,
-      borderColor:"green",
-      borderBottomWidth:0
+    replyWrapper: {
+      borderRadius: 15,
+      padding: 5,
+      borderLeftWidth: 2,
+      borderColor: colors.leftBubbleBackground,
+      borderWidth: 2,
+      borderBottomWidth: 0,
+    },
+    editWraper: {
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      paddingBottom: 5,
     },
     wrapper: {
       borderRadius: 15,
@@ -548,10 +510,10 @@ const styles = {
       backgroundColor: 'transparent',
       textAlign: 'right',
     },
-    numberOfRepliesContainerStyle:{
-      flexDirection:'row',
+    numberOfRepliesContainerStyle: {
+      flexDirection: 'row',
       justifyContent: 'flex-start',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     containerToNext: {
       borderBottomLeftRadius: 3,
@@ -566,16 +528,21 @@ const styles = {
   }),
   right: StyleSheet.create({
     container: {
-      marginTop:2
+      marginTop: 2,
     },
-    replyWrapper:{
+    editWraper: {
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      paddingBottom: 5,
+    },
+    replyWrapper: {
+      borderTopRightRadius: 15,
       borderTopLeftRadius: 15,
-      padding:2,
-      borderLeftWidth:2,
-      borderLeftColor:"green",
-      borderWidth:2,
-      borderColor:"green",
-      borderBottomWidth:0
+      padding: 2,
+      borderLeftWidth: 2,
+      borderWidth: 2,
+      borderColor: colors.defaultBlue,
+      borderBottomWidth: 0,
     },
     wrapper: {
       borderRadius: 15,
@@ -607,10 +574,10 @@ const styles = {
       backgroundColor: 'transparent',
       textAlign: 'right',
     },
-    numberOfRepliesContainerStyle:{
-      flexDirection:'row',
+    numberOfRepliesContainerStyle: {
+      flexDirection: 'row',
       justifyContent: 'flex-end',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     containerToPrevious: {
       borderTopRightRadius: 3,
@@ -646,81 +613,5 @@ const styles = {
       fontFamily: textStyles.regularFont,
       color: '#FFFF',
     },
-  }),
-};
-
-Bubble.defaultProps = {
-  touchableProps: {},
-  onLongPress: null,
-  renderMessageImage: null,
-  renderMessageVideo: null,
-  renderMessageAudio: null,
-  renderMessageText: null,
-  renderCustomView: null,
-  renderUsername: null,
-  renderTicks: null,
-  renderTime: null,
-  renderQuickReplies: null,
-  onQuickReply: null,
-  position: 'left',
-  // optionTitles: DEFAULT_OPTION_TITLES,
-  currentMessage: {
-    text: null,
-    createdAt: null,
-    image: null,
-  },
-  nextMessage: {},
-  previousMessage: {},
-  containerStyle: {},
-  wrapperStyle: {},
-  bottomContainerStyle: {},
-  tickStyle: {},
-  usernameStyle: {},
-  containerToNextStyle: {},
-  containerToPreviousStyle: {},
-};
-
-Bubble.propTypes = {
-  user: PropTypes.object.isRequired,
-  touchableProps: PropTypes.object,
-  onLongPress: PropTypes.func,
-  renderMessageImage: PropTypes.func,
-  renderMessageVideo: PropTypes.func,
-  renderMessageAudio: PropTypes.func,
-  renderMessageText: PropTypes.func,
-  renderCustomView: PropTypes.func,
-  isCustomViewBottom: PropTypes.bool,
-  renderUsernameOnMessage: PropTypes.bool,
-  renderUsername: PropTypes.func,
-  renderTime: PropTypes.func,
-  renderTicks: PropTypes.func,
-  renderQuickReplies: PropTypes.func,
-  onQuickReply: PropTypes.func,
-  position: PropTypes.oneOf(['left', 'right']),
-  optionTitles: PropTypes.arrayOf(PropTypes.string),
-  currentMessage: PropTypes.object,
-  nextMessage: PropTypes.object,
-  previousMessage: PropTypes.object,
-  containerStyle: PropTypes.shape({
-    left: StylePropType,
-    right: StylePropType,
-  }),
-  wrapperStyle: PropTypes.shape({
-    left: StylePropType,
-    right: StylePropType,
-  }),
-  bottomContainerStyle: PropTypes.shape({
-    left: StylePropType,
-    right: StylePropType,
-  }),
-  tickStyle: StylePropType,
-  usernameStyle: StylePropType,
-  containerToNextStyle: PropTypes.shape({
-    left: StylePropType,
-    right: StylePropType,
-  }),
-  containerToPreviousStyle: PropTypes.shape({
-    left: StylePropType,
-    right: StylePropType,
   }),
 };

@@ -1,0 +1,20 @@
+{
+  "name": "gptbot",
+  "version": "1.0.0",
+  "description": "Chat GPT in Ethora bot",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chatgpt",
+    "ethora"
+  ],
+  "author": "Dappros, Anton Kolot",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "openai": "^3.2.1",
+    "pdf-parse": "^1.1.1"
+  }
+}
