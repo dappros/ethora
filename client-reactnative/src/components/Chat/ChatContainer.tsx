@@ -270,16 +270,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
   });
 
-  const senderDetails = {
-    senderFirstName: loginStore.initialData.firstName,
-    senderLastName: loginStore.initialData.lastName,
-    senderWalletAddress: loginStore.initialData.walletAddress,
-    photoURL: loginStore.userAvatar,
-  };
   const giftedRef = useRef(null);
   const navigation = useNavigation<HomeStackNavigationProp>();
   const manipulatedWalletAddress: string = underscoreManipulation(
-    senderDetails.senderWalletAddress
+    loginStore.initialData.walletAddress
   );
   const { tokenTransferSuccess } = walletStore;
   const debouncedChatText = useDebounce(text, 500);
@@ -420,10 +414,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     mediaListArray.map(async (item) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
       const data: IMessageToSend = {
-        senderFirstName: senderDetails.senderFirstName,
-        senderLastName: senderDetails.senderLastName,
-        senderWalletAddress: senderDetails.senderWalletAddress,
-        photoURL: senderDetails.photoURL,
+        senderFirstName: loginStore.initialData.firstName,
+        senderLastName: loginStore.initialData.lastName,
+        senderWalletAddress: loginStore.initialData.walletAddress,
+        photoURL: loginStore.userAvatar,
         location: item.location,
         locationPreview: item.locationPreview,
         mimetype: item.mimetype,
@@ -458,11 +452,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     const parentIndex = messages.findIndex(
       (item) => item._id === currentMessage?.mainMessage?.id
     );
-    console.log(
-      //@ts-ignore
-      giftedRef.current?._messageContainerRef?.current?.scrollToIndex,
-      "parent Index"
-    );
+
     //@ts-ignore
     giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
       animated: true,
@@ -540,6 +530,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       showInChannel: showInChannel,
       push: true,
     };
+    console.log(data);
 
     if (isEditing) {
       sendReplaceMessageStanza(

@@ -664,8 +664,9 @@ export class ChatStore {
 
   //subscribes to all default chats mestioned in config
   subscribeToDefaultChats = () => {
-    Object.entries(defaultChats).forEach(([key]) => {
-      const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
+    defaultChats.forEach((chat) => {
+      const jid = chat.jid + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
+      console.log(jid)
       const manipulatedWalletAddress = underscoreManipulation(
         this.stores.loginStore.initialData.walletAddress
       );
