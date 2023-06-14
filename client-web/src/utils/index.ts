@@ -246,6 +246,7 @@ function findFirebaseConfig(input: string[]) {
 }
 
 export function getFirebaseConfigFromString(input: string) {
+  if(!input) return {}
   const objects = findObjectInString(input);
   const configString = findFirebaseConfig(objects)
   const configJson = preprocessInputKeysToJson(configString);

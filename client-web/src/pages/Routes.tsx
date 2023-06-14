@@ -142,11 +142,14 @@ export const Routes = () => {
     }
 
     setLoading(false);
-    try {
-      const payload = await onMessageListener();
-      sendBrowserNotification(payload.notification.body, () => {});
-    } catch (error) {
-      console.log(error);
+
+    if (appConfig.firebaseWebConfigString) {
+      try {
+        const payload = await onMessageListener();
+        sendBrowserNotification(payload.notification.body, () => {});
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
