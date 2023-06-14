@@ -175,7 +175,7 @@ export const createMessageObject = (messageDetails = []) => {
           const parsedMessage = JSON.parse(item.attrs.mainMessage);
           const mainMessage: IMainMessage = {
             text: parsedMessage.text || "",
-            id: parsedMessage?.id,
+            id: parsedMessage?.id && parsedMessage.id.toString(),
             userName: parsedMessage.userName || "",
             createdAt: parsedMessage.createdAt,
             fileName: parsedMessage.fileName,

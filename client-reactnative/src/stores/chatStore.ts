@@ -622,7 +622,6 @@ export class ChatStore {
   };
 
   updateAllRoomsInfo = async () => {
-    console.log("callesadnmdckjnabksjbc");
     let map: any = { isUpdated: 0 };
     this.roomList.forEach((item) => {
       const latestMessage = this.messages
@@ -633,9 +632,7 @@ export class ChatStore {
             b: { createdAt: string | number | Date }
           ) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )[0];
-      console.log("kajncjksan: ", latestMessage);
       if (latestMessage) {
-        console.log("lastmessage: ", latestMessage.createdAt);
         map[latestMessage?.roomJid] = {
           ...this.roomsInfoMap[latestMessage?.roomJid],
 
