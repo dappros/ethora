@@ -1,6 +1,7 @@
-import React from 'react';
-import {AlertDialog, Center, Button as NativeButton} from 'native-base';
+import React, { useRef } from 'react';
+import {AlertDialog, Box, Center, Button as NativeButton} from 'native-base';
 import {Button} from '../Button';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 export const DeleteDialog = ({
   open,
@@ -21,15 +22,16 @@ export const DeleteDialog = ({
   deleteButtonTitle?: string;
   cancelButtonTitle?: string;
 }) => {
-  const cancelRef = React.useRef(null);
+  const cancelRef = useRef(null);
   return (
-    <Center>
+    <Center >
       <AlertDialog
         leastDestructiveRef={cancelRef}
         isOpen={open}
         onClose={onClose}>
         <AlertDialog.Content>
-          <AlertDialog.CloseButton />
+          
+          <AlertDialog.CloseButton style={{position: 'absolute', right: 0, top: 0}} />
           <AlertDialog.Header>{title}</AlertDialog.Header>
           <AlertDialog.Body>{description}</AlertDialog.Body>
           <AlertDialog.Footer>
