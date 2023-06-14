@@ -116,7 +116,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
   return (
     <View style={{marginTop: hp('1%'), backgroundColor: 'white'}}>
       <HStack paddingX={wp('4%')}>
-        {itemsTransfersAllowed && collections.length > 0 && (
+        {itemsTransfersAllowed && (
           <ProfileTab
             isTabActive={activeAssetTab === 1}
             onPress={() => setActiveAssetTab(1)}
