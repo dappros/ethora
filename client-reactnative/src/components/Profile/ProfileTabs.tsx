@@ -1,26 +1,26 @@
-import {useNavigation} from '@react-navigation/native';
-import {HStack, VStack} from 'native-base';
-import React, {useState} from 'react';
-import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
+import { useNavigation } from "@react-navigation/native";
+import { HStack, VStack } from "native-base";
+import React, { useState } from "react";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import {
   coinImagePath,
   coinReplacedName,
   commonColors,
   itemsTransfersAllowed,
   textStyles,
-} from '../../../docs/config';
-import {IDocument, TBalance} from '../../stores/types';
-import {NftListItem} from '../Transactions/NftListItem';
-import {DocumentListItem} from './DocumentListItem';
-import {ProfileTab} from './ProfileTab';
+} from "../../../docs/config";
+import { IDocument, TBalance } from "../../stores/types";
+import { NftListItem } from "../Transactions/NftListItem";
+import { DocumentListItem } from "./DocumentListItem";
+import { ProfileTab } from "./ProfileTab";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {NftMediaModal} from '../NftMediaModal';
-import {HomeStackNavigationProp} from '../../navigation/types';
+} from "react-native-responsive-screen";
+import { NftMediaModal } from "../NftMediaModal";
+import { HomeStackNavigationProp } from "../../navigation/types";
 
-const renderItem = ({item, index}: {item: any; index: number}) => (
+const renderItem = ({ item, index }: { item: any; index: number }) => (
   <Item
     tokenSymbol={item.tokenSymbol}
     tokenName={item.tokenName}
@@ -39,18 +39,19 @@ const Item = ({
 }) => (
   <HStack
     paddingX={10}
-    justifyContent={'space-between'}
-    alignItems={'center'}
-    width={'full'}>
-    <HStack justifyContent={'center'} alignItems={'center'}>
+    justifyContent={"space-between"}
+    alignItems={"center"}
+    width={"full"}
+  >
+    <HStack justifyContent={"center"} alignItems={"center"}>
       <Image source={coinImagePath} style={styles.tokenIconStyle} />
 
       <Text style={styles.coinsItemText}>{/* {tokenSymbol} */}</Text>
     </HStack>
-    <VStack justifyContent={'center'} alignItems={'center'}>
+    <VStack justifyContent={"center"} alignItems={"center"}>
       <Text style={styles.coinsItemText}>{coinReplacedName}</Text>
     </VStack>
-    <VStack justifyContent={'center'} alignItems={'center'}>
+    <VStack justifyContent={"center"} alignItems={"center"}>
       <Text style={[styles.coinsItemText]}>
         {parseFloat(balance).toFixed(0)}
       </Text>
@@ -109,14 +110,14 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
 
   const [mediaModalData, setMediaModalData] = useState({
     open: false,
-    url: '',
-    mimetype: '',
+    url: "",
+    mimetype: "",
   });
 
   return (
-    <View style={{marginTop: hp('1%'), backgroundColor: 'white'}}>
-      <HStack paddingX={wp('4%')}>
-        {itemsTransfersAllowed && (
+    <View style={{ marginTop: hp("1%"), backgroundColor: "white" }}>
+      <HStack paddingX={wp("4%")}>
+        {itemsTransfersAllowed && !!nftItems.length && (
           <ProfileTab
             isTabActive={activeAssetTab === 1}
             onPress={() => setActiveAssetTab(1)}
@@ -143,7 +144,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
         )}
       </HStack>
 
-      <View style={{marginBottom: hp('34%'), backgroundColor: 'white'}}>
+      <View style={{ marginBottom: hp("34%"), backgroundColor: "white" }}>
         {activeAssetTab === 1 &&
           nftItems.length === 0 &&
           documents.length === 0 && (
@@ -154,14 +155,14 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
               keyExtractor={(item, index) => index.toString()}
             />
           )}
-        {activeAssetTab === 1 && (
+        {activeAssetTab === 1 && !!nftItems.length && (
           <FlatList
             data={nftItems}
-            renderItem={e => (
+            renderItem={(e) => (
               <RenderAssetItem
                 item={e.item}
                 onClick={() =>
-                  navigation.navigate('NftItemHistory', {
+                  navigation.navigate("NftItemHistory", {
                     item: e.item,
                     userWalletAddress: userWalletAddress,
                   })
@@ -182,11 +183,11 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
         {activeAssetTab === 2 && (
           <FlatList
             data={collections}
-            renderItem={e => (
+            renderItem={(e) => (
               <RenderAssetItem
                 item={e.item}
                 onClick={() =>
-                  navigation.navigate('NftItemHistory', {
+                  navigation.navigate("NftItemHistory", {
                     item: e.item,
                     userWalletAddress: userWalletAddress,
                   })
@@ -207,7 +208,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
         {activeAssetTab === 3 && (
           <FlatList
             data={documents}
-            renderItem={e => (
+            renderItem={(e) => (
               <DocumentListItem
                 item={e.item}
                 onAssetPress={() =>
@@ -218,7 +219,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
                   })
                 }
                 onItemPress={() => {
-                  navigation.navigate('DocumentHistoryScreen', {
+                  navigation.navigate("DocumentHistoryScreen", {
                     item: e.item,
                     userWalletAddress: userWalletAddress,
                   });
@@ -232,7 +233,9 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
       </View>
       <NftMediaModal
         modalVisible={mediaModalData.open}
-        closeModal={() => setMediaModalData(prev => ({...prev, open: false}))}
+        closeModal={() =>
+          setMediaModalData((prev) => ({ ...prev, open: false }))
+        }
         url={mediaModalData.url}
         mimetype={mediaModalData.mimetype}
       />
@@ -242,8 +245,8 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
-    height: hp('3%'),
-    width: hp('3%'),
+    height: hp("3%"),
+    width: hp("3%"),
   },
 
   mainContainerStyle: {
@@ -251,12 +254,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabText: {
-    fontSize: hp('1.97%'),
+    fontSize: hp("1.97%"),
     fontFamily: textStyles.boldFont,
   },
   coinsItemText: {
     fontFamily: textStyles.mediumFont,
-    fontSize: hp('1.97%'),
-    color: '#000000',
+    fontSize: hp("1.97%"),
+    color: "#000000",
   },
 });

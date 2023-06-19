@@ -80,7 +80,7 @@ export const TransactionsListItem = (props: TransactionListProps) => {
             <VStack ml={'2'}>
               <Box>
                 <Text fontSize={hp('1.7%')} fontWeight={'bold'}>
-                  {truncateString(name, 1)}
+                  {truncateString(name, 15)}
                 </Text>
               </Box>
               <Box>
