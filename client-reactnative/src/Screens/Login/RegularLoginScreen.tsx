@@ -100,7 +100,6 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
                 <Input
                   testID={'loginPassword'}
                   accessibilityLabel="Enter your password"
-                  maxLength={15}
                   marginBottom={2}
                   fontFamily={textStyles.lightFont}
                   fontSize={hp('1.6%')}

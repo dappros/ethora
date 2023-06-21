@@ -417,12 +417,14 @@ export class ChatStore {
     const { avatar, name, jid } = props;
     const anotherUserFirstname = name.split(" ")[0];
     const anotherUserLastname = name.split(" ")[1];
-    const xmppID = jid.split("@")[0];
-    const anotherUserWalletAddress = reverseUnderScoreManipulation(xmppID);
+    const manipulatedWalletAddress = jid.split("@")[0];
+    const anotherUserWalletAddress = reverseUnderScoreManipulation(
+      manipulatedWalletAddress
+    );
     //this will get the other user's Avatar and description
     retrieveOtherUserVcard(
       this.stores.loginStore.initialData.xmppUsername,
-      xmppID,
+      jid,
       this.xmpp
     );
 
@@ -630,7 +632,6 @@ export class ChatStore {
             b: { createdAt: string | number | Date }
           ) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )[0];
-
       if (latestMessage) {
         map[latestMessage?.roomJid] = {
           ...this.roomsInfoMap[latestMessage?.roomJid],
@@ -664,8 +665,8 @@ export class ChatStore {
 
   //subscribes to all default chats mestioned in config
   subscribeToDefaultChats = () => {
-    Object.entries(defaultChats).forEach(([key]) => {
-      const jid = key + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
+    defaultChats.forEach((chat) => {
+      const jid = chat.jid + this.stores.apiStore.xmppDomains.CONFERENCEDOMAIN;
       const manipulatedWalletAddress = underscoreManipulation(
         this.stores.loginStore.initialData.walletAddress
       );
@@ -744,7 +745,6 @@ export class ChatStore {
       }
 
       if (stanza.attrs.id === XMPP_TYPES.chatLinkInfo) {
-        console.log(stanza.attrs.type === "error", "getinfo stanza");
         if (stanza.attrs.type !== "error") {
           runInAction(() => {
             this.chatLinkInfo[stanza.attrs.from] =
@@ -803,10 +803,11 @@ export class ChatStore {
             anotherUserAvatar = item.children[0].children[0];
           }
         });
-        this.stores.otherUserStore.setDataFromVCard(
-          anotherUserDescription,
-          anotherUserAvatar
-        );
+        if (anotherUserAvatar && anotherUserDescription)
+          this.stores.loginStore.setOtherUserVcard({
+            anotherUserAvatar: anotherUserAvatar,
+            anotherUserDescription: anotherUserDescription,
+          });
       }
 
       //response when last message of the stack arrived
@@ -853,6 +854,7 @@ export class ChatStore {
               fullName = item.children[0];
             }
           });
+
           this.stores.loginStore.updateUserPhotoAndDescription(
             profilePhoto,
             profileDescription

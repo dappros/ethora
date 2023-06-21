@@ -562,10 +562,7 @@ export class WalletStore {
         runInAction(() => {
           this.offset = this.offset + response.data.limit;
           this.total = response.data.total;
-          this.anotherUserTransaction = [
-            ...this.anotherUserTransaction,
-            ...response.data.items,
-          ].map((item) => mapTransactions(item, walletAddress));
+          this.anotherUserTransaction = response.data.items.map((item) => mapTransactions(item, walletAddress));
         });
       }
     } catch (error) {
