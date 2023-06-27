@@ -32,7 +32,7 @@ export const createMessage = (
       mainMessage: undefined,
     },
     roomJID: from,
-    date: new Date().toISOString(),
+    date: new Date(+id.substring(0,13)).toISOString(),
     key: Date.now() + Number(id),
     coinsInMessage: 0,
     numberOfReplies: 0,

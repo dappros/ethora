@@ -26,7 +26,7 @@ import {
 } from "../../../constants";
 import xmpp from "../../../xmpp";
 import { IButtons } from "../../../pages/ChatInRoom/Chat";
-const coin = '/coin.png'
+const coin = "/coin.png";
 
 const avatarPreviewUrl = "https://icotar.com/initials/";
 
@@ -182,7 +182,6 @@ export const Message: React.FC<IMessage> = ({
       </Button>
     );
   };
-
   useEffect(() => {
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
@@ -369,7 +368,7 @@ export const Message: React.FC<IMessage> = ({
                   }}
                 >
                   {differenceInHours(new Date(), new Date(message.date)) > 5
-                    ? format(new Date(message.date), "h:mm a")
+                    ? format(new Date(message.date), "dd.MM hh:mm a")
                     : formatDistance(
                         subDays(new Date(message.date), 0),
                         new Date(),
