@@ -18,14 +18,14 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box } from "@mui/system";
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from "../../../constants";
 import xmpp from "../../../xmpp";
 import { IButtons } from "../../../pages/ChatInRoom/Chat";
+import {
+  isAudtioMimetype,
+  isImageMimetype,
+  isPdfMimetype,
+  isVideoMimetype,
+} from "../../../utils/mimetypes";
 const coin = "/coin.png";
 
 const avatarPreviewUrl = "https://icotar.com/initials/";
@@ -117,7 +117,7 @@ export const Message: React.FC<IMessage> = ({
             <br />
           </strong>
           {message.data.mainMessage?.imageLocation &&
-            imageMimetypes[message.data.mainMessage.mimeType] && (
+            isImageMimetype(message.data.mainMessage.mimeType) && (
               <Card sx={{ maxWidth: 200 }}>
                 <CardActionArea onClick={fullViewImage}>
                   <CardMedia
@@ -148,8 +148,8 @@ export const Message: React.FC<IMessage> = ({
           ) : null} */}
 
           {message.data.mainMessage?.imageLocation &&
-            videoMimetypes[message.data.mainMessage?.mimeType] && (
-              <video controls width="200px">
+            isVideoMimetype(message.data.mainMessage?.mimeType) && (
+              <video controls width="300px">
                 <source
                   src={message.data.mainMessage.imageLocation}
                   type={message.data.mainMessage.mimeType}
@@ -160,7 +160,7 @@ export const Message: React.FC<IMessage> = ({
             )}
 
           {message.data.mainMessage?.imageLocation &&
-            audioMimetypes[message.data.mainMessage?.mimeType] && (
+            isAudtioMimetype(message.data.mainMessage?.mimeType) && (
               <audio controls>
                 <source
                   src={message.data.mainMessage.imageLocation}
@@ -272,7 +272,7 @@ export const Message: React.FC<IMessage> = ({
           )}
 
           {message.data.isMediafile &&
-            !!imageMimetypes[message.data.mimetype] && (
+            !!isImageMimetype(message.data.mimetype) && (
               <Card sx={{ maxWidth: 200 }}>
                 <CardActionArea onClick={fullViewImage}>
                   <CardMedia
@@ -290,7 +290,7 @@ export const Message: React.FC<IMessage> = ({
               </Card>
             )}
 
-          {message.data.isMediafile && pdfMimemtype[message.data.mimetype] && (
+          {message.data.isMediafile && isPdfMimetype(message.data.mimetype) && (
             <Card sx={{ maxWidth: 200 }}>
               <CardActionArea
                 onClick={(event) => {
@@ -314,8 +314,8 @@ export const Message: React.FC<IMessage> = ({
           )}
 
           {message.data.isMediafile &&
-            !!videoMimetypes[message.data.mimetype] && (
-              <video controls width="200px">
+            !!isVideoMimetype(message.data.mimetype) && (
+              <video controls width={400} height={400}>
                 <source
                   src={message.data.location}
                   type={message.data.mimetype}
@@ -326,7 +326,7 @@ export const Message: React.FC<IMessage> = ({
             )}
 
           {message.data.isMediafile &&
-            !!audioMimetypes[message.data.mimetype] && (
+            !!isAudtioMimetype(message.data.mimetype) && (
               <audio controls>
                 <source
                   src={message.data.location}
