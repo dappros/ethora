@@ -6,7 +6,7 @@ import UsersTable from "../../components/UsersTable/UsersTable";
 export default function Owner() {
   return (
     <div style={{ padding: "20px" }}>
-      <Container maxWidth={"lg"}>
+      <Container maxWidth={false}>
         <Box style={{ marginTop: "20px" }}>
           <Apps />
         </Box>
