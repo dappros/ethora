@@ -31,10 +31,11 @@ import {
 
 const coin = "/coin.png";
 
-const docsIconUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png";
+const docsIconUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png";
 const excelIconUrl =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png";
-const fileIcon = 'https://cdn-icons-png.flaticon.com/512/2246/2246713.png'
+const fileIcon = "https://cdn-icons-png.flaticon.com/512/2246/2246713.png";
 const avatarPreviewUrl = "https://icotar.com/initials/";
 
 export interface IMessage {
@@ -277,10 +278,9 @@ export const Message: React.FC<IMessage> = ({
               backgroundColor: "transparent !important",
               border: "none !important",
               position: "relative",
-              flexDirection: 'column'
+              flexDirection: "column",
             }}
           >
-            
             <CardMedia
               sx={{
                 height: 150,
@@ -292,7 +292,7 @@ export const Message: React.FC<IMessage> = ({
               image={docsIconUrl}
               alt={message.data.originalName}
             />
-            <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
+            <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
               {message.data.originalName}
             </Typography>
           </CardActionArea>
@@ -312,7 +312,7 @@ export const Message: React.FC<IMessage> = ({
               backgroundColor: "transparent !important",
               border: "none !important",
               position: "relative",
-              flexDirection: 'column'
+              flexDirection: "column",
             }}
           >
             <CardMedia
@@ -326,7 +326,7 @@ export const Message: React.FC<IMessage> = ({
               image={excelIconUrl}
               alt={message.data.originalName}
             />
-             <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
+            <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
               {message.data.originalName}
             </Typography>
           </CardActionArea>
@@ -335,7 +335,7 @@ export const Message: React.FC<IMessage> = ({
     }
 
     return (
-      <Box >
+      <Box>
         <CardActionArea
           onClick={() => openFileInNewTab(message.data.location)}
           sx={{
@@ -346,7 +346,7 @@ export const Message: React.FC<IMessage> = ({
             backgroundColor: "transparent !important",
             border: "none !important",
             position: "relative",
-            flexDirection: 'column'
+            flexDirection: "column",
           }}
         >
           <CardMedia
@@ -360,9 +360,9 @@ export const Message: React.FC<IMessage> = ({
             image={fileIcon}
             alt={message.data.originalName}
           />
-           <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
-              {message.data.originalName}
-            </Typography>
+          <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
+            {message.data.originalName}
+          </Typography>
         </CardActionArea>
       </Box>
     );
@@ -423,7 +423,26 @@ export const Message: React.FC<IMessage> = ({
         )}
 
         <KitMessage.CustomContent>
-          {/* Main Message */}
+          <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
+            {!isThread && !message.data.isReply && (
+              <IconButton
+                aria-label="more"
+                id="long-button"
+                aria-controls={openMenu ? "long-menu" : undefined}
+                aria-expanded={openMenu ? "true" : undefined}
+                aria-haspopup="true"
+                sx={{
+                  position: "absolute",
+                  right: -20,
+                  top: -10,
+                  zIndex: 99999,
+                }}
+                onClick={openDialogMenu}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+          </Box>
           {message.data.isReply && !isThread && <ReplyComponent />}
           {(position.type === "first" || position.type === "single") && (
             <span
@@ -442,21 +461,11 @@ export const Message: React.FC<IMessage> = ({
                 {firstName} {lastName}
                 <br />
               </strong>
-              {!isThread && !message.data.isReply && (
-                <IconButton
-                  aria-label="more"
-                  id="long-button"
-                  aria-controls={openMenu ? "long-menu" : undefined}
-                  aria-expanded={openMenu ? "true" : undefined}
-                  aria-haspopup="true"
-                  onClick={openDialogMenu}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              )}
             </span>
           )}
+
           {renderMedia()}
+
           {!message.data.isMediafile && (
             <div>
               <span
@@ -467,7 +476,6 @@ export const Message: React.FC<IMessage> = ({
                   ),
                 }}
               />
-              {/*FOOTER */}
               <div
                 style={{
                   display: "flex",
