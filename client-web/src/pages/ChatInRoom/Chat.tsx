@@ -65,7 +65,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
-import {Helmet} from 'react-helmet'
+import { Helmet } from "react-helmet";
 import { createMainMessageForThread } from "../../utils/createMessage";
 import Dompurify from "dompurify";
 
@@ -172,7 +172,6 @@ export function ChatInRoom() {
     users_cnt: "",
   });
 
-
   const [transferDialogData, setTransferDialogData] = useState<{
     open: boolean;
     message: TMessageHistory | null;
@@ -277,8 +276,9 @@ export function ChatInRoom() {
 
   const getConversationInfo = (roomJID: string) => {
     const messagesInRoom = messages
-      .filter((item: TMessageHistory) => item.roomJID === roomJID)
+      .filter((item: TMessageHistory) => item.data.roomJid === roomJID)
       .slice(-1);
+
     if (loaderArchive && messagesInRoom.length <= 0) {
       return "Loading...";
     }
@@ -376,7 +376,7 @@ export function ChatInRoom() {
           waveForm: "",
           attachmentId: item._id,
           wrappable: true,
-          roomJid: currentRoom
+          roomJid: currentRoom,
         };
 
         const additionalDataForThread = {
@@ -559,7 +559,6 @@ export function ChatInRoom() {
 
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
-     
       <MainContainer responsive>
         <Sidebar position="left" scrollable={false}>
           <Search placeholder="Search..." />
