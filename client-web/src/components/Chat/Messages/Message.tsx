@@ -22,12 +22,19 @@ import xmpp from "../../../xmpp";
 import { IButtons } from "../../../pages/ChatInRoom/Chat";
 import {
   isAudtioMimetype,
+  isDocumentMimetype,
+  isExcelMimetype,
   isImageMimetype,
   isPdfMimetype,
   isVideoMimetype,
 } from "../../../utils/mimetypes";
+
 const coin = "/coin.png";
 
+const docsIconUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png";
+const excelIconUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png";
+const fileIcon = 'https://cdn-icons-png.flaticon.com/512/2246/2246713.png'
 const avatarPreviewUrl = "https://icotar.com/initials/";
 
 export interface IMessage {
@@ -87,6 +94,10 @@ export const Message: React.FC<IMessage> = ({
   const rightClick = (event: React.SyntheticEvent<HTMLElement>) => {
     event.preventDefault();
     openDialogMenu();
+  };
+
+  const openFileInNewTab = (link: string) => {
+    window.open(link, "_blank");
   };
 
   const ReplyComponent = () => {
@@ -182,13 +193,188 @@ export const Message: React.FC<IMessage> = ({
       </Button>
     );
   };
+
+  const renderMedia = () => {
+    if (!message.data.isMediafile) {
+      return null;
+    }
+    const mimetype = message.data.mimetype;
+    if (isImageMimetype(mimetype)) {
+      return (
+        <Card sx={{ maxWidth: 200 }}>
+          <CardActionArea onClick={fullViewImage}>
+            <CardMedia
+              style={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={message.data.location}
+              alt={message.data.originalName}
+            />
+          </CardActionArea>
+        </Card>
+      );
+    }
+    if (isPdfMimetype(mimetype)) {
+      return (
+        <Card sx={{ maxWidth: 200 }}>
+          <CardActionArea
+            onClick={(event) => {
+              event.preventDefault();
+              window.open(message.data.location, "_blank");
+            }}
+          >
+            <CardMedia
+              style={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={message.data.locationPreview}
+              alt={message.data.originalName}
+            />
+          </CardActionArea>
+        </Card>
+      );
+    }
+
+    if (isVideoMimetype(mimetype)) {
+      return (
+        <video controls width={400} height={400}>
+          <source
+            src={message.data.location}
+            type={mimetype}
+            title={message.data.originalName}
+          />
+          Sorry, your browser doesn't support videos.
+        </video>
+      );
+    }
+    if (isAudtioMimetype(mimetype)) {
+      return (
+        <audio controls>
+          <source src={message.data.location} type={mimetype} />
+          Your browser does not support the audio element.
+        </audio>
+      );
+    }
+
+    if (isDocumentMimetype(mimetype)) {
+      return (
+        <Box>
+          <CardActionArea
+            onClick={() => openFileInNewTab(message.data.location)}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              fontSize: 150,
+              backgroundColor: "transparent !important",
+              border: "none !important",
+              position: "relative",
+              flexDirection: 'column'
+            }}
+          >
+            
+            <CardMedia
+              sx={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={docsIconUrl}
+              alt={message.data.originalName}
+            />
+            <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
+              {message.data.originalName}
+            </Typography>
+          </CardActionArea>
+        </Box>
+      );
+    }
+    if (isExcelMimetype(mimetype)) {
+      return (
+        <Box sx={{ color: "primary" }}>
+          <CardActionArea
+            onClick={() => openFileInNewTab(message.data.location)}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              fontSize: 150,
+              backgroundColor: "transparent !important",
+              border: "none !important",
+              position: "relative",
+              flexDirection: 'column'
+            }}
+          >
+            <CardMedia
+              sx={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={excelIconUrl}
+              alt={message.data.originalName}
+            />
+             <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
+              {message.data.originalName}
+            </Typography>
+          </CardActionArea>
+        </Box>
+      );
+    }
+
+    return (
+      <Box >
+        <CardActionArea
+          onClick={() => openFileInNewTab(message.data.location)}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            fontSize: 150,
+            backgroundColor: "transparent !important",
+            border: "none !important",
+            position: "relative",
+            flexDirection: 'column'
+          }}
+        >
+          <CardMedia
+            sx={{
+              height: 150,
+              objectFit: "cover",
+              objectPosition: "left",
+            }}
+            component="img"
+            height="150"
+            image={fileIcon}
+            alt={message.data.originalName}
+          />
+           <Typography sx={{fontSize: 12, fontWeight: 'bold'}}>
+              {message.data.originalName}
+            </Typography>
+        </CardActionArea>
+      </Box>
+    );
+  };
   useEffect(() => {
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
     }
     setMessageDirection(isSameUser ? "outgoing" : "incoming");
   }, []);
-
+  if (message.data.isMediafile) {
+  }
   return (
     <div is={"Message"}>
       {!!position.separator && (
@@ -270,72 +456,7 @@ export const Message: React.FC<IMessage> = ({
               )}
             </span>
           )}
-
-          {message.data.isMediafile &&
-            !!isImageMimetype(message.data.mimetype) && (
-              <Card sx={{ maxWidth: 200 }}>
-                <CardActionArea onClick={fullViewImage}>
-                  <CardMedia
-                    style={{
-                      height: 150,
-                      objectFit: "cover",
-                      objectPosition: "left",
-                    }}
-                    component="img"
-                    height="150"
-                    image={message.data.location}
-                    alt={message.data.originalName}
-                  />
-                </CardActionArea>
-              </Card>
-            )}
-
-          {message.data.isMediafile && isPdfMimetype(message.data.mimetype) && (
-            <Card sx={{ maxWidth: 200 }}>
-              <CardActionArea
-                onClick={(event) => {
-                  event.preventDefault();
-                  window.open(message.data.location, "_blank");
-                }}
-              >
-                <CardMedia
-                  style={{
-                    height: 150,
-                    objectFit: "cover",
-                    objectPosition: "left",
-                  }}
-                  component="img"
-                  height="150"
-                  image={message.data.locationPreview}
-                  alt={message.data.originalName}
-                />
-              </CardActionArea>
-            </Card>
-          )}
-
-          {message.data.isMediafile &&
-            !!isVideoMimetype(message.data.mimetype) && (
-              <video controls width={400} height={400}>
-                <source
-                  src={message.data.location}
-                  type={message.data.mimetype}
-                  title={message.data.originalName}
-                />
-                Sorry, your browser doesn't support videos.
-              </video>
-            )}
-
-          {message.data.isMediafile &&
-            !!isAudtioMimetype(message.data.mimetype) && (
-              <audio controls>
-                <source
-                  src={message.data.location}
-                  type={message.data.mimetype}
-                />
-                Your browser does not support the audio element.
-              </audio>
-            )}
-
+          {renderMedia()}
           {!message.data.isMediafile && (
             <div>
               <span

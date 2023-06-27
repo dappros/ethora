@@ -1,5 +1,7 @@
 import {
   audioMimetypes,
+  docsMimetypes,
+  excelMimetypes,
   imageMimetypes,
   pdfMimemtype,
   videoMimetypes,
@@ -17,4 +19,10 @@ export const isVideoMimetype = (mimetype: string) => {
 };
 export const isPdfMimetype = (mimetype: string) => {
   return !!pdfMimemtype[mimetype];
+};
+export const isDocumentMimetype = (mimetype: string) => {
+  return !!docsMimetypes[mimetype];
+};
+export const isExcelMimetype = (mimetype: string) => {
+  return !!excelMimetypes[mimetype];
 };
