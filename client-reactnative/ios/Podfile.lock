@@ -457,8 +457,6 @@ PODS:
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
-  - react-native-rsa-native (2.0.5):
-    - React
   - react-native-safe-area-context (4.5.0):
     - RCT-Folly
     - RCTRequired
@@ -689,7 +687,6 @@ DEPENDENCIES:
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
-  - react-native-rsa-native (from `../node_modules/react-native-rsa-native`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-tracking-transparency (from `../node_modules/react-native-tracking-transparency`)
@@ -835,8 +832,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-pdf"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
-  react-native-rsa-native:
-    :path: "../node_modules/react-native-rsa-native"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-splash-screen:
@@ -988,7 +983,6 @@ SPEC CHECKSUMS:
   react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
   react-native-pdf: 33c622cbdf776a649929e8b9d1ce2d313347c4fa
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
-  react-native-rsa-native: 12132eb627797529fdb1f0d22fd0f8f9678df64a
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-tracking-transparency: 25ff1ff866e338c137c818bdec20526bb05ffcc1
@@ -1038,4 +1032,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f909417fa89282f669c689055fe6f35a5e74f9fd
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.12.0
