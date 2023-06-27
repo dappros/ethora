@@ -226,6 +226,7 @@ export function ChatInRoom() {
     if (roomJID) {
       loadMessages(roomJID);
       setShowMetaNavigation(true);
+      setRoomDetails(roomJID);
     }
   }, [roomJID]);
 
@@ -251,11 +252,16 @@ export function ChatInRoom() {
   const chooseRoom = (jid: string) => {
     history.push("/chat/" + jid.split("@")[0]);
     loadMessages(jid);
+    setRoomDetails(jid);
+  };
+
+  const setRoomDetails = (jid: string) => {
+    setCurrentRoom(jid);
+    const currentRoomData = userChatRooms.find((e) => e.jid === jid);
+    console.log(currentRoomData);
+    setRoomData(currentRoomData);
   };
   const loadMessages = (jid: string) => {
-    setCurrentRoom(jid);
-    const currentRoomData = userChatRooms.filter((e) => e.jid === jid)[0];
-    setRoomData(currentRoomData);
     useStoreState.getState().clearCounterChatRoom(jid);
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
 
@@ -314,7 +320,7 @@ export function ChatInRoom() {
             isSystemMessage: false,
             tokenAmount: 0,
             receiverMessageId: currentEditMessage.data.receiverMessageId,
-            mucname: roomData.name,
+            mucname: roomData?.name,
             photoURL: userAvatar,
             roomJid: roomJID,
             isReply: false,
@@ -553,10 +559,17 @@ export function ChatInRoom() {
     handleCloseDeleteMessageDialog();
   };
 
+  const roomLastSeen =
+    messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
+    "Active " +
+      formatDistance(
+        subDays(new Date(mainWindowMessages.slice(-1)[0].date), 0),
+        new Date(),
+        { addSuffix: true }
+      );
   //Delete confirmation dialogue component
 
   //component to render File upload dialog box
-
   return (
     <Box style={{ paddingBlock: "20px", height: "100%" }}>
       <MainContainer responsive>
@@ -598,33 +611,19 @@ export function ChatInRoom() {
           }}
         >
           <ChatContainer>
-            {!!roomData && (
+            {!!roomData?.name && (
               <ConversationHeader
                 style={{
                   height: "70px",
                 }}
               >
                 <ConversationHeader.Back />
-                {mainWindowMessages.length > 0 && (
-                  <ConversationHeader.Content
-                    userName={roomData.name}
-                    onClick={handleChatDetailClick}
-                    info={
-                      messages.filter(
-                        (item: TMessageHistory) => item.roomJID === currentRoom
-                      ).length > 0 &&
-                      "Active " +
-                        formatDistance(
-                          subDays(
-                            new Date(mainWindowMessages.slice(-1)[0].date),
-                            0
-                          ),
-                          new Date(),
-                          { addSuffix: true }
-                        )
-                    }
-                  />
-                )}
+
+                <ConversationHeader.Content
+                  userName={roomData.name}
+                  onClick={handleChatDetailClick}
+                  info={roomLastSeen}
+                />
                 <ConversationHeader.Actions>
                   <ChatAudioMessageDialog
                     profile={profile}
