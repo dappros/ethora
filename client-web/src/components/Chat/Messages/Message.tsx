@@ -274,7 +274,6 @@ export const Message: React.FC<IMessage> = ({
               justifyContent: "center",
               alignItems: "center",
               display: "flex",
-              fontSize: 150,
               backgroundColor: "transparent !important",
               border: "none !important",
               position: "relative",
@@ -284,7 +283,8 @@ export const Message: React.FC<IMessage> = ({
             <CardMedia
               sx={{
                 height: 150,
-                objectFit: "cover",
+                objectFit: "contain",
+
                 objectPosition: "left",
               }}
               component="img"
@@ -308,7 +308,6 @@ export const Message: React.FC<IMessage> = ({
               justifyContent: "center",
               alignItems: "center",
               display: "flex",
-              fontSize: 150,
               backgroundColor: "transparent !important",
               border: "none !important",
               position: "relative",
@@ -318,7 +317,7 @@ export const Message: React.FC<IMessage> = ({
             <CardMedia
               sx={{
                 height: 150,
-                objectFit: "cover",
+                objectFit: "contain",
                 objectPosition: "left",
               }}
               component="img"
@@ -342,7 +341,6 @@ export const Message: React.FC<IMessage> = ({
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
-            fontSize: 150,
             backgroundColor: "transparent !important",
             border: "none !important",
             position: "relative",
@@ -352,8 +350,7 @@ export const Message: React.FC<IMessage> = ({
           <CardMedia
             sx={{
               height: 150,
-              objectFit: "cover",
-              objectPosition: "left",
+              objectFit: "contain",
             }}
             component="img"
             height="150"
@@ -466,8 +463,8 @@ export const Message: React.FC<IMessage> = ({
 
           {renderMedia()}
 
-          {!message.data.isMediafile && (
-            <div>
+          <Box>
+            {!message.data.isMediafile && (
               <span
                 dangerouslySetInnerHTML={{
                   __html: message.body.replace(
@@ -476,63 +473,61 @@ export const Message: React.FC<IMessage> = ({
                   ),
                 }}
               />
-              <div
+            )}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 1,
+                minWidth: 200,
+                color:
+                  messageDirection === "incoming"
+                    ? "rgb(110, 169, 215)"
+                    : "#c6e3fa",
+                flexDirection:
+                  messageDirection === "incoming" ? "row" : "row-reverse",
+              }}
+            >
+              <Box
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 5,
-                  minWidth: 200,
-                  color:
-                    messageDirection === "incoming"
-                      ? "rgb(110, 169, 215)"
-                      : "#c6e3fa",
-                  flexDirection:
-                    messageDirection === "incoming" ? "row" : "row-reverse",
+                  fontSize: 12,
                 }}
               >
-                <div
-                  style={{
-                    fontSize: 12,
+                {differenceInHours(new Date(), new Date(message.date)) > 5
+                  ? format(new Date(message.date), "dd.MM hh:mm a")
+                  : formatDistance(
+                      subDays(new Date(message.date), 0),
+                      new Date(),
+                      {
+                        addSuffix: true,
+                      }
+                    )}
+              </Box>
+              {message.coinsInMessage > 0 && (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <div style={{ fontSize: 12 }}>{message?.coinsInMessage}</div>
+                  <img
+                    src={coin}
+                    style={{ width: 25, height: 25 }}
+                    alt={"coin"}
+                  />
+                </div>
+              )}
+              {message.data.isEdited && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    marginLeft: 1,
+                    marginRight: 1,
                   }}
                 >
-                  {differenceInHours(new Date(), new Date(message.date)) > 5
-                    ? format(new Date(message.date), "dd.MM hh:mm a")
-                    : formatDistance(
-                        subDays(new Date(message.date), 0),
-                        new Date(),
-                        {
-                          addSuffix: true,
-                        }
-                      )}
-                </div>
-                {message.coinsInMessage > 0 && (
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div style={{ fontSize: 12 }}>
-                      {message?.coinsInMessage}
-                    </div>
-                    <img
-                      src={coin}
-                      style={{ width: 25, height: 25 }}
-                      alt={"coin"}
-                    />
-                  </div>
-                )}
-                {message.data.isEdited && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-end",
-                      marginLeft: 3,
-                      marginRight: 3,
-                    }}
-                  >
-                    <Typography fontSize={12}>edited</Typography>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                  <Typography fontSize={12}>edited</Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
         </KitMessage.CustomContent>
 
         {/*{(position.type === "last" || position.type === "single") && (*/}
