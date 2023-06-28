@@ -35,41 +35,7 @@ import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
 import { dateToHumanReadableFormat } from "../../utils";
 
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
 type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string | any },
-  b: { [key in Key]: number | string | any }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 
 type ModalType =
   | "deleteUser"
@@ -158,11 +124,19 @@ export default function UsersTable() {
   const getUsers = async (
     appId: string | null,
     limit: number = ROWS_PER_PAGE,
-    offset: number = 0
+    offset: number = 0,
+    orderBy?: string,
+    order?: string
   ) => {
     try {
       if (appId) {
-        const getUsersResp = await getAppUsers(appId, limit, offset);
+        const getUsersResp = await getAppUsers(
+          appId,
+          limit,
+          offset,
+          orderBy,
+          order
+        );
         const { data } = getUsersResp;
         setPagination({
           limit: data.limit,
@@ -243,13 +217,17 @@ export default function UsersTable() {
     setUsers(oldUsers);
   };
 
-  const handleRequestSort = (
+  const handleRequestSort = async (
     event: React.MouseEvent<unknown>,
     property: keyof IUser
   ) => {
     const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const currentOrder = isAsc ? "desc" : "asc";
+    setOrder(currentOrder);
     setOrderBy(property);
+    const limit = 50;
+    const users = await getUsers(currentApp, limit, 0, property, currentOrder);
+    setUsers(users);
   };
   const openActionModal = (type: ModalType) => {
     setUsersActionModal({ open: true, type });
@@ -431,7 +409,7 @@ export default function UsersTable() {
               rowCount={users.length}
             />
             <TableBody>
-              {stableSort(users, getComparator(order, orderBy))
+              {users
                 .slice(
                   page * ROWS_PER_PAGE,
                   page * ROWS_PER_PAGE + ROWS_PER_PAGE

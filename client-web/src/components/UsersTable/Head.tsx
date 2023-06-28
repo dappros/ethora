@@ -25,9 +25,10 @@ interface UsersTableProps {
 interface HeadCell {
   disablePadding: boolean;
   id: keyof IUser | "actions";
+  disableSorting: boolean;
   label: string;
   numeric: boolean;
-  width?: number
+  width?: number;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -35,62 +36,65 @@ const headCells: readonly HeadCell[] = [
     id: "appId",
     numeric: false,
     disablePadding: true,
+    disableSorting: true,
     label: "App Id",
-    width: 100
+    width: 100,
   },
   {
     id: "firstName",
     numeric: true,
     disablePadding: false,
+    disableSorting: false,
     label: "First Name",
-    width: 100
-
+    width: 100,
   },
   {
     id: "lastName",
     numeric: true,
     disablePadding: false,
+    disableSorting: false,
     label: "Last Name",
-    width: 100
-
+    width: 100,
   },
   {
     id: "tags",
     numeric: true,
     disablePadding: false,
+    disableSorting: true,
     label: "User Tags",
-    width: 100
-
+    width: 100,
   },
   {
     id: "email",
     numeric: true,
     disablePadding: false,
+    disableSorting: false,
     label: "Email",
-    width: 100
-
+    width: 100,
   },
   {
-    id: "lastSeen",
+    id: "createdAt",
     numeric: true,
     disablePadding: false,
+    disableSorting: false,
     label: "Created/Seen",
-    width: 400
+    width: 400,
   },
   {
     id: "authMethod",
     numeric: true,
     disablePadding: false,
+    disableSorting: true,
     label: "Auth method",
-    width: 400
+    width: 400,
   },
   {
     id: "actions",
     numeric: true,
     disablePadding: false,
+    disableSorting: true,
     label: "Actions",
-    width: 100
-
+    width: 100,
   },
 ];
 export function UsersTableHead(props: UsersTableProps) {
@@ -135,6 +139,7 @@ export function UsersTableHead(props: UsersTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
+              disabled={headCell.disableSorting}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
