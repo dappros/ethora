@@ -71,8 +71,8 @@ export type TSelectedIds = {
   tags: string[];
 };
 export default function UsersTable() {
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] = useState<keyof IUser>("createdAt");
   const [selectedIds, setSelectedIds] = useState<TSelectedIds[]>([]);
   const [page, setPage] = useState(0);
   const [userActionModal, setUsersActionModal] = useState<{
@@ -152,7 +152,7 @@ export default function UsersTable() {
   };
 
   const getInitialUsers = async (appId: string) => {
-    const allUsers = await getUsers(appId);
+    const allUsers = await getUsers(appId, ROWS_PER_PAGE, 0, orderBy, order);
     setUsers(allUsers);
     if (selectedIds.length) {
       const updatedIds = selectedIds.map((u) => {
@@ -437,16 +437,9 @@ export default function UsersTable() {
                           }}
                         />
                       </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.appId}
-                      </TableCell>
-                      <TableCell align="right">{row.firstName}</TableCell>
-                      <TableCell align="right">{row.lastName}</TableCell>
+
+                      <TableCell align="center">{row.firstName}</TableCell>
+                      <TableCell align="center">{row.lastName}</TableCell>
                       <TableCell align="center">
                         <Box
                           sx={{
@@ -471,8 +464,8 @@ export default function UsersTable() {
                       <TableCell align="right">
                         {row.email || "No Email"}
                       </TableCell>
-                      <TableCell align="center">
-                        <p style={{ width: 150 }}>
+                      <TableCell align="right">
+                        <p style={{ maxWidth: 200 }}>
                           {dateToHumanReadableFormat(row.createdAt)}
                         </p>
                         <p>

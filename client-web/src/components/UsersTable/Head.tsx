@@ -32,14 +32,7 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  {
-    id: "appId",
-    numeric: false,
-    disablePadding: true,
-    disableSorting: true,
-    label: "App Id",
-    width: 100,
-  },
+ 
   {
     id: "firstName",
     numeric: true,
