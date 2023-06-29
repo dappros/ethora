@@ -11,7 +11,9 @@ type FormData = {
   ipfsUrl?: string;
   adminEmail: string;
   adminPassword: string;
+  postmarkToken: string;
 };
+
 export const Install = () => {
   const {
     register,
@@ -56,6 +58,10 @@ export const Install = () => {
         <div className="my-2">
           <p className="font-bold">Root domain</p>
           <Input {...register("webAddress", { required: true })} label="" />
+        </div>
+        <div className="my-2">
+          <p className="font-bold">Postmark token</p>
+          <Input {...register("postmarkToken", { required: true })} label="" />
         </div>
         {/* <div className="my-2">
           <p className="font-bold">Web app address</p>
