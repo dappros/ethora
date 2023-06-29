@@ -44,8 +44,7 @@ export const Install = () => {
       <div className="container mx-auto px-4 my-3">
         <div className="text-center">
           <h1 className="font-bold text-lg">
-            Welcome to Dappros Platform (DP) dedicated server (v23.06)
-            installation!
+            Welcome to Ethora (Dappros Platform) Dedicated Server v23.06 installation!
           </h1>
         </div>
         <div className="my-2">
@@ -57,10 +56,12 @@ export const Install = () => {
         </div>
         <div className="my-2">
           <p className="font-bold">Root domain</p>
+          <p>your main domain name which will host all the services (e.g. if you specify “ethora.com” then your API endpoint will be api.ethora.com, your web app app.ethora.com etc)</p>
           <Input {...register("webAddress", { required: true })} label="" />
         </div>
         <div className="my-2">
           <p className="font-bold">Postmark token</p>
+          <p>used by the server for e-mailing your users (account confirmation etc) - create a Postmark account and post your token here</p>
           <Input {...register("postmarkToken", { required: true })} label="" />
         </div>
         {/* <div className="my-2">
@@ -137,7 +138,7 @@ export const Install = () => {
             type="button"
             className="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
           >
-            Proceed & Initialize this DP Server
+            Proceed & Initialize this Server
           </button>
         </div>
       </div>
