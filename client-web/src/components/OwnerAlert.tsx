@@ -32,7 +32,7 @@ export const OwnerAlert: React.FC<IOwnerAlert> = ({ onClose }) => {
         }}
       >
         <ListItem sx={{ display: "list-item" }}>
-          Create: use the green “+” icon.
+          Create: use the blue “+” icon.
         </ListItem>
         <ListItem sx={{ display: "list-item" }}>
           Manage / View: click one of the available apps in the list.
