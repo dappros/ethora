@@ -18,16 +18,24 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box } from "@mui/system";
-import {
-  audioMimetypes,
-  imageMimetypes,
-  pdfMimemtype,
-  videoMimetypes,
-} from "../../../constants";
 import xmpp from "../../../xmpp";
 import { IButtons } from "../../../pages/ChatInRoom/Chat";
-const coin = '/coin.png'
+import {
+  isAudtioMimetype,
+  isDocumentMimetype,
+  isExcelMimetype,
+  isImageMimetype,
+  isPdfMimetype,
+  isVideoMimetype,
+} from "../../../utils/mimetypes";
 
+const coin = "/coin.png";
+
+const docsIconUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png";
+const excelIconUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png";
+const fileIcon = "https://cdn-icons-png.flaticon.com/512/2246/2246713.png";
 const avatarPreviewUrl = "https://icotar.com/initials/";
 
 export interface IMessage {
@@ -89,6 +97,10 @@ export const Message: React.FC<IMessage> = ({
     openDialogMenu();
   };
 
+  const openFileInNewTab = (link: string) => {
+    window.open(link, "_blank");
+  };
+
   const ReplyComponent = () => {
     return (
       <Button
@@ -117,7 +129,7 @@ export const Message: React.FC<IMessage> = ({
             <br />
           </strong>
           {message.data.mainMessage?.imageLocation &&
-            imageMimetypes[message.data.mainMessage.mimeType] && (
+            isImageMimetype(message.data.mainMessage.mimeType) && (
               <Card sx={{ maxWidth: 200 }}>
                 <CardActionArea onClick={fullViewImage}>
                   <CardMedia
@@ -148,8 +160,8 @@ export const Message: React.FC<IMessage> = ({
           ) : null} */}
 
           {message.data.mainMessage?.imageLocation &&
-            videoMimetypes[message.data.mainMessage?.mimeType] && (
-              <video controls width="200px">
+            isVideoMimetype(message.data.mainMessage?.mimeType) && (
+              <video controls width="300px">
                 <source
                   src={message.data.mainMessage.imageLocation}
                   type={message.data.mainMessage.mimeType}
@@ -160,7 +172,7 @@ export const Message: React.FC<IMessage> = ({
             )}
 
           {message.data.mainMessage?.imageLocation &&
-            audioMimetypes[message.data.mainMessage?.mimeType] && (
+            isAudtioMimetype(message.data.mainMessage?.mimeType) && (
               <audio controls>
                 <source
                   src={message.data.mainMessage.imageLocation}
@@ -183,13 +195,183 @@ export const Message: React.FC<IMessage> = ({
     );
   };
 
+  const renderMedia = () => {
+    if (!message.data.isMediafile) {
+      return null;
+    }
+    const mimetype = message.data.mimetype;
+    if (isImageMimetype(mimetype)) {
+      return (
+        <Card sx={{ maxWidth: 200 }}>
+          <CardActionArea onClick={fullViewImage}>
+            <CardMedia
+              style={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={message.data.location}
+              alt={message.data.originalName}
+            />
+          </CardActionArea>
+        </Card>
+      );
+    }
+    if (isPdfMimetype(mimetype)) {
+      return (
+        <Card sx={{ maxWidth: 200 }}>
+          <CardActionArea
+            onClick={(event) => {
+              event.preventDefault();
+              window.open(message.data.location, "_blank");
+            }}
+          >
+            <CardMedia
+              style={{
+                height: 150,
+                objectFit: "cover",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={message.data.locationPreview}
+              alt={message.data.originalName}
+            />
+          </CardActionArea>
+        </Card>
+      );
+    }
+
+    if (isVideoMimetype(mimetype)) {
+      return (
+        <video controls width={400} height={400}>
+          <source
+            src={message.data.location}
+            type={mimetype}
+            title={message.data.originalName}
+          />
+          Sorry, your browser doesn't support videos.
+        </video>
+      );
+    }
+    if (isAudtioMimetype(mimetype)) {
+      return (
+        <audio controls>
+          <source src={message.data.location} type={mimetype} />
+          Your browser does not support the audio element.
+        </audio>
+      );
+    }
+
+    if (isDocumentMimetype(mimetype)) {
+      return (
+        <Box>
+          <CardActionArea
+            onClick={() => openFileInNewTab(message.data.location)}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              backgroundColor: "transparent !important",
+              border: "none !important",
+              position: "relative",
+              flexDirection: "column",
+            }}
+          >
+            <CardMedia
+              sx={{
+                height: 150,
+                objectFit: "contain",
+
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={docsIconUrl}
+              alt={message.data.originalName}
+            />
+            <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
+              {message.data.originalName}
+            </Typography>
+          </CardActionArea>
+        </Box>
+      );
+    }
+    if (isExcelMimetype(mimetype)) {
+      return (
+        <Box sx={{ color: "primary" }}>
+          <CardActionArea
+            onClick={() => openFileInNewTab(message.data.location)}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              backgroundColor: "transparent !important",
+              border: "none !important",
+              position: "relative",
+              flexDirection: "column",
+            }}
+          >
+            <CardMedia
+              sx={{
+                height: 150,
+                objectFit: "contain",
+                objectPosition: "left",
+              }}
+              component="img"
+              height="150"
+              image={excelIconUrl}
+              alt={message.data.originalName}
+            />
+            <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
+              {message.data.originalName}
+            </Typography>
+          </CardActionArea>
+        </Box>
+      );
+    }
+
+    return (
+      <Box>
+        <CardActionArea
+          onClick={() => openFileInNewTab(message.data.location)}
+          sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            backgroundColor: "transparent !important",
+            border: "none !important",
+            position: "relative",
+            flexDirection: "column",
+          }}
+        >
+          <CardMedia
+            sx={{
+              height: 150,
+              objectFit: "contain",
+            }}
+            component="img"
+            height="150"
+            image={fileIcon}
+            alt={message.data.originalName}
+          />
+          <Typography sx={{ fontSize: 12, fontWeight: "bold" }}>
+            {message.data.originalName}
+          </Typography>
+        </CardActionArea>
+      </Box>
+    );
+  };
   useEffect(() => {
     if (message.data.quickReplies) {
       setButtons(JSON.parse(message.data.quickReplies));
     }
     setMessageDirection(isSameUser ? "outgoing" : "incoming");
   }, []);
-
+  if (message.data.isMediafile) {
+  }
   return (
     <div is={"Message"}>
       {!!position.separator && (
@@ -238,7 +420,26 @@ export const Message: React.FC<IMessage> = ({
         )}
 
         <KitMessage.CustomContent>
-          {/* Main Message */}
+          <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
+            {!isThread && !message.data.isReply && (
+              <IconButton
+                aria-label="more"
+                id="long-button"
+                aria-controls={openMenu ? "long-menu" : undefined}
+                aria-expanded={openMenu ? "true" : undefined}
+                aria-haspopup="true"
+                sx={{
+                  position: "absolute",
+                  right: -20,
+                  top: -10,
+                  zIndex: 99999,
+                }}
+                onClick={openDialogMenu}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+          </Box>
           {message.data.isReply && !isThread && <ReplyComponent />}
           {(position.type === "first" || position.type === "single") && (
             <span
@@ -257,88 +458,13 @@ export const Message: React.FC<IMessage> = ({
                 {firstName} {lastName}
                 <br />
               </strong>
-              {!isThread && !message.data.isReply && (
-                <IconButton
-                  aria-label="more"
-                  id="long-button"
-                  aria-controls={openMenu ? "long-menu" : undefined}
-                  aria-expanded={openMenu ? "true" : undefined}
-                  aria-haspopup="true"
-                  onClick={openDialogMenu}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              )}
             </span>
           )}
 
-          {message.data.isMediafile &&
-            !!imageMimetypes[message.data.mimetype] && (
-              <Card sx={{ maxWidth: 200 }}>
-                <CardActionArea onClick={fullViewImage}>
-                  <CardMedia
-                    style={{
-                      height: 150,
-                      objectFit: "cover",
-                      objectPosition: "left",
-                    }}
-                    component="img"
-                    height="150"
-                    image={message.data.location}
-                    alt={message.data.originalName}
-                  />
-                </CardActionArea>
-              </Card>
-            )}
+          {renderMedia()}
 
-          {message.data.isMediafile && pdfMimemtype[message.data.mimetype] && (
-            <Card sx={{ maxWidth: 200 }}>
-              <CardActionArea
-                onClick={(event) => {
-                  event.preventDefault();
-                  window.open(message.data.location, "_blank");
-                }}
-              >
-                <CardMedia
-                  style={{
-                    height: 150,
-                    objectFit: "cover",
-                    objectPosition: "left",
-                  }}
-                  component="img"
-                  height="150"
-                  image={message.data.locationPreview}
-                  alt={message.data.originalName}
-                />
-              </CardActionArea>
-            </Card>
-          )}
-
-          {message.data.isMediafile &&
-            !!videoMimetypes[message.data.mimetype] && (
-              <video controls width="200px">
-                <source
-                  src={message.data.location}
-                  type={message.data.mimetype}
-                  title={message.data.originalName}
-                />
-                Sorry, your browser doesn't support videos.
-              </video>
-            )}
-
-          {message.data.isMediafile &&
-            !!audioMimetypes[message.data.mimetype] && (
-              <audio controls>
-                <source
-                  src={message.data.location}
-                  type={message.data.mimetype}
-                />
-                Your browser does not support the audio element.
-              </audio>
-            )}
-
-          {!message.data.isMediafile && (
-            <div>
+          <Box>
+            {!message.data.isMediafile && (
               <span
                 dangerouslySetInnerHTML={{
                   __html: message.body.replace(
@@ -347,64 +473,61 @@ export const Message: React.FC<IMessage> = ({
                   ),
                 }}
               />
-              {/*FOOTER */}
-              <div
+            )}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 1,
+                minWidth: 200,
+                color:
+                  messageDirection === "incoming"
+                    ? "rgb(110, 169, 215)"
+                    : "#c6e3fa",
+                flexDirection:
+                  messageDirection === "incoming" ? "row" : "row-reverse",
+              }}
+            >
+              <Box
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginTop: 5,
-                  minWidth: 200,
-                  color:
-                    messageDirection === "incoming"
-                      ? "rgb(110, 169, 215)"
-                      : "#c6e3fa",
-                  flexDirection:
-                    messageDirection === "incoming" ? "row" : "row-reverse",
+                  fontSize: 12,
                 }}
               >
-                <div
-                  style={{
-                    fontSize: 12,
+                {differenceInHours(new Date(), new Date(message.date)) > 5
+                  ? format(new Date(message.date), "dd.MM hh:mm a")
+                  : formatDistance(
+                      subDays(new Date(message.date), 0),
+                      new Date(),
+                      {
+                        addSuffix: true,
+                      }
+                    )}
+              </Box>
+              {message.coinsInMessage > 0 && (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <div style={{ fontSize: 12 }}>{message?.coinsInMessage}</div>
+                  <img
+                    src={coin}
+                    style={{ width: 25, height: 25 }}
+                    alt={"coin"}
+                  />
+                </div>
+              )}
+              {message.data.isEdited && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    marginLeft: 1,
+                    marginRight: 1,
                   }}
                 >
-                  {differenceInHours(new Date(), new Date(message.date)) > 5
-                    ? format(new Date(message.date), "h:mm a")
-                    : formatDistance(
-                        subDays(new Date(message.date), 0),
-                        new Date(),
-                        {
-                          addSuffix: true,
-                        }
-                      )}
-                </div>
-                {message.coinsInMessage > 0 && (
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div style={{ fontSize: 12 }}>
-                      {message?.coinsInMessage}
-                    </div>
-                    <img
-                      src={coin}
-                      style={{ width: 25, height: 25 }}
-                      alt={"coin"}
-                    />
-                  </div>
-                )}
-                {message.data.isEdited && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-end",
-                      marginLeft: 3,
-                      marginRight: 3,
-                    }}
-                  >
-                    <Typography fontSize={12}>edited</Typography>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                  <Typography fontSize={12}>edited</Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
         </KitMessage.CustomContent>
 
         {/*{(position.type === "last" || position.type === "single") && (*/}

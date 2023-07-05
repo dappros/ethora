@@ -26,7 +26,7 @@ import {
 import { signInWithGoogle } from "../../services/firebase";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { ForgotPasswordModal } from "../../components/ForgotPasswordModal";
-import { Typography } from "@mui/material";
+import { Alert, AlertTitle, Typography } from "@mui/material";
 import xmpp from "../../xmpp";
 
 export default function Signon() {
@@ -255,6 +255,12 @@ export default function Signon() {
           alignItems: "center",
         }}
       >
+        {!!signUpPlan && <Alert severity={"info"}>
+          <AlertTitle>Account Owners</AlertTitle>
+          In order to create and manage your App(s), you need to create your own
+          account first. You can use one of your social accounts or create a new
+          custom account using e-mail and password.
+        </Alert>}
         <Box
           sx={{ marginTop: 5 }}
           style={{

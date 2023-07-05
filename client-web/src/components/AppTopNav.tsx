@@ -107,7 +107,7 @@ const AppTopNav = () => {
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
   const firebaseAppId = useStoreState(
-    (s) => s.config.REACT_APP_FIREBASE_APP_ID
+    (s) => s.config.firebaseConfig.appId
   );
 
   const setBalance = useStoreState((state) => state.setBalance);

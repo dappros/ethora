@@ -22,34 +22,35 @@ export const DOMAIN = "@" + BASEDOMAIN;
 export const SERVICE = `wss://${BASEDOMAIN}:5443/ws`;
 export const mobileEthoraBaseUrl = "https://eto.li?c=";
 
-export type TImageMimeType = "image/png" | "image/jpeg" | "image/jpg";
-export type TVideoMimeType = "video/mp4";
-export type TAudioMimeType =
-  | "audio/mpeg"
-  | "application/octet-stream"
-  | "audio/x-m4a"
-  | "audio/webm";
-export type TPdfMimeType = "application/pdf";
-export type TCombinedMimeType =
-  | TAudioMimeType
-  | TImageMimeType
-  | TPdfMimeType
-  | TVideoMimeType;
-export const imageMimetypes: Record<TImageMimeType, TImageMimeType> = {
+export const imageMimetypes = {
   "image/png": "image/png",
   "image/jpeg": "image/jpeg",
   "image/jpg": "image/jpg",
-};
-export const videoMimetypes: Record<TVideoMimeType, TVideoMimeType> = {
+} as const;
+export const videoMimetypes = {
   "video/mp4": "video/mp4",
-};
-export const audioMimetypes: Record<TAudioMimeType, TAudioMimeType> = {
+} as const;
+export const audioMimetypes = {
   "audio/mpeg": "audio/mpeg",
   "audio/webm": "audio/webm",
   "application/octet-stream": "application/octet-stream",
   "audio/x-m4a": "audio/x-m4a",
-};
+} as const;
 
-export const pdfMimemtype: Record<TPdfMimeType, TPdfMimeType> = {
+export const pdfMimemtype = {
   "application/pdf": "application/pdf",
-};
+} as const;
+
+export const docsMimetypes = {
+  "application/msword": "application/msword",
+ 
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
+} as const;
+
+export const excelMimetypes = {
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel": "application/vnd.ms-excel",
+} as const
