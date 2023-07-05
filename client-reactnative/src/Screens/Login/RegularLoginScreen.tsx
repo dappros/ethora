@@ -48,6 +48,7 @@ export const RegularLoginScreen = ({navigation}: ScreenProps) => {
     try {
       await loginStore.regularLogin({username: userName, password});
     } catch (error:any) {
+      console.log(error.response.data)
       if (error?.response?.status === 409) {
         showError('Error', 'This email is not verified');
       } else {
