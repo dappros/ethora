@@ -15,6 +15,7 @@ import { createMessage } from "./utils/createMessage";
 import { history } from "./utils/history";
 import { walletToUsername } from "./utils/walletManipulation";
 import { XmppClass } from "./xmpp";
+import { playCoinSound } from "./utils/playCoinSound";
 
 export class XmppHandler {
   public lastMsgId: string = "";
@@ -77,7 +78,7 @@ export class XmppHandler {
       const isCurrentUser =
         msg.data.senderWalletAddress ===
         useStoreState.getState().user.walletAddress;
-
+      playCoinSound(+msg.data.tokenAmount)
       if (!isCurrentUser) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         sendBrowserNotification(msg.body, () => {
