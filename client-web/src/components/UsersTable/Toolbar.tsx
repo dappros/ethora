@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 
 interface UsersTableToolbarProps {
-  selected:  TSelectedIds[];
+  selected: TSelectedIds[];
   onButtonClick: (type: ModalType) => void;
 }
 type ModalType =
@@ -32,9 +32,9 @@ export function UsersTableToolbar({
         sx={{
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
-          display: 'flex',
-          justifyContent: 'space-between',
-         
+          display: "flex",
+          justifyContent: "space-between",
+
           bgcolor: (theme) =>
             alpha(
               theme.palette.primary.main,
@@ -46,11 +46,19 @@ export function UsersTableToolbar({
           color="inherit"
           variant="subtitle1"
           component="div"
-          sx={{minWidth: 200}}
+          sx={{ minWidth: 200 }}
         >
           {selected.length} selected
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexDirection:  { xs: 'row', md: 'row' }, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            flexDirection: { xs: "row", md: "row" },
+            flexWrap: "wrap",
+          }}
+        >
           {/* <Button
             variant={"outlined"}
             onClick={() => onButtonClick("sendTokens")}
@@ -61,24 +69,21 @@ export function UsersTableToolbar({
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("addTag")}
-            sx={{minWidth: 'max-content'}}
-
+            sx={{ minWidth: "max-content" }}
           >
             Add Tag
           </Button>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("removeAllTags")}
-            sx={{minWidth: 'max-content'}}
-
+            sx={{ minWidth: "max-content" }}
           >
             Remove All Tags
           </Button>
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("removeTag")}
-            sx={{minWidth: 'max-content'}}
-
+            sx={{ minWidth: "max-content" }}
           >
             Remove Tag
           </Button>
@@ -86,10 +91,9 @@ export function UsersTableToolbar({
           <Button
             variant={"outlined"}
             onClick={() => onButtonClick("resetPassword")}
-            sx={{minWidth: 'max-content'}}
-
+            sx={{ minWidth: "max-content" }}
           >
-            Reset Passwords
+            Reset Password
           </Button>
 
           <Tooltip title="Delete users">

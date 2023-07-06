@@ -97,6 +97,7 @@ export function UsersActionModal({
       showSnackbar("success", "Tag removed");
       closeModal();
     } catch (error) {
+      console.log(error)
       showSnackbar("error", "Something went wrong");
     }
     setLoading(false);
@@ -278,10 +279,10 @@ export function UsersActionModal({
       </Box>
       {renderDialogContent()}
       <DialogActions>
-        <Button disabled={loading} onClick={closeModal}>
+        <Button disabled={loading} onClick={closeModal} color="error">
           {"Cancel"}
         </Button>
-        <Button disabled={loading} onClick={onSubmit} autoFocus color={"error"}>
+        <Button disabled={loading} onClick={onSubmit} autoFocus color={"primary"}>
           {"Submit"}
         </Button>
       </DialogActions>

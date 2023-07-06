@@ -19,9 +19,12 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
-
+import GoogleIcon from "@mui/icons-material/Google";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import MailIcon from "@mui/icons-material/Mail";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -34,7 +37,16 @@ import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
 import { dateToHumanReadableFormat } from "../../utils";
-
+const icons = {
+  google: GoogleIcon,
+  facebook: FacebookIcon,
+  email: MailIcon,
+};
+const authMethodText = {
+  google: 'Google',
+  facebook: 'Facebook',
+  email: 'E-Mail',
+};
 type Order = "asc" | "desc";
 
 type ModalType =
@@ -167,7 +179,22 @@ export default function UsersTable() {
       setSelectedIds(updatedIds);
     }
   };
-
+  const updateUsers = async (appId: string) => {
+    const allUsers = await getUsers(currentApp, 50, 0, orderBy, order);
+    setUsers(allUsers);
+    // if (selectedIds.length) {
+    //   const updatedIds = selectedIds.map((u) => {
+    //     const updatedUser = allUsers.find((i) => i._id === u._id);
+    //     return {
+    //       _id: updatedUser._id,
+    //       walletAddress: updatedUser.defaultWallet.walletAddress,
+    //       appId: updatedUser.appId,
+    //       tags: updatedUser.tags,
+    //     };
+    //   });
+    //   setSelectedIds(updatedIds);
+    // }
+  };
   useEffect(() => {
     if (currentApp) {
       getInitialUsers(currentApp);
@@ -279,7 +306,7 @@ export default function UsersTable() {
     setUsersActionModal((p) => ({ ...p, open: false }));
   };
   const updateUsersData = async () => {
-    await getInitialUsers(currentApp);
+    await updateUsers(currentApp);
   };
 
   const isSelected = (id: string) =>
@@ -415,6 +442,8 @@ export default function UsersTable() {
                   page * ROWS_PER_PAGE + ROWS_PER_PAGE
                 )
                 .map((row, index) => {
+                  const authMethod = row.authMethod;
+                  const AuthIcon = icons[authMethod];
                   const isItemSelected = isSelected(row._id.toString());
                   const labelId = `Users-table-checkbox-${index}`;
 
@@ -474,8 +503,12 @@ export default function UsersTable() {
                             : ""}
                         </p>
                       </TableCell>
-                      <TableCell align="center">
-                        {row.authMethod || ""}
+                      <TableCell align="center" color="primary">
+                        <Tooltip title={authMethodText[authMethod]}>
+                          <span>
+                            {authMethod ? <AuthIcon color={"primary"} /> : ""}
+                          </span>
+                        </Tooltip>
                       </TableCell>
                       <TableCell align="right">
                         <IconButton
@@ -506,7 +539,7 @@ export default function UsersTable() {
                           }}
                         >
                           <MenuItem onClick={(e) => handleAclEditOpen(e, row)}>
-                            Edit Acl
+                            Edit ACL
                           </MenuItem>
                         </Menu>
                       </TableCell>
