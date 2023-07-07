@@ -49,12 +49,10 @@ const authMethodText = {
 };
 type Order = "asc" | "desc";
 
-type ModalType =
+export type ModalType =
   | "deleteUser"
-  | "addTag"
-  | "removeTag"
-  | "removeAllTags"
   | "sendTokens"
+  | 'manageTags'
   | "resetPassword";
 
 interface Props {}
@@ -90,7 +88,7 @@ export default function UsersTable() {
   const [userActionModal, setUsersActionModal] = useState<{
     open: boolean;
     type: ModalType;
-  }>({ open: false, type: "addTag" });
+  }>({ open: false, type: 'manageTags' });
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -179,22 +177,7 @@ export default function UsersTable() {
       setSelectedIds(updatedIds);
     }
   };
-  const updateUsers = async (appId: string) => {
-    const allUsers = await getUsers(currentApp, 50, 0, orderBy, order);
-    setUsers(allUsers);
-    // if (selectedIds.length) {
-    //   const updatedIds = selectedIds.map((u) => {
-    //     const updatedUser = allUsers.find((i) => i._id === u._id);
-    //     return {
-    //       _id: updatedUser._id,
-    //       walletAddress: updatedUser.defaultWallet.walletAddress,
-    //       appId: updatedUser.appId,
-    //       tags: updatedUser.tags,
-    //     };
-    //   });
-    //   setSelectedIds(updatedIds);
-    // }
-  };
+
   useEffect(() => {
     if (currentApp) {
       getInitialUsers(currentApp);
@@ -306,7 +289,7 @@ export default function UsersTable() {
     setUsersActionModal((p) => ({ ...p, open: false }));
   };
   const updateUsersData = async () => {
-    await updateUsers(currentApp);
+    await getInitialUsers(currentApp);
   };
 
   const isSelected = (id: string) =>

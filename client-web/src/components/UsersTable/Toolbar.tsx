@@ -8,19 +8,14 @@ import {
   alpha,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { ModalType } from "./UsersTable";
 type TSelectedIds = { walletAddress: string; _id: string; appId: string };
 
 interface UsersTableToolbarProps {
   selected: TSelectedIds[];
   onButtonClick: (type: ModalType) => void;
 }
-type ModalType =
-  | "deleteUser"
-  | "addTag"
-  | "removeTag"
-  | "removeAllTags"
-  | "sendTokens"
-  | "resetPassword";
+
 
 export function UsersTableToolbar({
   selected,
@@ -66,26 +61,13 @@ export function UsersTableToolbar({
           >
             Send Tokens
           </Button> */}
+         
           <Button
             variant={"outlined"}
-            onClick={() => onButtonClick("addTag")}
+            onClick={() => onButtonClick('manageTags')}
             sx={{ minWidth: "max-content" }}
           >
-            Add Tag
-          </Button>
-          <Button
-            variant={"outlined"}
-            onClick={() => onButtonClick("removeAllTags")}
-            sx={{ minWidth: "max-content" }}
-          >
-            Remove All Tags
-          </Button>
-          <Button
-            variant={"outlined"}
-            onClick={() => onButtonClick("removeTag")}
-            sx={{ minWidth: "max-content" }}
-          >
-            Remove Tag
+            Manage Tags
           </Button>
 
           <Button

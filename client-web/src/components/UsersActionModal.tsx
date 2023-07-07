@@ -4,27 +4,24 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, DialogActions, TextField } from "@mui/material";
+import {
+  Badge,
+  Button,
+  Chip,
+  DialogActions,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useSnackbar } from "../context/SnackbarContext";
 import {
-  TTransferToUser,
   addTagToUser,
   deleteUsers,
   removeTagFromUser,
   resetUsersPasswords,
-  sendTokens,
   setUserTags,
 } from "../http";
-import { coinsMainName } from "../config/config";
-import { TSelectedIds } from "./UsersTable/UsersTable";
-
-type ModalType =
-  | "deleteUser"
-  | "addTag"
-  | "removeTag"
-  | "removeAllTags"
-  | "sendTokens"
-  | "resetPassword";
+import { ModalType, TSelectedIds } from "./UsersTable/UsersTable";
+import { getUniqueTagsFromUsers } from "../utils/getUniqueTagsFromUsers";
 
 type TProps = {
   open: boolean;
@@ -47,6 +44,7 @@ export function UsersActionModal({
 
   const { showSnackbar } = useSnackbar();
   const selectedUsersIds = selectedUsers.map((i) => i._id);
+  const uniqueTags = getUniqueTagsFromUsers(selectedUsers);
   const appId = selectedUsers?.[0]?.appId;
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -86,18 +84,16 @@ export function UsersActionModal({
     setLoading(false);
   };
 
-  const removeTag = async () => {
-    const tags = inputValue.trim().split(",");
-
+  const removeTag = async (tag: string) => {
     setLoading(true);
     try {
-      await removeTagFromUser(appId, tags, selectedUsersIds);
+      await removeTagFromUser(appId, [tag], selectedUsersIds);
       await updateData();
 
       showSnackbar("success", "Tag removed");
       closeModal();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       showSnackbar("error", "Something went wrong");
     }
     setLoading(false);
@@ -142,25 +138,8 @@ export function UsersActionModal({
 
   const onSubmit = () => {
     switch (type) {
-      case "deleteUser":
-        return deletePickedUsers();
-      case "addTag":
-        if (!inputValue) {
-          setInputError(true);
-          return;
-        }
+      case "manageTags":
         return addTag();
-
-      case "removeTag":
-        if (!inputValue) {
-          setInputError(true);
-
-          return;
-        }
-        return removeTag();
-
-      case "removeAllTags":
-        return removeAllTags();
 
       case "resetPassword":
         return resetPasswords();
@@ -171,22 +150,48 @@ export function UsersActionModal({
   };
   const renderDialogContent = () => {
     switch (type) {
-      case "addTag":
+      case "manageTags":
         return (
-          <Box style={{ width: "350px" }}>
+          <Box style={{ width: "450px", padding: 2 }}>
             <DialogTitle
-              style={{ display: "flex", justifyContent: "space-between" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                paddingX: 2,
+              }}
             >
-              Add Tags
+              Tags
             </DialogTitle>
             <Box
               sx={{
+                paddingX: 2,
+                pb: 2,
                 display: "flex",
-                justifyContent: "flex-start",
-                pl: 3,
-                pr: 3,
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
               }}
             >
+              {!uniqueTags.length && <Typography>No tags for selected users.</Typography>}
+              {uniqueTags.map((t, i) => {
+                return (
+                  <Badge
+                    key={i}
+                    badgeContent={+t.count}
+                    color={"secondary"}
+                    variant={"standard"}
+                  >
+                    <Chip
+                      color={"primary"}
+                      label={t.tag}
+                      onDelete={() => removeTag(t.tag)}
+                    />
+                  </Badge>
+                );
+              })}
+            </Box>
+            <Box sx={{ paddingX: 2 }}>
+              <Typography sx={{ fontWeight: "bold" }}>Add Tags</Typography>
               <TextField
                 error={inputError}
                 fullWidth
@@ -201,47 +206,7 @@ export function UsersActionModal({
             </Box>
           </Box>
         );
-      case "removeTag":
-        return (
-          <Box style={{ width: "350px" }}>
-            <DialogTitle
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              Remove Tags
-            </DialogTitle>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-start",
-                pl: 3,
-                pr: 3,
-              }}
-            >
-              <TextField
-                error={inputError}
-                fullWidth
-                margin="dense"
-                label="Provide tags separated by comma"
-                name="tags"
-                type="tags"
-                variant="outlined"
-                onChange={handleChangeInput}
-                value={inputValue}
-              />
-            </Box>
-          </Box>
-        );
-      case "removeAllTags":
-        return (
-          <Box style={{ width: "350px" }}>
-            <DialogTitle
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              Are you sure you want to remove all tags from{" "}
-              {selectedUsers.length} users?
-            </DialogTitle>
-          </Box>
-        );
+
       case "deleteUser":
         return (
           <Box style={{ width: "350px" }}>
@@ -282,7 +247,12 @@ export function UsersActionModal({
         <Button disabled={loading} onClick={closeModal} color="error">
           {"Cancel"}
         </Button>
-        <Button disabled={loading} onClick={onSubmit} autoFocus color={"primary"}>
+        <Button
+          disabled={loading}
+          onClick={onSubmit}
+          autoFocus
+          color={"primary"}
+        >
           {"Submit"}
         </Button>
       </DialogActions>
