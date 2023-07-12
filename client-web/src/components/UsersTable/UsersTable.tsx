@@ -156,7 +156,7 @@ export default function UsersTable() {
       order
     );
     setPage(tablePage);
-
+      setSelectedIds([])
     setUsers(fetchedUsers);
   };
 
@@ -168,6 +168,7 @@ export default function UsersTable() {
     setRowsPerPage(value);
     setUsers(users);
     setPage(0);
+    setSelectedIds([])
   };
 
   const handleAclEditClose = () =>
@@ -195,6 +196,8 @@ export default function UsersTable() {
     setOrder(currentOrder);
     setOrderBy(property);
     setUsers(users);
+    setSelectedIds([])
+
   };
   const openActionModal = (type: ModalType) => {
     setUsersActionModal({ open: true, type });
