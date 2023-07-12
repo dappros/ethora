@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   Box,
+  Button,
   FormControl,
   IconButton,
   InputLabel,
@@ -21,12 +22,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import { UsersTableToolbar } from "./Toolbar";
 import { UsersTableHead } from "./Head";
 import { UsersActionModal } from "../UsersActionModal";
-import { IOtherUserACL, IUser, getAppUsers } from "../../http";
+import { IOtherUserACL, IUser, exportUsersCsv, getAppUsers } from "../../http";
 import { useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
 import { UsersTableRow } from "./UsersTableRow";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type Order = "asc" | "desc";
 
@@ -72,7 +74,7 @@ export default function UsersTable() {
     state.ACL.result.find((i) => i.appId === currentApp)
   );
   const canCreateUsers = ownerAccess || ACL?.application.appUsers.create;
-
+  const { showSnackbar } = useSnackbar();
   const [pagination, setPagination] = useState<{
     total: number;
     limit: number;
@@ -156,7 +158,7 @@ export default function UsersTable() {
       order
     );
     setPage(tablePage);
-      setSelectedIds([])
+    setSelectedIds([]);
     setUsers(fetchedUsers);
   };
 
@@ -168,7 +170,7 @@ export default function UsersTable() {
     setRowsPerPage(value);
     setUsers(users);
     setPage(0);
-    setSelectedIds([])
+    setSelectedIds([]);
   };
 
   const handleAclEditClose = () =>
@@ -196,8 +198,7 @@ export default function UsersTable() {
     setOrder(currentOrder);
     setOrderBy(property);
     setUsers(users);
-    setSelectedIds([])
-
+    setSelectedIds([]);
   };
   const openActionModal = (type: ModalType) => {
     setUsersActionModal({ open: true, type });
@@ -243,6 +244,23 @@ export default function UsersTable() {
     }
 
     setSelectedIds(newSelected);
+  };
+
+  const onExportClick = async () => {
+    try {
+      const res = await exportUsersCsv(currentApp);
+      const url = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = currentApp + ".csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.open(url, "_blank");
+    } catch (error) {
+      showSnackbar("error", "Cannot get content");
+      console.log(error);
+    }
   };
 
   const closeUsersActionModal = async () => {
@@ -356,13 +374,14 @@ export default function UsersTable() {
             </FormControl>
           )}
           {canCreateUsers && (
-            <IconButton
-              onClick={() => setShowNewUser(true)}
-              size="large"
-              sx={{ marginLeft: "auto" }}
-            >
-              <AddCircleIcon fontSize="large" color="primary" />
-            </IconButton>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Button variant={"outlined"} onClick={onExportClick}>
+                Export CSV
+              </Button>
+              <IconButton onClick={() => setShowNewUser(true)} size="large">
+                <AddCircleIcon fontSize="large" color="primary" />
+              </IconButton>
+            </Box>
           )}
         </Box>
         <TableContainer>
