@@ -506,6 +506,7 @@ export class LoginStore {
         this.loginHandler(response, "");
       }
     } catch (error: any) {
+      console.log(error.response, 'dsfjklsdjfkdslfjk')
       runInAction(() => {
         this.isFetching = false;
         this.error = true;
