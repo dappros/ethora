@@ -590,8 +590,8 @@ export function getAppUsers(
   appId: string,
   limit: number = 10,
   offset: number = 0,
-  orderBy: string = 'createdAt',
-  order: string = 'asc'
+  orderBy: string = "createdAt",
+  order: string = "asc"
 ) {
   const owner = useStoreState.getState().user;
   const params = new URLSearchParams({
@@ -600,7 +600,7 @@ export function getAppUsers(
     orderBy,
     order,
   });
-  
+
   return http.get<ExplorerRespose<IUser[]>>(
     `/users/${appId}?${params.toString()}`,
     {
@@ -615,6 +615,10 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
+
+export const exportUsersCsv = (appId: string) => {
+  return httpWithAuth().get<string>(`/users/export/` + appId);
+};
 export function addTagToUser(appId: string, tags: string[], userIds: string[]) {
   return httpWithAuth().post(`/users/tags-add/` + appId, {
     usersIdList: userIds,

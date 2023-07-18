@@ -1,6 +1,5 @@
-import Clipboard from '@react-native-clipboard/clipboard';
-import { useWalletConnect } from '@walletconnect/react-native-dapp';
 import React, { useEffect, useState } from 'react';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { commonColors, textStyles } from '../../../docs/config';
@@ -12,6 +11,8 @@ import { showError, showSuccess } from '../../components/Toast/toast';
 import { httpGet, httpDelete, httpPost } from '../../config/apiService';
 import { isAddress } from '../../helpers/isAddress';
 import { useStores } from '../../stores/context';
+import { WalletConnectModal, useWalletConnectModal } from '@walletconnect/modal-react-native';
+import { projectId, providerMetadata } from '../../constants/walletConnect';
 
 //interfaces and types
 export interface IAuthentication { }
@@ -44,27 +45,27 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({ }) => {
   //local states
 
   //local variables
-  const connector = useWalletConnect();
+  const {open, address, provider} = useWalletConnectModal()
   //local variables
 
   //hooks
   useEffect(() => {
     getAddress();
     return () => {
-      connector.killSession();
+      provider?.disconnect();
     };
   }, []);
   
   useEffect(() => {
-    if (connector.accounts.length) {
-      updateAddress(connector.accounts[0]);
+    if (address) {
+      updateAddress(address);
     }
-  }, [connector.accounts]);
+  }, [address]);
   //hooks
 
   //handle to connect to metamask
   const onMetamaskPress = () => {
-    connector.connect({ chainId: 1 });
+    open()
   };
 
   //handle to show qr
@@ -287,6 +288,10 @@ export const AuthenticationScreen: React.FC<IAuthentication> = ({ }) => {
         onDeletePress={removeAddress}
         onClose={() => setShowRemoveAccount(false)}
         open={showRemoveAccount}
+      />
+       <WalletConnectModal
+        projectId={projectId}
+        providerMetadata={providerMetadata}
       />
     </View>
   );

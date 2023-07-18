@@ -151,7 +151,7 @@ export type IMessagePosition = {
 
 export const dateToHumanReadableFormat = (date: string | Date) => {
   try {
-    return format(new Date(date), "yyyy MMMM dd MM:ss");
+    return format(new Date(date), "yyyy MMMM dd HH:mm");
   } catch (error) {
     console.log(error);
     return "";

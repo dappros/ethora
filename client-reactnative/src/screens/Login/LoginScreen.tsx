@@ -9,7 +9,7 @@ import {
   View,
   VStack,
 } from "native-base";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SocialButton from "../../components/Buttons/SocialButton";
 import {
   widthPercentageToDP as wp,
@@ -47,9 +47,17 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useRegisterModal } from "../../hooks/useRegisterModal";
 import { UserNameModal } from "../../components/Modals/Login/UserNameModal";
 import { checkWalletExist } from "../../config/routesConstants";
-import { useWalletConnect } from "@walletconnect/react-native-dapp";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../navigation/types";
+import {
+  useWalletConnectModal,
+  WalletConnectModal,
+} from "@walletconnect/modal-react-native";
+import { ethers } from "ethers";
+import { signMessage } from "../../helpers/signMessage";
+import { projectId, providerMetadata } from "../../constants/walletConnect";
+
+
 
 type LoginScreenProps = NativeStackScreenProps<
   AuthStackParamList,
@@ -59,12 +67,16 @@ type LoginScreenProps = NativeStackScreenProps<
 const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
   const { loginStore, apiStore } = useStores();
   const { isFetching } = loginStore;
-  const connector = useWalletConnect();
   const [externalWalletModalData, setExternalWalletModalData] = useState({
     walletAddress: "",
     message: "",
   });
   const [signedMessage, setSignedMessage] = useState("");
+  const { open, isConnected, provider, address } = useWalletConnectModal();
+  const web3Provider = useMemo(
+    () => (provider ? new ethers.providers.Web3Provider(provider) : undefined),
+    [provider]
+  );
   const {
     firstName,
     lastName,
@@ -80,6 +92,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
       webClientId: googleWebClientId,
     });
   }, []);
+
   const onAppleButtonPress = async () => {
     const user = await handleAppleLogin(
       apiStore.defaultToken,
@@ -100,7 +113,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
   const openModalForWallet = (message: string) => {
     setExternalWalletModalData({
       message,
-      walletAddress: connector.accounts[0],
+      walletAddress: address,
     });
     setModalOpen(true);
   };
@@ -108,27 +121,31 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
   const sendWalletMessage = async () => {
     const walletExist = await checkExternalWalletExist();
     const messageToSend = walletExist ? "Login" : "Registration";
-    const message = await connector.signPersonalMessage([
-      messageToSend,
-      connector.accounts[0],
-    ]);
+    const res = await signMessage({
+      web3Provider: web3Provider,
+      method: "personal_sign",
+      message: messageToSend,
+    });
+    console.log(res);
+
+    const message = res.result;
     setSignedMessage(message);
     !walletExist
       ? openModalForWallet(message)
       : loginStore.loginExternalWallet({
-          walletAddress: connector.accounts[0],
+          walletAddress: address,
           signature: message,
           loginType: "signature",
           msg: "Login",
         });
-    connector.killSession();
+    provider?.disconnect();
   };
   const checkExternalWalletExist = async () => {
     try {
       const res = await httpPost(
         checkWalletExist,
         {
-          walletAddress: connector.accounts[0],
+          walletAddress: address,
         },
         apiStore.defaultToken
       );
@@ -170,15 +187,12 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
   };
 
   useEffect(() => {
-    if (!!connector.accounts && !signedMessage && connector.connected) {
-      sendWalletMessage();
-    }
-  }, [
-    connector.accounts,
-    connector.session,
-    connector.connected,
-    signedMessage,
-  ]);
+    if (address && isConnected) sendWalletMessage();
+  }, [address, isConnected]);
+  const connectMetamask = async () => {
+    return open();
+  };
+
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -305,9 +319,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
               />
             }
             bg="#cc6228"
-            onPress={() => {
-              connector.connect();
-            }}
+            onPress={connectMetamask}
           />
         </View>
         <HStack justifyContent={"center"}>
@@ -350,6 +362,10 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
         setFirstName={setFirstName}
         setLastName={setLastName}
         onSubmit={onModalSubmit}
+      />
+      <WalletConnectModal
+        projectId={projectId}
+        providerMetadata={providerMetadata}
       />
     </ImageBackground>
   );

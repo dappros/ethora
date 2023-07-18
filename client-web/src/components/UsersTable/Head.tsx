@@ -54,7 +54,7 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     disableSorting: true,
-    label: "User Tags",
+    label: "Tags",
     width: 100,
   },
   {
