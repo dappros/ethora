@@ -1,19 +1,20 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {makeAutoObservable, runInAction, action} from 'mobx';
-import {LoginManager} from 'react-native-fbsdk-next';
-import {deleteAllRealm} from '../components/realmModels/allSchemas';
-import {httpPost, httpPut} from '../config/apiService';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { makeAutoObservable, runInAction, action } from "mobx";
+import { LoginManager } from "react-native-fbsdk-next";
+import { deleteAllRealm } from "../components/realmModels/allSchemas";
+import { httpPost, httpPut } from "../config/apiService";
 import {
   loginURL,
   refreshTokenURL,
   registerUserURL,
-} from '../config/routesConstants';
-import {asyncStorageSetItem} from '../helpers/cache/asyncStorageSetItem';
+  regularLoginUrl,
+} from "../config/routesConstants";
+import { asyncStorageSetItem } from "../helpers/cache/asyncStorageSetItem";
 
-import {underscoreManipulation} from '../helpers/underscoreLogic';
-import {rootStore, RootStore} from './context';
-import {asyncStorageGetItem} from '../helpers/cache/asyncStorageGetItem';
-import {regularLoginEmail} from '../../docs/config';
+import { underscoreManipulation } from "../helpers/underscoreLogic";
+import { rootStore, RootStore } from "./context";
+import { asyncStorageGetItem } from "../helpers/cache/asyncStorageGetItem";
+import { regularLoginEmail } from "../../docs/config";
 
 //interfaces and types
 export interface InitialDataProps {
@@ -38,50 +39,50 @@ export class LoginStore {
   isFetching: boolean = false;
   loading: boolean = false;
   error: boolean = false;
-  errorMessage: string = '';
+  errorMessage: string = "";
   initialData: InitialDataProps = {
-    firstName: '',
-    lastName: '',
-    walletAddress: '',
-    photo: '',
-    username: '',
-    password: '',
-    desc: '',
-    xmppPassword: '',
-    xmppUsername: '',
-    _id: '',
-    referrerId: '',
+    firstName: "",
+    lastName: "",
+    walletAddress: "",
+    photo: "",
+    username: "",
+    password: "",
+    desc: "",
+    xmppPassword: "",
+    xmppUsername: "",
+    _id: "",
+    referrerId: "",
     isProfileOpen: false,
     isAssetsOpen: false,
-    email: '',
-    cryptoKey: '',
+    email: "",
+    cryptoKey: "",
   };
-  userDescription: string = '';
-  userAvatar: string = '';
-  anotherUserAvatar: string = '';
-  anotherUserDescription: string = '';
-  anotherUserFirstname: string = 'Loading';
-  anotherUserLastname: string = '...';
+  userDescription: string = "";
+  userAvatar: string = "";
+  anotherUserAvatar: string = "";
+  anotherUserDescription: string = "";
+  anotherUserFirstname: string = "Loading";
+  anotherUserLastname: string = "...";
   anotherUserLastSeen: any = {};
   anotherUserWalletAddress: any = {};
   isPreviousUser: boolean = false;
   pushSubscriptionData: any = {
     ok: false,
     subscription_info: {
-      appId: '',
-      country: '',
+      appId: "",
+      country: "",
       createdAt: null,
-      deviceId: '',
+      deviceId: "",
       deviceType: null,
-      environment: 'Development',
+      environment: "Development",
       expiresAt: null,
-      externalId: '',
+      externalId: "",
       id: null,
-      isSubscribed: '0',
+      isSubscribed: "0",
       jid: null,
-      language: 'en',
-      lat: '',
-      long: '',
+      language: "en",
+      lat: "",
+      long: "",
       screenName: null,
       timezone: 0,
       updatedAt: 0,
@@ -89,10 +90,10 @@ export class LoginStore {
   };
   skipForever: boolean = false;
   stores: RootStore;
-  userToken: string = '';
-  refreshToken: string = '';
-  walletAddress: string = '';
-  xmppUsername: string = '';
+  userToken: string = "";
+  refreshToken: string = "";
+  walletAddress: string = "";
+  xmppUsername: string = "";
 
   constructor(stores: RootStore) {
     makeAutoObservable(this);
@@ -105,60 +106,60 @@ export class LoginStore {
       this.isFetching = false;
       this.loading = false;
       this.error = false;
-      this.errorMessage = '';
+      this.errorMessage = "";
       this.initialData = {
-        firstName: '',
-        lastName: '',
-        walletAddress: '',
-        photo: '',
-        username: '',
-        password: '',
-        desc: '',
-        xmppPassword: '',
-        xmppUsername: '',
-        email: '',
-        cryptoKey: '',
-        _id: '',
-        referrerId: '',
+        firstName: "",
+        lastName: "",
+        walletAddress: "",
+        photo: "",
+        username: "",
+        password: "",
+        desc: "",
+        xmppPassword: "",
+        xmppUsername: "",
+        email: "",
+        cryptoKey: "",
+        _id: "",
+        referrerId: "",
         isProfileOpen: true,
         isAssetsOpen: true,
       };
-      this.userDescription = '';
-      this.userAvatar = '';
-      this.anotherUserAvatar = '';
-      this.anotherUserDescription = '';
-      this.anotherUserFirstname = 'Loading';
-      this.anotherUserLastname = '...';
+      this.userDescription = "";
+      this.userAvatar = "";
+      this.anotherUserAvatar = "";
+      this.anotherUserDescription = "";
+      this.anotherUserFirstname = "Loading";
+      this.anotherUserLastname = "...";
       this.anotherUserLastSeen = {};
       this.anotherUserWalletAddress = {};
       this.isPreviousUser = false;
       this.pushSubscriptionData = {
         ok: false,
         subscription_info: {
-          appId: '',
-          country: '',
+          appId: "",
+          country: "",
           createdAt: null,
-          deviceId: '',
+          deviceId: "",
           deviceType: null,
-          environment: 'Development',
+          environment: "Development",
           expiresAt: null,
-          externalId: '',
+          externalId: "",
           id: null,
-          isSubscribed: '0',
+          isSubscribed: "0",
           jid: null,
-          language: 'en',
-          lat: '',
-          long: '',
+          language: "en",
+          lat: "",
+          long: "",
           screenName: null,
           timezone: 0,
           updatedAt: 0,
         },
       };
       this.skipForever = false;
-      this.userToken = '';
-      this.refreshToken = '';
-      this.walletAddress = '';
-      this.xmppUsername = '';
+      this.userToken = "";
+      this.refreshToken = "";
+      this.walletAddress = "";
+      this.xmppUsername = "";
     });
   };
 
@@ -175,12 +176,12 @@ export class LoginStore {
   //update user name
   updateUserName(name: string) {
     runInAction(() => {
-      this.initialData.firstName = name.split(' ')[0];
-      this.initialData.lastName = name.split(' ')[1];
+      this.initialData.firstName = name.split(" ")[0];
+      this.initialData.lastName = name.split(" ")[1];
     });
   }
 
-  //set vcard details for another user. 
+  //set vcard details for another user.
   setOtherUserVcard(data: any) {
     runInAction(() => {
       this.anotherUserAvatar = data.anotherUserAvatar;
@@ -201,7 +202,7 @@ export class LoginStore {
       this.anotherUserLastname = data.anotherUserLastname;
       this.anotherUserLastSeen = data.anotherUserLastSeen;
       this.anotherUserWalletAddress = data.anotherUserWalletAddress;
-      this.anotherUserAvatar = data.anotherUserAvatar || '';
+      this.anotherUserAvatar = data.anotherUserAvatar || "";
     });
   }
 
@@ -237,35 +238,37 @@ export class LoginStore {
   //handle to get refresh token to renew user session
   getRefreshToken = async () => {
     try {
-      const response = await httpPost(
-         refreshTokenURL,
-        {},
-        this.refreshToken,
-      );
+      const response = await httpPost(refreshTokenURL, {}, this.refreshToken);
       runInAction(() => {
         this.userToken = response.data.token;
         this.refreshToken = response.data.refreshToken;
       });
-      await asyncStorageSetItem('userToken', response.data.token);
-      await asyncStorageSetItem('refreshToken', response.data.refreshToken);
+      await asyncStorageSetItem("userToken", response.data.token);
+      await asyncStorageSetItem("refreshToken", response.data.refreshToken);
     } catch (error) {
       console.log(error);
     }
   };
 
   //function to login using email and password
-  regularLogin = async ({username, password}:{username:string, password:string}) => {
+  regularLogin = async ({
+    username,
+    password,
+  }: {
+    username: string;
+    password: string;
+  }) => {
     const body = regularLoginEmail
-      ? {email: username, password}
-      : {username, password};
+      ? { email: username, password }
+      : { username, password };
     const response = await httpPost(
-       loginURL,
+      regularLoginUrl,
       body,
-      this.stores.apiStore.defaultToken,
+      this.stores.apiStore.defaultToken
     );
-    console.log(response.data)
+    console.log(response.data);
     if (response.data.success) {
-      this.loginHandler(response, '');
+      this.loginHandler(response, "");
     }
   };
 
@@ -274,7 +277,7 @@ export class LoginStore {
     loginType: any,
     authToken: any,
     password: any,
-    ssoUserData: {photo: any},
+    ssoUserData: { photo: any }
   ) => {
     const token = this.stores.apiStore.defaultToken;
     let bodyData = {
@@ -284,30 +287,29 @@ export class LoginStore {
     runInAction(() => {
       this.isFetching = true;
     });
-    const url =  loginURL;
+    const url = loginURL;
 
-    console.log('test', ssoUserData)
+    console.log("test", ssoUserData);
     try {
       const response: any = await httpPost(url, bodyData, token);
 
       if (response.data.success) {
-
         this.loginHandler(response, ssoUserData.photo);
       } else {
         this.error = true;
         this.errorMessage = response.data.msg;
       }
     } catch (error: any) {
-      console.log('hellp')
-      console.log(error)
+      console.log("hellp");
+      console.log(error);
       this.error = true;
       this.errorMessage = error.response;
     }
   };
 
   loginHandler = async (response: any, photo: string) => {
-    await asyncStorageSetItem('userToken', response.data.token);
-    await asyncStorageSetItem('refreshToken', response.data.refreshToken);
+    await asyncStorageSetItem("userToken", response.data.token);
+    await asyncStorageSetItem("refreshToken", response.data.refreshToken);
     runInAction(() => {
       this.loading = false;
       this.userToken = response.data.token;
@@ -328,10 +330,10 @@ export class LoginStore {
     } = response.data.user;
 
     if (!lastName) {
-      lastName = firstName.split(' ')[1];
-      firstName = firstName.split(' ')[0];
+      lastName = firstName.split(" ")[1];
+      firstName = firstName.split(" ")[0];
     }
-    const {walletAddress} = response.data.user.defaultWallet;
+    const { walletAddress } = response.data.user.defaultWallet;
     const xmppUsername = underscoreManipulation(walletAddress);
 
     // save user login details received after login
@@ -345,14 +347,14 @@ export class LoginStore {
       xmppPassword,
       xmppUsername,
       _id,
-      referrerId: response.data.referrerId || '',
+      referrerId: response.data.referrerId || "",
       isProfileOpen: isProfileOpen,
       isAssetsOpen: isAssetsOpen,
-      desc: '',
+      desc: "",
       email,
       cryptoKey,
     };
-    await asyncStorageSetItem('initialLoginData', dataForStorage);
+    await asyncStorageSetItem("initialLoginData", dataForStorage);
     runInAction(() => {
       this.initialData = dataForStorage;
       this.isFetching = false;
@@ -371,7 +373,7 @@ export class LoginStore {
       isProfileOpen,
       isAssetsOpen,
     } = user;
-    const {walletAddress} = user.defaultWallet;
+    const { walletAddress } = user.defaultWallet;
     const xmppUsername = underscoreManipulation(walletAddress);
 
     // save user login details received after login
@@ -388,7 +390,7 @@ export class LoginStore {
       isProfileOpen: isProfileOpen,
       isAssetsOpen: isAssetsOpen,
     };
-    await asyncStorageSetItem('initialLoginData', dataForStorage);
+    await asyncStorageSetItem("initialLoginData", dataForStorage);
     runInAction(() => {
       this.initialData = dataForStorage;
       this.isFetching = false;
@@ -402,15 +404,15 @@ export class LoginStore {
     msg: string;
     loginType: string;
   }) => {
-    const url =  loginURL;
+    const url = loginURL;
 
     try {
       const response = await httpPost(
         url,
         body,
-        this.stores.apiStore.defaultToken,
+        this.stores.apiStore.defaultToken
       );
-      await this.loginHandler(response, '');
+      await this.loginHandler(response, "");
     } catch (error) {
       console.log(error);
     }
@@ -419,7 +421,7 @@ export class LoginStore {
   //set initial data received from login response
   updateInitialData = async (data: InitialDataProps) => {
     try {
-      await asyncStorageSetItem('initialLoginData', data);
+      await asyncStorageSetItem("initialLoginData", data);
       runInAction(() => {
         this.initialData = data;
         this.isFetching = false;
@@ -435,8 +437,8 @@ export class LoginStore {
       this.loading = true;
     });
 
-    const userToken = await asyncStorageGetItem('userToken');
-    const refreshToken = await asyncStorageGetItem('refreshToken');
+    const userToken = await asyncStorageGetItem("userToken");
+    const refreshToken = await asyncStorageGetItem("refreshToken");
 
     runInAction(() => {
       this.userToken = userToken;
@@ -448,13 +450,13 @@ export class LoginStore {
   //extract initial details from login
   setInitialDetailsFromAsyncStorage = async () => {
     this.isFetching = true;
-    await AsyncStorage.getItem('initialLoginData').then(
+    await AsyncStorage.getItem("initialLoginData").then(
       action((data: any) => {
         if (data) {
           this.initialData = JSON.parse(data);
         }
         this.isFetching = false;
-      }),
+      })
     );
   };
 
@@ -462,14 +464,14 @@ export class LoginStore {
   registerUser = async (body: any, ssoUserData: any) => {
     const token = this.stores.apiStore.defaultToken;
     try {
-      const url =  registerUserURL;
+      const url = registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
         this.loginUser(
           body.loginType,
           body.authToken,
           body.password,
-          ssoUserData,
+          ssoUserData
         );
       } else {
         runInAction(() => {
@@ -498,12 +500,13 @@ export class LoginStore {
   }) => {
     const token = this.stores.apiStore.defaultToken;
     try {
-      const url =  registerUserURL;
+      const url = registerUserURL;
       const response: any = await httpPost(url, body, token);
       if (response.data.success) {
-        this.loginHandler(response, '');
+        this.loginHandler(response, "");
       }
     } catch (error: any) {
+      console.log(error.response, 'dsfjklsdjfkdslfjk')
       runInAction(() => {
         this.isFetching = false;
         this.error = true;
@@ -518,10 +521,10 @@ export class LoginStore {
     lastName: string;
   }) => {
     const fd = new FormData();
-    fd.append('firstName', bodyData.firstName);
-    fd.append('lastName', bodyData.lastName);
+    fd.append("firstName", bodyData.firstName);
+    fd.append("lastName", bodyData.lastName);
 
-    const url =  registerUserURL;
+    const url = registerUserURL;
     const response: any = await httpPut(url, fd, this.userToken);
     if (response.data.success) {
       const updatedData = {

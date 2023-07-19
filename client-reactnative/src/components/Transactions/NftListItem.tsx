@@ -208,7 +208,7 @@ export const NftListItem = (props: NftListItemProps) => {
                     color: item.isCollection ? 'green' : 'black',
                     fontFamily: item.isCollection
                       ? textStyles.semiBoldFont
-                      : '',
+                      : textStyles.regularFont,
                   }}>
                   {assetsYouHave}
                 </Text>

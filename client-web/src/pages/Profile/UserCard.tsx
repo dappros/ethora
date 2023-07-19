@@ -24,7 +24,9 @@ export default function UserCard({ profile, walletAddress }: TProps) {
   const [edit, setEdit] = useState(false);
   const user = useStoreState((state) => state.user);
   const [showQrModal, setShowQrModal] = useState(false);
-
+  const setActiveRoomFilter = useStoreState(
+    (state) => state.setActiveRoomFilter
+  );
   const history = useHistory();
   const openDirectChat = () => {
     createPrivateChat(
@@ -48,6 +50,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
           };
           useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
           history.push("/chat/" + result.roomJid);
+          setActiveRoomFilter('private')
         } else {
           history.push("/chat/" + result.roomJid);
         }

@@ -1,12 +1,17 @@
 version: "3.7"
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: dappros/web
+    restart: always
     ports:
-      - "3000:3000"
+      - "8080:80"
     volumes:
-      - .:/app
-      - /app/node_modules
-    tty: true
+      - ./init.sh:/init.sh
+    environment:
+      - API_URL=https://xxx.domain.con/v1
+      - APP_DOMAIN=domain.com
+    command:
+      [
+        "sh",
+        "/init.sh"
+      ]

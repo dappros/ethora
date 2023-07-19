@@ -125,13 +125,12 @@ const NewChatScreen = (props: NewChatScreenProps) => {
         { roomName: chatName, roomDescription: chatDescription },
         chatStore.xmpp
       );
-
       chatAvatar &&
         setRoomImage(
           manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
           roomHash + apiStore.xmppDomains.CONFERENCEDOMAIN,
           chatAvatar,
-          "",
+          "none",
           "icon",
           chatStore.xmpp
         );

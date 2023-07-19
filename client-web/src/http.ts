@@ -1,5 +1,4 @@
 import axios from "axios";
-import { config } from "./config";
 import { PUSH_URL } from "./constants";
 import {
   ExplorerRespose,
@@ -7,12 +6,10 @@ import {
   ILineChartData,
   ITransaction,
 } from "./pages/Profile/types";
-import { TApp, useStoreState } from "./store";
+import { IConfig, TApp, useStoreState } from "./store";
 import qs from "qs";
 import type { Stripe } from "stripe";
-import xmpp from "./xmpp";
 import { http } from "./api/interceptors";
-
 
 export type TDefaultWallet = {
   walletAddress: string;
@@ -125,8 +122,6 @@ export interface IUserAcl {
   result: ACL[];
 }
 
-
-
 export const httpWithAuth = () => {
   const user = useStoreState.getState().user;
   http.defaults.headers.common["Authorization"] = user.token;
@@ -174,8 +169,6 @@ export interface IDocument {
   location: string;
   locations: Array<string>;
 }
-
-
 
 export const loginUsername = (username: string, password: string) => {
   const appToken = useStoreState.getState().config.appToken;
@@ -469,11 +462,13 @@ export function getMyAcl() {
   );
 }
 export function getConfig(domainName = "ethora") {
-  return http.get("apps/get-config?domainName=" + domainName);
+  return http.get<{ result: Omit<IConfig, "firebaseConfig"> }>(
+    "apps/get-config?domainName=" + domainName
+  );
 }
-type TAppResponse = {result: TApp}
-export function updateAppSettings( appId: string, data: FormData) {
-  return httpWithAuth().put<TAppResponse>("/apps/" + appId, data)
+type TAppResponse = { result: TApp };
+export function updateAppSettings(appId: string, data: FormData) {
+  return httpWithAuth().put<TAppResponse>("/apps/" + appId, data);
 }
 
 export interface IAclBody {
@@ -594,11 +589,20 @@ export function updateApp(id: string, fd: FormData) {
 export function getAppUsers(
   appId: string,
   limit: number = 10,
-  offset: number = 0
+  offset: number = 0,
+  orderBy: string = "createdAt",
+  order: string = "asc"
 ) {
   const owner = useStoreState.getState().user;
+  const params = new URLSearchParams({
+    limit: limit.toString(),
+    offset: offset.toString(),
+    orderBy,
+    order,
+  });
+
   return http.get<ExplorerRespose<IUser[]>>(
-    `/users/${appId}?&limit=${limit}&offset=${offset}`,
+    `/users/${appId}?${params.toString()}`,
     {
       headers: { Authorization: owner.token },
     }
@@ -611,6 +615,10 @@ export function rotateAppJwt(appId: string) {
     headers: { Authorization: owner.token },
   });
 }
+
+export const exportUsersCsv = (appId: string) => {
+  return httpWithAuth().get<string>(`/users/export/` + appId);
+};
 export function addTagToUser(appId: string, tags: string[], userIds: string[]) {
   return httpWithAuth().post(`/users/tags-add/` + appId, {
     usersIdList: userIds,

@@ -15,6 +15,6 @@ export const Home: React.FC<IHome> = ({}) => {
     case "profile":
       return <Redirect to={"/profile/" + user.walletAddress} />;
     default:
-      return <Redirect to={"/profile"} />;
+      return <Redirect to={"/chat/none"} />;
   }
 };

@@ -1,7 +1,7 @@
-import {observer} from 'mobx-react-lite';
-import React, {useEffect, useRef, useState} from 'react';
-import {GiftedChat, Send, Actions} from 'react-native-gifted-chat';
-import {useStores} from '../../stores/context';
+import { observer } from "mobx-react-lite";
+import React, { useEffect, useRef, useState } from "react";
+import { GiftedChat, Send, Actions } from "react-native-gifted-chat";
+import { useStores } from "../../stores/context";
 import {
   deleteMessageStanza,
   getPaginatedArchive,
@@ -12,8 +12,8 @@ import {
   sendInvite,
   sendMediaMessageStanza,
   sendMessageStanza,
-} from '../../xmpp/stanzas';
-import MessageBody from '../../components/Chat/MessageBody';
+} from "../../xmpp/stanzas";
+import MessageBody from "../../components/Chat/MessageBody";
 import {
   ActivityIndicator,
   Animated,
@@ -23,28 +23,28 @@ import {
   Pressable,
   StyleSheet,
   Text,
-} from 'react-native';
-import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
-import {format} from 'date-fns';
+} from "react-native";
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
+import { format } from "date-fns";
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from '../../helpers/underscoreLogic';
-import {ROUTES} from '../../constants/routes';
-import {ImageMessage} from '../../components/Chat/ImageMessage';
-import {ChatMediaModal} from '../../components/Modals/ChatMediaModal';
-import {Actionsheet, useDisclose, View} from 'native-base';
-import {modalTypes} from '../../constants/modalTypes';
-import {systemMessage} from '../../helpers/systemMessage';
-import parseChatLink from '../../helpers/parseChatLink';
-import openChatFromChatLink from '../../helpers/chat/openChatFromChatLink';
+} from "../../helpers/underscoreLogic";
+import { ROUTES } from "../../constants/routes";
+import { ImageMessage } from "../../components/Chat/ImageMessage";
+import { ChatMediaModal } from "../../components/Modals/ChatMediaModal";
+import { Actionsheet, useDisclose, View } from "native-base";
+import { modalTypes } from "../../constants/modalTypes";
+import { systemMessage } from "../../helpers/systemMessage";
+import parseLink from "../../helpers/parseLink";
+import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
-} from 'react-native-audio-recorder-player';
-import RNFetchBlob from 'react-native-blob-util';
+} from "react-native-audio-recorder-player";
+import RNFetchBlob from "react-native-blob-util";
 
 import {
   allowIsTyping,
@@ -54,47 +54,47 @@ import {
   metaRooms as predefinedMeta,
   ROOM_KEYS,
   textStyles,
-} from '../../../docs/config';
-import Entypo from 'react-native-vector-icons/Entypo';
-import IonIcons from 'react-native-vector-icons/Ionicons';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {fileUpload} from '../../config/routesConstants';
-import {httpUpload} from '../../config/apiService';
-import {showToast} from '../../components/Toast/toast';
-import DocumentPicker from 'react-native-document-picker';
-import {pdfMimemtype} from '../../constants/mimeTypes';
-import {normalizeData} from '../../helpers/normalizeData';
-import {AudioMessage} from '../../components/Chat/AudioMessage';
-import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
-import RenderChatFooter from '../../components/Chat/RenderChatFooter';
-import {AudioSendButton} from '../../components/Chat/AudioSendButton';
-import {PdfMessage} from '../../components/Chat/PdfMessage';
-import {FileMessage} from '../../components/Chat/FileMessage';
-import {downloadFile} from '../../helpers/downloadFile';
-import {VideoMessage} from '../../components/Chat/VideoMessage';
-import {ChatComposer} from '../../components/Chat/Composer';
-import {mentionRegEx, parseValue} from '../../helpers/chat/inputUtils';
-import matchAll from 'string.prototype.matchall';
-import {useDebounce} from '../../hooks/useDebounce';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {MetaNavigation} from '../../components/Chat/MetaNavigation';
-import {asyncStorageGetItem} from '../../helpers/cache/asyncStorageGetItem';
-import {IMessageToSend} from '../../helpers/chat/createMessageObject';
-import {isAudioMimetype} from '../../helpers/checkMimetypes';
-import {IMessage} from '../../stores/chatStore';
+} from "../../../docs/config";
+import Entypo from "react-native-vector-icons/Entypo";
+import IonIcons from "react-native-vector-icons/Ionicons";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { fileUpload } from "../../config/routesConstants";
+import { httpUpload } from "../../config/apiService";
+import { showToast } from "../../components/Toast/toast";
+import DocumentPicker from "react-native-document-picker";
+import { pdfMimemtype } from "../../constants/mimeTypes";
+import { normalizeData } from "../../helpers/normalizeData";
+import { AudioMessage } from "../../components/Chat/AudioMessage";
+import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
+import RenderChatFooter from "../../components/Chat/RenderChatFooter";
+import { AudioSendButton } from "../../components/Chat/AudioSendButton";
+import { PdfMessage } from "../../components/Chat/PdfMessage";
+import { FileMessage } from "../../components/Chat/FileMessage";
+import { downloadFile } from "../../helpers/downloadFile";
+import { VideoMessage } from "../../components/Chat/VideoMessage";
+import { ChatComposer } from "../../components/Chat/Composer";
+import { mentionRegEx, parseValue } from "../../helpers/chat/inputUtils";
+import matchAll from "string.prototype.matchall";
+import { useDebounce } from "../../hooks/useDebounce";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { MetaNavigation } from "../../components/Chat/MetaNavigation";
+import { asyncStorageGetItem } from "../../helpers/cache/asyncStorageGetItem";
+import { IMessageToSend } from "../../helpers/chat/createMessageObject";
+import { isAudioMimetype } from "../../helpers/checkMimetypes";
+import { IMessage } from "../../stores/chatStore";
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
-const ChatScreen = observer(({route, navigation}: any) => {
-  const {loginStore, chatStore, walletStore, apiStore, debugStore} =
+const ChatScreen = observer(({ route, navigation }: any) => {
+  const { loginStore, chatStore, walletStore, apiStore, debugStore } =
     useStores();
 
-  const {firstName, lastName, walletAddress} = loginStore.initialData;
+  const { firstName, lastName, walletAddress } = loginStore.initialData;
 
-  const {tokenTransferSuccess} = walletStore;
+  const { tokenTransferSuccess } = walletStore;
   const duration = 2000;
 
-  const fullName = firstName + ' ' + lastName;
+  const fullName = firstName + " " + lastName;
 
   const mediaButtonAnimation = new Animated.Value(1);
 
@@ -106,12 +106,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [recording, setRecording] = useState(false);
   const [fileUploadProgress, setFileUploadProgress] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const [composingUsername, setComposingUsername] = useState('');
+  const [composingUsername, setComposingUsername] = useState("");
   const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false);
-  const [text, setText] = useState('');
-  const [selection, setSelection] = useState({start: 0, end: 0});
+  const [text, setText] = useState("");
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
   const debouncedChatText = useDebounce(text, 500);
-  const [onTapMessageObject, setOnTapMessageObject] = useState('');
+  const [onTapMessageObject, setOnTapMessageObject] = useState("");
   const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
   const [showEditOption, setShowEditOption] = useState(true);
   const [showReplyOption, setShowReplyOption] = useState(true);
@@ -119,7 +119,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const [showViewThread, setShowViewThread] = useState(false);
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
 
-  const {isOpen, onOpen, onClose} = useDisclose();
+  const { isOpen, onOpen, onClose } = useDisclose();
   const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
 
   const handleSetIsEditing = (value: boolean) => {
@@ -127,24 +127,24 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
 
   const getMetaRooms = async () => {
-    const rooms = await asyncStorageGetItem('metaRooms');
+    const rooms = await asyncStorageGetItem("metaRooms");
     setMetaRooms(rooms || predefinedMeta);
   };
   const giftedRef = useRef(null);
 
   const path = Platform.select({
-    ios: 'audio.m4a',
+    ios: "audio.m4a",
     android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
   });
 
-  const {chatJid, chatName} = route.params;
+  const { chatJid, chatName } = route.params;
   const [mediaModal, setMediaModal] = useState({
     open: false,
-    url: '',
-    type: '',
+    url: "",
+    type: "",
     message: {},
   });
-  const room = chatStore.roomList.find(item => item.jid === chatJid);
+  const room = chatStore.roomList.find((item) => item.jid === chatJid);
 
   const messages = chatStore.messages
     .filter((item: any) => {
@@ -196,7 +196,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       lastUserText: lastMessage?.text,
       lastUserName: lastMessage?.user?.name,
       lastMessageTime:
-        lastMessage?.createdAt && format(lastMessage?.createdAt, 'hh:mm'),
+        lastMessage?.createdAt && format(lastMessage?.createdAt, "hh:mm"),
     });
   }, [!!messages]);
 
@@ -215,7 +215,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
   }, [chatStore.isComposing.state]);
 
-  const renderMessage = props => {
+  const renderMessage = (props) => {
     return <MessageBody {...props} />;
   };
 
@@ -240,30 +240,33 @@ const ChatScreen = observer(({route, navigation}: any) => {
     return (
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 43,
-          backgroundColor: 'white',
+          backgroundColor: "white",
           left: 0,
           padding: 10,
           borderRadius: 10,
           width: 200,
-        }}>
+        }}
+      >
         {defaultBotsList
-          .filter(one =>
-            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
+          .filter((one) =>
+            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
           )
-          .map(one => (
+          .map((one) => (
             <Pressable
               key={one.id}
               onPress={() => onSuggestionPress(one)}
               style={{
                 paddingBottom: 5,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontFamily: textStyles.semiBoldFont,
-                  color: '#000',
-                }}>
+                  color: "#000",
+                }}
+              >
                 {one.name}
               </Text>
             </Pressable>
@@ -273,9 +276,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   };
   const partTypes = [
     {
-      trigger: '@', // Should be a single character like '@' or '#'
+      trigger: "@", // Should be a single character like '@' or '#'
       renderSuggestions,
-      textStyle: {fontWeight: 'bold', color: 'blue'}, // The mention style in the input
+      textStyle: { fontWeight: "bold", color: "blue" }, // The mention style in the input
     },
   ];
 
@@ -284,7 +287,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const tokenAmount = messageString[0].tokenAmount || 0;
     const receiverMessageId = messageString[0].receiverMessageId || 0;
     const manipulatedWalletAddress = underscoreManipulation(
-      loginStore.initialData.walletAddress,
+      loginStore.initialData.walletAddress
     );
     const data = {
       senderFirstName: loginStore.initialData.firstName,
@@ -301,24 +304,24 @@ const ChatScreen = observer(({route, navigation}: any) => {
       push: true,
     };
     const text = parseValue(messageText, partTypes).plainText;
-    const matches = Array.from(matchAll(messageText ?? '', mentionRegEx));
-    matches.forEach(match =>
-      sendInvite(manipulatedWalletAddress, chatJid, match[4], chatStore.xmpp),
+    const matches = Array.from(matchAll(messageText ?? "", mentionRegEx));
+    matches.forEach((match) =>
+      sendInvite(manipulatedWalletAddress, chatJid, match[4], chatStore.xmpp)
     );
     sendMessageStanza(
       manipulatedWalletAddress,
       chatJid,
       text,
       data,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
   };
 
   const getOtherUserDetails = (props: any) => {
-    const {avatar, name, _id} = props;
-    const firstName = name.split(' ')[0];
-    const lastName = name.split(' ')[1];
-    const xmppID = _id.split('@')[0];
+    const { avatar, name, _id } = props;
+    const firstName = name.split(" ")[0];
+    const lastName = name.split(" ")[1];
+    const xmppID = _id.split("@")[0];
     // const {anotherUserWalletAddress} = this.props.loginReducer;
     const walletAddress = reverseUnderScoreManipulation(xmppID);
     //fetch transaction
@@ -330,7 +333,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     retrieveOtherUserVcard(
       loginStore.initialData.xmppUsername,
       theirXmppUsername,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
 
     loginStore.setOtherUserDetails({
@@ -345,7 +348,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const onUserAvatarPress = (props: any) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = props._id.split('@')[0];
+    const xmppID = props._id.split("@")[0];
     const walletAddress = reverseUnderScoreManipulation(xmppID);
     if (walletAddress === loginStore.initialData.walletAddress) {
       navigation.navigate(ROUTES.PROFILE);
@@ -356,14 +359,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
     }
   };
   const onMediaMessagePress = (type: any, url: any, message) => {
-    setMediaModal({open: true, type, url, message});
+    setMediaModal({ open: true, type, url, message });
   };
 
   const closeMediaModal = () => {
-    setMediaModal({type: '', open: false, url: ''});
+    setMediaModal({ type: "", open: false, url: "" });
   };
 
-  const handleInputChange = t => {
+  const handleInputChange = (t) => {
     setText(t);
     setTimeout(() => {
       isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
@@ -391,7 +394,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       try {
         parsedWaveform = JSON.parse(waveForm);
       } catch (error) {
-        console.log('cant parse wave');
+        console.log("cant parse wave");
       }
     }
     if (isImageMimetype(mimetype)) {
@@ -429,7 +432,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       );
     } else if (pdfMimemtype[mimetype]) {
       const pdfImage =
-        'https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw';
+        "https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw";
       return (
         <PdfMessage
           url={preview || pdfImage}
@@ -454,7 +457,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     let extraData = {};
     if (
       message.user._id.includes(
-        underscoreManipulation(loginStore.initialData.walletAddress),
+        underscoreManipulation(loginStore.initialData.walletAddress)
       )
     ) {
       return;
@@ -462,12 +465,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
     if (
       !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
     ) {
-      const jid = message.user._id.split('@' + apiStore.xmppDomains.DOMAIN)[0];
+      const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0];
       const walletFromJid = reverseUnderScoreManipulation(jid);
       const token = loginStore.userToken;
 
       extraData = {
-        type: 'transfer',
+        type: "transfer",
         amnt: null,
         name: message.user.name,
         message_id: message._id,
@@ -477,7 +480,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         jid,
         senderName:
           loginStore.initialData.firstName +
-          ' ' +
+          " " +
           loginStore.initialData.lastName,
       };
     }
@@ -506,7 +509,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const handleCopyText = () => {
     Clipboard.setString(onTapMessageObject.text);
-    showToast('success', 'Info', 'Message copied', 'top');
+    showToast("success", "Info", "Message copied", "top");
     return onClose();
   };
 
@@ -526,7 +529,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       manipulatedWalletAddress,
       chatJid,
       onTapMessageObject?._id as string,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
   };
 
@@ -557,7 +560,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         messageText,
         onTapMessageObject._id,
         data,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
       setIsEditing(false);
     } else {
@@ -595,23 +598,27 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const QRPressed = () => {
     setShowModal(true);
     setModalType(modalTypes.GENERATEQR);
-    setExtraData({link: chatJid, mode: 'chat'});
+    setExtraData({ link: chatJid, mode: "chat" });
   };
 
   const handleChatLinks = (chatLink: string) => {
-    const chatJID =
-      parseChatLink(chatLink) + apiStore.xmppDomains.CONFERENCEDOMAIN;
-    // navigation.navigate(ROUTES.ROOMSLIST);
-    // // getUserRoomsStanza(
-    // //   underscoreManipulation(loginStore.walletAddress),
-    // //   chatStore.xmpp
-    // //   );
-    openChatFromChatLink(
-      chatJID,
-      loginStore.initialData.walletAddress,
-      navigation,
-      chatStore.xmpp,
-    );
+    const parsedLink = parseLink(chatLink);
+    if (parsedLink) {
+      const chatJID =
+        parsedLink.searchParams.get("c") +
+        apiStore.xmppDomains.CONFERENCEDOMAIN;
+      // navigation.navigate(ROUTES.ROOMSLIST);
+      // // getUserRoomsStanza(
+      // //   underscoreManipulation(loginStore.walletAddress),
+      // //   chatStore.xmpp
+      // //   );
+      openChatFromChatLink(
+        chatJID,
+        loginStore.initialData.walletAddress,
+        navigation,
+        chatStore.xmpp
+      );
+    } else showToast("error", "Error", "Invalid QR", "top");
   };
 
   const animateMediaButtonIn = () => {
@@ -645,13 +652,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const result = await audioRecorderPlayer.startRecorder(
       path,
       audioSet,
-      true,
+      true
     );
     console.log(result);
   };
 
   const getWaveformArray = async (url: string) => {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       let ddd = await NativeModules.Waveform.getWaveformArray(url);
 
       const data = JSON.parse(ddd);
@@ -670,7 +677,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       .map((_, i) =>
         arr
           .slice(i * blockSize, (i + 1) * blockSize)
-          .reduce((sum, val) => sum + Math.abs(val), 0),
+          .reduce((sum, val) => sum + Math.abs(val), 0)
       );
 
     return res;
@@ -679,7 +686,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const getAudioData = async (url?: string) => {
     const audioPath =
       url ||
-      (Platform.OS === 'ios'
+      (Platform.OS === "ios"
         ? `${RNFetchBlob.fs.dirs.CacheDir}/audioMessage.m4a`
         : path);
     const data = await getWaveformArray(audioPath);
@@ -717,7 +724,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
         manipulatedWalletAddress,
         chatJid,
         data,
-        chatStore.xmpp,
+        chatStore.xmpp
       );
     });
   };
@@ -729,7 +736,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
     const result = await audioRecorderPlayer.stopRecorder();
 
     const filesApiURL = fileUpload;
-    const FormData = require('form-data');
+    const FormData = require("form-data");
     let data = new FormData();
     const waveform = await getAudioData();
     // let correctpath = '';
@@ -737,17 +744,17 @@ const ChatScreen = observer(({route, navigation}: any) => {
     // const str2 = res.uri;
     // correctpath = str2.replace(str1, '');
 
-    data.append('files', {
+    data.append("files", {
       uri: result,
-      type: 'audio/mpeg',
-      name: 'sound.mp3',
+      type: "audio/mpeg",
+      name: "sound.mp3",
     });
     try {
       const response = await httpUpload(
         filesApiURL,
         data,
         loginStore.userToken,
-        setFileUploadProgress,
+        setFileUploadProgress
       );
       setFileUploadProgress(0);
 
@@ -757,7 +764,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
       }
     } catch (error) {
       console.log(error);
-      showToast('error', 'Error', 'Cannot upload file, try again later', 'top');
+      showToast("error", "Error", "Cannot upload file, try again later", "top");
     }
   };
 
@@ -765,13 +772,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
-        copyTo: 'cachesDirectory',
+        copyTo: "cachesDirectory",
       });
 
       const filesApiURL = fileUpload;
-      const FormData = require('form-data');
+      const FormData = require("form-data");
       let data = new FormData();
-      data.append('files', {
+      data.append("files", {
         uri: res[0].uri,
         type: res[0].type,
         name: res[0].name,
@@ -781,12 +788,12 @@ const ChatScreen = observer(({route, navigation}: any) => {
         filesApiURL,
         data,
         loginStore.userToken,
-        setFileUploadProgress,
+        setFileUploadProgress
       );
       setFileUploadProgress(0);
       if (response.data.results?.length) {
         debugStore.addLogsApi(response.data.results);
-        if (response.data.results[0].mimetype === 'audio/mpeg') {
+        if (response.data.results[0].mimetype === "audio/mpeg") {
           let wave = await getAudioData(absolutePath);
           submitMediaMessage(response.data.results, wave);
         } else {
@@ -799,10 +806,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
         // User cancelled the picker, exit any dialogs or menus and move on
       } else {
         showToast(
-          'error',
-          'Error',
-          'Cannot upload file, try again later',
-          'top',
+          "error",
+          "Error",
+          "Cannot upload file, try again later",
+          "top"
         );
         throw err;
       }
@@ -812,7 +819,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const displayNftItems = async () => {
     setIsNftItemGalleryVisible(true);
   };
-  const sendNftItemsFromGallery = item => {
+  const sendNftItemsFromGallery = (item) => {
     const data: IMessageToSend = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
@@ -828,14 +835,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
       wrappable: true,
       push: true,
       roomJid: chatJid,
-      receiverMessageId: '0',
+      receiverMessageId: "0",
     };
 
     sendMediaMessageStanza(
       manipulatedWalletAddress,
       chatJid,
       data,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
     setIsNftItemGalleryVisible(false);
   };
@@ -843,10 +850,10 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const onDeleteMessagePress = () => {
     const messageId = onTapMessageObject._id;
     deleteMessageStanza(
-      manipulatedWalletAddress + '@' + apiStore.xmppDomains.DOMAIN,
+      manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
       chatJid,
       messageId,
-      chatStore.xmpp,
+      chatStore.xmpp
     );
     onClose();
   };
@@ -854,35 +861,36 @@ const ChatScreen = observer(({route, navigation}: any) => {
   const renderAttachment = () => {
     const options = walletStore.nftItems.length
       ? {
-          'Upload File': async () => await sendAttachment(),
-          'Display an Item': async () => await displayNftItems(),
+          "Upload File": async () => await sendAttachment(),
+          "Display an Item": async () => await displayNftItems(),
           Cancel: () => {
-            console.log('Cancel');
+            console.log("Cancel");
           },
         }
       : {
-          'Upload File': async () => await sendAttachment(),
+          "Upload File": async () => await sendAttachment(),
           Cancel: () => {
-            console.log('Cancel');
+            console.log("Cancel");
           },
         };
     return (
-      <View style={{position: 'relative'}}>
+      <View style={{ position: "relative" }}>
         <View
           accessibilityLabel="Choose attachment"
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}>
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
           <Actions
             containerStyle={{
-              width: hp('4%'),
-              height: hp('4%'),
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: hp("4%"),
+              height: hp("4%"),
+              alignItems: "center",
+              justifyContent: "center",
             }}
             icon={() => (
-              <Entypo name="attachment" color={'black'} size={hp('3%')} />
+              <Entypo name="attachment" color={"black"} size={hp("3%")} />
             )}
             options={options}
             optionTintColor="#000000"
@@ -894,7 +902,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const renderSend = (props: any) => {
     const animateMediaButtonStyle = {
-      transform: [{scale: mediaButtonAnimation}],
+      transform: [{ scale: mediaButtonAnimation }],
     };
     if (!props.text) {
       return (
@@ -908,13 +916,13 @@ const ChatScreen = observer(({route, navigation}: any) => {
     return (
       <Send {...props}>
         <View style={[styles.sendButton]}>
-          <IonIcons name="ios-send" color={'white'} size={hp('3%')} />
+          <IonIcons name="ios-send" color={"white"} size={hp("3%")} />
         </View>
       </Send>
     );
   };
 
-  const renderComposer = props => {
+  const renderComposer = (props) => {
     return (
       <ChatComposer
         onTextChanged={setText}
@@ -927,11 +935,11 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
-      item => item._id === currentMessage?.mainMessage?.id,
+      (item) => item._id === currentMessage?.mainMessage?.id
     );
     console.log(
       giftedRef.current?._messageContainerRef?.current?.scrollToIndex,
-      'parent Index',
+      "parent Index"
     );
     giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
       animated: true,
@@ -942,8 +950,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
   return (
     <>
       <ImageBackground
-        style={{width: '100%', height: '100%', zIndex: 0}}
-        source={{uri: room?.roomBackground ? room.roomBackground : null}}>
+        style={{ width: "100%", height: "100%", zIndex: 0 }}
+        source={{ uri: room?.roomBackground ? room.roomBackground : null }}
+      >
         <SecondaryHeader
           title={chatStore.roomsInfoMap[chatJid]?.name}
           isQR={true}
@@ -959,7 +968,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           <AudioPlayer audioUrl={mediaModal.url} />
         )}
         {chatStore.isLoadingEarlierMessages && (
-          <View style={{backgroundColor: 'transparent'}}>
+          <View style={{ backgroundColor: "transparent" }}>
             <ActivityIndicator size={30} color={commonColors.primaryColor} />
           </View>
         )}
@@ -971,14 +980,14 @@ const ChatScreen = observer(({route, navigation}: any) => {
             <ActivityIndicator size={30} color={commonColors.primaryColor} />
           )}
           text={text}
-          type={'main'}
+          type={"main"}
           scrollToParentMessage={(currentMessage: any) =>
             scrollToParentMessage(currentMessage)
           }
           renderUsernameOnMessage
           onInputTextChanged={handleInputChange}
           renderMessage={renderMessage}
-          renderMessageImage={props => renderMedia(props)}
+          renderMessageImage={(props) => renderMedia(props)}
           renderComposer={renderComposer}
           messages={messages}
           renderAvatarOnTop
@@ -988,7 +997,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
               isEditing={isEditing}
               setIsEditing={handleSetIsEditing}
               onTapMessageObject={onTapMessageObject}
-              closeReply={() => handleReply('close')}
+              closeReply={() => handleReply("close")}
               replyMessage={onTapMessageObject?.text}
               replyUserName={onTapMessageObject?.user?.name}
               allowIsTyping={allowIsTyping}
@@ -998,18 +1007,18 @@ const ChatScreen = observer(({route, navigation}: any) => {
               setFileUploadProgress={setFileUploadProgress}
             />
           )}
-          placeholder={'Type a message'}
+          placeholder={"Type a message"}
           listViewProps={{
             onEndReached: onLoadEarlier,
             onEndReachedThreshold: 0.05,
           }}
           // textInputProps={{onSelectionChange: e => console.log(e)}}
-          keyboardShouldPersistTaps={'handled'}
-          onSend={messageString => sendMessage(messageString, false)}
+          keyboardShouldPersistTaps={"handled"}
+          onSend={(messageString) => sendMessage(messageString, false)}
           user={{
             _id:
               loginStore.initialData.xmppUsername +
-              '@' +
+              "@" +
               apiStore.xmppDomains.DOMAIN,
             name: loginStore.initialData.username,
           }}
@@ -1017,17 +1026,16 @@ const ChatScreen = observer(({route, navigation}: any) => {
           alwaysShowSend
           showUserAvatar
           textInputProps={{
-            color: 'black',
-            onSelectionChange: e => setSelection(e.nativeEvent.selection),
+            color: "black",
+            onSelectionChange: (e) => setSelection(e.nativeEvent.selection),
           }}
           onLongPress={(message: any) => handleOnLongPress(message)}
           onTap={(message: any) => handleOnPress(message)}
           handleReply={handleReply}
           // onInputTextChanged={()=>{alert('hhh')}}
-          parsePatterns={linkStyle => [
+          parsePatterns={(linkStyle) => [
             {
-              pattern:
-                /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
+              pattern: /\bhttps:\/\/www\.eto\.li\?c=0x[0-9a-f]+_0x[0-9a-f]+/gm,
               style: linkStyle,
               onPress: handleChatLinks,
             },
@@ -1058,7 +1066,8 @@ const ChatScreen = observer(({route, navigation}: any) => {
             setIsShowDeleteOption(true);
             setShowReplyOption(true);
             setShowViewThread(false);
-          }}>
+          }}
+        >
           <Actionsheet.Content>
             {showReplyOption ? (
               <Actionsheet.Item onPress={() => handleReply()}>
@@ -1082,7 +1091,7 @@ const ChatScreen = observer(({route, navigation}: any) => {
           </Actionsheet.Content>
         </Actionsheet>
         <MetaNavigation
-          chatId={chatJid.split('@')[0]}
+          chatId={chatJid.split("@")[0]}
           open={showMetaNavigation || chatStore.showMetaNavigation}
           onClose={() => {
             setShowMetaNavigation(false);
@@ -1103,9 +1112,9 @@ const ChatScreen = observer(({route, navigation}: any) => {
 
 const styles = StyleSheet.create({
   usernameStyle: {
-    fontWeight: 'bold',
-    color: '#FFFF',
-    fontSize: hp('1.47%'),
+    fontWeight: "bold",
+    color: "#FFFF",
+    fontSize: hp("1.47%"),
   },
   sendButton: {
     backgroundColor: commonColors.primaryDarkColor,

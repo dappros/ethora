@@ -95,59 +95,59 @@ export interface IMainMessage {
 
 export const createMessageObject = (messageDetails = []) => {
   const message: IMessage = {
-    _id: '',
-    text: '',
-    createdAt: '',
+    _id: "",
+    text: "",
+    createdAt: "",
     system: false,
     tokenAmount: 0,
     user: {
-      _id: '',
-      name: '',
-      avatar: '',
+      _id: "",
+      name: "",
+      avatar: "",
     },
-    image: '',
-    realImageURL: '',
-    localURL: '',
+    image: "",
+    realImageURL: "",
+    localURL: "",
     isStoredFile: false,
     mimetype: undefined,
-    duration: '',
-    size: '',
-    waveForm: '',
-    roomJid: '',
-    receiverMessageId: '',
+    duration: "",
+    size: "",
+    waveForm: "",
+    roomJid: "",
+    receiverMessageId: "",
     imageLocationPreview: undefined,
     imageLocation: undefined,
-    quickReplies: '',
+    quickReplies: "",
     wrappable: true,
-    nftId: '',
-    nftName: '',
-    nftActionType: '',
-    contractAddress: '',
-    fileName: '',
-    originalName: '',
+    nftId: "",
+    nftName: "",
+    nftActionType: "",
+    contractAddress: "",
+    fileName: "",
+    originalName: "",
     isReply: false,
     mainMessage: undefined,
     numberOfReplies: 0,
     showInChannel: false,
-    preview: '',
+    preview: "",
     isReplace: false,
-    replaceMessageId: '',
+    replaceMessageId: "",
     isEdited: false,
   };
   messageDetails.forEach((item: any) => {
-    if (item.name === 'body') {
+    if (item.name === "body") {
       message.text = item.children[0];
     }
-    if (item.name === 'archived') {
+    if (item.name === "archived") {
       message._id = item.attrs.id;
       message.roomJid = item.attrs.by;
-      message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13))).toDateString();
+      message.createdAt = new Date(parseInt(item.attrs.id.substring(0, 13)));
     }
-    if (item.name === 'data') {
+    if (item.name === "data") {
       message.user.name =
-        item.attrs.senderFirstName + ' ' + item.attrs.senderLastName;
+        item.attrs.senderFirstName + " " + item.attrs.senderLastName;
       message.user._id = item.attrs.senderJID;
-      const isSystem = item.attrs.isSystemMessage === 'true';
+      const isSystem = item.attrs.isSystemMessage === "true";
       message.system = isSystem;
       message.tokenAmount = +item.attrs?.tokenAmount || 0;
       message.user.avatar = item.attrs.photoURL || null;
@@ -159,24 +159,24 @@ export const createMessageObject = (messageDetails = []) => {
       message.duration = item.attrs.duration;
       message.size = item.attrs.size;
       message.image = item.attrs.location;
-      message.receiverMessageId = item.attrs.receiverMessageId || '';
-      message.quickReplies = item.attrs.quickReplies || '';
-      message.attachmentId = item.attrs.attachmentId || '';
+      message.receiverMessageId = item.attrs.receiverMessageId || "";
+      message.quickReplies = item.attrs.quickReplies || "";
+      message.attachmentId = item.attrs.attachmentId || "";
       message.wrappable = true;
-      message.nftId = item.attrs.nftId || '';
-      message.nftName = item.attrs.nftName || '';
+      message.nftId = item.attrs.nftId || "";
+      message.nftName = item.attrs.nftName || "";
       message.nftActionType = item.attrs?.nftActionType;
       message.contractAddress = item.attrs?.contractAddress;
-      message.fileName = item.attrs.fileName || '';
-      message.originalName = item.attrs.originalName || '';
-      message.isReply = item.attrs.isReply === 'true' || false;
+      message.fileName = item.attrs.fileName || "";
+      message.originalName = item.attrs.originalName || "";
+      message.isReply = item.attrs.isReply === "true" || false;
       if (item.attrs.mainMessage) {
         try {
           const parsedMessage = JSON.parse(item.attrs.mainMessage);
           const mainMessage: IMainMessage = {
-            text: parsedMessage.text || '',
-            id: parsedMessage?.id,
-            userName: parsedMessage.userName || '',
+            text: parsedMessage.text || "",
+            id: parsedMessage?.id && parsedMessage.id.toString(),
+            userName: parsedMessage.userName || "",
             createdAt: parsedMessage.createdAt,
             fileName: parsedMessage.fileName,
             imageLocation: parsedMessage.imageLocation,
@@ -187,7 +187,7 @@ export const createMessageObject = (messageDetails = []) => {
             duration: parsedMessage.duration,
             waveForm: parsedMessage.waveForm,
             attachmentId: parsedMessage.attachmentId,
-            wrappable: parsedMessage.wrappable === 'true' || false,
+            wrappable: parsedMessage.wrappable === "true" || false,
             nftId: parsedMessage.mainMessageNftId,
             nftActionType: parsedMessage.nftActionType,
             contractAddress: parsedMessage.contractAddress,
@@ -200,11 +200,11 @@ export const createMessageObject = (messageDetails = []) => {
       }
 
       message.numberOfReplies = 0;
-      message.showInChannel = item.attrs.showInChannel === 'true' || false;
+      message.showInChannel = item.attrs.showInChannel === "true" || false;
       message.preview = item.attrs.locationPreview;
       // message.roomJid = item.attrs.roomJid;
     }
-    if (item.name === 'replace') {
+    if (item.name === "replace") {
       message.isReplace = true;
       message.replaceMessageId = item.attrs.id;
     }

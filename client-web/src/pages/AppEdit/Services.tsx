@@ -1,17 +1,29 @@
 import React, { useRef, useState } from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
 import * as http from "../../http";
 import { useParams } from "react-router";
 import { useStoreState } from "../../store";
 import { useFormik } from "formik";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { LoadingButton } from "@mui/lab";
+import InfoIcon from "@mui/icons-material/Info";
+import { getFirebaseConfigFromString } from "../../utils";
 
 export interface IServices {}
 type IFile = {
   file?: File;
   url: string;
 };
+
+const firebaseConfigExample = `{
+  apiKey: "AIzaassdcefSyDgasd.-WrjLQadoYf0ads12dscxzsi_qO4g",
+  authDomain: "ethora-668e9.firebaseapp.com",
+  projectId: "ethora-668e9",
+  storageBucket: "ethora-668e9.appspot.com",
+  messagingSenderId: "972933470054",
+  appId: "1:972933470054:web:d4682e76ef02fdasdawdasd9b9cdaa7",
+  measurementId: "G-WHMasd7asdxcvX4asdC8"
+}`;
 export const Services: React.FC<IServices> = ({}) => {
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState({
@@ -31,6 +43,7 @@ export const Services: React.FC<IServices> = ({}) => {
   });
   const { appId } = useParams<{ appId: string }>();
   const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+
   const updateApp = useStoreState((s) => s.updateApp);
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -74,62 +87,18 @@ export const Services: React.FC<IServices> = ({}) => {
 
   const formik = useFormik({
     initialValues: {
-      REACT_APP_FIREBASE_API_KEY: app.REACT_APP_FIREBASE_API_KEY,
-      REACT_APP_FIREBASE_AUTH_DOMAIN: app.REACT_APP_FIREBASE_AUTH_DOMAIN,
-      REACT_APP_FIREBASE_PROJECT_ID: app.REACT_APP_FIREBASE_PROJECT_ID,
-      REACT_APP_FIREBASE_STORAGE_BUCKET: app.REACT_APP_FIREBASE_STORAGE_BUCKET,
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID:
-        app.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-      REACT_APP_FIREBASE_APP_ID: app.REACT_APP_FIREBASE_APP_ID,
-      REACT_APP_FIREBASE_MEASURMENT_ID: app.REACT_APP_FIREBASE_MEASURMENT_ID,
+      firebaseWebConfigString: app.firebaseWebConfigString || "",
     },
     validate: (values) => {
       const errors: Record<string, string> = {};
 
       return errors;
     },
-    onSubmit: async (
-      {
-        REACT_APP_FIREBASE_API_KEY,
-        REACT_APP_FIREBASE_AUTH_DOMAIN,
-        REACT_APP_FIREBASE_PROJECT_ID,
-        REACT_APP_FIREBASE_STORAGE_BUCKET,
-        REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
-        REACT_APP_FIREBASE_APP_ID,
-        REACT_APP_FIREBASE_MEASURMENT_ID,
-      },
-      { setSubmitting }
-    ) => {
+    onSubmit: async ({ firebaseWebConfigString }, { setSubmitting }) => {
       const data = new FormData();
-      REACT_APP_FIREBASE_API_KEY &&
-        data.append("REACT_APP_FIREBASE_API_KEY", REACT_APP_FIREBASE_API_KEY);
-      REACT_APP_FIREBASE_AUTH_DOMAIN &&
-        data.append(
-          "REACT_APP_FIREBASE_AUTH_DOMAIN",
-          REACT_APP_FIREBASE_AUTH_DOMAIN
-        );
-      REACT_APP_FIREBASE_PROJECT_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_PROJECT_ID",
-          REACT_APP_FIREBASE_PROJECT_ID
-        );
-      REACT_APP_FIREBASE_STORAGE_BUCKET &&
-        data.append(
-          "REACT_APP_FIREBASE_STORAGE_BUCKET",
-          REACT_APP_FIREBASE_STORAGE_BUCKET
-        );
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_MESSAGING_SENDER_ID",
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID
-        );
-      REACT_APP_FIREBASE_APP_ID &&
-        data.append("REACT_APP_FIREBASE_APP_ID", REACT_APP_FIREBASE_APP_ID);
-      REACT_APP_FIREBASE_MEASURMENT_ID &&
-        data.append(
-          "REACT_APP_FIREBASE_MEASURMENT_ID",
-          REACT_APP_FIREBASE_MEASURMENT_ID
-        );
+
+      firebaseWebConfigString &&
+        data.append("firebaseWebConfigString", firebaseWebConfigString);
       googleServisesJson.file &&
         data.append("googleServicesJson", googleServisesJson.file);
       googleServisesPlist.file &&
@@ -146,203 +115,156 @@ export const Services: React.FC<IServices> = ({}) => {
     },
   });
 
+  const handleFirebaseConfigChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const value = e.target.value;
+    const config = getFirebaseConfigFromString(value);
+    console.log(config)
+  };
+
   return (
     <Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Typography>Push Notifications certificate (Apple)</Typography>
+      <Box>
+        <Typography
+          sx={{ fontWeight: "bold", fontSize: 24, mb: 2 }}
+          variant="h2"
+        >
+          Google sign-in and Firebase analytics
+        </Typography>
+        <Typography sx={{ fontStyle: "italic" }}>
+          Firebase credentials are required to allow your users to sign on via
+          Google Account. Also this allows you to track your app usage analytics
+          in your Firebase console. These options will be disabled if
+          credentials are not provided.
+        </Typography>
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        <Typography sx={{ fontWeight: "bold", mb: 1 }}>Web</Typography>
+        <Typography sx={{ mb: 1, display: "flex", alignItems: "center" }}>
+          Copy paste the configuration from your Firebase Console{" "}
+          <Tooltip
+            sx={{ ml: 1 }}
+            title={
+              <Box>
+                <Typography sx={{ fontSize: 12 }}>
+                  Follow these steps to copy Firebase data:
+                </Typography>
+                <Typography sx={{ fontSize: 12 }}>1) Your App. </Typography>
+                <Typography sx={{ fontSize: 12 }}>
+                  2) Project settings.
+                </Typography>
+                <Typography sx={{ fontSize: 12 }}>3) Web. </Typography>
+                <Typography sx={{ fontSize: 12 }}>
+                  4) Copy the Firebase data according to the example provided in
+                  the input field.
+                </Typography>
+                <Typography sx={{ fontSize: 12 }}>
+                  5) Paste copied data.
+                </Typography>
+              </Box>
+            }
+          >
+            <InfoIcon color="primary" />
+          </Tooltip>
+        </Typography>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            id="outlined-configuration"
+            name={'firebaseWebConfigString'}
+            placeholder={firebaseConfigExample}
+            onChange={formik.handleChange}
+            value={formik.values.firebaseWebConfigString}
+            multiline
+            rows={15}
+          />
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography sx={{ fontWeight: "bold", mb: 1 }}>Android</Typography>
+
+        <Typography sx={{ mb: 1 }}>Google Services JSON</Typography>
+
         <input
-          onChange={uploadCertificate}
-          ref={fileRef}
+          onChange={handleGoogleServisesJsonChange}
+          ref={googleServisesJsonRef}
           type="file"
-          accept="*/*"
+          accept=".json"
           style={{ display: "none" }}
         />
-        <Button variant="outlined" onClick={() => fileRef.current?.click()}>
-          {certificate.originalname || "Upload"}
+        <Button
+          // disabled={loading}
+          color="primary"
+          variant="outlined"
+          onClick={() => googleServisesJsonRef?.current?.click()}
+        >
+          {googleServisesJson?.file?.name || "Upload"}
         </Button>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 4, mt: 1, mb: 1 }}>
-        <Box >
-          <Typography>Google Services JSON</Typography>
+      <Box sx={{ mb: 2 }}>
+        <Typography sx={{ fontWeight: "bold", mb: 1 }}>iOS</Typography>
 
+        <Typography sx={{ mb: 1 }}>Google Services PLIST</Typography>
+        <input
+          onChange={handleGoogleServisesPlistChange}
+          ref={googleServisesPlistRef}
+          type="file"
+          accept=".plist"
+          style={{ display: "none" }}
+        />
+        <Button
+          // disabled={loading}
+          color="primary"
+          variant="outlined"
+          onClick={() => googleServisesPlistRef?.current?.click()}
+        >
+          {googleServisesPlist?.file?.name || "Upload"}
+        </Button>
+      </Box>
+
+      <Box>
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            sx={{ fontWeight: "bold", fontSize: 24, mb: 2 }}
+            variant="h2"
+          >
+            Push Notifications
+          </Typography>
+          <Typography sx={{ fontStyle: "italic" }}>
+            Upload the relevant Push Notification certificate to enable push
+            alerts for incoming chat messages and other events.
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography>Push Notifications certificate (Apple)</Typography>
           <input
-            onChange={handleGoogleServisesJsonChange}
-            ref={googleServisesJsonRef}
+            onChange={uploadCertificate}
+            ref={fileRef}
             type="file"
-            accept=".json"
+            accept="*/*"
             style={{ display: "none" }}
           />
-          <Button
-            // disabled={loading}
-            color="primary"
-            variant="outlined"
-            onClick={() => googleServisesJsonRef?.current?.click()}
-          >
-            {googleServisesJson?.file?.name || "Upload"}
+          <Button variant="outlined" onClick={() => fileRef.current?.click()}>
+            {certificate.originalname || "Upload"}
           </Button>
         </Box>
-        <Box >
-          <Typography>Google Services PLIST</Typography>
-          <input
-            onChange={handleGoogleServisesPlistChange}
-            ref={googleServisesPlistRef}
-            type="file"
-            accept=".plist"
-            style={{ display: "none" }}
+        <Box>
+          <TextField
+            sx={{ width: "100%" }}
+            margin="dense"
+            label="Firebase Server key"
+            name="firebaseServerKey"
+            variant="outlined"
+            // onChange={formik.handleChange}
+            // onBlur={formik.handleBlur}
+            // value={formik.values.appUrl}
+            // error={!!formik.touched.appUrl && !!formik.errors.appUrl}
           />
-          <Button
-            // disabled={loading}
-            color="primary"
-            variant="outlined"
-            onClick={() => googleServisesPlistRef?.current?.click()}
-          >
-            {googleServisesPlist?.file?.name || "Upload"}
-          </Button>
         </Box>
       </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="Firebase Server key"
-          name="firebaseServerKey"
-          variant="outlined"
-          // onChange={formik.handleChange}
-          // onBlur={formik.handleBlur}
-          // value={formik.values.appUrl}
-          // error={!!formik.touched.appUrl && !!formik.errors.appUrl}
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="Google Id (Firebase)"
-          name="appUrl"
-          variant="outlined"
-          // onChange={formik.handleChange}
-          // onBlur={formik.handleBlur}
-          // value={formik.values.appUrl}
-          // error={!!formik.touched.appUrl && !!formik.errors.appUrl}
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_API_KEY"
-          name="REACT_APP_FIREBASE_API_KEY"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_API_KEY}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_API_KEY &&
-            !!formik.errors.REACT_APP_FIREBASE_API_KEY
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_AUTH_DOMAIN"
-          name="REACT_APP_FIREBASE_AUTH_DOMAIN"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_AUTH_DOMAIN}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_AUTH_DOMAIN &&
-            !!formik.errors.REACT_APP_FIREBASE_AUTH_DOMAIN
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_PROJECT_ID"
-          name="REACT_APP_FIREBASE_PROJECT_ID"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_PROJECT_ID}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_PROJECT_ID &&
-            !!formik.errors.REACT_APP_FIREBASE_PROJECT_ID
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_STORAGE_BUCKET"
-          name="REACT_APP_FIREBASE_STORAGE_BUCKET"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_STORAGE_BUCKET}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_STORAGE_BUCKET &&
-            !!formik.errors.REACT_APP_FIREBASE_STORAGE_BUCKET
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_MESSAGING_SENDER_ID"
-          name="REACT_APP_FIREBASE_MESSAGING_SENDER_ID"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_MESSAGING_SENDER_ID &&
-            !!formik.errors.REACT_APP_FIREBASE_MESSAGING_SENDER_ID
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_APP_ID"
-          name="REACT_APP_FIREBASE_APP_ID"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_APP_ID}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_APP_ID &&
-            !!formik.errors.REACT_APP_FIREBASE_APP_ID
-          }
-        />
-      </Box>
-      <Box>
-        <TextField
-          sx={{ width: "100%" }}
-          margin="dense"
-          label="REACT_APP_FIREBASE_MEASURMENT_ID"
-          name="REACT_APP_FIREBASE_MEASURMENT_ID"
-          variant="outlined"
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.REACT_APP_FIREBASE_MEASURMENT_ID}
-          error={
-            !!formik.touched.REACT_APP_FIREBASE_MEASURMENT_ID &&
-            !!formik.errors.REACT_APP_FIREBASE_MEASURMENT_ID
-          }
-        />
-      </Box>
-      <Typography sx={{ fontSize: 12 }}>
-        On Free plan, you use our default Ethora integrations. To publish to
-        Appstore, you need to register your own accounts in these services and
-        upgrade.
-      </Typography>
+
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <LoadingButton
           loading={formik.isSubmitting}

@@ -5,20 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useRef} from 'react';
-import {StyleSheet} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import Share from 'react-native-share';
+import React, { useRef } from "react";
+import { StyleSheet } from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import Share from "react-native-share";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {commonColors, textStyles, unv_url} from '../../docs/config';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {useStores} from '../stores/context';
-import {showToast} from './Toast/toast';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Pressable, Text, View} from 'native-base';
+} from "react-native-responsive-screen";
+import { commonColors, textStyles, unv_url } from "../../docs/config";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { useStores } from "../stores/context";
+import { showToast } from "./Toast/toast";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Pressable, Text, View } from "native-base";
 
 interface QRCodeGeneratorProps {
   shareKey: string;
@@ -27,22 +27,22 @@ interface QRCodeGeneratorProps {
 }
 
 const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
-  const svg = useRef(null);
-  const {apiStore} = useStores();
-  const {shareKey, close} = props;
+  const svg: any = useRef(null);
+  const { apiStore } = useStores();
+  const { shareKey, close } = props;
 
-  let link = '';
+  let link = "";
 
-  if (shareKey.includes('profileLink') || shareKey.includes('doclink')) {
+  if (shareKey.includes("profileLink") || shareKey.includes("doclink")) {
     link = shareKey;
   } else {
-    link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, '');
+    link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, "");
   }
   const createShareLink = () => {
     if (props.removeBaseUrl) {
       return shareKey;
     }
-    const shareLink = `${unv_url}${link}`;
+    const shareLink = `${unv_url}${link}&app=ethora`;
     return shareLink;
   };
 
@@ -52,7 +52,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
 
   const callback = (dataURL: string) => {
     let imgURL = `data:image/png;base64,${dataURL}`;
-    Share.open({url: imgURL}).then(() => {
+    Share.open({ url: imgURL }).then(() => {
       close();
     });
   };
@@ -61,10 +61,10 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
     if (props.removeBaseUrl) {
       Clipboard.setString(shareKey);
     } else {
-      const shareLink = `${unv_url}${link}`;
+      const shareLink = `${unv_url}${link}&app=ethora`;
       Clipboard.setString(shareLink);
     }
-    showToast('success', 'Info', 'Link copied', 'top');
+    showToast("success", "Info", "Link copied", "top");
     // showInfo('Info', 'Link copied.')
   };
 
@@ -77,7 +77,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         //QR code value
         value={qrlink ? qrlink : undefined}
         //size of QR Code
-        size={hp('20%')}
+        size={hp("20%")}
         //Color of the QR Code (Optional)
         color="black"
         quietZone={5}
@@ -96,14 +96,14 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
 
       <Pressable
         shadow={3}
-        style={({pressed}) => [
+        style={({ pressed }) => [
           {
             backgroundColor: pressed
-              ? '#1667e2'
+              ? "#1667e2"
               : commonColors.primaryDarkColor,
           },
         ]}
-        height={wp('10%')}
+        height={wp("10%")}
         justifyContent="center"
         alignItems="center"
         bg={commonColors.primaryDarkColor}
@@ -113,48 +113,52 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         borderRadius={5}
         onPress={shareQR}
         accessibilityLabel="Send your profile via QR"
-        w={'80%'}>
+        w={"80%"}
+      >
         <Text style={styles.TextStyle}> Share QR </Text>
-        <Ionicons size={hp('2%')} color={'#fff'} name="share-social" />
+        <Ionicons size={hp("2%")} color={"#fff"} name="share-social" />
       </Pressable>
 
       <Text> Or copy link</Text>
       <Pressable
         shadow={2}
-        height={wp('10%')}
+        height={wp("10%")}
         justifyContent="center"
         alignItems="center"
-        bg={'#fff'}
+        bg={"#fff"}
         flexDirection="row"
         margin={5}
         marginTop={2}
-        w={'80%'}
+        w={"80%"}
         borderRadius={5}
         accessibilityLabel="Copy hyperlink"
-        onPress={copyToClipboard}>
+        onPress={copyToClipboard}
+      >
         <View flex={0.8}>
           <Text
-            color={'#000'}
-            overflow={'hidden'}
+            color={"#000"}
+            overflow={"hidden"}
             fontFamily={textStyles.mediumFont}
-            numberOfLines={1}>
-            {' '}
+            numberOfLines={1}
+          >
+            {" "}
             {!props.removeBaseUrl && unv_url}
-            {link}{' '}
+            {link}{" "}
           </Text>
         </View>
 
         <View
           flex={0.2}
           bg={commonColors.primaryDarkColor}
-          w={wp('18%')}
-          h={wp('9%')}
+          w={wp("18%")}
+          h={wp("9%")}
           borderRadius={5}
-          justifyContent={'center'}
-          alignItems={'center'}
+          justifyContent={"center"}
+          alignItems={"center"}
           shadow={1}
-          margin={1}>
-          <Text color={'#fff'} fontFamily={textStyles.mediumFont}>
+          margin={1}
+        >
+          <Text color={"#fff"} fontFamily={textStyles.mediumFont}>
             Copy
           </Text>
         </View>
@@ -167,21 +171,21 @@ export default QRCodeGenerator;
 
 const styles = StyleSheet.create({
   MainContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   button: {
-    width: '70%',
+    width: "70%",
     paddingTop: 8,
     marginTop: 10,
     paddingBottom: 8,
     backgroundColor: commonColors.primaryDarkColor,
     marginBottom: 20,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 5,
   },
   TextStyle: {
-    color: '#fff',
+    color: "#fff",
     fontFamily: textStyles.mediumFont,
     // textAlign: 'center',
     fontSize: 18,

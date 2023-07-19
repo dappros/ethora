@@ -1,31 +1,33 @@
-import {observer} from 'mobx-react-lite';
-import React, {useEffect} from 'react';
-import {format} from 'date-fns';
-import {useStores} from '../../stores/context';
-import {getRoomArchiveStanza, getPaginatedArchive} from '../../xmpp/stanzas';
-import ChatContainer from '../../components/Chat/ChatContainer';
-import {IMessage, roomListProps} from '../../stores/chatStore';
-import { View } from 'native-base';
+import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
+import { format } from "date-fns";
+import { useStores } from "../../stores/context";
+import { getRoomArchiveStanza, getPaginatedArchive } from "../../xmpp/stanzas";
+import ChatContainer from "../../components/Chat/ChatContainer";
+import { IMessage, roomListProps } from "../../stores/chatStore";
+import { View } from "native-base";
 
-const ChatScreen = observer(({route}: any) => {
-  const {chatStore} = useStores();
+const ChatScreen = observer(({ route }: any) => {
+  const { chatStore } = useStores();
 
-  const {chatJid, chatName} = route.params;
-  const room:roomListProps = chatStore.roomList.find(item => item.jid === chatJid)||{
-    avatar:"",
-    counter:0,
-    createdAt:"",
-    jid:chatJid,
-    lastUserName:"",
-    lastUserText:"",
-    name:chatName?chatName:'',
-    participants:0,
-    isFavourite:false,
-    muted:false,
-    priority:0,
-    roomBackground:"",
-    roomBackgroundIndex:0,
-    roomThumbnail:""
+  const { chatJid, chatName } = route.params;
+  const room: roomListProps = chatStore.roomList.find(
+    (item) => item.jid === chatJid
+  ) || {
+    avatar: "",
+    counter: 0,
+    createdAt: "",
+    jid: chatJid,
+    lastUserName: "",
+    lastUserText: "",
+    name: chatName ? chatName : "",
+    participants: 0,
+    isFavourite: false,
+    muted: false,
+    priority: 0,
+    roomBackground: "",
+    roomBackgroundIndex: 0,
+    roomThumbnail: "",
   };
   const messages = chatStore.messages
     .filter((item: IMessage) => {
@@ -66,7 +68,8 @@ const ChatScreen = observer(({route}: any) => {
         lastUserText: lastMessage?.text,
         lastUserName: lastMessage?.user?.name,
         lastMessageTime:
-          lastMessage?.createdAt && format(lastMessage?.createdAt as Date, 'hh:mm'),
+          lastMessage?.createdAt &&
+          format(new Date(lastMessage?.createdAt), "hh:mm"),
       });
   }, [!!messages]);
 
@@ -79,7 +82,7 @@ const ChatScreen = observer(({route}: any) => {
   };
 
   return (
-    <View testID='ChatScreen'>
+    <View testID="ChatScreen">
       <ChatContainer
         containerType="main"
         roomDetails={room}

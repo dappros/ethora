@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   Box,
-  Checkbox,
-  Chip,
+  Button,
   FormControl,
   IconButton,
   InputLabel,
-  Menu,
   MenuItem,
   Modal,
   Paper,
@@ -15,120 +13,58 @@ import {
   SelectChangeEvent,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TablePagination,
-  TableRow,
   Typography,
 } from "@mui/material";
-
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { UsersTableToolbar } from "./Toolbar";
 import { UsersTableHead } from "./Head";
 import { UsersActionModal } from "../UsersActionModal";
-import { ACL, IOtherUserACL, IUser, IUserAcl, getAppUsers } from "../../http";
-import { useStoreState } from "../../store";
+import { IOtherUserACL, IUser, exportUsersCsv, getAppUsers } from "../../http";
+import { TApp, useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
-import { dateToHumanReadableFormat } from "../../utils";
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+import { UsersTableRow } from "./UsersTableRow";
+import { useSnackbar } from "../../context/SnackbarContext";
 
 type Order = "asc" | "desc";
 
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string | any },
-  b: { [key in Key]: number | string | any }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-type ModalType =
+export type ModalType =
   | "deleteUser"
-  | "addTag"
-  | "removeTag"
-  | "removeAllTags"
   | "sendTokens"
+  | "manageTags"
   | "resetPassword";
 
-interface Props {}
-function hasACLAdmin(acl: ACL): boolean {
-  const application = acl?.application;
-  if (application) {
-    const appKeys = Object.keys(application);
-    let hasAdmin = false;
-    for (let i = 0; i < appKeys.length; i++) {
-      if (application[appKeys[i]]?.admin === true) {
-        hasAdmin = true;
-        break;
-      }
-    }
-    return hasAdmin;
-  }
-  return false;
+interface Props {
+  currentApp: string;
+  onAppChange: (app:string) => void
 }
 
-const ITEM_HEIGHT = 48;
-const ROWS_PER_PAGE = 10;
 export type TSelectedIds = {
   walletAddress: string;
   _id: string;
   appId: string;
   tags: string[];
 };
-export default function UsersTable() {
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof IUser>("appId");
+export default function UsersTable({currentApp, onAppChange}: Props) {
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] = useState<keyof IUser>("createdAt");
   const [selectedIds, setSelectedIds] = useState<TSelectedIds[]>([]);
   const [page, setPage] = useState(0);
   const [userActionModal, setUsersActionModal] = useState<{
     open: boolean;
     type: ModalType;
-  }>({ open: false, type: "addTag" });
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
+  }>({ open: false, type: "manageTags" });
   const apps = useStoreState((state) => state.apps);
-  const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
+
+
+
   const [showNewUser, setShowNewUser] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [currentApp, setCurrentApp] = useState<string>(apps[0]?._id);
   const [aclEditData, setAclEditData] = useState<{
     modalOpen: boolean;
     user: IUser | null;
@@ -136,19 +72,12 @@ export default function UsersTable() {
     modalOpen: false,
     user: null,
   });
-  const [hasAdmin, setHasAdmin] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const maxPage = useRef(0);
-
+  const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
   const ACL = useStoreState((state) =>
     state.ACL.result.find((i) => i.appId === currentApp)
   );
   const canCreateUsers = ownerAccess || ACL?.application.appUsers.create;
-
-  useEffect(() => {
-    setHasAdmin(hasACLAdmin(ACL));
-  }, [ACL]);
-
+  const { showSnackbar } = useSnackbar();
   const [pagination, setPagination] = useState<{
     total: number;
     limit: number;
@@ -157,13 +86,20 @@ export default function UsersTable() {
 
   const getUsers = async (
     appId: string | null,
-    limit: number = ROWS_PER_PAGE,
-    offset: number = 0
+    limit: number = rowsPerPage,
+    offset: number = 0,
+    orderBy?: string,
+    order?: string
   ) => {
     try {
       if (appId) {
-        const getUsersResp = await getAppUsers(appId, limit, offset);
-        const { data } = getUsersResp;
+        const { data } = await getAppUsers(
+          appId,
+          limit,
+          offset,
+          orderBy,
+          order
+        );
         setPagination({
           limit: data.limit,
           offset: data.offset,
@@ -178,7 +114,13 @@ export default function UsersTable() {
   };
 
   const getInitialUsers = async (appId: string) => {
-    const allUsers = await getUsers(appId);
+    const allUsers = await getUsers(
+      appId,
+      rowsPerPage,
+      users.length,
+      orderBy,
+      order
+    );
     setUsers(allUsers);
     if (selectedIds.length) {
       const updatedIds = selectedIds.map((u) => {
@@ -201,32 +143,37 @@ export default function UsersTable() {
   }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
-    setCurrentApp(e.target.value);
+    onAppChange(e.target.value);
     getInitialUsers(e.target.value);
   };
 
-  const onPagination = (
+  const onPagination = async (
     event: React.ChangeEvent<unknown>,
     tablePage: number
   ) => {
-    const limit = ROWS_PER_PAGE;
+    const limit = rowsPerPage;
     const offset = tablePage * limit;
+    const fetchedUsers = await getUsers(
+      currentApp,
+      limit,
+      offset,
+      orderBy,
+      order
+    );
     setPage(tablePage);
-    if (maxPage.current < tablePage) {
-      maxPage.current = tablePage;
-      getUsers(currentApp, limit, offset).then((u) => {
-        setUsers((p) => [...users, ...u]);
-      });
-    }
+    setSelectedIds([]);
+    setUsers(fetchedUsers);
   };
 
-  const handleAclEditOpen = (
-    e: React.MouseEvent<HTMLElement, MouseEvent>,
-    user: IUser
+  const handleChangeRowsPerPage = async (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    e.stopPropagation();
-    setAclEditData({ modalOpen: true, user });
-    handleMenuClose();
+    const value = parseInt(event.target.value, 10);
+    const users = await getUsers(currentApp, value, 0, orderBy, order);
+    setRowsPerPage(value);
+    setUsers(users);
+    setPage(0);
+    setSelectedIds([]);
   };
 
   const handleAclEditClose = () =>
@@ -243,13 +190,18 @@ export default function UsersTable() {
     setUsers(oldUsers);
   };
 
-  const handleRequestSort = (
+  const handleRequestSort = async (
     event: React.MouseEvent<unknown>,
     property: keyof IUser
   ) => {
     const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const currentOrder = isAsc ? "desc" : "asc";
+    const limit = rowsPerPage;
+    const users = await getUsers(currentApp, limit, 0, property, currentOrder);
+    setOrder(currentOrder);
     setOrderBy(property);
+    setUsers(users);
+    setSelectedIds([]);
   };
   const openActionModal = (type: ModalType) => {
     setUsersActionModal({ open: true, type });
@@ -297,6 +249,23 @@ export default function UsersTable() {
     setSelectedIds(newSelected);
   };
 
+  const onExportClick = async () => {
+    try {
+      const res = await exportUsersCsv(currentApp);
+      const url = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = currentApp + ".csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.open(url, "_blank");
+    } catch (error) {
+      showSnackbar("error", "Cannot get content");
+      console.log(error);
+    }
+  };
+
   const closeUsersActionModal = async () => {
     setUsersActionModal((p) => ({ ...p, open: false }));
   };
@@ -304,12 +273,13 @@ export default function UsersTable() {
     await getInitialUsers(currentApp);
   };
 
+  const updateAclEditData = (user: IUser) => {
+    setAclEditData({ modalOpen: true, user });
+  };
+
   const isSelected = (id: string) =>
     selectedIds.findIndex((u) => u._id === id) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * ROWS_PER_PAGE - users.length) : 0;
   if (!users.length) {
     return (
       <Paper sx={{ width: "100%", mb: 2 }}>
@@ -407,13 +377,14 @@ export default function UsersTable() {
             </FormControl>
           )}
           {canCreateUsers && (
-            <IconButton
-              onClick={() => setShowNewUser(true)}
-              size="large"
-              sx={{ marginLeft: "auto" }}
-            >
-              <AddCircleIcon fontSize="large" color="primary" />
-            </IconButton>
+            <Box sx={{ marginLeft: "auto" }}>
+              <Button variant={"outlined"} onClick={onExportClick}>
+                Export CSV
+              </Button>
+              <IconButton onClick={() => setShowNewUser(true)} size="large">
+                <AddCircleIcon fontSize="large" color="primary" />
+              </IconButton>
+            </Box>
           )}
         </Box>
         <TableContainer>
@@ -431,136 +402,29 @@ export default function UsersTable() {
               rowCount={users.length}
             />
             <TableBody>
-              {stableSort(users, getComparator(order, orderBy))
-                .slice(
-                  page * ROWS_PER_PAGE,
-                  page * ROWS_PER_PAGE + ROWS_PER_PAGE
-                )
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row._id.toString());
-                  const labelId = `Users-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      key={row._id}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            "aria-labelledby": labelId,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        component="th"
-                        id={labelId}
-                        scope="row"
-                        padding="none"
-                      >
-                        {row.appId}
-                      </TableCell>
-                      <TableCell align="right">{row.firstName}</TableCell>
-                      <TableCell align="right">{row.lastName}</TableCell>
-                      <TableCell align="center">
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1,
-                            justifyContent: "center",
-                          }}
-                        >
-                          {row.tags.map((tag, i) => {
-                            return (
-                              <Chip
-                                variant={"filled"}
-                                color="primary"
-                                label={tag}
-                                key={i}
-                              />
-                            );
-                          })}
-                        </Box>
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.email || "No Email"}
-                      </TableCell>
-                      <TableCell align="center">
-                        <p style={{ width: 150 }}>
-                          {dateToHumanReadableFormat(row.createdAt)}
-                        </p>
-                        <p>
-                          {row.lastSeen
-                            ? dateToHumanReadableFormat(row.lastSeen)
-                            : ""}
-                        </p>
-                      </TableCell>
-                      <TableCell align="center">
-                        {row.authMethod || ""}
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          disabled={!hasAdmin}
-                          aria-label="more"
-                          id="long-button"
-                          aria-controls={open ? "long-menu" : undefined}
-                          aria-expanded={open ? "true" : undefined}
-                          aria-haspopup="true"
-                          onClick={handleMenuClick}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          id="long-menu"
-                          MenuListProps={{
-                            "aria-labelledby": "long-button",
-                          }}
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleMenuClose}
-                          PaperProps={{
-                            style: {
-                              maxHeight: ITEM_HEIGHT * 4.5,
-                              width: "20ch",
-                              boxShadow: "5px 5px 10px 0px rgba(0,0,0,0.05)",
-                            },
-                          }}
-                        >
-                          <MenuItem onClick={(e) => handleAclEditOpen(e, row)}>
-                            Edit Acl
-                          </MenuItem>
-                        </Menu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: 33 * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+              {users.map((row) => {
+                return (
+                  <UsersTableRow
+                    key={row._id}
+                    data={row}
+                    isSelected={isSelected}
+                    onRowClick={handleClick}
+                    updateAclEditData={updateAclEditData}
+                  />
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
           component="div"
           count={pagination.total}
-          rowsPerPage={ROWS_PER_PAGE}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
           page={page}
           onPageChange={onPagination}
-          rowsPerPageOptions={[]}
+          rowsPerPageOptions={[10, 25, 50]}
+          labelRowsPerPage={"Users per page"}
         />
         <UsersTableToolbar
           onButtonClick={openActionModal}
