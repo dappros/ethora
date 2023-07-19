@@ -6,6 +6,7 @@ import { Routes } from "./pages/Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
 import { SnackbarContextProvider } from "./context/SnackbarContext";
+import "./index.css";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,7 +19,6 @@ function App() {
 
   const primaryColor = useStoreState((s) => s.config.primaryColor);
   const secondaryColor = useStoreState((s) => s.config.secondaryColor);
-  
 
   const lightTheme = createTheme({
     palette: {
@@ -28,7 +28,6 @@ function App() {
     },
   });
 
-  
   return (
     <Router history={history}>
       <SnackbarContextProvider>

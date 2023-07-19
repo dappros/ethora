@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import AppMock from "../../components/AppBuilder/AppMock";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
 import { httpWithAuth, updateAppSettings } from "../../http";
 import { useParams } from "react-router";
 import { intervalToDuration } from "date-fns";
@@ -13,6 +13,9 @@ import {
 } from "../../utils";
 import { config } from "../../config";
 import useDebounce from "../../hooks/useDebounce";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import BuildIcon from "@mui/icons-material/Build";
+import InfoIcon from "@mui/icons-material/Info";
 
 export interface TCustomDetails {
   primaryColor: string;
@@ -286,24 +289,9 @@ export default function AppBuilder() {
               display: "grid",
               gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
               columnGap: 3,
+              rowGap: 3,
             }}
           >
-            <Box>
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Main Color"
-                name="mainColor"
-                variant="outlined"
-                placeholder="#ffffff"
-                InputLabelProps={{ shrink: true }}
-                type={"color"}
-                value={primaryColor}
-                error={!isValidHexCode(primaryColor)}
-                onChange={(e) => setPrimaryColor(e.target.value)}
-              />
-            </Box>
-
             <Box>
               <TextField
                 margin="dense"
@@ -316,22 +304,7 @@ export default function AppBuilder() {
               />
             </Box>
 
-            <Box>
-              <TextField
-                margin="dense"
-                fullWidth
-                label="Secondary Color"
-                name="secondaryColor"
-                variant={"outlined"}
-                type={"color"}
-                InputLabelProps={{ shrink: true }}
-                placeholder="#ffffff"
-                value={secondaryColor}
-                error={!isValidHexCode(secondaryColor)}
-                onChange={(e) => setSecondaryColor(e.target.value)}
-              />
-            </Box>
-            <Box>
+            <Box sx={{ position: "relative" }}>
               <TextField
                 margin="dense"
                 fullWidth
@@ -340,25 +313,61 @@ export default function AppBuilder() {
                 variant="outlined"
                 value={coinName}
                 onChange={(e) => setCoinName(e.target.value)}
-                helperText={
-                  "Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure."
-                }
               />
+              <Tooltip title="Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure.">
+                <InfoIcon
+                  sx={{
+                    position: "absolute",
+                    right: -30,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                  }}
+                  color="primary"
+                />
+              </Tooltip>
             </Box>
-            {/* <Box sx={{ gridColumn: "1/3" }}>
-              <TextField
-                fullWidth
-                margin="dense"
-                label="Coin symbol (3-4 letters)"
-                name="coinSymbol"
-                variant="outlined"
-                value={coinSymbol}
-                onChange={(e) => setCoinSymbol(e.target.value)}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <input
+                type="color"
+                id="primaryColor"
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+                style={{
+                  outline: "none",
+                  border: "none",
+                  borderRadius: "100%",
+                  width: 40,
+                  height: 40,
+                  backgroundColor: primaryColor,
+                  padding: 10,
+                }}
               />
-            </Box> */}
-            <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
-              <Typography>App Logo</Typography>
+              <label htmlFor="primaryColor">
+                <Typography>Primary Color</Typography>
+              </label>
+            </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <input
+                type="color"
+                id="secondaryColor"
+                value={secondaryColor}
+                onChange={(e) => setSecondaryColor(e.target.value)}
+                style={{
+                  outline: "none",
+                  border: "none",
+                  borderRadius: "100%",
+                  width: 40,
+                  height: 40,
+                  backgroundColor: secondaryColor,
+                  padding: 10,
+                }}
+              />
+              <label htmlFor="secondaryColor">
+                <Typography>Secondary Color</Typography>
+              </label>
+            </Box>
 
+            <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
               <input
                 onChange={handleLogoChange}
                 ref={appLogoRef}
@@ -370,9 +379,10 @@ export default function AppBuilder() {
                 color="primary"
                 variant="outlined"
                 onClick={() => appLogoRef?.current?.click()}
-                sx={{ minWidth: 150 }}
+                sx={{ minWidth: 150, py: 2 }}
+                startIcon={<UploadFileIcon />}
               >
-                {logo?.file?.name || "Upload File"}
+                {logo?.file?.name || "App Logo"}
               </Button>
               <Typography sx={{ fontSize: 12, color: "rgba(0, 0, 0, 0.6)" }}>
                 Recommended size: 500px x 500px
@@ -385,51 +395,67 @@ export default function AppBuilder() {
                 type="file"
                 style={{ display: "none" }}
               />
-              <Typography>Login Screen Background</Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  flexDirection: "column",
+                  gap: 2,
+                }}
+              >
                 <Button
                   // disabled={loading}
                   color="primary"
                   variant="outlined"
                   onClick={() => loginScreenBgRef?.current?.click()}
-                  sx={{ maxWidth: "200px", minWidth: 150 }}
+                  sx={{ minWidth: 150, py: 2 }}
+                  startIcon={<UploadFileIcon />}
                 >
-                  {loginScreenBackground?.file?.name || "Upload File"}
+                  {loginScreenBackground?.file?.name ||
+                    "Login Screen Background"}
                 </Button>
-                <Typography>OR</Typography>
-                <TextField
-                  margin="dense"
-                  fullWidth
-                  label="Login Screen Color"
-                  name="loginScreenColor"
-                  variant={"outlined"}
-                  type={"color"}
-                  InputLabelProps={{ shrink: true }}
-                  placeholder="#ffffff"
-                  value={
-                    isValidHexCode(loginScreenBackground.value)
-                      ? loginScreenBackground.value
-                      : "#fffff"
-                  }
-                  error={!isValidHexCode(secondaryColor)}
-                  onChange={(e) =>
-                    setLoginScreenBackground({
-                      file: undefined,
-                      value: e.target.value,
-                    })
-                  }
-                  sx={{ minWidth: 150 }}
-                />
+                <Box sx={{ textAlign: "center", width: "100%" }}>
+                  <Typography>OR</Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                  <input
+                    type="color"
+                    id="loginScreenBackgroundColor"
+                    value={
+                      isValidHexCode(loginScreenBackground.value)
+                        ? loginScreenBackground.value
+                        : "#fffff"
+                    }
+                    onChange={(e) =>
+                      setLoginScreenBackground({
+                        file: undefined,
+                        value: e.target.value,
+                      })
+                    }
+                    style={{
+                      outline: "none",
+                      border: "none",
+                      borderRadius: "100%",
+                      width: 40,
+                      height: 40,
+                      backgroundColor: isValidHexCode(
+                        loginScreenBackground.value
+                      )
+                        ? loginScreenBackground.value
+                        : "#fffff",
+                      padding: 10,
+                    }}
+                  />
+                  <label htmlFor="loginScreenBackgroundColor">
+                    <Typography>Login Screen Color</Typography>
+                  </label>
+                </Box>
               </Box>
             </Box>
           </Box>
+
           <Box>
-            <Typography sx={{ fontWeight: "bold", mb: 2 }}>
-              Mobile App
-            </Typography>
-          </Box>
-          <Box>
-            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
               <TextField
                 margin="dense"
                 fullWidth
@@ -438,9 +464,9 @@ export default function AppBuilder() {
                 variant="outlined"
                 onChange={(e) => setBundleId(e.target.value)}
                 value={bundleId}
-                helperText={
-                  "Bundle ID should be unique to identify your app for Appstore and other purposes."
-                }
+                // helperText={
+                //   "Bundle ID should be unique to identify your app for Appstore and other purposes."
+                // }
               />
               {buildStage === "download" ? (
                 <Box
@@ -458,7 +484,7 @@ export default function AppBuilder() {
                     color={"success"}
                     sx={{ width: 300, height: 50 }}
                   >
-                    Download React Native build
+                    Download React build
                   </Button>
                   <Typography
                     sx={{ fontSize: 12, color: "rgba(0, 0, 0, 0.6)" }}
@@ -472,19 +498,18 @@ export default function AppBuilder() {
                   loading={loading}
                   disabled={buildStage === "preparing"}
                   onClick={prepareRnBuild}
-                  sx={{ width: 300, height: 50 }}
+                  sx={{ width: 300, height: 50, borderRadius: 7 }}
                   variant="contained"
+                  startIcon={<BuildIcon />}
                 >
                   {buildStage === "preparing" ? "Preparing" : "Prepare"} React
-                  Native build
+                  build
                 </LoadingButton>
               )}
             </Box>
           </Box>
-          <Box>
-            <Typography sx={{ fontWeight: "bold", mb: 2 }}>Web App</Typography>
-          </Box>
-          <Box style={{ display: "flex", alignItems: "center" }}>
+
+          <Box sx={{ display: "flex", alignItems: "center", my: 3 }}>
             <TextField
               margin="dense"
               label="Domain Name"
@@ -512,8 +537,8 @@ export default function AppBuilder() {
               loading={loading}
               disabled={loading || domainNameError}
               onClick={saveSettings}
-              variant="contained"
-              sx={{ padding: "10px 40px" }}
+              variant="outlined"
+              sx={{ padding: "10px 40px", borderRadius: 7 }}
             >
               Save
             </LoadingButton>

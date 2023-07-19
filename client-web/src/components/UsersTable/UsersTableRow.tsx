@@ -22,7 +22,7 @@ import { useStoreState } from "../../store";
 
 const metamaskIcon = 'https://images.ctfassets.net/9sy2a0egs6zh/2XUXAYxxFFVjPlZABUoiLg/d0ff82237d3e5d9bd1097a98e0754453/MMI-icon.svg'
 const MetamaskImage = () => {
-  return <img src={metamaskIcon} style={{width: 30, height: 30}} />
+  return <img src={metamaskIcon} style={{width: 20, height: 20}} />
 }
 const icons = {
   google: GoogleIcon,
