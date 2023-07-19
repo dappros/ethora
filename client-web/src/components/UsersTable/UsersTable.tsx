@@ -23,7 +23,7 @@ import { UsersTableToolbar } from "./Toolbar";
 import { UsersTableHead } from "./Head";
 import { UsersActionModal } from "../UsersActionModal";
 import { IOtherUserACL, IUser, exportUsersCsv, getAppUsers } from "../../http";
-import { useStoreState } from "../../store";
+import { TApp, useStoreState } from "../../store";
 import NewUserModal from "../../pages/Owner/NewUserModal";
 import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
@@ -38,7 +38,10 @@ export type ModalType =
   | "manageTags"
   | "resetPassword";
 
-interface Props {}
+interface Props {
+  currentApp: string;
+  onAppChange: (app:string) => void
+}
 
 export type TSelectedIds = {
   walletAddress: string;
@@ -46,7 +49,7 @@ export type TSelectedIds = {
   appId: string;
   tags: string[];
 };
-export default function UsersTable() {
+export default function UsersTable({currentApp, onAppChange}: Props) {
   const [order, setOrder] = useState<Order>("desc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("createdAt");
   const [selectedIds, setSelectedIds] = useState<TSelectedIds[]>([]);
@@ -55,13 +58,13 @@ export default function UsersTable() {
     open: boolean;
     type: ModalType;
   }>({ open: false, type: "manageTags" });
-
   const apps = useStoreState((state) => state.apps);
+
+
 
   const [showNewUser, setShowNewUser] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [currentApp, setCurrentApp] = useState<string>(apps[0]?._id);
   const [aclEditData, setAclEditData] = useState<{
     modalOpen: boolean;
     user: IUser | null;
@@ -140,7 +143,7 @@ export default function UsersTable() {
   }, [currentApp]);
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
-    setCurrentApp(e.target.value);
+    onAppChange(e.target.value);
     getInitialUsers(e.target.value);
   };
 

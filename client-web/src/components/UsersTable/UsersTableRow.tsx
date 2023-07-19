@@ -4,6 +4,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import MailIcon from "@mui/icons-material/Mail";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import DiamondIcon from '@mui/icons-material/Diamond';
 
 import {
   TableRow,
@@ -19,16 +20,22 @@ import {
 import { dateToHumanReadableFormat } from "../../utils";
 import { useStoreState } from "../../store";
 
+const metamaskIcon = 'https://images.ctfassets.net/9sy2a0egs6zh/2XUXAYxxFFVjPlZABUoiLg/d0ff82237d3e5d9bd1097a98e0754453/MMI-icon.svg'
+const MetamaskImage = () => {
+  return <img src={metamaskIcon} style={{width: 20, height: 20}} />
+}
 const icons = {
   google: GoogleIcon,
   facebook: FacebookIcon,
   email: MailIcon,
+  metamask: MetamaskImage
 };
 
 const authMethodText = {
   google: "Google",
   facebook: "Facebook",
   email: "E-Mail",
+  metamask: 'Metamask'
 };
 
 function hasACLAdmin(acl: ACL): boolean {
@@ -93,7 +100,6 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
   useEffect(() => {
     setHasAdmin(hasACLAdmin(ACL));
   }, [ACL]);
-
   const labelId = `Users-table-checkbox-${data._id}`;
   return (
     <TableRow
@@ -141,7 +147,7 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
         <p>{data.lastSeen ? dateToHumanReadableFormat(data.lastSeen) : ""}</p>
       </TableCell>
       <TableCell align="center" color="primary">
-        <Tooltip title={authMethodText[authMethod]}>
+        <Tooltip title={authMethod ? authMethodText[authMethod] : ''}>
           <span>{authMethod ? <AuthIcon color={"primary"} /> : ""}</span>
         </Tooltip>
       </TableCell>

@@ -25,7 +25,11 @@ import { useHistory } from "react-router";
 import SettingsIcon from "@mui/icons-material/Settings";
 const COINS_TO_CREATE_APP = 10;
 
-export default function BasicTable() {
+interface Props {
+  onRowClick?: (app: string) => void;
+}
+
+export default function Apps({ onRowClick }: Props) {
   const apps = useStoreState((state) => state.apps);
   const setApps = useStoreState((state) => state.setApps);
 
@@ -155,7 +159,15 @@ export default function BasicTable() {
                 key={app._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell
+                  component="th"
+                  scope="row"
+                  onClick={() => onRowClick(app._id)}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": { textDecoration: "underline" },
+                  }}
+                >
                   {app.displayName}
                 </TableCell>
                 <TableCell align="center">
@@ -185,7 +197,7 @@ export default function BasicTable() {
                 </TableCell>
                 <TableCell align="right">
                   <Box style={{ display: "flex", flexDirection: "column" }}>
-                    <IconButton  onClick={() => onEdit(app)}>
+                    <IconButton onClick={() => onEdit(app)}>
                       <SettingsIcon color="primary" />
                     </IconButton>
                   </Box>

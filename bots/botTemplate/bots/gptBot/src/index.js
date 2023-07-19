@@ -1,86 +1,66 @@
+// Importing necessary dependencies and modules
 const { Bot } = require('../../../lib');
-const { botInitData } = require("./config/Config");
-const { runCompletion } = require("./utils/Openai");
-const axios = require('axios');
-const fs = require('fs');
-const pdf = require('pdf-parse');
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') })
 
+// Importing bot configurations and different handlers
+const { botInitData } = require("./config/Config");
+const { processExistingExtractedText } = require("./process/process");
+const { processFileUrl } = require("./process/processFileUrl");
+const { processImage } = require("./process/processImage");
+const { processPDF } = require("./process/processPDF");
+const { processCSV } = require("./process/processCSV");
+const { switchToAllergyContext } = require("./handlers/switchContextHandler");
+const allergyHandler = require("./handlers/allergyHandler");
+const clearBotState = require("./handlers/exitHandler");
+
+// Mapping file types to their corresponding processing functions
+const fileTypeProcessors = {
+    jpeg: processImage,
+    png: processImage,
+    pdf: processPDF,
+    csv: processCSV
+};
+
+// Instantiating a new Bot object with necessary configurations
 const bot = new Bot(botInitData().botData);
 
-bot.use("Start", async (context) => {
+// Middleware for handling incoming messages
+bot.use(async (context) => {
+    // Extracting necessary properties from the context object
+    const { session, message } = context;
+    const { state } = session;
+    const { data } = message;
+    const messageData = context.message?.data?.messageData; // Using optional chaining to avoid undefined errors
+    const userJID = data?.user?.userJID;
 
-    await context.session.sendTextMessage("Hello!\n" +
-        "Send me all your questions and I'll try to answer them.");
+    // If no messageData, early return
+    if ( !messageData ) return;
 
-    // Move to the next step
-    context.stepper.nextUserStep();
+    // Splitting the mimetype to get the file type
+    const fileType = messageData.mimetype.split("/")[ 1 ];
+
+    // If there's extracted text, process it
+    if ( state.extractedText ) {
+        return await processExistingExtractedText(context, userJID);
+    }
+    // If there's a csv file URL, process it
+    if ( state.fileUrl ) {
+        return await processFileUrl(context, state.fileUrl);
+    }
+    // If the message contains a known file type, process it accordingly
+    if ( fileTypeProcessors[ fileType ] ) {
+        return await fileTypeProcessors[ fileType ](context, messageData.location);
+    }
 });
 
-bot.use(async (context) => {
+// --Middleware for handling context-specific messages
+// Processing by the "Context" keyword, to change the current step to work with the Allergy context
+bot.use("Context", switchToAllergyContext);
+// Handling all user questions in the context of allergies
+bot.use(allergyHandler, 1);
+// Handling user exit from any process. All processes are stopped and the states are cleared.
+bot.use("exit", clearBotState);
 
-    const indexOfSpace = context.message.getText().indexOf(' ');
-    let clearMessage = context.message.getText().slice(indexOfSpace + 1);
-    if ( !clearMessage.endsWith('.') ) {
-        clearMessage += '.'
-    }
-    const userJID = context.message.data.user.userJID;
-
-    // const filterData = {
-    //     where: {
-    //         user_jid: userJID,
-    //         type: "Allergies"
-    //     }
-    // }
-    // console.log(filterData)
-
-    let dataBuffer = fs.readFileSync('./data/test.pdf');
-
-    pdf(dataBuffer).then(function(data) {
-
-    // getFilteredDataApi(filterData).then(result => {
-    //     console.log("Filtered result: ", createAllergiesString(result))
-        console.log(data.text);
-
-        runCompletion(context.message.getText(), userJID, context.message.data.user.firstName, data.text).then(result => {
-            return context.session.sendTextMessage(result);
-        }).catch(error => {
-            console.log("Error: ", error)
-        })
-
-    // }).catch(error => {
-    //     console.log("Get filtered dat Error: ", error)
-    // })
-    });
-
-}, 1);
-
-function createAllergiesString(data) {
-    const allergies = data.items.map((item) => {
-        const name = item.name || "Unnamed";
-        const reaction = item.reaction || "Unknown reaction";
-        const frequency = item.frequency || "Unknown frequency";
-        return `${name}: ${reaction} (Frequency: ${frequency})`;
-    });
-    return allergies.join(', ');
-}
-
-
-
-const getFilteredDataApi = async (params) => {
-    try {
-        const http = axios.create({
-            baseURL: "https://app-dev.dappros.com/v1/"
-        });
-
-        let result = await http.get('data', { params }, {
-            // headers: {
-            //     'Content-Type': 'application/json',
-            //     Authorization: this.authData.token,
-            // },
-        });
-        return result.data;
-    } catch ( error ) {
-        console.log(JSON.stringify(error))
-        throw error;
-    }
-}
+// Export the bot
+module.exports = bot;

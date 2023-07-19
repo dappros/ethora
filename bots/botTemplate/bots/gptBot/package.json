@@ -13,8 +13,23 @@
   "author": "Dappros, Anton Kolot",
   "license": "ISC",
   "dependencies": {
+    "@pdftron/pdfnet-node": "^10.1.1",
+    "canvas": "^2.11.2",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.0.3",
+    "file-saver": "^2.0.5",
+    "fs-extra": "^11.1.1",
+    "gm": "^1.25.0",
+    "node-tesseract-ocr": "^2.2.1",
     "openai": "^3.2.1",
-    "pdf-parse": "^1.1.1"
+    "pdf-image": "^2.0.0",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^1.1.1",
+    "pdf2image": "^1.2.3",
+    "pdf2pic": "^2.2.1",
+    "pdfjs-dist": "^3.7.107",
+    "rimraf": "^5.0.1",
+    "tesseract.js": "^4.1.0",
+    "uuid": "^9.0.0"
   }
 }
