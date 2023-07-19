@@ -2,7 +2,7 @@ name: name
 on:
   push:
     branches:
-      - "auction"
+      - "actions"
     paths:
       - "/client-web/**"
 jobs:
