@@ -9,7 +9,8 @@ const botInitData = () => {
         tokenJWT: process.env.TOKEN,
         botName: process.env.BOT_NAME,
         useTyping: true,
-        connectionRooms: process.env.ROOMS.split(',')
+        connectionRooms: process.env.ROOMS.split(','),
+        botImg: process.env.BOT_IMAGE
     }
 
     const openaiData = {
