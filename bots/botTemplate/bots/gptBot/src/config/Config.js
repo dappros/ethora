@@ -1,7 +1,3 @@
-const path = require("path")
-require('dotenv').config({path: path.join(__dirname, '../../.env')})
-
-
 const botInitData = () => {
     const botData = {
         email: process.env.EMAIL,
