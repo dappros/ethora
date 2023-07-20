@@ -21,6 +21,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: client-web
-          file: Dockerfile.build
+          file: client-web/dockerfolder/Dockerfile
           push: true
           tags: dappros/web
