@@ -24,5 +24,5 @@ jobs:
         with:
           context: ./client-web
           file: ./Dockerfile.build
-          push: ${{ github.ref_type == 'tag' }}
+          push: true
           tags: dappros/web
