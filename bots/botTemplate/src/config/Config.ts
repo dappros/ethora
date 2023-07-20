@@ -36,7 +36,7 @@ class Config implements IConfig {
 
             botName: data.botName,
             botImg: data.botImg ? data.botImg : 'https://cdn-icons-png.flaticon.com/512/9690/9690648.png',
-            apiDomain: data.isProduction ? "https://app.dappros.com/v1/" : "https://app-dev.dappros.com/v1/",
+            apiDomain: data.isProduction ? "https://app.dappros.com/v1/" : "https://api.ethoradev.com/v1/",
             tokenJWT: data.tokenJWT,
             presenceTimer: data.presenceTimer ? data.presenceTimer : 0,
             tokenName: data.tokenName ? data.tokenName : '',

@@ -1,7 +1,3 @@
-const path = require("path")
-require('dotenv').config({path: path.join(__dirname, '../../.env')})
-
-
 const botInitData = () => {
     const botData = {
         email: process.env.EMAIL,
@@ -9,7 +5,8 @@ const botInitData = () => {
         tokenJWT: process.env.TOKEN,
         botName: process.env.BOT_NAME,
         useTyping: true,
-        connectionRooms: process.env.ROOMS.split(',')
+        connectionRooms: process.env.ROOMS.split(','),
+        botImg: process.env.BOT_IMAGE
     }
 
     const openaiData = {
