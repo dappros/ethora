@@ -290,3 +290,5 @@ export default function AppMock(props: TCustomDetails) {
     </div>
   );
 }
+
+
