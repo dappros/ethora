@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - '/client-web/**'
+      - 'client-web/**'
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
