@@ -30,7 +30,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: client-web/dockerfolder/
-          file: Dockerfile
+          context: client-web
+          file: client-web/dockerfolder/Dockerfile
           push: true
           tags: dappros/web
