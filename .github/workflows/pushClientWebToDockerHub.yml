@@ -33,4 +33,4 @@ jobs:
           context: client-web
           file: client-web/dockerfolder/Dockerfile
           push: true
-          tags: dappros/web:$RELEASE_VERSION
+          tags: dappros/web:${{ env.RELEASE_VERSION }}
