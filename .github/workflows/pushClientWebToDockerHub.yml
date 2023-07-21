@@ -1,10 +1,14 @@
 name: Build and Push Docker image for client-web to DockerHub
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - 'client-web/**'
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'client-web/**'
+    tags:
+      - 'web-client-*.*.*'
 jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
@@ -17,6 +21,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
