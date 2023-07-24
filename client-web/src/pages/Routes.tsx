@@ -20,6 +20,8 @@ import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
 import Subscriptions from "./Payments";
 import { Home } from "./Home/Home";
+import NewChat from "./NewChat/NewChat";
+
 import AppBuilder from "./AppBuilder/AppBuilder";
 import { AppEdit } from "./AppEdit/AppEdit";
 import AppTopNav from "../components/AppTopNav";
@@ -55,7 +57,6 @@ const Provenance = React.lazy(() => import("./Transactions/Provenance"));
 const UploadDocument = React.lazy(
   () => import("./UploadDocument/UploadDocument")
 );
-const NewChat = React.lazy(() => import("./NewChat/NewChat"));
 const Referrals = React.lazy(() => import("./Referrals/Referrals"));
 const ChangeBackground = React.lazy(
   () => import("./ChatRoomDetails/ChangeBackground")
