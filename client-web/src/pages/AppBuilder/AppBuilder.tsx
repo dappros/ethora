@@ -178,8 +178,6 @@ export default function AppBuilder() {
       const res = await httpWithAuth().post("apps/check-domain-name", {
         domainName,
       });
-      // console.log(res);
-      // setDomain(`${domainName}`);
       setDomainNameError(false);
     } catch (error) {
       console.log(error);
@@ -220,7 +218,7 @@ export default function AppBuilder() {
     try {
       const res = await updateAppSettings(appId, data);
       updateApp(res.data.result);
-      showSnackbar('success', 'Your app is ready to use')
+      showSnackbar("success", "Your app is ready to use");
     } catch (error) {
       showSnackbar("error", "Cannot save settings");
       console.log({ error });
@@ -381,9 +379,6 @@ export default function AppBuilder() {
                   variant="outlined"
                   value={coinName}
                   onChange={(e) => setCoinName(e.target.value)}
-                  // helperText={
-                  //   "Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure."
-                  // }
                 />
                 <Tooltip title="Name of your internal coin used for gamification and token economy. Leave “Coin” if unsure.">
                   <InfoIcon
@@ -393,21 +388,10 @@ export default function AppBuilder() {
                       top: "50%",
                       transform: "translateY(-50%)",
                     }}
-                    color="primary"
                   />
                 </Tooltip>
               </Box>
-              {/* <Box sx={{ gridColumn: "1/3" }}>
-              <TextField
-                fullWidth
-                margin="dense"
-                label="Coin symbol (3-4 letters)"
-                name="coinSymbol"
-                variant="outlined"
-                value={coinSymbol}
-                onChange={(e) => setCoinSymbol(e.target.value)}
-              />
-            </Box> */}
+
               <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
                 <input
                   onChange={handleLogoChange}
@@ -503,7 +487,6 @@ export default function AppBuilder() {
                         top: 15,
                         transform: "translateY(-50%)",
                       }}
-                      color="primary"
                     />
                   </Tooltip>
                 </Box>
@@ -531,7 +514,7 @@ export default function AppBuilder() {
                 <TextField
                   margin="dense"
                   fullWidth
-                  sx={{margin: 0,}}
+                  sx={{ margin: 0 }}
                   label="Bundle ID"
                   name="bundleId"
                   variant="outlined"
@@ -573,7 +556,6 @@ export default function AppBuilder() {
                     onClick={prepareRnBuild}
                     sx={{ width: 300, height: 50 }}
                     variant="outlined"
-
                     startIcon={<DownloadIcon />}
                   >
                     {buildStage === "preparing" ? "Preparing" : "Prepare"} React
@@ -634,7 +616,6 @@ export default function AppBuilder() {
               <Button
                 onClick={openAppDomain}
                 variant="outlined"
-
                 startIcon={<OpenInNewIcon />}
               >
                 Open the Web App
@@ -653,18 +634,37 @@ export default function AppBuilder() {
             </LoadingButton>
           </Box>
         </Box>
-
-        <AppMock
-          primaryColor={primaryColor}
-          secondaryColor={secondaryColor}
-          logo={logo.url}
-          loginScreenBackground={loginScreenBackground.value}
-          coinLogo={coinLogo.url}
-          coinSymbol={coinSymbol}
-          coinName={coinName}
-          currentScreenIndex={currentScreenIndex}
-          changeScreen={setCurrentScreenIndex}
-        />
+        <fieldset
+          style={{
+            border: "1px solid rgba(0,0,0,0.3)",
+            borderRadius: 10,
+            height: "100%",
+            padding: 20,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <legend>
+            <Chip
+              variant="filled"
+              color={"primary"}
+              sx={{ fontWeight: "bold" }}
+              label={"Mobile App Preview"}
+            />
+          </legend>
+          <AppMock
+            primaryColor={primaryColor}
+            secondaryColor={secondaryColor}
+            logo={logo.url}
+            loginScreenBackground={loginScreenBackground.value}
+            coinLogo={coinLogo.url}
+            coinSymbol={coinSymbol}
+            coinName={coinName}
+            currentScreenIndex={currentScreenIndex}
+            changeScreen={setCurrentScreenIndex}
+          />
+        </fieldset>
       </Box>
     </main>
   );

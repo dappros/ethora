@@ -4,6 +4,7 @@ import defaultLoginBackground from "../../assets/images/login_background.png";
 import defaultCoinPath from "../../assets/images/coin.png";
 import profilePic from "../../assets/images/profilepic.png";
 import { isValidHexCode } from "../../utils";
+import { Box } from "@mui/material";
 
 export default function AppMock(props: TCustomDetails) {
   const {
@@ -258,15 +259,11 @@ export default function AppMock(props: TCustomDetails) {
   };
 
   return (
-    <div
-      style={{
-        // width: "50%",
+    <Box
+      sx={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-evenly",
-        // alignItems: "center",
-        // backgroundColor: "#EDEDED",
-        // background: "linear-gradient(45deg, #ffffff, #e6e6e6)",
+        transform: 'translateX(60px)'
       }}
     >
       <div
@@ -275,6 +272,7 @@ export default function AppMock(props: TCustomDetails) {
           display: "flex",
           alignItems: "flex-start",
           height: "100%",
+          marginLeft: 'auto'
         }}
       >
         <MobileOutline screenIndex={0} />
@@ -287,6 +285,6 @@ export default function AppMock(props: TCustomDetails) {
       >
         <MobileOutline screenIndex={1} />
       </div>
-    </div>
+    </Box>
   );
 }
