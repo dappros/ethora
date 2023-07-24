@@ -51,7 +51,7 @@ export default function AppBuilder() {
   const updateApp = useStoreState((s) => s.updateApp);
 
   const [displayName, setDisplayName] = useState(app.displayName || "");
-  const [bundleId, setBundleId] = useState("com.ethora");
+  const [bundleId, setBundleId] = useState(app.bundleId);
   const [logo, setLogo] = useState<IFile>({
     file: undefined,
     url: app.logoImage || "",
