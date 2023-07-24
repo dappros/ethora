@@ -117,7 +117,6 @@ export function ChatTransferDialog({
       const sender = user.firstName + " " + user.lastName;
       const receiver =
         message.data.senderFirstName + " " + message.data.senderLastName;
-        console.log(amount, '123123213')
       const textMessage = `${sender} -> ${currentCoinAmount} ${coinName} -> ${receiver}`;
       const transactionId = res.data.transaction._id;
       xmpp.sendSystemMessage(
