@@ -2,7 +2,6 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
-import { TCombinedMimeType } from "../constants";
 import { stat } from "fs";
 import type { Stripe } from "stripe";
 import { THomeScreen } from "../http";
@@ -106,7 +105,7 @@ export type TMessageHistory = {
     originalName?: string;
     location?: string;
     locationPreview?: string;
-    mimetype?: TCombinedMimeType;
+    mimetype?: string;
     xmlns: string;
     isReply?: boolean;
     mainMessage?: IMainMessage;
