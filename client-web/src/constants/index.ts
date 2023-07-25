@@ -16,7 +16,7 @@ export const NFMT_TRAITS: Record<string, { color: string }> = {
 };
 
 const BASEDOMAIN = config.IS_PRODUCTION ? "dxmpp.com" : "dev.dxmpp.com";
-export const PUSH_URL = "https://" + BASEDOMAIN + ":7777/api/v1";
+export const PUSH_URL = 'https://push.dxmpp.com:7777/api/v1';
 export const CONFERENCEDOMAIN = "@conference." + BASEDOMAIN;
 export const DOMAIN = "@" + BASEDOMAIN;
 export const SERVICE = `wss://${BASEDOMAIN}:5443/ws`;
