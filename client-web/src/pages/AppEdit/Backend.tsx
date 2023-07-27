@@ -64,7 +64,7 @@ export const Backend: React.FC<IBackend> = ({}) => {
   return (
     <Box>
       <Box sx={sectionStyle}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, justifyContent: 'center' }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, justifyContent: 'flex-start' }}>
           <Box>
             <Typography sx={{ fontWeight: "bold" }}>JWT Token</Typography>
             <Typography sx={{ fontSize: 12 }}>
