@@ -29,6 +29,7 @@ import { EditAcl } from "../EditAcl";
 import NoDataImage from "../NoDataImage";
 import { UsersTableRow } from "./UsersTableRow";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { format } from "date-fns";
 
 type Order = "asc" | "desc";
 
@@ -40,7 +41,7 @@ export type ModalType =
 
 interface Props {
   currentApp: string;
-  onAppChange: (app:string) => void
+  onAppChange: (app: string) => void;
 }
 
 export type TSelectedIds = {
@@ -49,7 +50,7 @@ export type TSelectedIds = {
   appId: string;
   tags: string[];
 };
-export default function UsersTable({currentApp, onAppChange}: Props) {
+export default function UsersTable({ currentApp, onAppChange }: Props) {
   const [order, setOrder] = useState<Order>("desc");
   const [orderBy, setOrderBy] = useState<keyof IUser>("createdAt");
   const [selectedIds, setSelectedIds] = useState<TSelectedIds[]>([]);
@@ -59,8 +60,6 @@ export default function UsersTable({currentApp, onAppChange}: Props) {
     type: ModalType;
   }>({ open: false, type: "manageTags" });
   const apps = useStoreState((state) => state.apps);
-
-
 
   const [showNewUser, setShowNewUser] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -254,8 +253,9 @@ export default function UsersTable({currentApp, onAppChange}: Props) {
       const res = await exportUsersCsv(currentApp);
       const url = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
       const a = document.createElement("a");
+      const fileName = 'users-' + format(new Date(), "yyyy-MM-dd") + ".csv";
       a.href = url;
-      a.download = currentApp + ".csv";
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
