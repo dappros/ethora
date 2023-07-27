@@ -192,11 +192,11 @@ export default function Apps({ onRowClick }: Props) {
                     <CloseIcon color={"error"} />
                   )}
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="center">
                   {new Date(app.createdAt).toDateString()}
                 </TableCell>
                 <TableCell align="right">
-                  <Box style={{ display: "flex", flexDirection: "column" }}>
+                  <Box style={{ display: "flex", flexDirection: "column", alignItems: 'flex-end' }}>
                     <IconButton onClick={() => onEdit(app)}>
                       <SettingsIcon color="primary" />
                     </IconButton>
