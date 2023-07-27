@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -19,15 +18,17 @@ import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
 import { coinsMainName } from "../../config/config";
 import { getApps } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloseIcon from "@mui/icons-material/Close";
 import { useHistory } from "react-router";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { AppsTableHead } from "../../components/AppsTable/AppsTableHead";
+
 const COINS_TO_CREATE_APP = 10;
 
 interface Props {
   onRowClick?: (app: string) => void;
 }
+
+const NA = "N/A";
 
 export default function Apps({ onRowClick }: Props) {
   const apps = useStoreState((state) => state.apps);
@@ -143,16 +144,7 @@ export default function Apps({ onRowClick }: Props) {
 
       {apps.length > 0 && (
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell width={200}>Display Name</TableCell>
-              <TableCell align="center">Profile Open</TableCell>
-              <TableCell align="center">Assets Visible</TableCell>
-              <TableCell align="center">Self-Sovereignty</TableCell>
-              <TableCell align="center">Created</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
+          <AppsTableHead />
           <TableBody>
             {apps.map((app) => (
               <TableRow
@@ -170,33 +162,36 @@ export default function Apps({ onRowClick }: Props) {
                 >
                   {app.displayName}
                 </TableCell>
-                <TableCell align="center">
-                  {app.defaultAccessProfileOpen ? (
-                    <CheckCircleIcon color={"success"} />
-                  ) : (
-                    <CloseIcon color={"error"} />
-                  )}
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
                 </TableCell>
-                <TableCell align="center">
-                  {app.defaultAccessAssetsOpen ? (
-                    <CheckCircleIcon color={"success"} />
-                  ) : (
-                    <CloseIcon color={"error"} />
-                  )}
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {NA}
                 </TableCell>
 
-                <TableCell align="center">
-                  {app.usersCanFree ? (
-                    <CheckCircleIcon color={"success"} />
-                  ) : (
-                    <CloseIcon color={"error"} />
-                  )}
-                </TableCell>
                 <TableCell align="center">
                   {new Date(app.createdAt).toDateString()}
                 </TableCell>
                 <TableCell align="right">
-                  <Box style={{ display: "flex", flexDirection: "column", alignItems: 'flex-end' }}>
+                  <Box
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-end",
+                    }}
+                  >
                     <IconButton onClick={() => onEdit(app)}>
                       <SettingsIcon color="primary" />
                     </IconButton>
