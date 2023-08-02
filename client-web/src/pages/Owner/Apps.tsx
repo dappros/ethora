@@ -194,7 +194,11 @@ export default function Apps({ onRowClick }: Props) {
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {NA}
+                {app.stats.totalTransactions}
+                  <span style={{ fontWeight: "bold", color: "green" }}>
+                    {" "}
+                    +{app.stats.recentlyTransactions}
+                  </span>
                 </TableCell>
 
                 <TableCell align="center">
