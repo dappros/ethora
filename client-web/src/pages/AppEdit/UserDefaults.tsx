@@ -95,24 +95,40 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
         <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Box>
-                <Typography sx={{ fontWeight: "bold" }}>
+              <Box sx={{ mb: 4 }}>
+                <Typography sx={{ fontWeight: "bold", mb: 2 }}>
                   Default chat rooms
                 </Typography>
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "0.25fr 3.5fr 0.25fr",
+                      gap: 1,
+                      alignItems: "center",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    <Typography sx={{fontWeight: 'bold', width: 150}}>Title</Typography>
+                    <Typography sx={{fontWeight: 'bold'}}>JID</Typography>
+                    <Typography sx={{fontWeight: 'bold'}}>Pinned</Typography>
+
+                  </Box>
                   {defaultChatRooms.map((item, i) => {
                     return (
                       <Box
                         key={item.jid}
                         sx={{
-                          display: "flex",
+                          display: "grid",
+                          gridTemplateColumns: "0.25fr 3.5fr 0.25fr",
                           gap: 1,
                           alignItems: "center",
                           fontWeight: "bold",
                           fontSize: 14,
                         }}
                       >
-                        <p style={{ width: 200 }}>{item.name}</p>
+                        <p style={{ width: 150 }}>{item.name}</p>
                         <TextField
                           margin="dense"
                           // label="Email"
