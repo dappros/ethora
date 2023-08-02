@@ -163,19 +163,35 @@ export default function Apps({ onRowClick }: Props) {
                   {app.displayName}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {NA}
+                  {app.stats.totalRegistered}
+                  <span style={{ fontWeight: "bold", color: "green" }}>
+                    {" "}
+                    +{app.stats.recentlyRegistered}
+                  </span>
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} align="center">
+                  {app.stats.totalSessions}
+                  <span style={{ fontWeight: "bold", color: "green" }}>
+                    {" "}
+                    +{app.stats.recentlySessions}
+                  </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
                   {NA}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {NA}
+                  {app.stats.totalApiCalls}
+                  <span style={{ fontWeight: "bold", color: "green" }}>
+                    {" "}
+                    +{app.stats.recentlyApiCalls}
+                  </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {NA}
-                </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {NA}
+                  {app.stats.totalFiles}
+                  <span style={{ fontWeight: "bold", color: "green" }}>
+                    {" "}
+                    +{app.stats.recentlyFiles}
+                  </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
                   {NA}

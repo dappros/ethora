@@ -138,6 +138,21 @@ export type TUserChatRooms = {
   group?: TActiveRoomFilter;
 };
 
+export type AppStats = {
+  recentlyApiCalls: number
+  recentlyFiles: number
+  recentlyIssuance: number
+  recentlyRegistered: number
+  recentlySessions: number
+  recentlyTransactions: number
+  totalApiCalls: number
+  totalFiles: number
+  totalIssuance: number
+  totalRegistered: number;
+  totalSessions: number
+  totalTransactions: number
+};
+
 export type TApp = {
   _id: string;
   displayName: string;
@@ -151,7 +166,7 @@ export type TApp = {
   appGoogleId?: string;
   appLogo?: string;
   firebaseWebConfigString?: string;
-
+stats: AppStats;
   bundleId: string;
   coinName: string;
   coinSymbol: string;
