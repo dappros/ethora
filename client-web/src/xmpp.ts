@@ -610,7 +610,19 @@ export class XmppClass {
     );
     this.client.send(message);
   };
-
+  getAndReceiveRoomInfo = (roomJID: string) => {
+    const message = xml(
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: "roomInfo",
+        to: roomJID,
+        type: "get",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
+    return this.client.sendReceive(message);
+  };
   isComposing = (walletAddress: string, chatJID: string, fullName: string) => {
     const message = xml(
       "message",
