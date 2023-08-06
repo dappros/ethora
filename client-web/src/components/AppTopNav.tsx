@@ -24,7 +24,6 @@ import { TActiveRoomFilter, useStoreState } from "../store";
 import { Badge, Divider } from "@mui/material";
 import {
   coinsMainName,
-  defaultChats,
   defaultMetaRoom,
   ROOMS_FILTERS,
 } from "../config/config";
@@ -106,9 +105,7 @@ const AppTopNav = () => {
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
-  const firebaseAppId = useStoreState(
-    (s) => s.config.firebaseConfig.appId
-  );
+  const firebaseAppId = useStoreState((s) => s.config.firebaseConfig.appId);
 
   const setBalance = useStoreState((state) => state.setBalance);
   const rooms = useStoreState((state) => state.userChatRooms);
@@ -189,15 +186,20 @@ const AppTopNav = () => {
       meta: 0,
       private: 0,
     };
+    const chats = useStoreState.getState().defaultChatRooms;
+    const chatsMap = {};
+    chats.forEach((c) => {
+      chatsMap[c.jid] = c;
+    });
     rooms.forEach((item) => {
       const splitedJid = item.jid.split("@")[0];
-      if (defaultChats[splitedJid]) {
+      if (chatsMap[splitedJid]) {
         counts.official += item.unreadMessages;
       }
-      if (!defaultChats[splitedJid] && +item.users_cnt < 3) {
+      if (!chatsMap[splitedJid] && +item.users_cnt < 3) {
         counts.private += item.unreadMessages;
       }
-      if (!defaultChats[splitedJid] && +item.users_cnt >= 3) {
+      if (!chatsMap[splitedJid] && +item.users_cnt >= 3) {
         counts.meta += item.unreadMessages;
       }
     });

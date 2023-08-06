@@ -4,7 +4,6 @@ import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
 import { useStoreState } from "./store";
 import { walletToUsername } from "./utils/walletManipulation";
 import { XmppHandler } from "./xmppHandler";
-import { defaultChats } from "./config/config";
 
 const xmppMessagesHandler = new XmppHandler();
 
@@ -25,12 +24,12 @@ export class XmppClass {
       username: walletToUsername(walletAddress),
       password,
     });
-    this.client.setMaxListeners(20)
+    this.client.setMaxListeners(20);
     this.client.start();
 
     this.client.on("online", (jid) => {
-      xmppMessagesHandler.getListOfRooms(this)
-      this.subscribeToDefaultChats()
+      xmppMessagesHandler.getListOfRooms(this);
+      this.subscribeToDefaultChats();
     });
     this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
     this.client.on("stanza", (stanza) =>
@@ -129,10 +128,9 @@ export class XmppClass {
     this.client.send(message);
   };
   subscribeToDefaultChats = () => {
-    Object.entries(defaultChats).forEach(([key]) => {
-      const jid = key + CONFERENCEDOMAIN;
-      
-      this.subsribe(jid);
+    const chats = useStoreState.getState().defaultChatRooms;
+    chats.forEach((chat) => {
+      this.subsribe(chat.jid);
     });
   };
   subsribe(address: string) {

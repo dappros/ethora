@@ -4,7 +4,7 @@ import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
 import { stat } from "fs";
 import type { Stripe } from "stripe";
-import { THomeScreen } from "../http";
+import { IDefaultChatRoom, THomeScreen } from "../http";
 
 export type TUser = {
   firstName: string;
@@ -139,18 +139,18 @@ export type TUserChatRooms = {
 };
 
 export type AppStats = {
-  recentlyApiCalls: number
-  recentlyFiles: number
-  recentlyIssuance: number
-  recentlyRegistered: number
-  recentlySessions: number
-  recentlyTransactions: number
-  totalApiCalls: number
-  totalFiles: number
-  totalIssuance: number
+  recentlyApiCalls: number;
+  recentlyFiles: number;
+  recentlyIssuance: number;
+  recentlyRegistered: number;
+  recentlySessions: number;
+  recentlyTransactions: number;
+  totalApiCalls: number;
+  totalFiles: number;
+  totalIssuance: number;
   totalRegistered: number;
-  totalSessions: number
-  totalTransactions: number
+  totalSessions: number;
+  totalTransactions: number;
 };
 
 export type TApp = {
@@ -166,7 +166,7 @@ export type TApp = {
   appGoogleId?: string;
   appLogo?: string;
   firebaseWebConfigString?: string;
-stats: AppStats;
+  stats: AppStats;
   bundleId: string;
   coinName: string;
   coinSymbol: string;
@@ -258,6 +258,9 @@ interface IStore {
   };
   showHeaderError: boolean;
   setShowHeaderError: (value: boolean) => void;
+  defaultChatRooms: IDefaultChatRoom[];
+  setDefaultChatRooms: (value: IDefaultChatRoom[]) => void;
+  getDefaultChats: () => Promise<void>;
   ACL: http.IUserAcl;
   messages: TMessage[];
   currentThreadViewMessage: TMessageHistory;
@@ -345,6 +348,7 @@ const _useStore = create<IStore>()(
             isAgreeWithTerms: false,
             homeScreen: "",
           },
+          defaultChatRooms: [],
           config: {
             firebaseWebConfigString: "",
             primaryColor: "",
@@ -492,6 +496,21 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.apps = [];
             }),
+          setDefaultChatRooms: (rooms) =>
+            set((state) => {
+              state.defaultChatRooms = rooms;
+            }),
+
+          getDefaultChats: async () => {
+            try {
+              const chats = await http.getDefaultChats();
+              set((state) => {
+                state.defaultChatRooms = chats.data;
+              });
+            } catch (error) {
+              console.log(error);
+            }
+          },
           clearUser: () =>
             set((state) => {
               state.user = {

@@ -13,7 +13,6 @@ import React, { useState } from "react";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useStoreState } from "../../store";
 import * as http from "../../http";
-import { defaultChats } from "../../config/config";
 import { useParams } from "react-router";
 import xmpp from "../../xmpp";
 import { CONFERENCEDOMAIN } from "../../constants";
@@ -28,10 +27,12 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
   const updateApp = useStoreState((state) => state.updateApp);
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
+  const defaultChats = useStoreState((state) => state.defaultChatRooms);
+
   const [defaultChatRooms, setDefaultChatRooms] = useState(() =>
-    Object.entries(defaultChats).map((item, i) => ({
-      ...item[1],
-      jid: item[0],
+    defaultChats.map((item, i) => ({
+      ...item,
+      jid: item.jid,
       checked: i === 0,
       disabled: i === 0,
       error: false,
@@ -58,7 +59,10 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
     ) => {
       setSubmitting(true);
       const fd = new FormData();
-
+      const defaultRooms = defaultChatRooms.map((room) => ({
+        jid: room.jid,
+        pinned: room.checked,
+      }));
       fd.append("displayName", app.displayName);
       fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
       fd.append(
@@ -66,6 +70,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
         defaultAccessProfileOpen.toString()
       );
       fd.append("usersCanFree", usersCanFree.toString());
+      fd.append("defaultRooms", JSON.stringify(defaultRooms));
       try {
         const res = await http.updateAppSettings(appId, fd);
         setUser({ ...user, homeScreen: "" });
@@ -124,18 +129,19 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                   <Box
                     sx={{
                       display: "grid",
-                      gridTemplateColumns: "0.25fr 3.5fr 0.25fr",
+                      gridTemplateColumns: "0.9fr 0.1fr",
                       gap: 1,
                       alignItems: "center",
                       fontWeight: "bold",
                       fontSize: 14,
                     }}
                   >
-                    <Typography sx={{ fontWeight: "bold", width: 150 }}>
-                      Title
-                    </Typography>
                     <Typography sx={{ fontWeight: "bold" }}>JID</Typography>
-                    <Typography sx={{ fontWeight: "bold" }}>Pinned</Typography>
+                    <Typography
+                      sx={{ fontWeight: "bold", textAlign: "center" }}
+                    >
+                      Pinned
+                    </Typography>
                   </Box>
                   {defaultChatRooms.map((item, i) => {
                     return (
@@ -143,22 +149,13 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                         key={i}
                         sx={{
                           display: "grid",
-                          gridTemplateColumns: "0.25fr 3.5fr 0.25fr",
+                          gridTemplateColumns: "0.9fr 0.1fr",
                           gap: 1,
                           alignItems: "center",
                           fontWeight: "bold",
                           fontSize: 14,
                         }}
                       >
-                        <TextField
-                          sx={{ width: 150 }}
-                          margin="dense"
-                          name="name"
-                          fullWidth
-                          variant="outlined"
-                          value={item.name}
-                          onChange={(e) => changeRoomInfo(e, i)}
-                        />
                         <TextField
                           margin="dense"
                           name="jid"

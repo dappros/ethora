@@ -27,6 +27,11 @@ export interface ICompany {
   registrationNumber: string;
   payeReference: string;
 }
+export interface IDefaultChatRoom {
+  jid: string;
+  pinned: boolean;
+  title: string;
+}
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -564,7 +569,11 @@ export function loginOwner(email: string, password: string) {
 export function getApps() {
   return httpWithAuth().get("/apps");
 }
+export function getDefaultChats() {
+  const appToken = useStoreState.getState().config.appToken;
 
+  return httpWithToken(appToken).get<IDefaultChatRoom[]>("/apps/get-default-rooms");
+}
 export function createApp(fd: FormData) {
   const owner = useStoreState.getState().user;
   return http.post("/apps", fd, {

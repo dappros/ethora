@@ -73,6 +73,7 @@ export const Routes = () => {
   const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
   const lastAuthUrl = useRef("");
+  const getDefaultChats = useStoreState((state) => state.getDefaultChats);
 
   const history = useHistory();
   const getDocuments = async (walletAddress: string) => {
@@ -117,6 +118,12 @@ export const Routes = () => {
   useEffect(() => {
     getAppConfig();
   }, []);
+  useEffect(() => {
+    if(appConfig.appToken) {
+
+      getDefaultChats();
+    }
+  }, [appConfig.appToken]);
 
   useEffect(() => {
     if (user.walletAddress) {
