@@ -32,6 +32,12 @@ export interface IDefaultChatRoom {
   pinned: boolean;
   title: string;
 }
+export interface IUserDefaults {
+    defaultAccessProfileOpen: boolean,
+    defaultAccessAssetsOpen: boolean,
+    usersCanFree: boolean,
+    defaultRooms: Omit<IDefaultChatRoom, 'title'>[]
+}
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -568,6 +574,9 @@ export function loginOwner(email: string, password: string) {
 
 export function getApps() {
   return httpWithAuth().get("/apps");
+}
+export function changeUserDefaults(appId: string, data: IUserDefaults) {
+  return httpWithAuth().put("/apps/user-defaults/" + appId, data);
 }
 export function getDefaultChats() {
   const appToken = useStoreState.getState().config.appToken;

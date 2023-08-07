@@ -18,7 +18,7 @@ import xmpp from "../../xmpp";
 import { CONFERENCEDOMAIN } from "../../constants";
 export interface IUserDefaults {}
 
-const JID_LENGTH = 64;
+const JID_LENGTH = 64 + CONFERENCEDOMAIN.length;
 
 export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
   const fileRef = React.useRef<HTMLInputElement>(null);
@@ -58,24 +58,25 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       { setSubmitting }
     ) => {
       setSubmitting(true);
-      const fd = new FormData();
       const defaultRooms = defaultChatRooms.map((room) => ({
         jid: room.jid,
         pinned: room.checked,
       }));
-      fd.append("displayName", app.displayName);
-      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      fd.append(
-        "defaultAccessProfileOpen",
-        defaultAccessProfileOpen.toString()
-      );
-      fd.append("usersCanFree", usersCanFree.toString());
-      fd.append("defaultRooms", JSON.stringify(defaultRooms));
+      const body = {
+        defaultAccessProfileOpen: defaultAccessProfileOpen,
+        defaultAccessAssetsOpen: defaultAccessAssetsOpen,
+        usersCanFree: usersCanFree,
+        defaultRooms: defaultRooms,
+      };
+
       try {
-        const res = await http.updateAppSettings(appId, fd);
+        const res = await http.changeUserDefaults(appId, body);
+        console.log(res.data)
         setUser({ ...user, homeScreen: "" });
-        updateApp(res.data.result);
+        updateApp(res.data);
+        showSnackbar('success', 'User Defaults updated successfully')
       } catch (error) {
+        console.log(error)
         showSnackbar(
           "error",
           "Cannot update the app " + (error.response?.data?.error || "")
@@ -104,9 +105,7 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
     const rooms = [...defaultChatRooms];
     rooms[i][property] = value;
     if (property === "jid" && value.length === JID_LENGTH) {
-      const isRoomExistsStanza = await xmpp.getAndReceiveRoomInfo(
-        value + CONFERENCEDOMAIN
-      );
+      const isRoomExistsStanza = await xmpp.getAndReceiveRoomInfo(value);
       //error appears because room is not exist and we can create it
       if (isRoomExistsStanza.children[1]?.["name"] !== "error") {
         rooms[i].error = true;
