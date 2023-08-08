@@ -378,9 +378,7 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       )}
       <KitMessage
-        onContextMenu={
-          !message.data.isReply && !isThread ? rightClick : () => {}
-        }
+        onContextMenu={rightClick}
         style={{
           marginBottom:
             position.type === "last" || position.type === "single" ? 15 : null,
@@ -421,7 +419,7 @@ export const Message: React.FC<IMessage> = ({
 
         <KitMessage.CustomContent>
           <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
-            {!isThread && !message.data.isReply && (
+            {!isThread && (
               <IconButton
                 aria-label="more"
                 id="long-button"
