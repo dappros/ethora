@@ -163,41 +163,41 @@ export default function Apps({ onRowClick }: Props) {
                   {app.displayName}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats.totalRegistered}
+                  {app.stats?.totalRegistered}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
-                    +{app.stats.recentlyRegistered}
+                    +{app.stats?.recentlyRegistered}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats.totalSessions}
+                  {app.stats?.totalSessions}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
-                    +{app.stats.recentlySessions}
+                    +{app.stats?.recentlySessions}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
                   {NA}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats.totalApiCalls}
+                  {app.stats?.totalApiCalls}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
-                    +{app.stats.recentlyApiCalls}
+                    +{app.stats?.recentlyApiCalls}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats.totalFiles}
+                  {app.stats?.totalFiles}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
-                    +{app.stats.recentlyFiles}
+                    +{app.stats?.recentlyFiles}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                {app.stats.totalTransactions}
+                {app.stats?.totalTransactions}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
-                    +{app.stats.recentlyTransactions}
+                    +{app.stats?.recentlyTransactions}
                   </span>
                 </TableCell>
 
