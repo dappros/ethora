@@ -72,6 +72,7 @@ export const Message: React.FC<IMessage> = ({
   const isSameUser = userJid === messageJid;
   const history = useHistory();
   const [buttons, setButtons] = useState<IButtons[]>();
+  const [messageHovered, setMessageHovered] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -97,6 +98,12 @@ export const Message: React.FC<IMessage> = ({
     openDialogMenu();
   };
 
+  const onMouseEnter = () => {
+    setMessageHovered(true);
+  };
+  const onMouseLeave = () => {
+    setMessageHovered(false);
+  };
   const openFileInNewTab = (link: string) => {
     window.open(link, "_blank");
   };
@@ -527,33 +534,34 @@ export const Message: React.FC<IMessage> = ({
             </Box>
           </Box>
         </KitMessage.CustomContent>
-
-        {/*{(position.type === "last" || position.type === "single") && (*/}
-        {/*  <KitMessage.Footer*/}
-        {/*    sentTime={*/}
-        {/*      differenceInHours(new Date(), new Date(message.date)) > 5*/}
-        {/*        ? format(new Date(message.date), "h:mm a")*/}
-        {/*        : formatDistance(*/}
-        {/*            subDays(new Date(message.date), 0),*/}
-        {/*            new Date(),*/}
-        {/*            {*/}
-        {/*              addSuffix: true,*/}
-        {/*            }*/}
-        {/*          )*/}
-        {/*    }*/}
-        {/*  />*/}
-        {/*)}*/}
-        <KitMessage.Footer>
+        <KitMessage.Footer style={{ marginLeft: 0 }}>
           {message.numberOfReplies > 0 &&
             messageDirection === "incoming" &&
             !isThread && (
-              <Button onClick={() => openThreadView()} variant="text">
-                <Typography fontSize={"12px"} textTransform={"none"}>
-                  {message.numberOfReplies}{" "}
-                  {message.numberOfReplies === 1 ? "Reply" : "Replies"} (tap to
-                  review)
-                </Typography>
-              </Button>
+              <Box
+                onClick={openThreadView}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                sx={{
+                  px: 0,
+                  width: 140,
+                  color: (theme) => theme.palette.primary.main,
+                  cursor: "pointer",
+                  mb: 1
+                }}
+              >
+                {messageHovered ? (
+                  <Typography fontSize={"12px"} textTransform={"none"}>
+                    View thread
+                  </Typography>
+                ) : (
+                  <Typography fontSize={"12px"} textTransform={"none"}>
+                    {message.numberOfReplies}{" "}
+                    {message.numberOfReplies === 1 ? "Reply" : "Replies"} (tap
+                    to review)
+                  </Typography>
+                )}
+              </Box>
             )}
         </KitMessage.Footer>
       </KitMessage>

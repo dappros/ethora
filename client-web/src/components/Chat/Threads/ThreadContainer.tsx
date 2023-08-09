@@ -6,7 +6,7 @@ import {
   MessageList,
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { Box, Checkbox, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Checkbox, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Message } from "../Messages/Message";
 import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
@@ -66,7 +66,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
   const messages = useStoreState((state) => state.historyMessages);
 
   const { roomJID } = useParams<{ roomJID: string }>();
-
+    const theme = useTheme()
   const threadWindowMessages = messages.filter(
     (item: TMessageHistory) =>
       item.roomJID.includes(roomJID) &&
@@ -134,7 +134,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
   return (
     <ChatContainer
       style={{
-        borderLeftWidth: "2px",
+       borderLeft: '1px solid #d1dbe3' ,
       }}
     >
       {!!roomData && (
@@ -180,7 +180,10 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
               </div>
             </span>
           </Box>
-          <Divider>{currentThreadViewMessage.numberOfReplies}</Divider>
+          <Divider>
+            {currentThreadViewMessage.numberOfReplies}{" "}
+            {currentThreadViewMessage.numberOfReplies > 1 ? "replies" : "reply"}{" "}
+          </Divider>
         </div>
       )}
 

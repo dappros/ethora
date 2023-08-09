@@ -797,21 +797,21 @@ export function ChatInRoom() {
             )}
           </ChatContainer>
           {isThreadView && (
-            <ThreadContainer
-              chooseRoom={chooseRoom}
-              currentPickedRoom={currentPickedRoom}
-              currentRoom={currentRoom}
-              handleSetThreadView={handleSetThreadView}
-              handleShowInChannel={handleShowInChannel}
-              isThreadView={isThreadView}
-              onYReachStart={onYReachStart}
-              profile={profile}
-              roomData={roomData}
-              sendFile={sendFile}
-              showInChannel={showInChannel}
-              toggleMediaModal={toggleMediaModal}
-              toggleTransferDialog={toggleTransferDialog}
-            />
+              <ThreadContainer
+                chooseRoom={chooseRoom}
+                currentPickedRoom={currentPickedRoom}
+                currentRoom={currentRoom}
+                handleSetThreadView={handleSetThreadView}
+                handleShowInChannel={handleShowInChannel}
+                isThreadView={isThreadView}
+                onYReachStart={onYReachStart}
+                profile={profile}
+                roomData={roomData}
+                sendFile={sendFile}
+                showInChannel={showInChannel}
+                toggleMediaModal={toggleMediaModal}
+                toggleTransferDialog={toggleTransferDialog}
+              />
           )}
         </div>
       </MainContainer>
