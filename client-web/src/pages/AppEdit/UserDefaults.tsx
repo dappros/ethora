@@ -33,8 +33,8 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
     defaultChats.map((item, i) => ({
       ...item,
       jid: item.jid,
-      checked: i === 0,
-      disabled: i === 0,
+      checked: item.pinned,
+      disabled: false,
       error: false,
     }))
   );
