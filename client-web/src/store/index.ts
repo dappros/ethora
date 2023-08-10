@@ -260,6 +260,7 @@ interface IStore {
   setShowHeaderError: (value: boolean) => void;
   defaultChatRooms: IDefaultChatRoom[];
   setDefaultChatRooms: (value: IDefaultChatRoom[]) => void;
+  deleteUserChatRoom: (roomJid: string) => void;
   getDefaultChats: () => Promise<void>;
   ACL: http.IUserAcl;
   messages: TMessage[];
@@ -690,6 +691,13 @@ const _useStore = create<IStore>()(
                   ...data,
                 };
               }
+            }),
+          deleteUserChatRoom: (roomJid: string) =>
+            set((state) => {
+              const newRooms = state.userChatRooms.filter(
+                (c) => c.jid !== roomJid
+              );
+              state.userChatRooms = newRooms;
             }),
           clearCounterChatRoom: (roomJID: string) =>
             set((state) => {

@@ -58,6 +58,7 @@ import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { createMainMessageForThread } from "../../utils/createMessage";
 import Dompurify from "dompurify";
+import { LeaveRoomButton } from "../../components/Chat/LeaveRoomButton";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -208,7 +209,7 @@ export function ChatInRoom() {
       return;
     } else {
       const lastMessageID = filteredMessages[0].id;
-      xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
+      // xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
     }
   };
 
@@ -248,9 +249,9 @@ export function ChatInRoom() {
   const setRoomDetails = (jid: string) => {
     setCurrentRoom(jid);
     const currentRoomData = userChatRooms.find((e) => e.jid === jid);
-    console.log(currentRoomData);
     setRoomData(currentRoomData);
   };
+
   const loadMessages = (jid: string) => {
     useStoreState.getState().clearCounterChatRoom(jid);
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
@@ -626,6 +627,7 @@ export function ChatInRoom() {
                   >
                     <QrCodeIcon />
                   </IconButton>
+                  <LeaveRoomButton roomJid={roomData.jid} />
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
