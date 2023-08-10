@@ -80,7 +80,9 @@ export class XmppHandler {
       const isCurrentUser =
         msg.data.senderWalletAddress ===
         useStoreState.getState().user.walletAddress;
-      playCoinSound(+msg.data.tokenAmount);
+      if (msg.data.isSystemMessage === "true") {
+        playCoinSound(+msg.data.tokenAmount);
+      }
       if (!isCurrentUser) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         sendBrowserNotification(msg.body, () => {
