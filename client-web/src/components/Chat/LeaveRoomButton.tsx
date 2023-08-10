@@ -26,7 +26,7 @@ export const LeaveRoomButton: React.FC<ILeaveRoomButton> = ({ roomJid }) => {
   };
   return (
     <>
-      <IconButton onClick={onButtonClick}>
+      <IconButton sx={{color: 'black'}} onClick={onButtonClick}>
         <LogoutIcon />
       </IconButton>
       <DeleteDialog
