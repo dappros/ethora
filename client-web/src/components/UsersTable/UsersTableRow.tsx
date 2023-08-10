@@ -140,8 +140,8 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
         </Box>
       </TableCell>
       <TableCell align="right">{data.email || "No Email"}</TableCell>
-      <TableCell align="right">
-        <p style={{ maxWidth: 200 }}>
+      <TableCell align="center">
+        <p >
           {dateToHumanReadableFormat(data.createdAt)}
         </p>
         <p>{data.lastSeen ? dateToHumanReadableFormat(data.lastSeen) : ""}</p>
