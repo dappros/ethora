@@ -33,16 +33,7 @@ import {
 import { Message } from "../../components/Chat/Messages/Message";
 import { SystemMessage } from "../../components/Chat/Messages/SystemMessage";
 import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   IconButton,
-  useMediaQuery,
-  useTheme,
   Box,
   Slide,
   Stack,
@@ -55,7 +46,7 @@ import { MetaNavigation } from "../../components/MetaNavigation/MetaNavigation";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
 import { CONFERENCEDOMAIN } from "../../constants";
-import { appName, ROOMS_FILTERS } from "../../config/config";
+import { ROOMS_FILTERS } from "../../config/config";
 import ThreadContainer from "../../components/Chat/Threads/ThreadContainer";
 import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
@@ -65,7 +56,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { Helmet } from "react-helmet";
 import { createMainMessageForThread } from "../../utils/createMessage";
 import Dompurify from "dompurify";
 
@@ -797,21 +787,21 @@ export function ChatInRoom() {
             )}
           </ChatContainer>
           {isThreadView && (
-              <ThreadContainer
-                chooseRoom={chooseRoom}
-                currentPickedRoom={currentPickedRoom}
-                currentRoom={currentRoom}
-                handleSetThreadView={handleSetThreadView}
-                handleShowInChannel={handleShowInChannel}
-                isThreadView={isThreadView}
-                onYReachStart={onYReachStart}
-                profile={profile}
-                roomData={roomData}
-                sendFile={sendFile}
-                showInChannel={showInChannel}
-                toggleMediaModal={toggleMediaModal}
-                toggleTransferDialog={toggleTransferDialog}
-              />
+            <ThreadContainer
+              chooseRoom={chooseRoom}
+              currentPickedRoom={currentPickedRoom}
+              currentRoom={currentRoom}
+              handleSetThreadView={handleSetThreadView}
+              handleShowInChannel={handleShowInChannel}
+              isThreadView={isThreadView}
+              onYReachStart={onYReachStart}
+              profile={profile}
+              roomData={roomData}
+              sendFile={sendFile}
+              showInChannel={showInChannel}
+              toggleMediaModal={toggleMediaModal}
+              toggleTransferDialog={toggleTransferDialog}
+            />
           )}
         </div>
       </MainContainer>
