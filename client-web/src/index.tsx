@@ -21,9 +21,7 @@ if (config.DISABLE_STRICT) {
   root.render(
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
-      <Router>
         <App />
-      </Router>
     </Web3ReactProvider>
   );
 } else {
@@ -31,9 +29,7 @@ if (config.DISABLE_STRICT) {
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
       <React.StrictMode>
-        <Router>
           <App />
-        </Router>
       </React.StrictMode>
     </Web3ReactProvider>
   );
