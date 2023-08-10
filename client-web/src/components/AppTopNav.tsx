@@ -108,7 +108,7 @@ const AppTopNav = () => {
   const setActiveRoomFilter = useStoreState(
     (state) => state.setActiveRoomFilter
   );
-
+  const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
   const [unreadMessagesCounts, setUnreadMessagesCounts] = useState({
     official: 0,
     meta: 0,
@@ -246,7 +246,12 @@ const AppTopNav = () => {
                       onClick={() =>
                         onRoomFilterClick(item.name as TActiveRoomFilter)
                       }
-                      sx={{ color: "white" }}
+                      sx={{
+                        color:
+                          item.name === activeRoomFilter
+                            ? "white"
+                            : "rgba(255,255,255,0.8)",
+                      }}
                     >
                       <item.Icon />
                     </IconButton>
@@ -278,7 +283,7 @@ const AppTopNav = () => {
                     style={{ width: 30, height: 30, borderRadius: "100%" }}
                     src={user.profileImage || defUserImage}
                   />
-                  <Box sx={{display: 'flex', alignItems: 'center'}}>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
                     <img
                       alt=""
                       style={{ width: 16, height: 16, borderRadius: "100%" }}
