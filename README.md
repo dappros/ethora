@@ -62,6 +62,10 @@ You can always customize later either via web UI or directly via code.
 
 <img width="800" alt="Screenshot 2023-08-09 at 21 40 57" src="https://github.com/dappros/ethora/assets/328787/5c5b5230-e3d5-4f16-9f3a-9aae98649105">
 
+App Builder Demo
+
+![App Builder Demo](client-web/public/images/Builder-demo.gif)
+
 <br>**Q: How is this hosted? Can I self-host?**
 <br />A: Your web app will be hosted in our cloud (Free tier) by default. Alternatively, you can check out the React.js code from this repository and self host it, or get our full backend from AWS Marketplace and get both app and API backend running in your own infrastructure.
 
