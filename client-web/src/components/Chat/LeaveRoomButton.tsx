@@ -4,6 +4,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { DeleteDialog } from "../DeleteDialog";
 import xmpp from "../../xmpp";
 import { useStoreState } from "../../store";
+import { useHistory } from "react-router";
 
 export interface ILeaveRoomButton {
   roomJid: string;
@@ -12,6 +13,7 @@ export interface ILeaveRoomButton {
 export const LeaveRoomButton: React.FC<ILeaveRoomButton> = ({ roomJid }) => {
   const deleteUserChatRoom = useStoreState(s => s.deleteUserChatRoom)
   const [showLeaveRoom, setShowLeaveRoom] = useState(false);
+  const history = useHistory()
   const onButtonClick = () => {
     setShowLeaveRoom(true);
   };
@@ -22,7 +24,8 @@ export const LeaveRoomButton: React.FC<ILeaveRoomButton> = ({ roomJid }) => {
     xmpp.leaveTheRoom(roomJid);
     xmpp.unsubscribe(roomJid);
     deleteUserChatRoom(roomJid)
-    closeLeaveRoomModal()
+    closeLeaveRoomModal();
+    history.push('/chat/none')
   };
   return (
     <>

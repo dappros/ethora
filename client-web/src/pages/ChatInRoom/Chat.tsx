@@ -550,14 +550,14 @@ export function ChatInRoom() {
     handleCloseDeleteMessageDialog();
   };
 
-  const roomLastSeen =
+  const roomLastSeen =mainWindowMessages.slice(-1)[0]?.date ? 
     messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
     "Active " +
       formatDistance(
-        subDays(new Date(mainWindowMessages.slice(-1)[0].date), 0),
+        subDays(new Date(mainWindowMessages.slice(-1)[0]?.date), 0),
         new Date(),
         { addSuffix: true }
-      );
+      ) : '';
   //Delete confirmation dialogue component
 
   //component to render File upload dialog box
