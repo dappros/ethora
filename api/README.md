@@ -1,11 +1,11 @@
-#Ethora (Dappros Platform) API
+# Ethora (Dappros Platform) API
 
 This section will be useful for developers who are looking to:
 1) Better understand how our server applications work
 2) Extend their apps functionality beyond the code currently available in Ethora client engines (React Native for iOS/Android and React.js for Web)
 3) Interact with their apps and server data through their own 3rd party logic (for example, import/export users with your legacy system via Users API etc), create their own server extensions, chat bots etc
 
-##Latest version (Swagger)
+## Latest version (Swagger)
 
 Latest version of Ethora API documentation is available here:
 https://api.ethoradev.com/api-docs/#/
