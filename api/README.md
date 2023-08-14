@@ -15,3 +15,13 @@ https://api.ethoradev.com/api-docs/#/
 Swagger documentation can be used interactively.
 
 You can track changes to Swagger documentation here in this repo.
+
+## Older API documentation
+
+Older, manually written, non-Swagger API documentation is available here:
+https://www.dappros.com/developers/#introduction
+
+This version doesn't cover all the latest additions but may still be useful as it describes in detail different sections and features of Dappros Platform API. Dappros Platform is simply our backend-as-a-service (with web3/blockchain and chat/messaging features) server-side platform which was created first before we have created the Ethora client-side app engine. 
+
+<img width="1344" alt="Screenshot 2023-08-14 at 16 46 29" src="https://github.com/dappros/ethora/assets/328787/66b487d8-e494-42cb-ac17-149180315e24">
+
