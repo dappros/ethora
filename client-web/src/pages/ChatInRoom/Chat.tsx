@@ -39,6 +39,7 @@ import {
   Stack,
   Typography,
   Divider,
+  Button,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
@@ -226,7 +227,11 @@ export function ChatInRoom() {
       setProfile(result.data.result);
     });
   }, []);
-
+ const joinTheRoom = () => {
+  xmpp.subsribe(currentRoom);
+  xmpp.presenceInRoom(currentRoom);
+  chooseRoom(currentRoom)
+ }
   const toggleTransferDialog = (
     value: boolean,
     message: TMessageHistory = null
@@ -550,14 +555,15 @@ export function ChatInRoom() {
     handleCloseDeleteMessageDialog();
   };
 
-  const roomLastSeen =mainWindowMessages.slice(-1)[0]?.date ? 
-    messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
-    "Active " +
-      formatDistance(
-        subDays(new Date(mainWindowMessages.slice(-1)[0]?.date), 0),
-        new Date(),
-        { addSuffix: true }
-      ) : '';
+  const roomLastSeen = mainWindowMessages.slice(-1)[0]?.date
+    ? messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
+      "Active " +
+        formatDistance(
+          subDays(new Date(mainWindowMessages.slice(-1)[0]?.date), 0),
+          new Date(),
+          { addSuffix: true }
+        )
+    : "";
   //Delete confirmation dialogue component
 
   //component to render File upload dialog box
@@ -631,6 +637,24 @@ export function ChatInRoom() {
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
+              {!roomData?.name && currentRoom !== NO_ROOM_PICKED && <ConversationHeader
+                style={{
+                  height: "70px",
+                }}
+              >
+                <ConversationHeader.Back />
+
+                <ConversationHeader.Actions>
+                 
+                  <IconButton
+                    sx={{ color: "black" }}
+                    onClick={() => setQrModalVisible(true)}
+                  >
+                    <QrCodeIcon />
+                  </IconButton>
+                <Button onClick={joinTheRoom} variant="outlined">Join the room</Button>
+                </ConversationHeader.Actions>
+              </ConversationHeader>}
             <MessageList
               style={{
                 backgroundImage: currentPickedRoom?.room_background
