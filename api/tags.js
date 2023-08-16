@@ -5,7 +5,7 @@ module.exports = [
   },
   {
     name: 'Explorer',
-    description: ''
+    description: 'Retrieving the assets ledger (blockchain) transactions. <br />ℹ️ In our platform, a private (L2) Ethereum blockchain is used for keeping an immutable ledger of transactions of digital assets and Documents.  <br />This ensures that all assets, transactions, documents, art and token issuances are happening in a verifiable manner facilitating trust of users and organizations. <br />Each DP/Ethora server by default has its own private L2 chain. There is an option to make L2 chain public or connect it to a global L1 chain depending on project requirements.'
   },
   {
     name: 'Files',
@@ -17,14 +17,14 @@ module.exports = [
   },
   {
     name: 'Users',
-    description: ''
+    description: 'Managing Users. <br />ℹ️ Users are end user identities that have authenticated with one of the allowed sign on methods.  <br />Users are first created by a certain App but depending on configuration and business logic, Users may be able to interact beyond the resources of a current App, for example they may be able to interact with global web3 resources (L1), server-wide (L2) resources shared across Apps etc.  <br />Each user receives an EVM (Ethereum) compatible "L2" cryptographic identity or wallet by default and additional wallets/IDs can be linked if required. <br />Tags can be assigned to Users depending on business logic requirements.'
   },
   {
     name: 'Wallets',
-    description: ''
+    description: 'Managing Wallets. <br />ℹ️ Users, Apps, Bots and other entities may create and manage Wallets. Wallets are protected by cryptographic keypairs and allow to store and transact digital assets such as Coins, digital art and Documents. '
   },
   {
     name: 'Mobile',
-    description: ''
+    description: 'App Builder functions. <br >ℹ️ This allows to initiate the generated of React Native code customized for your specific Application.'
   }
 ]
