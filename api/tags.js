@@ -27,4 +27,16 @@ module.exports = [
     name: 'Mobile',
     description: 'App Builder functions. <br >ℹ️ This allows to initiate the generated of React Native code customized for your specific Application.'
   }
+  {
+    name: 'Docs',
+    description: 'Managing User uploaded Documents. <br />ℹ️ Documents are special types of Tokens that act as cryptographic and metadata wrappers around File objects. This allows to implement various business logic for secure documents sharing and also to track signatures and provenance if required. <br />Before calling a Docs API, client application should first use Files to upload the file and then call Docs API with the File location, which in turn will create an on-chain Document entity.'
+  }
+  {
+    name: 'Rooms',
+    description: 'Managing chat rooms. <br />ℹ️ We use MUC (multi-user chats) according to XMPP standards for private, group and public chat rooms in the platform. <br />Most of the messaging interaction including managing the rooms happens via XMPP protocol. <br />Some functions have API endpoints however to simplify client-side and backend interaction with Rooms.'
+  }
+  {
+    name: 'Sharelinks',
+    description: 'Managing secure sharing links for certain resources such as User Profiles and Documents. <br />ℹ️ Sharelink is a special mechanism to facilitate individual shares of User Profiles or Documents in cases where such resource is not open to the public and/or is encrypted.'      
+  }  
 ]
