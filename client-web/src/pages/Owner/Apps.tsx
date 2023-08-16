@@ -163,14 +163,14 @@ export default function Apps({ onRowClick }: Props) {
                   {app.displayName}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats?.totalRegistered}
+                  {app.stats?.totalRegistered.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlyRegistered}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats?.totalSessions}
+                  {app.stats?.totalSessions.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlySessions}
@@ -180,21 +180,21 @@ export default function Apps({ onRowClick }: Props) {
                   {NA}
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats?.totalApiCalls}
+                  {app.stats?.totalApiCalls.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlyApiCalls}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                  {app.stats?.totalFiles}
+                  {app.stats?.totalFiles.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlyFiles}
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                {app.stats?.totalTransactions}
+                {app.stats?.totalTransactions.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlyTransactions}
