@@ -151,6 +151,8 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
           <span>{authMethod ? <AuthIcon color={"primary"} /> : ""}</span>
         </Tooltip>
       </TableCell>
+      <TableCell align="center">{data.registrationChannelType}</TableCell>
+
       <TableCell align="right">
         <IconButton
           disabled={!hasAdmin}

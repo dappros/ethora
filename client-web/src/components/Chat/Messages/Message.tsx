@@ -15,6 +15,7 @@ import {
   IconButton,
   Typography,
   Divider,
+  useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box } from "@mui/system";
@@ -84,6 +85,8 @@ export const Message: React.FC<IMessage> = ({
   const userJid = useMemo(() => xmpp.client?.jid?.toString().split("/")[0], []);
   const isSameUser = userJid === messageJid;
   const history = useHistory();
+  const theme = useTheme();
+
   const [buttons, setButtons] = useState<IButtons[]>();
   const [messageHovered, setMessageHovered] = useState(false);
 
@@ -569,9 +572,14 @@ export const Message: React.FC<IMessage> = ({
                   </Typography>
                 ) : (
                   <Typography fontSize={"12px"} textTransform={"none"}>
-                    {message.numberOfReplies.length}{" "}
-                    {message.numberOfReplies.length === 1 ? "Reply" : "Replies"}{" "}
-                    {}{"Last reply "}
+                    <span style={{ fontWeight: "bold", color:theme.palette.primary.main }}>
+                      {message.numberOfReplies.length}{" "}
+                      {message.numberOfReplies.length === 1
+                        ? "Reply"
+                        : "Replies"}{" "}
+                    </span>
+                    {}
+                    {"Last reply "}
                     {differenceInHours(
                       new Date(),
                       new Date(
@@ -607,21 +615,25 @@ export const Message: React.FC<IMessage> = ({
                 {filterSameReplies(message.numberOfReplies).map((r) => {
                   return (
                     <img
-                    src={
-                      r.data.photoURL
-                        ? r.data.photoURL
-                        : +firstName + " " + lastName
-                    }
+                      src={
+                        r.data.photoURL
+                          ? r.data.photoURL
+                          : +firstName + " " + lastName
+                      }
                       key={r.id}
                       onError={({ currentTarget }) => {
                         currentTarget.onerror = null;
-                        currentTarget.src = avatarPreviewUrl + r.data.senderFirstName + " " + r.data.senderLastName;
+                        currentTarget.src =
+                          avatarPreviewUrl +
+                          r.data.senderFirstName +
+                          " " +
+                          r.data.senderLastName;
                       }}
                       style={{
                         width: 20,
                         height: 20,
                         borderRadius: "100%",
-                        marginRight: 3
+                        marginRight: 3,
                       }}
                     />
                   );

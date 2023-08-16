@@ -94,6 +94,7 @@ export interface IUser {
   tags: [];
   updatedAt: Date;
   username: string;
+  registrationChannelType?: string;
   xmppPassword: string;
   __v: number;
   _id: string;
