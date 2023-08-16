@@ -209,7 +209,7 @@ export const Routes = () => {
         <AuthRoute path="/privacy" component={Privacy} />
         <AuthRoute path="/newchat" component={NewChat} />
         <AuthRoute path="/referrals" component={Referrals} />
-        <AuthRoute path="/statistics" component={StatisticsPage} />
+        <AuthRoute path="/statistics/:appId" component={StatisticsPage} />
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
         <AuthRoute path="/organizations" component={Organizations} />
         <AuthRoute path="/payments" component={Subscriptions} />

@@ -33,10 +33,10 @@ export interface IDefaultChatRoom {
   title: string;
 }
 export interface IUserDefaults {
-    defaultAccessProfileOpen: boolean,
-    defaultAccessAssetsOpen: boolean,
-    usersCanFree: boolean,
-    defaultRooms: Omit<IDefaultChatRoom, 'title'>[]
+  defaultAccessProfileOpen: boolean;
+  defaultAccessAssetsOpen: boolean;
+  usersCanFree: boolean;
+  defaultRooms: Omit<IDefaultChatRoom, "title">[];
 }
 export type TUser = {
   firstName: string;
@@ -282,6 +282,31 @@ export async function deployNfmt(
     return null;
   }
 }
+
+interface GraphData {
+  apiCallCount: number;
+  apiCalls: { y: string[]; x: string[] };
+  issuance: { y: string[]; x: string[] };
+  issuanceCount: number;
+  sessions: { y: string[]; x: string[] };
+  sessionsCount: number;
+  transactions: { y: string[]; x: string[] };
+  transactionsCount: number;
+}
+
+export const getGraphs = (
+  appId: string,
+  startDate: string,
+  endDate: string
+) => {
+  const params = new URLSearchParams();
+  params.append("startDate", startDate);
+  params.append("endDate", endDate);
+
+  return httpWithAuth().get<GraphData>(
+    "/apps/graph-statistic/" + appId + "?" + params.toString()
+  );
+};
 
 export function getBalance(walletAddress: string) {
   const user = useStoreState.getState().user;
@@ -582,7 +607,9 @@ export function changeUserDefaults(appId: string, data: IUserDefaults) {
 export function getDefaultChats() {
   const appToken = useStoreState.getState().config.appToken;
 
-  return httpWithToken(appToken).get<IDefaultChatRoom[]>("/apps/get-default-rooms");
+  return httpWithToken(appToken).get<IDefaultChatRoom[]>(
+    "/apps/get-default-rooms"
+  );
 }
 export function createApp(fd: FormData) {
   const owner = useStoreState.getState().user;

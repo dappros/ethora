@@ -21,6 +21,7 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { useHistory } from "react-router";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { AppsTableHead } from "../../components/AppsTable/AppsTableHead";
+import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 
 const COINS_TO_CREATE_APP = 10;
 
@@ -194,7 +195,7 @@ export default function Apps({ onRowClick }: Props) {
                   </span>
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold" }} align="center">
-                {app.stats?.totalTransactions.toLocaleString("en-US")}
+                  {app.stats?.totalTransactions.toLocaleString("en-US")}
                   <span style={{ fontWeight: "bold", color: "green" }}>
                     {" "}
                     +{app.stats?.recentlyTransactions}
@@ -208,12 +209,16 @@ export default function Apps({ onRowClick }: Props) {
                   <Box
                     style={{
                       display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-end",
+                      alignItems: "center",
+                      justifyContent: 'flex-end'
+                      
                     }}
                   >
                     <IconButton onClick={() => onEdit(app)}>
                       <SettingsIcon color="primary" />
+                    </IconButton>
+                    <IconButton onClick={() => history.push('/statistics/' + app._id)}>
+                      <LeaderboardIcon color="primary" />
                     </IconButton>
                   </Box>
                 </TableCell>

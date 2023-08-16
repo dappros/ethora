@@ -20,6 +20,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useParams } from "react-router";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,79 +57,83 @@ function a11yProps(index: number) {
   };
 }
 
+const LineChartLocal = ({ data, name }: { data: any[]; name: string }) => {
+  return (
+    <LineChart
+      height={500}
+      width={900}
+      data={data}
+      margin={{
+        top: 5,
+        right: 30,
+        left: 20,
+        bottom: 5,
+      }}
+    >
+      <Tooltip />
+
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis
+        label={{
+          value: name,
+          angle: -90,
+          position: "left",
+        }}
+      />
+      <Line
+        type="monotone"
+        dataKey="value"
+        stroke="#8884d8"
+        activeDot={{ r: 8 }}
+      />
+    </LineChart>
+  );
+};
+
 export default function StatisticsPage() {
   const [value, setValue] = React.useState(0);
-  const [apiCount, setApiCount] = React.useState();
-  const [sessionsCount, setSessionsCount] = React.useState();
-  const [transactionCount, setTransactionCount] = React.useState();
-  const [issuanceCount, setIssuenceCount] = React.useState();
+  const [apiCount, setApiCount] = React.useState(0);
+  const [sessionsCount, setSessionsCount] = React.useState(0);
+  const [transactionCount, setTransactionCount] = React.useState(0);
+  const [issuanceCount, setIssuenceCount] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   const [sessionGraph, setSessionGraph] = React.useState([]);
   const [apisGraph, setApisGraph] = React.useState([]);
   const [transactionGraph, setTransactionGraph] = React.useState([]);
   const [issuanceGraph, setIssuenceGraph] = React.useState([]);
 
+  const { appId } = useParams<{ appId: string }>();
+
   const [startDate, setStartDate] = React.useState(() => {
     const startDate = new Date();
     startDate.setDate(1);
     startDate.setHours(0, 0, 0, 0);
-    return format(startDate, "yyyy-MM-dd");
+    return startDate.toISOString();
   });
 
   const [endDate, setEndDate] = React.useState(() => {
     const endDate = new Date();
-    return format(endDate, "yyyy-MM-dd");
+    return endDate.toISOString();
   });
 
   const confirUrl = new URL(config.API_URL);
   const baseUrl = confirUrl.origin;
 
-  const getCounts = async () => {
-    setLoading(true);
+  const getData = async () => {
     try {
-      const sessionCountResp = await http.httpWithAuth()({
-        url: `${baseUrl}/analysis/sessions-count?startDate=${startDate}&endDate=${endDate}`,
-      });
-      setSessionsCount(sessionCountResp.data.count);
+      const { data } = await http.getGraphs(appId, startDate, endDate);
+      setTransactionCount(data.transactionsCount);
+      setApiCount(data.apiCallCount);
+      setIssuenceCount(data.issuanceCount);
+      setSessionsCount(data.sessionsCount);
+      setSessionGraph(convert(data.sessions));
+      setTransactionGraph(convert(data.transactions));
+      setIssuenceGraph(convert(data.issuance));
+      setApisGraph(convert(data.apiCalls));
+    } catch (error) {}
 
-      const transactionCountResp = await http.httpWithAuth()({
-        url: `${baseUrl}/analysis/transactions-count?startDate=${startDate}&endDate=${endDate}`,
-      });
-      setTransactionCount(transactionCountResp.data.count);
-
-      const issuanceCountResp = await http.httpWithAuth()({
-        url: `${baseUrl}/analysis/issuance-count?startDate=${startDate}&endDate=${endDate}`,
-      });
-      setIssuenceCount(issuanceCountResp.data.count);
-
-      const apisCountResp = await http.httpWithAuth()({
-        url: `${baseUrl}/analysis/apis-count?startDate=${startDate}&endDate=${endDate}`,
-      });
-      setApiCount(apisCountResp.data.count);
-    } catch (e) {
-      setLoading(false);
-    }
-    setLoading(false);
-  };
-
-  const getGraph = async () => {
-    const sessionGraphResp = await http.httpWithAuth()({
-      url: `${baseUrl}/analysis/sessions-graph?startDate=${startDate}&endDate=${endDate}`,
-    });
-    // /analysis/apis-graph?startDate=${startDate}&endDate=${endDate}
-    const apiGraphResp = await http.httpWithAuth()({
-      url: `${baseUrl}/analysis/apis-graph?startDate=${startDate}&endDate=${endDate}`,
-    });
-
-    const transactionsGraphResp = await http.httpWithAuth()({
-      url: `${baseUrl}/analysis/transactions-graph?startDate=${startDate}&endDate=${endDate}`,
-    });
-
-    const issuanceGraphResp = await http.httpWithAuth()({
-      url: `${baseUrl}/analysis/issuance-graph?startDate=${startDate}&endDate=${endDate}`,
-    });
-
-    function convert(data) {
+    function convert(data: { x: string[]; y: string[] }) {
       let converded = [];
 
       for (const [index, value] of data.y.entries()) {
@@ -141,16 +146,10 @@ export default function StatisticsPage() {
 
       return converded;
     }
-
-    setSessionGraph(convert(sessionGraphResp.data));
-    setApisGraph(convert(apiGraphResp.data));
-    setTransactionGraph(convert(transactionsGraphResp.data));
-    setIssuenceGraph(convert(issuanceGraphResp.data));
   };
 
   React.useEffect(() => {
-    getCounts();
-    getGraph();
+    getData();
   }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -158,8 +157,7 @@ export default function StatisticsPage() {
   };
 
   const filterStats = async () => {
-    await getCounts();
-    await getGraph();
+    await getData();
   };
 
   const onUploadCsv = async () => {
@@ -167,14 +165,14 @@ export default function StatisticsPage() {
       url: `${baseUrl}/analysis/apis-csv?startDate=${startDate}&endDate=${endDate}`,
     });
 
-    let dataUrl = "data:text/csv," + response.data
-    let filename = "api.csv"
+    let dataUrl = "data:text/csv," + response.data;
+    let filename = "api.csv";
 
     const link = document.createElement("a");
     link.href = dataUrl;
     link.download = filename;
     link.click();
-  }
+  };
 
   return (
     <Container
@@ -189,14 +187,14 @@ export default function StatisticsPage() {
           id="date"
           label="From"
           type="date"
-          defaultValue={startDate}
+          defaultValue={format(new Date(startDate), 'yyyy-MM-dd')}
           sx={{ width: 220 }}
           InputLabelProps={{
             shrink: true,
           }}
           onChange={(e) => {
             console.log(e.target.value);
-            setStartDate(e.target.value);
+            setStartDate(new Date(e.target.value).toISOString());
           }}
           style={{ paddingRight: "15px" }}
         />
@@ -204,12 +202,13 @@ export default function StatisticsPage() {
           id="date"
           label="To"
           type="date"
-          defaultValue={endDate}
+          defaultValue={format(new Date(endDate), 'yyyy-MM-dd')}
+
           sx={{ width: 220 }}
           InputLabelProps={{
             shrink: true,
           }}
-          onChange={(e) => setEndDate(e.target.value)}
+          onChange={(e) => setEndDate(new Date(e.target.value).toISOString())}
           style={{ paddingRight: "15px" }}
         />
         <LoadingButton
@@ -275,33 +274,7 @@ export default function StatisticsPage() {
             className="tabpanel-box"
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <LineChart
-              height={500}
-              width={900}
-              data={sessionGraph}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis
-                label={{
-                  value: "Sessions",
-                  angle: -90,
-                  position: "left",
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
+            <LineChartLocal data={sessionGraph} name={"Sessions"} />
           </Box>
         </TabPanel>
         <TabPanel value={value} index={1}>
@@ -309,33 +282,7 @@ export default function StatisticsPage() {
             className="tabpanel-box"
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <LineChart
-              height={500}
-              width={900}
-              data={apisGraph}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis
-                label={{
-                  value: "Sessions",
-                  angle: -90,
-                  position: "left",
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
+            <LineChartLocal data={apisGraph} name={"APIs"} />
           </Box>
           <Button onClick={onUploadCsv}>Upload CSV</Button>
         </TabPanel>
@@ -344,33 +291,7 @@ export default function StatisticsPage() {
             className="tabpanel-box"
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <LineChart
-              height={500}
-              width={900}
-              data={issuanceGraph}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis
-                label={{
-                  value: "Sessions",
-                  angle: -90,
-                  position: "left",
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
+            <LineChartLocal data={issuanceGraph} name={"Issuance"} />
           </Box>
         </TabPanel>
         <TabPanel value={value} index={3}>
@@ -378,33 +299,7 @@ export default function StatisticsPage() {
             className="tabpanel-box"
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <LineChart
-              height={500}
-              width={900}
-              data={transactionGraph}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis
-                label={{
-                  value: "Sessions",
-                  angle: -90,
-                  position: "left",
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
+            <LineChartLocal data={transactionGraph} name={"Transaction"} />
           </Box>
         </TabPanel>
       </Box>
