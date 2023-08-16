@@ -56,6 +56,19 @@ export interface IMessage {
 
 type IDirection = "outgoing" | "incoming";
 
+const filterSameReplies = (messages: TMessageHistory[]) => {
+  const map = {};
+  const result: TMessageHistory[] = [];
+  messages.forEach((m) => {
+    const walletAddress = m.data.senderWalletAddress;
+    if (!map[walletAddress]) {
+      result.push(m);
+      map[walletAddress] = true;
+    }
+  });
+  return result;
+};
+
 export const Message: React.FC<IMessage> = ({
   message,
   position,
@@ -535,7 +548,7 @@ export const Message: React.FC<IMessage> = ({
           </Box>
         </KitMessage.CustomContent>
         <KitMessage.Footer style={{ marginLeft: 0 }}>
-          {message.numberOfReplies > 0 &&
+          {message.numberOfReplies.length > 0 &&
             messageDirection === "incoming" &&
             !isThread && (
               <Box
@@ -544,10 +557,10 @@ export const Message: React.FC<IMessage> = ({
                 onMouseLeave={onMouseLeave}
                 sx={{
                   px: 0,
-                  width: 140,
+                  width: 200,
                   color: (theme) => theme.palette.primary.main,
                   cursor: "pointer",
-                  mb: 1
+                  mb: 1,
                 }}
               >
                 {messageHovered ? (
@@ -556,11 +569,63 @@ export const Message: React.FC<IMessage> = ({
                   </Typography>
                 ) : (
                   <Typography fontSize={"12px"} textTransform={"none"}>
-                    {message.numberOfReplies}{" "}
-                    {message.numberOfReplies === 1 ? "Reply" : "Replies"} (tap
-                    to review)
+                    {message.numberOfReplies.length}{" "}
+                    {message.numberOfReplies.length === 1 ? "Reply" : "Replies"}{" "}
+                    {}{"Last reply "}
+                    {differenceInHours(
+                      new Date(),
+                      new Date(
+                        message.numberOfReplies[
+                          message.numberOfReplies.length - 1
+                        ].date
+                      )
+                    ) > 5
+                      ? format(
+                          new Date(
+                            message.numberOfReplies[
+                              message.numberOfReplies.length - 1
+                            ].date
+                          ),
+                          "dd.MM hh:mm a"
+                        )
+                      : formatDistance(
+                          subDays(
+                            new Date(
+                              message.numberOfReplies[
+                                message.numberOfReplies.length - 1
+                              ].date
+                            ),
+                            0
+                          ),
+                          new Date(),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
                   </Typography>
                 )}
+                {filterSameReplies(message.numberOfReplies).map((r) => {
+                  return (
+                    <img
+                    src={
+                      r.data.photoURL
+                        ? r.data.photoURL
+                        : +firstName + " " + lastName
+                    }
+                      key={r.id}
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = avatarPreviewUrl + r.data.senderFirstName + " " + r.data.senderLastName;
+                      }}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "100%",
+                        marginRight: 3
+                      }}
+                    />
+                  );
+                })}
               </Box>
             )}
         </KitMessage.Footer>

@@ -399,7 +399,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
       showToast("error", "Error", "Cannot upload file, try again later", "top");
     }
   };
@@ -497,7 +497,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         }
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
       // User cancelled the picker, exit any dialogs or menus and move on
       showToast("error", "Error", "Cannot upload file, try again later", "top");
       console.log(err);

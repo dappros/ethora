@@ -447,6 +447,8 @@ PODS:
     - FBSDKGamingServicesKit (~> 14.1.0)
     - FBSDKShareKit (~> 14.1.0)
     - React-Core
+  - react-native-get-random-values (1.9.0):
+    - React-Core
   - react-native-image-picker (4.10.3):
     - React-Core
   - react-native-netinfo (8.3.1):
@@ -471,8 +473,6 @@ PODS:
     - React-Core
     - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
-    - React-Core
-  - react-native-webview (11.26.1):
     - React-Core
   - React-perflogger (0.68.1)
   - React-RCTActionSheet (0.68.1):
@@ -682,6 +682,7 @@ DEPENDENCIES:
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -691,7 +692,6 @@ DEPENDENCIES:
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-tracking-transparency (from `../node_modules/react-native-tracking-transparency`)
   - react-native-video (from `../node_modules/react-native-video`)
-  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -822,6 +822,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-document-picker"
   react-native-fbsdk-next:
     :path: "../node_modules/react-native-fbsdk-next"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-netinfo:
@@ -840,8 +842,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-tracking-transparency"
   react-native-video:
     :path: "../node_modules/react-native-video"
-  react-native-webview:
-    :path: "../node_modules/react-native-webview"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -978,6 +978,7 @@ SPEC CHECKSUMS:
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-document-picker: 958e2bc82e128be69055be261aeac8d872c8d34c
   react-native-fbsdk-next: d6e1c6ad1693c891add104ab529d96906784ba9c
+  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-image-picker: 60f4246eb5bb7187fc15638a8c1f13abd3820695
   react-native-netinfo: 1a6035d3b9780221d407c277ebfb5722ace00658
   react-native-pager-view: da490aa1f902c9a5aeecf0909cc975ad0e92e53e
@@ -987,7 +988,6 @@ SPEC CHECKSUMS:
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-tracking-transparency: 25ff1ff866e338c137c818bdec20526bb05ffcc1
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
-  react-native-webview: 9f111dfbcfc826084d6c507f569e5e03342ee1c1
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
   React-RCTActionSheet: 4b45da334a175b24dabe75f856b98fed3dfd6201
   React-RCTAnimation: d6237386cb04500889877845b3e9e9291146bc2e

@@ -35,7 +35,7 @@ export const createMessage = (
     date: new Date(+id.substring(0,13)).toISOString(),
     key: Date.now() + Number(id),
     coinsInMessage: 0,
-    numberOfReplies: 0,
+    numberOfReplies: [],
   };
   if (data.attrs.mainMessage) {
     try {

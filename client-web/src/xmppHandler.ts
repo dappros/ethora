@@ -205,7 +205,7 @@ export class XmppHandler {
       (item) => item.data.mainMessage?.id === messageId
     );
     this.temporaryMessages[messageIndex].numberOfReplies =
-      threadMessages.length;
+      threadMessages;
   };
 
   onLastMessageArchive = (stanza: Element, xmpp: any) => {

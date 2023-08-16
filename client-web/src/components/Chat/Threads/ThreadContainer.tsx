@@ -181,8 +181,8 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
             </span>
           </Box>
           <Divider>
-            {currentThreadViewMessage.numberOfReplies}{" "}
-            {currentThreadViewMessage.numberOfReplies > 1 ? "replies" : "reply"}{" "}
+            {currentThreadViewMessage.numberOfReplies.length}{" "}
+            {currentThreadViewMessage.numberOfReplies.length > 1 ? "replies" : "reply"}{" "}
           </Divider>
         </div>
       )}

@@ -63,7 +63,7 @@ type TMessage = {
   wallet: string;
   from: string;
   room: string;
-  numberOfReplies?: number;
+  numberOfReplies?: TMessageHistory;
 };
 
 export interface IMainMessage {
@@ -116,7 +116,7 @@ export type TMessageHistory = {
   date: string;
   key: number;
   coinsInMessage: number;
-  numberOfReplies?: number;
+  numberOfReplies?:TMessageHistory[];
 };
 
 export type TUserBlackList = {
@@ -420,7 +420,7 @@ const _useStore = create<IStore>()(
             date: "",
             key: 0,
             coinsInMessage: 0,
-            numberOfReplies: 0,
+            numberOfReplies: [],
           },
           historyMessages: [],
           loaderArchive: false,
@@ -566,7 +566,7 @@ const _useStore = create<IStore>()(
                 (item) => item.data.mainMessage?.id === messageId
               );
               state.historyMessages[messageIndex].numberOfReplies =
-                threadMessages.length;
+                threadMessages;
             });
           },
           replaceMessage(messageId: number, messageText: string) {
