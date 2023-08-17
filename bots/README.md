@@ -64,20 +64,26 @@ const data = {
 }
 ```
 
-For automatic registration, you will need a JWT token - you can get it from this link by copying "Authorization header set to App JWT":
+For automatic registration, you will need a JWT token - you can get it from this link https://app-dev.dappros.com/api-docs/#/Users/post_v1_users_ by copying "Authorization header set to App JWT":
 
 
 #### Create an account manually
 
-Go to the Swagger API link (see the API section of Ethora monorepo). Here you need to create a new account for the bot.
+Go to the Swagger API link (see the API section of Ethora monorepo for the latest link, /api-docs/#/Users/post_v1_users_). Here you need to create a new account for the bot.
 
 1. Copy token JWT
 
+<img width="901" alt="Screenshot 2023-08-17 at 10 04 42" src="https://github.com/dappros/ethora/assets/328787/662f1833-eaab-45de-8b0e-4814e3d26198">
+
+
 2. Click on the "lock" and paste the token in the "Value" field
+
+<img width="886" alt="Screenshot 2023-08-17 at 10 05 32" src="https://github.com/dappros/ethora/assets/328787/837cb9bf-1a8e-4408-96af-82c66be2870d">
+
 
 3. Click "Try it out" and fill in all fields.
    
-5. Click "Execute"
+4. Click "Execute"
 
 ### Connecting a bot
 In the index,js file, after connecting the library, create an object with the bot data:
@@ -123,7 +129,7 @@ bot.use(async (ctx) => {
 }, 1);
 ```
 
-## Working Process
+## Workflow
 
 ### Handlers
 There are handlers you need to create for specific functions that you can use at will - for example, presence in the framework.
@@ -262,7 +268,9 @@ To work with steps, you will generally only need these methods.
 They allow you to get, delete and edit a user's step.
 
 #### nextUserStep
+```javascript
 nextUserStep(): void;
+```
 
 The method does not accept incoming data. It automatically replaces the user's step with the next one (by the step index in the handler steps array).
 
@@ -298,7 +306,9 @@ bot.use('_key_ Test', async (ctx) => {
 ```
 
 #### setNextUserStep
+```javascript
 setNextUserStep(step: string | number): void;
+```
 
 The method allows you to manually change the user's step.
 The argument takes the name of the step to which you wish to change the current user step.
@@ -356,7 +366,9 @@ Handler steps are handled automatically, so you don't have to use this documenta
 Only if you want to expand the existing functionality.
 
 #### addStep
+```javascript
 addStep(step: string | number): void;
+```
 
 The method allows you to add your step to the list of steps of handlers.
 The argument takes only the name of the step.
@@ -383,6 +395,7 @@ The method is similar to the previous one, but it saves not one step, but an arr
 
 Now this method is used automatically, after the formation of a step map from handlers.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    const stepList = [
    {stepName: 1, onStep: false, editing: false},
@@ -420,9 +433,9 @@ interface IStepData {
    onStep: boolean;
    editing: boolean;
 }
-```
 
 findStep(step: string | number): IStepData | undefined;
+```
 
 The method will allow you to find the data of the handler step by the name of this step.
 
@@ -462,14 +475,17 @@ interface IStepData {
    onStep: boolean;
    editing: boolean;
 }
-```
 
 setStepEditing(step: string | number, status: boolean): IStepData | undefined;
+```
 
 The method is similar to the previous one, it allows you to change the "editing" status of the handler step.
+
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    ctx.stepper.setStepEditing('step5', true);
 });
+```
 
 #### changeStep
 
