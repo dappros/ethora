@@ -135,7 +135,8 @@ bot.use(async (ctx) => {
 There are handlers you need to create for specific functions that you can use at will - for example, presence in the framework.
 
 Otherwise, you should use the default handler.
-Default Handlers
+
+### Default Handlers
 
 ```javascript
 bot.use(‘pattern', async (context, next) => {
@@ -404,8 +405,11 @@ bot.use('_key_ Test', async (ctx) => {
 
    ctx.stepper.addStepList(stepList);
 });
+```
 
 #### getCurrentStep
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
