@@ -21,7 +21,7 @@ In essence, Web3 Chat Bots are automated entities possessing the following featu
 
 Chat Bots allow App owners and Users to build their own interactions and effectively extend the platform building exciting mechanisms and social economy interactions for their users.
 
-<img width="882" alt="Screenshot 2023-08-17 at 11 54 41" src="https://github.com/dappros/ethora/assets/328787/54ea48fc-641e-43b5-bcfc-ff71a96c8733">
+<img width="660" alt="Screenshot 2023-08-17 at 12 01 04" src="https://github.com/dappros/ethora/assets/328787/14de0087-763d-4d70-af19-99f9cc1f74a4">
 
 As described in the network diagram above, Bots can be hosted at your own hosting of choice and they can interact with:
 
