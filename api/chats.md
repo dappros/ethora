@@ -2,7 +2,7 @@
 
 ## Definitions 
 
-* **App
+* **App** - an Ethora/DP App that you have created. An App may have a set of default (Pinned) Rooms which all Users of the App will automatically join 
 * **User** - an XMPP user which is identified by JID (Jabber ID). In our platform, each platform User automatically has an XMPP user identity
 * **Join**, **Subscribe**, **Participate** - this all has the same meaning of User being subscribed to a Room which means the server will be sending the User all messages from that Room unless User unsubscribes from / leaves the Room
 * **Room** - a chat room (MUC, a Multi-User Chat, by XMPP definition, sometimes also called Conferences) to which Users may be subscribed to send and receive messages. Rooms may be private (1:1 direct messaging), Group (private discussion of more than 2 Users) or Public (publicly available Room) depending on their settings and who they were shared with
