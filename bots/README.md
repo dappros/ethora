@@ -7,6 +7,32 @@ These chat bots leverage Ethora API, XMPP messaging protocol and Web3.js (or Web
 3rd party developers may write their own bots based on our examples or from scratch, in order to extend the functionality of Ethora engine. 
 
 
+In essence, Web3 Chat Bots are automated entities possessing the following features:
+
+* can send and receive chat messages
+* can react to messages, specific content and sequences of messages from Users
+* can offer both conversational and button-based UI
+* can send guidance messages visible for one or specific Users only
+* control one or more Wallets
+* may have their own social profile
+* can own and transfer Tokens (including ERC-20 Coins, NFT Items and Documents)
+* may control chat Rooms and/or interact with other features of Dappros Platform and Ethereum blockchain similarly as normal users do
+* often have part or most of their logic managed by a smart contract
+
+Chat Bots allow App owners and Users to build their own interactions and effectively extend the platform building exciting mechanisms and social economy interactions for their users.
+
+<img width="882" alt="Screenshot 2023-08-17 at 11 54 41" src="https://github.com/dappros/ethora/assets/328787/54ea48fc-641e-43b5-bcfc-ff71a96c8733">
+
+As described in the network diagram above, Bots can be hosted at your own hosting of choice and they can interact with:
+
+* chat Rooms and chat messages via XMPP protocol
+* Tokens, smart contracts and blockchain via Web3
+* other Ethora platform entities via via Ethora/DP REST JSON API
+
+You can create your own chat bots in any programming language from scratch, but the easiest thing to do is use code samples offered in our Github repo. Recommended languages for bots are Node.js and Python. 
+
+N.B.: Your chat bots on Ethora platform don't have to be web3 bots in a way that they must operate their own crypto wallet, sign transactions with they keypair etc. It's just useful to know that you have that option with Ethora. Otherwise, it may work as a standard web2.0 chat bot. It all depends on your requirements, how you build it and how you use it.
+
 ## Ethora Bots Framework
 
 Ethora Bots Framework is a sort of SDK to help you build your own chat bots. 
