@@ -6,6 +6,14 @@ These chat bots leverage Ethora API, XMPP messaging protocol and Web3.js (or Web
 
 3rd party developers may write their own bots based on our examples or from scratch, in order to extend the functionality of Ethora engine. 
 
+
+## Ethora Bots Framework
+
+Ethora Bots Framework is a sort of SDK to help you build your own chat bots. 
+
+We offer a number of code samples of ready bots as well as methods that implement the core functions of working with XMPP protocol, chat rooms, DP/Ethora API as well as typical user-bot interactions so that you don't have to implement these from scratch. 
+
+
 ### Getting Started
 
 ### Framework initialization
@@ -16,7 +24,7 @@ This can be done as follows: go to our Github repository, then do a git clone in
 
 Go to the folder Ethora -> Bots -> botTemplate
 
-Here you need to run npm run build
+Here you need to run _npm run build_
 
 Then the “lib” folder will appear. All working framework files will be compiled into this folder.
 
@@ -31,7 +39,10 @@ Go to the “bots” folder and create a new directory there where your bot file
 Then go to this folder and create an index.js file - this is the file from which your bot will start.
 
 In the index.js file, include the bot framework like this: 
+
+```javascript
 const {Bot} = require('../../lib');
+```
 
 The framework is connected, then, in order to work with your bot, you need to prepare its data.
 
@@ -45,11 +56,13 @@ If you want an account to be created automatically, you just need to specify the
 
 If such a login already exists, you will receive a corresponding error. If this login is free, an account will be created and the authorization will be automatically performed.
 
+```javascript
 const data = {
    username: 'Test',
    password: '12345678',
    tokenJWT: token
 }
+```
 
 For automatic registration, you will need a JWT token - you can get it from this link by copying "Authorization header set to App JWT":
 
@@ -69,11 +82,13 @@ Go to the Swagger API link (see the API section of Ethora monorepo). Here you ne
 ### Connecting a bot
 In the index,js file, after connecting the library, create an object with the bot data:
 
+```javascript
 const data = {
    username: 'Username',
    password: 'Password',
    tokenJWT: ’Token’,
 }
+```
 
 (The login, password and token data must be taken from the previous step when creating an account for the bot.)
 
@@ -81,6 +96,7 @@ This is the minimum set of required data to run the bot.
 
 Here is the complete list of attributes you can use:
 
+```javascript
 username: string; - Login when creating a bot account
 password: string; - Password when creating a bot account
 tokenJWT: string; - The token is in the swager, you used it when creating your account
@@ -94,14 +110,18 @@ usePresence?: boolean; - The default is false. If true, then when the user is pr
 presenceTimer?: number; - The default is 1 minute. Time to run your presence handler.
 useRoomsArchive?: boolean; - The default is false. If true, gets the archive of chat rooms and subscribes to them.
 connectionRooms?: string[]; - List of chat rooms to which the bot will connect at startup by default, in the format "fb9cf8277d7133ef03aed5811bc5f57237ebddecea351d8abfcb8899f6b56d79@conference.dev.dxmpp.com"
+```
 
-Now you can create a bot, for this it is enough to pass the data we just collected to it: 
+Now you can create a bot, for this it is enough to pass the data we just collected to it:
+
+```javascript
 const bot = new Bot(data);
 
 bot.use(async (ctx) => {
    //Sending a message
    return await ctx.session.sendTextMessage('Hello! This is a test message.');
 }, 1);
+```
 
 ## Working Process
 
@@ -110,9 +130,12 @@ There are handlers you need to create for specific functions that you can use at
 
 Otherwise, you should use the default handler.
 Default Handlers
+
+```javascript
 bot.use(‘pattern', async (context, next) => {
  return next();
 });
+```
 
 The handler takes three arguments:
 
@@ -130,16 +153,20 @@ An empty pattern: you can simply leave it out, in which case the handler will al
 
 (this is a good solution when you use the stepper to filter handlers)
 
+```javascript
 bot.use(async (context, next) => {
 });
+```
 
 ### RegExp
 You can use regular expressions to filter the text sent by the user. 
 
 If the text in the user's message is equal to your regular expression, the handler will be started.
 
+```javascript
 bot.use(/\/start (.+)/, async (context, next) => {
 });
+```
 
 (The handler will run if the message starts with "/start")
 
@@ -152,16 +179,20 @@ In order to use this pattern, you need to pass the keywords in this form "_key_ 
 
 Thus, you can specify as many keywords as you like, you need to specify them with a space, without commas.
 
+```javascript
 bot.use('_key_ Test Word', async (context, next) => {
 });
+```
 
 ### String
 This pattern takes a string and checks the user's message for a full match to that string.
 
 For example, when you specify "Test" the handler will only work if the user writes "Test" in the chat.
 
+```javascript
 bot.use('Test', async (context, next) => {
 });
+```
 
 ### Function
 In a function, you can accept context and next.
@@ -172,20 +203,24 @@ next is needed to switch to the next handler.
 
 If you specify next() in a handler, then the next one will be launched, if next is not running in it, this completes the queue for launching handlers.
 
+```javascript
 bot.use('Test', async (context, next) => {
    await context.session.sendTextMessage('Hello! This is a test message.');
    next();
 });
+```
 
 ### Step
 You can specify a "step" handler followed by a user step. After that, the handler will be launched only when the user is currently on the handler step.
 
 The step can be specified both in the format of numbers and in the format of a string.
 
+```javascript
 bot.use('Test', async (context, next) => {
    await context.session.sendTextMessage('Hello! This is a test message.');
    next();
 }, 1);
+```
 
 ## Stepper
 
@@ -204,11 +239,13 @@ Transitions between steps will work the same way in both cases.
 
 Handler steps have several parameters:
 
+```javascript
 interface IStepData {
      stepName: string | number;
      onStep: boolean;
      editing: boolean;
 }
+```
 
 **stepName** - is the name of the step you wrote.
 
@@ -231,6 +268,7 @@ The method does not accept incoming data. It automatically replaces the user's s
 
 If the user has not yet set the current step, it will be created (1 step from the array of handler steps).
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    await ctx.session.sendTextMessage(
        'Congratulations, you have moved to step 1, write something.');
@@ -238,13 +276,18 @@ bot.use('_key_ Test', async (ctx) => {
    //User transition to the next step
    ctx.stepper.nextUserStep();
 });
+```
 
 #### previousUserStep
+
+```javascript
 previousUserStep(): void;
+```
 
 This method is similar to the previous one, but it changes the user's current step to the previous one by its index.
 If the user does not have a step, it is created automatically.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    await ctx.session.sendTextMessage(
        'Congratulations, you have moved to previous  step');
@@ -252,6 +295,7 @@ bot.use('_key_ Test', async (ctx) => {
    //User transition to the previous step
    ctx.stepper.previousUserStep();
 });
+```
 
 #### setNextUserStep
 setNextUserStep(step: string | number): void;
@@ -259,6 +303,7 @@ setNextUserStep(step: string | number): void;
 The method allows you to manually change the user's step.
 The argument takes the name of the step to which you wish to change the current user step.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    await ctx.session.sendTextMessage(
        'Congratulations, you have moved to previous  step');
@@ -266,13 +311,18 @@ bot.use('_key_ Test', async (ctx) => {
    //Set new user step
    ctx.stepper.setNextUserStep(2);
 });
+```
 
 #### removeNextUserStep
+
+```javascript
 removeNextUserStep(): void;
+```
 
 This method doesn't take any arguments, just removes the user's step.
 This can be useful if you want to move the user to the 0 point of the conversation, before specifying the steps.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    await ctx.session.sendTextMessage(
        'Okay, back to the main menu.');
@@ -280,18 +330,24 @@ bot.use('_key_ Test', async (ctx) => {
    //Zeroing a step for a user
    ctx.stepper.removeNextUserStep();
 });
+```
 
 #### getUserStep
+
+```javascript
 getUserStep(): string | number | undefined;
+```
 
 The method allows getting the user's current step.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    //Get user step.
    const userStep = ctx.stepper.getUserStep();
 
    await ctx.session.sendTextMessage(`Your step: &{userStep}.`);
 });
+```
 
 ### Handler steps control
 Here you can find methods for working with handler steps.
@@ -305,11 +361,15 @@ addStep(step: string | number): void;
 The method allows you to add your step to the list of steps of handlers.
 The argument takes only the name of the step.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    ctx.stepper.addStep("stepTwo");
 });
+```
 
 #### addStepList
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
@@ -317,6 +377,7 @@ interface IStepData {
 }
 
 addStepList(steps: IStepData[]): void
+```
 
 The method is similar to the previous one, but it saves not one step, but an array of handler steps.
 
@@ -339,33 +400,43 @@ interface IStepData {
 }
 
 getCurrentStep(): IStepData | void;
+```
 
 The method returns the data of the current step of the handler. It searches for the current step in the list of steps. The method understands that this is the current step by its parameter "onStep" - if "onStep" = "true", then this step is the current one
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    const currentStepData = ctx.stepper.getCurrentStep();
 
    console.log(currentStepData)
 });
+```
 
 #### findStep
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
    editing: boolean;
 }
+```
 
 findStep(step: string | number): IStepData | undefined;
 
 The method will allow you to find the data of the handler step by the name of this step.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    const stepData = ctx.stepper.findStep(2);
 
    console.log(stepData);
 });
+```
 
 #### setOnStep
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
@@ -373,18 +444,25 @@ interface IStepData {
 }
 
 setOnStep(step: string | number, status: boolean): IStepData | undefined;
+```
+
 With this method, you can set the "onStep" status to true or false to the handler step you specify.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    ctx.stepper.setOnStep('step5', true);
 });
+```
 
 #### setStepEditing
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
    editing: boolean;
 }
+```
 
 setStepEditing(step: string | number, status: boolean): IStepData | undefined;
 
@@ -394,6 +472,8 @@ bot.use('_key_ Test', async (ctx) => {
 });
 
 #### changeStep
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
@@ -401,9 +481,11 @@ interface IStepData {
 }
 
 changeStep(data: IStepData): IStepData | undefined;
+```
 
 The method allows you to change all the data of the selected step at once, for this you need to pass the correct name of the step in the object.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
     const stepData = {
    stepName: 2;
@@ -412,8 +494,11 @@ bot.use('_key_ Test', async (ctx) => {
 }
    const newStepData = ctx.stepper.setStepEditing(stepData);
 });
+```
 
 #### getAllSteps
+
+```javascript
 interface IStepData {
    stepName: string | number;
    onStep: boolean;
@@ -421,14 +506,17 @@ interface IStepData {
 }
 
 getAllSteps(): IStepData[];
+```
 
 The method allows you to get all the steps of the handlers in an array.
 
+```javascript
 bot.use('_key_ Test', async (ctx) => {
    const allStepsList = ctx.stepper.getAllSteps();
 
    console.log(allStepsList);
 });
+```
 
 ### Sending messages
 
@@ -440,12 +528,15 @@ The keyboard is optional.
 
 The keyboard is an array of buttons that has the following type:
 
+```javascript
 export interface IKeyboardButton {
    name: string;
    value: string;
    notDisplayedValue: string;
 }
+```
 
+```javascript
 bot.use( async (ctx) => {
  const keyboard = [{
     name: 'Close',
@@ -455,5 +546,5 @@ bot.use( async (ctx) => {
 
  await ctx.session.sendTextMessage('Hello! This is a test message.', keyboard);
 });
-
+```
 
