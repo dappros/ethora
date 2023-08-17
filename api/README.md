@@ -1,6 +1,8 @@
 # Ethora (Dappros Platform) API
 
-This section is optional. You can build your apps using Ethora engine without having to study the API documentation.
+Studying this section is optional. You can build your apps using Ethora engine without having to study the API documentation.
+
+_Note: for information on interactin with our XMPP messaging server and other RTC (Real-Time Communication) components beyond those covered in the API, please refer to this manual: https://github.com/dappros/ethora/blob/main/api/chats.md_
 
 This section will be useful for developers who are looking to:
 1) Better understand how our platform works
