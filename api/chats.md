@@ -4,7 +4,8 @@
 
 * **App** - an Ethora/DP App that you have created. An App may have a set of default (Pinned) Rooms which all Users of the App will automatically join 
 * **User** - an XMPP user which is identified by JID (Jabber ID). In our platform, each platform User automatically has an XMPP user identity
-* **Join**, **Subscribe**, **Participate** - this all has the same meaning of User being subscribed to a Room which means the server will be sending the User all messages from that Room unless User unsubscribes from / leaves the Room
+* **Join**, **Participate**, become **Occupant** - this all has the same meaning of User being a member of a Room which means the server will be sending the User all messages from that Room unless User leaves the Room
+* **Subscribe** - Users may remain Participants of the Room but unsubscribe or subscribe to Rooms at the same time. This can be used, for example, to manage notifications. 
 * **Room** - a chat room (MUC, a Multi-User Chat, by XMPP definition, sometimes also called Conferences) to which Users may be subscribed to send and receive messages. Rooms may be private (1:1 direct messaging), Group (private discussion of more than 2 Users) or Public (publicly available Room) depending on their settings and who they were shared with
 * **Owner (Room Owner)** - Room Owner is a User who has full controls over the Room (typically the User who has created it in the first place)
 * **Admin (Room Admin)** - Room Admin is a User who has certain administrative privileges over the specific Room (e.g. a chat moderator)
