@@ -30,7 +30,7 @@ Some ideas of what you can build with Ethora engine:
 * loyalty points & rewards app
 * chat bot / ChatGPT consulting app
 * p2p social commerce and business networking app
-* gamificaiton of [anything] app
+* gamification of [anything] app
 * fans app (sport clubs, celebrities) - communication, collectibles, 2nd screen
 * DAO / charity governance - voting and crowd-funding via bots, governance tokens and DAO smart contracts
 * digital identity / KYC / pass app (NFT / QR based)
@@ -75,7 +75,7 @@ App Builder Demo
 <img width="800" alt="Screenshot 2023-06-08 at 09 59 55" src="https://github.com/dappros/ethora/assets/328787/0b944697-c4be-49c7-b952-c8da0d3900e1">
 
 <br>**Q: How do I create an account and play with this builder?**
-<br>A: Sign up for a Free account here: https://www.dappros.com/pricing/, sign in & go into "Apps" section the menu. 
+<br>A: Sign up for a Free account here: https://www.dappros.com/pricing/, sign in & go into "Apps" section of the menu. 
 
 ---
 
@@ -102,7 +102,7 @@ Sharing a chat room via QR or hyperlink<br />
 
 You can easily extend your Ethora-based app with chat bots. This is a fantastic way to implement additional functionality without changing a single line of code in the engine itself.
 
-We use XMPP protocol and this means you can easily connect to chat rooms, interact with your Users and digital assets via your own chat bots logic. Your chat bots can be written in Python, Node.js or anything really that is capable to interact with XMPP. In this repo (https://github.com/dappros/ethora/tree/main/bots section)  you will find some sample bots built using Ethora Bots Framework. This Framework is a scaffolding (currently in Node.js but more languages coming) that absctracts away the mundande tasks allowing you to focus on the core logic of your bots. 
+We use XMPP protocol and this means you can easily connect to chat rooms, interact with your Users and digital assets via your own chat bots logic. Your chat bots can be written in Python, Node.js or anything really that is capable of interacting with XMPP. In this repo (https://github.com/dappros/ethora/tree/main/bots section)  you will find some sample bots built using Ethora Bots Framework. This Framework is a scaffolding (currently in Node.js but more languages coming) that abstracts away the mundane tasks allowing you to focus on the core logic of your bots. 
 
 ChatGPT bot<br />
 <img width="400" alt="Screenshot 2023-05-05 at 11 01 10" src="https://user-images.githubusercontent.com/328787/236429436-a1046904-b342-44e8-98a9-c269eb42857b.png">
@@ -168,7 +168,7 @@ Ethora already offers some gamification bots such as:
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=pKEMcxJb5HM" target="_blank"><img width="439" alt="ethora_youtube" src="https://user-images.githubusercontent.com/328787/185500847-3a607707-9008-4c56-873c-7c9aa1aa1eee.png"></a>
 
 This video demo shows how Users can reward each other with Coin or digital collectibles. 
-Another user has shared some useful information? Just long tap on their message and choose to reward them with Coins or a send them an NFT item.
+Another user has shared some useful information? Just long tap on their message and choose to reward them with Coins or send them an NFT item.
 
 In group / public chat rooms, this mechanism doubles as 'likes' or 'merit' social metric. Messages that are more useful to the community will receive more rewards and attention.
 
@@ -207,7 +207,7 @@ You will need environment set up for iOS or Android development.
 
 ## Authors, License and Governance ⚖️
 
-AUTHORS. Ethora and its server infrastructure (Dappros Platform, chat & push services etc) have been developed since 2018 by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. The team is lead by Taras Filatov, a Ukrainian-born and UK based tech entrepreneur.
+AUTHORS. Ethora and its server infrastructure (Dappros Platform, chat & push services etc) have been developed since 2018 by <a href="https://www.dappros.com/">Dappros</a> and <a href="http://deepxhub.com/">DeepX</a>. The team is led by Taras Filatov, a Ukrainian-born and UK based tech entrepreneur.
 
 LICENSE. The project codebase of Ethora developed by the project contributors is released under AGPL license which facilitates open-source distribution and contributions. Other licenses (commercial closed source, SaaS, perpetual etc) can be obtained from the authors. 
 
