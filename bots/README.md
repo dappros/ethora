@@ -27,7 +27,7 @@ As described in the network diagram above, Bots can be hosted at your own hostin
 
 * chat Rooms and chat messages via XMPP protocol
 * Tokens, smart contracts and blockchain via Web3
-* other Ethora platform entities via via Ethora/DP REST JSON API
+* other Ethora platform entities via Ethora/DP REST JSON API
 
 You can create your own chat bots in any programming language from scratch, but the easiest thing to do is use code samples offered in our Github repo. Recommended languages for bots are Node.js and Python. 
 
@@ -137,7 +137,7 @@ botImg?: string; - Link to the bot image, if not specified, the default image or
 useAppName?: boolean; - Defaults to true if botName is not specified, the name in the application is used. With false and without botName login is used.
 useAppImg?: boolean; - By default, true, the image from the application is used (if the image is not set in the application, the default image is used). If false, the default image or the one specified in botImg.
 useInvites?: boolean; - The default is false. If true, then the bot will track incoming invites, and upon receiving an invite, subscribe to the chat room in the invite.
-isProduction?: boolean; - The default is true. If ture is used "dxmpp.com" if false "dev.dxmpp.com".
+isProduction?: boolean; - The default is true. If true it uses "dxmpp.com" if false "dev.dxmpp.com".
 usePresence?: boolean; - The default is false. If true, then when the user is present in the chat, the corresponding handler will be launched. (more on presence below).
 presenceTimer?: number; - The default is 1 minute. Time to run your presence handler.
 useRoomsArchive?: boolean; - The default is false. If true, gets the archive of chat rooms and subscribes to them.
