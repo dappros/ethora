@@ -1,9 +1,9 @@
 # Working with Ethora/DP Chat server (aka RTC, Real-Time Communication module)
 
-# Ethora (Dappros Platform) client-server Chat flow
+## Ethora (Dappros Platform) client-server Chat flow
 
 **About this document**
-This document describes how client Apps interact with Ethora Chat server and API in order to carry out instant messaging (RTC) related functionalities.
+<br />This document describes how client Apps interact with Ethora Chat server and API in order to carry out instant messaging (RTC) related functionalities.
 
 
 
