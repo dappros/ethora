@@ -109,11 +109,11 @@ STATS
 
 This is a standard type of stanza for sending most of the messages.
 
-'''
+```
 sendMessageStanza data content
  const data = {senderFirstName, senderLastName, senderWalletAddress, isSystemMessage, tokenAmount, receiverMessageId, mucName, photoURL, roomJid, isReply, mainMessage, showInChannel, push
     };
-'''
+```
 
 (here User means the author of the message)
 
@@ -154,12 +154,13 @@ Where **mainMessage** can be either undefined or include such fields
 }
 
 **sendMediaMessageStanza** can have such data 
-'''
+```
 {senderFirstName, senderLastName, senderWalletAddress, photoURL, location, locationPreview, mimetype, originalName, wrappable, push, mucName, roomJid, receiverMessageId, fileName, size, duration, waveForm, attachmentId}
-'''
+```
 
 ### List of functions
 
+```
 subsribe(address: string) {
     const message = xml(
       "iq",
@@ -181,7 +182,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   discoInfo() {
     const message = xml(
       "iq",
@@ -196,7 +199,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   unsubscribe(address: string) {
     const message = xml(
       "iq",
@@ -211,7 +216,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   getRooms() {
     const message = xml(
       "iq",
@@ -224,7 +231,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   }
+```
 
+```
   getVcard(username: string) {
     if (username !== this.client.jid?.getLocal()) {
       // get other vcard
@@ -255,11 +264,16 @@ subsribe(address: string) {
       this.client.send(message);
     }
   }
+```
 
+```
   presence() {
     this.client.send(xml("presence"));
   }
+```
 
+
+```
   botPresence(room: string) {
     const xmlMsg = xml(
       "presence",
@@ -271,7 +285,9 @@ subsribe(address: string) {
     );
     this.client.send(xmlMsg);
   }
+```
 
+```
   roomPresence(room: string) {
     const presence = xml(
       "presence",
@@ -283,7 +299,9 @@ subsribe(address: string) {
     );
     this.client.send(presence);
   }
+```
 
+```
   leaveTheRoom(room: string) {
     const presence = xml("presence", {
       from: from
@@ -304,7 +322,9 @@ subsribe(address: string) {
     );
     this.client.send(presence);
   }
+```
 
+```
   getRoomArchiveStanza(chatJID: string, amount: number) {
     let message = xml(
       "iq",
@@ -326,7 +346,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   }
+```
 
+```
   getPaginatedArchive = (
     chatJID: string,
     firstUserMessageID: string,
@@ -358,7 +380,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
 
+```
   getLastMessageArchive(chat_jid: string) {
     xmppMessagesHandler.isGettingMessages = true;
     let message = xml(
@@ -381,7 +405,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   }
+```
 
+```
   sendMessage(
     roomJID: string,
     firstName: string,
@@ -415,6 +441,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   }
+```
+
+```
   sendMessageStanza = (roomJID: string, messageText: string, data: any) => {
     const message = xml(
       "message",
@@ -434,7 +463,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
 
+```
   sendSystemMessage(
     roomJID: string,
     firstName: string,
@@ -468,7 +499,10 @@ subsribe(address: string) {
     );
     this.client.send(message);
   }
+```
 
+
+```
   sendMediaMessageStanza(roomJID: string, data: any) {
     const message = xml(
       "message",
@@ -517,7 +551,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   createNewRoom(to: string) {
     let message = xml(
       "presence",
@@ -536,7 +572,9 @@ subsribe(address: string) {
     // console.log(message.toString());
     this.client.send(message);
   }
+```
 
+```
   roomConfig(to: string, data: { roomName: string; roomDescription?: string }) {
     const message = xml(
       "iq",
@@ -573,7 +611,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   getArchive = (userJID: string) => {
     let message = xml(
       "iq",
@@ -586,7 +626,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
 
+```
   sendInvite(from: string, to: string, otherUserId: string) {
     const stanza = xml(
       "message",
@@ -606,7 +648,9 @@ subsribe(address: string) {
     );
     this.client.send(stanza);
   }
+```
 
+```
   setOwner(to: string) {
     const message = xml(
       "iq",
@@ -621,7 +665,9 @@ subsribe(address: string) {
 
     this.client.send(message);
   }
+```
 
+```
   getRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
@@ -635,6 +681,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
+
+```
   getAndReceiveRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
@@ -648,6 +697,9 @@ subsribe(address: string) {
     );
     return this.client.sendReceive(message);
   };
+```
+
+```
   isComposing = (walletAddress: string, chatJID: string, fullName: string) => {
     const message = xml(
       "message",
@@ -668,7 +720,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
 
+```
   pausedComposing = (walletAddress: string, chatJID: string) => {
     const message = xml(
       "message",
@@ -688,7 +742,9 @@ subsribe(address: string) {
     );
     this.client.send(message);
   };
+```
 
+```
   blacklistUser = (userJIDToBlacklist: string) => {
     const stanza = xml(
       "iq",
@@ -705,6 +761,9 @@ subsribe(address: string) {
     );
     this.client.send(stanza);
   };
+```
+
+```
   getBlackList = () => {
     const stanza = xml(
       "iq",
@@ -719,7 +778,9 @@ subsribe(address: string) {
     );
     this.client.send(stanza);
   };
+```
 
+```
   getRoomMemberInfo = (roomJID) => {
     const stanza = xml(
       "iq",
@@ -735,7 +796,9 @@ subsribe(address: string) {
     );
     this.client.send(stanza);
   };
+```
 
+```
   changeRoomDescription = (roomJID: string, newDescription: string) => {
     const stanza = xml(
       "iq",
@@ -767,7 +830,9 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
+```
 
+```
   changeRoomName = (roomJID: string, newRoomName: string) => {
     console.log(roomJID, newRoomName);
     const stanza = xml(
@@ -800,7 +865,9 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
+```
 
+```
   banUserStanza = (banUserId: string, roomJID: string) => {
     const stanza = xml(
       "iq",
@@ -822,7 +889,9 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
+```
 
+```
   unbanUserStanza = (unbanUserId: string, roomJID: string) => {
     const stanza = xml(
       "iq",
@@ -842,7 +911,9 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
+```
 
+```
   removeUserFromBlackList = (userAddressToRemoveFromBlacklist: string) => {
     const stanza = xml(
       "iq",
@@ -859,7 +930,9 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
+```
 
+```
   //stanza to edit/replace message.
   sendReplaceMessageStanza = (
     roomJID: string,
@@ -888,7 +961,9 @@ subsribe(address: string) {
     );
     this.client.send(stanza);
   };
+```
 
+```
   //stanza to delete message
   deleteMessageStanza = (roomJid: string, messageId: string) => {
     // <message
@@ -916,6 +991,6 @@ subsribe(address: string) {
 
     this.client.send(stanza);
   };
-
+```
 
 
