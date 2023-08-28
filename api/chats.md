@@ -133,24 +133,24 @@ Please note we continue below showing the “mainMessage” parameters however i
 
 Where **mainMessage** can be either undefined or include such fields 
 {
-  **text**: string; // the main body (text) of the message 
-  **id**: string; // a unique message ID (based on unix timestamp)
-  **userName**: string; // user name or login name of the User (TF: this may be deprecated since firstName and lastName are used for display purposes now)
-  **createdAt?**: string | number | Date; // when the message was sent 
-  **fileName?**: string; // (optional) for file attachments this is used to display the file name
-  **imageLocation?**: string;  // (optional) for file attachments this is URL of the file itself, typically from our IPFS or Minio buckets based files service
-  **imagePreview?**: string; //  (optional) for file attachments that are pictures and some other supported file types (PDF etc) this will be a path to the preview / thumbnail version of the attachment
-  **mimeType?**: string; // (optional) for file attachments this is the mimeType of the file, so that App interface can display the correct UI and/or icon (e.g. PDF, DOC) for this type of file  
-  **originalName?**: string; // (optional) similar to fileName, but uses full system name of the file attachments including extension etc. TF: either this or fileName may be deprecated.
-  **size?**: string; // (optional) for file attachments this will be used to display the file size so that users can estimate the impact of opening or downloading it
-  **duration?**: string; // (optional) for attachments that are audio or video, this is their duration in seconds to inform the users how long it would take to to play it
-  **waveForm?**: string; // (optional) for attachments that are audio, this will display the waveForm so that users can visually estimate the contents of the record
-  **attachmentId?**: string; // this refers to the file object ID as per /files/ API. This is used to enable actions over the files in certain use cases
-  **wrappable?**: string | boolean; // (optional) this is used for the purposes of digital art and NFT. If enabled, this means users can wrap this content into NFT 
-  **nftId?**: string; // (optional) this is used for the purposes of digital art and NFT. This is used to link content with an NFT collection.
-  **nftActionType?**: string; // (optional) this is used for the purposes of digital art and NFT. This is to inform App interface of what type of actions are available. 
-  **contractAddress?**: string;  // (optional) this is used when messages are linked to smart contracts
-  **roomJid?**: string;  // JID of the current Chat Room. It shows to which room this message is related TF: we might need to deprecate this as we already have room Jid in the main stanza above.
+  * **text**: string; // the main body (text) of the message 
+  * **id**: string; // a unique message ID (based on unix timestamp)
+  * **userName**: string; // user name or login name of the User (TF: this may be deprecated since firstName and lastName are used for display purposes now)
+  * **createdAt?**: string | number | Date; // when the message was sent 
+  * **fileName?**: string; // (optional) for file attachments this is used to display the file name
+  * **imageLocation?**: string;  // (optional) for file attachments this is URL of the file itself, typically from our IPFS or Minio buckets based files service
+  * **imagePreview?**: string; //  (optional) for file attachments that are pictures and some other supported file types (PDF etc) this will be a path to the preview / thumbnail version of the attachment
+  * **mimeType?**: string; // (optional) for file attachments this is the mimeType of the file, so that App interface can display the correct UI and/or icon (e.g. PDF, DOC) for this type of file  
+  * **originalName?**: string; // (optional) similar to fileName, but uses full system name of the file attachments including extension etc. TF: either this or fileName may be deprecated.
+  * **size?**: string; // (optional) for file attachments this will be used to display the file size so that users can estimate the impact of opening or downloading it
+  * **duration?**: string; // (optional) for attachments that are audio or video, this is their duration in seconds to inform the users how long it would take to to play it
+  * **waveForm?**: string; // (optional) for attachments that are audio, this will display the waveForm so that users can visually estimate the contents of the record
+  * **attachmentId?**: string; // this refers to the file object ID as per /files/ API. This is used to enable actions over the files in certain use cases
+  * **wrappable?**: string | boolean; // (optional) this is used for the purposes of digital art and NFT. If enabled, this means users can wrap this content into NFT 
+  * **nftId?**: string; // (optional) this is used for the purposes of digital art and NFT. This is used to link content with an NFT collection.
+  * **nftActionType?**: string; // (optional) this is used for the purposes of digital art and NFT. This is to inform App interface of what type of actions are available. 
+  * **contractAddress?**: string;  // (optional) this is used when messages are linked to smart contracts
+  * **roomJid?**: string;  // JID of the current Chat Room. It shows to which room this message is related TF: we might need to deprecate this as we already have room Jid in the main stanza above.
 }
 
 **sendMediaMessageStanza** can have such data 
@@ -159,7 +159,6 @@ Where **mainMessage** can be either undefined or include such fields
 '''
 
 ### List of functions
-
 
 subsribe(address: string) {
     const message = xml(
