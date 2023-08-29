@@ -9,6 +9,8 @@ COPY ./ ./
 ENV VITE_APP_API_URL=https://api.ethoradev.com
 ENV VITE_APP_DISABLE_STRICT=true
 ENV VITE_APP_DOMAIN_NAME=domainxxx.com
+ENV VITE_APP_XMPP_BASEDOMAIN=xmpp.com
+
 RUN yarn build
 
 FROM nginx:1.17-alpine
