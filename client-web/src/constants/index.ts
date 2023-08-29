@@ -15,7 +15,7 @@ export const NFMT_TRAITS: Record<string, { color: string }> = {
   "Unique!": { color: "black" },
 };
 
-const BASEDOMAIN = config.IS_PRODUCTION ? "dxmpp.com" : "dev.dxmpp.com";
+const BASEDOMAIN = import.meta.env.VITE_APP_XMPP_BASEDOMAIN;
 export const PUSH_URL = "https://" + BASEDOMAIN + ":7777/api/v1";
 export const CONFERENCEDOMAIN = "@conference." + BASEDOMAIN;
 export const DOMAIN = "@" + BASEDOMAIN;
