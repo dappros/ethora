@@ -20,6 +20,8 @@ import { ChangeTempPassword } from "./ChangeTempPassword/ChangeTempPassword";
 import Organizations from "./Organizations/Organizations";
 import Subscriptions from "./Payments";
 import { Home } from "./Home/Home";
+import NewChat from "./NewChat/NewChat";
+
 import AppBuilder from "./AppBuilder/AppBuilder";
 import { AppEdit } from "./AppEdit/AppEdit";
 import AppTopNav from "../components/AppTopNav";
@@ -55,7 +57,6 @@ const Provenance = React.lazy(() => import("./Transactions/Provenance"));
 const UploadDocument = React.lazy(
   () => import("./UploadDocument/UploadDocument")
 );
-const NewChat = React.lazy(() => import("./NewChat/NewChat"));
 const Referrals = React.lazy(() => import("./Referrals/Referrals"));
 const ChangeBackground = React.lazy(
   () => import("./ChatRoomDetails/ChangeBackground")
@@ -72,6 +73,7 @@ export const Routes = () => {
   const [loading, setLoading] = useState(false);
   const [isAppConfigError, setIsAppConfigError] = useState(false);
   const lastAuthUrl = useRef("");
+  const getDefaultChats = useStoreState((state) => state.getDefaultChats);
 
   const history = useHistory();
   const getDocuments = async (walletAddress: string) => {
@@ -116,6 +118,12 @@ export const Routes = () => {
   useEffect(() => {
     getAppConfig();
   }, []);
+  useEffect(() => {
+    if(appConfig.appToken) {
+
+      getDefaultChats();
+    }
+  }, [appConfig.appToken]);
 
   useEffect(() => {
     if (user.walletAddress) {
@@ -201,7 +209,7 @@ export const Routes = () => {
         <AuthRoute path="/privacy" component={Privacy} />
         <AuthRoute path="/newchat" component={NewChat} />
         <AuthRoute path="/referrals" component={Referrals} />
-        <AuthRoute path="/statistics" component={StatisticsPage} />
+        <AuthRoute path="/statistics/:appId" component={StatisticsPage} />
         <AuthRoute path="/changebg/:roomJID" component={ChangeBackground} />
         <AuthRoute path="/organizations" component={Organizations} />
         <AuthRoute path="/payments" component={Subscriptions} />

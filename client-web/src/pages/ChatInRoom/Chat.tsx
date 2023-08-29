@@ -33,21 +33,13 @@ import {
 import { Message } from "../../components/Chat/Messages/Message";
 import { SystemMessage } from "../../components/Chat/Messages/SystemMessage";
 import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   IconButton,
-  useMediaQuery,
-  useTheme,
   Box,
   Slide,
   Stack,
   Typography,
   Divider,
+  Button,
 } from "@mui/material";
 import { useParams, useHistory } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
@@ -55,7 +47,7 @@ import { MetaNavigation } from "../../components/MetaNavigation/MetaNavigation";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import { QrModal } from "../Profile/QrModal";
 import { CONFERENCEDOMAIN } from "../../constants";
-import { appName, ROOMS_FILTERS } from "../../config/config";
+import { ROOMS_FILTERS } from "../../config/config";
 import ThreadContainer from "../../components/Chat/Threads/ThreadContainer";
 import { ChatTransferDialog } from "../../components/Chat/ChatTransferDialog";
 import { ChatMediaModal } from "../../components/Chat/ChatMediaModal";
@@ -65,9 +57,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import { DeleteDialog } from "../../components/DeleteDialog";
 import { useSnackbar } from "../../context/SnackbarContext";
-import { Helmet } from "react-helmet";
 import { createMainMessageForThread } from "../../utils/createMessage";
 import Dompurify from "dompurify";
+import { LeaveRoomButton } from "../../components/Chat/LeaveRoomButton";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -218,7 +210,7 @@ export function ChatInRoom() {
       return;
     } else {
       const lastMessageID = filteredMessages[0].id;
-      xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
+      // xmpp.getPaginatedArchive(currentRoom, String(lastMessageID), 10);
     }
   };
 
@@ -235,7 +227,11 @@ export function ChatInRoom() {
       setProfile(result.data.result);
     });
   }, []);
-
+ const joinTheRoom = () => {
+  xmpp.subsribe(currentRoom);
+  xmpp.presenceInRoom(currentRoom);
+  chooseRoom(currentRoom)
+ }
   const toggleTransferDialog = (
     value: boolean,
     message: TMessageHistory = null
@@ -258,9 +254,9 @@ export function ChatInRoom() {
   const setRoomDetails = (jid: string) => {
     setCurrentRoom(jid);
     const currentRoomData = userChatRooms.find((e) => e.jid === jid);
-    console.log(currentRoomData);
     setRoomData(currentRoomData);
   };
+
   const loadMessages = (jid: string) => {
     useStoreState.getState().clearCounterChatRoom(jid);
     useStoreState.getState().setCurrentUntrackedChatRoom(jid);
@@ -559,14 +555,15 @@ export function ChatInRoom() {
     handleCloseDeleteMessageDialog();
   };
 
-  const roomLastSeen =
-    messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
-    "Active " +
-      formatDistance(
-        subDays(new Date(mainWindowMessages.slice(-1)[0].date), 0),
-        new Date(),
-        { addSuffix: true }
-      );
+  const roomLastSeen = mainWindowMessages.slice(-1)[0]?.date
+    ? messages.filter((item) => item.roomJID === currentRoom).length > 0 &&
+      "Active " +
+        formatDistance(
+          subDays(new Date(mainWindowMessages.slice(-1)[0]?.date), 0),
+          new Date(),
+          { addSuffix: true }
+        )
+    : "";
   //Delete confirmation dialogue component
 
   //component to render File upload dialog box
@@ -636,9 +633,28 @@ export function ChatInRoom() {
                   >
                     <QrCodeIcon />
                   </IconButton>
+                  <LeaveRoomButton roomJid={roomData.jid} />
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
+              {!roomData?.name && currentRoom !== NO_ROOM_PICKED && <ConversationHeader
+                style={{
+                  height: "70px",
+                }}
+              >
+                <ConversationHeader.Back />
+
+                <ConversationHeader.Actions>
+                 
+                  <IconButton
+                    sx={{ color: "black" }}
+                    onClick={() => setQrModalVisible(true)}
+                  >
+                    <QrCodeIcon />
+                  </IconButton>
+                <Button onClick={joinTheRoom} variant="outlined">Join the room</Button>
+                </ConversationHeader.Actions>
+              </ConversationHeader>}
             <MessageList
               style={{
                 backgroundImage: currentPickedRoom?.room_background

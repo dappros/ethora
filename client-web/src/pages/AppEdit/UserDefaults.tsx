@@ -13,9 +13,12 @@ import React, { useState } from "react";
 import { useSnackbar } from "../../context/SnackbarContext";
 import { useStoreState } from "../../store";
 import * as http from "../../http";
-import { defaultChats } from "../../config/config";
 import { useParams } from "react-router";
+import xmpp from "../../xmpp";
+import { CONFERENCEDOMAIN } from "../../constants";
 export interface IUserDefaults {}
+
+const JID_LENGTH = 64 + CONFERENCEDOMAIN.length;
 
 export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
   const fileRef = React.useRef<HTMLInputElement>(null);
@@ -24,12 +27,15 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
   const updateApp = useStoreState((state) => state.updateApp);
   const setUser = useStoreState((state) => state.setUser);
   const user = useStoreState((state) => state.user);
+  const defaultChats = useStoreState((state) => state.defaultChatRooms);
+
   const [defaultChatRooms, setDefaultChatRooms] = useState(() =>
-    Object.entries(defaultChats).map((item, i) => ({
-      ...item[1],
-      jid: item[0],
-      checked: i === 0,
-      disabled: i === 0,
+    defaultChats.map((item, i) => ({
+      ...item,
+      jid: item.jid,
+      checked: item.pinned,
+      disabled: false,
+      error: false,
     }))
   );
   const { showSnackbar } = useSnackbar();
@@ -52,25 +58,25 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       { setSubmitting }
     ) => {
       setSubmitting(true);
-      const fd = new FormData();
-      console.log(
-        defaultAccessAssetsOpen,
-        defaultAccessProfileOpen,
-        usersCanFree
-      );
+      const defaultRooms = defaultChatRooms.map((room) => ({
+        jid: room.jid,
+        pinned: room.checked,
+      }));
+      const body = {
+        defaultAccessProfileOpen: defaultAccessProfileOpen,
+        defaultAccessAssetsOpen: defaultAccessAssetsOpen,
+        usersCanFree: usersCanFree,
+        defaultRooms: defaultRooms,
+      };
 
-      fd.append("displayName", app.displayName);
-      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      fd.append(
-        "defaultAccessProfileOpen",
-        defaultAccessProfileOpen.toString()
-      );
-      fd.append("usersCanFree", usersCanFree.toString());
       try {
-        const res = await http.updateAppSettings(appId, fd);
+        const res = await http.changeUserDefaults(appId, body);
+        console.log(res.data)
         setUser({ ...user, homeScreen: "" });
-        updateApp(res.data.result);
+        updateApp(res.data);
+        showSnackbar('success', 'User Defaults updated successfully')
       } catch (error) {
+        console.log(error)
         showSnackbar(
           "error",
           "Cannot update the app " + (error.response?.data?.error || "")
@@ -89,38 +95,75 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
     r[i].checked = e.target.checked;
     setDefaultChatRooms(r);
   };
+
+  const changeRoomInfo = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    i: number
+  ) => {
+    const property = e.target.name;
+    const value = e.target.value;
+    const rooms = [...defaultChatRooms];
+    rooms[i][property] = value;
+    if (property === "jid" && value.length === JID_LENGTH) {
+      const isRoomExistsStanza = await xmpp.getAndReceiveRoomInfo(value);
+      //error appears because room is not exist and we can create it
+      if (isRoomExistsStanza.children[1]?.["name"] !== "error") {
+        rooms[i].error = true;
+      }
+    }
+    setDefaultChatRooms(rooms);
+  };
+
   return (
     <Box sx={{ padding: 1 }}>
       <Box sx={{ width: "100%" }}>
         <form onSubmit={formik.handleSubmit} style={{ width: "100%" }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Box>
-                <Typography sx={{ fontWeight: "bold" }}>
+              <Box sx={{ mb: 4 }}>
+                <Typography sx={{ fontWeight: "bold", mb: 2 }}>
                   Default chat rooms
                 </Typography>
-                <Box sx={{ mb: 4 }}>
+                <Box sx={{ mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "0.9fr 0.1fr",
+                      gap: 1,
+                      alignItems: "center",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    <Typography sx={{ fontWeight: "bold" }}>JID</Typography>
+                    <Typography
+                      sx={{ fontWeight: "bold", textAlign: "center" }}
+                    >
+                      Pinned
+                    </Typography>
+                  </Box>
                   {defaultChatRooms.map((item, i) => {
                     return (
                       <Box
-                        key={item.jid}
+                        key={i}
                         sx={{
-                          display: "flex",
+                          display: "grid",
+                          gridTemplateColumns: "0.9fr 0.1fr",
                           gap: 1,
                           alignItems: "center",
                           fontWeight: "bold",
                           fontSize: 14,
                         }}
                       >
-                        <p style={{ width: 200 }}>{item.name}</p>
                         <TextField
                           margin="dense"
-                          // label="Email"
-                          disabled
-                          name="room"
+                          name="jid"
                           fullWidth
                           variant="outlined"
                           value={item.jid}
+                          onChange={(e) => changeRoomInfo(e, i)}
+                          inputProps={{ maxLength: JID_LENGTH }}
+                          error={item.jid.length < JID_LENGTH || item.error}
                         />
                         <Checkbox
                           inputProps={{ "aria-label": "Checkbox" }}

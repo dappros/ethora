@@ -82,6 +82,14 @@ const headCells: readonly HeadCell[] = [
     width: 400,
   },
   {
+    id: "registrationChannelType",
+    numeric: true,
+    disablePadding: false,
+    disableSorting: true,
+    label: "Attribution",
+    width: 400,
+  },
+  {
     id: "actions",
     numeric: true,
     disablePadding: false,

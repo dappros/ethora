@@ -8,9 +8,13 @@ Note: linked open-source libraries and components may be subject to their own li
 import axios from 'axios';
 import {rootStore} from '../stores/context';
 import {refreshTokenURL} from './routesConstants';
+import { Platform } from 'react-native';
 
 const http = axios.create({
   baseURL: rootStore.apiStore.defaultUrl,
+  headers: {
+    'x-device-type': Platform.OS
+  }
 });
 
 http.interceptors.response.use(undefined, async error => {

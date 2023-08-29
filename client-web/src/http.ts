@@ -27,6 +27,17 @@ export interface ICompany {
   registrationNumber: string;
   payeReference: string;
 }
+export interface IDefaultChatRoom {
+  jid: string;
+  pinned: boolean;
+  title: string;
+}
+export interface IUserDefaults {
+  defaultAccessProfileOpen: boolean;
+  defaultAccessAssetsOpen: boolean;
+  usersCanFree: boolean;
+  defaultRooms: Omit<IDefaultChatRoom, "title">[];
+}
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -83,6 +94,7 @@ export interface IUser {
   tags: [];
   updatedAt: Date;
   username: string;
+  registrationChannelType?: string;
   xmppPassword: string;
   __v: number;
   _id: string;
@@ -270,6 +282,31 @@ export async function deployNfmt(
     return null;
   }
 }
+
+interface GraphData {
+  apiCallCount: number;
+  apiCalls: { y: string[]; x: string[] };
+  issuance: { y: string[]; x: string[] };
+  issuanceCount: number;
+  sessions: { y: string[]; x: string[] };
+  sessionsCount: number;
+  transactions: { y: string[]; x: string[] };
+  transactionsCount: number;
+}
+
+export const getGraphs = (
+  appId: string,
+  startDate: string,
+  endDate: string
+) => {
+  const params = new URLSearchParams();
+  params.append("startDate", startDate);
+  params.append("endDate", endDate);
+
+  return httpWithAuth().get<GraphData>(
+    "/apps/graph-statistic/" + appId + "?" + params.toString()
+  );
+};
 
 export function getBalance(walletAddress: string) {
   const user = useStoreState.getState().user;
@@ -564,7 +601,16 @@ export function loginOwner(email: string, password: string) {
 export function getApps() {
   return httpWithAuth().get("/apps");
 }
+export function changeUserDefaults(appId: string, data: IUserDefaults) {
+  return httpWithAuth().put("/apps/user-defaults/" + appId, data);
+}
+export function getDefaultChats() {
+  const appToken = useStoreState.getState().config.appToken;
 
+  return httpWithToken(appToken).get<IDefaultChatRoom[]>(
+    "/apps/get-default-rooms"
+  );
+}
 export function createApp(fd: FormData) {
   const owner = useStoreState.getState().user;
   return http.post("/apps", fd, {

@@ -210,6 +210,7 @@ export default function Users() {
               <TableCell align="right">Last Name</TableCell>
               <TableCell align="right">User Name</TableCell>
               <TableCell align="right">Email</TableCell>
+              <TableCell align="right">Attribution</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -229,6 +230,9 @@ export default function Users() {
                 </TableCell>
                 <TableCell align="right">
                   {user.email ? user.email : "-"}
+                </TableCell>
+                <TableCell align="right">
+                  {user.registrationChannelType ? user.registrationChannelType : "-"}
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>

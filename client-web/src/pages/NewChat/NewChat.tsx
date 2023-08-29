@@ -23,6 +23,8 @@ export interface INewChat {}
 const NewChat: React.FC<INewChat> = ({}) => {
   const theme = useTheme();
   const user = useStoreState((state) => state.user);
+  const setActiveRoomFilter = useStoreState((state) => state.setActiveRoomFilter);
+
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const history = useHistory();
@@ -62,11 +64,11 @@ const NewChat: React.FC<INewChat> = ({}) => {
           },
         };
         const res = await httpWithAuth().post("/room", body);
-        console.log(res?.data);
       }
+      setActiveRoomFilter('private')
       setLoading(false);
       showSnackbar("success", "Room created successfully");
-      history.push("/chat/none");
+      history.push("/chat/" + roomHash);
     },
   });
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -17,7 +17,7 @@ import { IUserAcl } from "../http";
 export interface IMenu {}
 
 const menuAccountSection = (walletAddress: string) => ({
-  name: "Account",
+  name: "Wallet",
   visible: true,
 
   items: [
@@ -27,7 +27,6 @@ const menuAccountSection = (walletAddress: string) => ({
       visible: true,
     },
     { name: "Explorer", id: "/explorer", visible: false },
-    { name: "Referrals", id: "/referrals", visible: true },
 
     {
       name: "Transactions",
@@ -38,15 +37,14 @@ const menuAccountSection = (walletAddress: string) => ({
 });
 
 const menuActionsSection = {
-  name: "Actions",
+  name: "Create",
   visible: true,
 
   items: [
-    { name: "New room", id: "/newchat", visible: true },
 
-    { name: "Mint NFT", id: "/mint", visible: configNFT },
+    { name: "NFT", id: "/mint", visible: configNFT },
     {
-      name: "Upload Document",
+      name: "Document",
       id: "/documents/upload",
       visible: configDocuments,
     },
@@ -57,6 +55,7 @@ const idActionsSection = (user: TUser) => ({
   name: "Id",
   visible: true,
   items: [
+    { name: "Referrals", id: "/referrals", visible: true },
     { name: "Privacy and Data", id: "/privacy", visible: true },
 
     { name: "Sign out", id: "logout", visible: true },
@@ -108,7 +107,8 @@ const initMenuItems = (user: TUser, ACL: IUserAcl) => {
     {
       name: "Messaging",
       visible: true,
-      items: [{ name: "Chats", id: "/chat/none", visible: true }],
+    
+    items: [{ name: "Chats", id: "/chat/none", visible: true },{ name: "New room", id: "/newchat", visible: true },],
     },
     menuActionsSection,
     billingSection(user),

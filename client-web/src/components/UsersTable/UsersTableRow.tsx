@@ -140,8 +140,8 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
         </Box>
       </TableCell>
       <TableCell align="right">{data.email || "No Email"}</TableCell>
-      <TableCell align="right">
-        <p style={{ maxWidth: 200 }}>
+      <TableCell align="center">
+        <p >
           {dateToHumanReadableFormat(data.createdAt)}
         </p>
         <p>{data.lastSeen ? dateToHumanReadableFormat(data.lastSeen) : ""}</p>
@@ -151,6 +151,8 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
           <span>{authMethod ? <AuthIcon color={"primary"} /> : ""}</span>
         </Tooltip>
       </TableCell>
+      <TableCell align="center">{data.registrationChannelType}</TableCell>
+
       <TableCell align="right">
         <IconButton
           disabled={!hasAdmin}

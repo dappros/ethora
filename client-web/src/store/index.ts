@@ -2,10 +2,9 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, devtools } from "zustand/middleware";
 import * as http from "../http";
-import { TCombinedMimeType } from "../constants";
 import { stat } from "fs";
 import type { Stripe } from "stripe";
-import { THomeScreen } from "../http";
+import { IDefaultChatRoom, THomeScreen } from "../http";
 
 export type TUser = {
   firstName: string;
@@ -64,7 +63,7 @@ type TMessage = {
   wallet: string;
   from: string;
   room: string;
-  numberOfReplies?: number;
+  numberOfReplies?: TMessageHistory;
 };
 
 export interface IMainMessage {
@@ -106,7 +105,7 @@ export type TMessageHistory = {
     originalName?: string;
     location?: string;
     locationPreview?: string;
-    mimetype?: TCombinedMimeType;
+    mimetype?: string;
     xmlns: string;
     isReply?: boolean;
     mainMessage?: IMainMessage;
@@ -117,7 +116,7 @@ export type TMessageHistory = {
   date: string;
   key: number;
   coinsInMessage: number;
-  numberOfReplies?: number;
+  numberOfReplies?:TMessageHistory[];
 };
 
 export type TUserBlackList = {
@@ -139,6 +138,21 @@ export type TUserChatRooms = {
   group?: TActiveRoomFilter;
 };
 
+export type AppStats = {
+  recentlyApiCalls: number;
+  recentlyFiles: number;
+  recentlyIssuance: number;
+  recentlyRegistered: number;
+  recentlySessions: number;
+  recentlyTransactions: number;
+  totalApiCalls: number;
+  totalFiles: number;
+  totalIssuance: number;
+  totalRegistered: number;
+  totalSessions: number;
+  totalTransactions: number;
+};
+
 export type TApp = {
   _id: string;
   displayName: string;
@@ -152,7 +166,7 @@ export type TApp = {
   appGoogleId?: string;
   appLogo?: string;
   firebaseWebConfigString?: string;
-
+  stats: AppStats;
   bundleId: string;
   coinName: string;
   coinSymbol: string;
@@ -244,6 +258,10 @@ interface IStore {
   };
   showHeaderError: boolean;
   setShowHeaderError: (value: boolean) => void;
+  defaultChatRooms: IDefaultChatRoom[];
+  setDefaultChatRooms: (value: IDefaultChatRoom[]) => void;
+  deleteUserChatRoom: (roomJid: string) => void;
+  getDefaultChats: () => Promise<void>;
   ACL: http.IUserAcl;
   messages: TMessage[];
   currentThreadViewMessage: TMessageHistory;
@@ -331,6 +349,7 @@ const _useStore = create<IStore>()(
             isAgreeWithTerms: false,
             homeScreen: "",
           },
+          defaultChatRooms: [],
           config: {
             firebaseWebConfigString: "",
             primaryColor: "",
@@ -401,7 +420,7 @@ const _useStore = create<IStore>()(
             date: "",
             key: 0,
             coinsInMessage: 0,
-            numberOfReplies: 0,
+            numberOfReplies: [],
           },
           historyMessages: [],
           loaderArchive: false,
@@ -478,6 +497,21 @@ const _useStore = create<IStore>()(
             set((state) => {
               state.apps = [];
             }),
+          setDefaultChatRooms: (rooms) =>
+            set((state) => {
+              state.defaultChatRooms = rooms;
+            }),
+
+          getDefaultChats: async () => {
+            try {
+              const chats = await http.getDefaultChats();
+              set((state) => {
+                state.defaultChatRooms = chats.data;
+              });
+            } catch (error) {
+              console.log(error);
+            }
+          },
           clearUser: () =>
             set((state) => {
               state.user = {
@@ -532,7 +566,7 @@ const _useStore = create<IStore>()(
                 (item) => item.data.mainMessage?.id === messageId
               );
               state.historyMessages[messageIndex].numberOfReplies =
-                threadMessages.length;
+                threadMessages;
             });
           },
           replaceMessage(messageId: number, messageText: string) {
@@ -657,6 +691,13 @@ const _useStore = create<IStore>()(
                   ...data,
                 };
               }
+            }),
+          deleteUserChatRoom: (roomJid: string) =>
+            set((state) => {
+              const newRooms = state.userChatRooms.filter(
+                (c) => c.jid !== roomJid
+              );
+              state.userChatRooms = newRooms;
             }),
           clearCounterChatRoom: (roomJID: string) =>
             set((state) => {

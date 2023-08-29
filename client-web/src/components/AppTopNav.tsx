@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-
-import Container from "@mui/material/Container";
 
 import { Link, useHistory, useLocation } from "react-router-dom";
 
@@ -12,7 +10,6 @@ import ExploreIcon from "@mui/icons-material/Explore";
 import GroupIcon from "@mui/icons-material/Group";
 import StarRateIcon from "@mui/icons-material/StarRate";
 import {
-  getApps,
   getBalance,
   getMyAcl,
   httpWithAuth,
@@ -21,19 +18,17 @@ import {
 import xmpp from "../xmpp";
 import { TActiveRoomFilter, useStoreState } from "../store";
 
-import { Badge, Divider } from "@mui/material";
+import { Badge } from "@mui/material";
 import {
   coinsMainName,
-  defaultChats,
   defaultMetaRoom,
   ROOMS_FILTERS,
 } from "../config/config";
 import { Menu } from "./Menu";
-import { ethers } from "ethers";
 import { DOMAIN } from "../constants";
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
 import { walletToUsername } from "../utils/walletManipulation";
-import { firebase } from "../services/firebase";
+import defUserImage from "../assets/images/def-ava.png";
 
 const coinImg = "/coin.png";
 function firstLetersFromName(fN: string, lN: string) {
@@ -106,16 +101,14 @@ const AppTopNav = () => {
   const mainCoinBalance = useStoreState((state) =>
     state.balance.find((el) => el.tokenName === coinsMainName)
   );
-  const firebaseAppId = useStoreState(
-    (s) => s.config.firebaseConfig.appId
-  );
+  const firebaseAppId = useStoreState((s) => s.config.firebaseConfig.appId);
 
   const setBalance = useStoreState((state) => state.setBalance);
   const rooms = useStoreState((state) => state.userChatRooms);
   const setActiveRoomFilter = useStoreState(
     (state) => state.setActiveRoomFilter
   );
-
+  const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
   const [unreadMessagesCounts, setUnreadMessagesCounts] = useState({
     official: 0,
     meta: 0,
@@ -189,15 +182,20 @@ const AppTopNav = () => {
       meta: 0,
       private: 0,
     };
+    const chats = useStoreState.getState().defaultChatRooms;
+    const chatsMap = {};
+    chats.forEach((c) => {
+      chatsMap[c.jid] = c;
+    });
     rooms.forEach((item) => {
       const splitedJid = item.jid.split("@")[0];
-      if (defaultChats[splitedJid]) {
+      if (chatsMap[splitedJid]) {
         counts.official += item.unreadMessages;
       }
-      if (!defaultChats[splitedJid] && +item.users_cnt < 3) {
+      if (!chatsMap[splitedJid] && +item.users_cnt < 3) {
         counts.private += item.unreadMessages;
       }
-      if (!defaultChats[splitedJid] && +item.users_cnt >= 3) {
+      if (!chatsMap[splitedJid] && +item.users_cnt >= 3) {
         counts.meta += item.unreadMessages;
       }
     });
@@ -248,7 +246,12 @@ const AppTopNav = () => {
                       onClick={() =>
                         onRoomFilterClick(item.name as TActiveRoomFilter)
                       }
-                      sx={{ color: "white" }}
+                      sx={{
+                        color:
+                          item.name === activeRoomFilter
+                            ? "white"
+                            : "rgba(255,255,255,0.8)",
+                      }}
                     >
                       <item.Icon />
                     </IconButton>
@@ -272,14 +275,22 @@ const AppTopNav = () => {
                     alignItems: "center",
                     paddingX: "5px",
                     borderRadius: "5px",
+                    // paddingTop: 1
                   }}
                 >
                   <img
                     alt=""
-                    style={{ width: "20px", height: "20px" }}
-                    src={coinImg}
+                    style={{ width: 30, height: 30, borderRadius: "100%" }}
+                    src={user.profileImage || defUserImage}
                   />
-                  {mainCoinBalance?.balance}
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      alt=""
+                      style={{ width: 16, height: 16, borderRadius: "100%" }}
+                      src={coinImg}
+                    />
+                    {mainCoinBalance?.balance}
+                  </Box>
                 </Box>
               </Link>
             )}

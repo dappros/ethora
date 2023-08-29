@@ -15,6 +15,7 @@ import {
   IconButton,
   Typography,
   Divider,
+  useTheme,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Box } from "@mui/system";
@@ -56,6 +57,19 @@ export interface IMessage {
 
 type IDirection = "outgoing" | "incoming";
 
+const filterSameReplies = (messages: TMessageHistory[]) => {
+  const map = {};
+  const result: TMessageHistory[] = [];
+  messages.forEach((m) => {
+    const walletAddress = m.data.senderWalletAddress;
+    if (!map[walletAddress]) {
+      result.push(m);
+      map[walletAddress] = true;
+    }
+  });
+  return result;
+};
+
 export const Message: React.FC<IMessage> = ({
   message,
   position,
@@ -71,7 +85,10 @@ export const Message: React.FC<IMessage> = ({
   const userJid = useMemo(() => xmpp.client?.jid?.toString().split("/")[0], []);
   const isSameUser = userJid === messageJid;
   const history = useHistory();
+  const theme = useTheme();
+
   const [buttons, setButtons] = useState<IButtons[]>();
+  const [messageHovered, setMessageHovered] = useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -97,6 +114,12 @@ export const Message: React.FC<IMessage> = ({
     openDialogMenu();
   };
 
+  const onMouseEnter = () => {
+    setMessageHovered(true);
+  };
+  const onMouseLeave = () => {
+    setMessageHovered(false);
+  };
   const openFileInNewTab = (link: string) => {
     window.open(link, "_blank");
   };
@@ -378,9 +401,7 @@ export const Message: React.FC<IMessage> = ({
         <MessageSeparator>{position.separator}</MessageSeparator>
       )}
       <KitMessage
-        onContextMenu={
-          !message.data.isReply && !isThread ? rightClick : () => {}
-        }
+        onContextMenu={rightClick}
         style={{
           marginBottom:
             position.type === "last" || position.type === "single" ? 15 : null,
@@ -421,7 +442,7 @@ export const Message: React.FC<IMessage> = ({
 
         <KitMessage.CustomContent>
           <Box sx={{ position: "relative", height: "100%", width: "100%" }}>
-            {!isThread && !message.data.isReply && (
+            {!isThread && (
               <IconButton
                 aria-label="more"
                 id="long-button"
@@ -529,33 +550,95 @@ export const Message: React.FC<IMessage> = ({
             </Box>
           </Box>
         </KitMessage.CustomContent>
-
-        {/*{(position.type === "last" || position.type === "single") && (*/}
-        {/*  <KitMessage.Footer*/}
-        {/*    sentTime={*/}
-        {/*      differenceInHours(new Date(), new Date(message.date)) > 5*/}
-        {/*        ? format(new Date(message.date), "h:mm a")*/}
-        {/*        : formatDistance(*/}
-        {/*            subDays(new Date(message.date), 0),*/}
-        {/*            new Date(),*/}
-        {/*            {*/}
-        {/*              addSuffix: true,*/}
-        {/*            }*/}
-        {/*          )*/}
-        {/*    }*/}
-        {/*  />*/}
-        {/*)}*/}
-        <KitMessage.Footer>
-          {message.numberOfReplies > 0 &&
+        <KitMessage.Footer style={{ marginLeft: 0 }}>
+          {message.numberOfReplies.length > 0 &&
             messageDirection === "incoming" &&
             !isThread && (
-              <Button onClick={() => openThreadView()} variant="text">
-                <Typography fontSize={"12px"} textTransform={"none"}>
-                  {message.numberOfReplies}{" "}
-                  {message.numberOfReplies === 1 ? "Reply" : "Replies"} (tap to
-                  review)
-                </Typography>
-              </Button>
+              <Box
+                onClick={openThreadView}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                sx={{
+                  px: 0,
+                  width: 200,
+                  color: (theme) => theme.palette.primary.main,
+                  cursor: "pointer",
+                  mb: 1,
+                }}
+              >
+                {messageHovered ? (
+                  <Typography fontSize={"12px"} textTransform={"none"}>
+                    View thread
+                  </Typography>
+                ) : (
+                  <Typography fontSize={"12px"} textTransform={"none"}>
+                    <span style={{ fontWeight: "bold", color:theme.palette.primary.main }}>
+                      {message.numberOfReplies.length}{" "}
+                      {message.numberOfReplies.length === 1
+                        ? "Reply"
+                        : "Replies"}{" "}
+                    </span>
+                    {}
+                    {"Last reply "}
+                    {differenceInHours(
+                      new Date(),
+                      new Date(
+                        message.numberOfReplies[
+                          message.numberOfReplies.length - 1
+                        ].date
+                      )
+                    ) > 5
+                      ? format(
+                          new Date(
+                            message.numberOfReplies[
+                              message.numberOfReplies.length - 1
+                            ].date
+                          ),
+                          "dd.MM hh:mm a"
+                        )
+                      : formatDistance(
+                          subDays(
+                            new Date(
+                              message.numberOfReplies[
+                                message.numberOfReplies.length - 1
+                              ].date
+                            ),
+                            0
+                          ),
+                          new Date(),
+                          {
+                            addSuffix: true,
+                          }
+                        )}
+                  </Typography>
+                )}
+                {filterSameReplies(message.numberOfReplies).map((r) => {
+                  return (
+                    <img
+                      src={
+                        r.data.photoURL
+                          ? r.data.photoURL
+                          : +firstName + " " + lastName
+                      }
+                      key={r.id}
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src =
+                          avatarPreviewUrl +
+                          r.data.senderFirstName +
+                          " " +
+                          r.data.senderLastName;
+                      }}
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "100%",
+                        marginRight: 3,
+                      }}
+                    />
+                  );
+                })}
+              </Box>
             )}
         </KitMessage.Footer>
       </KitMessage>

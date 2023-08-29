@@ -73,6 +73,7 @@ export function EmailSignUpForm(props: TProps) {
             showSnackbar("error", errors.join(", "));
           }
         }
+        showSnackbar("error", error.response.data.error);
       }
       setSubmitting(false);
     },

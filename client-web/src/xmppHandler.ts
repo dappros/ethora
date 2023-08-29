@@ -7,8 +7,6 @@ import {
   useStoreState,
 } from "./store";
 import { Element } from "ltx";
-import { defaultChats } from "./config/config";
-import { CONFERENCEDOMAIN } from "./constants";
 import { xml } from "@xmpp/client";
 import { sendBrowserNotification } from "./utils";
 import { createMessage } from "./utils/createMessage";
@@ -26,8 +24,12 @@ export class XmppHandler {
   private lastRomJIDLoading: string = "";
 
   getRoomGroup = (jid: string, userCount: number): TActiveRoomFilter => {
-    const splittedJid = jid.split("@")[0];
-    if (defaultChats[splittedJid]) {
+    const chats = useStoreState.getState().defaultChatRooms;
+    const chatsMap = {};
+    chats.forEach((c) => {
+      chatsMap[c.jid] = c;
+    });
+    if (chatsMap[jid]) {
       return "official";
     }
     return "groups";
@@ -78,7 +80,9 @@ export class XmppHandler {
       const isCurrentUser =
         msg.data.senderWalletAddress ===
         useStoreState.getState().user.walletAddress;
-      playCoinSound(+msg.data.tokenAmount)
+      if (msg.data.isSystemMessage === "true") {
+        playCoinSound(+msg.data.tokenAmount);
+      }
       if (!isCurrentUser) {
         useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
         sendBrowserNotification(msg.body, () => {
@@ -201,7 +205,7 @@ export class XmppHandler {
       (item) => item.data.mainMessage?.id === messageId
     );
     this.temporaryMessages[messageIndex].numberOfReplies =
-      threadMessages.length;
+      threadMessages;
   };
 
   onLastMessageArchive = (stanza: Element, xmpp: any) => {
@@ -213,13 +217,13 @@ export class XmppHandler {
         stanza.getChild("fin")?.getChild("set")?.getChild("last")?.children[0]
       );
 
-      if(stanza.attrs.type === "error" || stanza.name === "iq"){
+      if (stanza.attrs.type === "error" || stanza.name === "iq") {
         useStoreState.getState().setLoaderArchive(false);
-        console.log("ERROR: ",stanza.attrs.type, stanza)
+        console.log("ERROR: ", stanza.attrs.type, stanza);
       }
 
       if (stanza.getChild("fin")) {
-      // if (!this.isGettingMessages) {
+        // if (!this.isGettingMessages) {
         useStoreState.getState().updateMessageHistory(this.temporaryMessages);
         this.isGettingMessages = false;
 
@@ -432,8 +436,9 @@ export class XmppHandler {
 
     xmpp.client.send(xml("presence"));
     xmpp.getArchive(xmpp.client?.jid?.toString());
-    Object.keys(defaultChats).forEach((roomJID) => {
-      xmpp.presenceInRoom(roomJID + CONFERENCEDOMAIN);
+    const chats = useStoreState.getState().defaultChatRooms;
+    chats.forEach((chat) => {
+      xmpp.presenceInRoom(chat.jid);
     });
     xmpp.getRooms();
     xmpp.getBlackList();
