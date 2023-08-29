@@ -67,14 +67,20 @@ STATS
 * App sends XMPP “subscribe” request to subscribe User JID to the Default Rooms.
 
 #### Display User’s Rooms
-* App sends getRooms request to Chat server. 
-* Chat server returns the list of rooms the User is subscribed to including 1 last message for each room. 
-* App displays the Chats List screen showing all rooms User is subscribed to including the last message (including metadata such as timestamp and author). 
+* App sends getRooms request to Chat server.
+* Chat server returns the list of rooms the User is participant/occupant (this works via our custom module at Ejabberd)
+* App sends getRoomArchiveStanza request to Chat server for all rooms from the above list. App includes the X last messages parameter within getRoomArchiveStanza to only receive last X messages. 
+* Chat server returns X messages for each room. 
+* App displays the Chats List screen showing all rooms User is subscribed to including the last message for each room (including metadata such as timestamp and author). 
 
 #### User enters a Room and receives chat history (messages archive) 
-* App sends getRoomArchiveStanza request to Chat server. 
+* User taps / clicks on the desired room name. 
+* App sends getRoomArchiveStanza for 30 last messages request to Chat server. 
 * Chat server returns messages one by one. 
 * App displays the received messages.
+* User scrolls to view older messages.
+* App sends getPaginatedArchive with ID (timestamp) of the last known message.
+* Chat server returns another portion of chat history. 
 
 #### User sends a message
 * User composes a chat message and sends it via App UI. 
@@ -153,7 +159,11 @@ Where **mainMessage** can be either undefined or include such fields
   * **roomJid?**: string;  // JID of the current Chat Room. It shows to which room this message is related TF: we might need to deprecate this as we already have room Jid in the main stanza above.
 }
 
-**sendMediaMessageStanza** can have such data 
+#### sendMediaMessageStanza
+
+For developers convenience, this stanza is normally used for sending the media messages such as audio, video etc. This focuses on media specific fields specified below.
+
+**sendMediaMessageStanza** 
 ```
 {senderFirstName, senderLastName, senderWalletAddress, photoURL, location, locationPreview, mimetype, originalName, wrappable, push, mucName, roomJid, receiverMessageId, fileName, size, duration, waveForm, attachmentId}
 ```
