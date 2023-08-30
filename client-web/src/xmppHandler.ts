@@ -91,7 +91,18 @@ export class XmppHandler {
       }
     }
   };
+  onPrivateXml = (stanza: any) => {
+    if (stanza.attrs.id === "privateXml") {
+      const rooms = stanza.children[0]?.children[0]?.children[0]?.children[0];
+      if (rooms) {
+        const parsedRooms: TUserChatRooms[] = JSON.parse(rooms);
 
+        parsedRooms.forEach((room) => {
+          useStoreState.getState().updateUserChatRoom(room);
+        });
+      }
+    }
+  };
   onMessageHistory = async (stanza: any) => {
     if (
       stanza.is("message") &&
@@ -204,8 +215,7 @@ export class XmppHandler {
     const threadMessages = this.temporaryMessages.filter(
       (item) => item.data.mainMessage?.id === messageId
     );
-    this.temporaryMessages[messageIndex].numberOfReplies =
-      threadMessages;
+    this.temporaryMessages[messageIndex].numberOfReplies = threadMessages;
   };
 
   onLastMessageArchive = (stanza: Element, xmpp: any) => {

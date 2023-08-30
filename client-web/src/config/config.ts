@@ -97,13 +97,13 @@ export const defaultMetaRoom = {
 };
 
 
-export const ROOMS_FILTERS: Record<string, TActiveRoomFilter> = {
+export const ROOMS_FILTERS = {
   official: 'official',
   private: 'private',
   groups: 'groups',
   meta: 'meta',
   favourite: 'favourite'
-}
+} as const
 
 export const defaultChatBackgroundThemes = [
   {

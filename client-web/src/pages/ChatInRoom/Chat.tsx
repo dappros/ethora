@@ -126,8 +126,7 @@ export function ChatInRoom() {
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
     setCurrentThreadViewMessage(threadMessage);
-  const handleShowInChannel = (show: boolean) =>
-    setShowInChannel(show);
+  const handleShowInChannel = (show: boolean) => setShowInChannel(show);
 
   const handleCurrentEditMessage = (message: TMessageHistory) =>
     setCurrentEditMessage(message);
@@ -227,11 +226,11 @@ export function ChatInRoom() {
       setProfile(result.data.result);
     });
   }, []);
- const joinTheRoom = () => {
-  xmpp.subsribe(currentRoom);
-  xmpp.presenceInRoom(currentRoom);
-  chooseRoom(currentRoom)
- }
+  const joinTheRoom = () => {
+    xmpp.subsribe(currentRoom);
+    xmpp.presenceInRoom(currentRoom);
+    chooseRoom(currentRoom);
+  };
   const toggleTransferDialog = (
     value: boolean,
     message: TMessageHistory = null
@@ -424,6 +423,7 @@ export function ChatInRoom() {
   };
 
   useEffect(() => {
+
     const timeoutId = setTimeout(() => {
       xmpp.pausedComposing(user.walletAddress, roomData?.jid);
     }, 1000);
@@ -637,7 +637,8 @@ export function ChatInRoom() {
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
-              {!roomData?.name && currentRoom !== NO_ROOM_PICKED && <ConversationHeader
+            {!roomData?.name && currentRoom !== NO_ROOM_PICKED && (
+              <ConversationHeader
                 style={{
                   height: "70px",
                 }}
@@ -645,16 +646,18 @@ export function ChatInRoom() {
                 <ConversationHeader.Back />
 
                 <ConversationHeader.Actions>
-                 
                   <IconButton
                     sx={{ color: "black" }}
                     onClick={() => setQrModalVisible(true)}
                   >
                     <QrCodeIcon />
                   </IconButton>
-                <Button onClick={joinTheRoom} variant="outlined">Join the room</Button>
+                  <Button onClick={joinTheRoom} variant="outlined">
+                    Join the room
+                  </Button>
                 </ConversationHeader.Actions>
-              </ConversationHeader>}
+              </ConversationHeader>
+            )}
             <MessageList
               style={{
                 backgroundImage: currentPickedRoom?.room_background

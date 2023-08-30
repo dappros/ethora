@@ -1,7 +1,7 @@
 import xmpp, { xml } from "@xmpp/client";
 import { Client } from "@xmpp/client";
 import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
-import { useStoreState } from "./store";
+import { TUserChatRooms, useStoreState } from "./store";
 import { walletToUsername } from "./utils/walletManipulation";
 import { XmppHandler } from "./xmppHandler";
 
@@ -30,10 +30,14 @@ export class XmppClass {
     this.client.on("online", (jid) => {
       xmppMessagesHandler.getListOfRooms(this);
       this.subscribeToDefaultChats();
+      this.getPrivateXmlRooms()
     });
     this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onRealtimeMessage(stanza)
+    );
+    this.client.on("stanza", (stanza) =>
+      xmppMessagesHandler.onPrivateXml(stanza)
     );
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onGetLastMessageArchive(stanza, this)
@@ -861,7 +865,50 @@ export class XmppClass {
     );
     this.client.send(stanza);
   };
+  setPrivateXmlRooms = (rooms: TUserChatRooms[]) => {
+    //     <iq type="set" id="1001">
+    //   <query xmlns="jabber:iq:private">
+    //     <exodus xmlns="exodus:prefs">
+    //       <defaultnick>Hamlet</defaultnick>
+    //     </exodus>
+    //   </query>
+    // </iq>
+    const roomsToSet = JSON.stringify(rooms);
 
+    const stanza = xml(
+      "iq",
+      {
+        id: "privateXml",
+        type: "set",
+      },
+      xml(
+        "query",
+        { xmlns: "jabber:iq:private" },
+        xml("exodus", { xmlns: "exodus:prefs" }, xml("rooms", {}, roomsToSet))
+      )
+    );
+    this.client.send(stanza);
+  };
+  getPrivateXmlRooms = () => {
+    //   <iq type="get" id="1002">
+    //   <query xmlns="jabber:iq:private">
+    //     <exodus xmlns="exodus:prefs"/>
+    //   </query>
+    // </iq>
+    const stanza = xml(
+      "iq",
+      {
+        id: "privateXml",
+        type: "get",
+      },
+      xml(
+        "query",
+        { xmlns: "jabber:iq:private" },
+        xml("exodus", { xmlns: "exodus:prefs" })
+      )
+    );
+    this.client.send(stanza);
+  };
   //stanza to delete message
   deleteMessageStanza = (roomJid: string, messageId: string) => {
     // <message
