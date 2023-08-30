@@ -33,8 +33,8 @@ CORE SERVER
 MAIN FEATURES PLUGINS
 * Plugin: mod_delete - allows to delete chat messages
 * Plugin: mod_edit - allows to edit chat messages
-* Plugin: mod_get_user_rooms - allows to easily obtain a list of all Rooms the User is subscribed to
-* Plugin: mod_get_users_activity - gets all subscribers and last activity from Room (used e.g. for Chat Details screen)
+* Plugin: mod_get_user_rooms - allows to easily obtain a list of all Rooms the User is participating in
+* Plugin: mod_get_users_activity - gets all participants and last activity from Room (used e.g. for Chat Details screen)
 * Plugin: mod_offline_post - sends a push notification to a webservice (e.g. Apple, Google push services) to alert the subscribers who are currently offline
 * Plugin: mod_user_ban - allows to ban Users
 * Plugin: mod_user_block - allows to block Users
