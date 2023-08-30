@@ -6,7 +6,14 @@ import {
   MessageList,
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { Box, Checkbox, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  IconButton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Message } from "../Messages/Message";
 import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
@@ -38,7 +45,7 @@ interface ThreadContainerProps {
   sendFile: (file: File, isReply: boolean) => void;
   showInChannel: boolean;
   toggleMediaModal: (value: boolean, message?: TMessageHistory) => void;
-  handleShowInChannel: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleShowInChannel: (show: boolean) => void;
   toggleTransferDialog: (value: boolean, message?: TMessageHistory) => void;
 }
 
@@ -66,7 +73,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
   const messages = useStoreState((state) => state.historyMessages);
 
   const { roomJID } = useParams<{ roomJID: string }>();
-    const theme = useTheme()
+  const theme = useTheme();
   const threadWindowMessages = messages.filter(
     (item: TMessageHistory) =>
       item.roomJID.includes(roomJID) &&
@@ -108,7 +115,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
       }
       const clearMessageFromHtml = DOMPurify.sanitize(myThreadMessage);
       const finalMessageTxt = stripHtml(clearMessageFromHtml);
-
+      handleShowInChannel(false);
       if (finalMessageTxt.trim().length > 0) {
         const data = {
           senderFirstName: user.firstName,
@@ -134,7 +141,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
   return (
     <ChatContainer
       style={{
-       borderLeft: '1px solid #d1dbe3' ,
+        borderLeft: "1px solid #d1dbe3",
       }}
     >
       {!!roomData && (
@@ -182,7 +189,9 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
           </Box>
           <Divider>
             {currentThreadViewMessage.numberOfReplies.length}{" "}
-            {currentThreadViewMessage.numberOfReplies.length > 1 ? "replies" : "reply"}{" "}
+            {currentThreadViewMessage.numberOfReplies.length > 1
+              ? "replies"
+              : "reply"}{" "}
           </Divider>
         </div>
       )}
@@ -279,7 +288,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
           >
             <Checkbox
               checked={showInChannel}
-              onChange={handleShowInChannel}
+              onChange={(e) => handleShowInChannel(e.target.checked)}
               inputProps={{ "aria-label": "controlled" }}
             />
             <Typography>Also send to room</Typography>

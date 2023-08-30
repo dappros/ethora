@@ -126,8 +126,8 @@ export function ChatInRoom() {
   const handleSetThreadView = (value: boolean) => setThreadView(value);
   const handleSetCurrentThreadViewMessage = (threadMessage: TMessageHistory) =>
     setCurrentThreadViewMessage(threadMessage);
-  const handleShowInChannel = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setShowInChannel(event.target.checked);
+  const handleShowInChannel = (show: boolean) =>
+    setShowInChannel(show);
 
   const handleCurrentEditMessage = (message: TMessageHistory) =>
     setCurrentEditMessage(message);
