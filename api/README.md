@@ -2,7 +2,10 @@
 
 Studying this section is optional. You can build your apps using Ethora engine without having to study the API documentation.
 
-_Note: for information on interacting with our XMPP messaging server and other RTC (Real-Time Communication) components beyond those covered in the API, please refer to this manual: https://github.com/dappros/ethora/blob/main/api/chats.md_
+_Note: for information on interacting with our XMPP messaging server and other RTC (Real-Time Communication) components beyond those covered in the API, please refer to this manual: https://github.com/dappros/ethora/blob/main/api/chats.md_.
+_For additional information regarding the Push Notifications please refer to https://github.com/dappros/ethora/blob/main/api/pushes.md_
+
+
 
 This section will be useful for developers who are looking to:
 1) Better understand how our platform works
