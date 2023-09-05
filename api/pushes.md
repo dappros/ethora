@@ -18,9 +18,6 @@ USER SIGNS IN AND SUBSCRIBES FOR PUSHES
 OR
 (B) REACT.JS (web client)
 * App uses **firebase** client library and obtains Push Token
-
-**TO DO: logic to clean up old / expired subscriptions**
-
 * App calls POST /push/subscriptions with deviceId payload, deviceType (1-12), appId, **jid** etc
 * Chat server plugin mod_offline_post checks which Users are offline over 5 minutes for each room. For those who are offline, it calls the Push Service via http request.
 * Push Service forms a Push Notification request for each Device of each offline User according to Devices and services subscription table it stores. Push Service sends Push Notifications requests to Apple, Google or other external push notification services according to the Device subscriptions. 
@@ -28,6 +25,10 @@ OR
 
 
 ## Advanced usage
+
+Additional information, API descriptions and edge cases covered below.
+
+**Dev Notes**: (1) Same Device ID will be returned by Google (Firebase) for same devices in most cases. (2) RTC rtc_push service will return an error if user tries to subscribe again with a Device ID which already has a subscription. (3) need to add logic to clean up old / expired subscriptions for old device IDs etc. There is a TTL field we can use for that purpose. **
 
 
 ### API - Parameters
