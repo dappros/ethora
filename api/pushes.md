@@ -7,6 +7,21 @@ If you want your Ethora based app to be sending Push Notification alerts to your
 In case you would like to modify / extend the standard flow or in case you would like to use our push notification infrastructure in other scenarios, please read on through the Advanced usage section. 
 
 ### Standard Usage flow
+
+USER SIGNS IN AND SUBSCRIBES FOR PUSHES
+
+* User logs in
+* App determines Users' jid based on User's main wallet address
+
+(A) REACT NATIVE (mobile client)
+* App uses react_native_push_notifications library and obtains Device ID (aka Device Token or Push Token)
+OR
+(B) REACT.JS (web client)
+* App uses **firebase** client library and obtains Push Token
+
+**TO DO: logic to clean up old / expired subscriptions**
+
+* App calls POST /push/subscriptions with deviceId payload, deviceType (1-12), appId, **jid** etc
 * Chat server plugin mod_offline_post checks which Users are offline over 5 minutes for each room. For those who are offline, it calls the Push Service via http request.
 * Push Service forms a Push Notification request for each Device of each offline User according to Devices and services subscription table it stores. Push Service sends Push Notifications requests to Apple, Google or other external push notification services according to the Device subscriptions. 
 * Offline Users receive push notification messages along with metadata according to their subscriptions, their App and Room settings. Typically they receive an excerpt of the chat message they have missed while being offline. 
