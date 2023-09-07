@@ -20,7 +20,6 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { styled } from "@mui/material";
 import PhotoSharpIcon from '@mui/icons-material/PhotoSharp';
 import Badge from '@mui/material/Badge'
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
 
 
@@ -109,106 +108,96 @@ const NewChat: React.FC<INewChat> = ({ }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
+          width: "fit-content",
+          m: "auto",
+          mt: "3rem",
         }}
       >
-        <Box sx={{
-          mt: 'auto'
-        }}>
-          <Typography variant="h4">Create a new room</Typography>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              width: "50vw",
-              gap: "10px",
-            }}
-          >
+        <Typography variant="h4">Create a new room</Typography>
 
-            <IconButton>
-              <input
-                accept="image/*"
-                style={{ display: "none" }}
-                id="raised-button-file"
-                multiple
-                type="file"
-                onChange={onFileChange}
-              />
-              <label htmlFor="raised-button-file">
-                <Badge
-                  badgeContent={"+"}
-                  color="secondary"
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  overlap="circular"
-                >
-                  <Avatar
-                    sx={{
-                      backgroundColor: theme.palette.primary.main,
-                      // padding: "5px",
-                      width: 55,
-                      height: 55,
-                    }}
-                    src={formik.values.chatImage}
-                  >
-                    <PhotoSharpIcon fontSize="large" />
-                  </Avatar>
-                </Badge>
-              </label>
-            </IconButton>
-            <StyledTextField
-              margin="dense"
-              inputProps={{
-                autoComplete: "off",
-              }}
-              label="Chat Name"
-              name="chatName"
-              type="text"
-              fullWidth
-              required
-              variant="outlined"
-              onChange={formik.handleChange}
-              value={formik.values.chatName}
-            />
-            
-          </Box>
 
-          <TextField
-            margin="dense"
-            inputProps={{
-              autoComplete: "off",
-            }}
-            label="Description"
-            name="description"
-            type="text"
-            fullWidth
-            multiline
-            rows={3}
-            variant="outlined"
-            onChange={formik.handleChange}
-            value={formik.values.description}
+
+        <IconButton>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="raised-button-file"
+            multiple
+            type="file"
+            onChange={onFileChange}
           />
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "10px",
-            }}
-          >
-            <Button
-              variant={"outlined"}
-              disabled={loading}
-              onClick={() => formik.handleSubmit()}
+          <label htmlFor="raised-button-file">
+            <Badge
+              badgeContent={"+"}
+              color="secondary"
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              overlap="circular"
             >
-              Sumbit
-            </Button>
-          </Box>
-        </Box>
+              <Avatar
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  borderRadius: '50%',
+                  borderColor: "red",
+                  width: 55,
+                  height: 55,
+                }}
+                src={formik.values.chatImage}
+              >
+                <PhotoSharpIcon fontSize="large" />
+              </Avatar>
+            </Badge>
+          </label>
+        </IconButton>
+        <StyledTextField
+          margin="dense"
+          inputProps={{
+            autoComplete: "off",
+          }}
+          label="Chat Name"
+          name="chatName"
+          type="text"
+          fullWidth
+          required
+          variant="outlined"
+          onChange={formik.handleChange}
+          value={formik.values.chatName}
+        />
+
+
+        <TextField
+          margin="dense"
+          inputProps={{
+            autoComplete: "off",
+          }}
+          label="Description"
+          name="description"
+          type="text"
+          fullWidth
+          multiline
+          rows={3}
+          variant="outlined"
+          onChange={formik.handleChange}
+          value={formik.values.description}
+        />
+
+        <Button
+          variant={"outlined"}
+          disabled={loading}
+          onClick={() => formik.handleSubmit()}
+          sx={{
+            mt: "1rem",
+          }}
+        >
+          Sumbit
+        </Button>
+
       </Box>
+
     </Container>
   );
 };
