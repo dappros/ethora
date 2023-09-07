@@ -17,10 +17,22 @@ import { CONFERENCEDOMAIN } from "../../constants";
 import { useHistory, useLocation } from "react-router";
 import { httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { styled } from "@mui/material";
+import PhotoSharpIcon from '@mui/icons-material/PhotoSharp';
+import Badge from '@mui/material/Badge'
+import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
-export interface INewChat {}
 
-const NewChat: React.FC<INewChat> = ({}) => {
+
+const StyledTextField = styled(TextField)(() => ({
+  "& .MuiFormLabel-asterisk": {
+    color: "red"
+  }
+}));
+
+export interface INewChat { }
+
+const NewChat: React.FC<INewChat> = ({ }) => {
   const theme = useTheme();
   const user = useStoreState((state) => state.user);
   const setActiveRoomFilter = useStoreState((state) => state.setActiveRoomFilter);
@@ -40,7 +52,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
     },
     onSubmit: async ({ chatName, description, chatImage }) => {
       setLoading(true);
-      const randomNumber = Math.round(Math.random()*100000)
+      const randomNumber = Math.round(Math.random() * 100000)
       const name = chatName + new Date().getTime() + randomNumber;
       const roomHash = sha256(name);
       xmpp.createNewRoom(roomHash);
@@ -87,17 +99,23 @@ const NewChat: React.FC<INewChat> = ({}) => {
     }
     setLoading(false);
   };
+
+
+
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box
-        style={{
+        sx={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <Box>
-          <Typography variant="h4">Create new chat</Typography>
+        <Box sx={{
+          mt: 'auto'
+        }}>
+          <Typography variant="h4">Create a new room</Typography>
+
           <Box
             sx={{
               display: "flex",
@@ -106,6 +124,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
               gap: "10px",
             }}
           >
+
             <IconButton>
               <input
                 accept="image/*"
@@ -116,18 +135,30 @@ const NewChat: React.FC<INewChat> = ({}) => {
                 onChange={onFileChange}
               />
               <label htmlFor="raised-button-file">
-                <Avatar
-                  sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    // padding: "5px",
-                    width: 60,
-                    height: 60,
+                <Badge
+                  badgeContent={"+"}
+                  color="secondary"
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
                   }}
-                  src={formik.values.chatImage}
-                ></Avatar>
+                  overlap="circular"
+                >
+                  <Avatar
+                    sx={{
+                      backgroundColor: theme.palette.primary.main,
+                      // padding: "5px",
+                      width: 55,
+                      height: 55,
+                    }}
+                    src={formik.values.chatImage}
+                  >
+                    <PhotoSharpIcon fontSize="large" />
+                  </Avatar>
+                </Badge>
               </label>
             </IconButton>
-            <TextField
+            <StyledTextField
               margin="dense"
               inputProps={{
                 autoComplete: "off",
@@ -136,11 +167,14 @@ const NewChat: React.FC<INewChat> = ({}) => {
               name="chatName"
               type="text"
               fullWidth
+              required
               variant="outlined"
               onChange={formik.handleChange}
               value={formik.values.chatName}
             />
+            
           </Box>
+
           <TextField
             margin="dense"
             inputProps={{
@@ -150,6 +184,8 @@ const NewChat: React.FC<INewChat> = ({}) => {
             name="description"
             type="text"
             fullWidth
+            multiline
+            rows={3}
             variant="outlined"
             onChange={formik.handleChange}
             value={formik.values.description}
