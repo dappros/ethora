@@ -184,7 +184,9 @@ const ChatDetailsScreen = observer(({ route }: any) => {
         avatar: props.profile,
         name: props.name,
       });
-      navigation.navigate("OtherUserProfileScreen");
+      navigation.navigate("OtherUserProfileScreen", {
+        walletAddress: userWalletAddress,
+      });
     }
   };
 

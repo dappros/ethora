@@ -94,13 +94,13 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
 
   const [itemsBalance, setItemsBalance] = useState(0);
 
-  const anotherUserWalletAddress = loginStore.anotherUserWalletAddress;
   const linkToken = route.params?.linkToken;
+  const anotherUserWalletAddress = route.params.walletAddress;
   const anotherUserTransaction = walletStore.anotherUserTransaction;
   const transactionCount = walletStore.total;
 
   const onDirectChatPress = () => {
-    const otherUserWalletAddress = loginStore.anotherUserWalletAddress;
+    const otherUserWalletAddress = anotherUserWalletAddress;
     const myWalletAddress = loginStore.initialData.walletAddress;
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
       .sort()
@@ -157,12 +157,12 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
   };
   const getBalances = async () => {
     await walletStore.fetchTransaction(
-      loginStore.anotherUserWalletAddress,
+      anotherUserWalletAddress,
       10,
       0
     );
     await walletStore.fetchOtherUserWalletBalance(
-      loginStore.anotherUserWalletAddress,
+      anotherUserWalletAddress,
       loginStore.userToken,
       linkToken || ""
     );
@@ -189,9 +189,9 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
       );
       calculateBalances();
     } else {
-      setItemsData([])
+      setItemsData([]);
     }
-  }, [anotherUserBalance.length]);
+  }, [anotherUserBalance]);
 
   useEffect(() => {
     calculateBalances();
@@ -214,7 +214,7 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
 
   useEffect(() => {
     getBalances();
-  }, [loginStore.anotherUserWalletAddress]);
+  }, [anotherUserWalletAddress]);
 
   const loadTabContent = () => {
     if (activeTab === 0) {
@@ -225,7 +225,7 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
           documents={[]}
           collections={collections}
           coinsItems={coinData}
-          userWalletAddress={loginStore.anotherUserWalletAddress}
+          userWalletAddress={anotherUserWalletAddress}
           nftItems={itemsData}
           itemsBalance={itemsBalance}
         />
@@ -237,7 +237,7 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
         <View style={{ paddingBottom: hp("27%") }}>
           <TransactionListTab
             transactions={anotherUserTransaction}
-            walletAddress={loginStore.anotherUserWalletAddress}
+            walletAddress={anotherUserWalletAddress}
             onEndReached={() => {
               if (anotherUserTransaction.length < walletStore.total) {
                 walletStore.fetchTransaction(

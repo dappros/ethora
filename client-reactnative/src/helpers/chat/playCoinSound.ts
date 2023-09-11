@@ -9,7 +9,6 @@ import {Player} from '@react-native-community/audio-toolkit';
 
 export const playCoinSound = (type: number) => {
   let coinSound = '';
-
   switch (type) {
     case 1:
       coinSound = 'token1.mp3';
@@ -29,6 +28,6 @@ export const playCoinSound = (type: number) => {
     default:
       coinSound = 'token7.mp3';
   }
-
+console.log(coinSound)
   new Player(coinSound).play();
 };

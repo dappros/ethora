@@ -109,7 +109,7 @@ const ScanScreen = () => {
           anotherUserLastSeen: {},
           anotherUserWalletAddress: walletAddressFromLink,
         });
-        navigation.navigate("OtherUserProfileScreen");
+        navigation.navigate("OtherUserProfileScreen", {walletAddress: walletAddressFromLink});
       }
     } else {
       if (e) {

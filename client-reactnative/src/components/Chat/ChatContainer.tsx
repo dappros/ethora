@@ -744,7 +744,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         avatar: avatarProps.avatar,
         name: avatarProps.name,
       });
-      navigation.navigate("OtherUserProfileScreen");
+      navigation.navigate("OtherUserProfileScreen", {
+        walletAddress: walletAddress,
+      });
     }
   };
 
@@ -1279,7 +1281,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         )}
         {/* @ts-ignore */}
         {isAudioMimetype(mediaModal.type) && (
-          <AudioPlayer audioUrl={mediaModal.url} />
+          <AudioPlayer
+            closePlayer={closeMediaModal}
+            audioUrl={mediaModal.url}
+          />
         )}
         {containerType === "thread" && (
           <View bg={commonColors.primaryDarkColor}>

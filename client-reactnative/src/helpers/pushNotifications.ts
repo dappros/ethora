@@ -18,7 +18,7 @@ import { xmppPushUrl } from "../../docs/config";
 export const subscribeForPushNotifications = async (data: any) => {
   const qs = require("qs");
   return await axios.post(
-    xmppPushUrl + subscribePushNotification,
+    'https://push.qa.ethoradev.com/api/v1/subscriptions',
     qs.stringify(data),
     {
       headers: {
@@ -34,20 +34,27 @@ export const getPushToken = async (
   defaultUrl: string,
   navigation: HomeStackNavigationProp
 ) => {
+  console.log('ousj')
   PushNotification.configure({
     // (optional) Called when Token is generated (iOS and Android)
     onRegister: async function (token: any) {
       console.log("TOKEN:", token);
-      const res = await subscribeForPushNotifications({
-        appId: "Ethora",
-        deviceId: token.token,
-        deviceType: Platform.OS === "ios" ? "0" : "1",
-        environment: "Production",
-        externalId: "",
-        isSubscribed: "1",
-        jid: underscoreManipulation(walletAddress) + "@" + DOMAIN,
-        screenName: "Ethora",
-      });
+      try {
+        const res = await subscribeForPushNotifications({
+          appId: "Ethora",
+          deviceId: token.token,
+          deviceType: Platform.OS === "ios" ? "0" : "1",
+          environment: "Production",
+          externalId: "",
+          isSubscribed: "1",
+          jid: underscoreManipulation(walletAddress) + "@" + DOMAIN,
+          screenName: "Ethora",
+        });
+        console.log(res.data)
+      } catch (error) {
+        console.log('error', error) 
+      }
+    
 
       // creating channel for local notifications
       PushNotification.createChannel(
