@@ -37,12 +37,12 @@ class XmppService {
       xml("query", { xmlns: "ns:getrooms" })
     );
 
-    console.log("-----> ", message.toString())
+    console.log("-----> ", message.toString());
 
     this.client.send(message);
   }
 
-  presence(roomJid) {
+  presence(roomJid, nickname) {
     if (!roomJid.includes("@")) {
       roomJid = `${roomJid}@${XMPP_CONFERENCE}`;
     }
@@ -50,7 +50,7 @@ class XmppService {
     let message = xml(
       "presence",
       {
-        to: `${roomJid}/${this.client.jid.getLocal()}`,
+        to: `${roomJid}/${nickname}`,
       },
       xml("x", "http://jabber.org/protocol/muc")
     );
@@ -83,7 +83,7 @@ class XmppService {
       )
     );
 
-    console.log("-----> ", message.toString())
+    console.log("-----> ", message.toString());
 
     this.client.send(message);
   }
@@ -107,12 +107,12 @@ class XmppService {
         mucName: "mucName",
         inProd: "true",
         msgType: "message",
-        push: "true"
+        push: "true",
       }),
       xml("body", {}, text)
     );
 
-    console.log("-----> ", message.toString())
+    console.log("-----> ", message.toString());
 
     this.client.send(message);
   }
@@ -180,7 +180,7 @@ class XmppService {
       })
     );
 
-    console.log("-----> ", message.toString())
+    console.log("-----> ", message.toString());
 
     this.client.send(message);
   }
@@ -207,12 +207,58 @@ class XmppService {
       )
     );
 
-    console.log("-----> ", message.toString())
+    console.log("-----> ", message.toString());
 
-    this.client.send(message)
+    this.client.send(message);
   }
 
-  roomConfig(room, roomName, roomDescription = '') {
+  unsubscribe(room) {
+    if (!room.includes("@")) {
+      room = `${room}@${XMPP_CONFERENCE}`;
+    }
+
+    const message = xml(
+      "iq",
+      {
+        to: room,
+        type: "set",
+        id: "newSubscription",
+      },
+      xml(
+        "unsubscribe",
+        { xmlns: "urn:xmpp:mucsub:0" }
+      )
+    );
+
+    console.log("-----> ", message.toString());
+
+    this.client.send(message);
+  }
+
+  getConfiguration(room) {
+    if (!room.includes("@")) {
+      room = `${room}@${XMPP_CONFERENCE}`;
+    }
+
+    const message = xml(
+      "iq",
+      {
+        to: room,
+        type: "get",
+        id: "getConfiguration",
+      },
+      xml(
+        "query",
+        { xmlns: "http://jabber.org/protocol/muc#owner" }
+      )
+    );
+
+    console.log("-----> ", message.toString());
+
+    this.client.send(message);
+  }
+
+  roomConfig(room, roomName, roomDescription = "") {
     if (!room.includes("@")) {
       room = `${room}@${XMPP_CONFERENCE}`;
     }
@@ -248,6 +294,54 @@ class XmppService {
         )
       )
     );
+
+    this.client.send(message);
+  }
+
+  discoInfo(to) {
+    const message = xml(
+      "iq",
+      {
+        to: to,
+        type: "get",
+        id: "discoInfo",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
+
+    console.log("-----> ", message.toString());
+
+    this.client.send(message);
+  }
+
+  discoItems(to) {
+    const message = xml(
+      "iq",
+      {
+        to: to,
+        type: "get",
+        id: "discoItems",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#items" })
+    );
+
+    console.log("-----> ", message.toString());
+
+    this.client.send(message);
+  }
+
+  getMySubscriptions(roomService) {
+    const message = xml(
+      "iq",
+      {
+        to: roomService,
+        type: "get",
+        id: "getMySubscriptions",
+      },
+      xml("subscriptions", { xmlns: "urn:xmpp:mucsub:0" })
+    );
+
+    console.log("-----> ", message.toString());
 
     this.client.send(message);
   }
