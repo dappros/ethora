@@ -637,7 +637,7 @@ export function ChatInRoom() {
                 </ConversationHeader.Actions>
               </ConversationHeader>
             )}
-            {!roomData?.name && currentRoom !== NO_ROOM_PICKED && (
+            {!roomData?.jid && currentRoom !== NO_ROOM_PICKED && (
               <ConversationHeader
                 style={{
                   height: "70px",
