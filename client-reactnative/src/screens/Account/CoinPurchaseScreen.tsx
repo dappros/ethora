@@ -70,22 +70,24 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
   } = useIAP();
   const requestCoinPurchase = async (id: string) => {
     try {
-      const transaction = await requestPurchase(id, false);
-
-      await finishTransaction(transaction, true);
-      const res = await httpPost(
-        '/users/payments',
-        {
-          type: 'purchase',
-          transaction: transaction,
-          platform: Platform.OS,
-          password: Platform.OS === 'ios' ? appleKey : '',
-        },
-        loginStore.userToken,
-      );
-      await walletStore.fetchWalletBalance(loginStore.userToken, true);
-      console.log(res.data);
-      showSuccess('Succes', 'Please, check your balance');
+      const transaction = await requestPurchase({sku: id});
+      if(transaction) {
+        await finishTransaction({purchase: transaction});
+        const res = await httpPost(
+          '/users/payments',
+          {
+            type: 'purchase',
+            transaction: transaction,
+            platform: Platform.OS,
+            password: Platform.OS === 'ios' ? appleKey : '',
+          },
+          loginStore.userToken,
+        );
+        await walletStore.fetchWalletBalance(loginStore.userToken, true);
+        console.log(res.data);
+        showSuccess('Succes', 'Please, check your balance');
+      }
+     
     } catch (err) {
       showError('Error', 'Please try again');
     }
@@ -93,7 +95,7 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
 
   useEffect(() => {
     if (connected) {
-      getProducts(productIds);
+      getProducts({skus: productIds});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected]);
