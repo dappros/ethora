@@ -6,6 +6,7 @@ import { stat } from "fs";
 import type { Stripe } from "stripe";
 import { IDefaultChatRoom, THomeScreen } from "../http";
 
+// type used for User profile details
 export type TUser = {
   firstName: string;
   lastName: string;
@@ -33,15 +34,17 @@ export type TUser = {
   homeScreen: THomeScreen;
 };
 
+// supposed to be used for switching light / dark themes
 type TMode = "light" | "dark";
 
+// this type implements a balance item. Each User may own multiple types of assets, fungible and non-fungible. Balances and history of transactions can be accessed from User profiles.
 export type TBalance = {
   balance: number;
   contractAddress: string;
   contractTokenIds?: Array<string>;
   createdAt: string;
   imagePreview: string;
-  nftFileUrl: string;
+  nftFileUrl?: string;
   nftId: string;
   nftMetaUrl: string;
   nftMimetype: string;
@@ -56,6 +59,7 @@ export type TBalance = {
   traits?: Array<string>;
 };
 
+// chat messages
 type TMessage = {
   body: string;
   firsName: string;
@@ -125,6 +129,7 @@ export type TUserBlackList = {
   user: string;
 };
 
+// rooms where our User is a participant (obtained from getRooms and via XMPP) 
 export type TUserChatRooms = {
   jid: string;
   name: string;
@@ -138,6 +143,7 @@ export type TUserChatRooms = {
   group?: TActiveRoomFilter;
 };
 
+// this is for Stats feature (App owners / admin users)
 export type AppStats = {
   recentlyApiCalls: number;
   recentlyFiles: number;
@@ -184,6 +190,7 @@ export type TApp = {
   coinImage?: string;
 };
 
+// used within Stats when displaying users stats of certain apps
 type TAppUser = {
   appId: string;
   firstName: string;
@@ -199,6 +206,7 @@ type TAppUser = {
   updatedAt: string;
 };
 
+// used to show Users (members) who are participants of this chat (in Chat Details screen)
 export type TMemberInfo = {
   ban_status: string;
   jid: string;
@@ -208,10 +216,13 @@ export type TMemberInfo = {
   role: string;
 };
 
+// Users roles for chat details screen
 export type TRoomRoles = {
   roomJID: string;
   role: string;
 };
+
+// used during Firebase initialization
 interface IFirebaseConfig {
   apiKey: string;
   authDomain: string;
@@ -222,6 +233,7 @@ interface IFirebaseConfig {
   measurementId: string;
 }
 
+// used in App Settings (for app owners / admins interface)
 export interface IConfig {
   firebaseWebConfigString?: string;
   firebaseConfig?: IFirebaseConfig;
@@ -236,6 +248,7 @@ export interface IConfig {
   logoImage: string;
 }
 
+// chats types for tabs
 export type TActiveRoomFilter =
   | "official"
   | "meta"
@@ -244,6 +257,7 @@ export type TActiveRoomFilter =
   | "private"
   | "";
 
+// Chat screen - used when editing messages
 export type replaceMessageListItemProps = {
   replaceMessageId: number;
   replaceMessageText: string;
