@@ -115,6 +115,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   margin="dense"
                   label="First Name"
                   name="firstName"
+                  id="firstName"
                   variant="standard"
                   error={
                     formik.touched.firstName && formik.errors.firstName
@@ -134,6 +135,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   margin="dense"
                   label="Last Name"
                   name="lastName"
+                  id="lastName"
                   variant="standard"
                   error={
                     formik.touched.lastName && formik.errors.lastName
@@ -153,6 +155,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   margin="dense"
                   label="Profile Description"
                   name="description"
+                  id="description"
                   variant="standard"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -167,6 +170,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   <FormControlLabel
                     checked={formik.values.isProfileOpen}
                     name="isProfileOpen"
+                    id="isProfileOpen"
                     control={
                       <Checkbox
                         onChange={(e) => {
@@ -190,6 +194,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   <FormControlLabel
                     checked={formik.values.isAssetsOpen || formik.values.isProfileOpen}
                     name="isAssetsOpen"
+                    id="isAssetsOpen"
                     control={
                       <Checkbox
                         disabled={formik.values.isProfileOpen}
@@ -206,6 +211,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   />
                 </Tooltip>
                 <LoadingButton
+                  id="submitProfile"
                   type="submit"
                   loading={loading}
                   variant="contained"

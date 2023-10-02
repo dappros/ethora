@@ -44,14 +44,14 @@ export function EmailSingInForm(props: TProps) {
   const { search } = useLocation();
 
   const searchParams = useMemo(() => new URLSearchParams(search), [search]);
-  const email = searchParams.get('email')
+  const email = searchParams.get("email");
 
   const [disable, setDisable] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { showSnackbar } = useSnackbar();
   const formik = useFormik({
     initialValues: {
-      email: email || '',
+      email: email || "",
       password: "",
     },
     validate,
@@ -93,6 +93,7 @@ export function EmailSingInForm(props: TProps) {
         margin="dense"
         label="Email"
         name="email"
+        id="email"
         type="email"
         fullWidth
         variant="standard"
@@ -109,6 +110,7 @@ export function EmailSingInForm(props: TProps) {
         <Input
           type={showPassword ? "text" : "password"}
           fullWidth
+          id="password"
           name="password"
           value={formik.values.password}
           onChange={formik.handleChange}
@@ -116,6 +118,7 @@ export function EmailSingInForm(props: TProps) {
           endAdornment={
             <InputAdornment position="end">
               <IconButton
+                id="showPassword"
                 aria-label="toggle password visibility"
                 onClick={() => setShowPassword((show) => !show)}
               >
@@ -129,7 +132,12 @@ export function EmailSingInForm(props: TProps) {
         )}
       </FormControl>
       <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
-        <Button disabled={disable} type="submit" variant="contained">
+        <Button
+          disabled={disable}
+          type="submit"
+          variant="contained"
+          id="submitEmail"
+        >
           Continue
         </Button>
       </Box>

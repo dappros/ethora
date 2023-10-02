@@ -115,7 +115,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
                 type="file"
                 onChange={onFileChange}
               />
-              <label htmlFor="raised-button-file">
+              <label htmlFor="raised-button-file" id="avatar">
                 <Avatar
                   sx={{
                     backgroundColor: theme.palette.primary.main,
@@ -134,6 +134,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
               }}
               label="Chat Name"
               name="chatName"
+              id="chatName"
               type="text"
               fullWidth
               variant="outlined"
@@ -148,6 +149,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
             }}
             label="Description"
             name="description"
+            id="description"
             type="text"
             fullWidth
             variant="outlined"
@@ -165,6 +167,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
           >
             <Button
               variant={"outlined"}
+              id="submitChat"
               disabled={loading}
               onClick={() => formik.handleSubmit()}
             >

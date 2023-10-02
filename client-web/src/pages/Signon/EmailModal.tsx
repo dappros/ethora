@@ -41,7 +41,7 @@ export function EmailModal({ open, setOpen, updateUser }: TProps) {
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           Continue with Email
-          <IconButton onClick={() => setOpen(false)}>
+          <IconButton onClick={() => setOpen(false)} id="close">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
@@ -52,8 +52,8 @@ export function EmailModal({ open, setOpen, updateUser }: TProps) {
                 onChange={handleChange}
                 aria-label="lab API tabs example"
               >
-                <Tab label="Sign In" value="1" />
-                <Tab label="Sign Up" value="2" />
+                <Tab label="Sign In" value="1" id="signIn" />
+                <Tab label="Sign Up" value="2" id="signUp"/>
               </TabList>
             </Box>
             {/* SIGN IN */}

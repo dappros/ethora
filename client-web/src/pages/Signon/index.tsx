@@ -308,6 +308,7 @@ export default function Signon() {
               onClick={onGoogleClick}
               sx={{ margin: 1 }}
               fullWidth
+              id="googleLogin"
               variant="contained"
               startIcon={<GoogleIcon />}
               style={{
@@ -325,6 +326,7 @@ export default function Signon() {
               sx={{ margin: 1 }}
               fullWidth
               variant="contained"
+              id="metamaskLogin"
               onClick={() => onMetamaskLogin()}
               startIcon={<DiamondIcon />}
               style={{
@@ -342,6 +344,8 @@ export default function Signon() {
               sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
               fullWidth
               variant="contained"
+              id="regularLogin"
+
               onClick={() => setOpenEmail(true)}
             >
               Sign In with E-mail

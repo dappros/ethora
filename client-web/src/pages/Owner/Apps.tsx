@@ -118,6 +118,7 @@ export default function Apps({ onRowClick }: Props) {
         >
           <span style={{ marginLeft: "auto" }}>
             <IconButton
+              id="addApp"
               disabled={!isEnoughCoinsToCreateApp || !canCreateApp}
               onClick={onAddApp}
               size="large"
@@ -214,10 +215,10 @@ export default function Apps({ onRowClick }: Props) {
                       
                     }}
                   >
-                    <IconButton onClick={() => onEdit(app)}>
+                    <IconButton onClick={() => onEdit(app)} id="settings">
                       <SettingsIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => history.push('/statistics/' + app._id)}>
+                    <IconButton onClick={() => history.push('/statistics/' + app._id)} id="statistics">
                       <LeaderboardIcon color="primary" />
                     </IconButton>
                   </Box>
