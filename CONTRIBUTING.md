@@ -15,12 +15,22 @@ To get an overview of the project, read the [README](README.md). Here are some r
 - [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow)
 - [Collaborating with pull requests](https://docs.github.com/en/github/collaborating-with-pull-requests)
 
+## Ethora Foundation
 
-## Getting started
+Currently Ethora codebase is managed by Ethora Foundation which is governed by Dappros (Dappros Ltd, company number 11455432, registered in England and Wales) and DeepX (Covijn Ltd, company number 10256693, registered in England and Wales). You may contact Ethora Foundation via https://www.dappros.com/contact-us/
+
+## License and distribution of Ethora code including your contributions
 
 Check our license https://github.com/dappros/ethora/blob/main/LICENSE to make sure you understand how Ethora engine is distributed and that you are fine with your work being distributed this way. Do not contribute any work which you don't want to be distributed.
 
 Please note that the company running this project (Dappros) and RTC infrastructure (DeepX) may be in some cases distributing this product (Ethora) under a commercial license to enterprise customers. This is done in order to help finance this project's R&D. **Please do not make code, documentation or other project contributions in cases where you are not happy for them to be included into our commercial versions too**. **Please do not make code, documentation or other project contributions in cases where you would like to retain or claim any intellectual property ownership over such contributions** or other parts of the project. In case you would like to restrict your contribution solely to the open source branch of the project or in case you have any other concerns around these matters, please **contact us first** https://www.dappros.com/contact-us/ to discuss this prior to your contribution. We are open in the future to maintain two versions of the product, an open-source and closed sourced one, or simply maintain the open-source one only, once this becomes practical. At the moment (August 2023) this isn't practical as we don't receive funding for the open source project maintenance and we don't recieve any significant code contributions from the open source community outside of our team. As soon as this situation changes we'll be happy to refine the approach on contributions accordingly. 
+
+## Copyright assignment
+
+!IMPORTANT - PLEASE MAKE SURE YOU AGREE WITH THE COPYRIGHT ASSIGNMENT WHEN CONTRIBUTING ANY CODE TO ETHORA CODEBASE!
+
+Due to the reasons stated above and in order to allow Ethora Foundation to govern the project efficiently, we require all contributors to assign copyright in their contributions over to Ethora Foundation. By submitting your code to Ethora effectively you are gifting the full rights over that contribution, to Ethora Foundation. This way the codebase of Ethora becomes a solid codebase free from any copyright issues, conflicts or claims and Ethora Foundation can maintain it efficiently including allowing other contributors to work on evolving or improving your contributed code, licensing the whole codebase under the same license etc.
+Some of the reasoning why copyright assingment is needed can be found in famous open source projects such as here: https://www.gnu.org/licenses/why-assign and https://www.fsf.org/bulletin/2014/spring/copyright-assignment-at-the-fsf.
 
 ### Issues
 
