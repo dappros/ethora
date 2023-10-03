@@ -30,7 +30,7 @@ export class XmppClass {
     this.client.on("online", (jid) => {
       xmppMessagesHandler.getListOfRooms(this);
       this.subscribeToDefaultChats();
-      this.getPrivateXmlRooms()
+      this.getPrivateXmlRooms();
     });
     this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
     this.client.on("stanza", (stanza) =>
@@ -844,6 +844,17 @@ export class XmppClass {
     messageId: string,
     data: any
   ) => {
+    // <message
+    //   id="replaceMessage"
+    //   type="groupchat"
+    //   to="wend@conference.dev.dxmpp.com"
+    // >
+    //   <replace
+    //     id="1696317314425072"
+    //     xmlns="urn:xmpp:message-correct:0"
+    //     text="first message edited now"
+    //   />
+    // </message>;
     const stanza = xml(
       "message",
       {
@@ -852,15 +863,10 @@ export class XmppClass {
         type: "groupchat",
         to: roomJID,
       },
-      xml("body", {}, replaceText),
       xml("replace", {
         id: messageId,
         xmlns: "urn:xmpp:message-correct:0",
-      }),
-      xml("data", {
-        xmlns: "http://dev.dxmpp.com",
-        senderJID: this.client.jid?.toString(),
-        ...data,
+        text: replaceText,
       })
     );
     this.client.send(stanza);

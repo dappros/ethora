@@ -41,7 +41,6 @@ export class XmppHandler {
       const data = stanza?.getChild("data");
       const replace = stanza?.getChild("replace");
       const archived = stanza?.getChild("archived");
-
       const id = stanza.getChild("archived")?.attrs.id;
       if (!data || !body || !id) {
         return;
@@ -108,6 +107,7 @@ export class XmppHandler {
       stanza.is("message") &&
       stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2"
     ) {
+      console.log(stanza.toString(), 'historyMessage')
       const body = stanza
         .getChild("result")
         ?.getChild("forwarded")
@@ -525,12 +525,14 @@ export class XmppHandler {
   //when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
   onSendReplaceMessageStanza = (stanza: any) => {
     if (stanza.attrs.id === "replaceMessage") {
-      const replaceMessageId = Number(
-        stanza.children.find((item) => item.name === "replace").attrs.id
-      );
-      const messageString = stanza.children.find((item) => item.name === "body")
-        .children[0];
-      useStoreState.getState().replaceMessage(replaceMessageId, messageString);
+      const replaceMessage: { text: string; id: string } = stanza.children.find(
+        (item) => item.name === "replace"
+      ).attrs;
+        console.log(stanza.toString(), 'editMessage')
+      const messageString = replaceMessage?.text;
+      useStoreState
+        .getState()
+        .replaceMessage(+replaceMessage.id, messageString);
     }
   };
 
