@@ -173,10 +173,34 @@ class XmppService {
         type: "groupchat",
         to: room,
       },
-      xml("body", {}, text),
       xml("replace", {
         id: msgId,
         xmlns: "urn:xmpp:message-correct:0",
+        text
+      })
+    );
+
+    console.log("-----> ", message.toString());
+
+    this.client.send(message);
+  }
+
+  sendReaction(room, msgId, text) {
+    if (!room.includes("@")) {
+      room = `${room}@${XMPP_CONFERENCE}`;
+    }
+
+    const message = xml(
+      "message",
+      {
+        id: Date.now().toString(),
+        type: "groupchat",
+        to: room,
+      },
+      xml("reaction", {
+        id: msgId,
+        xmlns: "urn:xmpp:reactions:0",
+        short_name: text
       })
     );
 

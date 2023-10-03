@@ -159,6 +159,31 @@ export default function Debug() {
           <button
             onClick={() => xmppService.editMessage(room, messageId, message)}
           >
+            Edit Message
+          </button>
+        </div>
+      </div>
+      <div>
+        <div>Send Raction Message</div>
+        <div>
+          <input
+            placeholder="room jid"
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+          />
+          <input
+            placeholder="message id"
+            value={messageId}
+            onChange={(e) => setMessageId(e.target.value)}
+          />
+          <input
+            placeholder="reaction short name"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <button
+            onClick={() => xmppService.sendReaction(room, messageId, message)}
+          >
             Edit
           </button>
         </div>
