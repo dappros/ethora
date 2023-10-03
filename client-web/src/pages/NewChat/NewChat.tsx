@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+
+import React, { useRef, useState, ChangeEvent } from "react";
+import { Cropper, CropperRef } from "react-advanced-cropper";
+import "react-advanced-cropper/dist/style.css";
 import {
   Avatar,
   Box,
@@ -8,6 +11,7 @@ import {
   TextField,
   Typography,
   useTheme,
+  Modal,
 } from "@mui/material";
 import { useFormik } from "formik";
 import { sha256 } from "js-sha256";
@@ -17,13 +21,97 @@ import { CONFERENCEDOMAIN } from "../../constants";
 import { useHistory, useLocation } from "react-router";
 import { httpWithAuth } from "../../http";
 import { useSnackbar } from "../../context/SnackbarContext";
+import { styled } from "@mui/material";
+import PhotoSharpIcon from '@mui/icons-material/PhotoSharp';
+import Badge from '@mui/material/Badge'
 
-export interface INewChat {}
 
-const NewChat: React.FC<INewChat> = ({}) => {
+
+const StyledTextField = styled(TextField)(() => ({
+  "& .MuiFormLabel-asterisk": {
+    color: "red"
+  }
+}));
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "min-content",
+  height: "auto",
+  borderRadius: '10px',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
+
+
+
+export interface INewChat { }
+
+const NewChat: React.FC<INewChat> = ({ }) => {
   const theme = useTheme();
   const user = useStoreState((state) => state.user);
   const setActiveRoomFilter = useStoreState((state) => state.setActiveRoomFilter);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const cropperRef = useRef<CropperRef>(null);
+
+  const [image, setImage] = useState(
+    '',
+  );
+
+  const onCrop = () => {
+    const cropper = cropperRef.current;
+    if (cropper) {
+      const canvas = cropper.getCanvas()
+
+      if (canvas) {
+        let file = new File([canvas.toDataURL()], "newAvatar.png", { type: "image/png" })
+        console.log(file)
+        onFileChange(file)
+
+      }
+    }
+  };
+  const onLoadImage = (event: ChangeEvent<HTMLInputElement>) => {
+    handleOpen()
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+    console.log(event.target)
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+    }
+  };
+  
+  const onFileChange = async (e: any) => {
+    setLoading(true);
+    console.log(e)
+    try {
+      const fd = new FormData();
+      fd.append("files", e);
+      const fileUploadResp = await httpWithAuth().post("/files", fd);
+      console.log(fd, fileUploadResp)
+      formik.setValues((prev) => ({
+        ...prev,
+        chatImage: fileUploadResp.data.results[0].location,
+      }));
+      console.log(fileUploadResp.data.results[0].location)
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+    handleClose()
+  };
+
+
 
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
@@ -40,7 +128,7 @@ const NewChat: React.FC<INewChat> = ({}) => {
     },
     onSubmit: async ({ chatName, description, chatImage }) => {
       setLoading(true);
-      const randomNumber = Math.round(Math.random()*100000)
+      const randomNumber = Math.round(Math.random() * 100000)
       const name = chatName + new Date().getTime() + randomNumber;
       const roomHash = sha256(name);
       xmpp.createNewRoom(roomHash);
@@ -71,108 +159,127 @@ const NewChat: React.FC<INewChat> = ({}) => {
       history.push("/chat/" + roomHash);
     },
   });
-  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
 
-    try {
-      const fd = new FormData();
-      fd.append("files", e.target.files[0]);
-      const fileUploadResp = await httpWithAuth().post("/files", fd);
-      formik.setValues((prev) => ({
-        ...prev,
-        chatImage: fileUploadResp.data.results[0].location,
-      }));
-    } catch (error) {
-      console.log(error);
-    }
-    setLoading(false);
-  };
+
+
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Cropper
+            ref={cropperRef}
+            src={image}
+            className="example__cropper"
+            backgroundClassName="example__cropper-background"
+          />
+          {image && (<>
+            <button className="example__button" onClick={onCrop}>
+              Set Image
+            </button>
+          </>)}
+        </Box>
+      </Modal>
+
       <Box
-        style={{
+        sx={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
+          width: "fit-content",
+          m: "auto",
+          mt: "3rem",
         }}
       >
-        <Box>
-          <Typography variant="h4">Create new chat</Typography>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              width: "50vw",
-              gap: "10px",
-            }}
-          >
-            <IconButton>
-              <input
-                accept="image/*"
-                style={{ display: "none" }}
-                id="raised-button-file"
-                multiple
-                type="file"
-                onChange={onFileChange}
-              />
-              <label htmlFor="raised-button-file">
-                <Avatar
-                  sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    // padding: "5px",
-                    width: 60,
-                    height: 60,
-                  }}
-                  src={formik.values.chatImage}
-                ></Avatar>
-              </label>
-            </IconButton>
-            <TextField
-              margin="dense"
-              inputProps={{
-                autoComplete: "off",
-              }}
-              label="Chat Name"
-              name="chatName"
-              type="text"
-              fullWidth
-              variant="outlined"
-              onChange={formik.handleChange}
-              value={formik.values.chatName}
-            />
-          </Box>
-          <TextField
-            margin="dense"
-            inputProps={{
-              autoComplete: "off",
-            }}
-            label="Description"
-            name="description"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={formik.handleChange}
-            value={formik.values.description}
+
+        <Typography variant="h4">Create a new room</Typography>
+
+
+
+        <IconButton>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="raised-button-file"
+            type="file"
+            ref={inputRef}
+            onChange={onLoadImage}
           />
-          <Box
-            sx={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "10px",
-            }}
-          >
-            <Button
-              variant={"outlined"}
-              disabled={loading}
-              onClick={() => formik.handleSubmit()}
+          <label htmlFor="raised-button-file">
+            <Badge
+              badgeContent={"+"}
+              color="secondary"
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              overlap="circular"
             >
-              Sumbit
-            </Button>
-          </Box>
-        </Box>
+              <Avatar
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  borderRadius: '50%',
+                  borderColor: "red",
+                  width: 55,
+                  height: 55,
+                }}
+                src={formik.values.chatImage}
+              >
+                <PhotoSharpIcon fontSize="large" />
+              </Avatar>
+            </Badge>
+          </label>
+        </IconButton>
+        <StyledTextField
+          margin="dense"
+          inputProps={{
+            autoComplete: "off",
+          }}
+          label="Chat Name"
+          name="chatName"
+          type="text"
+          fullWidth
+          required
+          variant="outlined"
+          onChange={formik.handleChange}
+          value={formik.values.chatName}
+        />
+
+
+        <TextField
+          margin="dense"
+          inputProps={{
+            autoComplete: "off",
+          }}
+          label="Description"
+          name="description"
+          type="text"
+          fullWidth
+          multiline
+          rows={3}
+          variant="outlined"
+          onChange={formik.handleChange}
+          value={formik.values.description}
+        />
+
+        <Button
+          variant={"outlined"}
+          disabled={loading}
+          onClick={() => formik.handleSubmit()}
+          sx={{
+            mt: "1rem",
+          }}
+        >
+          Sumbit
+        </Button>
+
       </Box>
+
     </Container>
   );
 };

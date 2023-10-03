@@ -108,7 +108,8 @@ const initMenuItems = (user: TUser, ACL: IUserAcl) => {
       name: "Messaging",
       visible: true,
     
-    items: [{ name: "Chats", id: "/chat/none", visible: true },{ name: "New room", id: "/newchat", visible: true },],
+    items: [{ name: "Chats", id: "/chat/none", visible: true }
+    ,{ name: "New room", id: "/newchat", visible: true },],
     },
     menuActionsSection,
     billingSection(user),

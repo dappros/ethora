@@ -36,6 +36,7 @@
     "js-sha256": "^0.9.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
+    "react-advanced-cropper": "^0.19.3",
     "react-audio-voice-recorder": "^1.0.4",
     "react-content-loader": "^6.2.0",
     "react-dom": "^18.2.0",
