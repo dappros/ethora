@@ -93,6 +93,7 @@ export class XmppHandler {
   };
 
   onMessageHistory = async (stanza: any) => {
+    console.log("<=== ", stanza.toString())
     if (
       stanza.is("message") &&
       stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2"
@@ -515,6 +516,7 @@ export class XmppHandler {
   //when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
   onSendReplaceMessageStanza = (stanza: any) => {
     if (stanza.attrs.id === "replaceMessage") {
+      console.log("<========== onSendReplaceMessageStanza", stanza.toString())
       const replaceMessageId = Number(
         stanza.children.find((item) => item.name === "replace").attrs.id
       );

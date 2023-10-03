@@ -848,17 +848,14 @@ export class XmppClass {
         type: "groupchat",
         to: roomJID,
       },
-      xml("body", {}, replaceText),
       xml("replace", {
         id: messageId,
         xmlns: "urn:xmpp:message-correct:0",
-      }),
-      xml("data", {
-        xmlns: "http://dev.dxmpp.com",
-        senderJID: this.client.jid?.toString(),
-        ...data,
+        text: replaceText
       })
     );
+
+    console.log("=======> sendReplaceMessageStanza =>", stanza.toString())
     this.client.send(stanza);
   };
 
