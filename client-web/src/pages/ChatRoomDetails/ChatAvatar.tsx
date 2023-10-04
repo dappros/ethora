@@ -48,6 +48,10 @@ export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
     const newRoomData = Object.assign({}, currentRoomData);
     newRoomData.group = status;
     updateUserChatRoom(newRoomData);
+    const favouriteRooms = useStoreState
+      .getState()
+      .userChatRooms.filter((r) => r.group === ROOMS_FILTERS.favourite);
+    xmpp.setPrivateXmlRooms(favouriteRooms);
   };
   const goToChangeBackground = (e: React.MouseEvent<HTMLElement>) => {
     if (isAllowedToChangeData) {

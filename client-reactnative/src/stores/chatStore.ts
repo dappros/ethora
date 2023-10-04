@@ -1082,77 +1082,61 @@ export class ChatStore {
         if (stanza.children[0].attrs.xmlns === "urn:xmpp:mam:2") {
           const singleMessageDetailArray =
             stanza.children[0].children[0].children[0].children;
-
+          const replace = stanza
+            .getChild("result")
+            ?.getChild("forwarded")
+            ?.getChild("message")
+            ?.getChild("replaced");
           const message = createMessageObject(singleMessageDetailArray);
-          if (message._id === "1676444732726065") {
-            console.log(message);
-          }
-          //check if the stanza is a replace stanza
-          if (message.isReplace) {
-            this.addToReplaceMessageList(
-              message.replaceMessageId,
-              message.text as string
-            );
-          } else {
-            //check if the current stanza is an edited message.
-            const replaceMessageItem = this.replaceMessageList.find(
-              (item) => message._id === item.replaceMessageId
-            );
-            if (replaceMessageItem) {
-              message.text = replaceMessageItem.replaceMessageText;
-              message.isEdited = true;
-              this.removeFromReplaceMessageList(
-                replaceMessageItem.replaceMessageId
+          message.isEdited = !!replace;
+
+          // if(this.replaceMessageList.find(item => message._id === item.replaceMessageId)){
+          //     message.text = item.rep
+          // }
+          const messageAlreadyExist = this.messages.findIndex(
+            (x: { _id: string }) => x._id === message._id
+          );
+          if (messageAlreadyExist === -1) {
+            temporaryArchiveMessages.push(message);
+            if (
+              this.blackList.find((item) => item.userJid === message.user._id)
+                ?.userJid
+            ) {
+              return;
+            }
+
+            if (message.system) {
+              if (message?.contractAddress && message.nftId) {
+                await updateMessageToWrapped(message.receiverMessageId, {
+                  nftId: message.nftId,
+                  contractAddress: message.contractAddress,
+                });
+              }
+
+              message.tokenAmount &&
+                (await updateTokenAmount(
+                  message.receiverMessageId,
+                  message.tokenAmount
+                ));
+            }
+
+            if (message.isReply && message.mainMessage?.id) {
+              const thread = temporaryArchiveMessages.filter(
+                (item) => item.mainMessage?.id === message.mainMessage?.id
+              );
+              this.updateMessageProperty(
+                message.mainMessage?.id,
+                "numberOfReplies",
+                thread.length
+              );
+              await updateNumberOfReplies(
+                message.mainMessage.id,
+                thread.length
               );
             }
-            // if(this.replaceMessageList.find(item => message._id === item.replaceMessageId)){
-            //     message.text = item.rep
-            // }
-            const messageAlreadyExist = this.messages.findIndex(
-              (x: { _id: string }) => x._id === message._id
-            );
-            if (messageAlreadyExist === -1) {
-              temporaryArchiveMessages.push(message);
-              if (
-                this.blackList.find((item) => item.userJid === message.user._id)
-                  ?.userJid
-              ) {
-                return;
-              }
 
-              if (message.system) {
-                if (message?.contractAddress && message.nftId) {
-                  await updateMessageToWrapped(message.receiverMessageId, {
-                    nftId: message.nftId,
-                    contractAddress: message.contractAddress,
-                  });
-                }
-
-                message.tokenAmount &&
-                  (await updateTokenAmount(
-                    message.receiverMessageId,
-                    message.tokenAmount
-                  ));
-              }
-
-              if (message.isReply && message.mainMessage?.id) {
-                const thread = temporaryArchiveMessages.filter(
-                  (item) => item.mainMessage?.id === message.mainMessage?.id
-                );
-                this.updateMessageProperty(
-                  message.mainMessage?.id,
-                  "numberOfReplies",
-                  thread.length
-                );
-                await updateNumberOfReplies(
-                  message.mainMessage.id,
-                  thread.length
-                );
-              }
-
-              await insertMessages(message);
-              this.addMessage(message);
-            }
+            await insertMessages(message);
+            this.addMessage(message);
           }
         }
 
@@ -1223,22 +1207,13 @@ export class ChatStore {
 
         //response to when a message is edited
         if (stanza.attrs.id === XMPP_TYPES.replaceMessage) {
-          // <message xmlns="jabber:client" xml:lang="en" to="olek@localhost/1216574346180782548712130" from="test_olek@conference.localhost/olek" type="groupchat" id="1635229272917013">
-          //   <archived by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:mam:tmp"/>
-          //   <stanza-id by="test_olek@conference.localhost" id="1635233863744841" xmlns="urn:xmpp:sid:0"/>
-          //   <replace xmlns="urn:xmpp:message-correct:0" id="1635229272917013"/>
-          //   <body>Wow</body>
-          // </message>
-          const replaceMessageId = stanza.children.find(
-            (item: { name: string }) => item.name === "replace"
-          ).attrs.id;
-          const messageString = stanza.children.find(
-            (item: { name: string }) => item.name === "body"
-          ).children[0];
-          // this.addToReplaceMessageList(replaceMessageId, messageString);
+          const replaceMessage: { text: string; id: string } =
+            stanza.children.find((item) => item.name === "replace").attrs;
+          const replaceMessageId = replaceMessage.id;
+          const replaceMessageText = replaceMessage.text;
 
-          this.editMessage(replaceMessageId, messageString);
-          await updateMessageText(replaceMessageId, messageString);
+          this.editMessage(replaceMessageId, replaceMessageText);
+          await updateMessageText(replaceMessageId, replaceMessageText);
         }
 
         //capture message composing

@@ -117,6 +117,7 @@ export const HomeStackScreen = observer(() => {
             //@ts-ignore
             navigation.navigate("OtherUserProfileScreen", {
               linkToken: linkToken,
+              walletAddress: walletAddressFromLink
             });
           }
         } else {

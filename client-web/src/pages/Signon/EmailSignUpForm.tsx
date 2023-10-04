@@ -89,6 +89,7 @@ export function EmailSignUpForm(props: TProps) {
         margin="dense"
         label="Email"
         name="email"
+        id="email"
         type="email"
         value={formik.values.email}
         onChange={formik.handleChange}
@@ -101,6 +102,7 @@ export function EmailSignUpForm(props: TProps) {
         margin="dense"
         label="First Name"
         name="firstName"
+        id="firstName"
         type="text"
         fullWidth
         variant="standard"
@@ -118,6 +120,7 @@ export function EmailSignUpForm(props: TProps) {
         margin="dense"
         label="Last Name"
         name="lastName"
+        id="lastName"
         type="text"
         fullWidth
         variant="standard"
@@ -136,6 +139,7 @@ export function EmailSignUpForm(props: TProps) {
         <LoadingButton
           type="submit"
           variant="contained"
+          id="submitEmail"
           loading={formik.isSubmitting}
         >
           Continue

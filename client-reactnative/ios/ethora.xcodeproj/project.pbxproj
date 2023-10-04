@@ -10,6 +10,10 @@
 		00E356F31AD99517003FC87E /* ethoraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ethoraTests.m */; };
 		047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */; };
 		0607163529546DF5001C2821 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0607163429546DF5001C2821 /* StoreKit.framework */; };
+		06D563212AAEEAB4006B1EF6 /* token1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 06D5631D2AAEEAB4006B1EF6 /* token1.mp3 */; };
+		06D563222AAEEAB4006B1EF6 /* token3.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 06D5631E2AAEEAB4006B1EF6 /* token3.mp3 */; };
+		06D563232AAEEAB4006B1EF6 /* token5.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 06D5631F2AAEEAB4006B1EF6 /* token5.mp3 */; };
+		06D563242AAEEAB4006B1EF6 /* token7.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 06D563202AAEEAB4006B1EF6 /* token7.mp3 */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -60,6 +64,10 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ethoraTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ethoraTests.m; sourceTree = "<group>"; };
 		0607163429546DF5001C2821 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		06D5631D2AAEEAB4006B1EF6 /* token1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = token1.mp3; path = ../android/app/src/main/res/raw/token1.mp3; sourceTree = "<group>"; };
+		06D5631E2AAEEAB4006B1EF6 /* token3.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = token3.mp3; path = ../android/app/src/main/res/raw/token3.mp3; sourceTree = "<group>"; };
+		06D5631F2AAEEAB4006B1EF6 /* token5.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = token5.mp3; path = ../android/app/src/main/res/raw/token5.mp3; sourceTree = "<group>"; };
+		06D563202AAEEAB4006B1EF6 /* token7.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = token7.mp3; path = ../android/app/src/main/res/raw/token7.mp3; sourceTree = "<group>"; };
 		09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Montserrat-Regular.ttf"; path = "../src/assets/fonts/Montserrat/Montserrat-Regular.ttf"; sourceTree = "<group>"; };
 		0F7E1C0355BB4BDCAFC06485 /* Poppins-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-MediumItalic.ttf"; path = "../src/assets/fonts/Poppins-MediumItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* ethora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ethora.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,6 +159,10 @@
 				4E7B0E91289B95F30013098F /* ethora.entitlements */,
 				4E9915B82892AB9D00D9AD8A /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				06D5631D2AAEEAB4006B1EF6 /* token1.mp3 */,
+				06D5631E2AAEEAB4006B1EF6 /* token3.mp3 */,
+				06D5631F2AAEEAB4006B1EF6 /* token5.mp3 */,
+				06D563202AAEEAB4006B1EF6 /* token7.mp3 */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -347,6 +359,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				06D563242AAEEAB4006B1EF6 /* token7.mp3 in Resources */,
 				FE493C4F3D9242A08728CDC4 /* Poppins-Black.ttf in Resources */,
 				7E1A6A009ED94573A03F61D6 /* Poppins-BlackItalic.ttf in Resources */,
 				83EC36DAE4584536B8DF863B /* Poppins-Bold.ttf in Resources */,
@@ -355,10 +368,12 @@
 				778C41483F4D437294668A18 /* Poppins-ExtraBoldItalic.ttf in Resources */,
 				4ED4F8D3DC1F45C59A2D8464 /* Poppins-ExtraLight.ttf in Resources */,
 				F201A05578354A74BCFC49DA /* Poppins-ExtraLightItalic.ttf in Resources */,
+				06D563232AAEEAB4006B1EF6 /* token5.mp3 in Resources */,
 				7A169BEAFDB1479EBBD40D34 /* Poppins-Italic.ttf in Resources */,
 				4C3E3F128E694D3282DEAA66 /* Poppins-Light.ttf in Resources */,
 				7F2980908E4C4C538AB2BC51 /* Poppins-LightItalic.ttf in Resources */,
 				B00BB6115507414EA411F9B3 /* Poppins-Medium.ttf in Resources */,
+				06D563222AAEEAB4006B1EF6 /* token3.mp3 in Resources */,
 				365261CB6CD7446888F6D075 /* Poppins-MediumItalic.ttf in Resources */,
 				5D05FA05C0CA45D99BC9E631 /* Poppins-Regular.ttf in Resources */,
 				852AB1DF06D14D1DA54FB294 /* Poppins-SemiBold.ttf in Resources */,
@@ -367,6 +382,7 @@
 				A3623F0154DA49A1A8B17CDC /* Poppins-ThinItalic.ttf in Resources */,
 				4E9915B92892AB9D00D9AD8A /* GoogleService-Info.plist in Resources */,
 				43BFDF7455794237B047F589 /* Montserrat-Bold.ttf in Resources */,
+				06D563212AAEEAB4006B1EF6 /* token1.mp3 in Resources */,
 				F95A5B337F134A758DC95C53 /* Montserrat-Light.ttf in Resources */,
 				7716047D36CC47CB893BC0E9 /* Montserrat-Medium.ttf in Resources */,
 				AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */,

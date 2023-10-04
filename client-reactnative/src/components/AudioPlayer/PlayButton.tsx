@@ -18,7 +18,7 @@ export default function PlayButton({
 }) {
   return (
     <TouchableOpacity style={styles.playButtonContainer} onPress={onPress}>
-      <FontAwesome name={state} size={25} color="black" />
+      <FontAwesome name={state} size={25} color="white" />
     </TouchableOpacity>
   );
 }

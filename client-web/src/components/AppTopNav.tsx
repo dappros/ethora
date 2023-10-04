@@ -246,6 +246,7 @@ const AppTopNav = () => {
                       onClick={() =>
                         onRoomFilterClick(item.name as TActiveRoomFilter)
                       }
+                      id={item.name}
                       sx={{
                         color:
                           item.name === activeRoomFilter
@@ -262,7 +263,7 @@ const AppTopNav = () => {
           </Box>
           <Box style={{ marginLeft: "auto" }}>
             {!!mainCoinBalance && (
-              <Link to={"/"} style={{ textDecoration: "none" }}>
+              <Link to={"/"} style={{ textDecoration: "none" }} id="balance">
                 <Box
                   sx={{
                     marginRight: "10px",

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useRef, useState } from "react";
 import {
   Text,
   View,
@@ -9,70 +9,70 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
-} from 'react-native';
-import SecondaryHeader from '../components/SecondaryHeader/SecondaryHeader';
+} from "react-native";
+import SecondaryHeader from "../components/SecondaryHeader/SecondaryHeader";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import FastImage from 'react-native-fast-image';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import DocumentPicker from 'react-native-document-picker';
-import {uploadFiles} from '../helpers/uploadFiles';
-import {useStores} from '../stores/context';
-import {showToast} from '../components/Toast/toast';
-import {useNavigation} from '@react-navigation/native';
-import {httpPost} from '../config/apiService';
-import {docsURL, fileUpload} from '../config/routesConstants';
-import CheckBox from '@react-native-community/checkbox';
-import Modal from 'react-native-modal';
+} from "react-native-responsive-screen";
+import { commonColors, textStyles } from "../../docs/config";
+import AntIcon from "react-native-vector-icons/AntDesign";
+import FastImage from "react-native-fast-image";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import DocumentPicker from "react-native-document-picker";
+import { uploadFiles } from "../helpers/uploadFiles";
+import { useStores } from "../stores/context";
+import { showToast } from "../components/Toast/toast";
+import { useNavigation } from "@react-navigation/native";
+import { httpPost } from "../config/apiService";
+import { docsURL, fileUpload } from "../config/routesConstants";
+import CheckBox from "@react-native-community/checkbox";
+import Modal from "react-native-modal";
 import {
   audioMimetypes,
   imageMimetypes,
   pdfMimemtype,
-} from '../constants/mimeTypes';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+} from "../constants/mimeTypes";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 interface MintScreenProps {}
 
 const options = {
-  title: 'Select Avatar',
+  title: "Select Avatar",
   storageOptions: {
     skipBackup: true,
-    path: 'images',
+    path: "images",
   },
   saveToPhotos: true,
 };
 
 const UploadDocumentsScreen = (props: MintScreenProps) => {
-  const {loginStore, walletStore, apiStore, debugStore} = useStores();
+  const { loginStore, walletStore, apiStore, debugStore } = useStores();
   const navigation = useNavigation();
 
-  const [itemName, setItemName] = useState<string>('');
-  const [doctorsName, setDoctorsName] = useState<string>('');
-  const [reportType, setReportType] = useState<string>('');
-  const [reportKind, setReportKind] = useState<string>('');
+  const [itemName, setItemName] = useState<string>("");
+  const [doctorsName, setDoctorsName] = useState<string>("");
+  const [reportType, setReportType] = useState<string>("");
+  const [reportKind, setReportKind] = useState<string>("");
 
   const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const [filePickResult, setFilePickResult] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<number>(1);
   const [uploadedFile, setUploadedFile] = useState<any>({
-    _id: '',
-    createdAt: '',
+    _id: "",
+    createdAt: "",
     expiresAt: 0,
-    filename: '',
+    filename: "",
     isVisible: true,
-    location: '',
-    locationPreview: '',
-    mimetype: '',
-    originalname: '',
-    ownerKey: '',
+    location: "",
+    locationPreview: "",
+    mimetype: "",
+    originalname: "",
+    ownerKey: "",
     size: 0,
-    updatedAt: '',
-    userId: '',
+    updatedAt: "",
+    userId: "",
   });
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const [isSelected, setSelection] = useState<boolean>(true);
@@ -81,31 +81,32 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     setModalVisible(!isModalVisible);
   };
   const [open, setOpen] = useState(false);
+  const keyboardRef = useRef()
 
   const clearData = () => {
     setLoading(false);
     setAvatarSource(null);
-    setItemName('');
+    setItemName("");
     setSelection(false);
     setUploadedFile({
-      _id: '',
-      createdAt: '',
+      _id: "",
+      createdAt: "",
       expiresAt: 0,
-      filename: '',
+      filename: "",
       isVisible: true,
-      location: '',
-      locationPreview: '',
-      mimetype: '',
-      originalname: '',
-      ownerKey: '',
+      location: "",
+      locationPreview: "",
+      mimetype: "",
+      originalname: "",
+      ownerKey: "",
       size: 0,
-      updatedAt: '',
-      userId: '',
+      updatedAt: "",
+      userId: "",
     });
-    setReportKind('');
-    setReportType('');
+    setReportKind("");
+    setReportType("");
     setAvatarSource(null);
-    setDoctorsName('');
+    setDoctorsName("");
     setDate(new Date());
   };
 
@@ -114,7 +115,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     setModalVisible(false);
   };
   const createNftItem = async () => {
-    let item = {files: [uploadedFile.location], documentName: itemName};
+    let item = { files: [uploadedFile.location], documentName: itemName };
 
     // alert(JSON.stringify(item))
     const url = apiStore.defaultUrl + docsURL;
@@ -126,7 +127,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       debugStore.addLogsApi(res.data);
       walletStore.fetchWalletBalance(loginStore.userToken, true);
     } catch (error) {
-      showToast('error', 'Error', 'Cannot create item, try again later', 'top');
+      showToast("error", "Error", "Cannot create item, try again later", "top");
       console.log(error.response);
     }
     setLoading(false);
@@ -134,11 +135,11 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
 
   const onUploadClick = async () => {
     if (!itemName.length) {
-      showToast('error', 'Error', 'Please fill the item name.', 'top');
+      showToast("error", "Error", "Please fill the item name.", "top");
       return;
     }
     if (!isSelected) {
-      showToast('error', 'Error', 'Please confirm distribution rights', 'top');
+      showToast("error", "Error", "Please confirm distribution rights", "top");
       return;
     }
 
@@ -146,21 +147,21 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     walletStore.fetchOwnTransactions(
       loginStore.initialData.walletAddress,
       100,
-      0,
+      0
     );
     showToast(
-      'success',
-      'Success',
-      'You minted new document, it will appear in your profile',
-      'bottom',
+      "success",
+      "Success",
+      "You minted new document, it will appear in your profile",
+      "bottom"
     );
     clearData();
   };
 
   const chooseImageOption = () => {
-    Alert.alert('Choose a file', '', [
-      {text: 'Open from files', onPress: () => setChatAvatar('files')},
-      {text: 'Dismiss', onPress: () => console.log('dismissed')},
+    Alert.alert("Choose a file", "", [
+      { text: "Open from files", onPress: () => setChatAvatar("files") },
+      { text: "Dismiss", onPress: () => console.log("dismissed") },
     ]);
   };
 
@@ -178,7 +179,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       setAvatarSource(
         isPdf
           ? response.results[0].locationPreview
-          : response.results[0].location,
+          : response.results[0].location
       );
     } catch (error) {
       console.log(error);
@@ -186,15 +187,15 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
   };
 
   const setChatAvatar = async (type: string) => {
-    if (type === 'image') {
-      launchImageLibrary(options, response => {
+    if (type === "image") {
+      launchImageLibrary(options, (response) => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
+          console.log("User cancelled image picker");
         } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
+          console.log("ImagePicker Error: ", response.error);
         } else {
           const data = new FormData();
-          data.append('files', {
+          data.append("files", {
             name: response.fileName,
             type: response.type,
             uri: response.uri,
@@ -202,10 +203,10 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
           sendFiles(data);
         }
       });
-    } else if (type === 'photo') {
-      launchCamera(options, response => {
+    } else if (type === "photo") {
+      launchCamera(options, (response) => {
         const data = new FormData();
-        data.append('files', {
+        data.append("files", {
           name: response.fileName,
           type: response.type,
           uri: response.uri,
@@ -224,7 +225,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
         });
         setFilePickResult(res[0]);
         const data = new FormData();
-        data.append('files', {
+        data.append("files", {
           name: res[0].name,
           type: res[0].type,
           uri: res[0].uri,
@@ -240,13 +241,9 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     }
   };
 
+
   return (
-    <KeyboardAwareScrollView
-      style={{flex: 1, backgroundColor: 'white'}}
-      // behavior={ "height"}
-      // keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 20}
-      // enabled={ false}
-    >
+    <KeyboardAwareScrollView ref={keyboardRef}>
       <View>
         <SecondaryHeader title="Upload file" />
       </View>
@@ -265,31 +262,34 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
 
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
               marginTop: 20,
-            }}>
+            }}
+          >
             <TouchableOpacity
               onPress={chooseImageOption}
-              style={{alignItems: 'flex-start', width: wp('90%')}}>
+              style={{ alignItems: "flex-start", width: wp("90%") }}
+            >
               <View
                 style={{
                   ...classes.alignCenter,
-                  width: wp('90%'),
-                  height: wp('50%'),
+                  width: wp("90%"),
+                  height: wp("50%"),
                   borderRadius: 10,
                   borderColor: commonColors.primaryColor,
                   borderWidth: 1,
-                  marginRight: wp('5%'),
-                }}>
+                  marginRight: wp("5%"),
+                }}
+              >
                 {avatarSource !== null ? (
                   <>
                     {audioMimetypes[uploadedFile.mimetype] && (
                       <AntIcon
-                        name={'playcircleo'}
+                        name={"playcircleo"}
                         color={commonColors.primaryColor}
-                        size={hp('5%')}
+                        size={hp("5%")}
                       />
                     )}
                     {!!imageMimetypes[uploadedFile.mimetype] && (
@@ -300,8 +300,8 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                         }}
                         resizeMode={FastImage.resizeMode.contain}
                         style={{
-                          width: wp('90%'),
-                          height: wp('50%'),
+                          width: wp("90%"),
+                          height: wp("50%"),
                           borderRadius: 10,
                         }}
                       />
@@ -314,8 +314,8 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                         }}
                         resizeMode={FastImage.resizeMode.contain}
                         style={{
-                          width: wp('40%'),
-                          height: wp('40%'),
+                          width: wp("40%"),
+                          height: wp("40%"),
                           borderRadius: 10,
                         }}
                       />
@@ -325,16 +325,17 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
                   <View>
                     <AntIcon
                       name="plus"
-                      size={hp('10%')}
+                      size={hp("10%")}
                       color={commonColors.primaryColor}
                     />
                     <Text
                       style={{
-                        marginTop: 'auto',
+                        marginTop: "auto",
                         fontFamily: textStyles.lightFont,
-                        fontSize: hp('2.6%'),
+                        fontSize: hp("2.6%"),
                         color: commonColors.primaryColor,
-                      }}>
+                      }}
+                    >
                       Add file
                     </Text>
                   </View>
@@ -346,18 +347,20 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
           <TouchableOpacity
             disabled={loading}
             onPress={onUploadClick}
-            accessibilityLabel={'Create document'}
-            style={classes.createButton}>
+            accessibilityLabel={"Create document"}
+            style={classes.createButton}
+          >
             <View
               style={{
                 ...classes.alignCenter,
                 flex: 1,
-              }}>
+              }}
+            >
               {loading ? (
                 <ActivityIndicator
                   animating={loading}
                   size="small"
-                  color={'white'}
+                  color={"white"}
                 />
               ) : (
                 <Text style={classes.createButtonText}>Upload file</Text>
@@ -370,9 +373,9 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
               onTintColor={commonColors.primaryColor}
               value={isSelected}
               onValueChange={setSelection}
-              style={{marginRight: 3, color: commonColors.primaryColor}}
+              style={{ marginRight: 3, color: commonColors.primaryColor }}
             />
-            <Text style={{color: commonColors.primaryColor}}>
+            <Text style={{ color: commonColors.primaryColor }}>
               By proceeding I confirm that I have the rights to distribute the
               above content.
             </Text>
@@ -381,62 +384,74 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       </ScrollView>
       <Modal
         onBackdropPress={() => setModalVisible(false)}
-        isVisible={isModalVisible}>
+        isVisible={isModalVisible}
+      >
         <View
           style={{
-            backgroundColor: 'white',
+            backgroundColor: "white",
             borderRadius: 5,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <TouchableOpacity
             onPress={() => selectNftQuantity(1)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>1</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(2)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>2</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(3)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>3</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(4)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>4</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(5)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>5</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(6)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>6</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(7)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>7</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(8)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>8</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(9)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>9</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => selectNftQuantity(10)}
-            style={classes.rarityItems}>
+            style={classes.rarityItems}
+          >
             <Text style={classes.quantityItem}>10</Text>
           </TouchableOpacity>
 
@@ -452,7 +467,7 @@ export default UploadDocumentsScreen;
 const classes = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   contentContainer: {
     flex: 1,
@@ -460,41 +475,41 @@ const classes = StyleSheet.create({
     marginTop: 0,
   },
   section1: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 20,
   },
   alignCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   textStyle: {
     fontFamily: textStyles.lightFont,
     color: commonColors.primaryColor,
-    position: 'absolute',
+    position: "absolute",
   },
   itemNameInput: {
-    color: 'black',
+    color: "black",
     borderWidth: 1,
     borderColor: commonColors.primaryColor,
     borderRadius: 5,
     flex: 1,
     paddingLeft: 20,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     // height: wp('10%'),
     fontFamily: textStyles.lightFont,
-    fontSize: hp('1.8%'),
-    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
+    fontSize: hp("1.8%"),
+    paddingVertical: Platform.OS === "ios" ? 10 : 0,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    width: wp('80%'),
-    alignItems: 'center',
+    flexDirection: "row",
+    width: wp("80%"),
+    alignItems: "center",
     marginTop: 10,
   },
   quantityItem: {
-    fontSize: hp('2.23%'),
+    fontSize: hp("2.23%"),
     fontFamily: textStyles.regularFont,
-    textAlign: 'left',
+    textAlign: "left",
     paddingLeft: 5,
     color: commonColors.primaryColor,
   },
@@ -503,19 +518,19 @@ const classes = StyleSheet.create({
     paddingVertical: 5,
     borderBottomColor: commonColors.primaryColor,
     borderBottomWidth: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   createButton: {
     backgroundColor: commonColors.primaryColor,
     borderRadius: 5,
-    height: hp('7%'),
+    height: hp("7%"),
     marginTop: 20,
   },
   createButtonText: {
-    fontSize: hp('2%'),
-    color: '#fff',
+    fontSize: hp("2%"),
+    color: "#fff",
     fontFamily: textStyles.regularFont,
   },
 });

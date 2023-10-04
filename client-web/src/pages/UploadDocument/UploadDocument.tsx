@@ -118,6 +118,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
               />
               <Button
                 disabled={loading}
+                id="uploadFile"
                 color="secondary"
                 variant="contained"
                 onClick={() => fileRef?.current?.click()}
@@ -138,6 +139,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
               }}
               label="Document Name"
               name="documentName"
+              id="documentName"
               type="text"
               fullWidth
               variant="standard"
@@ -156,7 +158,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
               }
             />
             <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
-              <Button disabled={loading} type="submit" variant="contained">
+              <Button id="submitUpload" disabled={loading} type="submit" variant="contained">
                 Create
               </Button>
             </Box>

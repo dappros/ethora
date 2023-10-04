@@ -98,6 +98,7 @@ export interface IUser {
   xmppPassword: string;
   __v: number;
   _id: string;
+  signUpPlan?: string;
 }
 
 export type TPermission = {

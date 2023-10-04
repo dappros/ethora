@@ -5,20 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Input, View, Text, TextArea} from 'native-base';
-import * as React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import Modal from 'react-native-modal';
-import {commonColors, textStyles} from '../../../../docs/config';
+import { Input, View, Text, TextArea, KeyboardAvoidingView } from "native-base";
+import * as React from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import Modal from "react-native-modal";
+import { commonColors, textStyles } from "../../../../docs/config";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+} from "react-native-responsive-screen";
 
 interface ProfileModalProps {
   isVisible: boolean;
   onBackdropPress: any;
-  modalType: 'name' | 'description' | '';
+  modalType: "name" | "description" | "";
   isDescriptionEditable: boolean;
   description: string;
   onDescriptionChange: any;
@@ -45,38 +45,43 @@ const ProfileModal = (props: ProfileModalProps) => {
   } = props;
 
   const modalContent = () => {
-    if (modalType === 'description') {
+    if (modalType === "description") {
       return isDescriptionEditable ? (
         <View
           justifyContent="space-evenly"
           alignItems="center"
           backgroundColor="white"
           borderRadius={8}
-          height={hp('30%')}>
+          height={hp("30%")}
+        >
           <TextArea
             margin={5}
             maxLength={128}
             fontFamily={textStyles.lightFont}
-            fontSize={hp('1.6%')}
-            color={'black'}
+            fontSize={hp("1.6%")}
+            color={"black"}
             value={description}
-            onChangeText={text => onDescriptionChange(text)}
+            onChangeText={(text) => onDescriptionChange(text)}
             placeholder="Enter your description"
-            placeholderTextColor={commonColors.primaryColor} autoCompleteType={undefined}          />
+            placeholderTextColor={commonColors.primaryColor}
+            autoCompleteType={undefined}
+          />
 
           <TouchableOpacity
             onPress={setDescription}
             style={{
               backgroundColor: commonColors.primaryColor,
               borderRadius: 5,
-              height: hp('4.3'),
+              height: hp("4.3"),
               padding: 4,
-            }}>
+            }}
+          >
             <View justifyContent="center" alignItems="center" flex={1}>
               <Text
-                fontSize={hp('2%')}
+                fontSize={hp("2%")}
                 color="#fff"
-                fontFamily={textStyles.regularFont}>
+                fontFamily={textStyles.regularFont}
+              >
                 Done editing
               </Text>
             </View>
@@ -85,22 +90,23 @@ const ProfileModal = (props: ProfileModalProps) => {
       ) : null;
     }
 
-    if (modalType === 'name') {
+    if (modalType === "name") {
       return (
         <View
-          justifyContent={'center'}
+          justifyContent={"center"}
           alignItems="center"
           backgroundColor="white"
           borderRadius={8}
-          height={hp('30%')}>
+          height={hp("30%")}
+        >
           <Input
             margin={5}
             maxLength={15}
             fontFamily={textStyles.lightFont}
-            fontSize={hp('1.6%')}
-            color={'black'}
+            fontSize={hp("1.6%")}
+            color={"black"}
             value={firstName}
-            onChangeText={text => onNameChange('firstName', text)}
+            onChangeText={(text) => onNameChange("firstName", text)}
             placeholder="Enter your firstname"
             placeholderTextColor={commonColors.primaryColor}
           />
@@ -109,10 +115,10 @@ const ProfileModal = (props: ProfileModalProps) => {
             margin={5}
             maxLength={15}
             fontFamily={textStyles.lightFont}
-            fontSize={hp('1.6%')}
-            color={'black'}
+            fontSize={hp("1.6%")}
+            color={"black"}
             value={lastName}
-            onChangeText={text => onNameChange('lastName', text)}
+            onChangeText={(text) => onNameChange("lastName", text)}
             placeholder="Enter your lastname"
             placeholderTextColor={commonColors.primaryColor}
           />
@@ -122,14 +128,16 @@ const ProfileModal = (props: ProfileModalProps) => {
             style={{
               backgroundColor: commonColors.primaryColor,
               borderRadius: 5,
-              height: hp('4.3'),
+              height: hp("4.3"),
               padding: 4,
-            }}>
+            }}
+          >
             <View justifyContent="center" alignItems="center" flex={1}>
               <Text
-                fontSize={hp('2%')}
+                fontSize={hp("2%")}
                 color="#fff"
-                fontFamily={textStyles.regularFont}>
+                fontFamily={textStyles.regularFont}
+              >
                 Done editing
               </Text>
             </View>
@@ -141,11 +149,13 @@ const ProfileModal = (props: ProfileModalProps) => {
 
   return (
     <Modal
-      animationIn={'slideInUp'}
-      animationOut={'slideOutDown'}
+      animationIn={"slideInUp"}
+      animationOut={"slideOutDown"}
+      avoidKeyboard
       isVisible={isVisible}
-      onBackdropPress={onBackdropPress}>
-      <View>{modalContent()}</View>
+      onBackdropPress={onBackdropPress}
+    >
+        <View>{modalContent()}</View>
     </Modal>
   );
 };

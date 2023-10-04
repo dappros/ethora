@@ -1,29 +1,29 @@
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {IApiMetaRoom} from '../components/Chat/MetaNavigation';
-import {IDocument, TBalance} from '../stores/types';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { IApiMetaRoom } from "../components/Chat/MetaNavigation";
+import { IDocument, TBalance } from "../stores/types";
 
 export type HomeStackParamList = {
   RoomsListScreem: undefined;
-  ChatScreen: {chatJid: string; chatName?: string};
-  ProfileScreen: {viewItems?: boolean} | undefined;
+  ChatScreen: { chatJid: string; chatName?: string };
+  ProfileScreen: { viewItems?: boolean } | undefined;
   TransactionsScreen: undefined;
   AccountScreen: undefined;
   DebugScreen: undefined;
   MintScreen: undefined;
   ScanScreen: undefined;
   NewChatScreen:
-    | {metaDirection: string; metaRoom: IApiMetaRoom | undefined}
+    | { metaDirection: string; metaRoom: IApiMetaRoom | undefined }
     | undefined;
-  OtherUserProfileScreen: {linkToken: string} | undefined;
-  NftItemHistory: {item: TBalance; userWalletAddress: string};
+  OtherUserProfileScreen: { linkToken: string } | { walletAddress: string };
+  NftItemHistory: { item: TBalance; userWalletAddress: string };
   InviteFriendsScreen: undefined;
-  ChatDetailsScreen: {roomName: string; roomJID: string};
+  ChatDetailsScreen: { roomName: string; roomJID: string };
   ResetPasswordScreen: undefined;
   PrivacyAndDataScreen: undefined;
   ThreadScreen: undefined;
   SwiperChatScreen: undefined;
-  DocumentHistoryScreen: {item: IDocument; userWalletAddress: string};
-  ChangeBackgroundScreen: {roomJID: string; roomName: string};
+  DocumentHistoryScreen: { item: IDocument; userWalletAddress: string };
+  ChangeBackgroundScreen: { roomJID: string; roomName: string };
   UploadDocumentsScreen: undefined;
   CoinPurchaseScreen: undefined;
   AuthenticationScreen: undefined;

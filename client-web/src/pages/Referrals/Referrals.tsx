@@ -112,6 +112,7 @@ const Referrals: React.FC<IReferrals> = ({}) => {
           <Button
             onClick={onShareClick}
             variant={"contained"}
+            id="shareCode"
             startIcon={<ShareIcon />}
           >
             {link}
@@ -153,6 +154,7 @@ const Referrals: React.FC<IReferrals> = ({}) => {
           <Button
             disabled={formik.isSubmitting}
             variant={"contained"}
+            id="submitEarn"
             type={"submit"}
           >
             Earn coins

@@ -39,9 +39,8 @@ export class XmppHandler {
     if (stanza.attrs.id === "sendMessage") {
       const body = stanza?.getChild("body");
       const data = stanza?.getChild("data");
-      const replace = stanza?.getChild("replace");
+      const replace = stanza?.getChild("replaced");
       const archived = stanza?.getChild("archived");
-
       const id = stanza.getChild("archived")?.attrs.id;
       if (!data || !body || !id) {
         return;
@@ -64,14 +63,6 @@ export class XmppHandler {
         return;
       }
 
-      if (replace) {
-        const replaceMessageId = Number(replace.attrs.id);
-        const messageString = body.getText();
-        useStoreState
-          .getState()
-          .replaceMessage(replaceMessageId, messageString);
-      }
-
       if (data.attrs.isReply) {
         const messageId = Number(msg.data?.mainMessage?.id);
         useStoreState.getState().setNumberOfReplies(messageId);
@@ -91,7 +82,18 @@ export class XmppHandler {
       }
     }
   };
+  onPrivateXml = (stanza: any) => {
+    if (stanza.attrs.id === "privateXml") {
+      const rooms = stanza.children[0]?.children[0]?.children[0]?.children[0];
+      if (rooms) {
+        const parsedRooms: TUserChatRooms[] = JSON.parse(rooms);
 
+        parsedRooms.forEach((room) => {
+          useStoreState.getState().updateUserChatRoom(room);
+        });
+      }
+    }
+  };
   onMessageHistory = async (stanza: any) => {
     console.log("<=== ", stanza.toString())
     if (
@@ -116,7 +118,7 @@ export class XmppHandler {
         .getChild("result")
         ?.getChild("forwarded")
         ?.getChild("message")
-        ?.getChild("replace");
+        ?.getChild("replaced");
 
       const id = stanza.getChild("result")?.attrs.id;
       if (!data || !body || !delay || !id) {
@@ -132,7 +134,7 @@ export class XmppHandler {
       }
 
       const msg = createMessage(data, body, id, stanza.attrs.from);
-
+      msg.data.isEdited = !!replace;
       // console.log('TEST ', data.attrs)
       const blackList = useStoreState
         .getState()
@@ -141,57 +143,32 @@ export class XmppHandler {
       if (blackList) {
         return;
       }
-      //if current stanza has replace tag
-      if (replace) {
-        //if message loading
-        if (this.isGettingMessages) {
-          const replaceItem: replaceMessageListItemProps = {
-            replaceMessageId: Number(replace.attrs.id),
-            replaceMessageText: body.getText(),
-          };
-          //add the replace item, which has the id of the main message to be edited, in a temporory array
-          this.temporaryReplaceMessages.push(replaceItem);
+      if (!this.isGettingMessages) {
+        //check for messages in temp Replace message array agains the current stanza message id
+        const replaceItem = this.temporaryReplaceMessages.find(
+          (item) => item.replaceMessageId === msg.id
+        );
+        //if exists then replace the body with current stanza body
+        if (replaceItem) {
+          msg.body = replaceItem.replaceMessageText;
         }
-        //if message loading done
-        if (!this.isGettingMessages) {
-          const replaceMessageId = Number(replace.attrs.id);
-          const messageString = body.getText();
-          //replace body/text of message id in messageHistory array
-          useStoreState
-            .getState()
-            .replaceMessage(replaceMessageId, messageString);
-        }
-      } else {
-        this.temporaryMessages.push(msg);
+        useStoreState.getState().setNewMessageHistory(msg);
+        useStoreState.getState().sortMessageHistory();
+      }
 
-        if (!this.isGettingMessages) {
-          //check for messages in temp Replace message array agains the current stanza message id
-          const replaceItem = this.temporaryReplaceMessages.find(
-            (item) => item.replaceMessageId === msg.id
-          );
-          //if exists then replace the body with current stanza body
-          if (replaceItem) {
-            msg.body = replaceItem.replaceMessageText;
-          }
-          useStoreState.getState().setNewMessageHistory(msg);
-          useStoreState.getState().sortMessageHistory();
-        }
-
-        const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
-        if (
-          stanza.attrs.to.split("@")[0] !==
-            data.attrs.senderJID.split("@")[0] &&
-          stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
-          !this.isGettingFirstMessages &&
-          data.attrs.roomJid
-        ) {
-          // useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
-        }
-        if (data.attrs.isReply) {
-          const messageid = msg.data.mainMessage?.id;
-          useStoreState.getState().setNumberOfReplies(messageid);
-          this.updateTemporaryMessagesRepliesCount(messageid);
-        }
+      const untrackedRoom = useStoreState.getState().currentUntrackedChatRoom;
+      if (
+        stanza.attrs.to.split("@")[0] !== data.attrs.senderJID.split("@")[0] &&
+        stanza.attrs.from.split("@")[0] !== untrackedRoom.split("@")[0] &&
+        !this.isGettingFirstMessages &&
+        data.attrs.roomJid
+      ) {
+        // useStoreState.getState().updateCounterChatRoom(data.attrs.roomJid);
+      }
+      if (data.attrs.isReply) {
+        const messageid = msg.data.mainMessage?.id;
+        useStoreState.getState().setNumberOfReplies(messageid);
+        this.updateTemporaryMessagesRepliesCount(messageid);
       }
     }
   };
@@ -205,8 +182,7 @@ export class XmppHandler {
     const threadMessages = this.temporaryMessages.filter(
       (item) => item.data.mainMessage?.id === messageId
     );
-    this.temporaryMessages[messageIndex].numberOfReplies =
-      threadMessages;
+    this.temporaryMessages[messageIndex].numberOfReplies = threadMessages;
   };
 
   onLastMessageArchive = (stanza: Element, xmpp: any) => {
@@ -240,11 +216,6 @@ export class XmppHandler {
           }
         });
 
-        this.temporaryReplaceMessages.forEach((item) => {
-          useStoreState
-            .getState()
-            .replaceMessage(item.replaceMessageId, item.replaceMessageText);
-        });
         useStoreState.getState().setLoaderArchive(false);
         this.temporaryMessages = [];
         this.isGettingFirstMessages = false;
@@ -516,13 +487,13 @@ export class XmppHandler {
   //when messages are edited in realtime then capture broadcast with id "replaceMessage" and replace the text.
   onSendReplaceMessageStanza = (stanza: any) => {
     if (stanza.attrs.id === "replaceMessage") {
-      console.log("<========== onSendReplaceMessageStanza", stanza.toString())
-      const replaceMessageId = Number(
-        stanza.children.find((item) => item.name === "replace").attrs.id
-      );
-      const messageString = stanza.children.find((item) => item.name === "body")
-        .children[0];
-      useStoreState.getState().replaceMessage(replaceMessageId, messageString);
+      const replaceMessage: { text: string; id: string } = stanza.children.find(
+        (item) => item.name === "replace"
+      ).attrs;
+      const messageString = replaceMessage?.text;
+      useStoreState
+        .getState()
+        .replaceMessage(+replaceMessage.id, messageString);
     }
   };
 

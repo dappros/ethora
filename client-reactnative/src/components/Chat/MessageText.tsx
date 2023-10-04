@@ -312,6 +312,7 @@ export const MessageText = observer((props: any) => {
         }, 2000);
         navigation.navigate("OtherUserProfileScreen", {
           linkToken: linkToken || "",
+          walletAddress: walletAddressFromLink
         });
       }
     };

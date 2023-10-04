@@ -131,6 +131,7 @@ export const Visibility: React.FC<VisibilityProps> = ({ handleChangeTab }) => {
         disabled={loading === "profile"}
         onClick={(event) => handleChangeTab(event, 1)}
         variant="contained"
+        id="manageProfileShares"
       >
         Manage profile shares
       </Button>
@@ -174,6 +175,8 @@ export const Visibility: React.FC<VisibilityProps> = ({ handleChangeTab }) => {
         fullWidth={false}
         onClick={(event) => handleChangeTab(event, 2)}
         variant="contained"
+        id="manageDocumentShares"
+
       >
         Manage documents shares
       </Button>
