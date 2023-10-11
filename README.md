@@ -8,8 +8,8 @@
 
 [![Discord](https://img.shields.io/badge/%3Cethora%3E-%237289DA.svg?style=flat&logo=discord&logoColor=white)](https://discord.gg/Sm6bAHA3ZC) [![Twitter URL](https://img.shields.io/twitter/url?url=https%3A%2F%2Fgithub.com%2Fdappros%2Fethora)](https://twitter.com/intent/tweet?url=https%3A%2F%2Fgithub.com%2Fdappros%2Fethora%2F&via=tarasfilatov&text=check%20out%20Ethora%20%23web3%20%23social%20app%20engine&hashtags=lowcode%2Creactnative%2Copensource%2Cnocode) [![Website](https://img.shields.io/website?url=https%3A%2F%2Fethora.com%2F)](https://ethora.com/) [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCRvrXwMOU0WBkRZyFlU7V_g)](https://www.youtube.com/channel/UCRvrXwMOU0WBkRZyFlU7V_g)
 
-# Ethora: open-source low-code app engine
-Mobile 📱 + Web/desktop 💻 web3 🌐 social 💬 platform for your community. 
+# Ethora: open-source 'super app' engine
+Mobile (React Native) 📱 + Web (React.js) 💻 web3 🌐 social 💬 platform for your community. 
 
 [ iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification ]
 
@@ -19,6 +19,36 @@ Simply:<br />
 🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
 Coding experience is optional. React Native and React.js developers can make deeper changes altering or extending any of the functionalities. 
+
+---
+
+### 📣 Project update - 11th October 2023 📣
+
+Hi all and thank you for your interest and support of Ethora engine and platform! 
+
+There are important updates and improvements coming soon:
+
+**1. Architecture review and refactoring.**
+
+The project has been developing over years, new features and changes have happened. We have done some refactoring before, but now there is a time to do further improvements.
+Below is a simplified scheme of our architecture. We invite any feedback or questions regarding the architecture and code of React Native and React.js clients as we are now going for a push to further improve the codebase to make it easier to use and modify for any developer. Please be critical and candid, tell us openly if you struggle to understand something etc - we will make the most use out of your feedback!
+
+<img width="800" alt="Screenshot 2023-10-11 at 12 07 13" src="https://github.com/dappros/ethora/assets/328787/72db36b2-cd13-41ba-bf5d-c625ea5d55ae">
+
+<br />**2. Design improvements**
+
+Great design update is coming soon first for the Mobile client and then Web. We are making the design layout more slick and professional, at the same time ensuring it is easy to customize for different projects.
+
+<img width="600" alt="Screenshot 2023-10-11 at 12 11 27" src="https://github.com/dappros/ethora/assets/328787/0128fad0-7422-4671-b34b-c3d9f222a110">
+
+<img width="600" alt="Screenshot 2023-10-11 at 12 12 28" src="https://github.com/dappros/ethora/assets/328787/d5b52d93-a8fb-4c7e-8860-9ad4c5dbcdca">
+
+<img width="600" alt="Screenshot 2023-10-11 at 12 12 52" src="https://github.com/dappros/ethora/assets/328787/e87c0dc4-6f18-4852-8a73-a68a6f076c68">
+
+<br />**3. Self hosted option via AWS Marketplace or Docker Hub**
+
+Currently this engine required Ethora API and Chat server running from our Cloud server. It has a generous free tier and a reasonable business plan. 
+Due to a popular demand, we are also going to make available a self hosted version. Those projects who prefer our Cloud option can rest assured you will be able to continue using it on the Free plan, upgrade to Business when you need extra support and SLA or migrate to a self-hosted if you need so in future.
 
 ---
 
@@ -46,6 +76,10 @@ Standard UI<br />
   
 Branded (customized) UI<br />
 <img width="622" alt="Screenshot 2023-05-04 at 17 31 05" src="https://user-images.githubusercontent.com/328787/236267243-d0c8f324-4a27-4743-a547-702351385a21.png">
+
+
+
+
 
 ---
 
