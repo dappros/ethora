@@ -49,7 +49,7 @@ Great design update is coming soon first for the Mobile client and then Web. We 
 
 Check out a video on Ethora engine by the famous @CodeEater21. He talks about our engine and covers the steps to build your project using Ethora for both iOS and Android: https://www.youtube.com/watch?v=pSomfrBgPzI
 
-<img width="600" alt="Screenshot 2023-10-11 at 14 03 44" src="https://github.com/dappros/ethora/assets/328787/0f8dc167-07dd-4bd5-abd0-9256fa37e53b">
+<a href="https://www.youtube.com/watch?v=pSomfrBgPzI"><img width="600" alt="Screenshot 2023-10-11 at 14 03 44" src="https://github.com/dappros/ethora/assets/328787/0f8dc167-07dd-4bd5-abd0-9256fa37e53b"></a>
 
 
 <br />**4. Self hosted option via AWS Marketplace or Docker Hub**
