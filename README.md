@@ -45,7 +45,14 @@ Great design update is coming soon first for the Mobile client and then Web. We 
 
 <img width="600" alt="Screenshot 2023-10-11 at 12 12 52" src="https://github.com/dappros/ethora/assets/328787/e87c0dc4-6f18-4852-8a73-a68a6f076c68">
 
-<br />**3. Self hosted option via AWS Marketplace or Docker Hub**
+<br />**3. New Youtube video**
+
+Check out a video on Ethora engine by the famous @CodeEater21. He talks about our engine and covers the steps to build your project using Ethora for both iOS and Android: https://www.youtube.com/watch?v=pSomfrBgPzI
+
+<img width="600" alt="Screenshot 2023-10-11 at 14 03 44" src="https://github.com/dappros/ethora/assets/328787/0f8dc167-07dd-4bd5-abd0-9256fa37e53b">
+
+
+<br />**4. Self hosted option via AWS Marketplace or Docker Hub**
 
 Currently this engine required Ethora API and Chat server running from our Cloud server. It has a generous free tier and a reasonable business plan. 
 Due to a popular demand, we are also going to make available a self hosted version. Those projects who prefer our Cloud option can rest assured you will be able to continue using it on the Free plan, upgrade to Business when you need extra support and SLA or migrate to a self-hosted if you need so in future.
