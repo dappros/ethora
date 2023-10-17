@@ -70,7 +70,8 @@ STATS
 * App sends getRooms request to Chat server.
 * Chat server returns the list of rooms the User is participant/occupant (this works via our custom module at Ejabberd)
 * App sends getRoomArchiveStanza request to Chat server for all rooms from the above list. App includes the X last messages parameter within getRoomArchiveStanza to only receive last X messages. 
-* Chat server returns X messages for each room. 
+* Chat server returns X messages for each room.
+* App (Mobile or Web client) adds the received messages into Messages array (all new messages for all new rooms). XMPP messages IDs are used for IDs (timestamp with microseconds) in frontend storage as well.
 * App displays the Chats List screen showing all rooms User is subscribed to including the last message for each room (including metadata such as timestamp and author). 
 
 #### User enters a Room and receives chat history (messages archive) 
@@ -108,6 +109,14 @@ STATS
 * App sends XMPP “createNewRoom” request to Chat server
 * Chat server creates the new Room, assigns User as its Owner and subscribes User to it
 * App redirects the User to the list of Rooms showing the newly created Room
+
+#### Messages formats
+
+Currently there are three message types:
+
+* Text message
+* Media 
+* System message (e.g. coin transferred)
 
 ### XMPP stanza contents
 
