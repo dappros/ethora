@@ -132,6 +132,10 @@ sendMessageStanza data content
 
 (here User means the author of the message)
 
+TO DO: replace items such as firstName, lastName, photoURL (avatar image) with vCard. 
+Along with Messages object, there should be a Users object within each room so that frontend client can quickly access this information.
+This will avoid situation such as when Users have changed their avatar or name and it remains static in the history.
+
 * **senderFirstName**, **senderLastName** - first and last name of the User, to display in chat Room
 * **senderWalletAddress** - the wallet address of the User (in Ethereum / EVM format) so that message author can be easily tipped with Coins or receive other transfers directly in the chat Room
 * **isSystemMessage** - if this flag is set, App UI will not process this as a standard text message, and will instead process this as a system message. For example, this could be a system message informing others about a Coin transfer from one User to another. Such message will be displayed in a different, more subtle way, in order to not clutter the Room
