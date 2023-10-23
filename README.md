@@ -76,6 +76,12 @@ Startups, communities and enterprises come to use Ethora engine so they can deli
 
 ---
 
+### Ethora platform entities and user journey
+<img width="1128" alt="Screenshot 2023-10-23 at 15 18 20" src="https://github.com/dappros/ethora/assets/328787/9546ee2a-916c-4b80-a974-ef45f5b37959">
+
+
+---
+
 ### React Native (iOS/Android) version
 
 Standard UI<br />
