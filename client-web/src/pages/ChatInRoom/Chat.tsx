@@ -1,3 +1,12 @@
+// This component renders the Chats List and Chat Room screens
+//
+// 10.10.2023 comments (TF and Borys): 
+// This needs refactoring. 
+// It uses XMPP class instance written by Borys for queries and responses (+ sometimes queries too) logic HTTPHandler later written by Anton
+// is ChatUIKit required? since we have our custom design now
+// Also couple issues with XMPP messages history loop and page refresh handling need addressing
+// store.userChatRooms is used here. GetUserRooms handler (not here) writes information there but does more than its name so needs refactoring.
+
 import React, {
   useCallback,
   useEffect,
