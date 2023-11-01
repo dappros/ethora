@@ -12,6 +12,9 @@ export default function Debug() {
   const [roomDescription, setRoomDescription] = useState("");
   const [discoInfo, setDiscoInfo] = useState("");
   const [mucService, setMucService] = useState("");
+  const [userJid, setUserJid] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [rosterJid, setRosterJid] = useState("");
 
   const onLogin = () => {
     xmppService.connect(username, password);
@@ -22,9 +25,9 @@ export default function Debug() {
   };
 
   return (
-    <div>
+    <div style={{padding: '20px'}}>
       <div>Debug</div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Login</div>
         <input
           type="text"
@@ -38,12 +41,23 @@ export default function Debug() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={onLogin}>Login</button>
+        <button onClick={onLogin}>Connect</button>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
+        <button onClick={() => xmppService.stop()}>Disconnect</button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
         <button onClick={getRooms}>getRooms</button>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
+        <div>initial presence</div>
+        <div>
+          <button onClick={() => xmppService.initialPresence()}>
+            Initial Presence
+          </button>
+        </div>
+      </div>
+      <div style={{paddingTop: "10px"}}>
         <div>presence</div>
         <div>
           <input
@@ -56,10 +70,12 @@ export default function Debug() {
             value={room}
             onChange={(e) => setRoom(e.target.value)}
           />
-          <button onClick={() => xmppService.presence(room, username)}>Presence</button>
+          <button onClick={() => xmppService.presence(room, username)}>
+            Presence
+          </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>leave room</div>
         <div>
           <input
@@ -70,7 +86,7 @@ export default function Debug() {
           <button onClick={() => xmppService.leaveRoom(room)}>Leave</button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>subscribe room</div>
         <div>
           <input
@@ -83,7 +99,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>unsubscribe room</div>
         <div>
           <input
@@ -96,7 +112,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>owner request configuration room</div>
         <div>
           <input
@@ -109,7 +125,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>history</div>
         <div>
           <input
@@ -120,7 +136,7 @@ export default function Debug() {
           <button onClick={() => xmppService.getHistory(room)}>History</button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Delete Message</div>
         <div>
           <input
@@ -138,7 +154,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Edit Message</div>
         <div>
           <input
@@ -163,7 +179,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Send Raction Message</div>
         <div>
           <input
@@ -188,7 +204,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Send Message</div>
         <div>
           <input
@@ -206,7 +222,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>Room config</div>
         <div>
           <input type="text" />
@@ -239,7 +255,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>DiscoInfo</div>
         <div>
           <input
@@ -257,7 +273,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>DiscoItems</div>
         <div>
           <input
@@ -275,7 +291,7 @@ export default function Debug() {
           </button>
         </div>
       </div>
-      <div>
+      <div style={{paddingTop: "10px"}}>
         <div>
           <input
             type="text"
@@ -296,6 +312,54 @@ export default function Debug() {
         <button onClick={() => xmppService.getArchiveFormField()}>
           getArchiveFormField
         </button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+          <button onClick={() => xmppService.myVcard()}>
+            my vCard
+          </button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+        <input type="text" value={userJid} onChange={(e) => setUserJid(e.target.value)} ></input>
+        <button onClick={() => xmppService.otherVcard(userJid)}>
+          other vCard
+        </button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+        <div>Update my vCard</div>
+        <div>
+          <input type="text" placeholder="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} ></input>
+        </div>
+        <button onClick={() => xmppService.updateMyVcard({FN: fullName})}>
+          update MyVcard
+        </button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+        <div>get roster</div>
+        <button onClick={() => xmppService.getRoster()}>
+          get roster
+        </button>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+        <div>
+          set roster
+        </div>
+        <div>
+          <input placeholder="rosterJid" type="text" value={rosterJid} onChange={(e) => setRosterJid(e.target.value)} />
+        </div>
+        <div>
+          <button onClick={() => xmppService.setRoster(rosterJid)}>set roster</button>
+        </div>
+      </div>
+      <div style={{paddingTop: "10px"}}>
+        <div>
+          remove roster
+        </div>
+        <div>
+          <input placeholder="rosterJid" type="text" value={rosterJid} onChange={(e) => setRosterJid(e.target.value)} />
+        </div>
+        <div>
+          <button onClick={() => xmppService.removeRoster(rosterJid)}>remove roster</button>
+        </div>
       </div>
     </div>
   );

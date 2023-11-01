@@ -3,6 +3,7 @@ import React from "react";
 
 import "./App.css"
 import Debug from "./components/Debug";
+import Register from "./components/Register";
 
 function App() {
 
@@ -10,8 +11,11 @@ function App() {
     <div className="App">
         <Router>
           <Switch>
-            <Route path="/">
+            <Route path="/" exact>
               <Debug></Debug>
+            </Route>
+            <Route path="/register">
+              <Register></Register>
             </Route>
           </Switch>
         </Router>

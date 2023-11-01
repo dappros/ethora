@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@xmpp/client": "^0.13.1",
-    "axios": "^1.5.0",
+    "axios": "^1.6.0",
     "base-64": "^1.0.0",
     "framer-motion": "^10.16.0",
     "react": "^18.2.0",

@@ -17,6 +17,8 @@ class XmppService {
     });
 
     this.client.on("online", () => console.log("xmpp is online"));
+    this.client.on("disconnect", () => console.log("on diconnect"));
+    this.client.on("close", () => console.log("on close"));
 
     this.client
       .start()
@@ -368,6 +370,148 @@ class XmppService {
     console.log("-----> ", message.toString());
 
     this.client.send(message);
+  }
+
+  myVcard() {
+    const message = xml(
+      // <iq from='stpeter@jabber.org/roundabout'
+      //     id='v1'
+      //     type='get'>
+      //   <vCard xmlns='vcard-temp'/>
+      // </iq>
+      "iq",
+      {
+        type: "get",
+        id: "v1"
+      },
+      xml(
+        "vCard",
+        {
+          xmlns: "vcard-temp"
+        }
+      )
+    )
+
+    console.log("-----> ", message.toString());
+    this.client.send(message);
+  }
+
+  otherVcard(jid) {
+    const message = xml(
+      // <iq from='stpeter@jabber.org/roundabout'
+      //     id='v1'
+      //     type='get'>
+      //   <vCard xmlns='vcard-temp'/>
+      // </iq>
+      "iq",
+      {
+        type: "get",
+        id: "v1",
+        to: jid
+      },
+      xml(
+        "vCard",
+        {
+          xmlns: "vcard-temp"
+        }
+      )
+    )
+
+    console.log("-----> ", message.toString());
+    this.client.send(message);
+  }
+
+  updateMyVcard(vCard) {
+    const message = xml(
+      "iq",
+      {
+        id: "v2",
+        type: "set"
+      },
+      xml(
+        "vCard",
+        "vcard-temp",
+        xml("FN", {}, vCard.FN),
+      )
+    )
+    console.log("-----> ", message.toString());
+    this.client.send(message);
+  }
+
+  getRoster() {
+    const message = xml(
+      "iq",
+      {
+        id: "getRoster",
+        type: "get"
+      },
+      xml(
+        "query",
+        "jabber:iq:roster"
+      )
+    )
+    console.log("-----> ", message.toString());
+    this.client.send(message);
+  }
+
+  setRoster(jid) {
+    const message = xml(
+      "iq",
+      {
+        id: "setRoster",
+        type: "set"
+      },
+      xml(
+        "query",
+        "jabber:iq:roster",
+        xml(
+          "item",
+          {
+            jid: jid
+          }
+        )
+      )
+    )
+
+    console.log("-----> ", message.toString());
+    this.client.send(message)
+  }
+
+  removeRoster(jid) {
+    const message = xml(
+      "iq",
+      {
+        id: "setRoster",
+        type: "set"
+      },
+      xml(
+        "query",
+        "jabber:iq:roster",
+        xml(
+          "item",
+          {
+            jid: jid,
+            subscription: "remove"
+          }
+        )
+      )
+    )
+
+    console.log("removeRoster -----> ", message.toString());
+    this.client.send(message)
+  }
+
+  initialPresence() {
+    const message = xml(
+      "presence",
+    )
+
+    console.log(message.toString());
+    this.client.send(message)
+  }
+
+  stop() {
+    this.client.stop()
   }
 }
 
