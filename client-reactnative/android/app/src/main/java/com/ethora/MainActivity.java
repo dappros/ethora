@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import org.devio.rn.splashscreen.SplashScreen;
+import android.os.Bundle;
+import com.zoontek.rnbootsplash.RNBootSplash;
 
 public class MainActivity extends ReactActivity {
 
@@ -47,7 +49,7 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    SplashScreen.show(this);
+    RNBootSplash.init(this, R.style.BootTheme);
     super.onCreate(null);
     // ATTENTION: This was auto-generated to handle app links.
     Intent appLinkIntent = getIntent();

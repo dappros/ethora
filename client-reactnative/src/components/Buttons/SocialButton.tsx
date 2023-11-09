@@ -5,48 +5,31 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Button, Text} from 'native-base';
-import {ColorType} from 'native-base/lib/typescript/components/types';
+import { TouchableOpacity } from 'react-native';
 import * as React from 'react';
-import {GestureResponderEvent} from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import { GestureResponderEvent } from 'react-native';
 
-interface SocialButtonProps {
-  label?: string;
-  color?: string;
-  fontFamily?: string;
-  fontSize?: number;
-  leftIcon?: JSX.Element | JSX.Element[] | undefined;
-  bg?: ColorType;
-  _pressed?: any;
+interface SocialButtonProperties {
+  icon?: JSX.Element | JSX.Element[] | undefined;
   onPress?: ((event: GestureResponderEvent) => void) | null | undefined;
 }
 
-const SocialButton = (props: SocialButtonProps) => {
-  const {label, color, fontFamily, fontSize, leftIcon, bg, _pressed, onPress} =
-    props;
+const SocialButton = (properties: SocialButtonProperties) => {
+  const { onPress, icon } = properties;
   return (
-    <Button
+    <TouchableOpacity
       onPress={onPress}
-      style={{maxHeight: 70}}
-      _pressed={_pressed}
-      bg={bg ? bg : undefined}
-      _text={{
-        color: color ? color : 'black',
+      style={{
+        backgroundColor: '#fff',
+        borderRadius: 22.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 45,
+        width: 45,
       }}
-      colorScheme={'black'}
-      textTransform={'uppercase'}
-      fontSize={fontSize ? fontSize : undefined}
-      w={wp('80%')}
-      h={hp('5.91%')}
-      leftIcon={leftIcon ? leftIcon : undefined}>
-      <Text fontFamily={fontFamily ? fontFamily : undefined} color={color}>
-        {label ? label : 'Button label'}
-      </Text>
-    </Button>
+    >
+      {icon}
+    </TouchableOpacity>
   );
 };
 

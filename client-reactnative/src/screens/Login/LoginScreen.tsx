@@ -1,81 +1,60 @@
+import { Box, Image, Spinner, Stack, Text, View } from 'native-base';
+import React, { useEffect, useMemo, useState } from 'react';
+import ReqularLoginLabel from '../../components/Login/RegularLoginLabel';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { ImageBackground } from 'react-native';
 import {
-  Box,
-  HStack,
-  Icon,
-  Image,
-  Spinner,
-  Stack,
-  Text,
-  View,
-  VStack,
-} from "native-base";
-import React, { useEffect, useMemo, useState } from "react";
-import SocialButton from "../../components/Buttons/SocialButton";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
-import {
-  appleSignIn,
   appTitle,
-  appVersion,
   commonColors,
-  facebookSignIn,
   googleSignIn,
   googleWebClientId,
-  isLogoTitle,
   loginScreenBackgroundImage,
-  logoHeight,
   logoPath,
-  logoWidth,
   regularLogin,
   textStyles,
-} from "../../../docs/config";
-import AntIcon from "react-native-vector-icons/AntDesign";
-import { useStores } from "../../stores/context";
-import { observer } from "mobx-react-lite";
+} from '../../../docs/config';
+import SocialButtons from '../../components/Login/SocialButtons';
+import { useStores } from '../../stores/context';
+import { observer } from 'mobx-react-lite';
 import {
   handleAppleLogin,
-  handleFaceBookLogin,
-  handleGoogleLogin,
   loginOrRegisterSocialUser,
-} from "../../helpers/login/socialLoginHandle";
-import { socialLoginType } from "../../constants/socialLoginConstants";
-import { httpPost } from "../../config/apiService";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useRegisterModal } from "../../hooks/useRegisterModal";
-import { UserNameModal } from "../../components/Modals/Login/UserNameModal";
-import { checkWalletExist } from "../../config/routesConstants";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../navigation/types";
+} from '../../helpers/login/socialLoginHandle';
+import { socialLoginType } from '../../constants/socialLoginConstants';
+import { httpPost } from '../../config/apiService';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useRegisterModal } from '../../hooks/useRegisterModal';
+import { UserNameModal } from '../../components/Modals/Login/UserNameModal';
+import { checkWalletExist } from '../../config/routesConstants';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AuthStackParamList as AuthStackParameterList } from '../../navigation/types';
 import {
   useWalletConnectModal,
   WalletConnectModal,
-} from "@walletconnect/modal-react-native";
-import { ethers } from "ethers";
-import { signMessage } from "../../helpers/signMessage";
-import { projectId, providerMetadata } from "../../constants/walletConnect";
+} from '@walletconnect/modal-react-native';
+import { ethers } from 'ethers';
+import { signMessage } from '../../helpers/signMessage';
+import { projectId, providerMetadata } from '../../constants/walletConnect';
+import CreateAccountButton from '../../components/Login/CreateAccountButton';
+import GoogleSignInButton from '../../components/Login/GoogleSignInButton';
 
-
-
-type LoginScreenProps = NativeStackScreenProps<
-  AuthStackParamList,
-  "LoginScreen"
+type LoginScreenProperties = NativeStackScreenProps<
+  AuthStackParameterList,
+  'LoginScreen'
 >;
 
-const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
+const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
   const { loginStore, apiStore } = useStores();
   const { isFetching } = loginStore;
   const [externalWalletModalData, setExternalWalletModalData] = useState({
-    walletAddress: "",
-    message: "",
+    walletAddress: '',
+    message: '',
   });
-  const [signedMessage, setSignedMessage] = useState("");
+  const [signedMessage, setSignedMessage] = useState('');
   const { open, isConnected, provider, address } = useWalletConnectModal();
   const web3Provider = useMemo(
     () => (provider ? new ethers.providers.Web3Provider(provider) : undefined),
-    [provider]
+    [provider],
   );
   const {
     firstName,
@@ -98,7 +77,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
       apiStore.defaultToken,
       loginStore.loginUser,
       loginStore.registerUser,
-      socialLoginType.APPLE
+      socialLoginType.APPLE,
     );
 
     await loginOrRegisterSocialUser(
@@ -106,7 +85,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
       apiStore.defaultToken,
       loginStore.loginUser,
       loginStore.registerUser,
-      socialLoginType.APPLE
+      socialLoginType.APPLE,
     );
   };
 
@@ -120,37 +99,35 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
 
   const sendWalletMessage = async () => {
     const walletExist = await checkExternalWalletExist();
-    const messageToSend = walletExist ? "Login" : "Registration";
+    const messageToSend = walletExist ? 'Login' : 'Registration';
     const res = await signMessage({
       web3Provider: web3Provider,
-      method: "personal_sign",
+      method: 'personal_sign',
       message: messageToSend,
     });
-    console.log(res);
-
     const message = res.result;
     setSignedMessage(message);
-    !walletExist
-      ? openModalForWallet(message)
-      : loginStore.loginExternalWallet({
+    walletExist
+      ? loginStore.loginExternalWallet({
           walletAddress: address,
           signature: message,
-          loginType: "signature",
-          msg: "Login",
-        });
+          loginType: 'signature',
+          msg: 'Login',
+        })
+      : openModalForWallet(message);
     provider?.disconnect();
   };
   const checkExternalWalletExist = async () => {
     try {
-      const res = await httpPost(
+      await httpPost(
         checkWalletExist,
         {
           walletAddress: address,
         },
-        apiStore.defaultToken
+        apiStore.defaultToken,
       );
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -172,18 +149,16 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
   };
 
   const onModalSubmit = async () => {
-    if (!externalWalletModalData.message) {
-      await onAppleLogin();
-    } else {
-      await loginStore.registerExternalWalletUser({
-        walletAddress: externalWalletModalData.walletAddress,
-        msg: "Registration",
-        signature: externalWalletModalData.message,
-        loginType: "signature",
-        firstName,
-        lastName,
-      });
-    }
+    await (externalWalletModalData.message
+      ? loginStore.registerExternalWalletUser({
+          walletAddress: externalWalletModalData.walletAddress,
+          msg: 'Registration',
+          signature: externalWalletModalData.message,
+          loginType: 'signature',
+          firstName,
+          lastName,
+        })
+      : onAppleLogin());
   };
 
   useEffect(() => {
@@ -197,163 +172,70 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
     <ImageBackground
       source={loginScreenBackgroundImage}
       style={{
-        backgroundColor: "rgba(0,0,255, 0.05)",
-        width: "100%",
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
+        backgroundColor: 'rgba(0,0,255, 0.05)',
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      <Box
-        testID="login-screen"
-        margin={3}
-        justifyContent={"center"}
-        alignItems={"center"}
+      <View
+        width={'74%'}
+        height={'100%'}
+        alignSelf={'center'}
+        position={'relative'}
       >
         <Image
           alt="App logo"
           accessibilityLabel="App logo"
           source={logoPath}
-          resizeMode={"cover"}
-          w={wp(logoWidth)}
-          h={logoHeight}
+          resizeMode={'cover'}
+          position={'absolute'}
+          top={55}
+          left={'0px'}
         />
-        {isLogoTitle && (
-          <Text
-            color={commonColors.primaryColor}
-            fontFamily={textStyles.semiBoldFont}
-            fontSize={hp("6.44%")}
-          >
-            {appTitle}
-          </Text>
-        )}
-      </Box>
-
-      <Stack margin={3} space={3}>
-        {facebookSignIn && (
-          <View accessibilityLabel="Sign in with Facebook">
-            <SocialButton
-              label="Sign in with Facebook"
-              color="white"
-              fontFamily={textStyles.boldFont}
-              fontSize={hp("1.47%")}
-              leftIcon={
-                <Icon
-                  color={"white"}
-                  size={hp("2.2%")}
-                  as={AntIcon}
-                  name={"facebook-square"}
-                />
-              }
-              bg="#4D6DA4"
-              onPress={() => {
-                handleFaceBookLogin(
-                  apiStore.defaultToken,
-                  loginStore.loginUser,
-                  loginStore.registerUser,
-                  socialLoginType.FACEBOOK
-                );
-              }}
-            />
-          </View>
-        )}
-        {googleSignIn && (
-          <View accessibilityLabel="Sign in with Google">
-            <SocialButton
-              label="Sign in with Google"
-              color="black"
-              fontFamily={textStyles.boldFont}
-              fontSize={hp("1.47%")}
-              leftIcon={
-                <Icon
-                  color={"#696969"}
-                  size={hp("2.2%")}
-                  as={AntIcon}
-                  name={"google"}
-                />
-              }
-              bg="#FFFF"
-              onPress={() =>
-                handleGoogleLogin(
-                  apiStore.defaultToken,
-                  loginStore.loginUser,
-                  loginStore.registerUser,
-                  socialLoginType.GOOGLE
-                )
-              }
-            />
-          </View>
-        )}
-        {appleSignIn && (
-          <View accessibilityLabel="Sign in with Apple">
-            <SocialButton
-              label="Sign in with Apple"
-              color="white"
-              fontFamily={textStyles.boldFont}
-              fontSize={hp("1.47%")}
-              leftIcon={
-                <Icon
-                  color={"white"}
-                  size={hp("2.2%")}
-                  as={AntIcon}
-                  name={"apple1"}
-                />
-              }
-              bg="#000000"
-              onPress={onAppleButtonPress}
-            />
-          </View>
-        )}
-        <View accessibilityLabel="Sign in with Metamask">
-          <SocialButton
-            label="Sign in with MetaMask"
-            color="white"
-            fontFamily={textStyles.boldFont}
-            fontSize={hp("1.47%")}
-            leftIcon={
-              <Icon
-                color={"white"}
-                size={hp("2.2%")}
-                as={AntIcon}
-                name={"antdesign"}
-              />
-            }
-            bg="#cc6228"
-            onPress={connectMetamask}
-          />
-        </View>
-        <HStack justifyContent={"center"}>
-          {regularLogin && (
-            <TouchableOpacity
-              testID="login-with-cred"
-              accessibilityLabel="Log in with password"
-              onPress={() => navigation.navigate("RegularLogin")}
+        <View
+          justifyContent={'flex-end'}
+          height={'100%'}
+          paddingBottom={'10.5%'}
+        >
+          <Box testID="login-screen">
+            <Text
+              color={commonColors.primaryColor}
+              fontFamily={textStyles.regularFont}
+              fontSize={hp('5.1%')}
             >
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: commonColors.primaryColor,
-                  fontFamily: textStyles.semiBoldFont,
-                }}
-              >
-                Login with credentials
-              </Text>
-            </TouchableOpacity>
-          )}
-        </HStack>
-      </Stack>
+              Welcome to {appTitle}!
+            </Text>
+            <Text
+              color={commonColors.primaryColor}
+              fontFamily={textStyles.regularFont}
+              fontSize={hp('2%')}
+              marginTop={'8px'}
+              marginBottom={'32px'}
+            >
+              Manage your community!
+            </Text>
+          </Box>
+
+          <Stack>
+            {googleSignIn && (
+              <GoogleSignInButton apiStore={apiStore} loginStore={loginStore} />
+            )}
+            <CreateAccountButton />
+
+            {regularLogin && <ReqularLoginLabel navigation={navigation} />}
+            <SocialButtons
+              connectMetamask={connectMetamask}
+              onAppleButtonPress={onAppleButtonPress}
+              loginStore={loginStore}
+              apiStore={apiStore}
+            />
+          </Stack>
+        </View>
+      </View>
       {isFetching && <Spinner />}
 
-      <VStack
-        style={{ position: "absolute", bottom: 0 }}
-        justifyContent={"center"}
-        accessibilityLabel="Ethora version details"
-        alignItems={"center"}
-      >
-        <Text style={styles.appVersion}>
-          Version {appVersion}. Powered by Dappros Platform
-        </Text>
-      </VStack>
       <UserNameModal
         modalVisible={modalOpen}
         closeModal={() => setModalOpen(false)}
@@ -369,14 +251,6 @@ const LoginScreen = observer(({ navigation }: LoginScreenProps) => {
       />
     </ImageBackground>
   );
-});
-
-const styles = StyleSheet.create({
-  appVersion: {
-    color: "grey",
-    fontFamily: textStyles.lightFont,
-    fontSize: hp("1%"),
-  },
 });
 
 export default LoginScreen;

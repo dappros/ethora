@@ -38,11 +38,11 @@
 		</dict>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string></string>
+			<string/>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string/>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>eto.li</string>
@@ -58,7 +58,7 @@
 	<key>FacebookDisplayName</key>
 	<string>Ethora</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -75,7 +75,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allowing access to the camera lets you take and send photos and videos and use other special features.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ethora wants to access your mic to record audio</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -124,6 +124,7 @@
 		<string>Montserrat-Regular.ttf</string>
 		<string>Montserrat-SemiBold.ttf</string>
 		<string>Montserrat-Thin.ttf</string>
+		<string>VarelaRound-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

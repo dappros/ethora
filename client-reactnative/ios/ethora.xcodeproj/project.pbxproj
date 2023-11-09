@@ -47,6 +47,7 @@
 		F95A5B337F134A758DC95C53 /* Montserrat-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9E8AE2A4AC8421EB7A640C2 /* Montserrat-Light.ttf */; };
 		FC76954AC23F40A28D5C15A7 /* Montserrat-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */; };
 		FE493C4F3D9242A08728CDC4 /* Poppins-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A4854E36F48F4770BE4A42F5 /* Poppins-Black.ttf */; };
+		ECE2800DE0B6458AB66D06E4 /* VarelaRound-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0E6F8F83E2124F33AE3C02E3 /* VarelaRound-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EE3C221B2E4C4CE2AE447073 /* Poppins-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-SemiBoldItalic.ttf"; path = "../src/assets/fonts/Poppins-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		F5F00330032C4262B13D97D5 /* Poppins-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Light.ttf"; path = "../src/assets/fonts/Poppins-Light.ttf"; sourceTree = "<group>"; };
+		0E6F8F83E2124F33AE3C02E3 /* VarelaRound-Regular.ttf */ = {isa = PBXFileReference; name = "VarelaRound-Regular.ttf"; path = "../src/assets/fonts/VarelaRound/VarelaRound-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -210,6 +212,7 @@
 				09EAD281C3B44C98B2126B5B /* Montserrat-Regular.ttf */,
 				6141242CB5EB45829CF57FA6 /* Montserrat-SemiBold.ttf */,
 				BFC26D2AD41B46E696ACF42E /* Montserrat-Thin.ttf */,
+				0E6F8F83E2124F33AE3C02E3 /* VarelaRound-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				AC197502F04A46C389237778 /* Montserrat-Regular.ttf in Resources */,
 				FC76954AC23F40A28D5C15A7 /* Montserrat-SemiBold.ttf in Resources */,
 				047E1A3BCED54467B7E6D29F /* Montserrat-Thin.ttf in Resources */,
+				ECE2800DE0B6458AB66D06E4 /* VarelaRound-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

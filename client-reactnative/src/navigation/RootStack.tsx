@@ -47,7 +47,7 @@ const RootStack = observer(() => {
               />
             ) : (
               <Stack.Screen
-                options={{headerShown: false}}
+                options={{headerShown: false, headerTransparent: true}}
                 name={'AuthStackScreen'}
                 component={AuthStack}
               />
