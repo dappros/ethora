@@ -1,0 +1,21 @@
+.container {
+  height: 100vh;
+  padding: 20px;
+}
+
+.chat {
+  display: flex;
+  height: 500px
+}
+
+.list {
+  padding: 10px;
+  width: 200px;
+}
+
+.main {
+  padding: 10px;
+  display: flex;
+  flex: 1;
+  border: 1px solid black;
+}

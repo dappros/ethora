@@ -69,6 +69,7 @@ import { useSnackbar } from "../../context/SnackbarContext";
 import { createMainMessageForThread } from "../../utils/createMessage";
 import Dompurify from "dompurify";
 import { LeaveRoomButton } from "../../components/Chat/LeaveRoomButton";
+import { throttle } from "../../utils/throttle";
 
 export type IMessagePosition = {
   position: MessageModel["position"];
@@ -410,14 +411,19 @@ export function ChatInRoom() {
     }
     setFileUploading(false);
   };
+  const sendThrottledComposing = useRef(
+    throttle(() => {
+      xmpp.isComposing(
+        user.walletAddress,
+        roomData.jid,
+        user.firstName + " " + user.lastName
+      );
+    }, 500)
+  );
 
-  const setMessage = (value) => {
+  const setMessage = (value: string) => {
     setMyMessage(value);
-    xmpp.isComposing(
-      user.walletAddress,
-      roomData.jid,
-      user.firstName + " " + user.lastName
-    );
+    sendThrottledComposing.current();
   };
 
   const handlePaste = (event: any) => {
@@ -432,7 +438,6 @@ export function ChatInRoom() {
   };
 
   useEffect(() => {
-
     const timeoutId = setTimeout(() => {
       xmpp.pausedComposing(user.walletAddress, roomData?.jid);
     }, 1000);

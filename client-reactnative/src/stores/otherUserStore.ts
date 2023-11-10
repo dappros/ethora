@@ -1,3 +1,5 @@
+// to store information about other users to be displayed in the Chat Screen
+
 import {makeAutoObservable, runInAction} from 'mobx';
 export class OtherUserStore {
   userAvatar = '';
