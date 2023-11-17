@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react"
 
 import {
   Dialog,
@@ -7,42 +7,41 @@ import {
   Button,
   Typography,
   TextField,
-} from "@mui/material";
-import { transferCoin } from "../../http";
+} from "@mui/material"
+import { transferCoin } from "../../http"
 
+import SendIcon from "@mui/icons-material/Send"
+import BlockIcon from "@mui/icons-material/Block"
+import xmpp from "../../xmpp"
+import { TMessageHistory, useStoreState } from "../../store"
+import { coinReplacedName, coinsMainName } from "../../config/config"
+import { DOMAIN } from "../../constants"
+import { createPrivateChat } from "../../helpers/chat/createPrivateChat"
+import { useSnackbar } from "../../context/SnackbarContext"
+import ReplyIcon from "@mui/icons-material/Reply"
+import EditIcon from "@mui/icons-material/Edit"
+import { walletToUsername } from "../../utils/walletManipulation"
+const coin = "/coin.png"
 
-import SendIcon from "@mui/icons-material/Send";
-import BlockIcon from "@mui/icons-material/Block";
-import xmpp from "../../xmpp";
-import { TMessageHistory, useStoreState } from "../../store";
-import { coinReplacedName, coinsMainName } from "../../config/config";
-import { DOMAIN } from "../../constants";
-import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
-import { useSnackbar } from "../../context/SnackbarContext";
-import ReplyIcon from '@mui/icons-material/Reply';
-import EditIcon from '@mui/icons-material/Edit';
-import { walletToUsername } from "../../utils/walletManipulation";
-const coin = '/coin.png'
-
-const dialogItems = [1, 3, 5, "x"];
-interface IProps {
-  open: boolean;
-  onClose: () => void;
-  loading?: boolean;
-  message: TMessageHistory | null;
-  onPrivateRoomClick: (jid: string) => void;
-  onThreadClick:() => void;
-  onEditClick:(value:boolean, message:TMessageHistory) => void;
-  onDeleteClick:(value:boolean, message:TMessageHistory) => void;
+const dialogItems = [1, 3, 5, "x"]
+interface IProperties {
+  open: boolean
+  onClose: () => void
+  loading?: boolean
+  message: TMessageHistory | null
+  onPrivateRoomClick: (jid: string) => void
+  onThreadClick: () => void
+  onEditClick: (value: boolean, message: TMessageHistory) => void
+  onDeleteClick: (value: boolean, message: TMessageHistory) => void
 }
-type IDialog = "dialog" | "error" | "clarification" | "transfer";
+type IDialog = "dialog" | "error" | "clarification" | "transfer"
 
 const dialogTypes: Record<IDialog, IDialog> = {
   dialog: "dialog",
   error: "error",
   clarification: "clarification",
   transfer: "transfer",
-};
+}
 
 export function ChatTransferDialog({
   open,
@@ -52,73 +51,74 @@ export function ChatTransferDialog({
   onPrivateRoomClick,
   onThreadClick,
   onEditClick,
-  onDeleteClick
-}: IProps) {
-  const user = useStoreState((state) => state.user);
+  onDeleteClick,
+}: IProperties) {
+  const user = useStoreState((state) => state.user)
 
-  const [coinAmount, setCoinAmount] = useState(1);
-  const [dialogType, setDialogType] = useState<IDialog>(dialogTypes.dialog);
+  const [coinAmount, setCoinAmount] = useState(1)
+  const [dialogType, setDialogType] = useState<IDialog>(dialogTypes.dialog)
 
-  const balance = useStoreState((store) => store.balance);
-  const setNewUserChatRoom = useStoreState((store) => store.setNewUserChatRoom);
-  const { showSnackbar } = useSnackbar();
+  const balance = useStoreState((store) => store.balance)
+  const setNewUserChatRoom = useStoreState((store) => store.setNewUserChatRoom)
+  const { showSnackbar } = useSnackbar()
 
-  const messageJid = message?.data?.senderJID.split('/')[0];
-  const userJid = useMemo(() => walletToUsername(user.walletAddress) + DOMAIN, []);
-  const isSameUser = userJid === messageJid;
-  const coinData = balance.filter(
-    (el) => !el?.tokenType && el?.contractAddress?.length > 10
-  );
+  const messageJid = message?.data?.senderJID.split("/")[0]
+  const userJid = useMemo(
+    () => walletToUsername(user.walletAddress) + DOMAIN,
+    []
+  )
+  const isSameUser = userJid === messageJid
+  const coinDatum = balance.find(
+    (element) => !element?.tokenType && element?.contractAddress?.length > 10
+  )
 
   const openThreadView = () => {
     onThreadClick()
     onClose()
   }
-  
+
   const openEditView = () => {
-    onEditClick(true, message);
-    onClose();
+    onEditClick(true, message)
+    onClose()
   }
 
   const handleDelete = () => {
-    onDeleteClick(true, message);
-    onClose();
+    onDeleteClick(true, message)
+    onClose()
   }
 
   const userToBlackList = (step: "clarify" | "block") => {
     if (step === "clarify") {
-      setDialogType(dialogTypes.clarification);
-      return;
+      setDialogType(dialogTypes.clarification)
+      return
     }
 
     if (step === "block") {
-      xmpp.blacklistUser(message.data.senderJID);
-      xmpp.getBlackList();
-      useStoreState
-        .getState()
-        .removeAllInMessageHistory(message.data.senderJID);
+      xmpp.blacklistUser(message.data.senderJID)
+      xmpp.getBlackList()
+      useStoreState.getState().removeAllInMessageHistory(message.data.senderJID)
     }
-    onClose();
-  };
+    onClose()
+  }
 
   const sendCoins = async (amount?: number) => {
-    const currentCoinAmount = amount ? Number(amount) : Number(coinAmount);
+    const currentCoinAmount = amount ? Number(amount) : Number(coinAmount)
     try {
       const res = await transferCoin(
         "DPT",
-        coinData[0].tokenName,
+        coinDatum.tokenName,
         currentCoinAmount,
         message.data.senderWalletAddress
-      );
+      )
       const coinName =
-        coinData[0].tokenName === coinsMainName
+        coinDatum.tokenName === coinsMainName
           ? coinReplacedName
-          : coinData[0].tokenName;
-      const sender = user.firstName + " " + user.lastName;
+          : coinDatum.tokenName
+      const sender = user.firstName + " " + user.lastName
       const receiver =
-        message.data.senderFirstName + " " + message.data.senderLastName;
-      const textMessage = `${sender} -> ${currentCoinAmount} ${coinName} -> ${receiver}`;
-      const transactionId = res.data.transaction._id;
+        message.data.senderFirstName + " " + message.data.senderLastName
+      const textMessage = `${sender} -> ${currentCoinAmount} ${coinName} -> ${receiver}`
+      const transactionId = res.data.transaction._id
       xmpp.sendSystemMessage(
         message.roomJID,
         user.firstName,
@@ -128,15 +128,15 @@ export function ChatTransferDialog({
         currentCoinAmount,
         message.id,
         transactionId
-      );
+      )
 
-      onClose();
+      onClose()
     } catch (error) {
-      console.log(error);
-      showSnackbar("error", "An error occurred during the coin transfer.");
-      onClose();
+      console.log(error)
+      showSnackbar("error", "An error occurred during the coin transfer.")
+      onClose()
     }
-  };
+  }
 
   const openPrivateRoom = () => {
     createPrivateChat(
@@ -158,23 +158,23 @@ export function ChatTransferDialog({
             composing: "",
             toUpdate: true,
             description: "",
-          };
-          setNewUserChatRoom(temporaryRoomData);
-          onPrivateRoomClick(result.roomJid);
+          }
+          setNewUserChatRoom(temporaryRoomData)
+          onPrivateRoomClick(result.roomJid)
         } else {
-          onPrivateRoomClick(result.roomJid);
+          onPrivateRoomClick(result.roomJid)
         }
       })
       .catch((error) => {
-        console.log("openPrivateRoom Error: ", error);
-      });
-    onClose();
-  };
+        console.log("openPrivateRoom Error:", error)
+      })
+    onClose()
+  }
 
   const renderDialogContent = () => {
-    if (!message) return null;
+    if (!message) return null
     switch (dialogType) {
-      case dialogTypes.clarification:
+      case dialogTypes.clarification: {
         return (
           <div
             style={{
@@ -191,8 +191,9 @@ export function ChatTransferDialog({
               To block list
             </Button>
           </div>
-        );
-      case dialogTypes.dialog:
+        )
+      }
+      case dialogTypes.dialog: {
         return (
           <div
             style={{
@@ -200,67 +201,75 @@ export function ChatTransferDialog({
               flexDirection: "column",
             }}
           >
-            {!isSameUser&&<div>
-              Reward{" "}
-              <strong>
-                {message.data.senderFirstName +
-                  " " +
-                  message.data.senderLastName}
-              </strong>{" "}
-              with coins
-            </div>}
+            {!isSameUser && (
+              <div>
+                Reward{" "}
+                <strong>
+                  {message.data.senderFirstName +
+                    " " +
+                    message.data.senderLastName}
+                </strong>{" "}
+                with coins
+              </div>
+            )}
 
-            {!isSameUser&&<div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                margin: "10px 0px 10px 0px",
-              }}
-            >
-              {dialogItems.map((item) => (
-                <div
-                  key={item}
-                  style={{
-                    textAlign: "center",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    typeof item === "number"
-                      ? sendCoins(item)
-                      : setDialogType(dialogTypes.transfer);
-                  }}
-                >
-                  <img
-                    src={coin}
+            {!isSameUser && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  margin: "10px 0px 10px 0px",
+                }}
+              >
+                {dialogItems.map((item) => (
+                  <div
+                    key={item}
                     style={{
-                      width: 25,
-                      height: 25,
+                      textAlign: "center",
+                      cursor: "pointer",
                     }}
-                    alt={"coin"}
-                  />
-                  <Typography
-                    sx={{
-                      fontWeight: "bold",
+                    onClick={() => {
+                      typeof item === "number"
+                        ? sendCoins(item)
+                        : setDialogType(dialogTypes.transfer)
                     }}
                   >
-                    {item}
-                  </Typography>
-                </div>
-              ))}
-            </div>}
-            {!isSameUser&&<Divider
-              style={{
-                margin: "10px",
-              }}
-            />}
-            {!isSameUser&&<Button
-              onClick={openPrivateRoom}
-              variant="outlined"
-              startIcon={<SendIcon />}
-            >
-              Direct message
-            </Button>}
+                    <img
+                      src={coin}
+                      style={{
+                        width: 25,
+                        height: 25,
+                      }}
+                      alt={"coin"}
+                    />
+                    <Typography
+                      sx={{
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {item}
+                    </Typography>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!isSameUser && (
+              <Divider
+                style={{
+                  margin: "10px",
+                }}
+              />
+            )}
+            {!isSameUser && (
+              <Button
+                onClick={openPrivateRoom}
+                variant="outlined"
+                startIcon={<SendIcon />}
+              >
+                Direct message
+              </Button>
+            )}
             <Button
               style={{
                 margin: "10px 0px 0px 0px",
@@ -272,7 +281,7 @@ export function ChatTransferDialog({
               Reply
             </Button>
 
-            {isSameUser&&
+            {isSameUser && (
               <Button
                 style={{
                   margin: "10px 0px 0px 0px",
@@ -283,9 +292,9 @@ export function ChatTransferDialog({
               >
                 Edit
               </Button>
-            }
+            )}
 
-            {isSameUser&&
+            {isSameUser && (
               <Button
                 style={{
                   margin: "10px 0px 0px 0px",
@@ -296,41 +305,46 @@ export function ChatTransferDialog({
               >
                 Delete
               </Button>
-            }
-              
-              {!isSameUser&&<Divider
-              style={{
-                margin: "10px",
-              }}
-            />}
-            {!isSameUser&&<div
-            style={{
-              display:'flex',
-              alignItems:"center",
-              flexDirection:"column"
-            }}
-            >
-              <Button
-                onClick={() => userToBlackList("clarify")}
-                variant="contained"
-                startIcon={<BlockIcon />}
-              >
-                Block this user
-              </Button>
-              <Typography
+            )}
+
+            {!isSameUser && (
+              <Divider
                 style={{
-                  textAlign: "center",
+                  margin: "10px",
                 }}
-                variant="caption"
-                display="block"
-                gutterBottom
+              />
+            )}
+            {!isSameUser && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
               >
-                Stop seeing this user.
-              </Typography>
-            </div>}
+                <Button
+                  onClick={() => userToBlackList("clarify")}
+                  variant="contained"
+                  startIcon={<BlockIcon />}
+                >
+                  Block this user
+                </Button>
+                <Typography
+                  style={{
+                    textAlign: "center",
+                  }}
+                  variant="caption"
+                  display="block"
+                  gutterBottom
+                >
+                  Stop seeing this user.
+                </Typography>
+              </div>
+            )}
           </div>
-        );
-      case dialogTypes.transfer:
+        )
+      }
+      case dialogTypes.transfer: {
         return (
           <div
             style={{
@@ -356,15 +370,17 @@ export function ChatTransferDialog({
               Send coins
             </Button>
           </div>
-        );
+        )
+      }
 
-      default:
-        return null;
+      default: {
+        return null
+      }
     }
-  };
+  }
   return (
     <Dialog open={open} onClose={onClose} maxWidth={"xl"}>
       <DialogContent>{renderDialogContent()}</DialogContent>
     </Dialog>
-  );
+  )
 }

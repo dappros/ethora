@@ -6,22 +6,21 @@ import {
   Tooltip,
   Typography,
   alpha,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { ModalType } from "./UsersTable";
-type TSelectedIds = { walletAddress: string; _id: string; appId: string };
+} from "@mui/material"
+import DeleteIcon from "@mui/icons-material/Delete"
+import { ModalType } from "./UsersTable"
+type TSelectedIds = { walletAddress: string; _id: string; appId: string }
 
-interface UsersTableToolbarProps {
-  selected: TSelectedIds[];
-  onButtonClick: (type: ModalType) => void;
+interface UsersTableToolbarProperties {
+  selected: TSelectedIds[]
+  onButtonClick: (type: ModalType) => void
 }
-
 
 export function UsersTableToolbar({
   selected,
   onButtonClick,
-}: UsersTableToolbarProps) {
-  if (selected.length) {
+}: UsersTableToolbarProperties) {
+  if (selected.length > 0) {
     return (
       <Toolbar
         sx={{
@@ -61,10 +60,10 @@ export function UsersTableToolbar({
           >
             Send Tokens
           </Button> */}
-         
+
           <Button
             variant={"outlined"}
-            onClick={() => onButtonClick('manageTags')}
+            onClick={() => onButtonClick("manageTags")}
             sx={{ minWidth: "max-content" }}
           >
             Manage Tags
@@ -85,6 +84,6 @@ export function UsersTableToolbar({
           </Tooltip>
         </Box>
       </Toolbar>
-    );
+    )
   }
 }

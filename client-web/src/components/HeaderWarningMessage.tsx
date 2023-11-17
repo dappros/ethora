@@ -1,17 +1,17 @@
-import React from "react";
-import { Box, IconButton, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { useStoreState } from "../store";
+import React from "react"
+import { Box, IconButton, Typography } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
+import { useStoreState } from "../store"
 
 export interface IHeaderWarningMessage {
-  message: string;
+  message: string
 }
 
 export const HeaderWarningMessage: React.FC<IHeaderWarningMessage> = ({
   message,
 }) => {
-  const setShowHeaderError = useStoreState((state) => state.setShowHeaderError);
-  const hideWarning = () => setShowHeaderError(false);
+  const setShowHeaderError = useStoreState((state) => state.setShowHeaderError)
+  const hideWarning = () => setShowHeaderError(false)
   return (
     <Box
       sx={{
@@ -40,5 +40,5 @@ export const HeaderWarningMessage: React.FC<IHeaderWarningMessage> = ({
         <CloseIcon />
       </IconButton>
     </Box>
-  );
-};
+  )
+}

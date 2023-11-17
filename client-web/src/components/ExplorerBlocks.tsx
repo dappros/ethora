@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   Box,
   Button,
@@ -7,18 +7,18 @@ import {
   Stack,
   Typography,
   useTheme,
-} from "@mui/material";
-import { IBlock } from "../pages/Profile/types";
-import { format } from "date-fns";
-import { Link, useHistory } from "react-router-dom";
+} from "@mui/material"
+import { IBlock } from "../pages/Profile/types"
+import { format } from "date-fns"
+import { Link, useHistory } from "react-router-dom"
 
-export interface IBlocksProps {
-  blocks: IBlock[];
+export interface IBlocksProperties {
+  blocks: IBlock[]
 }
 
-export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
-  const theme = useTheme();
-  const history = useHistory();
+export const ExplorerBlocks: React.FC<IBlocksProperties> = ({ blocks }) => {
+  const theme = useTheme()
+  const history = useHistory()
   return (
     <Box>
       <Box
@@ -58,7 +58,7 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
               container
               justifyContent={"flex-start"}
               key={item.hash}
-              sx={{ marginBottom: '10px', marginLeft: '15px' }}
+              sx={{ marginBottom: "10px", marginLeft: "15px" }}
             >
               <Grid
                 sx={{
@@ -99,9 +99,9 @@ export const ExplorerBlocks: React.FC<IBlocksProps> = ({ blocks }) => {
                 </Typography>
               </Grid>
             </Grid>
-          );
+          )
         })}
       </Grid>
     </Box>
-  );
-};
+  )
+}

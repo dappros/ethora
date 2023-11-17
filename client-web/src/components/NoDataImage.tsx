@@ -1,6 +1,6 @@
-import * as React from 'react'
-import './NoDataImage.scss'
+import * as React from "react"
+import "./NoDataImage.scss"
 
 export default function NoDataImage() {
-  return <div className='noDataImg'></div>
+  return <div className="noDataImg"></div>
 }

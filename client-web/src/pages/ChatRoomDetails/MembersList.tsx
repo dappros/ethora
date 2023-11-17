@@ -8,69 +8,70 @@ import {
   Menu,
   MenuItem,
   Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router";
-import { TMemberInfo, TUserChatRooms, useStoreState } from "../../store";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import xmpp from "../../xmpp";
-import { walletToUsername, usernameToWallet } from "../../utils/walletManipulation";
+} from "@mui/material"
+import React, { useEffect, useState } from "react"
+import { useHistory, useParams } from "react-router"
+import { TMemberInfo, TUserChatRooms, useStoreState } from "../../store"
+import MoreVertIcon from "@mui/icons-material/MoreVert"
+import xmpp from "../../xmpp"
+import {
+  walletToUsername,
+  usernameToWallet,
+} from "../../utils/walletManipulation"
 
 export default function MembersList() {
-  const { roomJID }: any = useParams();
-  const userChatRooms = useStoreState((store) => store.userChatRooms);
+  const { roomJID }: any = useParams()
+  const userChatRooms = useStoreState((store) => store.userChatRooms)
   const membersList = useStoreState((store) =>
     store.roomMemberInfo.filter((item) => item.name !== "none")
-  );
-  const user = useStoreState((store) => store.user);
-  const currentRoomData = userChatRooms.find((e) => e?.jid === roomJID);
-  const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<TMemberInfo>();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const roomRoles = useStoreState((state) => state.roomRoles);
-  const history = useHistory();
+  )
+  const user = useStoreState((store) => store.user)
+  const currentRoomData = userChatRooms.find((e) => e?.jid === roomJID)
+  const [showMenu, setShowMenu] = useState<boolean>(false)
+  const [selectedUser, setSelectedUser] = useState<TMemberInfo>()
+  const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null)
+  const roomRoles = useStoreState((state) => state.roomRoles)
+  const history = useHistory()
 
   const currentRoomRole = roomRoles.find(
     (value) => value.roomJID === currentRoomData?.jid
-  )?.role;
+  )?.role
 
-
- 
   const handleMenuClose = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(null);
-    setShowMenu(false);
-  };
+    event.stopPropagation()
+    setAnchorElement(null)
+    setShowMenu(false)
+  }
 
   const handleOnMemberPress = (member: TMemberInfo) => {
     if (member.jid.includes(walletToUsername(user.walletAddress))) {
-      history.push("/profile/" + user.walletAddress);
+      history.push("/profile/" + user.walletAddress)
     } else {
-      history.push("/profile/" + usernameToWallet(member.jid.split("@")[0]));
+      history.push("/profile/" + usernameToWallet(member.jid.split("@")[0]))
     }
-  };
+  }
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
     member: TMemberInfo
   ) => {
-    event.stopPropagation();
-    setSelectedUser(member);
-    setAnchorEl(event.currentTarget);
-    setShowMenu(true);
-  };
+    event.stopPropagation()
+    setSelectedUser(member)
+    setAnchorElement(event.currentTarget)
+    setShowMenu(true)
+  }
   const banUser = (
     member: TMemberInfo,
     event: React.MouseEvent<HTMLElement>
   ) => {
     if (member.ban_status === "clear") {
-      xmpp.banUserStanza(member.jid, currentRoomData.jid);
+      xmpp.banUserStanza(member.jid, currentRoomData.jid)
     } else {
-      xmpp.unbanUserStanza(member.jid, currentRoomData.jid);
+      xmpp.unbanUserStanza(member.jid, currentRoomData.jid)
     }
 
-    xmpp.getRoomMemberInfo(currentRoomData.jid);
-    handleMenuClose(event);
-  };
+    xmpp.getRoomMemberInfo(currentRoomData.jid)
+    handleMenuClose(event)
+  }
 
   return (
     <Box>
@@ -95,7 +96,11 @@ export default function MembersList() {
                   display: "flex",
                 }}
               >
-                {member.profile !== "none" ? (
+                {member.profile === "none" ? (
+                  <Typography style={{ color: "white" }}>
+                    {member.name ? member.name[0] : null}
+                  </Typography>
+                ) : (
                   <Avatar
                     style={{
                       width: "40px",
@@ -104,10 +109,6 @@ export default function MembersList() {
                     variant="square"
                     src={member.profile}
                   />
-                ) : (
-                  <Typography style={{ color: "white" }}>
-                    {member.name ? member.name[0] : null}
-                  </Typography>
                 )}
               </Box>
               <Typography>
@@ -143,7 +144,7 @@ export default function MembersList() {
                   <Typography>{member.role}</Typography>
                 </Box>
               )}
-              {member.ban_status !== "clear" ? (
+              {member.ban_status === "clear" ? null : (
                 <Box
                   style={{
                     border: "1px solid",
@@ -158,13 +159,13 @@ export default function MembersList() {
                 >
                   <Typography>banned</Typography>
                 </Box>
-              ) : null}
+              )}
               <Menu
                 id="long-menu"
                 MenuListProps={{
                   "aria-labelledby": "long-button",
                 }}
-                anchorEl={anchorEl}
+                anchorEl={anchorElement}
                 open={showMenu}
                 onClose={handleMenuClose}
                 PaperProps={{
@@ -179,9 +180,9 @@ export default function MembersList() {
                 </MenuItem>
               </Menu>
             </ListItem>
-          );
+          )
         })}
       </List>
     </Box>
-  );
+  )
 }

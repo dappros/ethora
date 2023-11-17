@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import * as http from "../../http";
+import React, { useEffect, useState } from "react"
+import * as http from "../../http"
 import {
   LineChart,
   Line,
@@ -9,35 +9,35 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { CircularProgress, useTheme } from "@mui/material";
-import { TChartData, transformDataForLineChart } from "../../utils";
+} from "recharts"
+import { CircularProgress, useTheme } from "@mui/material"
+import { TChartData, transformDataForLineChart } from "../../utils"
 
-type Props = {
-  appToken: string;
-};
+type Properties = {
+  appToken: string
+}
 
-export default function TransactionsGraph({ appToken }: Props) {
-  const [transactions, setTransactions] = useState<TChartData>([]);
-  const [loading, setLoading] = useState(false);
-  const theme = useTheme();
+export default function TransactionsGraph({ appToken }: Properties) {
+  const [transactions, setTransactions] = useState<TChartData>([])
+  const [loading, setLoading] = useState(false)
+  const theme = useTheme()
 
   const getData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await http.httpWithToken(appToken).get("explorer/graph");
-      setTransactions(transformDataForLineChart(res.data));
+      const res = await http.httpWithToken(appToken).get("explorer/graph")
+      setTransactions(transformDataForLineChart(res.data))
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
     if (appToken) {
-      getData();
+      getData()
     }
-  }, [appToken]);
+  }, [appToken])
 
   if (loading) {
     return (
@@ -51,7 +51,7 @@ export default function TransactionsGraph({ appToken }: Props) {
       >
         <CircularProgress />
       </div>
-    );
+    )
   }
 
   return (
@@ -85,5 +85,5 @@ export default function TransactionsGraph({ appToken }: Props) {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }

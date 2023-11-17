@@ -1,17 +1,23 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import "./Tnc.scss";
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import "./Tnc.scss"
 
-type TProps = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  company: string;
+type TProperties = {
+  firstName: string
+  lastName: string
+  email: string
+  company: string
   setTermsOpen: (isOpen: boolean) => void
-};
+}
 
-export default function Tnc({ firstName, lastName, email, company, setTermsOpen }: TProps) {
-  const date = new Date().toDateString();
+export default function Tnc({
+  firstName,
+  lastName,
+  email,
+  company,
+  setTermsOpen,
+}: TProperties) {
+  const date = new Date().toDateString()
 
   const onAccept = () => {
     setTermsOpen(false)
@@ -1862,9 +1868,18 @@ export default function Tnc({ firstName, lastName, email, company, setTermsOpen 
       routines, applications or technologies that will or may have a material
       negative effect upon the performance of a computer or introduce material
       security risks to a computer.
-      <Box style={{display: 'flex', justifyContent: 'center', padding: '20px'}}>
-        <Button onClick={onAccept} variant="contained" color="success" size="large">Close</Button>
+      <Box
+        style={{ display: "flex", justifyContent: "center", padding: "20px" }}
+      >
+        <Button
+          onClick={onAccept}
+          variant="contained"
+          color="success"
+          size="large"
+        >
+          Close
+        </Button>
       </Box>
     </Box>
-  );
+  )
 }

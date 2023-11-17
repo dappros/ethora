@@ -1,5 +1,5 @@
-import { Subscriptions } from "./Subscriptions";
-import { withStripe } from "./withStripe";
+import { Subscriptions } from "./Subscriptions"
+import { withStripe } from "./withStripe"
 
-const Subscription = withStripe(Subscriptions);
-export default Subscription;
+const Subscription = withStripe(Subscriptions)
+export default Subscription

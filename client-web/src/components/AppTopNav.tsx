@@ -1,45 +1,41 @@
-import { useEffect, useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
+import { useEffect, useState } from "react"
+import AppBar from "@mui/material/AppBar"
+import Box from "@mui/material/Box"
+import Toolbar from "@mui/material/Toolbar"
+import IconButton from "@mui/material/IconButton"
 
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom"
 
-import ExploreIcon from "@mui/icons-material/Explore";
-import GroupIcon from "@mui/icons-material/Group";
-import StarRateIcon from "@mui/icons-material/StarRate";
+import ExploreIcon from "@mui/icons-material/Explore"
+import GroupIcon from "@mui/icons-material/Group"
+import StarRateIcon from "@mui/icons-material/StarRate"
 import {
   getBalance,
   getMyAcl,
   httpWithAuth,
   subscribeForPushNotifications,
-} from "../http";
-import xmpp from "../xmpp";
-import { TActiveRoomFilter, useStoreState } from "../store";
+} from "../http"
+import xmpp from "../xmpp"
+import { TActiveRoomFilter, useStoreState } from "../store"
 
-import { Badge } from "@mui/material";
-import {
-  coinsMainName,
-  defaultMetaRoom,
-  ROOMS_FILTERS,
-} from "../config/config";
-import { Menu } from "./Menu";
-import { DOMAIN } from "../constants";
-import { getFirebaseMesagingToken } from "../services/firebaseMessaging";
-import { walletToUsername } from "../utils/walletManipulation";
-import defUserImage from "../assets/images/def-ava.png";
+import { Badge } from "@mui/material"
+import { coinsMainName, defaultMetaRoom, ROOMS_FILTERS } from "../config/config"
+import { Menu } from "./Menu"
+import { DOMAIN } from "../constants"
+import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
+import { walletToUsername } from "../utils/walletManipulation"
+import defUserImage from "../assets/images/def-ava.png"
 
-const coinImg = "/coin.png";
+const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {
-  return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
+  return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`
 }
 
 const roomFilters = [
   { name: ROOMS_FILTERS.official, Icon: StarRateIcon },
   { name: ROOMS_FILTERS.private, Icon: GroupIcon },
   { name: ROOMS_FILTERS.meta, Icon: ExploreIcon },
-];
+]
 
 const mockAcl = {
   result: [
@@ -90,132 +86,132 @@ const mockAcl = {
       },
     },
   ],
-};
+}
 const AppTopNav = () => {
-  const user = useStoreState((state) => state.user);
-  const apps = useStoreState((state) => state.apps);
-  const userId = useStoreState((state) => state.user._id);
-  const setACL = useStoreState((state) => state.setACL);
-  const history = useHistory();
-  const location = useLocation();
+  const user = useStoreState((state) => state.user)
+  const apps = useStoreState((state) => state.apps)
+  const userId = useStoreState((state) => state.user._id)
+  const setACL = useStoreState((state) => state.setACL)
+  const history = useHistory()
+  const location = useLocation()
   const mainCoinBalance = useStoreState((state) =>
-    state.balance.find((el) => el.tokenName === coinsMainName)
-  );
-  const firebaseAppId = useStoreState((s) => s.config.firebaseConfig.appId);
+    state.balance.find((element) => element.tokenName === coinsMainName)
+  )
+  const firebaseAppId = useStoreState((s) => s.config.firebaseConfig.appId)
 
-  const setBalance = useStoreState((state) => state.setBalance);
-  const rooms = useStoreState((state) => state.userChatRooms);
+  const setBalance = useStoreState((state) => state.setBalance)
+  const rooms = useStoreState((state) => state.userChatRooms)
   const setActiveRoomFilter = useStoreState(
     (state) => state.setActiveRoomFilter
-  );
-  const activeRoomFilter = useStoreState((state) => state.activeRoomFilter);
+  )
+  const activeRoomFilter = useStoreState((state) => state.activeRoomFilter)
   const [unreadMessagesCounts, setUnreadMessagesCounts] = useState({
     official: 0,
     meta: 0,
     private: 0,
-  });
+  })
 
   const subscribeForXmppNotifications = async () => {
     try {
-      const token = await getFirebaseMesagingToken();
+      const token = await getFirebaseMesagingToken()
       const res = await subscribeForPushNotifications(
         token,
         walletToUsername(user.walletAddress) + DOMAIN
-      );
+      )
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
   const getAcl = async () => {
     // setLoading(true);
 
     try {
       if (user?.ACL?.ownerAccess) {
-        setACL(mockAcl);
-        return;
+        setACL(mockAcl)
+        return
       }
-      const res = await getMyAcl();
-      setACL({ result: res.data.result });
+      const res = await getMyAcl()
+      setACL({ result: res.data.result })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
     // setLoading(false);
-  };
+  }
   useEffect(() => {
-    getAcl();
-  }, [apps.length, user.walletAddress]);
+    getAcl()
+  }, [apps.length, user.walletAddress])
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
-      setBalance(resp.data.balance);
-    });
-  }, []);
+      setBalance(resp.data.balance)
+    })
+  }, [])
 
   useEffect(() => {
     if (firebaseAppId) {
-      subscribeForXmppNotifications();
+      subscribeForXmppNotifications()
     }
-  }, [firebaseAppId]);
+  }, [firebaseAppId])
 
   useEffect(() => {
-    xmpp.init(user.walletAddress, user?.xmppPassword as string);
-  }, []);
+    xmpp.init(user.walletAddress, user?.xmppPassword as string)
+  }, [])
 
   const navigateToLatestMetaRoom = async () => {
     try {
-      const res = await httpWithAuth().get("/room/currentRoom");
+      const res = await httpWithAuth().get("/room/currentRoom")
       if (!res.data.result) {
-        history.push("/chat/" + defaultMetaRoom.jid);
+        history.push("/chat/" + defaultMetaRoom.jid)
 
-        return;
+        return
       }
-      history.push("/chat/" + res.data.result.roomId.roomJid);
+      history.push("/chat/" + res.data.result.roomId.roomJid)
     } catch (error) {
-      console.log(error, "cannot navigate to room");
+      console.log(error, "cannot navigate to room")
 
       // showError('Error', 'Cannot fetch latest meta room');
     }
-  };
+  }
 
   const getCounter = () => {
     const counts = {
       official: 0,
       meta: 0,
       private: 0,
-    };
-    const chats = useStoreState.getState().defaultChatRooms;
-    const chatsMap = {};
-    chats.forEach((c) => {
-      chatsMap[c.jid] = c;
-    });
-    rooms.forEach((item) => {
-      const splitedJid = item.jid.split("@")[0];
+    }
+    const chats = useStoreState.getState().defaultChatRooms
+    const chatsMap = {}
+    for (const c of chats) {
+      chatsMap[c.jid] = c
+    }
+    for (const item of rooms) {
+      const splitedJid = item.jid.split("@")[0]
       if (chatsMap[splitedJid]) {
-        counts.official += item.unreadMessages;
+        counts.official += item.unreadMessages
       }
       if (!chatsMap[splitedJid] && +item.users_cnt < 3) {
-        counts.private += item.unreadMessages;
+        counts.private += item.unreadMessages
       }
       if (!chatsMap[splitedJid] && +item.users_cnt >= 3) {
-        counts.meta += item.unreadMessages;
+        counts.meta += item.unreadMessages
       }
-    });
+    }
 
-    setUnreadMessagesCounts(counts);
-  };
+    setUnreadMessagesCounts(counts)
+  }
   const onRoomFilterClick = async (filter: TActiveRoomFilter) => {
-    setActiveRoomFilter(filter);
+    setActiveRoomFilter(filter)
     if (filter === ROOMS_FILTERS.meta) {
-      await navigateToLatestMetaRoom();
-      return;
+      await navigateToLatestMetaRoom()
+      return
     }
     if (!location.pathname.includes("chat")) {
-      history.push("/chat/none");
+      history.push("/chat/none")
     }
-  };
+  }
 
   useEffect(() => {
-    getCounter();
-  }, [rooms]);
+    getCounter()
+  }, [rooms])
   return (
     <AppBar position="static">
       <Box sx={{ width: "100%", padding: "0 20px" }}>
@@ -235,10 +231,10 @@ const AppTopNav = () => {
               }}
             >
               <Menu />
-              {roomFilters.map((item, i) => {
+              {roomFilters.map((item, index) => {
                 return (
                   <Badge
-                    key={i}
+                    key={index}
                     badgeContent={unreadMessagesCounts[item.name]}
                     color="secondary"
                   >
@@ -257,7 +253,7 @@ const AppTopNav = () => {
                       <item.Icon />
                     </IconButton>
                   </Badge>
-                );
+                )
               })}
             </Box>
           </Box>
@@ -299,6 +295,6 @@ const AppTopNav = () => {
         </Toolbar>
       </Box>
     </AppBar>
-  );
-};
-export default AppTopNav;
+  )
+}
+export default AppTopNav

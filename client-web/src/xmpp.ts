@@ -1,112 +1,112 @@
-import xmpp, { xml } from "@xmpp/client";
-import { Client } from "@xmpp/client";
-import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants";
-import { TUserChatRooms, useStoreState } from "./store";
-import { walletToUsername } from "./utils/walletManipulation";
-import { XmppHandler } from "./xmppHandler";
+import xmpp, { xml } from "@xmpp/client"
+import { Client } from "@xmpp/client"
+import { CONFERENCEDOMAIN, DOMAIN, SERVICE } from "./constants"
+import { TUserChatRooms, useStoreState } from "./store"
+import { walletToUsername } from "./utils/walletManipulation"
+import { XmppHandler } from "./xmppHandler"
 
-const xmppMessagesHandler = new XmppHandler();
+const xmppMessagesHandler = new XmppHandler()
 
 export class XmppClass {
-  public client!: Client;
+  public client!: Client
 
   init(walletAddress: string, password: string) {
     if (!password) {
-      return;
+      return
     }
 
     if (this.client) {
-      return;
+      return
     }
 
     this.client = xmpp.client({
       service: SERVICE,
       username: walletToUsername(walletAddress),
       password,
-    });
-    this.client.setMaxListeners(20);
-    this.client.start();
+    })
+    this.client.setMaxListeners(20)
+    this.client.start()
 
     this.client.on("online", (jid) => {
-      xmppMessagesHandler.getListOfRooms(this);
-      this.subscribeToDefaultChats();
-      this.getPrivateXmlRooms();
-    });
-    this.client.on("stanza", xmppMessagesHandler.onMessageHistory);
+      xmppMessagesHandler.getListOfRooms(this)
+      this.subscribeToDefaultChats()
+      this.getPrivateXmlRooms()
+    })
+    this.client.on("stanza", xmppMessagesHandler.onMessageHistory)
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onRealtimeMessage(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onPrivateXml(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onGetLastMessageArchive(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.connectToUserRooms(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onLastMessageArchive(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onComposing(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onInvite(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onBlackList(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onGetRoomInfo(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onGetRoomMemberInfo(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onChangeDescription(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onChangeRoomName(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onPresenceInRoom(stanza)
-    );
-    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza));
+    )
+    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza))
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onRemoveFromBlackList(stanza, this)
-    );
-    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza));
+    )
+    this.client.on("stanza", (stanza) => xmppMessagesHandler.onBan(stanza))
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onNewSubscription(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onRoomDesignChange(stanza, this)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onSendReplaceMessageStanza(stanza)
-    );
+    )
     this.client.on("stanza", (stanza) =>
       xmppMessagesHandler.onDeleteMessageStanza(stanza)
-    );
+    )
 
-    this.client.on("offline", () => console.log("offline"));
+    this.client.on("offline", () => console.log("offline"))
 
     this.client.on("error", (error) => {
-      console.log("xmmpp on error ", error);
+      console.log("xmmpp on error", error)
       // this.stop();
-      useStoreState.getState().setLoaderArchive(false);
+      useStoreState.getState().setLoaderArchive(false)
 
-      console.log("xmmpp error, terminating collection");
-    });
+      console.log("xmmpp error, terminating collection")
+    })
   }
 
   stop() {
     if (this.client) {
-      this.client.stop();
-      this.client = undefined;
-      useStoreState.getState().setLoaderArchive(false);
-      return;
+      this.client.stop()
+      this.client = undefined
+      useStoreState.getState().setLoaderArchive(false)
+      return
     }
   }
   setRoomImage = (
@@ -128,15 +128,15 @@ export class XmppClass {
         room_background: roomBackground,
         room: roomAddress + CONFERENCEDOMAIN,
       })
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
   subscribeToDefaultChats = () => {
-    const chats = useStoreState.getState().defaultChatRooms;
-    chats.forEach((chat) => {
-      this.subsribe(chat.jid);
-    });
-  };
+    const chats = useStoreState.getState().defaultChatRooms
+    for (const chat of chats) {
+      this.subsribe(chat.jid)
+    }
+  }
   subsribe(address: string) {
     const message = xml(
       "iq",
@@ -154,9 +154,9 @@ export class XmppClass {
         xml("event", { node: "urn:xmpp:mucsub:nodes:subscribers" }),
         xml("event", { node: "urn:xmpp:mucsub:nodes:subject" })
       )
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   discoInfo() {
@@ -169,9 +169,9 @@ export class XmppClass {
         id: "discover",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   unsubscribe(address: string) {
@@ -184,9 +184,9 @@ export class XmppClass {
         id: "unsubscribe",
       },
       xml("unsubscribe", { xmlns: "urn:xmpp:mucsub:0" })
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   getRooms() {
@@ -198,26 +198,12 @@ export class XmppClass {
         id: "getUserRooms",
       },
       xml("query", { xmlns: "ns:getrooms" })
-    );
-    this.client.send(message);
+    )
+    this.client.send(message)
   }
 
   getVcard(username: string) {
-    if (username !== this.client.jid?.getLocal()) {
-      // get other vcard
-      const message = xml(
-        "iq",
-        {
-          from: this.client.jid?.toString(),
-          id: "vCardOther",
-          to: username + "@" + this.client.jid?.getDomain(),
-          type: "get",
-        },
-        xml("vCard", { xmlns: "vcard-temp" })
-      );
-
-      this.client.send(message);
-    } else {
+    if (username === this.client.jid?.getLocal()) {
       const message = xml(
         "iq",
         {
@@ -228,25 +214,39 @@ export class XmppClass {
         xml("vCard", {
           xmlns: "vcard-temp",
         })
-      );
-      this.client.send(message);
+      )
+      this.client.send(message)
+    } else {
+      // get other vcard
+      const message = xml(
+        "iq",
+        {
+          from: this.client.jid?.toString(),
+          id: "vCardOther",
+          to: username + "@" + this.client.jid?.getDomain(),
+          type: "get",
+        },
+        xml("vCard", { xmlns: "vcard-temp" })
+      )
+
+      this.client.send(message)
     }
   }
 
   presence() {
-    this.client.send(xml("presence"));
+    this.client.send(xml("presence"))
   }
 
   botPresence(room: string) {
-    const xmlMsg = xml(
+    const xmlMessage = xml(
       "presence",
       {
         from: this.client.jid?.toString(),
         to: `${room}/${this.client.jid?.getLocal()}`,
       },
       xml("x", "http://jabber.org/protocol/muc")
-    );
-    this.client.send(xmlMsg);
+    )
+    this.client.send(xmlMessage)
   }
 
   roomPresence(room: string) {
@@ -257,8 +257,8 @@ export class XmppClass {
         to: `${room}/${this.client.jid?.getLocal()}`,
       },
       xml("x", "http://jabber.org/protocol/muc")
-    );
-    this.client.send(presence);
+    )
+    this.client.send(presence)
   }
 
   leaveTheRoom(room: string) {
@@ -266,8 +266,8 @@ export class XmppClass {
       from: this.client.jid?.toString(),
       to: room + "/" + this.client.jid?.getLocal(),
       type: "unavailable",
-    });
-    this.client.send(presence);
+    })
+    this.client.send(presence)
   }
   presenceInRoom(room: string) {
     const presence = xml(
@@ -278,12 +278,12 @@ export class XmppClass {
         id: "presenceInRoom",
       },
       xml("x", "http://jabber.org/protocol/muc")
-    );
-    this.client.send(presence);
+    )
+    this.client.send(presence)
   }
 
   getRoomArchiveStanza(chatJID: string, amount: number) {
-    let message = xml(
+    const message = xml(
       "iq",
       {
         type: "set",
@@ -300,8 +300,8 @@ export class XmppClass {
           xml("before")
         )
       )
-    );
-    this.client.send(message);
+    )
+    this.client.send(message)
   }
 
   getPaginatedArchive = (
@@ -310,11 +310,11 @@ export class XmppClass {
     amount: number
   ) => {
     if (xmppMessagesHandler.lastMsgId === firstUserMessageID) {
-      return;
+      return
     }
-    xmppMessagesHandler.isGettingMessages = true;
-    xmppMessagesHandler.isGettingFirstMessages = true;
-    useStoreState.getState().setLoaderArchive(true);
+    xmppMessagesHandler.isGettingMessages = true
+    xmppMessagesHandler.isGettingFirstMessages = true
+    useStoreState.getState().setLoaderArchive(true)
     const message = xml(
       "iq",
       {
@@ -332,13 +332,13 @@ export class XmppClass {
           xml("before", {}, firstUserMessageID)
         )
       )
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
 
   getLastMessageArchive(chat_jid: string) {
-    xmppMessagesHandler.isGettingMessages = true;
-    let message = xml(
+    xmppMessagesHandler.isGettingMessages = true
+    const message = xml(
       "iq",
       {
         type: "set",
@@ -355,8 +355,8 @@ export class XmppClass {
           xml("before")
         )
       )
-    );
-    this.client.send(message);
+    )
+    this.client.send(message)
   }
 
   sendMessage(
@@ -389,8 +389,8 @@ export class XmppClass {
         notDisplayedValue: notDisplayedValue ? notDisplayedValue : "",
       }),
       xml("body", {}, userMessage)
-    );
-    this.client.send(message);
+    )
+    this.client.send(message)
   }
   sendMessageStanza = (roomJID: string, messageText: string, data: any) => {
     const message = xml(
@@ -408,9 +408,9 @@ export class XmppClass {
         senderJID: this.client.jid?.toString(),
         ...data,
       })
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
 
   sendSystemMessage(
     roomJID: string,
@@ -442,8 +442,8 @@ export class XmppClass {
         transactionId,
       }),
       xml("body", {}, userMessage)
-    );
-    this.client.send(message);
+    )
+    this.client.send(message)
   }
 
   sendMediaMessageStanza(roomJID: string, data: any) {
@@ -490,13 +490,13 @@ export class XmppClass {
         mainMessage: data?.mainMessage,
         roomJid: data?.roomJid,
       })
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   createNewRoom(to: string) {
-    let message = xml(
+    const message = xml(
       "presence",
       {
         id: "createRoom",
@@ -509,9 +509,9 @@ export class XmppClass {
           this.client.jid?.toString().split("@")[0],
       },
       xml("x", "http://jabber.org/protocol/muc")
-    );
+    )
     // console.log(message.toString());
-    this.client.send(message);
+    this.client.send(message)
   }
 
   roomConfig(to: string, data: { roomName: string; roomDescription?: string }) {
@@ -546,13 +546,13 @@ export class XmppClass {
           )
         )
       )
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   getArchive = (userJID: string) => {
-    let message = xml(
+    const message = xml(
       "iq",
       { type: "set", id: userJID },
       xml(
@@ -560,9 +560,9 @@ export class XmppClass {
         { xmlns: "urn:xmpp:mam:2", queryid: "userArchive" },
         xml("set", { xmlns: "http://jabber.org/protocol/rsm" }, xml("before"))
       )
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
 
   sendInvite(from: string, to: string, otherUserId: string) {
     const stanza = xml(
@@ -580,8 +580,8 @@ export class XmppClass {
           xml("reason", {}, "Hey, this is the place with amazing cookies!")
         )
       )
-    );
-    this.client.send(stanza);
+    )
+    this.client.send(stanza)
   }
 
   setOwner(to: string) {
@@ -594,9 +594,9 @@ export class XmppClass {
         type: "set",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
-    );
+    )
 
-    this.client.send(message);
+    this.client.send(message)
   }
 
   getRoomInfo = (roomJID: string) => {
@@ -609,9 +609,9 @@ export class XmppClass {
         type: "get",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
   getAndReceiveRoomInfo = (roomJID: string) => {
     const message = xml(
       "iq",
@@ -622,9 +622,9 @@ export class XmppClass {
         type: "get",
       },
       xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-    );
-    return this.client.sendReceive(message);
-  };
+    )
+    return this.client.sendReceive(message)
+  }
   isComposing = (walletAddress: string, chatJID: string, fullName: string) => {
     const message = xml(
       "message",
@@ -642,9 +642,9 @@ export class XmppClass {
         fullName: fullName,
         manipulatedWalletAddress: walletAddress,
       })
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
 
   pausedComposing = (walletAddress: string, chatJID: string) => {
     const message = xml(
@@ -662,9 +662,9 @@ export class XmppClass {
         xmlns: SERVICE,
         manipulatedWalletAddress: walletAddress,
       })
-    );
-    this.client.send(message);
-  };
+    )
+    this.client.send(message)
+  }
 
   blacklistUser = (userJIDToBlacklist: string) => {
     const stanza = xml(
@@ -679,9 +679,9 @@ export class XmppClass {
         xmlns: "ns:deepx:muc:user:block",
         user: userJIDToBlacklist,
       })
-    );
-    this.client.send(stanza);
-  };
+    )
+    this.client.send(stanza)
+  }
   getBlackList = () => {
     const stanza = xml(
       "iq",
@@ -693,9 +693,9 @@ export class XmppClass {
       xml("query", {
         xmlns: "ns:deepx:muc:user:blocklist",
       })
-    );
-    this.client.send(stanza);
-  };
+    )
+    this.client.send(stanza)
+  }
 
   getRoomMemberInfo = (roomJID) => {
     const stanza = xml(
@@ -709,9 +709,9 @@ export class XmppClass {
         xmlns: "ns:room:last",
         room: roomJID,
       })
-    );
-    this.client.send(stanza);
-  };
+    )
+    this.client.send(stanza)
+  }
 
   changeRoomDescription = (roomJID: string, newDescription: string) => {
     const stanza = xml(
@@ -740,13 +740,13 @@ export class XmppClass {
           )
         )
       )
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 
   changeRoomName = (roomJID: string, newRoomName: string) => {
-    console.log(roomJID, newRoomName);
+    console.log(roomJID, newRoomName)
     const stanza = xml(
       "iq",
       {
@@ -773,10 +773,10 @@ export class XmppClass {
           )
         )
       )
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 
   banUserStanza = (banUserId: string, roomJID: string) => {
     const stanza = xml(
@@ -795,10 +795,10 @@ export class XmppClass {
         time: "2592000",
         comment: "Ban",
       })
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 
   unbanUserStanza = (unbanUserId: string, roomJID: string) => {
     const stanza = xml(
@@ -815,10 +815,10 @@ export class XmppClass {
         type: "room",
         room: roomJID,
       })
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 
   removeUserFromBlackList = (userAddressToRemoveFromBlacklist: string) => {
     const stanza = xml(
@@ -832,10 +832,10 @@ export class XmppClass {
         xmlns: "ns:deepx:muc:user:unblock",
         user: userAddressToRemoveFromBlacklist,
       })
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 
   //stanza to edit/replace message.
   sendReplaceMessageStanza = (
@@ -868,11 +868,11 @@ export class XmppClass {
         xmlns: "urn:xmpp:message-correct:0",
         text: replaceText,
       })
-    );
+    )
 
     console.log("=======> sendReplaceMessageStanza =>", stanza.toString())
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
   setPrivateXmlRooms = (rooms: TUserChatRooms[]) => {
     //     <iq type="set" id="1001">
     //   <query xmlns="jabber:iq:private">
@@ -881,7 +881,7 @@ export class XmppClass {
     //     </exodus>
     //   </query>
     // </iq>
-    const roomsToSet = JSON.stringify(rooms);
+    const roomsToSet = JSON.stringify(rooms)
 
     const stanza = xml(
       "iq",
@@ -894,9 +894,9 @@ export class XmppClass {
         { xmlns: "jabber:iq:private" },
         xml("exodus", { xmlns: "exodus:prefs" }, xml("rooms", {}, roomsToSet))
       )
-    );
-    this.client.send(stanza);
-  };
+    )
+    this.client.send(stanza)
+  }
   getPrivateXmlRooms = () => {
     //   <iq type="get" id="1002">
     //   <query xmlns="jabber:iq:private">
@@ -914,9 +914,9 @@ export class XmppClass {
         { xmlns: "jabber:iq:private" },
         xml("exodus", { xmlns: "exodus:prefs" })
       )
-    );
-    this.client.send(stanza);
-  };
+    )
+    this.client.send(stanza)
+  }
   //stanza to delete message
   deleteMessageStanza = (roomJid: string, messageId: string) => {
     // <message
@@ -940,10 +940,10 @@ export class XmppClass {
       xml("delete", {
         id: messageId,
       })
-    );
+    )
 
-    this.client.send(stanza);
-  };
+    this.client.send(stanza)
+  }
 }
 
-export default new XmppClass();
+export default new XmppClass()

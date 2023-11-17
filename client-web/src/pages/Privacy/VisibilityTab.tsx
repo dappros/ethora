@@ -7,15 +7,15 @@ import {
   Radio,
   RadioGroup,
   Typography,
-} from "@mui/material";
-import { Box } from "@mui/system";
-import React, { useState } from "react";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { changeUserData } from "../../http";
-import { useStoreState } from "../../store";
+} from "@mui/material"
+import { Box } from "@mui/system"
+import React, { useState } from "react"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { changeUserData } from "../../http"
+import { useStoreState } from "../../store"
 
-interface VisibilityProps {
-  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void;
+interface VisibilityProperties {
+  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void
 }
 
 const state: Record<string, string> = {
@@ -23,70 +23,72 @@ const state: Record<string, string> = {
   restricted: "false",
   full: "true",
   individual: "false",
-};
+}
 
-export const Visibility: React.FC<VisibilityProps> = ({ handleChangeTab }) => {
+export const Visibility: React.FC<VisibilityProperties> = ({
+  handleChangeTab,
+}) => {
   const updateUserProfilePermission = useStoreState(
     (state) => state.updateUserProfilePermission
-  );
+  )
   const updateUserDocumentsPermission = useStoreState(
     (state) => state.updateUserDocumentsPermission
-  );
-  const user = useStoreState((state) => state.user);
+  )
+  const user = useStoreState((state) => state.user)
 
   const [profileVisibility, setProfileVisibility] = useState(
     user.isProfileOpen ? "open" : "restricted"
-  );
+  )
   const [isAssetsOpen, setIsAssetsOpen] = useState(
     user.isAssetsOpen ? "full" : "individual"
-  );
-  const [loading, setLoading] = useState<"assets" | "profile" | null>(null);
-  const { showSnackbar } = useSnackbar();
-  console.log(isAssetsOpen);
+  )
+  const [loading, setLoading] = useState<"assets" | "profile" | null>(null)
+  const { showSnackbar } = useSnackbar()
+  console.log(isAssetsOpen)
   const updateProfileVisibility = async (value: string) => {
-    const profileStateToSave = value === "full" ? true : false;
-    const profileState = state[value];
-    setLoading("profile");
+    const profileStateToSave = value === "full" ? true : false
+    const profileState = state[value]
+    setLoading("profile")
 
     try {
-      const formData = new FormData();
-      formData.append("isProfileOpen", profileState);
-      const { data } = await changeUserData(formData);
+      const formData = new FormData()
+      formData.append("isProfileOpen", profileState)
+      const { data } = await changeUserData(formData)
 
-      showSnackbar("success", "Profile permissions updated");
-      updateUserProfilePermission(profileStateToSave);
-      setProfileVisibility(value);
+      showSnackbar("success", "Profile permissions updated")
+      updateUserProfilePermission(profileStateToSave)
+      setProfileVisibility(value)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(null);
-  };
+    setLoading(null)
+  }
 
   const updateAssetsVisibility = async (value: string) => {
-    setLoading("assets");
-    const assetsStateToSave = value === "full" ? true : false;
+    setLoading("assets")
+    const assetsStateToSave = value === "full" ? true : false
 
-    const assetsState = state[value];
+    const assetsState = state[value]
     try {
-      const formData = new FormData();
-      formData.append("isAssetsOpen", assetsState);
-      const { data } = await changeUserData(formData);
+      const formData = new FormData()
+      formData.append("isAssetsOpen", assetsState)
+      const { data } = await changeUserData(formData)
 
-      showSnackbar("success", "Assets permissions updated");
+      showSnackbar("success", "Assets permissions updated")
 
-      updateUserDocumentsPermission(assetsStateToSave);
-      setIsAssetsOpen(value);
+      updateUserDocumentsPermission(assetsStateToSave)
+      setIsAssetsOpen(value)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
 
-    setLoading(null);
-  };
+    setLoading(null)
+  }
 
   return (
     <Box
       sx={{
-        margin: '20px',
+        margin: "20px",
         flexDirection: "column",
         display: "flex",
         alignItems: "center",
@@ -176,10 +178,9 @@ export const Visibility: React.FC<VisibilityProps> = ({ handleChangeTab }) => {
         onClick={(event) => handleChangeTab(event, 2)}
         variant="contained"
         id="manageDocumentShares"
-
       >
         Manage documents shares
       </Button>
     </Box>
-  );
-};
+  )
+}

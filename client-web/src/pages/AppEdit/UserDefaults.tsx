@@ -1,4 +1,4 @@
-import { LoadingButton } from "@mui/lab";
+import { LoadingButton } from "@mui/lab"
 import {
   Box,
   Checkbox,
@@ -7,38 +7,38 @@ import {
   IconButton,
   TextField,
   Typography,
-} from "@mui/material";
-import { useFormik } from "formik";
-import React, { useState } from "react";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useStoreState } from "../../store";
-import * as http from "../../http";
-import { useParams } from "react-router";
-import xmpp from "../../xmpp";
-import { CONFERENCEDOMAIN } from "../../constants";
+} from "@mui/material"
+import { useFormik } from "formik"
+import React, { useState } from "react"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useStoreState } from "../../store"
+import * as http from "../../http"
+import { useParams } from "react-router"
+import xmpp from "../../xmpp"
+import { CONFERENCEDOMAIN } from "../../constants"
 export interface IUserDefaults {}
 
-const JID_LENGTH = 64 + CONFERENCEDOMAIN.length;
+const JID_LENGTH = 64 + CONFERENCEDOMAIN.length
 
 export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
-  const fileRef = React.useRef<HTMLInputElement>(null);
-  const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const updateApp = useStoreState((state) => state.updateApp);
-  const setUser = useStoreState((state) => state.setUser);
-  const user = useStoreState((state) => state.user);
-  const defaultChats = useStoreState((state) => state.defaultChatRooms);
+  const fileReference = React.useRef<HTMLInputElement>(null)
+  const { appId } = useParams<{ appId: string }>()
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId))
+  const updateApp = useStoreState((state) => state.updateApp)
+  const setUser = useStoreState((state) => state.setUser)
+  const user = useStoreState((state) => state.user)
+  const defaultChats = useStoreState((state) => state.defaultChatRooms)
 
   const [defaultChatRooms, setDefaultChatRooms] = useState(() =>
-    defaultChats.map((item, i) => ({
+    defaultChats.map((item, index) => ({
       ...item,
       jid: item.jid,
       checked: item.pinned,
       disabled: false,
       error: false,
     }))
-  );
-  const { showSnackbar } = useSnackbar();
+  )
+  const { showSnackbar } = useSnackbar()
 
   const formik = useFormik({
     initialValues: {
@@ -57,62 +57,62 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
       { defaultAccessAssetsOpen, defaultAccessProfileOpen, usersCanFree },
       { setSubmitting }
     ) => {
-      setSubmitting(true);
+      setSubmitting(true)
       const defaultRooms = defaultChatRooms.map((room) => ({
         jid: room.jid,
         pinned: room.checked,
-      }));
+      }))
       const body = {
         defaultAccessProfileOpen: defaultAccessProfileOpen,
         defaultAccessAssetsOpen: defaultAccessAssetsOpen,
         usersCanFree: usersCanFree,
         defaultRooms: defaultRooms,
-      };
+      }
 
       try {
-        const res = await http.changeUserDefaults(appId, body);
+        const res = await http.changeUserDefaults(appId, body)
         console.log(res.data)
-        setUser({ ...user, homeScreen: "" });
-        updateApp(res.data);
-        showSnackbar('success', 'User Defaults updated successfully')
+        setUser({ ...user, homeScreen: "" })
+        updateApp(res.data)
+        showSnackbar("success", "User Defaults updated successfully")
       } catch (error) {
         console.log(error)
         showSnackbar(
           "error",
           "Cannot update the app " + (error.response?.data?.error || "")
-        );
+        )
       }
 
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   const selectChatRooms = (
     e: React.ChangeEvent<HTMLInputElement>,
-    i: number
+    index: number
   ) => {
-    const r = [...defaultChatRooms];
-    r[i].checked = e.target.checked;
-    setDefaultChatRooms(r);
-  };
+    const r = [...defaultChatRooms]
+    r[index].checked = e.target.checked
+    setDefaultChatRooms(r)
+  }
 
   const changeRoomInfo = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    i: number
+    index: number
   ) => {
-    const property = e.target.name;
-    const value = e.target.value;
-    const rooms = [...defaultChatRooms];
-    rooms[i][property] = value;
+    const property = e.target.name
+    const value = e.target.value
+    const rooms = [...defaultChatRooms]
+    rooms[index][property] = value
     if (property === "jid" && value.length === JID_LENGTH) {
-      const isRoomExistsStanza = await xmpp.getAndReceiveRoomInfo(value);
+      const isRoomExistsStanza = await xmpp.getAndReceiveRoomInfo(value)
       //error appears because room is not exist and we can create it
       if (isRoomExistsStanza.children[1]?.["name"] !== "error") {
-        rooms[i].error = true;
+        rooms[index].error = true
       }
     }
-    setDefaultChatRooms(rooms);
-  };
+    setDefaultChatRooms(rooms)
+  }
 
   return (
     <Box sx={{ padding: 1 }}>
@@ -142,10 +142,10 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                       Pinned
                     </Typography>
                   </Box>
-                  {defaultChatRooms.map((item, i) => {
+                  {defaultChatRooms.map((item, index) => {
                     return (
                       <Box
-                        key={i}
+                        key={index}
                         sx={{
                           display: "grid",
                           gridTemplateColumns: "0.9fr 0.1fr",
@@ -161,18 +161,18 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
                           fullWidth
                           variant="outlined"
                           value={item.jid}
-                          onChange={(e) => changeRoomInfo(e, i)}
+                          onChange={(e) => changeRoomInfo(e, index)}
                           inputProps={{ maxLength: JID_LENGTH }}
                           error={item.jid.length < JID_LENGTH || item.error}
                         />
                         <Checkbox
                           inputProps={{ "aria-label": "Checkbox" }}
-                          onChange={(e) => selectChatRooms(e, i)}
+                          onChange={(e) => selectChatRooms(e, index)}
                           checked={item.checked}
                           disabled={item.disabled}
                         />
                       </Box>
-                    );
+                    )
                   })}
                   <Typography sx={{ fontSize: 12 }}>
                     Specify from 1 to 3 chat rooms your users will be subscribed
@@ -319,5 +319,5 @@ export const UserDefaults: React.FC<IUserDefaults> = ({}) => {
         </form>
       </Box>
     </Box>
-  );
-};
+  )
+}

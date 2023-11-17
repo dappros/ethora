@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-import { TBalance } from "../../store";
+import { TBalance } from "../../store"
 import {
   Avatar,
   Chip,
@@ -11,26 +11,26 @@ import {
   ListItemText,
   useTheme,
   Box,
-} from "@mui/material";
-import { produceNfmtItems } from "../../utils";
-import { NFMT_TRAITS } from "../../constants";
-import { useHistory } from "react-router";
+} from "@mui/material"
+import { produceNfmtItems } from "../../utils"
+import { NFMT_TRAITS } from "../../constants"
+import { useHistory } from "react-router"
 
 const NftItem = ({
   item,
   walletAddress,
 }: {
-  item: TBalance;
-  walletAddress: string;
+  item: TBalance
+  walletAddress: string
 }) => {
-  const theme = useTheme();
-  const history = useHistory();
+  const theme = useTheme()
+  const history = useHistory()
   const onItemClick = () => {
     history.push({
       pathname: "/provenance",
       state: { nftItem: item, walletAddress },
-    });
-  };
+    })
+  }
   return (
     <ListItem key={item.nftId}>
       <ListItemButton onClick={onItemClick}>
@@ -54,23 +54,23 @@ const NftItem = ({
         </Box>
       </ListItemButton>
     </ListItem>
-  );
-};
+  )
+}
 const NfmtItem = ({
   item,
   walletAddress,
 }: {
-  item: TBalance;
-  walletAddress: string;
+  item: TBalance
+  walletAddress: string
 }) => {
-  const theme = useTheme();
-  const history = useHistory();
+  const theme = useTheme()
+  const history = useHistory()
   const onItemClick = () => {
     history.push({
       pathname: "/provenance",
       state: { nftItem: item, walletAddress },
-    });
-  };
+    })
+  }
   return (
     <ListItem key={item.nftId}>
       <ListItemButton onClick={onItemClick}>
@@ -97,20 +97,16 @@ const NfmtItem = ({
             }}
           >
             {item.traits.map((trait) => {
-              if (NFMT_TRAITS[trait]) {
-                return (
-                  <Chip
-                    sx={{
-                      backgroundColor: NFMT_TRAITS[trait].color,
-                      marginRight: "5px",
-                    }}
-                    label={trait}
-                    key={trait}
-                  />
-                );
-              } else {
-                return null;
-              }
+              return NFMT_TRAITS[trait] ? (
+                <Chip
+                  sx={{
+                    backgroundColor: NFMT_TRAITS[trait].color,
+                    marginRight: "5px",
+                  }}
+                  label={trait}
+                  key={trait}
+                />
+              ) : null
             })}
           </Box>
           <span style={{ textAlign: "left", width: 50 }}>
@@ -119,35 +115,35 @@ const NfmtItem = ({
         </Box>
       </ListItemButton>
     </ListItem>
-  );
-};
+  )
+}
 
 export default function ItemsTable({
   balance,
   walletAddress,
 }: {
-  balance: TBalance[];
-  walletAddress: string;
+  balance: TBalance[]
+  walletAddress: string
 }) {
-  const nftItems = balance.filter((item) => item.tokenType === "NFT");
-  const nfmtItems = produceNfmtItems(balance);
+  const nftItems = balance.filter((item) => item.tokenType === "NFT")
+  const nfmtItems = produceNfmtItems(balance)
 
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-      {nftItems.map((item, i) => {
+      {nftItems.map((item, index) => {
         return (
           <NftItem walletAddress={walletAddress} item={item} key={item.nftId} />
-        );
+        )
       })}
-      {nfmtItems.map((item, i) => {
+      {nfmtItems.map((item, index) => {
         return (
           <NfmtItem
             walletAddress={walletAddress}
             item={item}
-            key={item.nftId + i}
+            key={item.nftId + index}
           />
-        );
+        )
       })}
     </List>
-  );
+  )
 }

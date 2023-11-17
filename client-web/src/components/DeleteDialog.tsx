@@ -1,20 +1,20 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import * as React from "react"
+import Button from "@mui/material/Button"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
 
-interface IProps {
-  open: boolean;
-  onClose: () => void;
-  onDeletePress: () => void;
-  loading?: boolean;
-  title: string;
-  description: string;
-  deleteButtonTitle?: string;
-  cancelButtonTitle?: string;
+interface IProperties {
+  open: boolean
+  onClose: () => void
+  onDeletePress: () => void
+  loading?: boolean
+  title: string
+  description: string
+  deleteButtonTitle?: string
+  cancelButtonTitle?: string
 }
 
 export function DeleteDialog({
@@ -26,7 +26,7 @@ export function DeleteDialog({
   description,
   deleteButtonTitle,
   cancelButtonTitle,
-}: IProps) {
+}: IProperties) {
   return (
     <Dialog
       open={open}
@@ -44,10 +44,15 @@ export function DeleteDialog({
         <Button disabled={loading} onClick={onClose}>
           {cancelButtonTitle || "Cancel"}
         </Button>
-        <Button disabled={loading} onClick={onDeletePress} autoFocus color={"error"}>
+        <Button
+          disabled={loading}
+          onClick={onDeletePress}
+          autoFocus
+          color={"error"}
+        >
           {deleteButtonTitle || "Delete"}
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }

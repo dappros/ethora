@@ -1,71 +1,70 @@
-import { Box, Button, Typography } from "@mui/material";
-import { useWeb3React } from "@web3-react/core";
-import * as React from "react";
-import { useHistory } from "react-router";
-import { DeleteDialog } from "../../components/DeleteDialog";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { deleteAccountService, httpWithAuth } from "../../http";
-import { useStoreState } from "../../store";
-import xmpp from "../../xmpp";
+import { Box, Button, Typography } from "@mui/material"
+import { useWeb3React } from "@web3-react/core"
+import * as React from "react"
+import { useHistory } from "react-router"
+import { DeleteDialog } from "../../components/DeleteDialog"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { deleteAccountService, httpWithAuth } from "../../http"
+import { useStoreState } from "../../store"
+import xmpp from "../../xmpp"
 
-interface ManageDataProps {}
+interface ManageDataProperties {}
 
-export const ManageData = (props: ManageDataProps) => {
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const { showSnackbar } = useSnackbar();
-  const clearUser = useStoreState((state) => state.clearUser);
-  const user = useStoreState((state) => state.user);
+export const ManageData = (properties: ManageDataProperties) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const { showSnackbar } = useSnackbar()
+  const clearUser = useStoreState((state) => state.clearUser)
+  const user = useStoreState((state) => state.user)
 
-  const history = useHistory();
-  const { active, deactivate } = useWeb3React();
-  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false);
+  const history = useHistory()
+  const { active, deactivate } = useWeb3React()
+  const handleCloseDeleteDialog = () => setDeleteDialogOpen(false)
 
   const deleteAccount = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await deleteAccountService();
-      showSnackbar("success", "Account deleted successfully");
+      await deleteAccountService()
+      showSnackbar("success", "Account deleted successfully")
 
-      onLogout();
+      onLogout()
     } catch (error) {
-      console.log(error);
-      showSnackbar("error", "Something went wrong");
+      console.log(error)
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
+    setLoading(false)
 
-    setDeleteDialogOpen(false);
-  };
+    setDeleteDialogOpen(false)
+  }
 
   const onLogout = () => {
-    clearUser();
-    xmpp.stop();
+    clearUser()
+    xmpp.stop()
     if (active) {
-      deactivate();
+      deactivate()
     }
-    history.push("/");
-  };
+    history.push("/")
+  }
   const downloadData = (data: unknown) => {
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(data)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download =
-      user.firstName + " " + user.lastName + " personal data.json";
-    link.click();
-    link.remove();
-  };
+    )}`
+    const link = document.createElement("a")
+    link.href = jsonString
+    link.download = user.firstName + " " + user.lastName + " personal data.json"
+    link.click()
+    link.remove()
+  }
   const exportData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const { data } = await httpWithAuth().get("/users/exportData");
-      downloadData(data);
+      const { data } = await httpWithAuth().get("/users/exportData")
+      downloadData(data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <Box
@@ -77,7 +76,7 @@ export const ManageData = (props: ManageDataProps) => {
         width: "50vw",
       }}
     >
-      <Box sx={{width: '100%'}}>
+      <Box sx={{ width: "100%" }}>
         <Typography fontWeight={"bold"}>Download your data</Typography>
         <Typography>
           You own your data. Tap the button below to download a copy of your
@@ -98,7 +97,7 @@ export const ManageData = (props: ManageDataProps) => {
       <Box
         sx={{
           marginTop: "20px",
-          width: '100%'
+          width: "100%",
         }}
       >
         <Typography fontWeight={"bold"}>Delete your account</Typography>
@@ -138,5 +137,5 @@ export const ManageData = (props: ManageDataProps) => {
         }
       />
     </Box>
-  );
-};
+  )
+}

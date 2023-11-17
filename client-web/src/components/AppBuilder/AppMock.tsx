@@ -1,12 +1,12 @@
-import defaultLogo from "../../assets/images/logo.png";
-import { TCustomDetails } from "../../pages/AppBuilder/AppBuilder";
-import defaultLoginBackground from "../../assets/images/login_background.png";
-import defaultCoinPath from "../../assets/images/coin.png";
-import profilePic from "../../assets/images/profilepic.png";
-import { isValidHexCode } from "../../utils";
-import { Box } from "@mui/material";
+import defaultLogo from "../../assets/images/logo.png"
+import { TCustomDetails } from "../../pages/AppBuilder/AppBuilder"
+import defaultLoginBackground from "../../assets/images/login_background.png"
+import defaultCoinPath from "../../assets/images/coin.png"
+import profilePic from "../../assets/images/profilepic.png"
+import { isValidHexCode } from "../../utils"
+import { Box } from "@mui/material"
 
-export default function AppMock(props: TCustomDetails) {
+export default function AppMock(properties: TCustomDetails) {
   const {
     primaryColor,
     secondaryColor,
@@ -15,14 +15,14 @@ export default function AppMock(props: TCustomDetails) {
     logo,
     loginScreenBackground,
     changeScreen,
-  } = props;
+  } = properties
   const isLoginBgColor =
-    loginScreenBackground && isValidHexCode(loginScreenBackground);
-  const backgroundImage = loginScreenBackground || defaultLoginBackground;
+    loginScreenBackground && isValidHexCode(loginScreenBackground)
+  const backgroundImage = loginScreenBackground || defaultLoginBackground
 
   //Component to display social button
-  function SocialButton(props: { color: string }) {
-    const { color } = props;
+  function SocialButton(properties: { color: string }) {
+    const { color } = properties
     return (
       <div style={{ backgroundColor: color }} className="socialButton">
         <style>
@@ -36,20 +36,20 @@ export default function AppMock(props: TCustomDetails) {
                     `}
         </style>
       </div>
-    );
+    )
   }
 
   //Component to display Title or Logo if provided else will show default
   const LogoTitle = () => {
-    const appTitleColor = primaryColor ? primaryColor : "#003E9C";
-    const appLogo = logo || defaultLogo;
+    const appTitleColor = primaryColor ? primaryColor : "#003E9C"
+    const appLogo = logo || defaultLogo
 
     return (
       <div style={{ border: logo ? "none" : "1px solid black" }}>
         <img src={appLogo} alt="Logo" width={200} height={100} />
       </div>
-    );
-  };
+    )
+  }
 
   //Component to show form in 1st screen
   const screen0 = () => {
@@ -82,12 +82,12 @@ export default function AppMock(props: TCustomDetails) {
         <SocialButton color="#000000" />
         <SocialButton color="#cc6228" />
       </div>
-    );
-  };
+    )
+  }
 
   //Component for balance button
   const BalanceButton = () => {
-    const coinPath = coinLogo || defaultCoinPath;
+    const coinPath = coinLogo || defaultCoinPath
     return (
       <div className="balance">
         <img
@@ -118,8 +118,8 @@ export default function AppMock(props: TCustomDetails) {
                     `}
         </style>
       </div>
-    );
-  };
+    )
+  }
 
   //Component to show form in 2nd screen
   const screen1 = () => {
@@ -188,14 +188,14 @@ export default function AppMock(props: TCustomDetails) {
           `}
         </style>
       </div>
-    );
-  };
+    )
+  }
 
   //Component to display mock mobile outline
-  const MobileOutline = (props: { screenIndex: number }) => {
-    const { screenIndex } = props;
-    const scaleValue = currentScreenIndex === screenIndex ? 1 : 0.9;
-    const isRightScreen = currentScreenIndex === 1;
+  const MobileOutline = (properties: { screenIndex: number }) => {
+    const { screenIndex } = properties
+    const scaleValue = currentScreenIndex === screenIndex ? 1 : 0.9
+    const isRightScreen = currentScreenIndex === 1
     return (
       <div
         className={"mobileOutline"}
@@ -255,15 +255,15 @@ export default function AppMock(props: TCustomDetails) {
           `}
         </style>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "row",
-        transform: 'translateX(60px)'
+        transform: "translateX(60px)",
       }}
     >
       <div
@@ -272,7 +272,7 @@ export default function AppMock(props: TCustomDetails) {
           display: "flex",
           alignItems: "flex-start",
           height: "100%",
-          marginLeft: 'auto'
+          marginLeft: "auto",
         }}
       >
         <MobileOutline screenIndex={0} />
@@ -286,7 +286,5 @@ export default function AppMock(props: TCustomDetails) {
         <MobileOutline screenIndex={1} />
       </div>
     </Box>
-  );
+  )
 }
-
-

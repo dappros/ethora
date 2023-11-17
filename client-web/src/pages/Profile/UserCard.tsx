@@ -1,39 +1,39 @@
-import React, { useState } from "react";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import Box from "@mui/material/Box";
-import { TProfile } from "./types";
-import defUserImage from "../../assets/images/def-ava.png";
-import { useStoreState } from "../../store";
-import EditProfileModal from "./EditProfileModal";
-import { Button, IconButton } from "@mui/material";
-import { createPrivateChat } from "../../helpers/chat/createPrivateChat";
-import { useHistory } from "react-router-dom";
-import { CONFERENCEDOMAIN } from "../../constants";
-import { generateProfileLink } from "../../utils";
-import QrCodeIcon from "@mui/icons-material/QrCode";
-import { QrModal } from "./QrModal";
-import { walletToUsername } from "../../utils/walletManipulation";
+import React, { useState } from "react"
+import Container from "@mui/material/Container"
+import Card from "@mui/material/Card"
+import Box from "@mui/material/Box"
+import { TProfile } from "./types"
+import defUserImage from "../../assets/images/def-ava.png"
+import { useStoreState } from "../../store"
+import EditProfileModal from "./EditProfileModal"
+import { Button, IconButton } from "@mui/material"
+import { createPrivateChat } from "../../helpers/chat/createPrivateChat"
+import { useHistory } from "react-router-dom"
+import { CONFERENCEDOMAIN } from "../../constants"
+import { generateProfileLink } from "../../utils"
+import QrCodeIcon from "@mui/icons-material/QrCode"
+import { QrModal } from "./QrModal"
+import { walletToUsername } from "../../utils/walletManipulation"
 
-type TProps = {
-  profile?: TProfile;
-  walletAddress?: string;
-};
+type TProperties = {
+  profile?: TProfile
+  walletAddress?: string
+}
 
-export default function UserCard({ profile, walletAddress }: TProps) {
-  const [edit, setEdit] = useState(false);
-  const user = useStoreState((state) => state.user);
-  const [showQrModal, setShowQrModal] = useState(false);
+export default function UserCard({ profile, walletAddress }: TProperties) {
+  const [edit, setEdit] = useState(false)
+  const user = useStoreState((state) => state.user)
+  const [showQrModal, setShowQrModal] = useState(false)
   const setActiveRoomFilter = useStoreState(
     (state) => state.setActiveRoomFilter
-  );
-  const history = useHistory();
+  )
+  const history = useHistory()
   const openDirectChat = () => {
     createPrivateChat(
       user.walletAddress,
       walletAddress,
       user.firstName,
-      profile.firstName,
+      profile.firstName
     )
       .then((result) => {
         if (result.isNewRoom) {
@@ -47,18 +47,18 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             composing: "",
             toUpdate: true,
             description: "",
-          };
-          useStoreState.getState().setNewUserChatRoom(temporaryRoomData);
-          history.push("/chat/" + result.roomJid);
-          setActiveRoomFilter('private')
+          }
+          useStoreState.getState().setNewUserChatRoom(temporaryRoomData)
+          history.push("/chat/" + result.roomJid)
+          setActiveRoomFilter("private")
         } else {
-          history.push("/chat/" + result.roomJid);
+          history.push("/chat/" + result.roomJid)
         }
       })
       .catch((error) => {
-        console.log("openPrivateRoom Error: ", error);
-      });
-  };
+        console.log("openPrivateRoom Error:", error)
+      })
+  }
   if (profile) {
     return (
       <Box style={{ marginTop: "10px", marginRight: "10px" }}>
@@ -95,7 +95,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
           </Box>
         </Card>
       </Box>
-    );
+    )
   }
   return (
     <Box sx={{ marginTop: "10px", marginRight: "10px", width: 250 }}>
@@ -115,7 +115,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
             src={user.profileImage || defUserImage}
           />
         </Box>
-        <Box sx={{width: '100%'}}>
+        <Box sx={{ width: "100%" }}>
           {!!user.firstName && (
             <Box>
               <Box
@@ -142,7 +142,7 @@ export default function UserCard({ profile, walletAddress }: TProps) {
         {user.firstName && (
           <Button
             onClick={(e) => {
-              setEdit(true);
+              setEdit(true)
             }}
           >
             Edit
@@ -161,5 +161,5 @@ export default function UserCard({ profile, walletAddress }: TProps) {
         onClose={() => setShowQrModal(false)}
       />
     </Box>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import LoadingButton from "@mui/lab/LoadingButton";
+import LoadingButton from "@mui/lab/LoadingButton"
 import {
   Box,
   Button,
@@ -6,44 +6,42 @@ import {
   InputLabel,
   NativeSelect,
   TextField,
-} from "@mui/material";
-import React from "react";
-import { useStoreState } from "../../store";
-import * as http from "../../http";
-import { useFormik } from "formik";
-import { useSnackbar } from "../../context/SnackbarContext";
+} from "@mui/material"
+import React from "react"
+import { useStoreState } from "../../store"
+import * as http from "../../http"
+import { useFormik } from "formik"
+import { useSnackbar } from "../../context/SnackbarContext"
 
 export interface IMintNft {}
 
 export const MintNft: React.FC<IMintNft> = ({}) => {
-  const [preview, setPreview] = React.useState<any>(null);
-  const [fileError, setFileError] = React.useState("");
-  const [file, setFile] = React.useState<File | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [preview, setPreview] = React.useState<any>(null)
+  const [fileError, setFileError] = React.useState("")
+  const [file, setFile] = React.useState<File | null>(null)
+  const [loading, setLoading] = React.useState(false)
 
-  const setBalance = useStoreState((state) => state.setBalance);
-  const user = useStoreState((state) => state.user);
-  const { showSnackbar } = useSnackbar();
-  const fileRef = React.useRef<HTMLInputElement>(null);
+  const setBalance = useStoreState((state) => state.setBalance)
+  const user = useStoreState((state) => state.user)
+  const { showSnackbar } = useSnackbar()
+  const fileReference = React.useRef<HTMLInputElement>(null)
 
   const onImage = (event: any) => {
-    const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement
 
     if (input.files) {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      reader.onload = (e) => {
-        if (e) {
-          if (e.target?.result) {
-            setPreview(e.target.result);
-          }
+      reader.addEventListener("load", (e) => {
+        if (e && e.target?.result) {
+          setPreview(e.target.result)
         }
-      };
-      setFileError("");
-      setFile(input.files[0]);
-      reader.readAsDataURL(input.files[0]);
+      })
+      setFileError("")
+      setFile(input.files[0])
+      reader.readAsDataURL(input.files[0])
     }
-  };
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -51,24 +49,24 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
       rarity: "1",
     },
     validate: (values: Record<string, string>) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.tokenName) {
-        errors.tokenName = "Required";
+        errors.tokenName = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: async (values) => {
       if (!file) {
-        setFileError("required");
-        return;
+        setFileError("required")
+        return
       }
 
-      const fd = new FormData();
-      fd.append("files", file);
+      const fd = new FormData()
+      fd.append("files", file)
 
-      setLoading(true);
+      setLoading(true)
       http
         .uploadFile(fd)
         .then(async (res) => {
@@ -76,20 +74,20 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
             values.tokenName,
             res.data.results[0]._id,
             values.rarity
-          );
-          const balanceResp = await http.getBalance(user.walletAddress);
-          setBalance(balanceResp.data.balance);
+          )
+          const balanceResp = await http.getBalance(user.walletAddress)
+          setBalance(balanceResp.data.balance)
           showSnackbar(
             "success",
             "Item minted successfully, it will appear in few seconds"
-          );
+          )
         })
-        .catch((e) => {
-          showSnackbar("error", "Minting failed");
+        .catch((error) => {
+          showSnackbar("error", "Minting failed")
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     },
-  });
+  })
 
   return (
     <Box>
@@ -122,7 +120,7 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
             >
               <input
                 onChange={onImage}
-                ref={fileRef}
+                ref={fileReference}
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
@@ -130,7 +128,7 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
               <Button
                 color="secondary"
                 variant="contained"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => fileReference.current?.click()}
               >
                 upload image
               </Button>
@@ -151,7 +149,7 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
               fullWidth
               variant="standard"
               onChange={(e) => {
-                formik.handleChange(e);
+                formik.handleChange(e)
               }}
               onBlur={formik.handleBlur}
               error={
@@ -173,8 +171,8 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
                   id: "uncontrolled-native",
                 }}
                 onChange={(e) => {
-                  console.log(e);
-                  formik.handleChange(e);
+                  console.log(e)
+                  formik.handleChange(e)
                 }}
               >
                 <option value={1}>1</option>
@@ -195,5 +193,5 @@ export const MintNft: React.FC<IMintNft> = ({}) => {
         </Box>
       </Box>
     </Box>
-  );
-};
+  )
+}

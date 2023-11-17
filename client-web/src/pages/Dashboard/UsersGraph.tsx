@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 
-import * as http from "../../http";
+import * as http from "../../http"
 import {
   LineChart,
   Line,
@@ -10,37 +10,37 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { CircularProgress, useTheme } from "@mui/material";
-import { TChartData, transformDataForLineChart } from "../../utils";
+} from "recharts"
+import { CircularProgress, useTheme } from "@mui/material"
+import { TChartData, transformDataForLineChart } from "../../utils"
 
-type Props = {
-  appToken: string;
-};
+type Properties = {
+  appToken: string
+}
 
-export default function UsersGraph({ appToken }: Props) {
-  const [userCount, setUsersCount] = useState(0);
-  const theme = useTheme();
-  const [userGraphData, setUserGraphData] = useState<TChartData>([]);
-  const [loading, setLoading] = useState(false);
+export default function UsersGraph({ appToken }: Properties) {
+  const [userCount, setUsersCount] = useState(0)
+  const theme = useTheme()
+  const [userGraphData, setUserGraphData] = useState<TChartData>([])
+  const [loading, setLoading] = useState(false)
 
   const getUsersData = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const usersCount = await http.httpWithToken(appToken).get("users/count");
-      setUsersCount(usersCount.data.count);
-      const graphData = await http.httpWithToken(appToken).get("users/graph");
-      setUserGraphData(transformDataForLineChart(graphData.data));
+      const usersCount = await http.httpWithToken(appToken).get("users/count")
+      setUsersCount(usersCount.data.count)
+      const graphData = await http.httpWithToken(appToken).get("users/graph")
+      setUserGraphData(transformDataForLineChart(graphData.data))
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   useEffect(() => {
     if (appToken) {
-      getUsersData();
+      getUsersData()
     }
-  }, [appToken]);
+  }, [appToken])
 
   if (loading) {
     return (
@@ -54,7 +54,7 @@ export default function UsersGraph({ appToken }: Props) {
       >
         <CircularProgress />
       </div>
-    );
+    )
   }
   return (
     <div className="dashboard-graph" style={{ marginRight: "10px" }}>
@@ -89,5 +89,5 @@ export default function UsersGraph({ appToken }: Props) {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }

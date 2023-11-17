@@ -1,28 +1,28 @@
-import React, { useState } from "react";
-import { useParams } from "react-router";
-import { useStoreState } from "../../store";
-import Box from "@mui/material/Box";
-import { Container, Tab, Tabs, Typography } from "@mui/material";
-import { Appearance } from "./Appearance";
-import { UserDefaults } from "./UserDefaults";
-import { Services } from "./Services";
-import { Backend } from "./Backend";
+import React, { useState } from "react"
+import { useParams } from "react-router"
+import { useStoreState } from "../../store"
+import Box from "@mui/material/Box"
+import { Container, Tab, Tabs, Typography } from "@mui/material"
+import { Appearance } from "./Appearance"
+import { UserDefaults } from "./UserDefaults"
+import { Services } from "./Services"
+import { Backend } from "./Backend"
 
-const tabs = ["Appearance", "User defaults", "Services", "Backend"];
+const tabs = ["Appearance", "User defaults", "Services", "Backend"]
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
+interface TabPanelProperties {
+  children?: React.ReactNode
+  index: number
+  value: number
 }
-function a11yProps(index: number) {
+function a11yProperties(index: number) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
-  };
+  }
 }
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+function TabPanel(properties: TabPanelProperties) {
+  const { children, value, index, ...other } = properties
 
   return (
     <div
@@ -38,16 +38,16 @@ function TabPanel(props: TabPanelProps) {
         </Box>
       )}
     </div>
-  );
+  )
 }
 export const AppEdit = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  const [activeStep, setActiveStep] = useState(0)
+  const { appId } = useParams<{ appId: string }>()
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId))
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveStep(newValue);
-  };
+    setActiveStep(newValue)
+  }
 
   return (
     <Container
@@ -60,8 +60,8 @@ export const AppEdit = () => {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          {tabs.map((tab, i) => {
-            return <Tab label={tab} {...a11yProps(i)} />;
+          {tabs.map((tab, index) => {
+            return <Tab label={tab} {...a11yProperties(index)} />
           })}
         </Tabs>
       </Box>
@@ -80,5 +80,5 @@ export const AppEdit = () => {
         </TabPanel>
       </Box>
     </Container>
-  );
-};
+  )
+}

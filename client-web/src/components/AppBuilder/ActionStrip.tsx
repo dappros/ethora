@@ -1,56 +1,52 @@
-
 //interfaces
 interface TActionStrip {
-    currentScreenIndex: number
-    screenSet: {
-        screenName: string;
-        index: number;
-    }[]
-    handlePrevClick: () => void
-    handleNextClick: () => void
-    handleSubmit: () => void
+  currentScreenIndex: number
+  screenSet: {
+    screenName: string
+    index: number
+  }[]
+  handlePrevClick: () => void
+  handleNextClick: () => void
+  handleSubmit: () => void
 }
 
+export function ActionStrip(properties: TActionStrip) {
+  const {
+    currentScreenIndex,
+    screenSet,
+    handleNextClick,
+    handlePrevClick,
+    handleSubmit,
+  } = properties
 
-export function ActionStrip(props: TActionStrip) {
+  return (
+    <div className={"actionStrip"}>
+      <div className={"leftActionStrip"}>
+        <div className={"actionButtonGroup"}>
+          <button
+            className={"prevButton"}
+            onClick={handlePrevClick}
+            disabled={currentScreenIndex === 0}
+          >
+            Previous
+          </button>
 
-    const {
-        currentScreenIndex,
-        screenSet,
-        handleNextClick,
-        handlePrevClick,
-        handleSubmit
-    } = props;
-
-    return (
-        <div className={"actionStrip"}>
-            <div className={"leftActionStrip"}>
-                <div className={"actionButtonGroup"}>
-                    <button
-                        className={"prevButton"}
-                        onClick={handlePrevClick}
-                        disabled={currentScreenIndex === 0}
-                    >
-                        Previous
-                    </button>
-
-                    <button
-                        className={"nextButton"}
-                        onClick={handleNextClick}
-                        disabled={currentScreenIndex === screenSet.length - 1}
-                    >
-                        Next
-                    </button>
-                </div>
-            </div>
-            {/* <div className={"rightActionStrip"}>
+          <button
+            className={"nextButton"}
+            onClick={handleNextClick}
+            disabled={currentScreenIndex === screenSet.length - 1}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      {/* <div className={"rightActionStrip"}>
                 <button className="submitButton" onClick={() => handleSubmit()}>
                     <p>Submit and Build</p>
                 </button>
             </div> */}
-            <style>
-                {
-                    `
+      <style>
+        {`
                     .actionStrip {
                         display: flex;
                         flex-basis: 10%;
@@ -130,9 +126,8 @@ export function ActionStrip(props: TActionStrip) {
                         box-shadow: 2px 2px 12px #2163c7,
                                    -2px -2px 12px #2d87ff;
                     }
-                    `
-                }
-            </style>
-        </div>
-    )
+                    `}
+      </style>
+    </div>
+  )
 }

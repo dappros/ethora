@@ -1,55 +1,54 @@
-import React, { useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import { useHistory } from "react-router-dom";
-import { getBalance } from "../http";
-import ButtonUnstyled from "@mui/base/ButtonUnstyled";
-import { useWeb3React } from "@web3-react/core";
-import { NavLink } from "react-router-dom";
+import React, { useState } from "react"
+import AppBar from "@mui/material/AppBar"
+import Box from "@mui/material/Box"
+import Toolbar from "@mui/material/Toolbar"
+import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
+import Menu from "@mui/material/Menu"
+import MenuIcon from "@mui/icons-material/Menu"
+import Container from "@mui/material/Container"
+import Avatar from "@mui/material/Avatar"
+import Button from "@mui/material/Button"
+import MenuItem from "@mui/material/MenuItem"
+import AdbIcon from "@mui/icons-material/Adb"
+import { useHistory } from "react-router-dom"
+import { getBalance } from "../http"
+import ButtonUnstyled from "@mui/base/ButtonUnstyled"
+import { useWeb3React } from "@web3-react/core"
+import { NavLink } from "react-router-dom"
 
-import { useStoreState } from "../store";
-const coinImg = '/coin.png'
+import { useStoreState } from "../store"
+const coinImg = "/coin.png"
 
 function firstLetersFromName(fN: string, lN: string) {
-  return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`;
+  return `${fN[0].toUpperCase()}${lN[0].toUpperCase()}`
 }
 
 const AppTopNavOwner = () => {
-  const user = useStoreState((state) => state.user);
-  const balances = useStoreState((state) => state.balance);
-  const clearOwner = useStoreState((state) => state.clearOwner);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [open, setOpen] = useState(false);
-  const history = useHistory();
+  const user = useStoreState((state) => state.user)
+  const balances = useStoreState((state) => state.balance)
+  const clearOwner = useStoreState((state) => state.clearOwner)
+  const [anchorElementUser, setAnchorElementUser] =
+    React.useState<null | HTMLElement>(null)
+  const [open, setOpen] = useState(false)
+  const history = useHistory()
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+    setAnchorElementUser(event.currentTarget)
+  }
 
   const mainCoinBalance = balances.find(
-    (el) => el.tokenName === "Dappros Platform Token"
-  );
+    (element) => element.tokenName === "Dappros Platform Token"
+  )
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+    setAnchorElementUser(null)
+  }
 
   const onLogout = () => {
-    clearOwner();
-    history.push("/");
-  };
+    clearOwner()
+    history.push("/")
+  }
 
   return (
     <AppBar style={{ backgroundColor: "#313949" }} position="static">
@@ -96,13 +95,13 @@ const AppTopNavOwner = () => {
                 vertical: "top",
                 horizontal: "right",
               }}
-              anchorEl={anchorElUser}
+              anchorEl={anchorElementUser}
               keepMounted
               transformOrigin={{
                 vertical: "top",
                 horizontal: "right",
               }}
-              open={Boolean(anchorElUser)}
+              open={Boolean(anchorElementUser)}
               onClose={handleCloseUserMenu}
             >
               <MenuItem onClick={onLogout}>
@@ -113,6 +112,6 @@ const AppTopNavOwner = () => {
         </Toolbar>
       </Container>
     </AppBar>
-  );
-};
-export default AppTopNavOwner;
+  )
+}
+export default AppTopNavOwner

@@ -1,25 +1,25 @@
-import { Box, IconButton, Typography } from "@mui/material";
-import * as React from "react";
-import { TUserBlackList, useStoreState } from "../../store";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import xmpp from "../../xmpp";
-import { format } from "date-fns";
-interface BlockingProps {}
+import { Box, IconButton, Typography } from "@mui/material"
+import * as React from "react"
+import { TUserBlackList, useStoreState } from "../../store"
+import AccountCircleIcon from "@mui/icons-material/AccountCircle"
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
+import xmpp from "../../xmpp"
+import { format } from "date-fns"
+interface BlockingProperties {}
 
-interface BlackListUserItemProps {
-  userItem: TUserBlackList;
-  handleRemove: (userId: string) => void;
+interface BlackListUserItemProperties {
+  userItem: TUserBlackList
+  handleRemove: (userId: string) => void
 }
 
-export const Blocking = (props: BlockingProps) => {
-  const blacklist = useStoreState((store) => store.blackList);
+export const Blocking = (properties: BlockingProperties) => {
+  const blacklist = useStoreState((store) => store.blackList)
 
   const handleRemoveUserFromBlackList = (userId: string) => {
-    console.log(userId);
-    xmpp.removeUserFromBlackList(userId);
-    xmpp.getBlackList();
-  };
+    console.log(userId)
+    xmpp.removeUserFromBlackList(userId)
+    xmpp.getBlackList()
+  }
 
   return (
     <Box
@@ -40,15 +40,15 @@ export const Blocking = (props: BlockingProps) => {
               handleRemove={handleRemoveUserFromBlackList}
               userItem={item}
             />
-          );
+          )
         })}
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-function BlackListUserItem(props: BlackListUserItemProps) {
-  const { userItem, handleRemove } = props;
+function BlackListUserItem(properties: BlackListUserItemProperties) {
+  const { userItem, handleRemove } = properties
 
   return (
     <Box
@@ -84,5 +84,5 @@ function BlackListUserItem(props: BlackListUserItemProps) {
         <RemoveCircleIcon color="error" />
       </IconButton>
     </Box>
-  );
+  )
 }

@@ -1,7 +1,7 @@
-import * as React from "react";
-import Container from "@mui/material/Container";
-import UsersTable from "../Owner/Users";
-import Box from "@mui/material/Box";
+import * as React from "react"
+import Container from "@mui/material/Container"
+import UsersTable from "../Owner/Users"
+import Box from "@mui/material/Box"
 
 export default function UsersPage() {
   return (
@@ -15,5 +15,5 @@ export default function UsersPage() {
         <UsersTable></UsersTable>
       </Box>
     </Container>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { ACL, IUser } from "../../http";
-import GoogleIcon from "@mui/icons-material/Google";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import MailIcon from "@mui/icons-material/Mail";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import DiamondIcon from '@mui/icons-material/Diamond';
+import React, { useEffect, useState } from "react"
+import { ACL, IUser } from "../../http"
+import GoogleIcon from "@mui/icons-material/Google"
+import FacebookIcon from "@mui/icons-material/Facebook"
+import MailIcon from "@mui/icons-material/Mail"
+import MoreVertIcon from "@mui/icons-material/MoreVert"
+import DiamondIcon from "@mui/icons-material/Diamond"
 
 import {
   TableRow,
@@ -16,51 +16,52 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-} from "@mui/material";
-import { dateToHumanReadableFormat } from "../../utils";
-import { useStoreState } from "../../store";
+} from "@mui/material"
+import { dateToHumanReadableFormat } from "../../utils"
+import { useStoreState } from "../../store"
 
-const metamaskIcon = 'https://images.ctfassets.net/9sy2a0egs6zh/2XUXAYxxFFVjPlZABUoiLg/d0ff82237d3e5d9bd1097a98e0754453/MMI-icon.svg'
+const metamaskIcon =
+  "https://images.ctfassets.net/9sy2a0egs6zh/2XUXAYxxFFVjPlZABUoiLg/d0ff82237d3e5d9bd1097a98e0754453/MMI-icon.svg"
 const MetamaskImage = () => {
-  return <img src={metamaskIcon} style={{width: 20, height: 20}} />
+  return <img src={metamaskIcon} style={{ width: 20, height: 20 }} />
 }
 const icons = {
   google: GoogleIcon,
   facebook: FacebookIcon,
   email: MailIcon,
-  metamask: MetamaskImage
-};
+  metamask: MetamaskImage,
+}
 
 const authMethodText = {
   google: "Google",
   facebook: "Facebook",
   email: "E-Mail",
-  metamask: 'Metamask'
-};
-
-function hasACLAdmin(acl: ACL): boolean {
-  const application = acl?.application;
-  if (application) {
-    const appKeys = Object.keys(application);
-    let hasAdmin = false;
-    for (let i = 0; i < appKeys.length; i++) {
-      if (application[appKeys[i]]?.admin === true) {
-        hasAdmin = true;
-        break;
-      }
-    }
-    return hasAdmin;
-  }
-  return false;
+  metamask: "Metamask",
 }
 
-const ITEM_HEIGHT = 48;
+function hasACLAdmin(acl: ACL): boolean {
+  const application = acl?.application
+  if (application) {
+    const appKeys = Object.keys(application)
+    let hasAdmin = false
+    for (const appKey of appKeys) {
+      if (application[appKey]?.admin === true) {
+        hasAdmin = true
+        break
+      }
+    }
+    return hasAdmin
+  }
+  return false
+}
+
+const ITEM_HEIGHT = 48
 
 export interface IUsersTableRow {
-  data: IUser;
-  isSelected: (id: string) => boolean;
-  onRowClick: (event: React.MouseEvent<unknown>, user: IUser) => void;
-  updateAclEditData: (user: IUser) => void;
+  data: IUser
+  isSelected: (id: string) => boolean
+  onRowClick: (event: React.MouseEvent<unknown>, user: IUser) => void
+  updateAclEditData: (user: IUser) => void
 }
 
 export const UsersTableRow: React.FC<IUsersTableRow> = ({
@@ -69,38 +70,38 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
   onRowClick,
   updateAclEditData,
 }) => {
-  const authMethod = data.authMethod;
-  const AuthIcon = icons[authMethod];
-  const isItemSelected = isSelected(data._id.toString());
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [hasAdmin, setHasAdmin] = useState(false);
+  const authMethod = data.authMethod
+  const AuthIcon = icons[authMethod]
+  const isItemSelected = isSelected(data._id.toString())
+  const [anchorElement, setAnchorElement] = useState<null | HTMLElement>(null)
+  const [hasAdmin, setHasAdmin] = useState(false)
   const ACL = useStoreState((state) =>
-    state.ACL.result.find((i) => i.appId === data.appId)
-  );
-  const open = Boolean(anchorEl);
+    state.ACL.result.find((index) => index.appId === data.appId)
+  )
+  const open = Boolean(anchorElement)
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
+    event.stopPropagation()
+    setAnchorElement(event.currentTarget)
+  }
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorElement(null)
+  }
 
   const handleAclEditOpen = (
     e: React.MouseEvent<HTMLElement, MouseEvent>,
     user: IUser
   ) => {
-    e.stopPropagation();
-    updateAclEditData(user);
-    handleMenuClose();
-  };
+    e.stopPropagation()
+    updateAclEditData(user)
+    handleMenuClose()
+  }
 
   useEffect(() => {
-    setHasAdmin(hasACLAdmin(ACL));
-  }, [ACL]);
-  const labelId = `Users-table-checkbox-${data._id}`;
+    setHasAdmin(hasACLAdmin(ACL))
+  }, [ACL])
+  const labelId = `Users-table-checkbox-${data._id}`
   return (
     <TableRow
       hover
@@ -132,22 +133,25 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
             justifyContent: "center",
           }}
         >
-          {data.tags.map((tag, i) => {
+          {data.tags.map((tag, index) => {
             return (
-              <Chip variant={"filled"} color="primary" label={tag} key={i} />
-            );
+              <Chip
+                variant={"filled"}
+                color="primary"
+                label={tag}
+                key={index}
+              />
+            )
           })}
         </Box>
       </TableCell>
       <TableCell align="right">{data.email || "No Email"}</TableCell>
       <TableCell align="center">
-        <p >
-          {dateToHumanReadableFormat(data.createdAt)}
-        </p>
+        <p>{dateToHumanReadableFormat(data.createdAt)}</p>
         <p>{data.lastSeen ? dateToHumanReadableFormat(data.lastSeen) : ""}</p>
       </TableCell>
       <TableCell align="center" color="primary">
-        <Tooltip title={authMethod ? authMethodText[authMethod] : ''}>
+        <Tooltip title={authMethod ? authMethodText[authMethod] : ""}>
           <span>{authMethod ? <AuthIcon color={"primary"} /> : ""}</span>
         </Tooltip>
       </TableCell>
@@ -170,7 +174,7 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
           MenuListProps={{
             "aria-labelledby": "long-button",
           }}
-          anchorEl={anchorEl}
+          anchorEl={anchorElement}
           open={open}
           onClose={handleMenuClose}
           PaperProps={{
@@ -187,5 +191,5 @@ export const UsersTableRow: React.FC<IUsersTableRow> = ({
         </Menu>
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}

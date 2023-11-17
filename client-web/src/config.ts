@@ -5,5 +5,5 @@ export const config = {
     import.meta.env.VITE_APP_PRODUCTION_MODE === "true" ? true : false,
   STRIPE_PUBLISHABLE_KEY: import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY,
   STRIPE_SECRET_KEY: import.meta.env.VITE_APP_STRIPE_SECRET_KEY,
-  DISABLE_STRICT: import.meta.env.VITE_APP_DISABLE_STRICT
-};
+  DISABLE_STRICT: import.meta.env.VITE_APP_DISABLE_STRICT,
+}

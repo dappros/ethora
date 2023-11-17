@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import React, { useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
 import {
   Badge,
   Button,
@@ -11,25 +11,25 @@ import {
   DialogActions,
   TextField,
   Typography,
-} from "@mui/material";
-import { useSnackbar } from "../context/SnackbarContext";
+} from "@mui/material"
+import { useSnackbar } from "../context/SnackbarContext"
 import {
   addTagToUser,
   deleteUsers,
   removeTagFromUser,
   resetUsersPasswords,
   setUserTags,
-} from "../http";
-import { ModalType, TSelectedIds } from "./UsersTable/UsersTable";
-import { getUniqueTagsFromUsers } from "../utils/getUniqueTagsFromUsers";
+} from "../http"
+import { ModalType, TSelectedIds } from "./UsersTable/UsersTable"
+import { getUniqueTagsFromUsers } from "../utils/getUniqueTagsFromUsers"
 
-type TProps = {
-  open: boolean;
-  type: ModalType;
-  selectedUsers: TSelectedIds[];
-  updateData: () => Promise<void>;
-  onClose: () => void;
-};
+type TProperties = {
+  open: boolean
+  type: ModalType
+  selectedUsers: TSelectedIds[]
+  updateData: () => Promise<void>
+  onClose: () => void
+}
 
 export function UsersActionModal({
   open,
@@ -37,120 +37,123 @@ export function UsersActionModal({
   type,
   updateData,
   selectedUsers,
-}: TProps) {
-  const [inputValue, setInputValue] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [inputError, setInputError] = useState(false);
+}: TProperties) {
+  const [inputValue, setInputValue] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [inputError, setInputError] = useState(false)
 
-  const { showSnackbar } = useSnackbar();
-  const selectedUsersIds = selectedUsers.map((i) => i._id);
-  const uniqueTags = getUniqueTagsFromUsers(selectedUsers);
-  const appId = selectedUsers?.[0]?.appId;
+  const { showSnackbar } = useSnackbar()
+  const selectedUsersIds = selectedUsers.map((index) => index._id)
+  const uniqueTags = getUniqueTagsFromUsers(selectedUsers)
+  const appId = selectedUsers?.[0]?.appId
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
-  };
+    const value = e.target.value
+    setInputValue(value)
+  }
 
   const closeModal = () => {
-    setInputValue("");
-    setLoading(false);
-    setInputError(false);
+    setInputValue("")
+    setLoading(false)
+    setInputError(false)
 
-    onClose();
-  };
+    onClose()
+  }
 
   const addTag = async () => {
-    const tags = inputValue.trim().split(",");
+    const tags = inputValue.trim().split(",")
 
     const isTagsRepeated = selectedUsers.some((u) => {
-      return u.tags.some((t) => tags.includes(t));
-    });
+      return u.tags.some((t) => tags.includes(t))
+    })
     if (isTagsRepeated) {
-      showSnackbar("error", "Tags cannot repeat");
-      return;
+      showSnackbar("error", "Tags cannot repeat")
+      return
     }
-    setLoading(true);
+    setLoading(true)
 
     try {
-      await addTagToUser(appId, tags, selectedUsersIds);
-      await updateData();
-      showSnackbar("success", "Tag added");
-      closeModal();
-    } catch (error) {
-      showSnackbar("error", "Something went wrong");
+      await addTagToUser(appId, tags, selectedUsersIds)
+      await updateData()
+      showSnackbar("success", "Tag added")
+      closeModal()
+    } catch {
+      showSnackbar("error", "Something went wrong")
     }
-    await updateData();
+    await updateData()
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const removeTag = async (tag: string) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await removeTagFromUser(appId, [tag], selectedUsersIds);
-      await updateData();
+      await removeTagFromUser(appId, [tag], selectedUsersIds)
+      await updateData()
 
-      showSnackbar("success", "Tag removed");
-      closeModal();
+      showSnackbar("success", "Tag removed")
+      closeModal()
     } catch (error) {
-      console.log(error);
-      showSnackbar("error", "Something went wrong");
+      console.log(error)
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   const removeAllTags = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await setUserTags(appId, [], selectedUsersIds);
-      await updateData();
+      await setUserTags(appId, [], selectedUsersIds)
+      await updateData()
 
-      showSnackbar("success", "All tags removed");
-      closeModal();
-    } catch (error) {
-      showSnackbar("error", "Something went wrong");
+      showSnackbar("success", "All tags removed")
+      closeModal()
+    } catch {
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   const resetPasswords = async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      await resetUsersPasswords(appId, selectedUsersIds);
-      showSnackbar("success", "Passwords reseted");
-      closeModal();
-    } catch (error) {
-      showSnackbar("error", "Something went wrong");
+      await resetUsersPasswords(appId, selectedUsersIds)
+      showSnackbar("success", "Passwords reseted")
+      closeModal()
+    } catch {
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   const deletePickedUsers = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await deleteUsers(appId, selectedUsersIds);
-      await updateData();
-      showSnackbar("success", "Users deleted");
-      closeModal();
-    } catch (error) {
-      showSnackbar("error", "Something went wrong");
+      await deleteUsers(appId, selectedUsersIds)
+      await updateData()
+      showSnackbar("success", "Users deleted")
+      closeModal()
+    } catch {
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const onSubmit = () => {
     switch (type) {
-      case "manageTags":
-        return addTag();
+      case "manageTags": {
+        return addTag()
+      }
 
-      case "resetPassword":
-        return resetPasswords();
+      case "resetPassword": {
+        return resetPasswords()
+      }
 
-      default:
-        break;
+      default: {
+        break
+      }
     }
-  };
+  }
   const renderDialogContent = () => {
     switch (type) {
-      case "manageTags":
+      case "manageTags": {
         return (
           <Box style={{ width: "450px", padding: 2 }}>
             <DialogTitle
@@ -172,11 +175,13 @@ export function UsersActionModal({
                 flexWrap: "wrap",
               }}
             >
-              {!uniqueTags.length && <Typography>No tags for selected users.</Typography>}
-              {uniqueTags.map((t, i) => {
+              {uniqueTags.length === 0 && (
+                <Typography>No tags for selected users.</Typography>
+              )}
+              {uniqueTags.map((t, index) => {
                 return (
                   <Badge
-                    key={i}
+                    key={index}
                     badgeContent={+t.count}
                     color={"secondary"}
                     variant={"standard"}
@@ -187,7 +192,7 @@ export function UsersActionModal({
                       onDelete={() => removeTag(t.tag)}
                     />
                   </Badge>
-                );
+                )
               })}
             </Box>
             <Box sx={{ paddingX: 2 }}>
@@ -205,9 +210,10 @@ export function UsersActionModal({
               />
             </Box>
           </Box>
-        );
+        )
+      }
 
-      case "deleteUser":
+      case "deleteUser": {
         return (
           <Box style={{ width: "350px" }}>
             <DialogTitle
@@ -217,8 +223,9 @@ export function UsersActionModal({
               {selectedUsers.length > 1 ? "users" : "user"}?
             </DialogTitle>
           </Box>
-        );
-      case "resetPassword":
+        )
+      }
+      case "resetPassword": {
         return (
           <Box style={{ width: "350px" }}>
             <DialogTitle
@@ -228,12 +235,14 @@ export function UsersActionModal({
               {selectedUsers.length} users?
             </DialogTitle>
           </Box>
-        );
+        )
+      }
 
-      default:
-        return null;
+      default: {
+        return null
+      }
     }
-  };
+  }
 
   return (
     <Dialog maxWidth={false} open={open} onClose={closeModal}>
@@ -257,5 +266,5 @@ export function UsersActionModal({
         </Button>
       </DialogActions>
     </Dialog>
-  );
+  )
 }

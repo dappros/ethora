@@ -94,6 +94,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-unicorn": "^49.0.0",
     "husky": "^8.0.3",
+    "prettier": "^3.1.0",
     "pretty-quick": "^3.1.3",
     "sass": "^1.57.1",
     "simple-zustand-devtools": "^1.1.0",

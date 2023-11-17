@@ -1,9 +1,9 @@
-import React from "react";
-import { Alert, AlertTitle, IconButton, List, ListItem } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import React from "react"
+import { Alert, AlertTitle, IconButton, List, ListItem } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
 
 export interface IOwnerAlert {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export const OwnerAlert: React.FC<IOwnerAlert> = ({ onClose }) => {
@@ -39,5 +39,5 @@ export const OwnerAlert: React.FC<IOwnerAlert> = ({ onClose }) => {
         </ListItem>
       </List>
     </Alert>
-  );
-};
+  )
+}

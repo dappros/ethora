@@ -1,83 +1,83 @@
-import React, { useState, useEffect } from "react";
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import { ExplorerRespose, ITransaction, TProfile } from "./types";
-import UserCard from "./UserCard";
+import React, { useState, useEffect } from "react"
+import Container from "@mui/material/Container"
+import Box from "@mui/material/Box"
+import { ExplorerRespose, ITransaction, TProfile } from "./types"
+import UserCard from "./UserCard"
 import {
   getPublicProfile,
   getTransactions,
   getBalance,
   IDocument,
-} from "../../http";
-import { Transactions } from "../Transactions/Transactions";
-import { FullPageSpinner } from "../../components/FullPageSpinner";
-import ItemsTable from "./ItemsTable";
-import { filterNftBalances } from "../../utils";
-import { TBalance } from "../../store";
-import { Button, Typography } from "@mui/material";
-import DocumentsTable from "./DocumentsTable";
-import * as http from "../../http";
-import { Helmet } from "react-helmet";
-import { appName } from "../../config/config";
-import defUserImage from "../../assets/images/def-ava.png";
-import { useHistory, useLocation } from "react-router";
+} from "../../http"
+import { Transactions } from "../Transactions/Transactions"
+import { FullPageSpinner } from "../../components/FullPageSpinner"
+import ItemsTable from "./ItemsTable"
+import { filterNftBalances } from "../../utils"
+import { TBalance } from "../../store"
+import { Button, Typography } from "@mui/material"
+import DocumentsTable from "./DocumentsTable"
+import * as http from "../../http"
+import { Helmet } from "react-helmet"
+import { appName } from "../../config/config"
+import defUserImage from "../../assets/images/def-ava.png"
+import { useHistory, useLocation } from "react-router"
 
-type TProps = {
-  walletAddress: string;
-};
+type TProperties = {
+  walletAddress: string
+}
 
-export function OtherProfile({ walletAddress }: TProps) {
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<TProfile>();
+export function OtherProfile({ walletAddress }: TProperties) {
+  const [loading, setLoading] = useState(true)
+  const [profile, setProfile] = useState<TProfile>()
   const [transactions, setTransactions] =
-    useState<ExplorerRespose<ITransaction[]>>();
-  const [balances, setBalances] = useState<TBalance[]>([]);
-  const [documents, setDocuments] = useState<IDocument[]>([]);
-  const [userProfileError, setUserProfileError] = useState(false);
-  const history = useHistory();
-  const location = useLocation();
+    useState<ExplorerRespose<ITransaction[]>>()
+  const [balances, setBalances] = useState<TBalance[]>([])
+  const [documents, setDocuments] = useState<IDocument[]>([])
+  const [userProfileError, setUserProfileError] = useState(false)
+  const history = useHistory()
+  const location = useLocation()
 
   const getDocuments = async (documents: IDocument[]) => {
-    const mappedDocuments = [];
+    const mappedDocuments = []
     for (const item of documents) {
       try {
         // const { data: file } = await http
         //   .httpWithAuth()
         //   .get<http.IFile>("/files/" + item.files[0]);
         // item.file = file;
-        item.location = item.locations[0];
-        mappedDocuments.push(item);
-      } catch (error) {
-        console.log(item.files[0], "sdjfkls");
+        item.location = item.locations[0]
+        mappedDocuments.push(item)
+      } catch {
+        console.log(item.files[0], "sdjfkls")
       }
     }
-    setDocuments(mappedDocuments);
-  };
+    setDocuments(mappedDocuments)
+  }
   const getUserTransactions = () => {
     getTransactions(walletAddress).then((result) => {
-      setTransactions(result.data);
-    });
-  };
+      setTransactions(result.data)
+    })
+  }
   const getProfile = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const profile = await getPublicProfile(walletAddress);
-      setProfile(profile.data);
-      setBalances(profile.data.balances.balance);
-      getDocuments(profile.data.documents);
+      const profile = await getPublicProfile(walletAddress)
+      setProfile(profile.data)
+      setBalances(profile.data.balances.balance)
+      getDocuments(profile.data.documents)
     } catch (error) {
-      console.log(error);
-      setUserProfileError(true);
+      console.log(error)
+      setUserProfileError(true)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   useEffect(() => {
-    getProfile();
-    getUserTransactions();
-  }, []);
+    getProfile()
+    getUserTransactions()
+  }, [])
 
   if (loading) {
-    return <FullPageSpinner />;
+    return <FullPageSpinner />
   }
 
   if (userProfileError) {
@@ -96,14 +96,13 @@ export function OtherProfile({ walletAddress }: TProps) {
               style={{ width: "150px", borderRadius: "10px" }}
               width={150}
               height={150}
-
               alt=""
               src={defUserImage}
             />
-            <Typography sx={{ fontWeight: "bold", margin: '8px 0' }}>
+            <Typography sx={{ fontWeight: "bold", margin: "8px 0" }}>
               User does not exist.
             </Typography>
-            <Typography sx={{mb: 3}}>
+            <Typography sx={{ mb: 3 }}>
               The account you are trying to access has been deleted or does not
               exist.
             </Typography>
@@ -118,7 +117,7 @@ export function OtherProfile({ walletAddress }: TProps) {
           </Box>
         </Box>
       </Container>
-    );
+    )
   }
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
@@ -140,7 +139,7 @@ export function OtherProfile({ walletAddress }: TProps) {
             <UserCard profile={profile} walletAddress={walletAddress} />
           </Box>
         )}
-        {!!balances.filter(filterNftBalances).length && (
+        {balances.some(filterNftBalances) && (
           <>
             <Typography variant="h6" style={{ margin: "16px" }}>
               Items
@@ -152,7 +151,7 @@ export function OtherProfile({ walletAddress }: TProps) {
           </>
         )}
       </Box>
-      {!!documents.length && (
+      {documents.length > 0 && (
         <>
           <Typography variant="h6" style={{ margin: "16px" }}>
             Documents
@@ -170,5 +169,5 @@ export function OtherProfile({ walletAddress }: TProps) {
       )}
       {/* <DocumentsTable walletAddress={walletAddress} /> */}
     </Container>
-  );
+  )
 }
