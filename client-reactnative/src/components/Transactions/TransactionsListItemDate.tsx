@@ -5,18 +5,19 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Text} from 'native-base';
-import React from 'react';
+import { Box, Text } from "native-base"
+import React from "react"
 
-export const TransactionsListitemDate = ({date}: {date: string}) => {
+export const TransactionsListitemDate = ({ date }: { date: string }) => {
   return (
     <Box
-      bg={'gray.500'}
-      w={'100%'}
+      bg={"gray.500"}
+      w={"100%"}
       h={5}
-      justifyContent={'center'}
-      alignItems={'center'}>
-      <Text color={'white'}>{date}</Text>
+      justifyContent={"center"}
+      alignItems={"center"}
+    >
+      <Text color={"white"}>{date}</Text>
     </Box>
-  );
-};
+  )
+}

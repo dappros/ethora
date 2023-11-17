@@ -5,48 +5,48 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useState} from 'react';
+import React, { useState } from "react"
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
+} from "react-native"
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import Modal from "react-native-modal"
 
-import {commonColors, textStyles} from '../../../docs/config';
-import {Input} from 'native-base';
-import {useStores} from '../../stores/context';
+import { commonColors, textStyles } from "../../../docs/config"
+import { Input } from "native-base"
+import { useStores } from "../../stores/context"
 export const RegisterExternalWalletModal = ({
   closeModal,
   modalVisible,
   walletAddress,
   message,
 }: {
-  closeModal: () => void;
-  modalVisible: boolean;
-  walletAddress: string;
-  message: string;
+  closeModal: () => void
+  modalVisible: boolean
+  walletAddress: string
+  message: string
 }) => {
-  const {loginStore} = useStores();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { loginStore } = useStores()
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [loading, setLoading] = useState(false)
   const onSubmit = async () => {
-    setLoading(true);
+    setLoading(true)
     await loginStore.registerExternalWalletUser({
       walletAddress,
-      msg: 'Registration',
+      msg: "Registration",
       signature: message,
-      loginType: 'signature',
+      loginType: "signature",
       firstName,
       lastName,
-    });
-    setLoading(false);
-  };
+    })
+    setLoading(false)
+  }
   return (
     <Modal onBackdropPress={closeModal} isVisible={modalVisible}>
       <View style={styles.modal}>
@@ -54,8 +54,8 @@ export const RegisterExternalWalletModal = ({
           maxLength={15}
           marginBottom={2}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           value={firstName}
           onChangeText={setFirstName}
           placeholder="Enter your firtname"
@@ -64,8 +64,8 @@ export const RegisterExternalWalletModal = ({
         <Input
           maxLength={15}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           value={lastName}
           onChangeText={setLastName}
           placeholder="Enter your lastname"
@@ -74,33 +74,34 @@ export const RegisterExternalWalletModal = ({
         <TouchableOpacity
           disabled={loading}
           style={styles.submitButton}
-          onPress={onSubmit}>
+          onPress={onSubmit}
+        >
           {loading ? (
-            <ActivityIndicator size={20} color={'white'} />
+            <ActivityIndicator size={20} color={"white"} />
           ) : (
-            <Text style={{color: 'white'}}>Register</Text>
+            <Text style={{ color: "white" }}>Register</Text>
           )}
         </TouchableOpacity>
       </View>
     </Modal>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   submitButton: {
     backgroundColor: commonColors.primaryDarkColor,
     width: 150,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 5,
     marginTop: 10,
   },
-});
+})

@@ -5,19 +5,19 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import * as React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import * as React from "react"
+import { StyleSheet, TouchableOpacity } from "react-native"
+import FontAwesome from "react-native-vector-icons/FontAwesome"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {commonColors} from '../../../../docs/config';
-import {Text, View} from 'native-base';
+} from "react-native-responsive-screen"
+import { commonColors } from "../../../../docs/config"
+import { Text, View } from "native-base"
 
 interface TransferModalButtonProps {
-  onPress: any;
-  title: string;
+  onPress: any
+  title: string
 }
 
 export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
@@ -28,8 +28,9 @@ export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
     <TouchableOpacity
       accessibilityLabel="Direct Message"
       onPress={() => {
-        onPress();
-      }}>
+        onPress()
+      }}
+    >
       <View style={styles.sendItemAndDMContainer} accessibilityLabel={title}>
         <View style={styles.sendItemAndDMIconContainer}>
           <FontAwesome name="send" size={15} color="black" />
@@ -37,22 +38,22 @@ export const TransferModalButton: React.FC<TransferModalButtonProps> = ({
         <Text>{title}</Text>
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   sendItemAndDMContainer: {
-    width: wp('50%'),
-    height: hp('5%'),
-    borderRadius: hp('1%'),
+    width: wp("50%"),
+    height: hp("5%"),
+    borderRadius: hp("1%"),
     borderWidth: 1,
     borderColor: commonColors.primaryColor,
     margin: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sendItemAndDMIconContainer: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
   },
-});
+})

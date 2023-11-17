@@ -5,25 +5,25 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {FlatList} from 'native-base';
-import * as React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import EmailListItem from './EmailListItem';
+import { FlatList } from "native-base"
+import * as React from "react"
+import { Text, View, StyleSheet } from "react-native"
+import EmailListItem from "./EmailListItem"
 
 interface RenderEmailListProps {
-  emailList: any;
-  deleteEmail: any;
-  setTooltipVisible: any;
-  tooltipVisible: boolean;
+  emailList: any
+  deleteEmail: any
+  setTooltipVisible: any
+  tooltipVisible: boolean
 }
 
 const RenderEmailList = (props: RenderEmailListProps) => {
-  const {emailList, deleteEmail, setTooltipVisible, tooltipVisible} = props;
+  const { emailList, deleteEmail, setTooltipVisible, tooltipVisible } = props
   return (
     <FlatList
       data={emailList}
       keyExtractor={(item: any) => item.email}
-      renderItem={item => (
+      renderItem={(item) => (
         <EmailListItem
           emailList={item}
           deleteEmail={deleteEmail}
@@ -32,11 +32,11 @@ const RenderEmailList = (props: RenderEmailListProps) => {
         />
       )}
     />
-  );
-};
+  )
+}
 
-export default RenderEmailList;
+export default RenderEmailList
 
 const styles = StyleSheet.create({
   container: {},
-});
+})

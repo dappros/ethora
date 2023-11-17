@@ -5,29 +5,29 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useState, useEffect} from 'react';
-import {View, Text} from 'react-native';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
-import Pulse from 'react-native-pulse';
-import { commonColors } from '../../../docs/config';
+import React, { useState, useEffect } from "react"
+import { View, Text } from "react-native"
+import AudioRecorderPlayer from "react-native-audio-recorder-player"
+import Pulse from "react-native-pulse"
+import { commonColors } from "../../../docs/config"
 
 export function RecordingSecondsCounter() {
-  const [miliseconds, setMiliseconds] = useState(0);
+  const [miliseconds, setMiliseconds] = useState(0)
   const [audioRecorderPlayer, setAudioRecorderPlayer] = useState(
-    new AudioRecorderPlayer(),
-  );
+    new AudioRecorderPlayer()
+  )
 
   useEffect(() => {
-    const timer = setInterval(() => setMiliseconds(prev => prev + 100), 100);
-    return () => clearInterval(timer);
-  }, []);
+    const timer = setInterval(() => setMiliseconds((prev) => prev + 100), 100)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <Text style={{color: commonColors.primaryColor}}>
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <Text style={{ color: commonColors.primaryColor }}>
         {audioRecorderPlayer.mmssss(Math.floor(miliseconds))}
       </Text>
-      <View style={{marginLeft: 15}}>
+      <View style={{ marginLeft: 15 }}>
         <Pulse
           color="red"
           numPulses={3}
@@ -37,5 +37,5 @@ export function RecordingSecondsCounter() {
         />
       </View>
     </View>
-  );
+  )
 }

@@ -4,8 +4,8 @@ import {
   sendInvite,
   setOwner,
   subscribeToRoom,
-} from '../../xmpp/stanzas';
-import {underscoreManipulation} from '../underscoreLogic';
+} from "../../xmpp/stanzas"
+import { underscoreManipulation } from "../underscoreLogic"
 
 export const createPrivateChat = async (
   myWalletAddress: string,
@@ -13,33 +13,33 @@ export const createPrivateChat = async (
   myFirstName: string,
   otherFirstName: string,
   CONFERENCEDOMAIN: string,
-  xmpp: any,
+  xmpp: any
 ) => {
   const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
     .sort()
-    .join('_');
+    .join("_")
 
-  const roomJid = combinedWalletAddress.toLowerCase() + CONFERENCEDOMAIN;
-  const combinedUsersName = [myFirstName, otherFirstName].sort().join(' and ');
+  const roomJid = combinedWalletAddress.toLowerCase() + CONFERENCEDOMAIN
+  const combinedUsersName = [myFirstName, otherFirstName].sort().join(" and ")
 
-  const myXmppUserName = underscoreManipulation(myWalletAddress);
-  createNewRoom(myXmppUserName, combinedWalletAddress.toLowerCase(), xmpp);
-  setOwner(myXmppUserName, combinedWalletAddress.toLowerCase(), xmpp);
+  const myXmppUserName = underscoreManipulation(myWalletAddress)
+  createNewRoom(myXmppUserName, combinedWalletAddress.toLowerCase(), xmpp)
+  setOwner(myXmppUserName, combinedWalletAddress.toLowerCase(), xmpp)
   roomConfig(
     myXmppUserName,
     combinedWalletAddress.toLowerCase(),
-    {roomName: combinedUsersName, roomDescription:""},
-    xmpp,
-  );
-  subscribeToRoom(roomJid, myXmppUserName, xmpp);
+    { roomName: combinedUsersName, roomDescription: "" },
+    xmpp
+  )
+  subscribeToRoom(roomJid, myXmppUserName, xmpp)
 
   setTimeout(() => {
     sendInvite(
       underscoreManipulation(myWalletAddress),
       roomJid.toLowerCase(),
       underscoreManipulation(otherUserWalletAddress),
-      xmpp,
-    );
-  }, 1000);
-  return {roomJid, roomName: combinedUsersName};
-};
+      xmpp
+    )
+  }, 1000)
+  return { roomJid, roomName: combinedUsersName }
+}

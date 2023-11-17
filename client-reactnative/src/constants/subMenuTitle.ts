@@ -6,12 +6,12 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 interface SubMenuTitleProps {
-    ACCOUNT:'ACCOUNT',
-    ACTIONS:'ACTIONS',
-    SYSTEM:'SYSTEM'
+  ACCOUNT: "ACCOUNT"
+  ACTIONS: "ACTIONS"
+  SYSTEM: "SYSTEM"
 }
-export const subMenuTitle:SubMenuTitleProps = {
-    ACCOUNT:'ACCOUNT',
-    ACTIONS:'ACTIONS',
-    SYSTEM:'SYSTEM'
+export const subMenuTitle: SubMenuTitleProps = {
+  ACCOUNT: "ACCOUNT",
+  ACTIONS: "ACTIONS",
+  SYSTEM: "SYSTEM",
 }

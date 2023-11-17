@@ -5,39 +5,39 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {observer} from 'mobx-react-lite';
-import React, { FC } from 'react';
-import {useStores} from '../../stores/context';
-import {RoomListItem} from './RoomListItem';
-import {View} from 'native-base';
-import {FlatList} from 'react-native';
-import {CreateNewChatButton} from '../Chat/CreateNewChatButton';
-import {useNavigation} from '@react-navigation/native';
-import {HomeStackNavigationProp} from '../../navigation/types';
-import { roomListProps } from '../../stores/chatStore';
+import { observer } from "mobx-react-lite"
+import React, { FC } from "react"
+import { useStores } from "../../stores/context"
+import { RoomListItem } from "./RoomListItem"
+import { View } from "native-base"
+import { FlatList } from "react-native"
+import { CreateNewChatButton } from "../Chat/CreateNewChatButton"
+import { useNavigation } from "@react-navigation/native"
+import { HomeStackNavigationProp } from "../../navigation/types"
+import { roomListProps } from "../../stores/chatStore"
 
-interface IRoomList{
-  roomsList: roomListProps[];
+interface IRoomList {
+  roomsList: roomListProps[]
 }
 
-export const RoomList:React.FC<IRoomList> = observer((props:IRoomList) => {
-  const {chatStore} = useStores();
-  const {roomsList} = props;
+export const RoomList: React.FC<IRoomList> = observer((props: IRoomList) => {
+  const { chatStore } = useStores()
+  const { roomsList } = props
   const sortedRoomsList = roomsList.sort(
     (a: any, b: any) =>
       chatStore.roomsInfoMap[a.jid]?.priority -
-      chatStore.roomsInfoMap[b.jid]?.priority,
-  );
-  const navigation = useNavigation<HomeStackNavigationProp>();
+      chatStore.roomsInfoMap[b.jid]?.priority
+  )
+  const navigation = useNavigation<HomeStackNavigationProp>()
   return (
     <>
-      <View justifyContent={'center'} alignItems={'center'} w={'full'}>
+      <View justifyContent={"center"} alignItems={"center"} w={"full"}>
         <FlatList
           nestedScrollEnabled={true}
-          style={{width: '100%'}}
+          style={{ width: "100%" }}
           data={sortedRoomsList}
           keyExtractor={(item: any) => `${item.jid}`}
-          renderItem={({item, index}) => {
+          renderItem={({ item, index }) => {
             return (
               <RoomListItem
                 index={index}
@@ -48,13 +48,13 @@ export const RoomList:React.FC<IRoomList> = observer((props:IRoomList) => {
                 participants={item.participants}
                 key={item.jid}
               />
-            );
+            )
           }}
         />
         <CreateNewChatButton
-          onPress={() => navigation.navigate('NewChatScreen')}
+          onPress={() => navigation.navigate("NewChatScreen")}
         />
       </View>
     </>
-  );
-});
+  )
+})

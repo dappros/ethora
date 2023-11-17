@@ -14,8 +14,8 @@ const configStartScreenOptions = {
   profileOwn: "profileOwn",
   roomBot: "roomBot",
   roomsNav: "roomsNav",
-};
-export const configStartScreen = configStartScreenOptions.roomsStarred; // default option (A) - start with the starred or default chat Rooms
+}
+export const configStartScreen = configStartScreenOptions.roomsStarred // default option (A) - start with the starred or default chat Rooms
 // const configStartScreen = 'profileOwn'; // option (B) - users start from own Profile
 // const configStartScreen = 'roomBot'; // option (C) - User starts in a room guided by your default Chat Bot
 // const configStartScreen = 'roomsNav'; // option (D) - User starts in a ‘metaverse’ mode
@@ -27,7 +27,7 @@ In this mode, Users can also create their own Rooms next to existing ones, colla
 If disabled, all rooms will be static and no navigation UI will be shown.
 */
 
-export const configMetaNav = true; // most business apps would prefer this disabled
+export const configMetaNav = true // most business apps would prefer this disabled
 
 /*
 ITEMS / NFT master switch.
@@ -39,7 +39,7 @@ Developers notes:
 (2) In Profile, we already hide types of assets that User doesn’t have, however we should also check this switch to make sure we don’t display contextual NFT related UI in apps where this is disabled.
 */
 
-export const configNFT = true;
+export const configNFT = true
 
 /*
 DOCUMENTS master switch.
@@ -47,16 +47,16 @@ When this setting is enabled, your Users can create and share Documents asset ty
 Most business applications would prefer this enabled.
 */
 
-export const configDocuments = true;
+export const configDocuments = true
 
 // TITLE
 // App title / name shown in Login screen and top nav bar
-const appTitle = "Ethora"; //done
+const appTitle = "Ethora" //done
 
 // LOGO (LOGIN SCREEN)
 // App logo (displayed in login screen) image path:
-import logoPath from "../src/assets/logo.png"; //done
-import DeviceInfo from "react-native-device-info";
+import logoPath from "../src/assets/logo.png" //done
+import DeviceInfo from "react-native-device-info"
 
 //images for tutorial screens
 // import slide1Image1 from '../src/assets/tutorials/slide1Img1.png';
@@ -68,18 +68,18 @@ import DeviceInfo from "react-native-device-info";
 // import slide4Image1 from '../src/assets/tutorials/slide4Img1.png';
 // import slide4Image2 from '../src/assets/tutorials/slide4Img2.png';
 
-import loginScreenBackgroundImage from "../src/assets/login_background.png";
+import loginScreenBackgroundImage from "../src/assets/login_background.png"
 
 // NAVBAR LOGO
 // If ’true’, same as above logo will also be displayed in the top left of the navbar before the app title
-const navbarLogoShow = false; //done
+const navbarLogoShow = false //done
 
 // COLOUR THEME
 const commonColors = {
   primaryColor: "#003E9C",
   primaryDarkColor: "#2775EA",
   secondaryColor: "#133452",
-}; //done
+} //done
 
 // FONTS
 const textStyles = {
@@ -89,10 +89,10 @@ const textStyles = {
   boldFont: "Poppins-Bold",
   semiBoldFont: "Poppins-SemiBold",
   thinFont: "Poppins-Thin",
-}; //done
+} //done
 
 export const googleWebClientId =
-  "972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com";
+  "972933470054-hbsf29ohpato76til2jtf6jgg1b4374c.apps.googleusercontent.com"
 
 const defaultChatBackgroundTheme = [
   {
@@ -143,17 +143,17 @@ const defaultChatBackgroundTheme = [
     isSelected: false,
     alt: "Tech Doodle",
   },
-];
+]
 
 /* TUTORIAL */
 // If enabled, users will be shown on-boarding tutorial screens to explain how to use the app and the token economy. Additionally, in the menu there will be “Tutorial” item that will allow users to review the tutorial again in future. We aim to keep the UI self-explanatory so keeping this disabled by default.
-const tutorialStartUponLogin = false; // show tutorial upon login //done
-const tutorialShowInMenu = false; // show tutorial item in the menu //done
+const tutorialStartUponLogin = false // show tutorial upon login //done
+const tutorialShowInMenu = false // show tutorial item in the menu //done
 
 /* USERS AND ACCOUNTS */
 // EMAIL MANAGEMENT
 // If enabled, we allow users to add / remove additional e-mails via E-mail menu item. This allows the system to “merge” user accounts when they use different social sign-in (SSO) mechanisms or 3rd parties for user accounts sign in, verification and premium features.
-const usersEmailsManageEnabled = false;
+const usersEmailsManageEnabled = false
 
 // PREMIUM MEMBER CHECK
 // For discussion - include here possibility to enable custom “premium member check” logic - possibly via custom ‘include’ code and then use it elsewhere in the engine, without breaking compatibility if this isn’t enabled. E.g. Hubspot e-mail verification etc.
@@ -177,7 +177,7 @@ const defaultChatRooms = [
     stickyOrder: false,
     removable: false,
   },
-];
+]
 
 const defaultChats = [
   {
@@ -201,22 +201,22 @@ const defaultChats = [
     stickyOrder: false,
     removable: false,
   },
-];
+]
 
 export const defaultMetaRoom = {
   name: "Agora (Start here) 🇬🇧🏛️👋💬",
   jid: "1c525d51b2a0e9d91819933295fcd82ba670371b92c0bf45ba1ba7fb904dbcdc",
-};
+}
 
 export interface IMetaRoom {
-  name: string;
-  description: string;
-  meta: boolean;
-  idAddress: string;
-  linkN: string;
-  linkS: string;
-  linkW: string;
-  linkE: string;
+  name: string
+  description: string
+  meta: boolean
+  idAddress: string
+  linkN: string
+  linkS: string
+  linkW: string
+  linkE: string
 }
 export const metaRooms: IMetaRoom[] = [
   {
@@ -693,57 +693,57 @@ export const metaRooms: IMetaRoom[] = [
     linkW: "",
     linkE: "",
   },
-];
+]
 /* TOKEN ECONOMY */
 // Coins image path
-import coinImagePath from "../src/assets/coin.png"; //done
+import coinImagePath from "../src/assets/coin.png" //done
 
 // Coins symbol
-const coinsMainSymbol = "DPT"; //done
-const coinsMainName = "Dappros Platform Token"; //done
-const coinReplacedSymbol = "ETO"; //done
-const coinReplacedName = "Ethora Coin"; //done
+const coinsMainSymbol = "DPT" //done
+const coinsMainName = "Dappros Platform Token" //done
+const coinReplacedSymbol = "ETO" //done
+const coinReplacedName = "Ethora Coin" //done
 
 //ITEMS
 //Allow Minting by users
-const itemsMintingAllowed = true;
+const itemsMintingAllowed = true
 
 // Allow Transfers by users
 // if set to ‘false’ users won’t be able to transfer items between each other or drop them in the chat rooms. This way you may, for example, support “badges” or “achievements”, as well as other scenarios where you may want Items to only be received from the system or chat bots.
-const itemsTransfersAllowed = true;
+const itemsTransfersAllowed = true
 
 // Minting Fee
 // (a proposed parameter, not implemented yet, if set will require N Coins to be spent towards minting each Item or a copy of an Item)
-const itemsMintingFee = 10;
+const itemsMintingFee = 10
 
 // SYSTEM WALLET NAME FOR TRANSACTIONS
 // Users receive transactions from your ’system’ wallet (or main app wallet) time to time. For example, 100 Coins upon first sign up. Transactions from other users typically display the counter-party first name and last name. From system it displays as “Anonymous” by default.
-const appWalletName = "Anonymous";
+const appWalletName = "Anonymous"
 
-const allowIsTyping = true;
+const allowIsTyping = true
 
-const endPoints: ["DEV", "QA", "PROD"] = ["DEV", "QA", "PROD"];
+const endPoints: ["DEV", "QA", "PROD"] = ["DEV", "QA", "PROD"]
 
-type TappEndpoint = "DEV" | "QA" | "PROD";
-const appEndpoint: TappEndpoint = endPoints[0];
+type TappEndpoint = "DEV" | "QA" | "PROD"
+const appEndpoint: TappEndpoint = endPoints[0]
 
 export interface IAPImodes {
-  DEV: string;
-  PROD: string;
-  QA: string;
+  DEV: string
+  PROD: string
+  QA: string
 }
 
 interface IxmppEndpointsValues {
-  DOMAIN: string;
-  SERVICE: string;
-  CONFERENCEDOMAIN: string;
-  CONFERENCEDOMAIN_WITHOUT: string;
+  DOMAIN: string
+  SERVICE: string
+  CONFERENCEDOMAIN: string
+  CONFERENCEDOMAIN_WITHOUT: string
 }
 
 export interface IxmppEndpoints {
-  DEV: IxmppEndpointsValues;
-  PROD: IxmppEndpointsValues;
-  QA: IxmppEndpointsValues;
+  DEV: IxmppEndpointsValues
+  PROD: IxmppEndpointsValues
+  QA: IxmppEndpointsValues
 }
 
 const xmppEndpoints: IxmppEndpoints = {
@@ -765,36 +765,36 @@ const xmppEndpoints: IxmppEndpoints = {
     CONFERENCEDOMAIN: "@conference.dxmpp.com",
     CONFERENCEDOMAIN_WITHOUT: "conference.dxmpp.com",
   },
-};
+}
 const apiModes: IAPImodes = {
   DEV: "https://api.ethoradev.com/v1",
   PROD: "https://app.dappros.com/v1",
   QA: "https://api.qa.ethoradev.com/v1",
-};
+}
 
-const appVersion = DeviceInfo.getVersion();
-const domain = "ethora";
+const appVersion = DeviceInfo.getVersion()
+const domain = "ethora"
 
 //universal link url
 //@ts-ignore
-let env = appEndpoint === "PROD" ? "p" : "d";
-const unv_url = "https://eto.li?c=";
-const appLinkingUrl = "https://eto.li/";
+let env = appEndpoint === "PROD" ? "p" : "d"
+const unv_url = "https://eto.li?c="
+const appLinkingUrl = "https://eto.li/"
 
 //Application token
 
-type TTokensMode = "DEV" | "QA" | "PROD";
+type TTokensMode = "DEV" | "QA" | "PROD"
 
 const TOKENS: Record<TTokensMode, string> = {
   DEV: "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlzVXNlckRhdGFFbmNyeXB0ZWQiOmZhbHNlLCJwYXJlbnRBcHBJZCI6bnVsbCwiaXNBbGxvd2VkTmV3QXBwQ3JlYXRlIjp0cnVlLCJpc0Jhc2VBcHAiOnRydWUsIl9pZCI6IjY0NmNjOGRjOTZkNGE0ZGM4ZjdiMmYyZCIsImRpc3BsYXlOYW1lIjoiRXRob3JhIiwiZG9tYWluTmFtZSI6ImV0aG9yYSIsImNyZWF0b3JJZCI6IjY0NmNjOGQzOTZkNGE0ZGM4ZjdiMmYyNSIsInVzZXJzQ2FuRnJlZSI6dHJ1ZSwiZGVmYXVsdEFjY2Vzc0Fzc2V0c09wZW4iOnRydWUsImRlZmF1bHRBY2Nlc3NQcm9maWxlT3BlbiI6dHJ1ZSwiYnVuZGxlSWQiOiJjb20uZXRob3JhIiwicHJpbWFyeUNvbG9yIjoiIzAwM0U5QyIsInNlY29uZGFyeUNvbG9yIjoiIzI3NzVFQSIsImNvaW5TeW1ib2wiOiJFVE8iLCJjb2luTmFtZSI6IkV0aG9yYSBDb2luIiwiUkVBQ1RfQVBQX0ZJUkVCQVNFX0FQSV9LRVkiOiJBSXphU3lEUWRrdnZ4S0t4NC1XcmpMUW9ZZjA4R0ZBUmdpX3FPNGciLCJSRUFDVF9BUFBfRklSRUJBU0VfQVVUSF9ET01BSU4iOiJldGhvcmEtNjY4ZTkuZmlyZWJhc2VhcHAuY29tIiwiUkVBQ1RfQVBQX0ZJUkVCQVNFX1BST0pFQ1RfSUQiOiJldGhvcmEtNjY4ZTkiLCJSRUFDVF9BUFBfRklSRUJBU0VfU1RPUkFHRV9CVUNLRVQiOiJldGhvcmEtNjY4ZTkuYXBwc3BvdC5jb20iLCJSRUFDVF9BUFBfRklSRUJBU0VfTUVTU0FHSU5HX1NFTkRFUl9JRCI6Ijk3MjkzMzQ3MDA1NCIsIlJFQUNUX0FQUF9GSVJFQkFTRV9BUFBfSUQiOiIxOjk3MjkzMzQ3MDA1NDp3ZWI6ZDQ2ODJlNzZlZjAyZmQ5YjljZGFhNyIsIlJFQUNUX0FQUF9GSVJFQkFTRV9NRUFTVVJNRU5UX0lEIjoiRy1XSE03WFJaNEM4IiwiUkVBQ1RfQVBQX1NUUklQRV9QVUJMSVNIQUJMRV9LRVkiOiIiLCJSRUFDVF9BUFBfU1RSSVBFX1NFQ1JFVF9LRVkiOiIiLCJjcmVhdGVkQXQiOiIyMDIzLTA1LTIzVDE0OjA4OjI4LjEzNloiLCJ1cGRhdGVkQXQiOiIyMDIzLTA1LTIzVDE0OjA4OjI4LjEzNloiLCJfX3YiOjB9LCJpYXQiOjE2ODQ4NTA5MjV9.-IqNVMsf8GyS9Z-_yuNW7hpSmejajjAy-W0J8TadRIM",
   QA: "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlzVXNlckRhdGFFbmNyeXB0ZWQiOmZhbHNlLCJwYXJlbnRBcHBJZCI6bnVsbCwiaXNBbGxvd2VkTmV3QXBwQ3JlYXRlIjp0cnVlLCJpc0Jhc2VBcHAiOnRydWUsIl9pZCI6IjY0ZWVlMzI5OTkxY2NkMDAyZWIxOTA1OSIsImRpc3BsYXlOYW1lIjoiRXRob3JhIiwiZG9tYWluTmFtZSI6ImV0aG9yYSIsImNyZWF0b3JJZCI6IjY0ZWVlMzIxOTkxY2NkMDAyZWIxOTA1MSIsInVzZXJzQ2FuRnJlZSI6dHJ1ZSwiZGVmYXVsdEFjY2Vzc0Fzc2V0c09wZW4iOnRydWUsImRlZmF1bHRBY2Nlc3NQcm9maWxlT3BlbiI6dHJ1ZSwiYnVuZGxlSWQiOiJjb20uZXRob3JhIiwicHJpbWFyeUNvbG9yIjoiIzAwM0U5QyIsInNlY29uZGFyeUNvbG9yIjoiIzI3NzVFQSIsImNvaW5TeW1ib2wiOiJFVE8iLCJjb2luTmFtZSI6IkV0aG9yYSBDb2luIiwiUkVBQ1RfQVBQX1NUUklQRV9QVUJMSVNIQUJMRV9LRVkiOiIiLCJSRUFDVF9BUFBfU1RSSVBFX1NFQ1JFVF9LRVkiOiIiLCJkZWZhdWx0Um9vbXMiOltdLCJjcmVhdGVkQXQiOiIyMDIzLTA4LTMwVDA2OjM1OjIxLjg1NVoiLCJ1cGRhdGVkQXQiOiIyMDIzLTA4LTMwVDA2OjM1OjIxLjg1NVoiLCJfX3YiOjB9LCJpYXQiOjE2OTMzNzczMzR9.5i2nlPk4Sw_si0qNbFd2CclBIX__3VWIjAsyLb75ryw",
   PROD: "JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlzVXNlckRhdGFFbmNyeXB0ZWQiOmZhbHNlLCJwYXJlbnRBcHBJZCI6bnVsbCwiX2lkIjoiNjNjNmE4YjdlNGI5ZDIyZTAwMTZlODU3IiwiYXBwTmFtZSI6IkV0aG9yYSIsImFwcERlc2NyaXB0aW9uIjoiIiwiYXBwTG9nbyI6IiIsImNyZWF0b3JJZCI6IjYzYzZhODk4ZTRiOWQyMmUwMDE2ZTgyZiIsImFwcEdvb2dsZUlkIjoiIiwiZGVmYXVsdEFjY2Vzc1Byb2ZpbGVPcGVuIjp0cnVlLCJkZWZhdWx0QWNjZXNzQXNzZXRzT3BlbiI6dHJ1ZSwidXNlcnNDYW5GcmVlIjp0cnVlLCJjcmVhdGVkQXQiOiIyMDIzLTAxLTE3VDEzOjU1OjAzLjA5M1oiLCJ1cGRhdGVkQXQiOiIyMDIzLTAxLTE3VDEzOjU1OjAzLjA5M1oiLCJfX3YiOjB9LCJpYXQiOjE2NzM5NjM3MTl9.jORqppQYgirljdwgMDtWDxNdZDtec7Wm93g-ewPQ3Fk",
-};
+}
 
-const APP_TOKEN = TOKENS[appEndpoint];
+const APP_TOKEN = TOKENS[appEndpoint]
 
-const logoWidth: string = "70%"; //represents the percentage of the width of device
-const logoHeight = 70; //represents the percetage of the height of the device
+const logoWidth: string = "70%" //represents the percentage of the width of device
+const logoHeight = 70 //represents the percetage of the height of the device
 
 const defaultBotsList = [
   {
@@ -803,30 +803,30 @@ const defaultBotsList = [
     jid: "0x9_b8_d0cd_c_dba8ef_e145de2_e5986d1b455_c07_b78c0",
     walletAddress: "0x9B8D0cdCDba8efE145de2E5986d1b455C07B78c0",
   },
-];
+]
 export const ROOM_KEYS: Record<string, string> = {
   official: "official",
   private: "private",
   groups: "groups",
-};
+}
 
-export const xmppPushUrl = 'https://push.dxmpp.com:7777/api/v1'
+export const xmppPushUrl = "https://push.dxmpp.com:7777/api/v1"
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
-const isLogoTitle: boolean = false;
-export const appWallets = ["0xB91F341f948469D77D607E36E5264aB0e0479c9C"];
+const isLogoTitle: boolean = false
+export const appWallets = ["0xB91F341f948469D77D607E36E5264aB0e0479c9C"]
 
 // LOGIN SCREEN
 
 // Enable or disable options below to control which login options your Users should have.
 
-const googleSignIn = true; // social sign on with existing Gmail account
-const appleSignIn = true; // social sign on with existing Apple account
-const facebookSignIn = true; // social sign on with existing Facebook account
-const metamaskSignIn = true; // sign in with Metamask or Wallet Connect crypto ID
-const regularLogin = true; // custom login+password - users have to register first
-const regularLoginEmail = true; // custom login using e-mail address for login - users have to register first
-const regularLoginUsername = false;
+const googleSignIn = true // social sign on with existing Gmail account
+const appleSignIn = true // social sign on with existing Apple account
+const facebookSignIn = true // social sign on with existing Facebook account
+const metamaskSignIn = true // sign in with Metamask or Wallet Connect crypto ID
+const regularLogin = true // custom login+password - users have to register first
+const regularLoginEmail = true // custom login using e-mail address for login - users have to register first
+const regularLoginUsername = false
 
 // TO BE DEPRECATED
 
@@ -876,4 +876,4 @@ export {
   defaultChatBackgroundTheme,
   xmppEndpoints,
   apiModes,
-};
+}

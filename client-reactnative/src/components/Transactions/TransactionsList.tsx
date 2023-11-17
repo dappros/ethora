@@ -5,18 +5,21 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {observer} from 'mobx-react-lite';
-import React, {useState} from 'react';
+import { observer } from "mobx-react-lite"
+import React, { useState } from "react"
 // import {FlatList} from 'react-native-gesture-handler';
 // import {useStores} from '../../stores/context';
-import {TransactionFilter} from './TransactionFilter';
-import {TransactionsListItem} from './TransactionsListItem';
-import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
-import {Box, FlatList} from 'native-base';
-import {FILTERS} from '../../constants/transactionsFilter';
-import {appWallets} from '../../../docs/config';
+import { TransactionFilter } from "./TransactionFilter"
+import { TransactionsListItem } from "./TransactionsListItem"
+import { compareTransactionsDate } from "../../helpers/transactions/compareTransactionsDate"
+import { Box, FlatList } from "native-base"
+import { FILTERS } from "../../constants/transactionsFilter"
+import { appWallets } from "../../../docs/config"
 
-const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
+const RenderTransactionItem = ({
+  item,
+  transactionOwnerWalletAddress,
+}: any) => {
   const {
     from,
     to,
@@ -31,22 +34,22 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
     showDate,
     formattedDate,
     balance,
-  } = item;
-  const isApp = appWallets.find(wallet => wallet === from);
+  } = item
+  const isApp = appWallets.find((wallet) => wallet === from)
   const name =
     to === transactionOwnerWalletAddress
       ? isApp
         ? senderFirstName
-        : senderFirstName + ' ' + senderLastName
-      : receiverFirstName + ' ' + receiverLastName;
+        : senderFirstName + " " + senderLastName
+      : receiverFirstName + " " + receiverLastName
   return (
     <TransactionsListItem
       from={from}
       to={to}
       balance={balance}
       transactionAmount={value}
-      transactionSender={senderFirstName + ' ' + senderLastName}
-      transactionReceiver={receiverFirstName + ' ' + receiverLastName}
+      transactionSender={senderFirstName + " " + senderLastName}
+      transactionReceiver={receiverFirstName + " " + receiverLastName}
       blockNumber={blockNumber}
       transactionHash={transactionHash}
       timestamp={timestamp}
@@ -56,36 +59,36 @@ const RenderTransactionItem = ({item, transactionOwnerWalletAddress}: any) => {
       name={name}
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
     />
-  );
-};
+  )
+}
 
 interface TransactionListProps {
-  transactions: any;
-  walletAddress: string;
-  onEndReached: any;
+  transactions: any
+  walletAddress: string
+  onEndReached: any
 }
 
 const TransactionsList = observer(
-  ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
-    const [activeFilter, setActiveFilter] = useState(FILTERS.all);
+  ({ transactions, walletAddress, onEndReached }: TransactionListProps) => {
+    const [activeFilter, setActiveFilter] = useState(FILTERS.all)
     const getFilteredTransactions = () => {
       if (activeFilter === FILTERS.all) {
-        return transactions;
+        return transactions
       }
       if (activeFilter === FILTERS.sent) {
         const filteredTransactions = transactions.filter(
-          (item: any) => item.from === walletAddress,
-        );
-        return filteredTransactions;
+          (item: any) => item.from === walletAddress
+        )
+        return filteredTransactions
       }
 
       if (activeFilter === FILTERS.received) {
         const filteredTransactions = transactions.filter(
-          (item: any) => item.to === walletAddress && item.to !== item.from,
-        );
-        return filteredTransactions;
+          (item: any) => item.to === walletAddress && item.to !== item.from
+        )
+        return filteredTransactions
       }
-    };
+    }
 
     return (
       <Box>
@@ -94,10 +97,10 @@ const TransactionsList = observer(
           setActiveFilter={setActiveFilter}
         />
         <FlatList
-          height={'100%'}
+          height={"100%"}
           scrollEnabled
-          style={{paddingBottom: 50}}
-          renderItem={({item}) => (
+          style={{ paddingBottom: 50 }}
+          renderItem={({ item }) => (
             <RenderTransactionItem
               item={item}
               transactionOwnerWalletAddress={walletAddress}
@@ -105,11 +108,11 @@ const TransactionsList = observer(
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(getFilteredTransactions())}
-          keyExtractor={item => item?.transactionHash}
+          keyExtractor={(item) => item?.transactionHash}
         />
       </Box>
-    );
-  },
-);
+    )
+  }
+)
 
-export default TransactionsList;
+export default TransactionsList

@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
-import {AlertDialog, Box, Center, Button as NativeButton} from 'native-base';
-import {Button} from '../Button';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import React, { useRef } from "react"
+import { AlertDialog, Box, Center, Button as NativeButton } from "native-base"
+import { Button } from "../Button"
+import { widthPercentageToDP } from "react-native-responsive-screen"
 
 export const DeleteDialog = ({
   open,
@@ -13,40 +13,47 @@ export const DeleteDialog = ({
   deleteButtonTitle,
   cancelButtonTitle,
 }: {
-  open: boolean;
-  onClose: () => void;
-  onDeletePress: () => void;
-  loading: boolean;
-  title: string;
-  description: string;
-  deleteButtonTitle?: string;
-  cancelButtonTitle?: string;
+  open: boolean
+  onClose: () => void
+  onDeletePress: () => void
+  loading: boolean
+  title: string
+  description: string
+  deleteButtonTitle?: string
+  cancelButtonTitle?: string
 }) => {
-  const cancelRef = useRef(null);
+  const cancelRef = useRef(null)
   return (
-    <Center >
+    <Center>
       <AlertDialog
         leastDestructiveRef={cancelRef}
         isOpen={open}
-        onClose={onClose}>
+        onClose={onClose}
+      >
         <AlertDialog.Content>
-          
-          <AlertDialog.CloseButton style={{position: 'absolute', right: 0, top: 0}} />
+          <AlertDialog.CloseButton
+            style={{ position: "absolute", right: 0, top: 0 }}
+          />
           <AlertDialog.Header>{title}</AlertDialog.Header>
           <AlertDialog.Body>{description}</AlertDialog.Body>
           <AlertDialog.Footer>
-            <NativeButton.Group space={2} justifyContent={'center'} alignItems={'center'}>
+            <NativeButton.Group
+              space={2}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
               <NativeButton
                 variant="unstyled"
                 colorScheme="coolGray"
                 onPress={onClose}
-                ref={cancelRef}>
-                {cancelButtonTitle || 'Cancel'}
+                ref={cancelRef}
+              >
+                {cancelButtonTitle || "Cancel"}
               </NativeButton>
               <Button
-                title={deleteButtonTitle || 'Delete'}
+                title={deleteButtonTitle || "Delete"}
                 style={{
-                  backgroundColor: 'red',
+                  backgroundColor: "red",
                 }}
                 loading={loading}
                 onPress={onDeletePress}
@@ -56,5 +63,5 @@ export const DeleteDialog = ({
         </AlertDialog.Content>
       </AlertDialog>
     </Center>
-  );
-};
+  )
+}

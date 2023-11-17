@@ -1,202 +1,201 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
-import { appLinkingUrl, unv_url } from "../../docs/config";
-import { MainHeader } from "../components/MainHeader/MainHeader";
-import { useStores } from "../stores/context";
-import { Linking } from "react-native";
-import parseChatLink from "../helpers/parseLink";
-import openChatFromChatLink from "../helpers/chat/openChatFromChatLink";
-import { useNavigation } from "@react-navigation/native";
-import { getLastMessageArchive, retrieveOtherUserVcard } from "../xmpp/stanzas";
-import { getPushToken } from "../helpers/pushNotifications";
-import { requestTrackingPermission } from "react-native-tracking-transparency";
-import AccountScreen from "../screens/Account/AccountScreen";
-import { AuthenticationScreen } from "../screens/Account/Authentication";
-import { CoinPurchaseScreen } from "../screens/Account/CoinPurchaseScreen";
-import { InviteFriendsScreen } from "../screens/Account/InviteFriendsScreen";
-import MintScreen from "../screens/Actions/MintScreen";
-import ScanScreen from "../screens/Actions/ScanScreen";
-import UploadDocumentsScreen from "../screens/Actions/UploadDocumentsScreen";
-import ChangeBackgroundScreen from "../screens/Chat/ChangeBackgroundScreen";
-import ChatDetailsScreen from "../screens/Chat/ChatDetailsScreen";
-import ChatScreen from "../screens/Chat/ChatScreen";
-import NewChatScreen from "../screens/Chat/NewChatScreen";
-import RoomListScreen from "../screens/Chat/RoomListScreen";
-import ThreadScreen from "../screens/Chat/ThreadScreen";
-import { PrivacyAndDataScreen } from "../screens/Privacy/PrivacyAndDataScreen";
-import { DocumentHistoryScreen } from "../screens/Profile/DocumentHistoryScreen";
-import NftItemHistoryScreen from "../screens/Profile/NftItemHistoryScreen";
-import OtherUserProfileScreen from "../screens/Profile/OtherUserProfileScreen";
-import { ProfileScreen } from "../screens/Profile/ProfileScreen";
-import TransactionsScreen from "../screens/Profile/TransactionsScreen";
-import { DebugScreen } from "../screens/System/DebugScreen";
-import { HomeStackParamList, HomeStackNavigationProp } from "./types";
-import { showToast } from "../components/Toast/toast";
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { observer } from "mobx-react-lite"
+import React, { useEffect } from "react"
+import { appLinkingUrl, unv_url } from "../../docs/config"
+import { MainHeader } from "../components/MainHeader/MainHeader"
+import { useStores } from "../stores/context"
+import { Linking } from "react-native"
+import parseChatLink from "../helpers/parseLink"
+import openChatFromChatLink from "../helpers/chat/openChatFromChatLink"
+import { useNavigation } from "@react-navigation/native"
+import { getLastMessageArchive, retrieveOtherUserVcard } from "../xmpp/stanzas"
+import { getPushToken } from "../helpers/pushNotifications"
+import { requestTrackingPermission } from "react-native-tracking-transparency"
+import AccountScreen from "../screens/Account/AccountScreen"
+import { AuthenticationScreen } from "../screens/Account/Authentication"
+import { CoinPurchaseScreen } from "../screens/Account/CoinPurchaseScreen"
+import { InviteFriendsScreen } from "../screens/Account/InviteFriendsScreen"
+import MintScreen from "../screens/Actions/MintScreen"
+import ScanScreen from "../screens/Actions/ScanScreen"
+import UploadDocumentsScreen from "../screens/Actions/UploadDocumentsScreen"
+import ChangeBackgroundScreen from "../screens/Chat/ChangeBackgroundScreen"
+import ChatDetailsScreen from "../screens/Chat/ChatDetailsScreen"
+import ChatScreen from "../screens/Chat/ChatScreen"
+import NewChatScreen from "../screens/Chat/NewChatScreen"
+import RoomListScreen from "../screens/Chat/RoomListScreen"
+import ThreadScreen from "../screens/Chat/ThreadScreen"
+import { PrivacyAndDataScreen } from "../screens/Privacy/PrivacyAndDataScreen"
+import { DocumentHistoryScreen } from "../screens/Profile/DocumentHistoryScreen"
+import NftItemHistoryScreen from "../screens/Profile/NftItemHistoryScreen"
+import OtherUserProfileScreen from "../screens/Profile/OtherUserProfileScreen"
+import { ProfileScreen } from "../screens/Profile/ProfileScreen"
+import TransactionsScreen from "../screens/Profile/TransactionsScreen"
+import { DebugScreen } from "../screens/System/DebugScreen"
+import { HomeStackParamList, HomeStackNavigationProp } from "./types"
+import { showToast } from "../components/Toast/toast"
 
-const HomeStack = createNativeStackNavigator<HomeStackParamList>();
+const HomeStack = createNativeStackNavigator<HomeStackParamList>()
 
 export const HomeStackScreen = observer(() => {
-  const { chatStore, loginStore, walletStore, apiStore } = useStores();
-  const { initialData } = loginStore;
-  const { xmppPassword, xmppUsername, walletAddress } = initialData;
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const { chatStore, loginStore, walletStore, apiStore } = useStores()
+  const { initialData } = loginStore
+  const { xmppPassword, xmppUsername, walletAddress } = initialData
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
   useEffect(() => {
     if (chatStore.roomList.length && chatStore.isOnline) {
       chatStore.roomList.forEach((item) => {
-        getLastMessageArchive(item.jid, chatStore.xmpp);
-      });
+        getLastMessageArchive(item.jid, chatStore.xmpp)
+      })
     }
-  }, [chatStore.roomList, chatStore.isOnline]);
+  }, [chatStore.roomList, chatStore.isOnline])
 
   const getCache = async () => {
     try {
-      const trackingStatus = await requestTrackingPermission();
+      const trackingStatus = await requestTrackingPermission()
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    await chatStore.getCachedRoomsInfo();
-    await chatStore.getRoomsFromCache();
-    await chatStore.getCachedMessages();
-    await walletStore.getCachedTransactions();
+    await chatStore.getCachedRoomsInfo()
+    await chatStore.getRoomsFromCache()
+    await chatStore.getCachedMessages()
+    await walletStore.getCachedTransactions()
     // if (walletAddress) {
     //   await walletStore.getDocuments(walletAddress);
     // }
-  };
+  }
 
   useEffect(() => {
-    getCache();
+    getCache()
     if (xmppUsername && xmppPassword) {
       getPushToken(
         loginStore.initialData.walletAddress,
         apiStore.xmppDomains.DOMAIN,
         apiStore.pushURL,
         navigation
-      );
-      chatStore.xmppConnect(xmppUsername, xmppPassword);
-      chatStore.xmppListener();
+      )
+      chatStore.xmppConnect(xmppUsername, xmppPassword)
+      chatStore.xmppListener()
     }
     if (walletAddress) {
-      walletStore.fetchWalletBalance(loginStore.userToken, true);
+      walletStore.fetchWalletBalance(loginStore.userToken, true)
     }
-  }, [initialData.xmppPassword]);
+  }, [initialData.xmppPassword])
 
   useEffect(() => {
     //when the app opens for the first time, when clicked url from outside, this will be called
     Linking.getInitialURL().then((url) => {
       if (url) {
         if (url.includes("profileLink")) {
-          const params = url.split(unv_url)[1];
-          const queryParams = new URLSearchParams(params);
-          const firstName: string = queryParams.get("firstName") as string;
-          const lastName: string = queryParams.get("lastName") as string;
-          const xmppId: string = queryParams.get("xmppId") as string;
+          const params = url.split(unv_url)[1]
+          const queryParams = new URLSearchParams(params)
+          const firstName: string = queryParams.get("firstName") as string
+          const lastName: string = queryParams.get("lastName") as string
+          const xmppId: string = queryParams.get("xmppId") as string
           const walletAddressFromLink: string = queryParams.get(
             "walletAddress"
-          ) as string;
-          const linkToken = queryParams.get("linkToken");
-          console.log(queryParams, "queryparams");
+          ) as string
+          const linkToken = queryParams.get("linkToken")
+          console.log(queryParams, "queryparams")
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate("ProfileScreen");
+            navigation.navigate("ProfileScreen")
           } else {
             setTimeout(() => {
               retrieveOtherUserVcard(
                 initialData.xmppUsername,
                 xmppId,
                 chatStore.xmpp
-              );
+              )
 
               loginStore.setOtherUserDetails({
                 anotherUserFirstname: firstName,
                 anotherUserLastname: lastName,
                 anotherUserLastSeen: {},
                 anotherUserWalletAddress: walletAddressFromLink,
-              });
-            }, 2000);
+              })
+            }, 2000)
             //@ts-ignore
             navigation.navigate("OtherUserProfileScreen", {
               linkToken: linkToken,
-              walletAddress: walletAddressFromLink
-            });
+              walletAddress: walletAddressFromLink,
+            })
           }
         } else {
-          const parseLink = parseChatLink(url);
+          const parseLink = parseChatLink(url)
           if (parseLink) {
-            const chatId = parseLink.searchParams.get("c");
+            const chatId = parseLink.searchParams.get("c")
             if (chatId) {
-              const chatJID = chatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+              const chatJID = chatId + apiStore.xmppDomains.CONFERENCEDOMAIN
               setTimeout(() => {
                 openChatFromChatLink(
                   chatJID,
                   initialData.walletAddress,
                   navigation,
                   chatStore.xmpp
-                );
-              }, 2000);
+                )
+              }, 2000)
             } else {
-              showToast("error", "Error", "Invalid QR", "top");
+              showToast("error", "Error", "Invalid QR", "top")
             }
           }
         }
       }
-    });
+    })
 
     //when the app is already open and url is clicked from outside this will be called
     const removeListener = Linking.addEventListener("url", (data) => {
-      console.log(data, "tessdfsdf");
+      console.log(data, "tessdfsdf")
       if (data.url) {
         if (data.url.includes("profileLink")) {
-          const params = data.url.split(unv_url)[1];
-          const queryParams = new URLSearchParams(params);
-          const firstName: string = queryParams.get("firstName") as string;
-          const lastName: string = queryParams.get("lastName") as string;
-          const xmppId: string = queryParams.get("xmppId") as string;
-          const linkToken: string = queryParams.get("linkToken") as string;
+          const params = data.url.split(unv_url)[1]
+          const queryParams = new URLSearchParams(params)
+          const firstName: string = queryParams.get("firstName") as string
+          const lastName: string = queryParams.get("lastName") as string
+          const xmppId: string = queryParams.get("xmppId") as string
+          const linkToken: string = queryParams.get("linkToken") as string
 
           const walletAddressFromLink: string = queryParams.get(
             "walletAddress"
-          ) as string;
-          console.log(walletAddress, "walletAddress");
-          console.log(walletAddressFromLink, "walletAddresslink");
+          ) as string
+          console.log(walletAddress, "walletAddress")
+          console.log(walletAddressFromLink, "walletAddresslink")
           if (walletAddress === walletAddressFromLink) {
-            navigation.navigate("ProfileScreen");
+            navigation.navigate("ProfileScreen")
           } else {
             retrieveOtherUserVcard(
               initialData.xmppUsername,
               xmppId,
               chatStore.xmpp
-            );
+            )
 
             loginStore.setOtherUserDetails({
               anotherUserFirstname: firstName,
               anotherUserLastname: lastName,
               anotherUserLastSeen: {},
               anotherUserWalletAddress: walletAddressFromLink,
-            });
+            })
           }
         } else {
-          const parsedChatId = parseChatLink(data.url);
+          const parsedChatId = parseChatLink(data.url)
           if (parsedChatId) {
-            const chatJID =
-              parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+            const chatJID = parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN
             openChatFromChatLink(
               chatJID,
               initialData.walletAddress,
               navigation,
               chatStore.xmpp
-            );
+            )
           } else {
-            showToast("error", "Error", "Invalid QR", "top");
+            showToast("error", "Error", "Invalid QR", "top")
           }
         }
       }
-    });
+    })
 
     return () => {
-      removeListener.remove();
-    };
-  }, []);
+      removeListener.remove()
+    }
+  }, [])
 
   return (
     <HomeStack.Navigator options={{ headerShown: true, headerTitle: "" }}>
@@ -347,7 +346,7 @@ export const HomeStackScreen = observer(() => {
         })}
       />
     </HomeStack.Navigator>
-  );
-});
+  )
+})
 
-export default HomeStackScreen;
+export default HomeStackScreen

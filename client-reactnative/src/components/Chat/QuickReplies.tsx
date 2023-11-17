@@ -5,28 +5,28 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Text, View} from 'native-base';
-import React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import {commonColors} from '../../../docs/config';
-import {colors} from '../../constants/messageColors';
-import {alpha} from '../../helpers/aplha';
-import {underscoreManipulation} from '../../helpers/underscoreLogic';
-import {useStores} from '../../stores/context';
-import {sendMessageStanza} from '../../xmpp/stanzas';
+import { Text, View } from "native-base"
+import React from "react"
+import { StyleSheet, TouchableOpacity } from "react-native"
+import { commonColors } from "../../../docs/config"
+import { colors } from "../../constants/messageColors"
+import { alpha } from "../../helpers/aplha"
+import { underscoreManipulation } from "../../helpers/underscoreLogic"
+import { useStores } from "../../stores/context"
+import { sendMessageStanza } from "../../xmpp/stanzas"
 
 interface IQuickReply {
-  name: string;
-  value: string;
-  notDisplayedValue: string;
+  name: string
+  value: string
+  notDisplayedValue: string
 }
 
 interface IQuickReplies {
-  quickReplies: IQuickReply[];
-  roomJid: string;
-  roomName: string;
-  width: number;
-  messageAuthor: string;
+  quickReplies: IQuickReply[]
+  roomJid: string
+  roomName: string
+  width: number
+  messageAuthor: string
 }
 
 export const QuickReplies: React.FC<IQuickReplies> = ({
@@ -36,18 +36,18 @@ export const QuickReplies: React.FC<IQuickReplies> = ({
   width,
   messageAuthor,
 }) => {
-  const {chatStore, loginStore} = useStores();
+  const { chatStore, loginStore } = useStores()
   const isSameUser =
     messageAuthor ===
-    underscoreManipulation(loginStore.initialData.walletAddress);
+    underscoreManipulation(loginStore.initialData.walletAddress)
   const onQuickReplyPress = ({
     name,
     value,
     notDisplayedValue,
   }: {
-    name: string;
-    value: string;
-    notDisplayedValue: string;
+    name: string
+    value: string
+    notDisplayedValue: string
   }) => {
     const data = {
       senderFirstName: loginStore.initialData.firstName,
@@ -55,26 +55,27 @@ export const QuickReplies: React.FC<IQuickReplies> = ({
       senderWalletAddress: loginStore.initialData.walletAddress,
       isSystemMessage: false,
       tokenAmount: 0,
-      receiverMessageId: '',
+      receiverMessageId: "",
       mucname: roomName,
       photoURL: loginStore.userAvatar,
       roomJid: roomJid,
       notDisplayedValue,
       push: true,
-    };
+    }
     sendMessageStanza(
       underscoreManipulation(loginStore.initialData.walletAddress),
       roomJid,
       value,
       data,
-      chatStore.xmpp,
-    );
-  };
+      chatStore.xmpp
+    )
+  }
   return (
     <View
-      alignItems={isSameUser ? 'flex-end' : 'flex-start'}
-      style={{marginVertical: 4}}
-      width={width}>
+      alignItems={isSameUser ? "flex-end" : "flex-start"}
+      style={{ marginVertical: 4 }}
+      width={width}
+    >
       {!!quickReplies &&
         quickReplies.map((item, i) => {
           return (
@@ -90,21 +91,22 @@ export const QuickReplies: React.FC<IQuickReplies> = ({
                     : alpha(colors.leftBubbleBackground, 0.4),
                 },
               ]}
-              key={i}>
-              <Text color={'white'}>{item.name}</Text>
+              key={i}
+            >
+              <Text color={"white"}>{item.name}</Text>
             </TouchableOpacity>
-          );
+          )
         })}
     </View>
-  );
-};
+  )
+}
 const styles = StyleSheet.create({
   button: {
     borderRadius: 5,
 
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 7,
     marginTop: 3,
   },
-});
+})

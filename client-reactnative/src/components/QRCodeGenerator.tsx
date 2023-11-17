@@ -5,70 +5,70 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, { useRef } from "react";
-import { StyleSheet } from "react-native";
-import QRCode from "react-native-qrcode-svg";
-import Share from "react-native-share";
+import React, { useRef } from "react"
+import { StyleSheet } from "react-native"
+import QRCode from "react-native-qrcode-svg"
+import Share from "react-native-share"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { commonColors, textStyles, unv_url } from "../../docs/config";
-import Clipboard from "@react-native-clipboard/clipboard";
-import { useStores } from "../stores/context";
-import { showToast } from "./Toast/toast";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { Pressable, Text, View } from "native-base";
+} from "react-native-responsive-screen"
+import { commonColors, textStyles, unv_url } from "../../docs/config"
+import Clipboard from "@react-native-clipboard/clipboard"
+import { useStores } from "../stores/context"
+import { showToast } from "./Toast/toast"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import { Pressable, Text, View } from "native-base"
 
 interface QRCodeGeneratorProps {
-  shareKey: string;
-  close: any;
-  removeBaseUrl?: boolean;
+  shareKey: string
+  close: any
+  removeBaseUrl?: boolean
 }
 
 const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
-  const svg: any = useRef(null);
-  const { apiStore } = useStores();
-  const { shareKey, close } = props;
+  const svg: any = useRef(null)
+  const { apiStore } = useStores()
+  const { shareKey, close } = props
 
-  let link = "";
+  let link = ""
 
   if (shareKey.includes("profileLink") || shareKey.includes("doclink")) {
-    link = shareKey;
+    link = shareKey
   } else {
-    link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, "");
+    link = shareKey.replace(apiStore.xmppDomains.CONFERENCEDOMAIN, "")
   }
   const createShareLink = () => {
     if (props.removeBaseUrl) {
-      return shareKey;
+      return shareKey
     }
-    const shareLink = `${unv_url}${link}&app=ethora`;
-    return shareLink;
-  };
+    const shareLink = `${unv_url}${link}&app=ethora`
+    return shareLink
+  }
 
   const shareQR = () => {
-    svg.current.toDataURL(callback);
-  };
+    svg.current.toDataURL(callback)
+  }
 
   const callback = (dataURL: string) => {
-    let imgURL = `data:image/png;base64,${dataURL}`;
+    let imgURL = `data:image/png;base64,${dataURL}`
     Share.open({ url: imgURL }).then(() => {
-      close();
-    });
-  };
+      close()
+    })
+  }
 
   const copyToClipboard = () => {
     if (props.removeBaseUrl) {
-      Clipboard.setString(shareKey);
+      Clipboard.setString(shareKey)
     } else {
-      const shareLink = `${unv_url}${link}&app=ethora`;
-      Clipboard.setString(shareLink);
+      const shareLink = `${unv_url}${link}&app=ethora`
+      Clipboard.setString(shareLink)
     }
-    showToast("success", "Info", "Link copied", "top");
+    showToast("success", "Info", "Link copied", "top")
     // showInfo('Info', 'Link copied.')
-  };
+  }
 
-  const qrlink = createShareLink();
+  const qrlink = createShareLink()
 
   return (
     <View style={styles.MainContainer}>
@@ -164,10 +164,10 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
         </View>
       </Pressable>
     </View>
-  );
-};
+  )
+}
 
-export default QRCodeGenerator;
+export default QRCodeGenerator
 
 const styles = StyleSheet.create({
   MainContainer: {
@@ -190,4 +190,4 @@ const styles = StyleSheet.create({
     // textAlign: 'center',
     fontSize: 18,
   },
-});
+})

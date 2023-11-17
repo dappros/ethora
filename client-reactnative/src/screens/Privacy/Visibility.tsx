@@ -1,15 +1,15 @@
-import {HStack, Radio, Text, View, VStack} from 'native-base';
-import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {textStyles} from '../../../docs/config';
-import {Button} from '../../components/Button';
-import {showSuccess} from '../../components/Toast/toast';
-import {httpUploadPut} from '../../config/apiService';
-import {changeUserData} from '../../config/routesConstants';
-import {useStores} from '../../stores/context';
+import { HStack, Radio, Text, View, VStack } from "native-base"
+import React, { useState } from "react"
+import { StyleSheet } from "react-native"
+import { textStyles } from "../../../docs/config"
+import { Button } from "../../components/Button"
+import { showSuccess } from "../../components/Toast/toast"
+import { httpUploadPut } from "../../config/apiService"
+import { changeUserData } from "../../config/routesConstants"
+import { useStores } from "../../stores/context"
 
 export interface IVisibility {
-  changeScreen: (index: number) => void;
+  changeScreen: (index: number) => void
 }
 
 const state: Record<string, boolean> = {
@@ -17,61 +17,61 @@ const state: Record<string, boolean> = {
   restricted: false,
   full: true,
   individual: false,
-};
+}
 
-export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
-  const {apiStore, loginStore} = useStores();
-  const [loading, setLoading] = useState<'assets' | 'profile' | null>(null);
+export const Visibility: React.FC<IVisibility> = ({ changeScreen }) => {
+  const { apiStore, loginStore } = useStores()
+  const [loading, setLoading] = useState<"assets" | "profile" | null>(null)
   const [visibilityValue, setVisibilityValue] = useState(
-    loginStore.initialData.isProfileOpen ? 'open' : 'restricted',
-  );
+    loginStore.initialData.isProfileOpen ? "open" : "restricted"
+  )
   const [assetsValue, setAssetsValue] = useState(
-    loginStore.initialData.isAssetsOpen ? 'full' : 'individual',
-  );
+    loginStore.initialData.isAssetsOpen ? "full" : "individual"
+  )
 
   const updateProfileVisibility = async (value: string) => {
-    const profileState = state[value];
-    setLoading('profile');
+    const profileState = state[value]
+    setLoading("profile")
 
     try {
-      const formData = new FormData();
-      formData.append('isProfileOpen', profileState);
-      const {data} = await httpUploadPut(
+      const formData = new FormData()
+      formData.append("isProfileOpen", profileState)
+      const { data } = await httpUploadPut(
         changeUserData,
         formData,
         loginStore.userToken,
-        console.log,
-      );
+        console.log
+      )
 
-      showSuccess('Success', 'Profile permissions updated');
-      loginStore.updateCurrentUser(data.user);
-      setVisibilityValue(value);
+      showSuccess("Success", "Profile permissions updated")
+      loginStore.updateCurrentUser(data.user)
+      setVisibilityValue(value)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(null);
-  };
+    setLoading(null)
+  }
   const updateAssetsVisibility = async (value: string) => {
-    setLoading('assets');
-    const assetsState = state[value];
+    setLoading("assets")
+    const assetsState = state[value]
     try {
-      const formData = new FormData();
-      formData.append('isAssetsOpen', assetsState);
-      const {data} = await httpUploadPut(
+      const formData = new FormData()
+      formData.append("isAssetsOpen", assetsState)
+      const { data } = await httpUploadPut(
         changeUserData,
         formData,
         loginStore.userToken,
-        console.log,
-      );
-      showSuccess('Success', 'Assets permissions updated');
-      loginStore.updateCurrentUser(data.user);
-      setAssetsValue(value);
+        console.log
+      )
+      showSuccess("Success", "Assets permissions updated")
+      loginStore.updateCurrentUser(data.user)
+      setAssetsValue(value)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
 
-    setLoading(null);
-  };
+    setLoading(null)
+  }
   return (
     <VStack paddingX={10}>
       <View>
@@ -81,15 +81,17 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             name="myRadioGroup"
             accessibilityLabel="favorite number"
             value={visibilityValue}
-            onChange={updateProfileVisibility}>
+            onChange={updateProfileVisibility}
+          >
             <View paddingY={5}>
               <Radio
                 value="open"
-                justifyContent={'flex-end'}
-                style={{marginTop: -30}}
-                colorScheme={'blue'}
-                alignItems={'flex-start'}>
-                <View width={'90%'} justifyContent={'flex-end'}>
+                justifyContent={"flex-end"}
+                style={{ marginTop: -30 }}
+                colorScheme={"blue"}
+                alignItems={"flex-start"}
+              >
+                <View width={"90%"} justifyContent={"flex-end"}>
                   <HStack>
                     <Text fontFamily={textStyles.semiBoldFont}>Open </Text>
                     <Text>(default)</Text>
@@ -101,12 +103,13 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
                 </View>
               </Radio>
             </View>
-            <View style={{paddingTop: 25}}>
+            <View style={{ paddingTop: 25 }}>
               <Radio
                 value="restricted"
-                colorScheme={'blue'}
-                style={{marginTop: -40}}>
-                <View width={'90%'}>
+                colorScheme={"blue"}
+                style={{ marginTop: -40 }}
+              >
+                <View width={"90%"}>
                   <HStack>
                     <Text fontFamily={textStyles.semiBoldFont}>Restricted</Text>
                   </HStack>
@@ -122,7 +125,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             <Button
               title="Manage profile shares"
               onPress={() => changeScreen(1)}
-              loading={loading === 'profile'}
+              loading={loading === "profile"}
             />
           </View>
         </VStack>
@@ -134,16 +137,18 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             name="myRadioGroup"
             accessibilityLabel="favorite number"
             value={assetsValue}
-            onChange={updateAssetsVisibility}>
+            onChange={updateAssetsVisibility}
+          >
             <View paddingY={5}>
               <Radio
                 value="full"
                 my={1}
-                style={{marginTop: -30}}
-                justifyContent={'flex-start'}
-                colorScheme={'blue'}
-                alignItems={'flex-start'}>
-                <View width={'90%'}>
+                style={{ marginTop: -30 }}
+                justifyContent={"flex-start"}
+                colorScheme={"blue"}
+                alignItems={"flex-start"}
+              >
+                <View width={"90%"}>
                   <HStack>
                     <Text fontFamily={textStyles.semiBoldFont}>Full </Text>
                     <Text>(default)</Text>
@@ -157,12 +162,13 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
             <View paddingY={5}>
               <Radio
                 value="individual"
-                colorScheme={'blue'}
-                style={{marginTop: -30}}>
-                <View width={'90%'}>
+                colorScheme={"blue"}
+                style={{ marginTop: -30 }}
+              >
+                <View width={"90%"}>
                   <HStack>
                     <Text fontFamily={textStyles.semiBoldFont}>
-                      Individual{' '}
+                      Individual{" "}
                     </Text>
                   </HStack>
                   <Text style={styles.description}>
@@ -175,7 +181,7 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
           </Radio.Group>
           <View mt={1}>
             <Button
-              loading={loading === 'assets'}
+              loading={loading === "assets"}
               title="Manage documents shares"
               onPress={() => changeScreen(2)}
             />
@@ -183,30 +189,30 @@ export const Visibility: React.FC<IVisibility> = ({changeScreen}) => {
         </VStack>
       </View>
     </VStack>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,
-    color: 'black',
+    color: "black",
     fontSize: 18,
     marginVertical: 10,
     marginBottom: 20,
   },
   description: {
     fontFamily: textStyles.regularFont,
-    color: 'black',
+    color: "black",
   },
   shareText: {
-    color: '#fff',
+    color: "#fff",
     fontFamily: textStyles.mediumFont,
     // textAlign: 'center',
     fontSize: 18,
   },
   note: {
-    color: 'black',
+    color: "black",
     marginTop: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
-});
+})

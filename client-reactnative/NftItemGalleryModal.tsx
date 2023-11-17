@@ -1,8 +1,8 @@
-import {FlatList} from 'react-native';
-import React from 'react';
-import {NftListItem} from './src/components/Transactions/NftListItem';
-import Modal from 'react-native-modal';
-import {HStack} from 'native-base';
+import { FlatList } from "react-native"
+import React from "react"
+import { NftListItem } from "./src/components/Transactions/NftListItem"
+import Modal from "react-native-modal"
+import { HStack } from "native-base"
 
 export const NftItemGalleryModal = ({
   nftItems,
@@ -13,11 +13,12 @@ export const NftItemGalleryModal = ({
   return (
     <Modal onBackdropPress={closeModal} isVisible={isModalVisible}>
       <HStack
-        w={'100%'}
-        height={'70%'}
-        bgColor={'white'}
-        padding={'1'}
-        borderRadius={10}>
+        w={"100%"}
+        height={"70%"}
+        bgColor={"white"}
+        padding={"1"}
+        borderRadius={10}
+      >
         <FlatList
           data={nftItems}
           renderItem={(e, index) => (
@@ -39,5 +40,5 @@ export const NftItemGalleryModal = ({
         />
       </HStack>
     </Modal>
-  );
-};
+  )
+}

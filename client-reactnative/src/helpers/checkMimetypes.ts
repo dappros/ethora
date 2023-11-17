@@ -3,19 +3,19 @@ import {
   imageMimetypes,
   pdfMimemtype,
   videoMimetypes,
-} from '../constants/mimeTypes';
+} from "../constants/mimeTypes"
 
 export const isVideoMimetype = (mimetype: string) => {
-  return !!videoMimetypes[mimetype];
-};
+  return !!videoMimetypes[mimetype]
+}
 
 export const isImageMimetype = (mimetype: string) => {
-  return !!imageMimetypes[mimetype];
-};
+  return !!imageMimetypes[mimetype]
+}
 
 export const isPdfMimetype = (mimetype: string) => {
-  return !!pdfMimemtype[mimetype];
-};
+  return !!pdfMimemtype[mimetype]
+}
 export const isAudioMimetype = (mimetype: string) => {
-  return audioMimetypes[mimetype];
-};
+  return audioMimetypes[mimetype]
+}
