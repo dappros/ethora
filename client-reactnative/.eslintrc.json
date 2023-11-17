@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    // change to warn/error to enable linting
+    "max-lines": [
+      "off",
+      {
+        "max": 300
+      }
+    ],
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+
+    // usefull
+    "prefer-const": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/ban-types": "off"
+  }
+}
