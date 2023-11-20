@@ -115,7 +115,7 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     setModalVisible(false)
   }
   const createNftItem = async () => {
-    let item = { files: [uploadedFile.location], documentName: itemName }
+    const item = { files: [uploadedFile.location], documentName: itemName }
 
     // alert(JSON.stringify(item))
     const url = apiStore.defaultUrl + docsURL

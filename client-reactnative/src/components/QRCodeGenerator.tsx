@@ -51,7 +51,7 @@ const QRCodeGenerator = (props: QRCodeGeneratorProps) => {
   }
 
   const callback = (dataURL: string) => {
-    let imgURL = `data:image/png;base64,${dataURL}`
+    const imgURL = `data:image/png;base64,${dataURL}`
     Share.open({ url: imgURL }).then(() => {
       close()
     })

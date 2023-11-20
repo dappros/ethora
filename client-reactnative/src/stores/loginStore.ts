@@ -280,7 +280,7 @@ export class LoginStore {
     ssoUserData: { photo: any }
   ) => {
     const token = this.stores.apiStore.defaultToken
-    let bodyData = {
+    const bodyData = {
       loginType: loginType,
       authToken: authToken,
     }
@@ -363,7 +363,7 @@ export class LoginStore {
 
   //update details of current user
   updateCurrentUser = async (user: any) => {
-    let {
+    const {
       firstName,
       lastName,
       username,

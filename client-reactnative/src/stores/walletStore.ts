@@ -247,7 +247,7 @@ export class WalletStore {
   }
   // fetches user balance (items, coins)
   async fetchWalletBalance(token: string, isOwn: boolean) {
-    let url = tokenEtherBalanceURL
+    const url = tokenEtherBalanceURL
     runInAction(() => {
       this.isFetching = true
     })
@@ -312,7 +312,7 @@ export class WalletStore {
     token: string,
     linkToken?: string
   ) {
-    let url = otherProfileBalance + walletAddress + "/" + (linkToken || "")
+    const url = otherProfileBalance + walletAddress + "/" + (linkToken || "")
     console.log(url)
     runInAction(() => {
       this.isFetching = true
@@ -547,7 +547,7 @@ export class WalletStore {
     limit: number,
     offset: number
   ) {
-    let url =
+    const url =
       transactionURL +
       "walletAddress=" +
       walletAddress +

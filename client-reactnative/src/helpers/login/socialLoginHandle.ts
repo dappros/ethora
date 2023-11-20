@@ -95,7 +95,7 @@ export const handleFaceBookLogin = async (
     data.accessToken
   )
 
-  let facebookUser = await auth().signInWithCredential(facebookCredential)
+  const facebookUser = await auth().signInWithCredential(facebookCredential)
 
   let hashUID = ""
 
@@ -103,7 +103,7 @@ export const handleFaceBookLogin = async (
     hashUID = hash
   })
 
-  let user = {
+  const user = {
     firstName: facebookUser.additionalUserInfo.profile.first_name,
     lastName: facebookUser.additionalUserInfo.profile.last_name,
     email: facebookUser.additionalUserInfo.profile.email,
@@ -173,7 +173,7 @@ export const handleGoogleLogin = async (
     hashUID = hash
   })
 
-  let user = {
+  const user = {
     firstName: googleUser.additionalUserInfo.profile.given_name,
     lastName: googleUser.additionalUserInfo.profile.family_name,
     email: googleUser.additionalUserInfo.profile.email,
@@ -197,7 +197,7 @@ export const handleAppleLogin = async (
   registerSocialUser: any,
   type: string
 ) => {
-  let appleUser = {
+  const appleUser = {
     loginType: "apple",
     authToken: "",
     displayName: "",
@@ -244,8 +244,8 @@ export const handleAppleLogin = async (
       nonce
     )
     const data = await auth().signInWithCredential(appleCredentialAndroid)
-    let hashUID = await sha256(data.user.uid)
-    let user = {
+    const hashUID = await sha256(data.user.uid)
+    const user = {
       loginType: "apple",
       authToken: id_token,
       displayName: "",
@@ -276,8 +276,8 @@ export const handleAppleLogin = async (
     )
 
     const data = await auth().signInWithCredential(appleCredential)
-    let hashUID = await sha256(data.user.uid)
-    let user = {
+    const hashUID = await sha256(data.user.uid)
+    const user = {
       loginType: "apple",
       authToken: identityToken,
       displayName: "",

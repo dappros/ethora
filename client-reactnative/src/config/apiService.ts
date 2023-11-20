@@ -36,7 +36,7 @@ http.interceptors.response.use(undefined, async (error) => {
     await rootStore.loginStore.getRefreshToken()
 
     if (rootStore.loginStore.userToken) {
-      let request = error.config
+      const request = error.config
       const token = rootStore.loginStore.userToken
       request.headers["Authorization"] = token
 

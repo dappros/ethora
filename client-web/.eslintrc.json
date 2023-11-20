@@ -21,7 +21,7 @@
         }
       }
     ],
-    "unicorn/no-null": "off",
+    "unicorn/no-null": "warn",
 
     // change to warn/error to enable linting
     "max-lines": [
@@ -30,25 +30,25 @@
         "max": 300
       }
     ],
-    "no-console": "off",
-    "no-unused-vars": "off",
+    "no-console": "warn",
+    "no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "unicorn/prefer-logical-operator-over-ternary": "off",
 
     // usefull 
-    "unicorn/prefer-number-properties":"off",
-    "unicorn/prevent-abbreviations": "off",
+    "unicorn/prefer-number-properties":"warn",
+    "unicorn/prevent-abbreviations": "warn",
     "unicorn/no-array-for-each": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
     "unicorn/no-array-callback-reference": "off",
     "unicorn/consistent-function-scoping": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "unicorn/prefer-module": "off",
-    "unicorn/no-useless-promise-resolve-reject": "off",
-    "unicorn/prefer-add-event-listener": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
-    "unicorn/prefer-array-some":"off",
-    "unicorn/prefer-spread": "off",
-    "@typescript-eslint/ban-types": "off"
+    "@typescript-eslint/no-var-requires": "warn",
+    "unicorn/prefer-module": "warn",
+    "unicorn/no-useless-promise-resolve-reject": "warn",
+    "unicorn/prefer-add-event-listener": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "unicorn/prefer-array-some":"warn",
+    "unicorn/prefer-spread": "warn",
+    "@typescript-eslint/ban-types": "warn"
   }
 }

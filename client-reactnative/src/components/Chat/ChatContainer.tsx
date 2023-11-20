@@ -303,7 +303,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //get Waveform
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== "ios") {
-      let res = await NativeModules.Waveform.getWaveformArray(url)
+      const res = await NativeModules.Waveform.getWaveformArray(url)
       const data = JSON.parse(res)
       return data
     } else {
@@ -364,7 +364,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
     const filesApiURL = fileUpload
     const FormData = require("form-data")
-    let data = new FormData()
+    const data = new FormData()
     const waveform = await getAudioData()
     // let correctpath = '';
     // const str1 = 'file://';
@@ -469,7 +469,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         copyTo: "cachesDirectory",
       })
       const FormData = require("form-data")
-      let data = new FormData()
+      const data = new FormData()
       data.append("files", {
         uri: res[0].uri,
         type: res[0].type,
@@ -486,7 +486,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
       if (response.data.results?.length) {
         if (response.data.results[0].mimetype === "audio/mpeg") {
-          let wave = await getAudioData(absolutePath)
+          const wave = await getAudioData(absolutePath)
           submitMediaMessage(response.data.results, roomDetail, xmpp, wave)
         } else {
           submitMediaMessage(response.data.results, roomDetail, xmpp, [])

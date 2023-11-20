@@ -3,9 +3,9 @@ import { ApiStore } from "../stores/apiStore"
 import { XMPP_TYPES } from "./xmppConstants"
 const store = new ApiStore()
 
-let DOMAIN = store.xmppDomains.DOMAIN
-let CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT
-let CONFERENCEDOMAIN = store.xmppDomains.CONFERENCEDOMAIN
+const DOMAIN = store.xmppDomains.DOMAIN
+const CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT
+const CONFERENCEDOMAIN = store.xmppDomains.CONFERENCEDOMAIN
 
 export const subscribeStanza = (from: string, to: string, xmpp: any) => {
   const subscribe = xml(
@@ -232,7 +232,7 @@ export const getPaginatedArchive = (
   firstUserMessageID: string,
   xmpp: any
 ) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -254,7 +254,7 @@ export const getPaginatedArchive = (
 }
 
 export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -339,7 +339,7 @@ export const leaveRoomXmpp = (
   xmpp.send(presence)
 }
 export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -364,7 +364,7 @@ export const get_list_of_subscribers = (
   walletAddress: string,
   xmpp: any
 ) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       from: walletAddress + "@" + DOMAIN,
@@ -741,7 +741,7 @@ export const retrieveOtherUserVcard = (
 }
 
 export const createNewRoom = (from: string, to: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "presence",
     {
       id: XMPP_TYPES.createRoom,

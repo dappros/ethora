@@ -622,7 +622,7 @@ export class ChatStore {
   }
 
   updateAllRoomsInfo = async () => {
-    let map: any = { isUpdated: 0 }
+    const map: any = { isUpdated: 0 }
     this.roomList.forEach((item) => {
       const latestMessage = this.messages
         .filter((message: { roomJid: string }) => item.jid === message.roomJid)
@@ -877,9 +877,9 @@ export class ChatStore {
 
       //response to presence request, we set roles for each room here
       if (stanza.attrs.id === XMPP_TYPES.roomPresence) {
-        let roomJID = stanza.attrs.from.split("/")[0]
+        const roomJID = stanza.attrs.from.split("/")[0]
 
-        let role = stanza.children[1].children[0].attrs.role
+        const role = stanza.children[1].children[0].attrs.role
         this.setRoomRoles(roomJID, role)
       }
 
@@ -1058,7 +1058,7 @@ export class ChatStore {
           stanza?.children[0]?.children[0]?.children[0]?.children[2]
             ?.children[0]?.name === "invite"
         ) {
-          let jid =
+          const jid =
             stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
               ?.jid
           subscribeStanza(xmppUsername, jid, this.xmpp)

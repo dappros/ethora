@@ -12,7 +12,7 @@ import { RoomList } from "./RoomList"
 import { checkIsDefaultChat } from "../../helpers/chat/checkIsDefaultChat"
 import { roomListProps } from "../../stores/chatStore"
 
-let _ = require("lodash")
+const _ = require("lodash")
 const ROOM_KEYS = {
   official: "official",
   private: "private",

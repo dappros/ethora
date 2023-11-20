@@ -52,7 +52,6 @@ const ChangeBackgroundScreen = observer((props: any) => {
     chatStore.changeBackgroundTheme(
       selectedRoomBackgroundIndex ? Number(selectedRoomBackgroundIndex) : 0
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const currentRoomDetail = chatStore.getRoomDetails(roomJID) as roomListProps

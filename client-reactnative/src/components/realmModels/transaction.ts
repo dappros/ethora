@@ -13,7 +13,7 @@ async function checkTransactionExist(transactionHash, callback) {
   // const realm = new Realm(databaseOptions)
   const realm = await Realm.open(databaseOptions)
 
-  let transactionObject = realm.objects(schemaTypes.TRANSACTION_SCHEMA)
+  const transactionObject = realm.objects(schemaTypes.TRANSACTION_SCHEMA)
   if (
     Array.from(
       transactionObject.filtered(`transactionHash="${transactionHash}"`)
@@ -95,7 +95,7 @@ export const queryAllTransactions = () =>
     const realm = await Realm.open(databaseOptions)
 
     // const realm = new Realm(databaseOptions)
-    let transactions = realm
+    const transactions = realm
       .objects(schemaTypes.TRANSACTION_SCHEMA)
       .filtered(`tokenName!="${" "}" SORT(timestamp ASC)`)
     resolve(Array.from(transactions))

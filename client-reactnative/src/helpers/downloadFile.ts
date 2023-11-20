@@ -5,7 +5,7 @@ import Share from "react-native-share"
 
 export const downloadFile = async (url: string, filename: string) => {
   // Get today's date to add the time suffix in filename
-  let date = new Date()
+  const date = new Date()
 
   const {
     dirs: { DownloadDir, DocumentDir },
@@ -44,7 +44,7 @@ export const downloadFile = async (url: string, filename: string) => {
             .then((a) => {
               filePath = res.data
 
-              let options = {
+              const options = {
                 //  type: type,
                 url: filePath, // (Platform.OS === 'android' ? 'file://' + filePath)
               }

@@ -82,7 +82,7 @@ const UploadDocumentsScreen = () => {
   }
 
   const createNftItem = async () => {
-    let item = { files: [uploadedFile.location], documentName: itemName }
+    const item = { files: [uploadedFile.location], documentName: itemName }
 
     // alert(JSON.stringify(item))
     const url = docsURL

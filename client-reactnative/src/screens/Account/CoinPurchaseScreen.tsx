@@ -96,7 +96,6 @@ export const CoinPurchaseScreen: React.FC<ICoinPurchaseScreen> = ({}) => {
     if (connected) {
       getProducts({ skus: productIds })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected])
   return (
     <View>

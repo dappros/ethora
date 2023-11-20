@@ -40,7 +40,7 @@ export default function AudioPlayer({
 
   const changeTime = async (seconds: any) => {
     // 50 / duration
-    let seektime = (seconds / 100) * duration
+    const seektime = (seconds / 100) * duration
     setTimeElapsed(seektime)
     audioRecorderPlayer.seekToPlayer(seektime)
   }
@@ -54,7 +54,7 @@ export default function AudioPlayer({
         audioRecorderPlayer.stopPlayer()
         setisAlreadyPlay(false)
       }
-      let currentPresent = Math.round(
+      const currentPresent = Math.round(
         (Math.floor(e.currentPosition) / Math.floor(e.duration)) * 100
       )
       setTimeElapsed(e.currentPosition)

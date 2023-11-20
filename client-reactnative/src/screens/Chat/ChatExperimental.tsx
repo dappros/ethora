@@ -654,7 +654,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
 
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== "ios") {
-      let ddd = await NativeModules.Waveform.getWaveformArray(url)
+      const ddd = await NativeModules.Waveform.getWaveformArray(url)
 
       const data = JSON.parse(ddd)
       return data
@@ -732,7 +732,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
 
     const filesApiURL = fileUpload
     const FormData = require("form-data")
-    let data = new FormData()
+    const data = new FormData()
     const waveform = await getAudioData()
     // let correctpath = '';
     // const str1 = 'file://';
@@ -772,7 +772,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
 
       const filesApiURL = fileUpload
       const FormData = require("form-data")
-      let data = new FormData()
+      const data = new FormData()
       data.append("files", {
         uri: res[0].uri,
         type: res[0].type,
@@ -789,7 +789,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       if (response.data.results?.length) {
         debugStore.addLogsApi(response.data.results)
         if (response.data.results[0].mimetype === "audio/mpeg") {
-          let wave = await getAudioData(absolutePath)
+          const wave = await getAudioData(absolutePath)
           submitMediaMessage(response.data.results, wave)
         } else {
           submitMediaMessage(response.data.results)

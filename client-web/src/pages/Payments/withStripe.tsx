@@ -41,7 +41,6 @@ export const withStripe = (Component: React.FC<ISecret>) => () => {
   }
   useEffect(() => {
     getClientSecret()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (loading) {

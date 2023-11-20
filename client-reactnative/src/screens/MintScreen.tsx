@@ -71,7 +71,7 @@ const MintScreen = (props: MintScreenProps) => {
   }
 
   const createNftItem = async () => {
-    let item = { name: itemName, rarity: selectedValue, mediaId: fileId }
+    const item = { name: itemName, rarity: selectedValue, mediaId: fileId }
     const url = apiStore.defaultUrl + nftTransferURL
     try {
       await httpPost(url, item, loginStore.userToken)

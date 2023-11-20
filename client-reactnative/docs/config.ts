@@ -777,7 +777,7 @@ const domain = "ethora"
 
 //universal link url
 //@ts-ignore
-let env = appEndpoint === "PROD" ? "p" : "d"
+const env = appEndpoint === "PROD" ? "p" : "d"
 const unv_url = "https://eto.li?c="
 const appLinkingUrl = "https://eto.li/"
 

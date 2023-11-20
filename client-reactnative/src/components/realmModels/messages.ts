@@ -42,7 +42,7 @@ export const insertMessages = (messageObject: any) =>
 export const queryRoomAllMessages = async () =>
   new Promise(async (resolve) => {
     const realm = await Realm.open(databaseOptions)
-    let chats = realm.objects(schemaTypes.MESSAGE_SCHEMA)
+    const chats = realm.objects(schemaTypes.MESSAGE_SCHEMA)
     resolve(Array.from(chats))
   })
 
@@ -63,7 +63,7 @@ export const updateTokenAmount = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions)
-    let message = realm.objectForPrimaryKey(
+    const message = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId
     )
@@ -85,7 +85,7 @@ export const updateMessageText = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions)
-    let message: any = realm.objectForPrimaryKey(
+    const message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId
     )
@@ -108,7 +108,7 @@ export const updateNumberOfReplies = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions)
-    let message: any = realm.objectForPrimaryKey(
+    const message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId
     )
@@ -129,7 +129,7 @@ export const updateMessageToWrapped = async (
 ) => {
   try {
     const realm = await Realm.open(databaseOptions)
-    let message: any = realm.objectForPrimaryKey(
+    const message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId
     )
@@ -146,7 +146,7 @@ export const updateMessageToWrapped = async (
 export const deleteMessageObject = async (messageId: string) => {
   try {
     const realm = await Realm.open(databaseOptions)
-    let message: any = realm.objectForPrimaryKey(
+    const message: any = realm.objectForPrimaryKey(
       schemaTypes.MESSAGE_SCHEMA,
       messageId
     )

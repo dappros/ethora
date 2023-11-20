@@ -219,6 +219,7 @@ export const stripHtml = (html: string) => {
   string_ = string_.replaceAll(/<p.*>/gi, "\n")
   string_ = string_.replaceAll(/<(?:.|\s)*?>/g, "")
 
+  // eslint-disable-next-line prefer-const
   document =
     string_.trim().length === 0
       ? new DOMParser().parseFromString(html, "text/html")
@@ -264,6 +265,7 @@ export function getTnc(
 ) {
   let customer: string
 
+  // eslint-disable-next-line prefer-const
   customer = company
     ? company +
       ", a company, represented by " +
