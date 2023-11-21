@@ -4,15 +4,12 @@ import { View } from "native-base"
 import React from "react"
 
 import { RoomsTabBar } from "../../components/RoomList/RoomsTabBar"
-import { HomeStackParamList as HomeStackParameterList } from "../../navigation/types"
-type ScreenProperties = NativeStackScreenProps<
-  HomeStackParameterList,
-  "RoomsListScreem"
->
+import { HomeStackParamList } from "../../navigation/types"
+type ScreenProps = NativeStackScreenProps<HomeStackParamList, "RoomsListScreem">
 
-const RoomListScreen = observer(({}: ScreenProperties) => {
+const RoomListScreen = observer(({}: ScreenProps) => {
   return (
-    <View flex={1} backgroundColor={"#EBEFF4"} position={"relative"}>
+    <View flex={1} backgroundColor={"white"}>
       <RoomsTabBar />
     </View>
   )
