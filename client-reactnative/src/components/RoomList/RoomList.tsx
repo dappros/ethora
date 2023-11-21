@@ -5,124 +5,51 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { observer } from 'mobx-react-lite';
-import React, { useRef, useState } from 'react';
-import { useStores } from '../../stores/context';
-import { RoomListItem } from './RoomListItem';
-import { View, VStack, Text, HStack, Box, Avatar } from 'native-base';
-import { Animated, FlatList, PanResponder, TextInput } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { HomeStackNavigationProp as HomeStackNavigationProperty } from '../../navigation/types';
-import { roomListProps as roomListProperties } from '../../stores/chatStore';
-import { defaultMetaRoom, ROOM_KEYS, textStyles } from '../../../docs/config';
-import { httpGet } from '../../config/apiService';
-import { homeStackRoutes } from '../../navigation/routes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { HeaderMenu } from '../MainHeader/HeaderMenu';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { observer } from "mobx-react-lite"
+import React, { useEffect, useRef, useState } from "react"
+import { useStores } from "../../stores/context"
+import { RoomListItem } from "./RoomListItem"
+import { View, VStack, Text, HStack, Box, Avatar } from "native-base"
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  PanResponder,
+  TextInput,
+} from "react-native"
+import { useNavigation, useRoute } from "@react-navigation/native"
+import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types"
+import { roomListProps as roomListProperties } from "../../stores/chatStore"
+import { defaultMetaRoom, ROOM_KEYS, textStyles } from "../../../docs/config"
+import { httpGet } from "../../config/apiService"
+import { homeStackRoutes } from "../../navigation/routes"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP,
+} from "react-native-responsive-screen"
+import { HeaderMenu } from "../MainHeader/HeaderMenu"
+import Icon from "react-native-vector-icons/FontAwesome"
+import RoomsCategories from "./RoomsCategories"
+import RoomsHeader from "./RoomsHeader"
 
 interface IRoomList {
-  roomsList: roomListProperties[];
+  roomsList: roomListProperties[]
 }
-
-const buttons = [
-  {
-    key: ROOM_KEYS.official,
-    icon: 'star',
-    show: true,
-    accessibilityLabel: 'Starred chats',
-    name: 'Favourite',
-  },
-  {
-    key: ROOM_KEYS.private,
-    icon: 'people',
-    show: true,
-    accessibilityLabel: 'Other chats',
-    name: 'Groups',
-  },
-  {
-    key: ROOM_KEYS.groups,
-    icon: 'compass',
-    show: true,
-    accessibilityLabel: 'Meta',
-    name: 'Private',
-  },
-];
 
 export const RoomList: React.FC<IRoomList> = observer(
   (properties: IRoomList) => {
-    const { chatStore, apiStore, loginStore } = useStores();
-    const { roomsList } = properties;
-    const route = useRoute();
+    const { chatStore, apiStore, loginStore } = useStores()
+    const { roomsList } = properties
     const sortedRoomsList = roomsList.sort(
       (a: any, b: any) =>
         chatStore.roomsInfoMap[a.jid]?.priority -
-        chatStore.roomsInfoMap[b.jid]?.priority,
-    );
-    const navigation = useNavigation<HomeStackNavigationProperty>();
+        chatStore.roomsInfoMap[b.jid]?.priority
+    )
+    const [allRooms, setAllRooms] = useState([...chatStore.roomList])
+    const navigation = useNavigation<HomeStackNavigationProperty>()
 
-    const navigateToLatestMetaRoom = async () => {
-      try {
-        const response = await httpGet(
-          '/room/currentRoom',
-          loginStore.userToken,
-        );
-        if (!response.data.result) {
-          navigation.navigate('ChatScreen', {
-            chatJid:
-              defaultMetaRoom.jid + apiStore.xmppDomains.CONFERENCEDOMAIN,
-          });
-          return;
-        }
-        navigation.navigate('ChatScreen', {
-          chatJid:
-            response.data.result.roomId.roomJid +
-            apiStore.xmppDomains.CONFERENCEDOMAIN,
-        });
-      } catch (error) {
-        console.log(error, 'adflkjsdf');
-
-        // showError('Error', 'Cannot fetch latest meta room');
-      }
-    };
-
-    const onTabPress = async (key: string) => {
-      // if user clicked on the Meta button in the header and he is in the chat screen
-      if (
-        route.name === homeStackRoutes.ChatScreen &&
-        key === ROOM_KEYS.groups
-      ) {
-        chatStore.toggleMetaNavigation(true);
-        chatStore.changeActiveChats(key);
-        // if current chat room is not meta one - navigate to latest meta room
-        if (
-          !chatStore.roomList.find((item) => item.jid === route.params?.chatJid)
-            ?.meta
-        ) {
-          await navigateToLatestMetaRoom();
-          chatStore.changeActiveChats(key);
-        }
-        return;
-      }
-
-      if (key === ROOM_KEYS.groups) {
-        chatStore.changeActiveChats(key);
-
-        await navigateToLatestMetaRoom();
-
-        return;
-      }
-      chatStore.changeActiveChats(key);
-
-      navigation.navigate('RoomsListScreem');
-    };
-
-    const highlightIcon = (id: string) => {
-      return chatStore.activeChats === id;
-    };
-
-    const scrollY = useRef(new Animated.Value(0)).current;
+    const scrollY = useRef(new Animated.Value(0)).current
     //
     // useEffect(() => {
     //   const scrollListener = scrollY.addListener(({ value }) => {
@@ -136,22 +63,22 @@ export const RoomList: React.FC<IRoomList> = observer(
     // }, [scrollY]);
     //
 
-    const panY = useRef(new Animated.Value(0)).current;
-    const [showCreateRoom, setShowCreateRoom] = useState(false);
+    const panY = useRef(new Animated.Value(0)).current
+    const [showCreateRoom, setShowCreateRoom] = useState(false)
 
     const panResponder = PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gestureState) => {
         if (gestureState.dy > 0) {
-          setShowCreateRoom(true);
+          setShowCreateRoom(true)
           Animated.event([null, { dy: panY }], {
             useNativeDriver: false,
-          })(event, gestureState);
+          })(event, gestureState)
         } else {
-          setShowCreateRoom(false);
+          setShowCreateRoom(false)
           Animated.event([null, { dy: panY }], {
             useNativeDriver: false,
-          })(event, gestureState);
+          })(event, gestureState)
         }
       },
       onPanResponderRelease: (_, gestureState) => {
@@ -164,31 +91,99 @@ export const RoomList: React.FC<IRoomList> = observer(
           toValue: 0,
           useNativeDriver: false,
           tension: 10, // Adjust the tension value for a smoother appearance
-        }).start();
+        }).start()
       },
-    });
+    })
+    const [isFocused, setIsFocused] = useState(false)
+    const [searchValue, setSearchValue] = useState("")
+    const [placeholderAnimationEnded, setPlaceholderAnimationEnded] =
+      useState(false)
+    const handleSearchFocus = () => setIsFocused(true)
+    const handleSearchBlur = () => {
+      if (!searchValue) setIsFocused(false)
+    }
+    const inputReference = useRef(null)
+    const placeholderAnim = useRef(new Animated.Value(0)).current
+    const screenWidth = Dimensions.get("window").width
 
+    useEffect(() => {
+      const placeholderMoveAnimation = Animated.timing(placeholderAnim, {
+        toValue: isFocused ? 1 : 0,
+        duration: 200,
+        useNativeDriver: false,
+      })
+      // placeholderMoveAnimation.start()
+      placeholderMoveAnimation.start(({ finished }) => {
+        if (finished) {
+          setPlaceholderAnimationEnded(isFocused)
+        }
+      })
+      return () => {
+        placeholderMoveAnimation.stop()
+      }
+    }, [isFocused, placeholderAnim])
+
+    const translateX = placeholderAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [widthPercentageToDP("-5%"), widthPercentageToDP("-33%")], // Adjust the value based on your desired movement
+      // outputRange: [-10, -100], // Adjust the value based on your desired movement
+    })
+
+    console.log("allrooms", allRooms)
+
+    const handleSearchChange = (value) => {
+      setSearchValue(value)
+      const newRooms = [...chatStore.roomList]
+      setAllRooms(newRooms.filter((room) => room.name.includes(value)))
+    }
+
+    console.log("searchValue", searchValue)
     const createRoomBlock = (
-      <Animated.View
-        style={{
-          paddingLeft: 20,
-          paddingRight: 20,
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {/*<Icon name="search" size={24} color="#888" />*/}
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+      <View paddingLeft={4} paddingRight={4} width={"full"}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#fff",
+            width: "100%",
+            borderRadius: 25,
+            position: "relative",
+          }}
+        >
+          <Animated.View
+            style={[
+              {
+                position: "absolute",
+                left: "50%", // Adjust the initial position based on your design
+              },
+              { transform: [{ translateX }] },
+            ]}
+          >
+            <Text style={{ color: "gray", opacity: searchValue ? 0 : 1 }}>
+              Search..
+            </Text>
+
+            <Icon
+              name="search"
+              style={{ position: "absolute", top: -3, left: -35 }}
+              size={24}
+              color="#888"
+            />
+          </Animated.View>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <TextInput
-              placeholder="Search"
+              ref={inputReference}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              onChangeText={handleSearchChange}
+              value={searchValue}
               style={{
-                backgroundColor: '#fff',
-                borderRadius: 30,
-                paddingLeft: 20,
+                paddingLeft: 46,
+                width: "100%",
                 height: 45,
-                alignItems: 'center',
                 paddingRight: 15,
-                textAlign: 'center',
               }}
+              caretHidden={!placeholderAnimationEnded}
             />
           </View>
         </View>
@@ -196,170 +191,58 @@ export const RoomList: React.FC<IRoomList> = observer(
           style={{
             marginTop: 10,
             marginBottom: 20,
-            backgroundColor: '#0052CD',
+            backgroundColor: "#0052CD",
             height: 45,
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
             borderRadius: 30,
           }}
-          onPress={() => navigation.navigate('NewChatScreen')}
+          onPress={() => navigation.navigate("NewChatScreen")}
         >
-          <HStack space={2} alignItems={'center'} justifyContent={'center'}>
+          <HStack space={2} alignItems={"center"} justifyContent={"center"}>
             <Icon name="plus" size={9} color="#fff" />
-            <Text style={{ color: '#fff' }}>New chat</Text>
+            <Text style={{ color: "#fff" }}>New chat</Text>
           </HStack>
         </TouchableOpacity>
-      </Animated.View>
-    );
+      </View>
+    )
 
     const translateY = panY.interpolate({
       inputRange: [-300, 0, 300],
       outputRange: [-50, 0, 50],
-      extrapolate: 'clamp',
-    });
+      extrapolate: "clamp",
+    })
+    // /*{...panResponder.panHandlers}*/
 
     return (
       <>
-        <Animated.View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            transform: [{ translateY }],
-          }}
-          {...panResponder.panHandlers}
+        <View
+          flex={1}
+          // style={{
+          //   flex: 1,
+          //   justifyContent: "center",
+          //   alignItems: "center",
+          //   transform: [{ translateY }],
+          // }}
         >
           <View
-            justifyContent={'center'}
-            alignItems={'center'}
-            w={'full'}
+            justifyContent={"center"}
+            alignItems={"center"}
+            w={"full"}
             flex={1}
           >
-            <Box
-              style={{
-                borderBottomLeftRadius: 15,
-                borderBottomRightRadius: 15,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-              }}
-              height={hp('10%')}
-              justifyContent={'flex-end'}
-              bgColor={'#fff'}
-              width={'100%'}
-            >
-              <HStack
-                alignItems={'center'}
-                justifyContent={'space-between'}
-                paddingBottom={1}
-              >
-                <View>
-                  <HeaderMenu />
-                </View>
-
-                <Text color={'#000'} fontWeight={700} fontSize={16}>
-                  Chats
-                </Text>
-                <Avatar
-                  bgColor={'#000'}
-                  marginRight={3}
-                  source={{
-                    uri: loginStore.userAvatar,
-                  }}
-                >
-                  <Text>MP</Text>
-                </Avatar>
-              </HStack>
-            </Box>
+            <RoomsHeader />
             <View paddingTop={100}>
-              {showCreateRoom && createRoomBlock}
-              <HStack
-                style={{
-                  width: '100%',
-
-                  flexDirection: 'row',
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                  paddingBottom: 18,
-                }}
-                space={10}
-              >
-                {buttons.map((item) => {
-                  if (!item.show) return null;
-                  return (
-                    <View key={item.key} style={{ flex: 1 }}>
-                      <TouchableOpacity
-                        accessibilityLabel={item.accessibilityLabel}
-                        onPress={async () => await onTabPress(item.key)}
-                        style={{
-                          paddingBottom: 10,
-                          position: 'relative',
-                        }}
-                      >
-                        <VStack space={1.5}>
-                          <HStack
-                            space={2}
-                            justifyContent={'center'}
-                            alignItems={'center'}
-                          >
-                            <Text
-                              style={{
-                                color: '#0052CD',
-                                fontFamily: highlightIcon(item.key)
-                                  ? textStyles.openSansBold
-                                  : textStyles.openSansRegular,
-                              }}
-                            >
-                              {item.name}
-                            </Text>
-                            {!!chatStore.unreadMessagesForGroups[item.key] && (
-                              <View
-                                style={{
-                                  paddingRight: 8,
-                                  paddingLeft: 8,
-                                  borderRadius: 5,
-                                  height: 16,
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  position: 'relative',
-                                  backgroundColor: '#0052CD',
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    color: '#fff',
-                                    fontSize: 9,
-                                    position: 'absolute',
-                                    top: -3,
-                                    textAlign: 'center',
-                                  }}
-                                >
-                                  {chatStore.unreadMessagesForGroups[item.key]}
-                                </Text>
-                              </View>
-                            )}
-                          </HStack>
-                          <View
-                            height={0.5}
-                            backgroundColor={
-                              highlightIcon(item.key) ? '#0052CD' : '#E8EDF2'
-                            }
-                            borderRadius={5}
-                          ></View>
-                        </VStack>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })}
-              </HStack>
+              {createRoomBlock}
+              {searchValue && <RoomsCategories />}
             </View>
             <FlatList
               nestedScrollEnabled={true}
-              style={{ width: '100%' }}
-              data={sortedRoomsList}
+              style={{ width: "100%" }}
+              data={searchValue ? allRooms : sortedRoomsList}
               onScroll={Animated.event(
                 [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                { useNativeDriver: false },
+                { useNativeDriver: false }
               )}
               // onScrollBeginDrag={() => setShowCreateButton(true)}
               // onScrollEndDrag={() => setShowCreateButton(false)} //
@@ -378,12 +261,12 @@ export const RoomList: React.FC<IRoomList> = observer(
                     participants={item.participants}
                     key={item.jid}
                   />
-                );
+                )
               }}
             />
           </View>
-        </Animated.View>
+        </View>
       </>
-    );
-  },
-);
+    )
+  }
+)
