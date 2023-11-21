@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import { default as MuiMenu } from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
+import React, { useEffect, useState } from "react"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
+import { default as MuiMenu } from "@mui/material/Menu"
+import MenuIcon from "@mui/icons-material/Menu"
 
-import MenuItem from "@mui/material/MenuItem";
-import { Divider } from "@mui/material";
-import { useWeb3React } from "@web3-react/core";
-import { configNFT, configDocuments } from "../config/config";
-import xmpp from "../xmpp";
-import { useHistory } from "react-router";
-import { TUser, useStoreState } from "../store";
-import { IUserAcl } from "../http";
+import MenuItem from "@mui/material/MenuItem"
+import { Divider } from "@mui/material"
+import { useWeb3React } from "@web3-react/core"
+import { configNFT, configDocuments } from "../config/config"
+import xmpp from "../xmpp"
+import { useHistory } from "react-router"
+import { TUser, useStoreState } from "../store"
+import { IUserAcl } from "../http"
 
 export interface IMenu {}
 
@@ -34,14 +34,13 @@ const menuAccountSection = (walletAddress: string) => ({
       visible: false,
     },
   ],
-});
+})
 
 const menuActionsSection = {
   name: "Create",
   visible: true,
 
   items: [
-
     { name: "NFT", id: "/mint", visible: configNFT },
     {
       name: "Document",
@@ -49,7 +48,7 @@ const menuActionsSection = {
       visible: configDocuments,
     },
   ],
-};
+}
 
 const idActionsSection = (user: TUser) => ({
   name: "Id",
@@ -60,7 +59,7 @@ const idActionsSection = (user: TUser) => ({
 
     { name: "Sign out", id: "logout", visible: true },
   ],
-});
+})
 const billingSection = (user: TUser) => ({
   name: "Billing",
   visible: !!user.stripeCustomerId || !!user?.company?.length,
@@ -76,7 +75,7 @@ const billingSection = (user: TUser) => ({
       visible: !!user?.company?.length,
     },
   ],
-});
+})
 const userSection = (ACL: IUserAcl) => ({
   name: "Users",
   visible: false,
@@ -88,7 +87,7 @@ const userSection = (ACL: IUserAcl) => ({
       visible: true,
     },
   ],
-});
+})
 const adminSection = (user: TUser) => ({
   name: "Admin",
   visible: user?.ACL?.masterAccess || user.isAllowedNewAppCreate,
@@ -100,70 +99,72 @@ const adminSection = (user: TUser) => ({
       visible: user.isAllowedNewAppCreate,
     },
   ],
-});
+})
 const initMenuItems = (user: TUser, ACL: IUserAcl) => {
-  let items = [
+  const items = [
     menuAccountSection(user.walletAddress),
     {
       name: "Messaging",
       visible: true,
-    
-    items: [{ name: "Chats", id: "/chat/none", visible: true },{ name: "New room", id: "/newchat", visible: true },],
+
+      items: [
+        { name: "Chats", id: "/chat/none", visible: true },
+        { name: "New room", id: "/newchat", visible: true },
+      ],
     },
     menuActionsSection,
     billingSection(user),
     userSection(ACL),
     adminSection(user),
     idActionsSection(user),
-  ];
+  ]
 
-  return items;
-};
+  return items
+}
 
 export const Menu: React.FC<IMenu> = ({}) => {
-  const { active, deactivate } = useWeb3React();
-  const user = useStoreState((state) => state.user);
-  const history = useHistory();
-  const ACL = useStoreState((state) => state.ACL);
-  const [menuItems, setMenuItems] = useState(initMenuItems(user, ACL));
+  const { active, deactivate } = useWeb3React()
+  const user = useStoreState((state) => state.user)
+  const history = useHistory()
+  const ACL = useStoreState((state) => state.ACL)
+  const [menuItems, setMenuItems] = useState(initMenuItems(user, ACL))
 
-  const clearUser = useStoreState((state) => state.clearUser);
+  const clearUser = useStoreState((state) => state.clearUser)
 
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElementUser, setAnchorElementUser] =
+    React.useState<null | HTMLElement>(null)
 
   const onLogout = () => {
-    clearUser();
-    xmpp.stop();
-    useStoreState.getState().clearMessageHistory();
-    useStoreState.getState().clearUserChatRooms();
+    clearUser()
+    xmpp.stop()
+    useStoreState.getState().clearMessageHistory()
+    useStoreState.getState().clearUserChatRooms()
     useStoreState.persist.rehydrate()
     if (active) {
-      deactivate();
+      deactivate()
     }
-    history.push("/");
-  };
+    history.push("/")
+  }
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+    setAnchorElementUser(event.currentTarget)
+  }
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+    setAnchorElementUser(null)
+  }
 
   const onMenuItemClick = (id: string, type: string) => {
     if (id === "logout") {
-      onLogout();
-      handleCloseUserMenu();
-      return;
+      onLogout()
+      handleCloseUserMenu()
+      return
     }
 
-    history.push(id);
+    history.push(id)
 
-    handleCloseUserMenu();
-  };
+    handleCloseUserMenu()
+  }
 
   return (
     <>
@@ -176,7 +177,7 @@ export const Menu: React.FC<IMenu> = ({}) => {
       <MuiMenu
         sx={{ mt: "20px" }}
         id="menu-appbar"
-        anchorEl={anchorElUser}
+        anchorEl={anchorElementUser}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -186,16 +187,16 @@ export const Menu: React.FC<IMenu> = ({}) => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorElUser)}
+        open={Boolean(anchorElementUser)}
         onClose={handleCloseUserMenu}
       >
-        {menuItems.map((el, i) => {
-          if (!el.visible) {
-            return null;
+        {menuItems.map((element, index) => {
+          if (!element.visible) {
+            return null
           }
           return (
-            <Box key={el.name}>
-              {i !== 0 && <Divider />}
+            <Box key={element.name}>
+              {index !== 0 && <Divider />}
 
               <Typography
                 sx={{
@@ -205,25 +206,25 @@ export const Menu: React.FC<IMenu> = ({}) => {
                   marginY: "7px",
                 }}
               >
-                {el.name}
+                {element.name}
               </Typography>
-              {el.items.map((item) => {
+              {element.items.map((item) => {
                 if (!item.visible) {
-                  return null;
+                  return null
                 }
                 return (
                   <MenuItem
-                    onClick={() => onMenuItemClick(item.id, el.name)}
+                    onClick={() => onMenuItemClick(item.id, element.name)}
                     key={item.id + item.name}
                   >
                     <Typography textAlign="center">{item.name}</Typography>
                   </MenuItem>
-                );
+                )
               })}
             </Box>
-          );
+          )
         })}
       </MuiMenu>
     </>
-  );
-};
+  )
+}

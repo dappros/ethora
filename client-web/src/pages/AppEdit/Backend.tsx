@@ -1,23 +1,23 @@
-import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
-import { useFormik } from "formik";
-import React, { useState } from "react";
-import { useParams } from "react-router";
-import { useStoreState } from "../../store";
-import { rotateAppJwt } from "../../http";
-import { useSnackbar } from "../../context/SnackbarContext";
+import { Box, Button, TextField, Tooltip, Typography } from "@mui/material"
+import { useFormik } from "formik"
+import React, { useState } from "react"
+import { useParams } from "react-router"
+import { useStoreState } from "../../store"
+import { rotateAppJwt } from "../../http"
+import { useSnackbar } from "../../context/SnackbarContext"
 
 export interface IBackend {}
 
 const sectionStyle = {
   mt: 2,
-};
+}
 
 export const Backend: React.FC<IBackend> = ({}) => {
-  const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const updateApp = useStoreState((state) => state.updateApp);
-  const { showSnackbar } = useSnackbar();
-  const [loading, setLoading] = useState(false);
+  const { appId } = useParams<{ appId: string }>()
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId))
+  const updateApp = useStoreState((state) => state.updateApp)
+  const { showSnackbar } = useSnackbar()
+  const [loading, setLoading] = useState(false)
   const formik = useFormik({
     initialValues: {
       dpApi: "",
@@ -30,41 +30,49 @@ export const Backend: React.FC<IBackend> = ({}) => {
       ipfs: "",
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
-      return errors;
+      return errors
     },
     onSubmit: ({}) => {},
-  });
+  })
   const downloadJWT = () => {
     const url = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify({ appJwt: app.appToken })
-    )}`;
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.open(url, "_blank");
-  };
+    )}`
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "data.json"
+    document.body.append(a)
+    a.click()
+    a.remove()
+    window.open(url, "_blank")
+  }
 
   const rotateJWT = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await rotateAppJwt(app._id);
-      updateApp(res.data.app);
-      showSnackbar("success", "JWT rotated");
-    } catch (e) {
-      console.log(e);
+      const res = await rotateAppJwt(app._id)
+      updateApp(res.data.app)
+      showSnackbar("success", "JWT rotated")
+    } catch (error) {
+      console.log(error)
     }
 
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <Box>
       <Box sx={sectionStyle}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, justifyContent: 'flex-start' }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            mt: 2,
+            justifyContent: "flex-start",
+          }}
+        >
           <Box>
             <Typography sx={{ fontWeight: "bold" }}>JWT Token</Typography>
             <Typography sx={{ fontSize: 12 }}>
@@ -233,5 +241,5 @@ export const Backend: React.FC<IBackend> = ({}) => {
         </Typography>
       </Box> */}
     </Box>
-  );
-};
+  )
+}

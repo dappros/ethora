@@ -5,18 +5,18 @@ import {
   Text,
   useDisclose,
   View,
-} from "native-base";
-import React, { useState, useEffect } from "react";
-import { textStyles } from "../../../docs/config";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useStores } from "../../stores/context";
+} from "native-base"
+import React, { useState, useEffect } from "react"
+import { textStyles } from "../../../docs/config"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { Alert } from "react-native"
+import { useNavigation } from "@react-navigation/native"
+import { useStores } from "../../stores/context"
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from "../../helpers/underscoreLogic";
-import { observer } from "mobx-react-lite";
+} from "../../helpers/underscoreLogic"
+import { observer } from "mobx-react-lite"
 import {
   assignModerator,
   banUserr,
@@ -30,53 +30,53 @@ import {
   unAssignModerator,
   unbanUser,
   unsubscribeFromChatXmpp,
-} from "../../xmpp/stanzas";
-import { deleteChatRoom } from "../../components/realmModels/chatList";
-import { uploadFiles } from "../../helpers/uploadFiles";
-import { fileUpload } from "../../config/routesConstants";
-import DocumentPicker from "react-native-document-picker";
-import { renameTheRoom } from "../../helpers/RoomList/renameRoom";
-import ChangeRoomNameModal from "../../components/Modals/Chat/ChangeRoomNameModal";
-import ChangeRoomDescriptionModal from "../../components/Modals/Chat/ChangeRoomDescriptionModal";
-import { roomListProps, roomMemberInfoProps } from "../../stores/chatStore";
-import RoomDetailsCard from "../../components/Chat/ChatDetails/RoomDetailsCard";
-import ChatDetailHeader from "../../components/Chat/ChatDetails/ChatDetailHeader";
-import ChatDetailMemebersList from "../../components/Chat/ChatDetails/ChatDetailMembersList";
-import { HomeStackNavigationProp } from "../../navigation/types";
+} from "../../xmpp/stanzas"
+import { deleteChatRoom } from "../../components/realmModels/chatList"
+import { uploadFiles } from "../../helpers/uploadFiles"
+import { fileUpload } from "../../config/routesConstants"
+import DocumentPicker from "react-native-document-picker"
+import { renameTheRoom } from "../../helpers/RoomList/renameRoom"
+import ChangeRoomNameModal from "../../components/Modals/Chat/ChangeRoomNameModal"
+import ChangeRoomDescriptionModal from "../../components/Modals/Chat/ChangeRoomDescriptionModal"
+import { roomListProps, roomMemberInfoProps } from "../../stores/chatStore"
+import RoomDetailsCard from "../../components/Chat/ChatDetails/RoomDetailsCard"
+import ChatDetailHeader from "../../components/Chat/ChatDetails/ChatDetailHeader"
+import ChatDetailMemebersList from "../../components/Chat/ChatDetails/ChatDetailMembersList"
+import { HomeStackNavigationProp } from "../../navigation/types"
 
 interface longTapUserProps {
-  ban_status: string;
-  jid: string;
-  last_active: string;
-  name: string;
-  profile: string;
-  role: string;
+  ban_status: string
+  jid: string
+  last_active: string
+  name: string
+  profile: string
+  role: string
 }
 
 export interface IuploadedImage {
-  _id: string;
-  createdAt: string;
-  expiresAt: number;
-  filename: string;
-  isVisible: boolean;
-  location: string;
-  locationPreview: string;
-  mimetype: string;
-  originalname: string;
-  ownerKey: string;
-  size: number;
-  updatedAt: string;
-  userId: string;
+  _id: string
+  createdAt: string
+  expiresAt: number
+  filename: string
+  isVisible: boolean
+  location: string
+  locationPreview: string
+  mimetype: string
+  originalname: string
+  ownerKey: string
+  size: number
+  updatedAt: string
+  userId: string
 }
 
 const ChatDetailsScreen = observer(({ route }: any) => {
-  const { chatStore, loginStore, apiStore } = useStores();
+  const { chatStore, loginStore, apiStore } = useStores()
   const currentRoomDetail = chatStore.getRoomDetails(
     route.params.roomJID
-  ) as roomListProps;
+  ) as roomListProps
 
-  const roomJID = currentRoomDetail?.jid;
-  const { isOpen, onOpen, onClose } = useDisclose();
+  const roomJID = currentRoomDetail?.jid
+  const { isOpen, onOpen, onClose } = useDisclose()
 
   const [longTapUser, setLongTapUser] = useState<longTapUserProps>({
     ban_status: "",
@@ -85,7 +85,7 @@ const ChatDetailsScreen = observer(({ route }: any) => {
     name: "",
     profile: "",
     role: "",
-  });
+  })
   const [kickUserItem, setKickUserItem] = useState<longTapUserProps>({
     ban_status: "",
     jid: "",
@@ -93,49 +93,45 @@ const ChatDetailsScreen = observer(({ route }: any) => {
     name: "",
     profile: "",
     role: "",
-  });
+  })
 
-  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid);
+  const isOwnerOrModerator = chatStore.checkIsModerator(currentRoomDetail.jid)
 
   const [descriptionModalVisible, setDescriptionModalVisible] =
-    useState<boolean>(false);
-  const [isShowKickDialog, setIsShowKickDialog] = useState(false);
+    useState<boolean>(false)
+  const [isShowKickDialog, setIsShowKickDialog] = useState(false)
 
   const [roomNameModalVisible, setRoomNameModalVisible] =
-    useState<boolean>(false);
+    useState<boolean>(false)
 
-  const handleCloseKickDialog = () => setIsShowKickDialog(false);
-  const cancelRef = React.useRef(null);
+  const handleCloseKickDialog = () => setIsShowKickDialog(false)
+  const cancelRef = React.useRef(null)
   // const [isNotification, setIsNotification] = useState<boolean>(roomInfo.muted)
 
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
-  const walletAddress = loginStore.initialData.walletAddress;
-  const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+  const walletAddress = loginStore.initialData.walletAddress
+  const manipulatedWalletAddress = underscoreManipulation(walletAddress)
 
   const unsubscribeFromRoom = () => {
-    unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-    chatStore.updateRoomInfo(roomJID, { muted: true });
-  };
+    unsubscribeFromChatXmpp(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+    chatStore.updateRoomInfo(roomJID, { muted: true })
+  }
 
   const subscribeRoom = () => {
-    subscribeToRoom(roomJID, manipulatedWalletAddress, chatStore.xmpp);
-    chatStore.updateRoomInfo(roomJID, { muted: false });
-  };
+    subscribeToRoom(roomJID, manipulatedWalletAddress, chatStore.xmpp)
+    chatStore.updateRoomInfo(roomJID, { muted: false })
+  }
 
   useEffect(() => {
-    getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-    getRoomInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-    getListOfBannedUserInRoom(
-      manipulatedWalletAddress,
-      roomJID,
-      chatStore.xmpp
-    );
-  }, []);
+    getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+    getRoomInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+    getListOfBannedUserInRoom(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+  }, [])
 
   const toggleNotification = (value: boolean) => {
-    value ? subscribeRoom() : unsubscribeFromRoom();
-  };
+    value ? subscribeRoom() : unsubscribeFromRoom()
+  }
 
   const leaveTheRoom = async () => {
     leaveRoomXmpp(
@@ -143,13 +139,13 @@ const ChatDetailsScreen = observer(({ route }: any) => {
       roomJID,
       walletAddress,
       chatStore.xmpp
-    );
-    unsubscribeFromRoom();
-    await deleteChatRoom(roomJID);
-    chatStore.getRoomsFromCache();
+    )
+    unsubscribeFromRoom()
+    await deleteChatRoom(roomJID)
+    chatStore.getRoomsFromCache()
     //@ts-ignore
-    navigation.popToTop();
-  };
+    navigation.popToTop()
+  }
 
   const deleteRoomDialog = async () => {
     Alert.alert("Delete", "Do you want to delete this room?", [
@@ -161,41 +157,41 @@ const ChatDetailsScreen = observer(({ route }: any) => {
         text: "Yes",
         onPress: () => leaveTheRoom(),
       },
-    ]);
-  };
+    ])
+  }
 
   const toggleFavourite = () => {
     chatStore.updateRoomInfo(roomJID, {
       isFavourite: !chatStore.roomsInfoMap[roomJID]?.isFavourite,
-    });
-  };
+    })
+  }
 
   const onUserAvatarPress = (props: roomMemberInfoProps) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = props.jid.split("@")[0];
-    const userWalletAddress = reverseUnderScoreManipulation(xmppID);
+    const xmppID = props.jid.split("@")[0]
+    const userWalletAddress = reverseUnderScoreManipulation(xmppID)
     if (userWalletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate("ProfileScreen");
-      return;
+      navigation.navigate("ProfileScreen")
+      return
     } else {
       chatStore.getOtherUserDetails({
         jid: props.jid,
         avatar: props.profile,
         name: props.name,
-      });
+      })
       navigation.navigate("OtherUserProfileScreen", {
         walletAddress: userWalletAddress,
-      });
+      })
     }
-  };
+  }
 
   const handleMemberLongTap = (item: roomMemberInfoProps) => {
     if (isOwnerOrModerator) {
-      setLongTapUser(item);
-      onOpen();
+      setLongTapUser(item)
+      onOpen()
     }
-  };
+  }
 
   const handleLongTapMenu = (type: number) => {
     if (type === 0) {
@@ -205,17 +201,17 @@ const ChatDetailsScreen = observer(({ route }: any) => {
           longTapUser.jid,
           currentRoomDetail.jid,
           chatStore.xmpp
-        );
+        )
       } else {
         unbanUser(
           manipulatedWalletAddress,
           longTapUser.jid,
           currentRoomDetail.jid,
           chatStore.xmpp
-        );
+        )
       }
-      getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-      onClose();
+      getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+      onClose()
     }
 
     if (type === 1) {
@@ -224,21 +220,21 @@ const ChatDetailsScreen = observer(({ route }: any) => {
           manipulatedWalletAddress,
           longTapUser.jid,
           chatStore.xmpp
-        );
+        )
       } else {
         unAssignModerator(
           manipulatedWalletAddress,
           longTapUser.jid,
           chatStore.xmpp
-        );
+        )
       }
     }
-  };
+  }
 
   const handleKickDialog = (item: roomMemberInfoProps) => {
-    setKickUserItem(item);
-    setIsShowKickDialog(true);
-  };
+    setKickUserItem(item)
+    setIsShowKickDialog(true)
+  }
 
   const handleKick = () => {
     if (kickUserItem.ban_status === "clear") {
@@ -247,26 +243,26 @@ const ChatDetailsScreen = observer(({ route }: any) => {
         kickUserItem.jid,
         currentRoomDetail.jid,
         chatStore.xmpp
-      );
+      )
     } else {
       unbanUser(
         manipulatedWalletAddress,
         kickUserItem.jid,
         currentRoomDetail.jid,
         chatStore.xmpp
-      );
+      )
     }
-    getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp);
-    handleCloseKickDialog();
-  };
+    getRoomMemberInfo(manipulatedWalletAddress, roomJID, chatStore.xmpp)
+    handleCloseKickDialog()
+  }
 
   const handleEditDesriptionPress = () => {
-    isOwnerOrModerator && setDescriptionModalVisible(true);
-  };
+    isOwnerOrModerator && setDescriptionModalVisible(true)
+  }
 
   const handleRoomNameEdit = () => {
-    isOwnerOrModerator && setRoomNameModalVisible(true);
-  };
+    isOwnerOrModerator && setRoomNameModalVisible(true)
+  }
 
   const [uploadedImage, setUploadedImage] = useState<IuploadedImage>({
     _id: "",
@@ -282,19 +278,19 @@ const ChatDetailsScreen = observer(({ route }: any) => {
     size: 0,
     updatedAt: "",
     userId: "",
-  });
+  })
 
   const sendFiles = async (data: any) => {
     const userJid =
       underscoreManipulation(loginStore.initialData.walletAddress) +
       "@" +
-      apiStore.xmppDomains.DOMAIN;
-    const { jid, roomBackground } = currentRoomDetail;
+      apiStore.xmppDomains.DOMAIN
+    const { jid, roomBackground } = currentRoomDetail
     try {
-      const url = fileUpload;
-      const response = await uploadFiles(data, loginStore.userToken, url);
-      const file = response.results[0];
-      setUploadedImage(response.results[0]);
+      const url = fileUpload
+      const response = await uploadFiles(data, loginStore.userToken, url)
+      const file = response.results[0]
+      setUploadedImage(response.results[0])
       setRoomImage(
         userJid,
         jid,
@@ -302,43 +298,43 @@ const ChatDetailsScreen = observer(({ route }: any) => {
         roomBackground ? roomBackground : "none",
         "icon",
         chatStore.xmpp
-      );
+      )
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const onImagePress = async () => {
     if (isOwnerOrModerator) {
       try {
         const res = await DocumentPicker.pickSingle({
           type: [DocumentPicker.types.images],
-        });
-        const formData = new FormData();
+        })
+        const formData = new FormData()
         formData.append("files", {
           name: res.name,
           type: res.type,
           uri: res.uri,
-        });
-        sendFiles(formData);
+        })
+        sendFiles(formData)
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     }
-  };
+  }
 
   const handleChangeDescription = (newDescription: string) => {
-    setDescriptionModalVisible(false);
+    setDescriptionModalVisible(false)
     changeRoomDescription(
       manipulatedWalletAddress,
       roomJID,
       newDescription,
       chatStore.xmpp
-    );
-  };
+    )
+  }
 
   const handleChangeRoomName = (newRoomName: string) => {
-    setRoomNameModalVisible(false);
+    setRoomNameModalVisible(false)
     renameTheRoom(
       manipulatedWalletAddress,
       currentRoomDetail.jid,
@@ -347,8 +343,8 @@ const ChatDetailsScreen = observer(({ route }: any) => {
       },
       chatStore.xmpp,
       chatStore.updateRoomInfo
-    );
-  };
+    )
+  }
 
   return (
     <View bg={"white"} flex={1}>
@@ -469,7 +465,7 @@ const ChatDetailsScreen = observer(({ route }: any) => {
         changeRoomName={handleChangeRoomName}
       />
     </View>
-  );
-});
+  )
+})
 
-export default ChatDetailsScreen;
+export default ChatDetailsScreen

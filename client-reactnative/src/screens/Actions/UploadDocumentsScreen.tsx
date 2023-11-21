@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from "react"
 import {
   Text,
   View,
@@ -9,31 +9,31 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
-} from "react-native";
+} from "react-native"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import AntIcon from "react-native-vector-icons/AntDesign";
-import FastImage from "react-native-fast-image";
-import DocumentPicker from "react-native-document-picker";
-import CheckBox from "@react-native-community/checkbox";
+} from "react-native-responsive-screen"
+import AntIcon from "react-native-vector-icons/AntDesign"
+import FastImage from "react-native-fast-image"
+import DocumentPicker from "react-native-document-picker"
+import CheckBox from "@react-native-community/checkbox"
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { commonColors, textStyles } from "../../../docs/config";
-import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
-import { showError, showSuccess } from "../../components/Toast/toast";
-import { httpPost } from "../../config/apiService";
-import { docsURL, fileUpload } from "../../config/routesConstants";
-import { pdfMimemtype } from "../../constants/mimeTypes";
-import { useStores } from "../../stores/context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import { commonColors, textStyles } from "../../../docs/config"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import { showError, showSuccess } from "../../components/Toast/toast"
+import { httpPost } from "../../config/apiService"
+import { docsURL, fileUpload } from "../../config/routesConstants"
+import { pdfMimemtype } from "../../constants/mimeTypes"
+import { useStores } from "../../stores/context"
 import {
   isAudioMimetype,
   isImageMimetype,
   isPdfMimetype,
-} from "../../helpers/checkMimetypes";
-import { uploadFiles } from "../../helpers/uploadFiles";
-import { HStack, VStack } from "native-base";
+} from "../../helpers/checkMimetypes"
+import { uploadFiles } from "../../helpers/uploadFiles"
+import { HStack, VStack } from "native-base"
 
 const emptyFile = {
   _id: "",
@@ -49,112 +49,112 @@ const emptyFile = {
   size: 0,
   updatedAt: "",
   userId: "",
-};
+}
 
 const UploadDocumentsScreen = () => {
-  const { loginStore, walletStore, debugStore } = useStores();
+  const { loginStore, walletStore, debugStore } = useStores()
 
-  const [itemName, setItemName] = useState<string>("");
+  const [itemName, setItemName] = useState<string>("")
   // data api
   // const [doctorsName, setDoctorsName] = useState<string>('');
   // const [reportType, setReportType] = useState<string>('');
   // const [reportKind, setReportKind] = useState<string>('');
   // const [date, setDate] = useState(new Date());
 
-  const [documentUrl, setDocumentUrl] = useState<string>("");
+  const [documentUrl, setDocumentUrl] = useState<string>("")
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [uploadedFile, setUploadedFile] = useState<typeof emptyFile>(emptyFile);
+  const [loading, setLoading] = useState<boolean>(false)
+  const [uploadedFile, setUploadedFile] = useState<typeof emptyFile>(emptyFile)
   const [distributionRightsApproved, setDistributionRightsApproved] =
-    useState<boolean>(true);
-  const keyboardRef = useRef();
+    useState<boolean>(true)
+  const keyboardRef = useRef()
 
   const clearData = () => {
-    setLoading(false);
-    setDocumentUrl("");
-    setItemName("");
-    setDistributionRightsApproved(false);
-    setUploadedFile(emptyFile);
+    setLoading(false)
+    setDocumentUrl("")
+    setItemName("")
+    setDistributionRightsApproved(false)
+    setUploadedFile(emptyFile)
     // setReportKind('');
     // setReportType('');
     // setDoctorsName('');
     // setDate(new Date());
-  };
+  }
 
   const createNftItem = async () => {
-    let item = { files: [uploadedFile.location], documentName: itemName };
+    const item = { files: [uploadedFile.location], documentName: itemName }
 
     // alert(JSON.stringify(item))
-    const url = docsURL;
-    setLoading(true);
+    const url = docsURL
+    setLoading(true)
     try {
-      const res = await httpPost(url, item, loginStore.userToken);
+      const res = await httpPost(url, item, loginStore.userToken)
       // alert(JSON.stringify(res.data))
 
-      debugStore.addLogsApi(res.data);
-      walletStore.fetchWalletBalance(loginStore.userToken, true);
+      debugStore.addLogsApi(res.data)
+      walletStore.fetchWalletBalance(loginStore.userToken, true)
     } catch (error) {
-      showError("Error", "Cannot create item, try again later");
-      console.log(error.response);
+      showError("Error", "Cannot create item, try again later")
+      console.log(error.response)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const onMintClick = async () => {
     if (!documentUrl) {
-      showError("Error", "Please load the image.");
-      return;
+      showError("Error", "Please load the image.")
+      return
     }
     if (!itemName.length) {
-      showError("Error", "Please fill the item name.");
-      return;
+      showError("Error", "Please fill the item name.")
+      return
     }
     if (!setDistributionRightsApproved) {
-      showError("Error", "Please confirm distribution rights");
-      return;
+      showError("Error", "Please confirm distribution rights")
+      return
     }
 
-    await createNftItem();
+    await createNftItem()
     walletStore.fetchOwnTransactions(
       loginStore.initialData.walletAddress,
       100,
       0
-    );
+    )
     showSuccess(
       "Success",
       "You minted new document, it will appear in your profile"
-    );
+    )
 
-    clearData();
-  };
+    clearData()
+  }
 
   const chooseImageOption = () => {
     Alert.alert("Choose a file", "", [
       { text: "Open from files", onPress: () => setDocumentFile() },
       { text: "Dismiss", onPress: () => console.log("dismissed") },
-    ]);
-  };
+    ])
+  }
 
   const sendFiles = async (data: any) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const url = fileUpload;
-      const response = await uploadFiles(data, loginStore.userToken, url);
-      setLoading(false);
+      const url = fileUpload
+      const response = await uploadFiles(data, loginStore.userToken, url)
+      setLoading(false)
 
-      setUploadedFile(response.results[0]);
-      debugStore.addLogsApi(response.results[0]);
+      setUploadedFile(response.results[0])
+      debugStore.addLogsApi(response.results[0])
       // alert(JSON.stringify(response.results[0]))
-      const isPdf = !!pdfMimemtype[response.results[0].mimetype];
+      const isPdf = !!pdfMimemtype[response.results[0].mimetype]
       setDocumentUrl(
         isPdf
           ? response.results[0].locationPreview
           : response.results[0].location
-      );
+      )
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const setDocumentFile = async () => {
     try {
@@ -165,22 +165,22 @@ const UploadDocumentsScreen = () => {
           DocumentPicker.types.video,
           DocumentPicker.types.pdf,
         ],
-      });
-      const data = new FormData();
+      })
+      const data = new FormData()
       data.append("files", {
         name: res[0].name,
         type: res[0].type,
         uri: res[0].uri,
-      });
-      sendFiles(data);
+      })
+      sendFiles(data)
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
       } else {
-        throw err;
+        throw err
       }
     }
-  };
+  }
 
   return (
     <KeyboardAwareScrollView
@@ -304,10 +304,10 @@ const UploadDocumentsScreen = () => {
         </View>
       </ScrollView>
     </KeyboardAwareScrollView>
-  );
-};
+  )
+}
 
-export default UploadDocumentsScreen;
+export default UploadDocumentsScreen
 
 const classes = StyleSheet.create({
   container: {
@@ -374,4 +374,4 @@ const classes = StyleSheet.create({
     borderWidth: 1,
     marginRight: wp("5%"),
   },
-});
+})

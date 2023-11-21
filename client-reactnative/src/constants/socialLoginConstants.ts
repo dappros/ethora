@@ -6,7 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 export const socialLoginType = {
-    FACEBOOK:'facebook',
-    GOOGLE:'google',
-    APPLE:'apple'
+  FACEBOOK: "facebook",
+  GOOGLE: "google",
+  APPLE: "apple",
 }

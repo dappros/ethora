@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import AppMock from "../../components/AppBuilder/AppMock";
+import { useEffect, useRef, useState } from "react"
+import AppMock from "../../components/AppBuilder/AppMock"
 import {
   Box,
   Button,
@@ -8,246 +8,246 @@ import {
   TextField,
   Tooltip,
   Typography,
-} from "@mui/material";
-import { httpWithAuth, updateAppSettings } from "../../http";
-import { useParams } from "react-router";
-import { intervalToDuration } from "date-fns";
-import { LoadingButton } from "@mui/lab";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useStoreState } from "../../store";
+} from "@mui/material"
+import { httpWithAuth, updateAppSettings } from "../../http"
+import { useParams } from "react-router"
+import { intervalToDuration } from "date-fns"
+import { LoadingButton } from "@mui/lab"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useStoreState } from "../../store"
 import {
   isValidHexCode,
   replaceNotAllowedCharactersInDomain,
-} from "../../utils";
-import { config } from "../../config";
-import useDebounce from "../../hooks/useDebounce";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import DownloadIcon from "@mui/icons-material/Download";
-import InfoIcon from "@mui/icons-material/Info";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+} from "../../utils"
+import { config } from "../../config"
+import useDebounce from "../../hooks/useDebounce"
+import UploadFileIcon from "@mui/icons-material/UploadFile"
+import DownloadIcon from "@mui/icons-material/Download"
+import InfoIcon from "@mui/icons-material/Info"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 export interface TCustomDetails {
-  primaryColor: string;
-  secondaryColor: string;
-  coinSymbol: string;
-  coinName: string;
-  currentScreenIndex: number;
-  changeScreen: (i: number) => void;
+  primaryColor: string
+  secondaryColor: string
+  coinSymbol: string
+  coinName: string
+  currentScreenIndex: number
+  changeScreen: (index: number) => void
 
-  logo: string;
-  loginScreenBackground: string;
-  coinLogo: string;
+  logo: string
+  loginScreenBackground: string
+  coinLogo: string
 }
 
-type BuildStage = "prepare" | "preparing" | "download";
+type BuildStage = "prepare" | "preparing" | "download"
 
 type IFile = {
-  file?: File;
-  url: string;
-};
+  file?: File
+  url: string
+}
 
 export default function AppBuilder() {
-  const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
-  const updateApp = useStoreState((s) => s.updateApp);
+  const { appId } = useParams<{ appId: string }>()
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId))
+  const updateApp = useStoreState((s) => s.updateApp)
 
-  const [displayName, setDisplayName] = useState(app.displayName || "");
-  const [bundleId, setBundleId] = useState(app.bundleId);
+  const [displayName, setDisplayName] = useState(app.displayName || "")
+  const [bundleId, setBundleId] = useState(app.bundleId)
   const [logo, setLogo] = useState<IFile>({
     file: undefined,
     url: app.logoImage || "",
-  });
+  })
   const [loginScreenBackground, setLoginScreenBackground] = useState({
     file: undefined,
     value: app?.loginScreenBackgroundImage || app.loginBackgroundColor || "",
-  });
+  })
   const [coinLogo, setCoinLogo] = useState<IFile>({
     file: undefined,
     url: app?.coinImage || "",
-  });
+  })
 
-  const [primaryColor, setPrimaryColor] = useState(app.primaryColor);
-  const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor);
-  const [coinSymbol, setCoinSymbol] = useState("");
-  const [coinName, setCoinName] = useState("Coin");
+  const [primaryColor, setPrimaryColor] = useState(app.primaryColor)
+  const [secondaryColor, setSecondaryColor] = useState(app.secondaryColor)
+  const [coinSymbol, setCoinSymbol] = useState("")
+  const [coinName, setCoinName] = useState("Coin")
 
-  const [domain, setDomain] = useState(`${app.domainName}`);
-  const debouncedDomain = useDebounce<string>(domain, 500);
-  const [loading, setLoading] = useState(true);
-  const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-  const [buildStage, setBuildStage] = useState<BuildStage>("prepare");
+  const [domain, setDomain] = useState(`${app.domainName}`)
+  const debouncedDomain = useDebounce<string>(domain, 500)
+  const [loading, setLoading] = useState(true)
+  const [currentScreenIndex, setCurrentScreenIndex] = useState(0)
+  const [buildStage, setBuildStage] = useState<BuildStage>("prepare")
   const [fileTimeToLive, setFileTimeToLive] = useState<Duration>({
     hours: 0,
     minutes: 0,
-  });
-  const [domainNameError, setDomainNameError] = useState(false);
-  const { showSnackbar } = useSnackbar();
-  const loginScreenBgRef = useRef<HTMLInputElement>(null);
-  const appLogoRef = useRef<HTMLInputElement>(null);
+  })
+  const [domainNameError, setDomainNameError] = useState(false)
+  const { showSnackbar } = useSnackbar()
+  const loginScreenBgReference = useRef<HTMLInputElement>(null)
+  const appLogoReference = useRef<HTMLInputElement>(null)
 
   useEffect(
     () => {
       if (debouncedDomain && debouncedDomain !== app.domainName) {
-        validateDomainName(debouncedDomain);
+        validateDomainName(debouncedDomain)
       }
     },
     [debouncedDomain] // Only call effect if debounced search term changes
-  );
+  )
 
   const checkBuild = async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const res = await httpWithAuth().get("/mobile/check-custom-src/" + appId);
+      const res = await httpWithAuth().get("/mobile/check-custom-src/" + appId)
 
       if (res.data?.isExists) {
-        const expiryDate = new Date(res.data.fileStats.birthtime);
-        expiryDate.setDate(expiryDate.getDate() + 1);
-        const diffInMs = expiryDate.getTime() - new Date().getTime();
+        const expiryDate = new Date(res.data.fileStats.birthtime)
+        expiryDate.setDate(expiryDate.getDate() + 1)
+        const diffInMs = expiryDate.getTime() - Date.now()
         if (diffInMs <= 0) {
-          setLoading(false);
+          setLoading(false)
 
-          setBuildStage("prepare");
-          return;
+          setBuildStage("prepare")
+          return
         }
         const timeToLive = intervalToDuration({
           start: 0,
           end: diffInMs,
-        });
+        })
 
-        setBuildStage("download");
+        setBuildStage("download")
 
-        setFileTimeToLive(timeToLive);
+        setFileTimeToLive(timeToLive)
       }
     } catch (error) {
       showSnackbar(
         "error",
         "Cannot make build" + (error?.response?.data?.error || "")
-      );
-      console.log(error);
+      )
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const getBuild = async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
       const res = await httpWithAuth().get("/mobile/get-custom-src/" + appId, {
         responseType: "blob",
-      });
-      let fileUrl = window.URL.createObjectURL(new Blob([res.data]));
-      const fileName = "client-reactnative.zip";
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = fileName;
-      link.click();
-      link.remove();
+      })
+      const fileUrl = window.URL.createObjectURL(new Blob([res.data]))
+      const fileName = "client-reactnative.zip"
+      const link = document.createElement("a")
+      link.href = fileUrl
+      link.download = fileName
+      link.click()
+      link.remove()
     } catch (error) {
       showSnackbar(
         "error",
         "Cannot make build" + (error?.response?.data?.error || "")
-      );
+      )
 
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   useEffect(() => {
-    checkBuild();
-  }, []);
+    checkBuild()
+  }, [])
   const handleLoginScreenBackgroundChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const l = event.target.files[0];
-    setLoginScreenBackground({ file: l, value: URL.createObjectURL(l) });
-    event.target.files = null;
-    event.target.value = null;
-  };
+    const l = event.target.files[0]
+    setLoginScreenBackground({ file: l, value: URL.createObjectURL(l) })
+    event.target.files = null
+    event.target.value = null
+  }
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const l = event.target.files[0];
-    setLogo({ file: l, url: URL.createObjectURL(l) });
-  };
+    const l = event.target.files[0]
+    setLogo({ file: l, url: URL.createObjectURL(l) })
+  }
 
   const handleCoinLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const l = event.target.files[0];
-    setCoinLogo({ file: l, url: URL.createObjectURL(l) });
-  };
+    const l = event.target.files[0]
+    setCoinLogo({ file: l, url: URL.createObjectURL(l) })
+  }
 
   const validateDomainName = async (domainName: string) => {
     try {
       const res = await httpWithAuth().post("apps/check-domain-name", {
         domainName,
-      });
-      setDomainNameError(false);
+      })
+      setDomainNameError(false)
     } catch (error) {
-      console.log(error);
+      console.log(error)
       if (domainName !== app.domainName) {
-        setDomainNameError(true);
+        setDomainNameError(true)
       }
     }
-  };
+  }
 
   const createFormData = () => {
-    const data = new FormData();
+    const data = new FormData()
 
-    bundleId && data.append("bundleId", bundleId);
-    displayName && data.append("displayName", displayName);
-    domain && data.append("domainName", domain);
-    primaryColor && data.append("primaryColor", primaryColor);
-    secondaryColor && data.append("secondaryColor", secondaryColor);
-    coinSymbol && data.append("coinSymbol", coinSymbol);
-    coinName && data.append("coinName", coinName);
-    coinLogo.file && data.append("coinLogoImage", coinLogo.file);
-    logo.file && data.append("logoImage", logo.file);
+    bundleId && data.append("bundleId", bundleId)
+    displayName && data.append("displayName", displayName)
+    domain && data.append("domainName", domain)
+    primaryColor && data.append("primaryColor", primaryColor)
+    secondaryColor && data.append("secondaryColor", secondaryColor)
+    coinSymbol && data.append("coinSymbol", coinSymbol)
+    coinName && data.append("coinName", coinName)
+    coinLogo.file && data.append("coinLogoImage", coinLogo.file)
+    logo.file && data.append("logoImage", logo.file)
     if (loginScreenBackground.file) {
-      data.append("loginScreenBackgroundImage", loginScreenBackground.file);
+      data.append("loginScreenBackgroundImage", loginScreenBackground.file)
     }
     if (
       !loginScreenBackground.file &&
       isValidHexCode(loginScreenBackground.value)
     ) {
-      data.append("loginBackgroundColor", loginScreenBackground.value);
+      data.append("loginBackgroundColor", loginScreenBackground.value)
     }
-    return data;
-  };
+    return data
+  }
 
   const saveSettings = async () => {
-    const data = createFormData();
+    const data = createFormData()
 
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await updateAppSettings(appId, data);
-      updateApp(res.data.result);
-      showSnackbar("success", "Your app is ready to use");
+      const res = await updateAppSettings(appId, data)
+      updateApp(res.data.result)
+      showSnackbar("success", "Your app is ready to use")
     } catch (error) {
-      showSnackbar("error", "Cannot save settings");
-      console.log({ error });
+      showSnackbar("error", "Cannot save settings")
+      console.log({ error })
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleAppNameChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const value = e.target.value;
-    setDisplayName(value);
+    const value = e.target.value
+    setDisplayName(value)
 
     const transformedDomain = replaceNotAllowedCharactersInDomain(
       value.toLowerCase().split(" ").join("")
-    );
-    setDomain(transformedDomain);
+    )
+    setDomain(transformedDomain)
     try {
-    } catch (error) {}
-  };
+    } catch {}
+  }
   const handleDomainNameChange = async (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const value = e.target.value;
-    setDomain(value);
+    const value = e.target.value
+    setDomain(value)
 
     try {
-    } catch (error) {}
-  };
+    } catch {}
+  }
 
   const prepareRnBuild = async () => {
     if (
@@ -255,31 +255,31 @@ export default function AppBuilder() {
       !isValidHexCode(primaryColor) ||
       !isValidHexCode(secondaryColor)
     ) {
-      return;
+      return
     }
-    setBuildStage("preparing");
-    setLoading(true);
+    setBuildStage("preparing")
+    setLoading(true)
 
-    const data = createFormData();
+    const data = createFormData()
 
     try {
       const res = await httpWithAuth().post(
         "/mobile/src-builder/" + appId,
         data
-      );
-      await checkBuild();
-      setBuildStage("download");
+      )
+      await checkBuild()
+      setBuildStage("download")
     } catch (error) {
-      setBuildStage("prepare");
-      console.log(error);
-      showSnackbar("error", "Something went wrong");
+      setBuildStage("prepare")
+      console.log(error)
+      showSnackbar("error", "Something went wrong")
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   const openAppDomain = () => {
-    const url = "https://" + app.domainName + "." + config.DOMAIN_NAME;
-    window.open(url, "_blank");
-  };
+    const url = "https://" + app.domainName + "." + config.DOMAIN_NAME
+    window.open(url, "_blank")
+  }
   return (
     <main>
       <Box
@@ -395,7 +395,7 @@ export default function AppBuilder() {
               <Box sx={{ mb: 2, mt: 1, position: "relative" }}>
                 <input
                   onChange={handleLogoChange}
-                  ref={appLogoRef}
+                  ref={appLogoReference}
                   type="file"
                   style={{ display: "none" }}
                 />
@@ -403,7 +403,7 @@ export default function AppBuilder() {
                   // disabled={loading}
                   color="primary"
                   variant="outlined"
-                  onClick={() => appLogoRef?.current?.click()}
+                  onClick={() => appLogoReference?.current?.click()}
                   sx={{ width: "100%" }}
                   startIcon={<UploadFileIcon />}
                 >
@@ -416,7 +416,7 @@ export default function AppBuilder() {
               <Box sx={{ mb: 2, mt: 1 }}>
                 <input
                   onInput={handleLoginScreenBackgroundChange}
-                  ref={loginScreenBgRef}
+                  ref={loginScreenBgReference}
                   type="file"
                   style={{ display: "none" }}
                 />
@@ -433,7 +433,7 @@ export default function AppBuilder() {
                     // disabled={loading}
                     color="primary"
                     variant="outlined"
-                    onClick={() => loginScreenBgRef?.current?.click()}
+                    onClick={() => loginScreenBgReference?.current?.click()}
                     sx={{ width: "100%" }}
                     startIcon={<UploadFileIcon />}
                   >
@@ -601,13 +601,13 @@ export default function AppBuilder() {
                     domainNameError
                       ? "❌ name not available, please fill in something more unique here"
                       : app.domainName === domain
-                      ? ""
-                      : "✅ available"
+                        ? ""
+                        : "✅ available"
                   }
                 />
                 <Typography
                   style={{
-                    marginBottom: app.domainName !== domain ? "20px" : 0,
+                    marginBottom: app.domainName === domain ? 0 : "20px",
                   }}
                 >
                   {"." + config.DOMAIN_NAME}
@@ -667,5 +667,5 @@ export default function AppBuilder() {
         </fieldset>
       </Box>
     </main>
-  );
+  )
 }

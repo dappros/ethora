@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { useParams } from "react-router";
-import { Box, Container } from "@mui/material";
-import { defaultChatBackgroundThemes } from "../../config/config";
-import { useStoreState } from "../../store";
-import { useSnackbar } from "../../context/SnackbarContext";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import xmpp from "../../xmpp";
+import React, { useState } from "react"
+import { useParams } from "react-router"
+import { Box, Container } from "@mui/material"
+import { defaultChatBackgroundThemes } from "../../config/config"
+import { useStoreState } from "../../store"
+import { useSnackbar } from "../../context/SnackbarContext"
+import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import xmpp from "../../xmpp"
 
 const BackgroundCard = ({
   url,
   selected,
   onClick,
 }: {
-  url: string;
-  selected: boolean;
-  onClick: () => void;
+  url: string
+  selected: boolean
+  onClick: () => void
 }) => {
   return (
     <Box
@@ -36,7 +36,7 @@ const BackgroundCard = ({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            zIndex: 10111,
+            zIndex: 10_111,
           }}
           fontSize={"large"}
         />
@@ -52,30 +52,30 @@ const BackgroundCard = ({
         }}
       />
     </Box>
-  );
-};
+  )
+}
 
 export interface IChangeBackground {}
 
 const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
-  const { roomJID } = useParams<{ roomJID: string }>();
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const {showSnackbar} = useSnackbar()
+  const { roomJID } = useParams<{ roomJID: string }>()
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const { showSnackbar } = useSnackbar()
   const currentRoom = useStoreState((state) =>
     state.userChatRooms.find((item) => item.jid === roomJID)
-  );
+  )
   const onBackgroundClick = (index: number) => {
-    setSelectedIndex(index);
-    const background = defaultChatBackgroundThemes[index];
-    const roomAddress = roomJID.split("@")[0];
+    setSelectedIndex(index)
+    const background = defaultChatBackgroundThemes[index]
+    const roomAddress = roomJID.split("@")[0]
     xmpp.setRoomImage(
       roomAddress,
       currentRoom.room_thumbnail,
       background.value,
       "background"
-    );
-    showSnackbar('success', 'Success! The chat background was set.')
-  };
+    )
+    showSnackbar("success", "Success! The chat background was set.")
+  }
 
   return (
     <Container
@@ -85,22 +85,22 @@ const ChangeBackground: React.FC<IChangeBackground> = ({}) => {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        padding: '10px 0'
+        padding: "10px 0",
       }}
     >
       <Box sx={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        {defaultChatBackgroundThemes.map((item, i) => {
+        {defaultChatBackgroundThemes.map((item, index) => {
           return (
             <BackgroundCard
-              onClick={() => onBackgroundClick(i)}
-              selected={selectedIndex === i}
+              onClick={() => onBackgroundClick(index)}
+              selected={selectedIndex === index}
               key={item.value}
               url={item.value}
             />
-          );
+          )
         })}
       </Box>
     </Container>
-  );
-};
-export default ChangeBackground;
+  )
+}
+export default ChangeBackground

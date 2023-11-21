@@ -5,12 +5,12 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React from 'react';
-import {observer} from 'mobx-react-lite';
+import React from "react"
+import { observer } from "mobx-react-lite"
 
-import {NftTransactionItem} from '../Transactions/NftTransactionItem';
-import {compareTransactionsDate} from '../../helpers/transactions/compareTransactionsDate';
-import {Box, FlatList} from 'native-base';
+import { NftTransactionItem } from "../Transactions/NftTransactionItem"
+import { compareTransactionsDate } from "../../helpers/transactions/compareTransactionsDate"
+import { Box, FlatList } from "native-base"
 
 const RenderTransactionItem = ({
   transaction,
@@ -36,10 +36,10 @@ const RenderTransactionItem = ({
     nftName,
     nftTotal,
     contractId,
-  } = transaction;
-  const token = JSON.parse(transaction.token || '{}');
-  const trait = token?.traits?.[0]?.[+contractId - 1];
-  const cost = token?.costs?.[+contractId - 1];
+  } = transaction
+  const token = JSON.parse(transaction.token || "{}")
+  const trait = token?.traits?.[0]?.[+contractId - 1]
+  const cost = token?.costs?.[+contractId - 1]
   return (
     <NftTransactionItem
       // historyItemTotal={}
@@ -49,15 +49,15 @@ const RenderTransactionItem = ({
       senderBalance={senderBalance}
       receiverBalance={receiverBalance}
       transactionAmount={value}
-      transactionSender={senderFirstName + ' ' + senderLastName}
-      transactionReceiver={receiverFirstName + ' ' + receiverLastName}
+      transactionSender={senderFirstName + " " + senderLastName}
+      transactionReceiver={receiverFirstName + " " + receiverLastName}
       blockNumber={blockNumber}
       transactionHash={transactionHash}
       timestamp={timestamp}
       showDate={showDate}
       formattedDate={formattedDate}
-      senderName={senderFirstName + ' ' + senderLastName}
-      receiverName={receiverFirstName + ' ' + receiverLastName}
+      senderName={senderFirstName + " " + senderLastName}
+      receiverName={receiverFirstName + " " + receiverLastName}
       tokenName={nftName}
       transactionOwnerWalletAddress={transactionOwnerWalletAddress}
       type={type}
@@ -67,24 +67,24 @@ const RenderTransactionItem = ({
       trait={trait}
       cost={cost}
     />
-  );
-};
+  )
+}
 
 interface TransactionListProps {
-  transactions: any;
-  walletAddress: string;
-  onEndReached: any;
+  transactions: any
+  walletAddress: string
+  onEndReached: any
 }
 
 const TransactionsList = observer(
-  ({transactions, walletAddress, onEndReached}: TransactionListProps) => {
+  ({ transactions, walletAddress, onEndReached }: TransactionListProps) => {
     return (
       <Box>
         <FlatList
-          height={'100%'}
+          height={"100%"}
           scrollEnabled
-          style={{paddingBottom: 50}}
-          renderItem={transaction => (
+          style={{ paddingBottom: 50 }}
+          renderItem={(transaction) => (
             <RenderTransactionItem
               transaction={transaction.item}
               transactionOwnerWalletAddress={walletAddress}
@@ -92,11 +92,11 @@ const TransactionsList = observer(
           )}
           onEndReached={onEndReached}
           data={compareTransactionsDate(transactions)}
-          keyExtractor={(transaction:any) => transaction.transactionHash}
+          keyExtractor={(transaction: any) => transaction.transactionHash}
         />
       </Box>
-    );
-  },
-);
+    )
+  }
+)
 
-export default TransactionsList;
+export default TransactionsList

@@ -1,15 +1,15 @@
-import * as React from "react";
-import Container from "@mui/material/Container";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import * as http from "../../http";
-import { config } from "../../config";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { format } from "date-fns";
-import LoadingButton from "@mui/lab/LoadingButton";
+import * as React from "react"
+import Container from "@mui/material/Container"
+import Tabs from "@mui/material/Tabs"
+import Tab from "@mui/material/Tab"
+import Typography from "@mui/material/Typography"
+import Box from "@mui/material/Box"
+import * as http from "../../http"
+import { config } from "../../config"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import { format } from "date-fns"
+import LoadingButton from "@mui/lab/LoadingButton"
 import {
   LineChart,
   Line,
@@ -19,17 +19,17 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { useParams } from "react-router";
+} from "recharts"
+import { useParams } from "react-router"
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
+interface TabPanelProperties {
+  children?: React.ReactNode
+  index: number
+  value: number
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+function TabPanel(properties: TabPanelProperties) {
+  const { children, value, index, ...other } = properties
 
   return (
     <div
@@ -46,15 +46,15 @@ function TabPanel(props: TabPanelProps) {
         </Box>
       )}
     </div>
-  );
+  )
 }
 
-function a11yProps(index: number) {
+function a11yProperties(index: number) {
   return {
     id: `simple-tab-${index}`,
     "aria-controls": `simple-tabpanel-${index}`,
     disableFocusRipple: true,
-  };
+  }
 }
 
 const LineChartLocal = ({ data, name }: { data: any[]; name: string }) => {
@@ -88,91 +88,91 @@ const LineChartLocal = ({ data, name }: { data: any[]; name: string }) => {
         activeDot={{ r: 8 }}
       />
     </LineChart>
-  );
-};
+  )
+}
 
 export default function StatisticsPage() {
-  const [value, setValue] = React.useState(0);
-  const [apiCount, setApiCount] = React.useState(0);
-  const [sessionsCount, setSessionsCount] = React.useState(0);
-  const [transactionCount, setTransactionCount] = React.useState(0);
-  const [issuanceCount, setIssuenceCount] = React.useState(0);
-  const [loading, setLoading] = React.useState(false);
-  const [sessionGraph, setSessionGraph] = React.useState([]);
-  const [apisGraph, setApisGraph] = React.useState([]);
-  const [transactionGraph, setTransactionGraph] = React.useState([]);
-  const [issuanceGraph, setIssuenceGraph] = React.useState([]);
+  const [value, setValue] = React.useState(0)
+  const [apiCount, setApiCount] = React.useState(0)
+  const [sessionsCount, setSessionsCount] = React.useState(0)
+  const [transactionCount, setTransactionCount] = React.useState(0)
+  const [issuanceCount, setIssuenceCount] = React.useState(0)
+  const [loading, setLoading] = React.useState(false)
+  const [sessionGraph, setSessionGraph] = React.useState([])
+  const [apisGraph, setApisGraph] = React.useState([])
+  const [transactionGraph, setTransactionGraph] = React.useState([])
+  const [issuanceGraph, setIssuenceGraph] = React.useState([])
 
-  const { appId } = useParams<{ appId: string }>();
+  const { appId } = useParams<{ appId: string }>()
 
   const [startDate, setStartDate] = React.useState(() => {
-    const startDate = new Date();
-    startDate.setDate(1);
-    startDate.setHours(0, 0, 0, 0);
-    return startDate.toISOString();
-  });
+    const startDate = new Date()
+    startDate.setDate(1)
+    startDate.setHours(0, 0, 0, 0)
+    return startDate.toISOString()
+  })
 
   const [endDate, setEndDate] = React.useState(() => {
-    const endDate = new Date();
-    return endDate.toISOString();
-  });
+    const endDate = new Date()
+    return endDate.toISOString()
+  })
 
-  const confirUrl = new URL(config.API_URL);
-  const baseUrl = confirUrl.origin;
+  const confirUrl = new URL(config.API_URL)
+  const baseUrl = confirUrl.origin
 
   const getData = async () => {
     try {
-      const { data } = await http.getGraphs(appId, startDate, endDate);
-      setTransactionCount(data.transactionsCount);
-      setApiCount(data.apiCallCount);
-      setIssuenceCount(data.issuanceCount);
-      setSessionsCount(data.sessionsCount);
-      setSessionGraph(convert(data.sessions));
-      setTransactionGraph(convert(data.transactions));
-      setIssuenceGraph(convert(data.issuance));
-      setApisGraph(convert(data.apiCalls));
-    } catch (error) {}
+      const { data } = await http.getGraphs(appId, startDate, endDate)
+      setTransactionCount(data.transactionsCount)
+      setApiCount(data.apiCallCount)
+      setIssuenceCount(data.issuanceCount)
+      setSessionsCount(data.sessionsCount)
+      setSessionGraph(convert(data.sessions))
+      setTransactionGraph(convert(data.transactions))
+      setIssuenceGraph(convert(data.issuance))
+      setApisGraph(convert(data.apiCalls))
+    } catch {}
 
     function convert(data: { x: string[]; y: string[] }) {
-      let converded = [];
+      const converded = []
 
       for (const [index, value] of data.y.entries()) {
         converded.push({
           value: value,
           // name: data.x[index],
           name: format(new Date(data.x[index]), "yyyy-MM-dd"),
-        });
+        })
       }
 
-      return converded;
+      return converded
     }
-  };
+  }
 
   React.useEffect(() => {
-    getData();
-  }, []);
+    getData()
+  }, [])
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   const filterStats = async () => {
-    await getData();
-  };
+    await getData()
+  }
 
   const onUploadCsv = async () => {
-    let response = await http.httpWithAuth()({
+    const response = await http.httpWithAuth()({
       url: `${baseUrl}/analysis/apis-csv?startDate=${startDate}&endDate=${endDate}`,
-    });
+    })
 
-    let dataUrl = "data:text/csv," + response.data;
-    let filename = "api.csv";
+    const dataUrl = "data:text/csv," + response.data
+    const filename = "api.csv"
 
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = filename;
-    link.click();
-  };
+    const link = document.createElement("a")
+    link.href = dataUrl
+    link.download = filename
+    link.click()
+  }
 
   return (
     <Container
@@ -187,14 +187,14 @@ export default function StatisticsPage() {
           id="date"
           label="From"
           type="date"
-          defaultValue={format(new Date(startDate), 'yyyy-MM-dd')}
+          defaultValue={format(new Date(startDate), "yyyy-MM-dd")}
           sx={{ width: 220 }}
           InputLabelProps={{
             shrink: true,
           }}
           onChange={(e) => {
-            console.log(e.target.value);
-            setStartDate(new Date(e.target.value).toISOString());
+            console.log(e.target.value)
+            setStartDate(new Date(e.target.value).toISOString())
           }}
           style={{ paddingRight: "15px" }}
         />
@@ -202,8 +202,7 @@ export default function StatisticsPage() {
           id="date"
           label="To"
           type="date"
-          defaultValue={format(new Date(endDate), 'yyyy-MM-dd')}
-
+          defaultValue={format(new Date(endDate), "yyyy-MM-dd")}
           sx={{ width: 220 }}
           InputLabelProps={{
             shrink: true,
@@ -232,7 +231,7 @@ export default function StatisticsPage() {
           >
             <Tab
               label={`Sessions - ${sessionsCount}`}
-              {...a11yProps(0)}
+              {...a11yProperties(0)}
               style={{
                 textAlign: "left",
                 textTransform: "none",
@@ -241,7 +240,7 @@ export default function StatisticsPage() {
             />
             <Tab
               label={`API calls - ${apiCount}`}
-              {...a11yProps(1)}
+              {...a11yProperties(1)}
               className="statistic-tab"
               style={{
                 textAlign: "left",
@@ -251,7 +250,7 @@ export default function StatisticsPage() {
             />
             <Tab
               label={`Issuence - ${issuanceCount}`}
-              {...a11yProps(2)}
+              {...a11yProperties(2)}
               style={{
                 textAlign: "left",
                 textTransform: "none",
@@ -260,7 +259,7 @@ export default function StatisticsPage() {
             />
             <Tab
               label={`Blockchain Transactions - ${transactionCount}`}
-              {...a11yProps(3)}
+              {...a11yProperties(3)}
               style={{
                 textAlign: "left",
                 textTransform: "none",
@@ -304,5 +303,5 @@ export default function StatisticsPage() {
         </TabPanel>
       </Box>
     </Container>
-  );
+  )
 }

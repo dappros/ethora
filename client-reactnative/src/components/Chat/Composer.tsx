@@ -1,24 +1,24 @@
-import React, {useMemo} from 'react';
-import {Composer, ComposerProps,} from 'react-native-gifted-chat';
+import React, { useMemo } from "react"
+import { Composer, ComposerProps } from "react-native-gifted-chat"
 import {
   MentionPartType,
   PartType,
   Position,
   Suggestion,
-} from '../../helpers/chat/inputTypes';
+} from "../../helpers/chat/inputTypes"
 import {
   generateValueFromPartsAndChangedText,
   generateValueWithAddedSuggestion,
   getMentionPartSuggestionKeywords,
   isMentionPartType,
   parseValue,
-} from '../../helpers/chat/inputUtils';
+} from "../../helpers/chat/inputUtils"
 
 interface IChatComposer extends ComposerProps {
-  partTypes: PartType[];
-  selection: Position;
-  onTextChanged: (text: string) => void;
-  text: string;
+  partTypes: PartType[]
+  selection: Position
+  onTextChanged: (text: string) => void
+  text: string
 }
 
 export const ChatComposer: React.FC<IChatComposer> = ({
@@ -28,23 +28,23 @@ export const ChatComposer: React.FC<IChatComposer> = ({
   text,
   ...props
 }) => {
-  const {plainText, parts} = useMemo(
+  const { plainText, parts } = useMemo(
     () => parseValue(text, partTypes),
-    [text, partTypes],
-  );
+    [text, partTypes]
+  )
   const onChangeInput = (changedText: string) => {
     onTextChanged(
-      generateValueFromPartsAndChangedText(parts, plainText, changedText),
-    );
-  };
+      generateValueFromPartsAndChangedText(parts, plainText, changedText)
+    )
+  }
   const keywordByTrigger = useMemo(() => {
     return getMentionPartSuggestionKeywords(
       parts,
       plainText,
       selection,
-      partTypes,
-    );
-  }, [parts, plainText, selection, partTypes]);
+      partTypes
+    )
+  }, [parts, plainText, selection, partTypes])
 
   const onSuggestionPress =
     (mentionType: MentionPartType) => (suggestion: Suggestion) => {
@@ -53,14 +53,14 @@ export const ChatComposer: React.FC<IChatComposer> = ({
         mentionType,
         plainText,
         selection,
-        suggestion,
-      );
+        suggestion
+      )
 
       if (!newValue) {
-        return;
+        return
       }
-      onTextChanged(newValue);
-    };
+      onTextChanged(newValue)
+    }
   const renderMentionSuggestions = (mentionType: MentionPartType) => {
     return (
       <React.Fragment key={mentionType.trigger}>
@@ -70,21 +70,21 @@ export const ChatComposer: React.FC<IChatComposer> = ({
             onSuggestionPress: onSuggestionPress(mentionType),
           })}
       </React.Fragment>
-    );
-  };
+    )
+  }
   return (
     <>
       {(
         partTypes.filter(
-          one => isMentionPartType(one) && one.renderSuggestions != null,
+          (one) => isMentionPartType(one) && one.renderSuggestions != null
         ) as MentionPartType[]
       ).map(renderMentionSuggestions)}
       <Composer
         text={plainText}
         multiline={true}
-        onTextChanged={changedText => onChangeInput(changedText)}
+        onTextChanged={(changedText) => onChangeInput(changedText)}
         {...props}
       />
     </>
-  );
-};
+  )
+}

@@ -1,24 +1,24 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useStoreState } from "./store";
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { useStoreState } from "./store"
 
-import "./pages/ChatInRoom/theme/default/main.scss";
-import { Routes } from "./pages/Routes";
-import { Router } from "react-router-dom";
-import { history } from "./utils/history";
-import { SnackbarContextProvider } from "./context/SnackbarContext";
-import "./index.css";
+import "./pages/ChatInRoom/theme/default/main.scss"
+import { Routes } from "./pages/Routes"
+import { Router } from "react-router-dom"
+import { history } from "./utils/history"
+import { SnackbarContextProvider } from "./context/SnackbarContext"
+import "./index.css"
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
   },
-});
+})
 
 function App() {
-  const setConfig = useStoreState((state) => state.setConfig);
+  const setConfig = useStoreState((state) => state.setConfig)
 
-  const primaryColor = useStoreState((s) => s.config.primaryColor);
-  const secondaryColor = useStoreState((s) => s.config.secondaryColor);
+  const primaryColor = useStoreState((s) => s.config.primaryColor)
+  const secondaryColor = useStoreState((s) => s.config.secondaryColor)
 
   const lightTheme = createTheme({
     palette: {
@@ -26,7 +26,7 @@ function App() {
       primary: { main: primaryColor || "#ffffff" },
       secondary: { main: secondaryColor || "#ffffff" },
     },
-  });
+  })
 
   return (
     <Router history={history}>
@@ -39,7 +39,7 @@ function App() {
         </ThemeProvider>
       </SnackbarContextProvider>
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -1,41 +1,41 @@
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { useWeb3React } from "@web3-react/core";
-import { registerSignature, TLoginSuccessResponse } from "../../http";
-import { useHistory } from "react-router-dom";
-import { useStoreState } from "../../store";
+import React from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { useFormik } from "formik"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import { useWeb3React } from "@web3-react/core"
+import { registerSignature, TLoginSuccessResponse } from "../../http"
+import { useHistory } from "react-router-dom"
+import { useStoreState } from "../../store"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updateUser: (data: TLoginSuccessResponse) => void;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateUser: (data: TLoginSuccessResponse) => void
+}
 
 const validate = (values: Record<string, string>) => {
-  const errors: Record<string, string> = {};
+  const errors: Record<string, string> = {}
 
   if (!values.firstName) {
-    errors.firstName = "Required";
+    errors.firstName = "Required"
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required";
+    errors.lastName = "Required"
   }
 
-  return errors;
-};
+  return errors
+}
 
-export function MetamaskModal({ open, setOpen, updateUser }: TProps) {
-  const { account, library, deactivate } = useWeb3React();
-  const setUser = useStoreState((state) => state.setUser);
-  const history = useHistory();
+export function MetamaskModal({ open, setOpen, updateUser }: TProperties) {
+  const { account, library, deactivate } = useWeb3React()
+  const setUser = useStoreState((state) => state.setUser)
+  const history = useHistory()
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -43,26 +43,26 @@ export function MetamaskModal({ open, setOpen, updateUser }: TProps) {
     },
     validate,
     onSubmit: async (values) => {
-      const signer = library.getSigner();
+      const signer = library.getSigner()
       try {
-        const msg = "Register";
-        const signature = await signer.signMessage(msg);
+        const message = "Register"
+        const signature = await signer.signMessage(message)
         const resp = await registerSignature(
           account as string,
           signature,
-          msg,
+          message,
           values.firstName,
           values.lastName
-        );
-        const user = resp.data.user;
-        updateUser(resp.data);
-        deactivate();
-        history.push(`/profile/${user.defaultWallet.walletAddress}`);
+        )
+        const user = resp.data.user
+        updateUser(resp.data)
+        deactivate()
+        history.push(`/profile/${user.defaultWallet.walletAddress}`)
       } catch (error) {
-        console.log("signature error ", error);
+        console.log("signature error", error)
       }
     },
-  });
+  })
 
   return (
     <Dialog onClose={() => setOpen(false)} maxWidth={false} open={open}>
@@ -126,5 +126,5 @@ export function MetamaskModal({ open, setOpen, updateUser }: TProps) {
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

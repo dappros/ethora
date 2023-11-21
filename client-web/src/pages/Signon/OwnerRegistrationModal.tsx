@@ -1,55 +1,53 @@
-import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import { useHistory } from "react-router-dom";
-import { useStoreState } from "../../store";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import FormGroup from "@mui/material/FormGroup";
-import Tnc from "./Tnc";
-import LoadingButton from "@mui/lab/LoadingButton";
-import Alert from "@mui/material/Alert";
-import * as http from "../../http";
-import { getTnc } from "../../utils";
+import React, { useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { useFormik } from "formik"
+import TextField from "@mui/material/TextField"
+import { useHistory } from "react-router-dom"
+import { useStoreState } from "../../store"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import FormGroup from "@mui/material/FormGroup"
+import Tnc from "./Tnc"
+import LoadingButton from "@mui/lab/LoadingButton"
+import Alert from "@mui/material/Alert"
+import * as http from "../../http"
+import { getTnc } from "../../utils"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 const validate = (values: Record<string, string>) => {
-  const errors: Record<string, string> = {};
+  const errors: Record<string, string> = {}
 
   if (!values.firstName) {
-    errors.firstName = "Required";
+    errors.firstName = "Required"
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required";
+    errors.lastName = "Required"
   }
 
   if (!values.email) {
-    errors.email = "Required";
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = "Invalid email address";
+    errors.email = "Required"
+  } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(values.email)) {
+    errors.email = "Invalid email address"
   }
 
-  return errors;
-};
+  return errors
+}
 
-
-
-export function OwnerRegistration({ open, setOpen }: TProps) {
-  const setOwner = useStoreState((state) => state.setOwner);
-  const history = useHistory();
-  const [termsOpen, setTermsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+export function OwnerRegistration({ open, setOpen }: TProperties) {
+  const setOwner = useStoreState((state) => state.setOwner)
+  const history = useHistory()
+  const [termsOpen, setTermsOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const formik = useFormik({
     initialValues: {
       firstName: "",
@@ -59,7 +57,7 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
     },
     validate,
     onSubmit: ({ firstName, lastName, email, companyName }) => {
-      setLoading(true);
+      setLoading(true)
       http
         .registerOwner(
           firstName,
@@ -75,25 +73,25 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
           )
         )
         .then((result) => {
-          const data = result.data;
+          const data = result.data
 
           setOwner({
             ...data.user,
             token: data.token,
-          });
-          history.push("/owner");
-          setOpen(false);
+          })
+          history.push("/owner")
+          setOpen(false)
         })
         .catch((error) => {
           if (error.response && error.response.status === 409) {
-            setError(error.response.data);
+            setError(error.response.data)
           }
         })
         .finally(() => {
-          setLoading(false);
-        });
+          setLoading(false)
+        })
     },
-  });
+  })
 
   return (
     <Dialog onClose={() => setOpen(false)} maxWidth={false} open={open}>
@@ -191,8 +189,8 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
             <a
               href="/"
               onClick={(e) => {
-                e.preventDefault();
-                setTermsOpen(true);
+                e.preventDefault()
+                setTermsOpen(true)
               }}
             >
               Terms and Conditions
@@ -220,7 +218,11 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
           </form>
         </Box>
       </Box>
-      <Dialog onClose={() => setTermsOpen(false)} maxWidth={false} open={termsOpen}>
+      <Dialog
+        onClose={() => setTermsOpen(false)}
+        maxWidth={false}
+        open={termsOpen}
+      >
         <Box sx={{ width: 800 }}>
           <Tnc
             setTermsOpen={(isOpen: boolean) => setTermsOpen(isOpen)}
@@ -232,5 +234,5 @@ export function OwnerRegistration({ open, setOpen }: TProps) {
         </Box>
       </Dialog>
     </Dialog>
-  );
+  )
 }

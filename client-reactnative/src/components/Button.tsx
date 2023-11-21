@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react"
 import {
   ActivityIndicator,
   StyleProp,
@@ -8,18 +8,18 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
+} from "react-native"
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {commonColors, textStyles} from '../../docs/config';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { commonColors, textStyles } from "../../docs/config"
 
 interface ButtonProps {
-  loading?: boolean;
-  onPress: () => void;
-  title: string;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-  disabled?: boolean;
+  loading?: boolean
+  onPress: () => void
+  title: string
+  style?: StyleProp<ViewStyle>
+  textStyle?: StyleProp<TextStyle>
+  disabled?: boolean
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -35,18 +35,20 @@ export const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={loading || disabled}
       accessibilityLabel={title}
-      style={[styles.submitButton, style]}>
+      style={[styles.submitButton, style]}
+    >
       <View
         style={{
-          alignItems: 'center',
-        }}>
+          alignItems: "center",
+        }}
+      >
         <Text style={[styles.submitButtonText, textStyle]}>
-          {loading ? <ActivityIndicator color={'white'} size={30} /> : title}
+          {loading ? <ActivityIndicator color={"white"} size={30} /> : title}
         </Text>
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   submitButton: {
@@ -55,13 +57,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
 
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
   submitButtonText: {
-    fontSize: hp('1.5%'),
-    color: '#FFFFFF',
+    fontSize: hp("1.5%"),
+    color: "#FFFFFF",
     fontFamily: textStyles.mediumFont,
   },
-});
+})

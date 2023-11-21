@@ -1,69 +1,69 @@
-import React, { useState } from "react";
-import { Typography, Box, Button, TextField } from "@mui/material";
-import { useStoreState } from "../../store";
-import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
-import ShareIcon from "@mui/icons-material/Share";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useFormik } from "formik";
-import { getBalance, httpWithAuth } from "../../http";
+import React, { useState } from "react"
+import { Typography, Box, Button, TextField } from "@mui/material"
+import { useStoreState } from "../../store"
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt"
+import ShareIcon from "@mui/icons-material/Share"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useFormik } from "formik"
+import { getBalance, httpWithAuth } from "../../http"
 
-const coinImg = '/coin.png'
+const coinImg = "/coin.png"
 
 export interface IReferrals {}
 
 interface IValues {
-  refLink: string;
+  refLink: string
 }
 
 const validate = (values: IValues) => {
-  const errors: IValues = { refLink: "" };
+  const errors: IValues = { refLink: "" }
   if (!values.refLink) {
-    errors.refLink = "Link is required";
+    errors.refLink = "Link is required"
   }
 
-  return errors;
-};
+  return errors
+}
 
 const Referrals: React.FC<IReferrals> = ({}) => {
-  const link = useStoreState((state) => state.user._id);
-  const walletAddress = useStoreState((state) => state.user.walletAddress);
+  const link = useStoreState((state) => state.user._id)
+  const walletAddress = useStoreState((state) => state.user.walletAddress)
 
-  const setBalance = useStoreState((state) => state.setBalance);
+  const setBalance = useStoreState((state) => state.setBalance)
 
-  const referrerId = useStoreState((state) => state.user.referrerId);
-  const { showSnackbar } = useSnackbar();
+  const referrerId = useStoreState((state) => state.user.referrerId)
+  const { showSnackbar } = useSnackbar()
   const formik = useFormik({
     initialValues: { refLink: "" },
     validate,
     onSubmit: async ({ refLink }, { setSubmitting }) => {
       if (referrerId) {
-        showSnackbar("error", "You already added your referral");
-        return;
+        showSnackbar("error", "You already added your referral")
+        return
       }
       if (refLink === link) {
-        showSnackbar("error", "You cannot be your referral");
-        return;
+        showSnackbar("error", "You cannot be your referral")
+        return
       }
-      setSubmitting(true);
+      setSubmitting(true)
       try {
         const res = await httpWithAuth().post("/users/referral", {
           referrerId: refLink,
-        });
-        const balance = await getBalance(walletAddress);
-        setBalance(balance.data.balance);
-        showSnackbar("success", "Referral successfully added");
-      } catch (error) {
-        showSnackbar("error", "Something went wrong");
+        })
+        const balance = await getBalance(walletAddress)
+        setBalance(balance.data.balance)
+        showSnackbar("success", "Referral successfully added")
+      } catch {
+        showSnackbar("error", "Something went wrong")
       }
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   const onShareClick = () => {
-    navigator.clipboard.writeText(link);
+    navigator.clipboard.writeText(link)
 
-    showSnackbar("success", "Link copied");
-  };
+    showSnackbar("success", "Link copied")
+  }
   return (
     <Box
       sx={{
@@ -162,7 +162,7 @@ const Referrals: React.FC<IReferrals> = ({}) => {
         </form>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Referrals;
+export default Referrals

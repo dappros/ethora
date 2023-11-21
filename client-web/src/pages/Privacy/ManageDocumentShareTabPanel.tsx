@@ -4,36 +4,36 @@ import {
   CircularProgress,
   IconButton,
   Typography,
-} from "@mui/material";
-import * as React from "react";
-import { ISharedLink } from "./ProfileShareTab";
-import QrCode2Icon from "@mui/icons-material/QrCode2";
-import DescriptionIcon from "@mui/icons-material/Description";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { generateDocumentLink } from "../../utils";
-import { format } from "date-fns";
+} from "@mui/material"
+import * as React from "react"
+import { ISharedLink } from "./ProfileShareTab"
+import QrCode2Icon from "@mui/icons-material/QrCode2"
+import DescriptionIcon from "@mui/icons-material/Description"
+import DeleteIcon from "@mui/icons-material/Delete"
+import { generateDocumentLink } from "../../utils"
+import { format } from "date-fns"
 
-interface ManageDocumentShareTabPanelProps {
-  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void;
-  loading: boolean;
-  sharedLinks: ISharedLink[];
-  handleOpenModal: (docLink: string) => void;
-  deleteLink: (linkToken: string) => Promise<void>;
+interface ManageDocumentShareTabPanelProperties {
+  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void
+  loading: boolean
+  sharedLinks: ISharedLink[]
+  handleOpenModal: (documentLink: string) => void
+  deleteLink: (linkToken: string) => Promise<void>
 }
 
-interface DocumentLinkItemComponentProps {
-  key: string;
-  linkItem: ISharedLink;
-  handleOpenModal: (docLink: string) => void;
-  docLink: string;
-  deleteLink: (linkToken: string) => Promise<void>;
+interface DocumentLinkItemComponentProperties {
+  key: string
+  linkItem: ISharedLink
+  handleOpenModal: (documentLink: string) => void
+  docLink: string
+  deleteLink: (linkToken: string) => Promise<void>
 }
 
 export const ManageDocumentShareTabPanel = (
-  props: ManageDocumentShareTabPanelProps
+  properties: ManageDocumentShareTabPanelProperties
 ) => {
   const { handleChangeTab, loading, sharedLinks, handleOpenModal, deleteLink } =
-    props;
+    properties
 
   return (
     <Box
@@ -70,7 +70,7 @@ export const ManageDocumentShareTabPanel = (
       </Typography>
       {loading ? <CircularProgress /> : null}
 
-      {sharedLinks.length
+      {sharedLinks.length > 0
         ? sharedLinks.map((item, index) => {
             return (
               <LinkItemComponent
@@ -82,15 +82,15 @@ export const ManageDocumentShareTabPanel = (
                 })}
                 deleteLink={deleteLink}
               />
-            );
+            )
           })
         : null}
     </Box>
-  );
-};
+  )
+}
 
-function LinkItemComponent(props: DocumentLinkItemComponentProps) {
-  const { linkItem, key, handleOpenModal, docLink, deleteLink } = props;
+function LinkItemComponent(properties: DocumentLinkItemComponentProperties) {
+  const { linkItem, key, handleOpenModal, docLink, deleteLink } = properties
   return (
     <Box
       key={key}
@@ -114,9 +114,9 @@ function LinkItemComponent(props: DocumentLinkItemComponentProps) {
           </Typography>
           <Typography>
             Expires:{" "}
-            {+linkItem.expiration !== -1
-              ? format(new Date(linkItem.expiration), "MMMM dd yyyy hh:mm")
-              : ""}
+            {+linkItem.expiration === -1
+              ? ""
+              : format(new Date(linkItem.expiration), "MMMM dd yyyy hh:mm")}
           </Typography>
         </Box>
 
@@ -139,5 +139,5 @@ function LinkItemComponent(props: DocumentLinkItemComponentProps) {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }

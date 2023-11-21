@@ -1,16 +1,16 @@
-import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
-import { format } from "date-fns";
-import { useStores } from "../../stores/context";
-import { getRoomArchiveStanza, getPaginatedArchive } from "../../xmpp/stanzas";
-import ChatContainer from "../../components/Chat/ChatContainer";
-import { IMessage, roomListProps } from "../../stores/chatStore";
-import { View } from "native-base";
+import { observer } from "mobx-react-lite"
+import React, { useEffect } from "react"
+import { format } from "date-fns"
+import { useStores } from "../../stores/context"
+import { getRoomArchiveStanza, getPaginatedArchive } from "../../xmpp/stanzas"
+import ChatContainer from "../../components/Chat/ChatContainer"
+import { IMessage, roomListProps } from "../../stores/chatStore"
+import { View } from "native-base"
 
 const ChatScreen = observer(({ route }: any) => {
-  const { chatStore } = useStores();
+  const { chatStore } = useStores()
 
-  const { chatJid, chatName } = route.params;
+  const { chatJid, chatName } = route.params
   const room: roomListProps = chatStore.roomList.find(
     (item) => item.jid === chatJid
   ) || {
@@ -28,40 +28,40 @@ const ChatScreen = observer(({ route }: any) => {
     roomBackground: "",
     roomBackgroundIndex: 0,
     roomThumbnail: "",
-  };
+  }
   const messages = chatStore.messages
     .filter((item: IMessage) => {
       if (item.roomJid === chatJid) {
         if (item.isReply) {
           if (item.showInChannel) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
         } else {
-          return true;
+          return true
         }
       }
     })
-    .sort((a: any, b: any) => b._id - a._id);
+    .sort((a: any, b: any) => b._id - a._id)
 
   //this will ensure that when chat screen is opened then message badge counter should stop counting
   useEffect(() => {
-    chatStore.toggleShouldCount(false);
+    chatStore.toggleShouldCount(false)
     return () => {
-      chatStore.toggleShouldCount(true);
-    };
-  }, []);
+      chatStore.toggleShouldCount(true)
+    }
+  }, [])
 
   //everytime chat room changes message archive is called for the corresponing room
   useEffect(() => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
-      getRoomArchiveStanza(chatJid, chatStore.xmpp);
+      getRoomArchiveStanza(chatJid, chatStore.xmpp)
     }
-  }, [chatJid]);
+  }, [chatJid])
 
   useEffect(() => {
-    const lastMessage = messages?.[0];
+    const lastMessage = messages?.[0]
     lastMessage &&
       chatStore.updateRoomInfo(chatJid, {
         archiveRequested: true,
@@ -70,16 +70,16 @@ const ChatScreen = observer(({ route }: any) => {
         lastMessageTime:
           lastMessage?.createdAt &&
           format(new Date(lastMessage?.createdAt), "hh:mm"),
-      });
-  }, [!!messages]);
+      })
+  }, [!!messages])
 
   const onLoadEarlier = () => {
-    const lastMessage = messages.length - 1;
+    const lastMessage = messages.length - 1
     if (messages.length > 5) {
-      getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
-      chatStore.setChatMessagesLoading(true);
+      getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp)
+      chatStore.setChatMessagesLoading(true)
     }
-  };
+  }
 
   return (
     <View testID="ChatScreen">
@@ -90,7 +90,7 @@ const ChatScreen = observer(({ route }: any) => {
         onLoadEarlier={onLoadEarlier}
       />
     </View>
-  );
-});
+  )
+})
 
-export default ChatScreen;
+export default ChatScreen

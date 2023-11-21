@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from "react"
 
-import { Box } from "@mui/system";
-import * as http from "../../http";
+import { Box } from "@mui/system"
+import * as http from "../../http"
 
-import QrCodeIcon from "@mui/icons-material/QrCode";
+import QrCodeIcon from "@mui/icons-material/QrCode"
 import {
   Avatar,
   Chip,
@@ -14,25 +14,25 @@ import {
   ListItemButton,
   ListItemText,
   useTheme,
-} from "@mui/material";
-import { format } from "date-fns";
-import { useHistory } from "react-router";
+} from "@mui/material"
+import { format } from "date-fns"
+import { useHistory } from "react-router"
 
 const DocumentItem = ({
   item,
   walletAddress,
 }: {
-  item: http.IDocument;
-  walletAddress: string;
+  item: http.IDocument
+  walletAddress: string
 }) => {
-  const theme = useTheme();
-  const history = useHistory();
+  const theme = useTheme()
+  const history = useHistory()
   const onItemClick = () => {
     history.push({
       pathname: "/provenance",
       state: { nftItem: item, walletAddress },
-    });
-  };
+    })
+  }
   return (
     <ListItem key={item._id}>
       <ListItemButton onClick={onItemClick}>
@@ -59,15 +59,15 @@ const DocumentItem = ({
         </Box>
       </ListItemButton>
     </ListItem>
-  );
-};
+  )
+}
 
 export default function DocumentsTable({
   documents,
   walletAddress,
 }: {
-  documents: http.IDocument[];
-  walletAddress: string;
+  documents: http.IDocument[]
+  walletAddress: string
 }) {
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
@@ -78,8 +78,8 @@ export default function DocumentsTable({
             item={item}
             key={item._id}
           />
-        );
+        )
       })}
     </List>
-  );
+  )
 }

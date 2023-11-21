@@ -5,27 +5,25 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Box, Text} from 'native-base';
-import React from 'react';
-import FastImage from 'react-native-fast-image';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {textStyles} from '../../../docs/config';
-import {formatBytes} from '../../helpers/chat/formatBytes';
-import {MessageSize} from './MessageSize';
-
+import { Box, Text } from "native-base"
+import React from "react"
+import FastImage from "react-native-fast-image"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { textStyles } from "../../../docs/config"
+import { formatBytes } from "../../helpers/chat/formatBytes"
+import { MessageSize } from "./MessageSize"
 
 //interface and types
 interface ImageMessageProps {
-  url: any;
-  size: any;
-  onLongPress?: () => void;
-  onPress: any;
-  nftId?: string;
-  nftName?: string;
+  url: any
+  size: any
+  onLongPress?: () => void
+  onPress: any
+  nftId?: string
+  nftName?: string
 }
 //interface and types
-
 
 //component to render UI for messages that have an image in it.
 export const ImageMessage = ({
@@ -36,44 +34,46 @@ export const ImageMessage = ({
   nftId,
   nftName,
 }: ImageMessageProps) => {
-  const formatedSize = formatBytes(parseFloat(size), 2);
+  const formatedSize = formatBytes(parseFloat(size), 2)
   return (
     <>
       {!!nftId && (
         <Text
-          color={'white'}
-          fontWeight={'bold'}
-          fontFamily={textStyles.boldFont}>
+          color={"white"}
+          fontWeight={"bold"}
+          fontFamily={textStyles.boldFont}
+        >
           🔗🖼️ NFT: {nftName}
         </Text>
       )}
       <TouchableOpacity
         onLongPress={onLongPress}
-        accessibilityLabel={'Image Attachment'}
+        accessibilityLabel={"Image Attachment"}
         onPress={onPress}
         activeOpacity={0.7}
         style={{
           borderRadius: 5,
-          justifyContent: 'center',
-          position: 'relative',
-        }}>
+          justifyContent: "center",
+          position: "relative",
+        }}
+      >
         {size && (
-          <MessageSize size={formatedSize.size + ' ' + formatedSize.unit} />
+          <MessageSize size={formatedSize.size + " " + formatedSize.unit} />
         )}
-        {!!nftId && <MessageSize size={'NFT'} />}
-        <Box p={'1.5'}>
+        {!!nftId && <MessageSize size={"NFT"} />}
+        <Box p={"1.5"}>
           <FastImage
             style={{
-              width: hp('22%'),
-              height: hp('22%'),
+              width: hp("22%"),
+              height: hp("22%"),
               borderRadius: 10,
-              borderColor: 'white',
+              borderColor: "white",
               borderWidth: nftId ? 2 : 0,
             }}
-            source={{uri: url}}
+            source={{ uri: url }}
           />
         </Box>
       </TouchableOpacity>
     </>
-  );
-};
+  )
+}

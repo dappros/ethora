@@ -4,32 +4,32 @@ import {
   CircularProgress,
   IconButton,
   Typography,
-} from "@mui/material";
-import * as React from "react";
-import { ISharedLink } from "./ProfileShareTab";
-import QrCode2Icon from "@mui/icons-material/QrCode2";
-import DescriptionIcon from "@mui/icons-material/Description";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { format } from "date-fns";
+} from "@mui/material"
+import * as React from "react"
+import { ISharedLink } from "./ProfileShareTab"
+import QrCode2Icon from "@mui/icons-material/QrCode2"
+import DescriptionIcon from "@mui/icons-material/Description"
+import DeleteIcon from "@mui/icons-material/Delete"
+import { format } from "date-fns"
 
-interface ManageTabPanelProps {
-  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void;
-  sharedLinks: ISharedLink[];
-  loading: boolean;
-  handleOpenModal: () => void;
-  profileLink: string;
-  deleteLink: (linkToken: string) => Promise<void>;
+interface ManageTabPanelProperties {
+  handleChangeTab: (event: React.SyntheticEvent, newValue: number) => void
+  sharedLinks: ISharedLink[]
+  loading: boolean
+  handleOpenModal: () => void
+  profileLink: string
+  deleteLink: (linkToken: string) => Promise<void>
 }
 
-interface ProfileLinkItemComponentProps {
-  key: string;
-  linkItem: ISharedLink;
-  handleOpenModal: () => void;
-  profileLink: string;
-  deleteLink: (linkToken: string) => Promise<void>;
+interface ProfileLinkItemComponentProperties {
+  key: string
+  linkItem: ISharedLink
+  handleOpenModal: () => void
+  profileLink: string
+  deleteLink: (linkToken: string) => Promise<void>
 }
 
-export const ManageTabPanel = (props: ManageTabPanelProps) => {
+export const ManageTabPanel = (properties: ManageTabPanelProperties) => {
   const {
     handleChangeTab,
     sharedLinks,
@@ -37,7 +37,7 @@ export const ManageTabPanel = (props: ManageTabPanelProps) => {
     handleOpenModal,
     profileLink,
     deleteLink,
-  } = props;
+  } = properties
   return (
     <Box
       style={{
@@ -73,7 +73,7 @@ export const ManageTabPanel = (props: ManageTabPanelProps) => {
       </Typography>
       {loading ? <CircularProgress /> : null}
 
-      {sharedLinks.length
+      {sharedLinks.length > 0
         ? sharedLinks.map((item, index) => {
             return (
               <LinkItemComponent
@@ -83,15 +83,15 @@ export const ManageTabPanel = (props: ManageTabPanelProps) => {
                 profileLink={profileLink}
                 deleteLink={deleteLink}
               />
-            );
+            )
           })
         : null}
     </Box>
-  );
-};
+  )
+}
 
-function LinkItemComponent(props: ProfileLinkItemComponentProps) {
-  const { linkItem, key, handleOpenModal, profileLink, deleteLink } = props;
+function LinkItemComponent(properties: ProfileLinkItemComponentProperties) {
+  const { linkItem, key, handleOpenModal, profileLink, deleteLink } = properties
   return (
     <Box
       key={key}
@@ -115,9 +115,9 @@ function LinkItemComponent(props: ProfileLinkItemComponentProps) {
           </Typography>
           <Typography>
             Expires:{" "}
-            {+linkItem.expiration !== -1
-              ? format(new Date(linkItem.expiration), "MMMM dd yyyy hh:mm")
-              : ""}
+            {+linkItem.expiration === -1
+              ? ""
+              : format(new Date(linkItem.expiration), "MMMM dd yyyy hh:mm")}
           </Typography>
         </Box>
 
@@ -140,5 +140,5 @@ function LinkItemComponent(props: ProfileLinkItemComponentProps) {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }

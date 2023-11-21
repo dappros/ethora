@@ -1,72 +1,73 @@
-import React, {useRef, useState} from 'react';
-import {StyleSheet, ScrollView} from 'react-native';
-import {HStack, Input, Text, View} from 'native-base';
+import React, { useRef, useState } from "react"
+import { StyleSheet, ScrollView } from "react-native"
+import { HStack, Input, Text, View } from "native-base"
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {Select} from 'native-base';
-import {commonColors, textStyles} from '../../../docs/config';
-import QRCodeGenerator from '../../components/QRCodeGenerator';
-import {httpPost} from '../../config/apiService';
-import {shareLink} from '../../config/routesConstants';
-import {generateProfileLink} from '../../helpers/generateProfileLink';
-import {useStores} from '../../stores/context';
-import {Button} from '../../components/Button';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { Select } from "native-base"
+import { commonColors, textStyles } from "../../../docs/config"
+import QRCodeGenerator from "../../components/QRCodeGenerator"
+import { httpPost } from "../../config/apiService"
+import { shareLink } from "../../config/routesConstants"
+import { generateProfileLink } from "../../helpers/generateProfileLink"
+import { useStores } from "../../stores/context"
+import { Button } from "../../components/Button"
 
 export interface IProfileShareAdd {}
 
-const HOUR = 60 * 60;
-const DAY = HOUR * 24;
-const WEEK = DAY * 7;
-const MONTH = WEEK * 4;
+const HOUR = 60 * 60
+const DAY = HOUR * 24
+const WEEK = DAY * 7
+const MONTH = WEEK * 4
 
 interface ISharedLink {
-  _id: string;
-  createdAt?: Date;
-  expiration: string;
-  memo: string;
-  resource: string;
-  token: string;
-  updatedAt: string;
-  userId: string;
-  walletAddress: string;
+  _id: string
+  createdAt?: Date
+  expiration: string
+  memo: string
+  resource: string
+  token: string
+  updatedAt: string
+  userId: string
+  walletAddress: string
 }
 
 export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
-  const [memo, setMemo] = useState('');
-  const [expiration, setExpiration] = useState('-1');
+  const [memo, setMemo] = useState("")
+  const [expiration, setExpiration] = useState("-1")
   const [createdLink, setCreatedLink] = useState<ISharedLink>({
-    _id: '',
-    expiration: '',
-    memo: '',
-    resource: '',
-    token: '',
-    updatedAt: '',
-    userId: '',
-    walletAddress: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const {apiStore, loginStore} = useStores();
-  const inputRef = useRef();
+    _id: "",
+    expiration: "",
+    memo: "",
+    resource: "",
+    token: "",
+    updatedAt: "",
+    userId: "",
+    walletAddress: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const { apiStore, loginStore } = useStores()
+  const inputRef = useRef()
   const generateLink = async () => {
     const body = {
       expiration: new Date().getTime() + +expiration * 1000,
       memo: memo,
-      resource: 'profile',
-    };
-    setLoading(true);
-    try {
-      const {data} = await httpPost(shareLink, body, loginStore.userToken);
-      setCreatedLink(data.sharelinkData);
-    } catch (error) {
-      console.log(error);
+      resource: "profile",
     }
-    setLoading(false);
-  };
+    setLoading(true)
+    try {
+      const { data } = await httpPost(shareLink, body, loginStore.userToken)
+      setCreatedLink(data.sharelinkData)
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false)
+  }
   return (
     <ScrollView
-      style={{backgroundColor: 'white', paddingHorizontal: 20, flex: 1}}>
-      <View style={{marginTop: 10}}>
-        <HStack justifyContent={'space-between'}>
+      style={{ backgroundColor: "white", paddingHorizontal: 20, flex: 1 }}
+    >
+      <View style={{ marginTop: 10 }}>
+        <HStack justifyContent={"space-between"}>
           <Text style={styles.title}>Create a Profile Sharing link</Text>
         </HStack>
         <Text style={styles.description}>
@@ -93,7 +94,8 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           borderColor={commonColors.primaryColor}
           color={commonColors.primaryColor}
           mt={1}
-          onValueChange={itemValue => setExpiration(itemValue)}>
+          onValueChange={(itemValue) => setExpiration(itemValue)}
+        >
           <Select.Item label="No Expiration" value={(-1).toString()} />
           <Select.Item label="1 hour" value={HOUR.toString()} />
           <Select.Item label="1 day" value={DAY.toString()} />
@@ -112,11 +114,11 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
           marginBottom={2}
           marginTop={1}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           onChangeText={setMemo}
           value={memo}
-          placeholder={'shared with Alice'}
+          placeholder={"shared with Alice"}
           placeholderTextColor={commonColors.primaryColor}
           borderColor={commonColors.primaryColor}
         />
@@ -141,43 +143,43 @@ export const ProfileShareAdd: React.FC<IProfileShareAdd> = ({}) => {
             walletAddress: createdLink.walletAddress,
             xmppId:
               loginStore.initialData.xmppUsername +
-              '@' +
+              "@" +
               apiStore.xmppDomains.DOMAIN,
           })}
           close={() => {}}
         />
       ) : (
         <Button
-          style={{marginBottom: 30}}
+          style={{ marginBottom: 30 }}
           loading={loading}
-          title={'Generate Link'}
+          title={"Generate Link"}
           onPress={generateLink}
         />
       )}
     </ScrollView>
-  );
-};
+  )
+}
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,
-    color: 'black',
+    color: "black",
     fontSize: 18,
     marginVertical: 10,
   },
   description: {
     fontFamily: textStyles.regularFont,
-    color: 'black',
+    color: "black",
   },
   shareText: {
-    color: '#fff',
+    color: "#fff",
     fontFamily: textStyles.mediumFont,
     // textAlign: 'center',
     fontSize: 18,
   },
   note: {
-    color: 'black',
+    color: "black",
     marginTop: 5,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: 12,
   },
-});
+})

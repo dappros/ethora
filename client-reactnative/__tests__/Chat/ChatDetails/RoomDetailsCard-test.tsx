@@ -1,22 +1,20 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import React from "react"
+import renderer from "react-test-renderer"
 
-import RoomDetailsCard from '../../../src/components/Chat/Chatdetails/RoomDetailsCard';
-import { StoreProvider } from '../../../src/stores/context';
+import RoomDetailsCard from "../../../src/components/Chat/Chatdetails/RoomDetailsCard"
+import { StoreProvider } from "../../../src/stores/context"
 
-test("renders correctly", ()=>{
- 
+test("renders correctly", () => {
+  const room = {
+    jid: "string",
+    name: "string",
+    roomThumbnail: "string",
+    roomBackground: "string",
+  }
 
-    const room= {
-        jid: "string",
-        name: "string",
-        roomThumbnail: "string",
-        roomBackground: "string"
-    };
-
-   const uploadedImage={
+  const uploadedImage = {
     _id: "string",
-    createdAt:"string",
+    createdAt: "string",
     expiresAt: 1,
     filename: "string",
     isVisible: true,
@@ -29,18 +27,21 @@ test("renders correctly", ()=>{
     updatedAt: "string",
     userId: "string",
   }
-   const tree = renderer.create(
-    <StoreProvider>
+  const tree = renderer
+    .create(
+      <StoreProvider>
         <RoomDetailsCard
-            handleEditDesriptionPress={()=>console.log("edit description press")}
-            handleRoomNameEdit={()=>console.log("room name edit")}
-            onImagePress={()=>new Promise(()=>console.log("Image press"))}
-            room={room}
-            toggleNotification={()=>console.log("asdasd")}
-            uploadedImage={uploadedImage}
+          handleEditDesriptionPress={() =>
+            console.log("edit description press")
+          }
+          handleRoomNameEdit={() => console.log("room name edit")}
+          onImagePress={() => new Promise(() => console.log("Image press"))}
+          room={room}
+          toggleNotification={() => console.log("asdasd")}
+          uploadedImage={uploadedImage}
         />
-    </StoreProvider>
-   ).toJSON();
-   expect(tree).toMatchSnapshot();
- 
+      </StoreProvider>
+    )
+    .toJSON()
+  expect(tree).toMatchSnapshot()
 })

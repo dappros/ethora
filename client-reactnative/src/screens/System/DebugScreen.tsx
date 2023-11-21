@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react"
 import {
   ScrollView,
   Text,
@@ -7,79 +7,79 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-} from 'react-native';
-import Highlighter from 'react-native-highlight-words';
+} from "react-native"
+import Highlighter from "react-native-highlight-words"
 
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from "react-native-tab-view"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
+} from "react-native-responsive-screen"
 
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import Modal from 'react-native-modal';
-import {commonColors, textStyles} from '../../../docs/config';
-import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
-import {useStores} from '../../stores/context';
+import AntIcon from "react-native-vector-icons/AntDesign"
+import Modal from "react-native-modal"
+import { commonColors, textStyles } from "../../../docs/config"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import { useStores } from "../../stores/context"
 
-const DebugScreenXmpp = ({navigation}) => {
-  const [searchText, setSearchText] = useState('');
-  const [textForSearch, setTextForSearch] = useState('');
+const DebugScreenXmpp = ({ navigation }) => {
+  const [searchText, setSearchText] = useState("")
+  const [textForSearch, setTextForSearch] = useState("")
   const submit = () => {
-    setTextForSearch(searchText);
-  };
-  const {debugStore} = useStores();
+    setTextForSearch(searchText)
+  }
+  const { debugStore } = useStores()
 
   const getCircularReplacer = () => {
-    const seen = new WeakSet();
+    const seen = new WeakSet()
     return (key, value) => {
-      if (typeof value === 'object' && value !== null) {
+      if (typeof value === "object" && value !== null) {
         if (seen.has(value)) {
-          return;
+          return
         }
-        seen.add(value);
+        seen.add(value)
       }
-      return value;
-    };
-  };
+      return value
+    }
+  }
   return (
-    <View style={{paddingBottom: 100}}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+    <View style={{ paddingBottom: 100 }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <TextInput
           value={searchText}
-          onChangeText={text => setSearchText(text)}
+          onChangeText={(text) => setSearchText(text)}
           placeholder="Search"
-          placeholderTextColor={'black'}
+          placeholderTextColor={"black"}
           style={styles.searchInput}
           maxLength={50}
         />
         <TouchableOpacity style={styles.searchButton} onPress={submit}>
-          <Text style={{color: 'white'}}>Search</Text>
+          <Text style={{ color: "white" }}>Search</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView>
         {/* <JSONTree data={textForSearch ? filteredLogs : logs} /> */}
-        <View style={{paddingLeft: 10}}>
+        <View style={{ paddingLeft: 10 }}>
           {debugStore.xmppLogs
-            .filter(log =>
-              JSON.stringify(log, getCircularReplacer()).includes(
-                textForSearch,
-              ),
+            .filter((log) =>
+              JSON.stringify(log, getCircularReplacer()).includes(textForSearch)
             )
             .map((log, i) => {
               return (
                 <Highlighter
                   key={i}
-                  highlightStyle={{backgroundColor: commonColors.primaryColor}}
+                  highlightStyle={{
+                    backgroundColor: commonColors.primaryColor,
+                  }}
                   searchWords={[textForSearch]}
                   textToHighlight={JSON.stringify(
                     log,
                     getCircularReplacer(),
-                    2,
+                    2
                   )}
                 />
-              );
+              )
             })}
         </View>
       </ScrollView>
@@ -89,15 +89,15 @@ const DebugScreenXmpp = ({navigation}) => {
         <Text key={JSON.stringify(log)}>{JSON.stringify(log, null, 2)}</Text>
       ))} */}
     </View>
-  );
-};
-const DebugScreenApi = ({navigation}) => {
-  const {debugStore} = useStores();
+  )
+}
+const DebugScreenApi = ({ navigation }) => {
+  const { debugStore } = useStores()
 
-  const [searchText, setSearchText] = useState('');
-  const [textForSearch, setTextForSearch] = useState('');
-  const [apiMode, setApiMode] = useState('');
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState("")
+  const [textForSearch, setTextForSearch] = useState("")
+  const [apiMode, setApiMode] = useState("")
+  const [isModalVisible, setModalVisible] = useState(false)
 
   const submit = async () => {
     // let res = await http.httpGet('wallets/balance/' + walletAddress);
@@ -106,22 +106,24 @@ const DebugScreenApi = ({navigation}) => {
     // dispatch(changeToken('prod'));
     // dispatch(changeXmpp(prodXmpp));
 
-    setTextForSearch(searchText);
-  };
+    setTextForSearch(searchText)
+  }
 
   return (
-    <View style={{paddingBottom: 100}}>
-      <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+    <View style={{ paddingBottom: 100 }}>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}
+      >
         <TextInput
           value={searchText}
-          onChangeText={text => setSearchText(text)}
+          onChangeText={(text) => setSearchText(text)}
           placeholder="Search"
-          placeholderTextColor={'black'}
+          placeholderTextColor={"black"}
           style={styles.searchInput}
           maxLength={50}
         />
         <TouchableOpacity style={styles.searchButton} onPress={submit}>
-          <Text style={{color: 'white'}}>Search</Text>
+          <Text style={{ color: "white" }}>Search</Text>
         </TouchableOpacity>
 
         <View style={styles.selectContainer}>
@@ -129,16 +131,18 @@ const DebugScreenApi = ({navigation}) => {
             style={{
               ...styles.textStyle,
               left: 5,
-            }}>
-            {' '}
+            }}
+          >
+            {" "}
             Api mode
           </Text>
           <Text
             style={{
               ...styles.textStyle,
               right: 40,
-            }}>
-            {' '}
+            }}
+          >
+            {" "}
             {apiMode}
           </Text>
 
@@ -149,8 +153,8 @@ const DebugScreenApi = ({navigation}) => {
                 // onPress={() => props.navigation.navigate('LoginComponent')}
                 color={commonColors.primaryColor}
                 name="caretdown"
-                size={hp('2%')}
-                style={{marginRight: 5, marginBottom: 2}}
+                size={hp("2%")}
+                style={{ marginRight: 5, marginBottom: 2 }}
               />
             </TouchableOpacity>
           </>
@@ -161,25 +165,28 @@ const DebugScreenApi = ({navigation}) => {
 
       <ScrollView>
         {/* <JSONTree data={textForSearch ? filteredLogs : logs} /> */}
-        <View style={{paddingLeft: 10}}>
+        <View style={{ paddingLeft: 10 }}>
           {debugStore.apiLogs
-            .filter(log => JSON.stringify(log).includes(textForSearch))
+            .filter((log) => JSON.stringify(log).includes(textForSearch))
             .map((log, i) => {
               return (
                 <Highlighter
                   key={i}
-                  highlightStyle={{backgroundColor: commonColors.primaryColor}}
+                  highlightStyle={{
+                    backgroundColor: commonColors.primaryColor,
+                  }}
                   searchWords={[textForSearch]}
                   textToHighlight={JSON.stringify(log, null, 2)}
                 />
-              );
+              )
             })}
         </View>
       </ScrollView>
 
       <Modal
         onBackdropPress={() => setModalVisible(false)}
-        isVisible={isModalVisible}>
+        isVisible={isModalVisible}
+      >
         <View style={styles.modalContainer}>
           <TouchableOpacity style={styles.rarityItems}>
             <Text style={styles.modalItem}>api-dev.dappros.com</Text>
@@ -197,21 +204,21 @@ const DebugScreenApi = ({navigation}) => {
         <Text key={JSON.stringify(log)}>{JSON.stringify(log, null, 2)}</Text>
       ))} */}
     </View>
-  );
-};
-export function DebugScreen({navigation}) {
-  const [index, setIndex] = React.useState(0);
+  )
+}
+export function DebugScreen({ navigation }) {
+  const [index, setIndex] = React.useState(0)
   const [routes] = React.useState([
-    {key: 'first', title: 'Xmpp logs'},
-    {key: 'second', title: 'API logs'},
-  ]);
-  const renderTabBar = props => (
+    { key: "first", title: "Xmpp logs" },
+    { key: "second", title: "API logs" },
+  ])
+  const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{backgroundColor: 'white'}}
-      style={{backgroundColor: commonColors.primaryColor}}
+      indicatorStyle={{ backgroundColor: "white" }}
+      style={{ backgroundColor: commonColors.primaryColor }}
     />
-  );
+  )
 
   return (
     <>
@@ -222,16 +229,16 @@ export function DebugScreen({navigation}) {
       />
       <TabView
         renderTabBar={renderTabBar}
-        navigationState={{index, routes}}
+        navigationState={{ index, routes }}
         renderScene={SceneMap({
           first: DebugScreenXmpp,
           second: DebugScreenApi,
         })}
         onIndexChange={setIndex}
-        initialLayout={{width: wp('100%')}}
+        initialLayout={{ width: wp("100%") }}
       />
     </>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -244,7 +251,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
   searchInput: {
-    width: '40%',
+    width: "40%",
     padding: 5,
     paddingLeft: 10,
     height: 30,
@@ -260,29 +267,29 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginLeft: 10,
 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    width: wp('35%'),
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    width: wp("35%"),
     height: 30,
   },
 
   textStyle: {
     fontFamily: textStyles.lightFont,
     color: commonColors.primaryColor,
-    position: 'absolute',
+    position: "absolute",
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   modalItem: {
-    fontSize: hp('2.23%'),
+    fontSize: hp("2.23%"),
     fontFamily: textStyles.regularFont,
-    textAlign: 'left',
+    textAlign: "left",
     paddingLeft: 5,
     color: commonColors.primaryColor,
   },
@@ -292,8 +299,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderBottomColor: commonColors.primaryColor,
     borderBottomWidth: 1,
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-});
+})

@@ -1,38 +1,38 @@
-import { Box, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { FullPageSpinner } from "../../components/FullPageSpinner";
-import { getTransactions } from "../../http";
-import { ExplorerRespose, ITransaction } from "../Profile/types";
-import { Transactions } from "../Transactions/Transactions";
+import { Box, Typography } from "@mui/material"
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router"
+import { FullPageSpinner } from "../../components/FullPageSpinner"
+import { getTransactions } from "../../http"
+import { ExplorerRespose, ITransaction } from "../Profile/types"
+import { Transactions } from "../Transactions/Transactions"
 
-interface ITransactionAddressDetailsProps {}
+interface ITransactionAddressDetailsProperties {}
 
-const TransactionAddressDetails: React.FC<ITransactionAddressDetailsProps> = (
-  props
-) => {
+const TransactionAddressDetails: React.FC<
+  ITransactionAddressDetailsProperties
+> = (properties) => {
   const [transactions, setTransactions] = useState<
     ExplorerRespose<ITransaction[]>
-  >({ items: [], total: 0, offset: 0, limit: 0 });
-  const [loading, setLoading] = useState(false);
+  >({ items: [], total: 0, offset: 0, limit: 0 })
+  const [loading, setLoading] = useState(false)
 
-  const params = useParams<{ address: string }>();
+  const parameters = useParams<{ address: string }>()
   const getDetails = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const { data } = await getTransactions(params.address);
-      setTransactions(data);
+      const { data } = await getTransactions(parameters.address)
+      setTransactions(data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
-    if (params?.address) {
-      getDetails();
+    if (parameters?.address) {
+      getDetails()
     }
-  }, [params]);
+  }, [parameters])
   return (
     <>
       {loading ? (
@@ -40,12 +40,12 @@ const TransactionAddressDetails: React.FC<ITransactionAddressDetailsProps> = (
       ) : (
         <Box>
           <Typography variant="h4" sx={{ padding: "10px", fontSize: "25px" }}>
-            Transactions from/to {params.address}
+            Transactions from/to {parameters.address}
           </Typography>
           <Transactions transactions={transactions.items} />
         </Box>
       )}
     </>
-  );
-};
-export default TransactionAddressDetails;
+  )
+}
+export default TransactionAddressDetails

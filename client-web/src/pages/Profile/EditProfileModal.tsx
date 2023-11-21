@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { Button, Tooltip } from "@mui/material";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import { useStoreState } from "../../store";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { httpWithAuth } from "../../http";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import ChageImage from "./ChangeImage";
-import defUserImage from "../../assets/images/def-ava.png";
+import React, { useEffect, useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { Button, Tooltip } from "@mui/material"
+import { useFormik } from "formik"
+import TextField from "@mui/material/TextField"
+import { useStoreState } from "../../store"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { httpWithAuth } from "../../http"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import ChageImage from "./ChangeImage"
+import defUserImage from "../../assets/images/def-ava.png"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  user: any;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  user: any
+}
 
-export default function EditProfileModal({ open, setOpen, user }: TProps) {
-  const [change, setChange] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const setUser = useStoreState((state) => state.setUser);
+export default function EditProfileModal({ open, setOpen, user }: TProperties) {
+  const [change, setChange] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const setUser = useStoreState((state) => state.setUser)
 
   const formik = useFormik({
     initialValues: {
@@ -35,34 +35,34 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
       isAssetsOpen: user.isAssetsOpen,
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.firstName) {
-        errors.firstName = "Required";
+        errors.firstName = "Required"
       }
 
       if (!values.lastName) {
-        errors.lastName = "Required";
+        errors.lastName = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: (values) => {
-      const fd = new FormData();
-      fd.append("firstName", values.firstName);
-      fd.append("lastName", values.lastName);
+      const fd = new FormData()
+      fd.append("firstName", values.firstName)
+      fd.append("lastName", values.lastName)
 
       if (values.description) {
-        fd.append("description", values.description);
+        fd.append("description", values.description)
       }
 
-      fd.append("isProfileOpen", values.isProfileOpen);
-      fd.append("isAssetsOpen", values.isAssetsOpen);
-      setLoading(true);
+      fd.append("isProfileOpen", values.isProfileOpen)
+      fd.append("isAssetsOpen", values.isAssetsOpen)
+      setLoading(true)
       httpWithAuth()
         .put("/users", fd)
         .then((response) => {
-          const respUser = response.data.user;
+          const respUser = response.data.user
           setUser({
             ...user,
             firstName: respUser.firstName,
@@ -70,12 +70,12 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
             description: respUser.description,
             isProfileOpen: respUser.isProfileOpen,
             isAssetsOpen: respUser.isAssetsOpen,
-          });
-          setOpen(false);
+          })
+          setOpen(false)
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     },
-  });
+  })
 
   return (
     <Dialog onClose={() => setOpen(false)} open={open}>
@@ -177,7 +177,7 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                           formik.setFieldValue(
                             "isProfileOpen",
                             e.target.checked
-                          );
+                          )
                         }}
                       />
                     }
@@ -192,17 +192,16 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
                   }
                 >
                   <FormControlLabel
-                    checked={formik.values.isAssetsOpen || formik.values.isProfileOpen}
+                    checked={
+                      formik.values.isAssetsOpen || formik.values.isProfileOpen
+                    }
                     name="isAssetsOpen"
                     id="isAssetsOpen"
                     control={
                       <Checkbox
                         disabled={formik.values.isProfileOpen}
                         onChange={(e) => {
-                          formik.setFieldValue(
-                            "isAssetsOpen",
-                            e.target.checked
-                          );
+                          formik.setFieldValue("isAssetsOpen", e.target.checked)
                         }}
                       />
                     }
@@ -225,5 +224,5 @@ export default function EditProfileModal({ open, setOpen, user }: TProps) {
       </Box>
       {change && <ChageImage open={change} setOpen={setChange} />}
     </Dialog>
-  );
+  )
 }

@@ -1,84 +1,84 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from "react"
 import {
   Avatar,
   Box,
   CircularProgress,
   IconButton,
   Typography,
-} from "@mui/material";
-import { useHistory } from "react-router";
-import { TActiveRoomFilter, useStoreState } from "../../store";
-import xmpp from "../../xmpp";
-import StarPurple500Icon from "@mui/icons-material/StarPurple500";
-import StarRateIcon from "@mui/icons-material/StarRate";
-import { ROOMS_FILTERS } from "../../config/config";
-import DeleteIcon from "@mui/icons-material/Delete";
-import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { uploadFile } from "../../http";
+} from "@mui/material"
+import { useHistory } from "react-router"
+import { TActiveRoomFilter, useStoreState } from "../../store"
+import xmpp from "../../xmpp"
+import StarPurple500Icon from "@mui/icons-material/StarPurple500"
+import StarRateIcon from "@mui/icons-material/StarRate"
+import { ROOMS_FILTERS } from "../../config/config"
+import DeleteIcon from "@mui/icons-material/Delete"
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { uploadFile } from "../../http"
 
 interface IRoomAvatar {
-  roomJID: string;
-  onDeleteRoomClick: () => void;
+  roomJID: string
+  onDeleteRoomClick: () => void
 }
 
 export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
   const currentRoomData = useStoreState((store) => store.userChatRooms).find(
     (e) => e?.jid === roomJID
-  );
-  const updateUserChatRoom = useStoreState((state) => state.updateUserChatRoom);
-  const roomRoles = useStoreState((state) => state.roomRoles);
-  const { showSnackbar } = useSnackbar();
+  )
+  const updateUserChatRoom = useStoreState((state) => state.updateUserChatRoom)
+  const roomRoles = useStoreState((state) => state.roomRoles)
+  const { showSnackbar } = useSnackbar()
   const currentRoomRole = roomRoles.find(
     (value) => value.roomJID === currentRoomData?.jid
-  )?.role;
-  const fileRef = useRef(null);
-  const [loading, setLoading] = useState<"chatIcon" | false>(false);
+  )?.role
+  const fileReference = useRef(null)
+  const [loading, setLoading] = useState<"chatIcon" | false>(false)
 
-  const history = useHistory();
+  const history = useHistory()
   const isFavouriteOrOfficialRoom =
     currentRoomData &&
     (currentRoomData.group === ROOMS_FILTERS.official ||
-      currentRoomData.group === ROOMS_FILTERS.favourite);
+      currentRoomData.group === ROOMS_FILTERS.favourite)
   const isAllowedToChangeData =
     currentRoomRole === "moderator" ||
     currentRoomRole === "owner" ||
-    currentRoomRole === "admin";
+    currentRoomRole === "admin"
   const changeRoomType = (status: TActiveRoomFilter) => {
-    const newRoomData = Object.assign({}, currentRoomData);
-    newRoomData.group = status;
-    updateUserChatRoom(newRoomData);
+    const newRoomData = Object.assign({}, currentRoomData)
+    newRoomData.group = status
+    updateUserChatRoom(newRoomData)
     const favouriteRooms = useStoreState
       .getState()
-      .userChatRooms.filter((r) => r.group === ROOMS_FILTERS.favourite);
-    xmpp.setPrivateXmlRooms(favouriteRooms);
-  };
+      .userChatRooms.filter((r) => r.group === ROOMS_FILTERS.favourite)
+    xmpp.setPrivateXmlRooms(favouriteRooms)
+  }
   const goToChangeBackground = (e: React.MouseEvent<HTMLElement>) => {
     if (isAllowedToChangeData) {
-      history.push("/changebg/" + roomJID);
+      history.push("/changebg/" + roomJID)
     }
-  };
+  }
 
   const changeRoomIcon = async (file: File) => {
-    const formData = new FormData();
-    formData.append("files", file);
-    setLoading("chatIcon");
+    const formData = new FormData()
+    formData.append("files", file)
+    setLoading("chatIcon")
     try {
-      const result = await uploadFile(formData);
-      const roomAddress = roomJID.split("@")[0];
+      const result = await uploadFile(formData)
+      const roomAddress = roomJID.split("@")[0]
       xmpp.setRoomImage(
         roomAddress,
         result.data.results[0].location,
         currentRoomData.room_background,
         "icon"
-      );
+      )
 
-      let newRoomData = Object.assign({}, currentRoomData);
-      newRoomData.room_thumbnail = result.data.results[0].location;
-      updateUserChatRoom(newRoomData);
-      showSnackbar("success", "Success! The chat icon was set");
+      const newRoomData = Object.assign({}, currentRoomData)
+      newRoomData.room_thumbnail = result.data.results[0].location
+      updateUserChatRoom(newRoomData)
+      showSnackbar("success", "Success! The chat icon was set")
     } catch (error) {
-      console.log(error);
+      console.log(error)
       showSnackbar(
         "error",
         "An error occurred while loading the image. " +
@@ -87,10 +87,10 @@ export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
           " " +
           error.response.data +
           " )"
-      );
+      )
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <div style={{ cursor: "pointer" }}>
       <Box
@@ -113,7 +113,7 @@ export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
             right: 0,
             display: "flex",
             flexDirection: "column",
-            zIndex: 99999,
+            zIndex: 99_999,
           }}
         >
           <IconButton
@@ -133,14 +133,14 @@ export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
           {isAllowedToChangeData && (
             <IconButton
               sx={{ color: "white" }}
-              onClick={() => fileRef.current?.click()}
+              onClick={() => fileReference.current?.click()}
             >
               <input
                 type="file"
                 name="file"
                 id="file"
                 onChange={(event) => changeRoomIcon(event.target.files[0])}
-                ref={fileRef}
+                ref={fileReference}
                 style={{ display: "none" }}
                 accept="image/*"
               />
@@ -177,5 +177,5 @@ export function ChatAvatar({ roomJID, onDeleteRoomClick }: IRoomAvatar) {
         </IconButton>
       </Box>
     </div>
-  );
+  )
 }

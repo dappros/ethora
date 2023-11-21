@@ -1,54 +1,54 @@
-import { useState } from "react";
-import { Box, Container, IconButton, Typography } from "@mui/material";
-import { useHistory, useParams } from "react-router";
-import { useStoreState } from "../../store";
-import xmpp from "../../xmpp";
-import EditIcon from "@mui/icons-material/Edit";
-import { DeleteDialog } from "../../components/DeleteDialog";
-import { ChangeRoomInfoModal } from "./ChangeRoomInfoModal";
-import { ChatAvatar } from "./ChatAvatar";
+import { useState } from "react"
+import { Box, Container, IconButton, Typography } from "@mui/material"
+import { useHistory, useParams } from "react-router"
+import { useStoreState } from "../../store"
+import xmpp from "../../xmpp"
+import EditIcon from "@mui/icons-material/Edit"
+import { DeleteDialog } from "../../components/DeleteDialog"
+import { ChangeRoomInfoModal } from "./ChangeRoomInfoModal"
+import { ChatAvatar } from "./ChatAvatar"
 
 export default function ChatDetails() {
-  const { roomJID } = useParams<{ roomJID: string }>();
+  const { roomJID } = useParams<{ roomJID: string }>()
 
-  const [newDescription, setNewDescription] = useState("");
-  const [newRoomName, setNewRoomName] = useState("");
-  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
-  const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false);
-  const [showRoomRenameModal, setShowRoomRenameModal] = useState(false);
+  const [newDescription, setNewDescription] = useState("")
+  const [newRoomName, setNewRoomName] = useState("")
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false)
+  const [showDeleteRoomDialog, setShowDeleteRoomDialog] = useState(false)
+  const [showRoomRenameModal, setShowRoomRenameModal] = useState(false)
   const currentRoomData = useStoreState((store) => store.userChatRooms).find(
     (e) => e?.jid === roomJID
-  );
-  const roomRoles = useStoreState((state) => state.roomRoles);
+  )
+  const roomRoles = useStoreState((state) => state.roomRoles)
 
-  const history = useHistory();
+  const history = useHistory()
 
   const currentRoomRole = roomRoles.find(
     (value) => value.roomJID === currentRoomData?.jid
-  )?.role;
+  )?.role
 
   const isAllowedToChangeData =
     currentRoomRole === "moderator" ||
     currentRoomRole === "owner" ||
-    currentRoomRole === "admin";
+    currentRoomRole === "admin"
 
   const handleChangeDescription = (newDescription: string) => {
-    xmpp.changeRoomDescription(roomJID, newDescription);
-  };
+    xmpp.changeRoomDescription(roomJID, newDescription)
+  }
 
   const handleChangeRoomName = (newRoomName: string) => {
-    xmpp.changeRoomName(roomJID, newRoomName);
-  };
+    xmpp.changeRoomName(roomJID, newRoomName)
+  }
 
   const closeRoomDeleteDialog = () => {
-    setShowDeleteRoomDialog(false);
-  };
+    setShowDeleteRoomDialog(false)
+  }
   const leaveTheRoom = async () => {
-    xmpp.leaveTheRoom(roomJID);
-    xmpp.unsubscribe(roomJID);
-    closeRoomDeleteDialog();
-    history.push("/chat/none");
-  };
+    xmpp.leaveTheRoom(roomJID)
+    xmpp.unsubscribe(roomJID)
+    closeRoomDeleteDialog()
+    history.push("/chat/none")
+  }
 
   return (
     <Container
@@ -108,8 +108,8 @@ export default function ChatDetails() {
         onClose={() => setShowRoomRenameModal(false)}
         onChange={setNewRoomName}
         onSubmit={() => {
-          setShowRoomRenameModal(false);
-          handleChangeRoomName(newRoomName);
+          setShowRoomRenameModal(false)
+          handleChangeRoomName(newRoomName)
         }}
       />
       <ChangeRoomInfoModal
@@ -118,8 +118,8 @@ export default function ChatDetails() {
         onClose={() => setShowDescriptionModal(false)}
         onChange={setNewDescription}
         onSubmit={() => {
-          setShowDescriptionModal(false);
-          handleChangeDescription(newDescription);
+          setShowDescriptionModal(false)
+          handleChangeDescription(newDescription)
         }}
       />
       <DeleteDialog
@@ -130,5 +130,5 @@ export default function ChatDetails() {
         onClose={closeRoomDeleteDialog}
       />
     </Container>
-  );
+  )
 }

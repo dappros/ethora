@@ -1,8 +1,8 @@
-import { Alert, Snackbar as MuiSnackbar } from "@mui/material";
-import { useSnackbar } from "../context/SnackbarContext";
+import { Alert, Snackbar as MuiSnackbar } from "@mui/material"
+import { useSnackbar } from "../context/SnackbarContext"
 
 export const Snackbar = () => {
-  const { snackbar, closeSnackbar } = useSnackbar();
+  const { snackbar, closeSnackbar } = useSnackbar()
 
   return (
     <MuiSnackbar
@@ -18,5 +18,5 @@ export const Snackbar = () => {
         {snackbar.message}
       </Alert>
     </MuiSnackbar>
-  );
-};
+  )
+}

@@ -1,11 +1,11 @@
-import { xml } from "@xmpp/client";
-import { ApiStore } from "../stores/apiStore";
-import { XMPP_TYPES } from "./xmppConstants";
-const store = new ApiStore();
+import { xml } from "@xmpp/client"
+import { ApiStore } from "../stores/apiStore"
+import { XMPP_TYPES } from "./xmppConstants"
+const store = new ApiStore()
 
-let DOMAIN = store.xmppDomains.DOMAIN;
-let CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT;
-let CONFERENCEDOMAIN = store.xmppDomains.CONFERENCEDOMAIN;
+const DOMAIN = store.xmppDomains.DOMAIN
+const CONFERENCEDOMAIN_WITHOUT = store.xmppDomains.CONFERENCEDOMAIN_WITHOUT
+const CONFERENCEDOMAIN = store.xmppDomains.CONFERENCEDOMAIN
 
 export const subscribeStanza = (from: string, to: string, xmpp: any) => {
   const subscribe = xml(
@@ -25,9 +25,9 @@ export const subscribeStanza = (from: string, to: string, xmpp: any) => {
       xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
       xml("event", { node: "urn:xmpp:mucsub:nodes:subject" })
     )
-  );
-  xmpp.send(subscribe);
-};
+  )
+  xmpp.send(subscribe)
+}
 
 export const presenceStanza = (from: string, to: string, xmpp: any) => {
   const presence = xml(
@@ -38,9 +38,9 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
       id: XMPP_TYPES.roomPresence,
     },
     xml("x", "http://jabber.org/protocol/muc")
-  );
-  xmpp.send(presence);
-};
+  )
+  xmpp.send(presence)
+}
 export const getUserRoomsStanza = (
   manipulatedWalletAddress: string,
   xmpp: any
@@ -53,9 +53,9 @@ export const getUserRoomsStanza = (
       id: XMPP_TYPES.getUserRooms,
     },
     xml("query", { xmlns: "ns:getrooms" })
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const blacklistUser = (
   manipulatedWalletAddress: string,
@@ -74,10 +74,10 @@ export const blacklistUser = (
       xmlns: "ns:deepx:muc:user:block",
       user: userAddressToBlacklist + "@" + DOMAIN,
     })
-  );
+  )
 
-  xmpp.send(stanza);
-};
+  xmpp.send(stanza)
+}
 
 export const removeUserFromBlackList = (
   manipulatedWalletAddress: string,
@@ -95,10 +95,10 @@ export const removeUserFromBlackList = (
       xmlns: "ns:deepx:muc:user:unblock",
       user: userAddressToRemoveFromBlacklist + "@" + DOMAIN,
     })
-  );
+  )
 
-  xmpp.send(stanza);
-};
+  xmpp.send(stanza)
+}
 
 export const getBlackList = (manipulatedWalletAddress: string, xmpp: any) => {
   const stanza = xml(
@@ -111,10 +111,10 @@ export const getBlackList = (manipulatedWalletAddress: string, xmpp: any) => {
     xml("query", {
       xmlns: "ns:deepx:muc:user:blocklist",
     })
-  );
+  )
 
-  xmpp.send(stanza);
-};
+  xmpp.send(stanza)
+}
 /*
 Copyright 2019-2021 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
 You may not use this file except in compliance with the License.
@@ -143,9 +143,9 @@ export const sendMessageStanza = (
       senderJID: from + "@" + DOMAIN,
       ...data,
     })
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const sendReplaceMessageStanza = (
   from: string,
@@ -174,10 +174,10 @@ export const sendReplaceMessageStanza = (
       xmlns: "urn:xmpp:message-correct:0",
       text: replaceText,
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const sendMediaMessageStanza = async (
   from: string,
@@ -204,10 +204,10 @@ export const sendMediaMessageStanza = async (
       isMediafile: true,
       ...data,
     })
-  );
+  )
 
-  await xmpp.send(message);
-};
+  await xmpp.send(message)
+}
 
 export const fetchRosterlist = (
   walletAddress: string,
@@ -223,16 +223,16 @@ export const fetchRosterlist = (
       id: stanzaId,
     },
     xml("subscriptions", "urn:xmpp:mucsub:0")
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 export const getPaginatedArchive = (
   chat_jid: string,
   firstUserMessageID: string,
   xmpp: any
 ) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -249,12 +249,12 @@ export const getPaginatedArchive = (
         xml("before", {}, firstUserMessageID)
       )
     )
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -271,9 +271,9 @@ export const getLastMessageArchive = (chat_jid: string, xmpp: any) => {
         xml("before")
       )
     )
-  );
-  xmpp?.send(message);
-};
+  )
+  xmpp?.send(message)
+}
 
 export const subscribeToRoom = (
   roomJID: string,
@@ -296,10 +296,10 @@ export const subscribeToRoom = (
       xml("event", { node: "urn:xmpp:mucsub:nodes:subscribers" }),
       xml("event", { node: "urn:xmpp:mucsub:nodes:subject" })
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 export const unsubscribeFromChatXmpp = (
   manipulatedWalletAddress: string,
   jid: string,
@@ -322,9 +322,9 @@ export const unsubscribeFromChatXmpp = (
       xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
       xml("event", { node: "urn:xmpp:mucsub:nodes:subject" })
     )
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 export const leaveRoomXmpp = (
   manipulatedWalletAddress: string,
   jid: string,
@@ -335,11 +335,11 @@ export const leaveRoomXmpp = (
     from: manipulatedWalletAddress + "@" + DOMAIN,
     to: jid + "/" + username,
     type: "unavailable",
-  });
-  xmpp.send(presence);
-};
+  })
+  xmpp.send(presence)
+}
 export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       type: "set",
@@ -356,15 +356,15 @@ export const getRoomArchiveStanza = (chat_jid: string, xmpp: any) => {
         xml("before")
       )
     )
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 export const get_list_of_subscribers = (
   chat_jid: string,
   walletAddress: string,
   xmpp: any
 ) => {
-  let message = xml(
+  const message = xml(
     "iq",
     {
       from: walletAddress + "@" + DOMAIN,
@@ -373,9 +373,9 @@ export const get_list_of_subscribers = (
       id: XMPP_TYPES.participants,
     },
     xml("subscriptions", "urn:xmpp:mucsub:0")
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const roomConfigurationForm = (
   user_jid: string,
@@ -409,10 +409,10 @@ export const roomConfigurationForm = (
         )
       )
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const getRoomInfo = (
   walletAddress: string,
@@ -428,10 +428,10 @@ export const getRoomInfo = (
       type: "get",
     },
     xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const getChatLinkInfo = (
   walletAddress: string,
@@ -447,10 +447,10 @@ export const getChatLinkInfo = (
       type: "get",
     },
     xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const isComposing = async (
   walletAddress: string,
@@ -480,12 +480,12 @@ export const isComposing = async (
       fullName: fullName,
       manipulatedWalletAddress: walletAddress,
     })
-  );
+  )
 
   // setTimeout((, xmpp) => {
-  xmpp.send(message);
+  xmpp.send(message)
   // }, 100);
-};
+}
 export const botStanza = (from: string, to: string, data: any, xmpp: any) => {
   const message = xml(
     "message",
@@ -501,9 +501,9 @@ export const botStanza = (from: string, to: string, data: any, xmpp: any) => {
       senderJID: from + "@" + DOMAIN,
       ...data,
     })
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 export const pausedComposing = async (
   walletAddress: string,
   chat_jid: string,
@@ -532,10 +532,10 @@ export const pausedComposing = async (
       xmlns: "http://" + DOMAIN,
       manipulatedWalletAddress: walletAddress,
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const activeChatState = async (
   walletAddress: string,
@@ -561,10 +561,10 @@ export const activeChatState = async (
     xml("active", {
       xmlns: "http://jabber.org/protocol/chatstates",
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const commonDiscover = (
   walletAddress: string,
@@ -589,10 +589,10 @@ export const commonDiscover = (
     xml("query", {
       xmlns: "http://jabber.org/protocol/disco#info",
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const discoverProfileSupport = (
   walletAddress: string,
@@ -617,10 +617,10 @@ export const discoverProfileSupport = (
     xml("profile", {
       xmlns: "urn:xmpp:tmp:profile",
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   //     <iq from='stpeter@jabber.org/roundabout'
@@ -639,10 +639,10 @@ export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
     xml("vCard", {
       xmlns: "vcard-temp",
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const setRoomImage = (
   userJid: string,
@@ -668,9 +668,9 @@ export const setRoomImage = (
       room_background: roomBackground,
       room: roomJid,
     })
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 //stanza to delete message.
 export const deleteMessageStanza = (
@@ -691,10 +691,10 @@ export const deleteMessageStanza = (
     xml("delete", {
       id: messageId,
     })
-  );
+  )
 
-  xmpp.send(stanza);
-};
+  xmpp.send(stanza)
+}
 
 export const updateVCard = (
   photoURL: string | null,
@@ -717,9 +717,9 @@ export const updateVCard = (
       photoURL ? xml("URL", {}, photoURL) : null,
       fullName ? xml("FN", {}, fullName) : null
     )
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const retrieveOtherUserVcard = (
   username: string,
@@ -735,13 +735,13 @@ export const retrieveOtherUserVcard = (
       type: "get",
     },
     xml("vCard", { xmlns: "vcard-temp" })
-  );
+  )
 
-  xmpp?.send(message);
-};
+  xmpp?.send(message)
+}
 
 export const createNewRoom = (from: string, to: string, xmpp: any) => {
-  let message = xml(
+  const message = xml(
     "presence",
     {
       id: XMPP_TYPES.createRoom,
@@ -749,9 +749,9 @@ export const createNewRoom = (from: string, to: string, xmpp: any) => {
       to: to + CONFERENCEDOMAIN + "/" + from,
     },
     xml("x", "http://jabber.org/protocol/muc")
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const setOwner = (from: string, to: string, xmpp: any) => {
   const message = xml(
@@ -763,10 +763,10 @@ export const setOwner = (from: string, to: string, xmpp: any) => {
       type: "set",
     },
     xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const roomConfig = (
   from: string,
@@ -805,10 +805,10 @@ export const roomConfig = (
         )
       )
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const sendInvite = (
   from: string,
@@ -828,10 +828,10 @@ export const sendInvite = (
         xml("reason", {}, "Hey, this is the place with amazing cookies!")
       )
     )
-  );
+  )
 
-  xmpp.send(stanza);
-};
+  xmpp.send(stanza)
+}
 
 export const banUser = (
   to: string,
@@ -864,9 +864,9 @@ export const banUser = (
         jid: bannedUserWalletAddres + "@" + DOMAIN,
       })
     )
-  );
-  xmpp.send(message);
-};
+  )
+  xmpp.send(message)
+}
 
 export const banUserr = (
   from: string,
@@ -902,10 +902,10 @@ export const banUserr = (
       time: "2592000",
       comment: "Ban",
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const unbanUser = (
   from: string,
@@ -936,10 +936,10 @@ export const unbanUser = (
       type: "room",
       room: roomJid,
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const getListOfBannedUserInRoom = (
   from: string,
@@ -959,10 +959,10 @@ export const getListOfBannedUserInRoom = (
       type: "room",
       room: roomJId,
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const assignModerator = (from: string, to: string, xmpp: any) => {
   // <iq from='crone1@shakespeare.lit/desktop'
@@ -993,10 +993,10 @@ export const assignModerator = (from: string, to: string, xmpp: any) => {
         role: "moderator",
       })
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const unAssignModerator = (from: string, to: string, xmpp: any) => {
   //   <iq from='crone1@shakespeare.lit/desktop'
@@ -1027,10 +1027,10 @@ export const unAssignModerator = (from: string, to: string, xmpp: any) => {
         role: "participant",
       })
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   //   <iq
@@ -1049,10 +1049,10 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
       xmlns: "ns:room:last",
       room: to,
     })
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}
 
 //stanza to change room description.
 export const changeRoomDescription = (
@@ -1083,7 +1083,7 @@ export const changeRoomDescription = (
         xml("field", { var: "muc#roomconfig_roomdesc" }, xml("value", {}, desc))
       )
     )
-  );
+  )
 
-  xmpp.send(message);
-};
+  xmpp.send(message)
+}

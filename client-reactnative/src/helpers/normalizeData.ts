@@ -6,10 +6,10 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 export const normalizeData = (filteredData: any) => {
-  const maxValue = Math.max(...filteredData);
-  const multiplier = maxValue ** -1;
+  const maxValue = Math.max(...filteredData)
+  const multiplier = maxValue ** -1
 
   return !maxValue
     ? filteredData
-    : filteredData.map((val: any) => val * multiplier);
-};
+    : filteredData.map((val: any) => val * multiplier)
+}

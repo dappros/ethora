@@ -5,8 +5,8 @@ import {
   TableSortLabel,
   Tooltip,
   Box,
-} from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+} from "@mui/material"
+import InfoIcon from "@mui/icons-material/Info"
 
 type CellId =
   | "displayName"
@@ -17,16 +17,16 @@ type CellId =
   | "files"
   | "web3"
   | "createdAt"
-  | "actions";
+  | "actions"
 
-type TableCellAlign = "inherit" | "left" | "center" | "right" | "justify";
+type TableCellAlign = "inherit" | "left" | "center" | "right" | "justify"
 interface HeadCell {
-  disablePadding: boolean;
-  id: CellId;
-  label: string;
-  numeric: boolean;
-  description?: string;
-  align: TableCellAlign;
+  disablePadding: boolean
+  id: CellId
+  label: string
+  numeric: boolean
+  description?: string
+  align: TableCellAlign
 }
 
 const headCells: readonly HeadCell[] = [
@@ -103,7 +103,7 @@ const headCells: readonly HeadCell[] = [
     label: "Actions",
     align: "right",
   },
-];
+]
 export const AppsTableHead = () => {
   return (
     <TableHead>
@@ -114,21 +114,21 @@ export const AppsTableHead = () => {
             align={headCell.align}
             padding={headCell.disablePadding ? "none" : "normal"}
           >
-            <Box style={{display: 'inline-flex', alignItems: 'center'}}>
-            {headCell.label}
-            {!!headCell.description && (
-              <Tooltip title={headCell.description}>
-                <InfoIcon
-                  color="primary"
-                  fontSize={"small"}
-                  sx={{ marginLeft: 1 }}
-                />
-              </Tooltip>
-            )}
+            <Box style={{ display: "inline-flex", alignItems: "center" }}>
+              {headCell.label}
+              {!!headCell.description && (
+                <Tooltip title={headCell.description}>
+                  <InfoIcon
+                    color="primary"
+                    fontSize={"small"}
+                    sx={{ marginLeft: 1 }}
+                  />
+                </Tooltip>
+              )}
             </Box>
           </TableCell>
         ))}
       </TableRow>
     </TableHead>
-  );
-};
+  )
+}

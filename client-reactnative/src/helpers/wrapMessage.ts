@@ -5,12 +5,11 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-
 interface wrapMessageProps {
-  senderName: string;
-  tokenName: string;
-  receiverMessageId: string;
-  receiverName: string;
+  senderName: string
+  tokenName: string
+  receiverMessageId: string
+  receiverName: string
 }
 
 export const wrapMessage = (data: wrapMessageProps) => {
@@ -22,7 +21,7 @@ export const wrapMessage = (data: wrapMessageProps) => {
       system: true,
       receiverMessageId: data.receiverMessageId,
       tokenName: data.tokenName,
-      nftActionType: 'wrap',
+      nftActionType: "wrap",
     },
-  ];
-};
+  ]
+}

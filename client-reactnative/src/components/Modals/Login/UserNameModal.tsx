@@ -5,20 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useState} from 'react';
+import React, { useState } from "react"
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
+} from "react-native"
 
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import Modal from 'react-native-modal';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import Modal from "react-native-modal"
 
-import {Input} from 'native-base';
-import {commonColors, textStyles} from '../../../../docs/config';
+import { Input } from "native-base"
+import { commonColors, textStyles } from "../../../../docs/config"
 
 export const UserNameModal = ({
   closeModal,
@@ -29,20 +29,20 @@ export const UserNameModal = ({
   setLastName,
   onSubmit,
 }: {
-  modalVisible: boolean;
-  firstName: string;
-  lastName: string;
-  closeModal: () => void;
-  setFirstName: (text: string) => void;
-  setLastName: (text: string) => void;
-  onSubmit: () => Promise<any>;
+  modalVisible: boolean
+  firstName: string
+  lastName: string
+  closeModal: () => void
+  setFirstName: (text: string) => void
+  setLastName: (text: string) => void
+  onSubmit: () => Promise<any>
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const submit = async () => {
-    setLoading(true);
-    await onSubmit();
-    setLoading(false);
-  };
+    setLoading(true)
+    await onSubmit()
+    setLoading(false)
+  }
   return (
     <Modal onBackdropPress={closeModal} isVisible={modalVisible}>
       <View style={styles.modal}>
@@ -50,8 +50,8 @@ export const UserNameModal = ({
           maxLength={15}
           marginBottom={2}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           value={firstName}
           onChangeText={setFirstName}
           placeholder="Enter your first name"
@@ -60,8 +60,8 @@ export const UserNameModal = ({
         <Input
           maxLength={15}
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.6%')}
-          color={'black'}
+          fontSize={hp("1.6%")}
+          color={"black"}
           value={lastName}
           onChangeText={setLastName}
           placeholder="Enter your last name"
@@ -70,33 +70,34 @@ export const UserNameModal = ({
         <TouchableOpacity
           disabled={loading}
           style={styles.submitButton}
-          onPress={submit}>
+          onPress={submit}
+        >
           {loading ? (
-            <ActivityIndicator size={20} color={'white'} />
+            <ActivityIndicator size={20} color={"white"} />
           ) : (
-            <Text style={{color: 'white'}}>Register</Text>
+            <Text style={{ color: "white" }}>Register</Text>
           )}
         </TouchableOpacity>
       </View>
     </Modal>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   modal: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   submitButton: {
     backgroundColor: commonColors.primaryDarkColor,
     width: 150,
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 5,
     marginTop: 10,
   },
-});
+})

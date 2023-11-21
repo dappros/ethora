@@ -1,12 +1,12 @@
-import { Box } from "@mui/material";
-import React from "react";
-import BezierCurve from "../../components/icons/BezierCurve";
+import { Box } from "@mui/material"
+import React from "react"
+import BezierCurve from "../../components/icons/BezierCurve"
 
-type Props = {
-  blockchain: any;
-};
+type Properties = {
+  blockchain: any
+}
 
-export default function Peers({ blockchain }: Props) {
+export default function Peers({ blockchain }: Properties) {
   return (
     <div
       className="dashboard-graph"
@@ -40,5 +40,5 @@ export default function Peers({ blockchain }: Props) {
         </div>
       </Box>
     </div>
-  );
+  )
 }

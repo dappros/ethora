@@ -1,43 +1,43 @@
-import {makeAutoObservable, runInAction} from 'mobx';
-import {RootStore} from './context';
+import { makeAutoObservable, runInAction } from "mobx"
+import { RootStore } from "./context"
 
 export class DebugStore {
-  xmppLogs: any = [];
-  apiLogs: any = [];
-  debugMode: boolean = false;
-  stores: RootStore | {} = {};
+  xmppLogs: any = []
+  apiLogs: any = []
+  debugMode: boolean = false
+  stores: RootStore | {} = {}
 
   constructor(stores: any) {
-    makeAutoObservable(this);
-    this.stores = stores;
+    makeAutoObservable(this)
+    this.stores = stores
   }
 
   setInitialState() {
     runInAction(() => {
-      this.xmppLogs = [];
-      this.apiLogs = [];
-      this.debugMode = false;
-    });
+      this.xmppLogs = []
+      this.apiLogs = []
+      this.debugMode = false
+    })
   }
 
   addLogsXmpp(log: any) {
     runInAction(() => {
-       this.xmppLogs.push(log);
-    });
+      this.xmppLogs.push(log)
+    })
   }
 
   addLogsApi(log: any) {
     runInAction(() => {
-     this.apiLogs.push(log);
-    });
+      this.apiLogs.push(log)
+    })
   }
 
   toggleDebugMode(value: boolean) {
-    this.debugMode = value;
+    this.debugMode = value
   }
 
   clearLogs() {
-    this.xmppLogs = [];
-    this.apiLogs = [];
+    this.xmppLogs = []
+    this.apiLogs = []
   }
 }

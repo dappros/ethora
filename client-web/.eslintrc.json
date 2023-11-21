@@ -1,0 +1,53 @@
+{
+  "root": true,
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "extends": [
+    "plugin:unicorn/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "unicorn/better-regex": "error",
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
+        }
+      }
+    ],
+    "unicorn/no-null": "warn",
+
+    // change to warn/error to enable linting
+    "max-lines": [
+      "off",
+      {
+        "max": 300
+      }
+    ],
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+    "unicorn/prefer-logical-operator-over-ternary": "off",
+
+    // usefull 
+    "unicorn/prefer-number-properties":"warn",
+    "unicorn/prevent-abbreviations": "warn",
+    "unicorn/no-array-for-each": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "unicorn/no-array-callback-reference": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "@typescript-eslint/no-var-requires": "warn",
+    "unicorn/prefer-module": "warn",
+    "unicorn/no-useless-promise-resolve-reject": "warn",
+    "unicorn/prefer-add-event-listener": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "unicorn/prefer-array-some":"warn",
+    "unicorn/prefer-spread": "warn",
+    "@typescript-eslint/ban-types": "warn"
+  }
+}

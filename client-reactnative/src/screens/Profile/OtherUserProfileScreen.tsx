@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import {
   SafeAreaView,
   Text,
@@ -12,38 +12,38 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-} from "react-native";
-import TransactionListTab from "../../components/Transactions/TransactionsList";
-import SkeletonContent from "react-native-skeleton-content-nonexpo";
+} from "react-native"
+import TransactionListTab from "../../components/Transactions/TransactionsList"
+import SkeletonContent from "react-native-skeleton-content-nonexpo"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { commonColors, textStyles, coinsMainName } from "../../../docs/config";
-import { useStores } from "../../stores/context";
-import { Avatar, HStack, VStack } from "native-base";
-import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
-import { observer } from "mobx-react-lite";
+} from "react-native-responsive-screen"
+import { commonColors, textStyles, coinsMainName } from "../../../docs/config"
+import { useStores } from "../../stores/context"
+import { Avatar, HStack, VStack } from "native-base"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import { observer } from "mobx-react-lite"
 import {
   createNewRoom,
   roomConfig,
   sendInvite,
   setOwner,
   subscribeToRoom,
-} from "../../xmpp/stanzas";
-import { underscoreManipulation } from "../../helpers/underscoreLogic";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import { filterNftBalances, produceNfmtItems } from "../../stores/walletStore";
-import { ProfileTabs } from "../../components/Profile/ProfileTabs";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+} from "../../xmpp/stanzas"
+import { underscoreManipulation } from "../../helpers/underscoreLogic"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import { filterNftBalances, produceNfmtItems } from "../../stores/walletStore"
+import { ProfileTabs } from "../../components/Profile/ProfileTabs"
+import { useNavigation } from "@react-navigation/native"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import {
   HomeStackNavigationProp,
   HomeStackParamList,
-} from "../../navigation/types";
+} from "../../navigation/types"
 
-const { primaryColor, primaryDarkColor } = commonColors;
-const { boldFont } = textStyles;
+const { primaryColor, primaryDarkColor } = commonColors
+const { boldFont } = textStyles
 
 const firstLayout = [
   {
@@ -68,78 +68,78 @@ const firstLayout = [
       },
     ],
   },
-];
+]
 type ScreenProps = NativeStackScreenProps<
   HomeStackParamList,
   "OtherUserProfileScreen"
->;
+>
 
 const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
   const { loginStore, walletStore, apiStore, chatStore, otherUserStore } =
-    useStores();
-  const navigation = useNavigation<HomeStackNavigationProp>();
+    useStores()
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
   const { setOffset, setTotal, clearPaginationData, anotherUserBalance } =
-    walletStore;
+    walletStore
 
-  const [coinData, setCoinData] = useState([]);
-  const [itemsData, setItemsData] = useState([]);
-  const collections = walletStore.anotherUserNfmtCollections;
+  const [coinData, setCoinData] = useState([])
+  const [itemsData, setItemsData] = useState([])
+  const collections = walletStore.anotherUserNfmtCollections
 
-  const [activeTab, setActiveTab] = useState(0);
-  const [activeAssetTab, setActiveAssetTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0)
+  const [activeAssetTab, setActiveAssetTab] = useState(1)
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingVCard, setIsLoadingVCard] = useState(true);
+  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingVCard, setIsLoadingVCard] = useState(true)
 
-  const [itemsBalance, setItemsBalance] = useState(0);
+  const [itemsBalance, setItemsBalance] = useState(0)
 
-  const linkToken = route.params?.linkToken;
-  const anotherUserWalletAddress = route.params.walletAddress;
-  const anotherUserTransaction = walletStore.anotherUserTransaction;
-  const transactionCount = walletStore.total;
+  const linkToken = route.params?.linkToken
+  const anotherUserWalletAddress = route.params.walletAddress
+  const anotherUserTransaction = walletStore.anotherUserTransaction
+  const transactionCount = walletStore.total
 
   const onDirectChatPress = () => {
-    const otherUserWalletAddress = anotherUserWalletAddress;
-    const myWalletAddress = loginStore.initialData.walletAddress;
+    const otherUserWalletAddress = anotherUserWalletAddress
+    const myWalletAddress = loginStore.initialData.walletAddress
     const combinedWalletAddress = [myWalletAddress, otherUserWalletAddress]
       .sort()
-      .join("_");
+      .join("_")
 
     const roomJid =
       combinedWalletAddress.toLowerCase() +
-      apiStore.xmppDomains.CONFERENCEDOMAIN;
+      apiStore.xmppDomains.CONFERENCEDOMAIN
     const combinedUsersName = [
       loginStore.initialData.firstName,
       loginStore.anotherUserFirstname,
     ]
       .sort()
-      .join(" and ");
+      .join(" and ")
 
-    const myXmppUserName = underscoreManipulation(myWalletAddress);
+    const myXmppUserName = underscoreManipulation(myWalletAddress)
     createNewRoom(
       myXmppUserName,
       combinedWalletAddress.toLowerCase(),
       chatStore.xmpp
-    );
+    )
     setOwner(
       myXmppUserName,
       combinedWalletAddress.toLowerCase(),
       chatStore.xmpp
-    );
+    )
     roomConfig(
       myXmppUserName,
       combinedWalletAddress.toLowerCase(),
       { roomName: combinedUsersName, roomDescription: "" },
       chatStore.xmpp
-    );
-    subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp);
+    )
+    subscribeToRoom(roomJid, myXmppUserName, chatStore.xmpp)
 
     navigation.navigate("ChatScreen", {
       chatJid: roomJid,
       chatName: combinedUsersName,
-    });
-    chatStore.toggleShouldCount(false);
+    })
+    chatStore.toggleShouldCount(false)
 
     setTimeout(() => {
       sendInvite(
@@ -147,37 +147,33 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
         roomJid.toLowerCase(),
         underscoreManipulation(otherUserWalletAddress),
         chatStore.xmpp
-      );
-    }, 3000);
-  };
+      )
+    }, 3000)
+  }
   const calculateBalances = () => {
     setItemsBalance(
       itemsData.reduce((acc, item) => (acc += parseFloat(item.balance)), 0)
-    );
-  };
+    )
+  }
   const getBalances = async () => {
-    await walletStore.fetchTransaction(
-      anotherUserWalletAddress,
-      10,
-      0
-    );
+    await walletStore.fetchTransaction(anotherUserWalletAddress, 10, 0)
     await walletStore.fetchOtherUserWalletBalance(
       anotherUserWalletAddress,
       loginStore.userToken,
       linkToken || ""
-    );
-    setIsLoading(false);
-    setIsLoadingVCard(false);
-  };
+    )
+    setIsLoading(false)
+    setIsLoadingVCard(false)
+  }
 
   useEffect(() => {
     if (anotherUserBalance?.length > 0) {
-      const nfmtItems = produceNfmtItems(anotherUserBalance);
+      const nfmtItems = produceNfmtItems(anotherUserBalance)
       setCoinData(
         anotherUserBalance.filter(
           (item: any) => item.tokenName === coinsMainName
         )
-      );
+      )
 
       setItemsData(
         anotherUserBalance
@@ -186,35 +182,35 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
           .concat(nfmtItems)
 
           .reverse()
-      );
-      calculateBalances();
+      )
+      calculateBalances()
     } else {
-      setItemsData([]);
+      setItemsData([])
     }
-  }, [anotherUserBalance]);
+  }, [anotherUserBalance])
 
   useEffect(() => {
-    calculateBalances();
+    calculateBalances()
 
-    return () => {};
-  }, [itemsData, coinData]);
+    return () => {}
+  }, [itemsData, coinData])
 
   useEffect(() => {
-    setOffset(0);
-    setTotal(0);
+    setOffset(0)
+    setTotal(0)
 
     return () => {
-      clearPaginationData();
-      setCoinData([]);
-      setIsLoading(true);
-      setIsLoadingVCard(true);
-      setItemsData([]);
-    };
-  }, []);
+      clearPaginationData()
+      setCoinData([])
+      setIsLoading(true)
+      setIsLoadingVCard(true)
+      setItemsData([])
+    }
+  }, [])
 
   useEffect(() => {
-    getBalances();
-  }, [anotherUserWalletAddress]);
+    getBalances()
+  }, [anotherUserWalletAddress])
 
   const loadTabContent = () => {
     if (activeTab === 0) {
@@ -229,7 +225,7 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
           nftItems={itemsData}
           itemsBalance={itemsBalance}
         />
-      );
+      )
     }
 
     if (activeTab === 1) {
@@ -244,18 +240,18 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
                   anotherUserWalletAddress,
                   walletStore.limit,
                   walletStore.offset
-                );
+                )
               }
             }}
           />
         </View>
-      );
+      )
     }
-  };
+  }
 
   const onTransactionNumberPress = () => {
-    setActiveTab(1);
-  };
+    setActiveTab(1)
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -427,8 +423,8 @@ const OtherUserProfileScreen = observer(({ route }: ScreenProps) => {
         </View>
       </View>
     </SafeAreaView>
-  );
-});
+  )
+})
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
@@ -465,6 +461,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: primaryColor,
   },
-});
+})
 
-export default OtherUserProfileScreen;
+export default OtherUserProfileScreen

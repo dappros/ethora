@@ -1,16 +1,16 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import { useFormik } from "formik";
-import { Container } from "@mui/system";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import LoadingButton from "@mui/lab/LoadingButton";
-import {createApp} from '../../http'
+import * as React from "react"
+import Box from "@mui/material/Box"
+import TextField from "@mui/material/TextField"
+import { useFormik } from "formik"
+import { Container } from "@mui/system"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { createApp } from "../../http"
 
 export default function CreateApp() {
-  const [loading, setLoading] = React.useState(false);
-  const fileRef = React.useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = React.useState(false)
+  const fileReference = React.useRef<HTMLInputElement>(null)
 
   const formik = useFormik({
     initialValues: {
@@ -24,13 +24,13 @@ export default function CreateApp() {
       coinsDayliBonus: 0,
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.appName) {
-        errors.appName = "Required";
+        errors.appName = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: ({
       appName,
@@ -38,34 +38,34 @@ export default function CreateApp() {
       appGoogleId,
       defaultAccessAssetsOpen,
       defaultAccessProfileOpen,
-      usersCanFree
+      usersCanFree,
     }) => {
-      setLoading(true);
-      const fd = new FormData();
-      let file;
-      if (fileRef.current) {
-        const files = fileRef.current.files;
+      setLoading(true)
+      const fd = new FormData()
+      let file
+      if (fileReference.current) {
+        const files = fileReference.current.files
         if (files) {
-          file = files[0];
+          file = files[0]
         }
       }
 
       if (file) {
-        fd.append("file", file);
+        fd.append("file", file)
       }
 
-      fd.append("appName", appName);
-      fd.append("appDesctription", appDesctription);
-      fd.append("appGoogleId", appGoogleId);
-      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString());
-      fd.append("usersCanFree", usersCanFree.toString());
+      fd.append("appName", appName)
+      fd.append("appDesctription", appDesctription)
+      fd.append("appGoogleId", appGoogleId)
+      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString())
+      fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString())
+      fd.append("usersCanFree", usersCanFree.toString())
 
       createApp(fd)
-        .then(response => console.log(response.data))
+        .then((response) => console.log(response.data))
         .finally(() => setLoading(false))
     },
-  });
+  })
 
   return (
     <Container>
@@ -150,7 +150,7 @@ export default function CreateApp() {
               labelPlacement="end"
             />
 
-            <input ref={fileRef} type="file" accept="image/*"></input>
+            <input ref={fileReference} type="file" accept="image/*"></input>
             <LoadingButton
               loading={loading}
               variant="contained"
@@ -164,5 +164,5 @@ export default function CreateApp() {
         </form>
       </Box>
     </Container>
-  );
+  )
 }

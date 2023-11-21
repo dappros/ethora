@@ -1,9 +1,9 @@
-import * as React from "react";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import {NavLink} from 'react-router-dom'
+import * as React from "react"
+import AppBar from "@mui/material/AppBar"
+import Toolbar from "@mui/material/Toolbar"
+import Typography from "@mui/material/Typography"
+import Container from "@mui/material/Container"
+import { NavLink } from "react-router-dom"
 
 const AppTopNavAuth = () => {
   return (
@@ -16,7 +16,7 @@ const AppTopNavAuth = () => {
           <Typography
             variant="h4"
             noWrap
-            component='p'
+            component="p"
             sx={{
               mr: 2,
               fontFamily: "monospace",
@@ -31,6 +31,6 @@ const AppTopNavAuth = () => {
         </Toolbar>
       </Container>
     </AppBar>
-  );
-};
-export default AppTopNavAuth;
+  )
+}
+export default AppTopNavAuth

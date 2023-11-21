@@ -9,21 +9,21 @@ import {
   coinReplacedName,
   coinsMainName,
   coinsMainSymbol,
-} from '../../docs/config';
+} from "../../docs/config"
 
 interface systemMessageProps {
-  senderName: string;
-  tokenAmount: number;
-  tokenName: string;
-  receiverMessageId: string;
-  receiverName: string;
-  nftId?: string;
-  transactionId: string | undefined;
+  senderName: string
+  tokenAmount: number
+  tokenName: string
+  receiverMessageId: string
+  receiverName: string
+  nftId?: string
+  transactionId: string | undefined
 }
 
 export const systemMessage = (data: systemMessageProps) => {
   const token =
-    data.tokenName === coinsMainName ? coinReplacedName : data.tokenName;
+    data.tokenName === coinsMainName ? coinReplacedName : data.tokenName
 
   return [
     {
@@ -32,12 +32,12 @@ export const systemMessage = (data: systemMessageProps) => {
         token || coinsMainSymbol
       } -> ${data.receiverName}`,
       createdAt: new Date(),
-      system: true as true,
+      system: true as const,
       tokenAmount: data.tokenAmount,
       receiverMessageId: data.receiverMessageId,
       tokenName: token,
       nftId: data.nftId as string,
       transactionId: data.transactionId as string,
     },
-  ];
-};
+  ]
+}

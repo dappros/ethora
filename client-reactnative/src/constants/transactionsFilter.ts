@@ -6,7 +6,7 @@ Note: linked open-source libraries and components may be subject to their own li
 */
 
 export const FILTERS = {
-    sent: 'sent',
-    all: 'all',
-    received: 'received',
-};
+  sent: "sent",
+  all: "all",
+  received: "received",
+}

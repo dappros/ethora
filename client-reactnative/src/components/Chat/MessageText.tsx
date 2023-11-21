@@ -1,37 +1,37 @@
-import React from "react";
-import { Button, Image, Text, View } from "native-base";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import React from "react"
+import { Button, Image, Text, View } from "native-base"
+import Ionicons from "react-native-vector-icons/Ionicons"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { useState } from "react";
+} from "react-native-responsive-screen"
+import { useState } from "react"
 import {
   apiModes,
   appEndpoint,
   commonColors,
   textStyles,
   unv_url,
-} from "../../../docs/config";
-import ParsedText from "react-native-parsed-text";
-import { Linking, StyleSheet, TouchableOpacity } from "react-native";
+} from "../../../docs/config"
+import ParsedText from "react-native-parsed-text"
+import { Linking, StyleSheet, TouchableOpacity } from "react-native"
 //@ts-ignore
-import Communications from "react-native-communications";
-import { getYoutubeMetadata } from "../../helpers/getYoutubeMetadata";
-import { getChatLinkInfo, retrieveOtherUserVcard } from "../../xmpp/stanzas";
-import { useStores } from "../../stores/context";
-import { underscoreManipulation } from "../../helpers/underscoreLogic";
-import { observer } from "mobx-react-lite";
-import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
-import { useNavigation } from "@react-navigation/native";
-import { HomeStackNavigationProp } from "../../navigation/types";
-import { homeStackRoutes } from "../../navigation/routes";
-import parseChatLink from "../../helpers/parseLink";
+import Communications from "react-native-communications"
+import { getYoutubeMetadata } from "../../helpers/getYoutubeMetadata"
+import { getChatLinkInfo, retrieveOtherUserVcard } from "../../xmpp/stanzas"
+import { useStores } from "../../stores/context"
+import { underscoreManipulation } from "../../helpers/underscoreLogic"
+import { observer } from "mobx-react-lite"
+import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink"
+import { useNavigation } from "@react-navigation/native"
+import { HomeStackNavigationProp } from "../../navigation/types"
+import { homeStackRoutes } from "../../navigation/routes"
+import parseChatLink from "../../helpers/parseLink"
 
-const DEFAULT_OPTION_TITLES = ["Call", "Text", "Cancel"];
+const DEFAULT_OPTION_TITLES = ["Call", "Text", "Cancel"]
 const ytubeLinkRegEx =
-  /\b(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gi;
-const WWW_URL_PATTERN = /^www\./i;
+  /\b(http(s)?:\/\/)?((w){3}.)?youtu(be|.be)?(\.com)?\/.+/gi
+const WWW_URL_PATTERN = /^www\./i
 
 const textStyle = {
   fontSize: 16,
@@ -40,7 +40,7 @@ const textStyle = {
   marginBottom: 5,
   marginLeft: 10,
   marginRight: 10,
-};
+}
 const styles: any = {
   left: StyleSheet.create({
     container: {},
@@ -64,61 +64,61 @@ const styles: any = {
       textDecorationLine: "underline",
     },
   }),
-};
+}
 
 function extractUrls(text: string) {
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const urls = text.match(urlRegex);
-  return urls || false;
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+  const urls = text.match(urlRegex)
+  return urls || false
 }
 
 export const MessageText = observer((props: any) => {
-  const [youtubeMetaData, setYoutubeMetaData] = useState<any>({});
+  const [youtubeMetaData, setYoutubeMetaData] = useState<any>({})
 
-  const { loginStore, apiStore, chatStore } = useStores();
+  const { loginStore, apiStore, chatStore } = useStores()
 
   const manipulatedWalletAddress = underscoreManipulation(
     loginStore.initialData.walletAddress
-  );
+  )
 
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
   const linkStyle = [
     styles[props.position].link,
     props.linkStyle && props.linkStyle[props.position],
-  ];
+  ]
 
   const onUrlPress = (url: string) => {
     // When someone sends a message that includes a website address beginning with "www." (omitting the scheme),
     // react-native-parsed-text recognizes it as a valid url, but Linking fails to open due to the missing scheme.
     if (WWW_URL_PATTERN.test(url)) {
-      onUrlPress(`http://${url}`);
+      onUrlPress(`http://${url}`)
     } else {
       Linking.canOpenURL(url).then((supported) => {
         if (!supported) {
-          console.error("No handler for URL:", url);
+          console.error("No handler for URL:", url)
         } else {
-          Linking.openURL(url);
+          Linking.openURL(url)
         }
-      });
+      })
     }
-  };
+  }
   const onPhonePress = (phone: any) => {
-    const { optionTitles } = props;
+    const { optionTitles } = props
     const options =
       optionTitles && optionTitles.length > 0
         ? optionTitles.slice(0, 3)
-        : DEFAULT_OPTION_TITLES;
-  };
+        : DEFAULT_OPTION_TITLES
+  }
   const onEmailPress = (email: string) =>
-    Communications.email([email], null, null, null, null);
+    Communications.email([email], null, null, null, null)
 
   if (props.currentMessage.text.match(ytubeLinkRegEx)) {
     getYoutubeMetadata(props.currentMessage.text.match(ytubeLinkRegEx)[0]).then(
       (resp: any) => {
-        setYoutubeMetaData(resp.data);
+        setYoutubeMetaData(resp.data)
       }
-    );
+    )
     return (
       <TouchableOpacity
         accessibilityLabel="Open Link"
@@ -180,7 +180,7 @@ export const MessageText = observer((props: any) => {
           </View>
         </View>
       </TouchableOpacity>
-    );
+    )
   } else if (
     props.currentMessage.text.includes(unv_url) &&
     !props.currentMessage.text.includes(
@@ -188,14 +188,13 @@ export const MessageText = observer((props: any) => {
     ) &&
     !props.currentMessage.text.includes("profileLink")
   ) {
-    const extractedUrl = extractUrls(props.currentMessage.text);
-    const parsedLink = extractedUrl && parseChatLink(extractedUrl[0]);
+    const extractedUrl = extractUrls(props.currentMessage.text)
+    const parsedLink = extractedUrl && parseChatLink(extractedUrl[0])
     if (parsedLink) {
       const chatJID =
-        parsedLink.searchParams.get("c") +
-        apiStore.xmppDomains.CONFERENCEDOMAIN;
+        parsedLink.searchParams.get("c") + apiStore.xmppDomains.CONFERENCEDOMAIN
       if (chatJID) {
-        getChatLinkInfo(manipulatedWalletAddress, chatJID, chatStore.xmpp);
+        getChatLinkInfo(manipulatedWalletAddress, chatJID, chatStore.xmpp)
 
         const handleChatLink = () => {
           openChatFromChatLink(
@@ -203,8 +202,8 @@ export const MessageText = observer((props: any) => {
             manipulatedWalletAddress,
             navigation,
             chatStore.xmpp
-          );
-        };
+          )
+        }
 
         return (
           <Button
@@ -232,10 +231,10 @@ export const MessageText = observer((props: any) => {
               (tap to open room)
             </Text>
           </Button>
-        );
+        )
       }
     } else {
-      return null;
+      return null
     }
     // const chatLink = props?.currentMessage?.text?.match(ethoraLinkRegex)?.[0];
     // const chatJid =
@@ -243,7 +242,7 @@ export const MessageText = observer((props: any) => {
   } else if (
     props.currentMessage.text.includes(`${apiModes[appEndpoint]}/docs/share/`)
   ) {
-    const doclink = props.currentMessage.text;
+    const doclink = props.currentMessage.text
     return (
       <View margin={3}>
         <Text
@@ -277,45 +276,45 @@ export const MessageText = observer((props: any) => {
           {doclink}
         </ParsedText>
       </View>
-    );
+    )
   } else if (
     props.currentMessage.text.includes(unv_url) &&
     props.currentMessage.text.includes("profileLink")
   ) {
-    const params = props.currentMessage.text.split(unv_url)[1];
-    const queryParams = new URLSearchParams(params);
-    const firstName: string = queryParams.get("firstName") as string;
-    const lastName: string = queryParams.get("lastName") as string;
-    const xmppId: string = queryParams.get("xmppId") as string;
+    const params = props.currentMessage.text.split(unv_url)[1]
+    const queryParams = new URLSearchParams(params)
+    const firstName: string = queryParams.get("firstName") as string
+    const lastName: string = queryParams.get("lastName") as string
+    const xmppId: string = queryParams.get("xmppId") as string
     const walletAddressFromLink: string = queryParams.get(
       "walletAddress"
-    ) as string;
-    const linkToken = queryParams.get("linkToken");
+    ) as string
+    const linkToken = queryParams.get("linkToken")
 
     const handleProfileOpen = () => {
       if (loginStore.initialData.walletAddress === walletAddressFromLink) {
-        navigation.navigate(homeStackRoutes.ProfileScreen as never);
+        navigation.navigate(homeStackRoutes.ProfileScreen as never)
       } else {
         setTimeout(() => {
           retrieveOtherUserVcard(
             loginStore.initialData.xmppUsername,
             xmppId,
             chatStore.xmpp
-          );
+          )
 
           loginStore.setOtherUserDetails({
             anotherUserFirstname: firstName,
             anotherUserLastname: lastName,
             anotherUserLastSeen: {},
             anotherUserWalletAddress: walletAddressFromLink,
-          });
-        }, 2000);
+          })
+        }, 2000)
         navigation.navigate("OtherUserProfileScreen", {
           linkToken: linkToken || "",
-          walletAddress: walletAddressFromLink
-        });
+          walletAddress: walletAddressFromLink,
+        })
       }
-    };
+    }
 
     return (
       <Button
@@ -343,7 +342,7 @@ export const MessageText = observer((props: any) => {
           (tap to view profile)
         </Text>
       </Button>
-    );
+    )
   } else {
     return (
       <ParsedText
@@ -362,7 +361,7 @@ export const MessageText = observer((props: any) => {
       >
         {props.currentMessage.text}
       </ParsedText>
-    );
+    )
   }
-  return null;
-});
+  return null
+})

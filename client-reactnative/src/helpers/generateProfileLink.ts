@@ -1,9 +1,9 @@
 interface ILink {
-  firstName: string;
-  lastName: string;
-  walletAddress: string;
-  xmppId: string;
-  linkToken?: string;
+  firstName: string
+  lastName: string
+  walletAddress: string
+  xmppId: string
+  linkToken?: string
 }
 
 export const generateProfileLink = ({
@@ -14,6 +14,6 @@ export const generateProfileLink = ({
   linkToken,
 }: ILink) => {
   return `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
-    linkToken ?? ''
-  }`;
-};
+    linkToken ?? ""
+  }`
+}

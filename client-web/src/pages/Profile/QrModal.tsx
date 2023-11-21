@@ -1,15 +1,15 @@
-import React from "react";
-import { Button, Dialog, DialogTitle, IconButton } from "@mui/material";
-import { Box } from "@mui/system";
-import QRCode from "react-qr-code";
-import { truncateString } from "../../utils";
-import CloseIcon from "@mui/icons-material/Close";
+import React from "react"
+import { Button, Dialog, DialogTitle, IconButton } from "@mui/material"
+import { Box } from "@mui/system"
+import QRCode from "react-qr-code"
+import { truncateString } from "../../utils"
+import CloseIcon from "@mui/icons-material/Close"
 
 export interface IQrModal {
-  open: boolean;
-  link: string;
-  onClose: () => void;
-  title?: string;
+  open: boolean
+  link: string
+  onClose: () => void
+  title?: string
 }
 
 export const QrModal: React.FC<IQrModal> = ({ title, open, link, onClose }) => {
@@ -41,7 +41,7 @@ export const QrModal: React.FC<IQrModal> = ({ title, open, link, onClose }) => {
           <span>{truncateString(link, 50)}</span>
           <Button
             variant="contained"
-            sx={{ borderRadius: "10px", marginLeft: '5px' }}
+            sx={{ borderRadius: "10px", marginLeft: "5px" }}
             onClick={() => navigator.clipboard.writeText(link)}
           >
             Copy
@@ -61,5 +61,5 @@ export const QrModal: React.FC<IQrModal> = ({ title, open, link, onClose }) => {
         </IconButton>
       </Box>
     </Dialog>
-  );
-};
+  )
+}

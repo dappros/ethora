@@ -1,56 +1,56 @@
-import { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import { IconButton, Tooltip, Typography } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { useStoreState } from "../../store";
-import NoDataImage from "../../components/NoDataImage";
-import NewAppModal from "./NewAppModal";
-import DeleteAppModal from "./DeletAppModal";
-import EditAppModal from "./EditAppModal";
-import RotateModal from "./RotateModal";
-import { RegisterCompanyModal } from "../../components/RegisterCompanyModal";
-import { coinsMainName } from "../../config/config";
-import { getApps } from "../../http";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useHistory } from "react-router";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { AppsTableHead } from "../../components/AppsTable/AppsTableHead";
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
+import { useEffect, useState } from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import Box from "@mui/material/Box"
+import { IconButton, Tooltip, Typography } from "@mui/material"
+import AddCircleIcon from "@mui/icons-material/AddCircle"
+import { useStoreState } from "../../store"
+import NoDataImage from "../../components/NoDataImage"
+import NewAppModal from "./NewAppModal"
+import DeleteAppModal from "./DeletAppModal"
+import EditAppModal from "./EditAppModal"
+import RotateModal from "./RotateModal"
+import { RegisterCompanyModal } from "../../components/RegisterCompanyModal"
+import { coinsMainName } from "../../config/config"
+import { getApps } from "../../http"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useHistory } from "react-router"
+import SettingsIcon from "@mui/icons-material/Settings"
+import { AppsTableHead } from "../../components/AppsTable/AppsTableHead"
+import LeaderboardIcon from "@mui/icons-material/Leaderboard"
 
-const COINS_TO_CREATE_APP = 10;
+const COINS_TO_CREATE_APP = 10
 
-interface Props {
-  onRowClick?: (app: string) => void;
+interface Properties {
+  onRowClick?: (app: string) => void
 }
 
-const NA = "N/A";
+const NA = "N/A"
 
-export default function Apps({ onRowClick }: Props) {
-  const apps = useStoreState((state) => state.apps);
-  const setApps = useStoreState((state) => state.setApps);
+export default function Apps({ onRowClick }: Properties) {
+  const apps = useStoreState((state) => state.apps)
+  const setApps = useStoreState((state) => state.setApps)
 
-  const user = useStoreState((state) => state.user);
-  const ACL = useStoreState((state) => state.ACL);
-  const history = useHistory();
-  const [open, setOpen] = useState(false);
-  const [companyModalOpen, setCompanyModalOpen] = useState(false);
+  const user = useStoreState((state) => state.user)
+  const ACL = useStoreState((state) => state.ACL)
+  const history = useHistory()
+  const [open, setOpen] = useState(false)
+  const [companyModalOpen, setCompanyModalOpen] = useState(false)
   const mainCoinBalance = useStoreState((state) =>
-    state.balance.find((el) => el.tokenName === coinsMainName)
-  );
+    state.balance.find((element) => element.tokenName === coinsMainName)
+  )
   const isEnoughCoinsToCreateApp =
-    +mainCoinBalance?.balance >= COINS_TO_CREATE_APP;
-  const currentAcl = ACL.result.find((item) => item.appId === user.appId);
-  const canCreateApp = currentAcl?.application?.appCreate?.create;
+    +mainCoinBalance?.balance >= COINS_TO_CREATE_APP
+  const currentAcl = ACL.result.find((item) => item.appId === user.appId)
+  const canCreateApp = currentAcl?.application?.appCreate?.create
 
-  const [showDelete, setShowDelete] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showRotate, setShowRotate] = useState(false);
+  const [showDelete, setShowDelete] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showRotate, setShowRotate] = useState(false)
   const [currentApp, setCurrentApp] = useState({
     _id: "",
     appName: "",
@@ -59,43 +59,43 @@ export default function Apps({ onRowClick }: Props) {
     defaultAccessProfileOpen: false,
     defaultAccessAssetsOpen: false,
     usersCanFree: false,
-  });
-  const { showSnackbar } = useSnackbar();
+  })
+  const { showSnackbar } = useSnackbar()
   const getUserApps = async () => {
     try {
-      const apps = await getApps();
-      const notNullApps = apps.data.apps.filter((a) => !!a);
-      setApps(notNullApps);
+      const apps = await getApps()
+      const notNullApps = apps.data.apps.filter((a) => !!a)
+      setApps(notNullApps)
     } catch (error) {
-      console.log(error);
-      showSnackbar("error", "Cannot get user apps");
+      console.log(error)
+      showSnackbar("error", "Cannot get user apps")
     }
-  };
+  }
   const onDelete = (app: any) => {
-    setCurrentApp(app);
-    setShowDelete(true);
-  };
+    setCurrentApp(app)
+    setShowDelete(true)
+  }
 
   const onEdit = (app: any) => {
-    setCurrentApp(app);
-    history.push("/editApp/" + app._id);
-    setShowEdit(true);
-  };
+    setCurrentApp(app)
+    history.push("/editApp/" + app._id)
+    setShowEdit(true)
+  }
 
   const onRotateJwt = (app: any) => {
-    setCurrentApp(app);
-    setShowRotate(true);
-  };
+    setCurrentApp(app)
+    setShowRotate(true)
+  }
   const onAddApp = () => {
     if (!user.isAgreeWithTerms) {
-      setCompanyModalOpen(true);
-      return;
+      setCompanyModalOpen(true)
+      return
     }
-    setOpen(true);
-  };
+    setOpen(true)
+  }
   useEffect(() => {
-    getUserApps();
-  }, []);
+    getUserApps()
+  }, [])
   //  useEffect(() => {
   //     if(user.homeScreen === 'appCreate') {
   //       onAddApp()
@@ -109,11 +109,11 @@ export default function Apps({ onRowClick }: Props) {
         </Typography>
         <Tooltip
           title={
-            !isEnoughCoinsToCreateApp
-              ? "You don't have enough coins to create the app."
-              : !canCreateApp
-              ? "You don't have permission to create app"
-              : ""
+            isEnoughCoinsToCreateApp
+              ? canCreateApp
+                ? ""
+                : "You don't have permission to create app"
+              : "You don't have enough coins to create the app."
           }
         >
           <span style={{ marginLeft: "auto" }}>
@@ -211,14 +211,16 @@ export default function Apps({ onRowClick }: Props) {
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: 'flex-end'
-                      
+                      justifyContent: "flex-end",
                     }}
                   >
                     <IconButton onClick={() => onEdit(app)} id="settings">
                       <SettingsIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => history.push('/statistics/' + app._id)} id="statistics">
+                    <IconButton
+                      onClick={() => history.push("/statistics/" + app._id)}
+                      id="statistics"
+                    >
                       <LeaderboardIcon color="primary" />
                     </IconButton>
                   </Box>
@@ -244,5 +246,5 @@ export default function Apps({ onRowClick }: Props) {
         <EditAppModal app={currentApp} open={showEdit} setOpen={setShowEdit} />
       )}
     </TableContainer>
-  );
+  )
 }

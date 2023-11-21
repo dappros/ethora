@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
-import Container from "@mui/material/Container";
-import UsersGraph from "./UsersGraph";
-import AppsSelect from "./AppsSelect";
-import { useStoreState } from "../../store";
-import TokensGraph from "./TokensGraph";
-import TransactionsGraph from "./TransactionsGraph";
-import Contracts from "./Contracts";
+import React, { useEffect, useState } from "react"
+import Container from "@mui/material/Container"
+import UsersGraph from "./UsersGraph"
+import AppsSelect from "./AppsSelect"
+import { useStoreState } from "../../store"
+import TokensGraph from "./TokensGraph"
+import TransactionsGraph from "./TransactionsGraph"
+import Contracts from "./Contracts"
 
-import "./Graph.scss";
-import NetworkHealth from "./NetworkHealth";
-import Peers from "./Peers";
-import * as http from "../../http";
-import { Box } from "@mui/material";
+import "./Graph.scss"
+import NetworkHealth from "./NetworkHealth"
+import Peers from "./Peers"
+import * as http from "../../http"
+import { Box } from "@mui/material"
 
-type Props = {};
+type Properties = {}
 
 export interface IBlockChain {
-  blockTimestamp: Date | string;
-  latestBlockHash: string;
-  latestBlockNumber: number;
-  noOfTransactions: number;
-  peerCount: number;
-  pendingTransactions: number;
-  transactionDifficulty: number;
+  blockTimestamp: Date | string
+  latestBlockHash: string
+  latestBlockNumber: number
+  noOfTransactions: number
+  peerCount: number
+  pendingTransactions: number
+  transactionDifficulty: number
 }
 
 function Dashboard() {
-  const apps = useStoreState((state) => state.apps);
-  const [currentAppIndex, setCurrentAppIndex] = useState(0);
-  const appToken = apps[currentAppIndex]?.appToken;
+  const apps = useStoreState((state) => state.apps)
+  const [currentAppIndex, setCurrentAppIndex] = useState(0)
+  const appToken = apps[currentAppIndex]?.appToken
   const [blockchain, setBlockchain] = useState<IBlockChain>({
     blockTimestamp: "",
     latestBlockHash: "",
@@ -37,27 +37,27 @@ function Dashboard() {
     peerCount: 0,
     pendingTransactions: 0,
     transactionDifficulty: 0,
-  });
+  })
 
   const getBlockchainData = async () => {
     try {
       const res = await http
         .httpWithToken(appToken)
-        .get<IBlockChain>("/explorer/blockchain");
-      setBlockchain(res.data);
+        .get<IBlockChain>("/explorer/blockchain")
+      setBlockchain(res.data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   useEffect(() => {
-    if (apps.length) {
-      setCurrentAppIndex(0);
+    if (apps.length > 0) {
+      setCurrentAppIndex(0)
     }
-  }, [apps]);
+  }, [apps])
   useEffect(() => {
-    getBlockchainData();
-  }, []);
+    getBlockchainData()
+  }, [])
 
   return (
     <div style={{ backgroundColor: "#edf0f4", padding: "20px" }}>
@@ -95,7 +95,7 @@ function Dashboard() {
         </Box>
       </Container>
     </div>
-  );
+  )
 }
 
-export default Dashboard;
+export default Dashboard

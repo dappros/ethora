@@ -1,38 +1,37 @@
-import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import { useQuery } from "../../utils";
-import { EmailSingInForm } from "./EmailSignInForm";
-import { EmailSignUpForm } from "./EmailSignUpForm";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { useLocation } from "react-router";
-import { TLoginSuccessResponse } from "../../http";
+import React, { useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import Tab from "@mui/material/Tab"
+import TabContext from "@mui/lab/TabContext"
+import TabList from "@mui/lab/TabList"
+import TabPanel from "@mui/lab/TabPanel"
+import { useQuery } from "../../utils"
+import { EmailSingInForm } from "./EmailSignInForm"
+import { EmailSignUpForm } from "./EmailSignUpForm"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { useLocation } from "react-router"
+import { TLoginSuccessResponse } from "../../http"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updateUser: (data: TLoginSuccessResponse) => void;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateUser: (data: TLoginSuccessResponse) => void
+}
 
-export function EmailModal({ open, setOpen, updateUser }: TProps) {
-  const [tab, setTab] = useState("1");
-  const [message, setMessage] = useState("");
-  const query = useQuery();
- 
+export function EmailModal({ open, setOpen, updateUser }: TProperties) {
+  const [tab, setTab] = useState("1")
+  const [message, setMessage] = useState("")
+  const query = useQuery()
 
   const onClose = (e: any, reason: any) => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTab(newValue);
-  };
+    setTab(newValue)
+  }
 
   return (
     <Dialog maxWidth={false} open={open} onClose={onClose}>
@@ -53,13 +52,16 @@ export function EmailModal({ open, setOpen, updateUser }: TProps) {
                 aria-label="lab API tabs example"
               >
                 <Tab label="Sign In" value="1" id="signIn" />
-                <Tab label="Sign Up" value="2" id="signUp"/>
+                <Tab label="Sign Up" value="2" id="signUp" />
               </TabList>
             </Box>
             {/* SIGN IN */}
             <TabPanel value="1">
               <Box>{message}</Box>
-              <EmailSingInForm updateUser={updateUser} closeModal={() => setOpen(false)} />
+              <EmailSingInForm
+                updateUser={updateUser}
+                closeModal={() => setOpen(false)}
+              />
             </TabPanel>
             {/* SIGN UP */}
             <TabPanel value="2">
@@ -69,5 +71,5 @@ export function EmailModal({ open, setOpen, updateUser }: TProps) {
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

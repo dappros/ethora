@@ -1,13 +1,16 @@
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = "production"
 
-const webpack = require('webpack');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const webpackConfigProd = require('react-scripts/config/webpack.config')('production');
+const webpack = require("webpack")
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+const webpackConfigProduction = require("react-scripts/config/webpack.config")(
+  "production"
+)
 
 // this one is optional, just for better feedback on build
 
 // pushing BundleAnalyzerPlugin to plugins array
-webpackConfigProd.plugins.push(new BundleAnalyzerPlugin());
+webpackConfigProduction.plugins.push(new BundleAnalyzerPlugin())
 
 // optional - pushing progress-bar plugin for better feedback;
 // it can and will work without progress-bar,
@@ -15,8 +18,8 @@ webpackConfigProd.plugins.push(new BundleAnalyzerPlugin());
 // and decide that compilation is kind of hang up on you; progress bar shows nice progression of webpack compilation
 
 // actually running compilation and waiting for plugin to start explorer
-webpack(webpackConfigProd, (err, stats) => {
-  if (err || stats.hasErrors()) {
-    console.error(err);
+webpack(webpackConfigProduction, (error, stats) => {
+  if (error || stats.hasErrors()) {
+    console.error(error)
   }
-});
+})

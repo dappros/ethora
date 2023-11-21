@@ -1,56 +1,60 @@
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import Box from "@mui/material/Box";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import { useFormik } from "formik";
-import { useStoreState } from "../../store";
-import { useHistory } from "react-router-dom";
-import { registerUsername, loginUsername, TLoginSuccessResponse, updateApp } from "../../http";
+import React, { useState } from "react"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import Input from "@mui/material/Input"
+import InputAdornment from "@mui/material/InputAdornment"
+import IconButton from "@mui/material/IconButton"
+import Box from "@mui/material/Box"
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import FormHelperText from "@mui/material/FormHelperText"
+import { useFormik } from "formik"
+import { useStoreState } from "../../store"
+import { useHistory } from "react-router-dom"
+import {
+  registerUsername,
+  loginUsername,
+  TLoginSuccessResponse,
+  updateApp,
+} from "../../http"
 
 const validate = (values: Record<string, string>) => {
-  const errors: Record<string, string> = {};
+  const errors: Record<string, string> = {}
 
   if (!values.username) {
-    errors.username = "Required";
+    errors.username = "Required"
   }
 
   if (!values.password) {
-    errors.password = "Required";
+    errors.password = "Required"
   } else if (values.password.length <= 3) {
-    errors.password = "Must be 3 characters or more";
+    errors.password = "Must be 3 characters or more"
   }
 
   if (!values.firstName) {
-    errors.firstName = "Required";
+    errors.firstName = "Required"
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required";
+    errors.lastName = "Required"
   }
 
-  return errors;
-};
+  return errors
+}
 
-type TProps = {
-  closeModal: () => void;
-  updateUser: (data: TLoginSuccessResponse) => void;
+type TProperties = {
+  closeModal: () => void
+  updateUser: (data: TLoginSuccessResponse) => void
+}
 
-};
+export function UsernameSignUpForm(properties: TProperties) {
+  const history = useHistory()
+  const setUser = useStoreState((state) => state.setUser)
 
-export function UsernameSignUpForm(props: TProps) {
-  const history = useHistory();
-  const setUser = useStoreState((state) => state.setUser);
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [disableSubmit, setDisableSubmit] = useState(false);
+  const [showPassword, setShowPassword] = useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(false)
 
   const formik = useFormik({
     initialValues: {
@@ -61,20 +65,20 @@ export function UsernameSignUpForm(props: TProps) {
     },
     validate,
     onSubmit: (fd) => {
-      setDisableSubmit(true);
+      setDisableSubmit(true)
       registerUsername(fd.username, fd.password, fd.firstName, fd.lastName)
         .then((resp) => {
           loginUsername(fd.username, fd.password).then((result) => {
-            props.updateUser(resp.data)
-            props.closeModal();
-          });
+            properties.updateUser(resp.data)
+            properties.closeModal()
+          })
         })
         .catch((error) => {})
         .finally(() => {
-          setDisableSubmit(false);
-        });
+          setDisableSubmit(false)
+        })
     },
-  });
+  })
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -169,5 +173,5 @@ export function UsernameSignUpForm(props: TProps) {
         </Button>
       </Box>
     </form>
-  );
+  )
 }

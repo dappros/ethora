@@ -1,145 +1,141 @@
-import React, {Fragment, useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
-import {HStack, Image, ScrollView, Text, View, VStack} from 'native-base';
-import SecondaryHeader from '../../components/SecondaryHeader/SecondaryHeader';
-import AntIcon from 'react-native-vector-icons/AntDesign';
+import React, { Fragment, useEffect, useState } from "react"
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native"
+import { HStack, Image, ScrollView, Text, View, VStack } from "native-base"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import AntIcon from "react-native-vector-icons/AntDesign"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import FastImage from 'react-native-fast-image';
-import Modal from 'react-native-modal';
-import AudioPlayer from '../../components/AudioPlayer/AudioPlayer';
-import NftTransactionListTab from '../../components/Nft/NftTransactionList';
-import {useStores} from '../../stores/context';
-import {transactionURL} from '../../config/routesConstants';
-import {httpGet, httpPost} from '../../config/apiService';
-import {APP_TOKEN, commonColors, textStyles} from '../../../docs/config';
-import VideoPlayer from 'react-native-video-player';
-import {mapTransactions} from '../../stores/walletStore';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {useNavigation} from '@react-navigation/native';
-import {showError, showSuccess} from '../../components/Toast/toast';
+} from "react-native-responsive-screen"
+import FastImage from "react-native-fast-image"
+import Modal from "react-native-modal"
+import AudioPlayer from "../../components/AudioPlayer/AudioPlayer"
+import NftTransactionListTab from "../../components/Nft/NftTransactionList"
+import { useStores } from "../../stores/context"
+import { transactionURL } from "../../config/routesConstants"
+import { httpGet, httpPost } from "../../config/apiService"
+import { APP_TOKEN, commonColors, textStyles } from "../../../docs/config"
+import VideoPlayer from "react-native-video-player"
+import { mapTransactions } from "../../stores/walletStore"
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import { DeleteDialog } from "../../components/Modals/DeleteDialog"
+import { useNavigation } from "@react-navigation/native"
+import { showError, showSuccess } from "../../components/Toast/toast"
 import {
   isAudioMimetype,
   isImageMimetype,
   isVideoMimetype,
-} from '../../helpers/checkMimetypes';
-import {HomeStackNavigationProp} from '../../navigation/types';
+} from "../../helpers/checkMimetypes"
+import { HomeStackNavigationProp } from "../../navigation/types"
 
 const NftItemHistoryScreen = (props: any) => {
-  const {item, userWalletAddress} = props.route.params;
+  const { item, userWalletAddress } = props.route.params
 
-  const {loginStore, walletStore} = useStores();
+  const { loginStore, walletStore } = useStores()
 
-  const [filePreview, setFilePreview] = useState<{uri: string}>({
-    uri: '',
-  });
-  const [itemTransactions, setItemTransactions] = useState<any>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [videoPaused, setVideoPaused] = useState<boolean>(true);
-  const navigation = useNavigation<HomeStackNavigationProp>();
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [filePreview, setFilePreview] = useState<{ uri: string }>({
+    uri: "",
+  })
+  const [itemTransactions, setItemTransactions] = useState<any>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [videoPaused, setVideoPaused] = useState<boolean>(true)
+  const navigation = useNavigation<HomeStackNavigationProp>()
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [modalData, setModalData] = useState({
     visible: false,
-    url: '',
-    mimetype: '',
-  });
+    url: "",
+    mimetype: "",
+  })
 
   useEffect(() => {
-    setFilePreview({uri: item.nftFileUrl});
-    getItemTransactionsHistory(userWalletAddress, item.nftId).then(res => {
-      const allTransactions = res.data.items.map(transation => {
-        return mapTransactions(transation, userWalletAddress);
-      });
+    setFilePreview({ uri: item.nftFileUrl })
+    getItemTransactionsHistory(userWalletAddress, item.nftId).then((res) => {
+      const allTransactions = res.data.items.map((transation) => {
+        return mapTransactions(transation, userWalletAddress)
+      })
 
       setItemTransactions(
         allTransactions.sort((a: any, b: any) => {
           return (
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        }),
-      );
-    });
-    return () => {};
-  }, [item]);
+          )
+        })
+      )
+    })
+    return () => {}
+  }, [item])
 
   //function to get Item transactions
   const getItemTransactionsHistory = async (
     walletAddress: string,
-    nftId: string,
+    nftId: string
   ) => {
     const url =
-      transactionURL +
-      'walletAddress=' +
-      walletAddress +
-      '&' +
-      'nftId=' +
-      nftId;
+      transactionURL + "walletAddress=" + walletAddress + "&" + "nftId=" + nftId
 
-    const appToken = APP_TOKEN;
-    return await httpGet(url, appToken);
-  };
+    const appToken = APP_TOKEN
+    return await httpGet(url, appToken)
+  }
 
   const onPreviewClick = () => {
     setModalData({
       url: item.nftFileUrl,
       mimetype: item.nftMimetype,
       visible: true,
-    });
-  };
+    })
+  }
 
   const closeModal = () => {
-    setModalData(prev => ({...prev, visible: false, url: ''}));
-  };
+    setModalData((prev) => ({ ...prev, visible: false, url: "" }))
+  }
   const deleteItem = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       if (item?.isCollection) {
         await httpPost(
-          '/tokens/items/nfmt/collection-destroy/' + item.contractAddress,
+          "/tokens/items/nfmt/collection-destroy/" + item.contractAddress,
           {},
-          loginStore.userToken,
-        );
+          loginStore.userToken
+        )
       }
 
-      if (item.tokenType === 'NFMT') {
+      if (item.tokenType === "NFMT") {
         await httpPost(
-          '/tokens/items/nfmt/burn/' +
+          "/tokens/items/nfmt/burn/" +
             item.contractAddress +
-            '/' +
+            "/" +
             item.nfmtType,
-          {amount: item.balance},
-          loginStore.userToken,
-        );
+          { amount: item.balance },
+          loginStore.userToken
+        )
       }
-      if (item.tokenType === 'NFT') {
+      if (item.tokenType === "NFT") {
       }
-      await walletStore.fetchWalletBalance(loginStore.userToken, true);
-      navigation.navigate('ProfileScreen');
-      showSuccess('Success', 'Item deleted');
+      await walletStore.fetchWalletBalance(loginStore.userToken, true)
+      navigation.navigate("ProfileScreen")
+      showSuccess("Success", "Item deleted")
     } catch (error) {
       showError(
-        'Error',
-        'Cant burn this collection as someone already owns NFTs in it',
-      );
+        "Error",
+        "Cant burn this collection as someone already owns NFTs in it"
+      )
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <Fragment>
       <SecondaryHeader
-        title={item.isCollection ? 'Collection details' : 'Item details'}
+        title={item.isCollection ? "Collection details" : "Item details"}
       />
 
       <ScrollView style={styles.container}>
-        <View style={{...styles.contentContainer, margin: 0}}>
+        <View style={{ ...styles.contentContainer, margin: 0 }}>
           <View style={styles.justifyBetween}>
             <TouchableOpacity
               onPress={onPreviewClick}
-              style={{alignItems: 'center', width: wp('60%')}}>
+              style={{ alignItems: "center", width: wp("60%") }}
+            >
               <View style={[styles.alignCenter, styles.imageContainer]}>
                 {isImageMimetype(item.nftMimetype) && (
                   <FastImage
@@ -152,12 +148,12 @@ const NftItemHistoryScreen = (props: any) => {
                   />
                 )}
                 {isVideoMimetype(item.nftMimetype) && (
-                  <View style={{position: 'relative'}}>
+                  <View style={{ position: "relative" }}>
                     <View style={styles.videoPlayButton}>
                       <AntIcon
-                        name={'playcircleo'}
-                        color={'white'}
-                        size={hp('5%')}
+                        name={"playcircleo"}
+                        color={"white"}
+                        size={hp("5%")}
                       />
                     </View>
 
@@ -173,9 +169,9 @@ const NftItemHistoryScreen = (props: any) => {
                 )}
                 {isAudioMimetype(item.nftMimetype) && (
                   <AntIcon
-                    name={'playcircleo'}
+                    name={"playcircleo"}
                     color={commonColors.primaryColor}
-                    size={hp('10%')}
+                    size={hp("10%")}
                   />
                 )}
               </View>
@@ -185,10 +181,11 @@ const NftItemHistoryScreen = (props: any) => {
                 style={[
                   styles.textStyle,
                   {
-                    wordWrap: 'wrap',
-                    fontWeight: 'bold',
+                    wordWrap: "wrap",
+                    fontWeight: "bold",
                   },
-                ]}>
+                ]}
+              >
                 {item.tokenName}
               </Text>
               <Text
@@ -196,19 +193,21 @@ const NftItemHistoryScreen = (props: any) => {
                   styles.textStyle,
                   {
                     marginTop: 10,
-                    alignSelf: 'flex-start',
+                    alignSelf: "flex-start",
                   },
-                ]}>
-                Balance: {item.balance + '/' + item.total}
+                ]}
+              >
+                Balance: {item.balance + "/" + item.total}
               </Text>
 
               <View />
               {loginStore.initialData.walletAddress === userWalletAddress && (
-                <HStack w={'full'} justifyContent={'center'} mt={5}>
+                <HStack w={"full"} justifyContent={"center"} mt={5}>
                   <TouchableOpacity
                     onPress={() => setDeleteModalOpen(true)}
-                    style={styles.actionButton}>
-                    <MaterialIcons name="delete" size={35} color={'red'} />
+                    style={styles.actionButton}
+                  >
+                    <MaterialIcons name="delete" size={35} color={"red"} />
                   </TouchableOpacity>
                 </HStack>
               )}
@@ -218,20 +217,21 @@ const NftItemHistoryScreen = (props: any) => {
           <TouchableOpacity
             disabled={loading}
             // onPress={onMintClick}
-            style={[styles.createButton, {height: hp('5%'), borderRadius: 0}]}>
-            <VStack justifyContent={'center'} alignItems={'center'} flex={1}>
+            style={[styles.createButton, { height: hp("5%"), borderRadius: 0 }]}
+          >
+            <VStack justifyContent={"center"} alignItems={"center"} flex={1}>
               {loading ? (
                 <ActivityIndicator
                   animating={loading}
                   size="small"
-                  color={'white'}
+                  color={"white"}
                 />
               ) : (
                 <Text style={styles.createButtonText}>Provenance</Text>
               )}
             </VStack>
           </TouchableOpacity>
-          <View style={{height: hp('50%')}}>
+          <View style={{ height: hp("50%") }}>
             {itemTransactions.length ? (
               <NftTransactionListTab
                 onEndReached={() => {}}
@@ -239,20 +239,21 @@ const NftItemHistoryScreen = (props: any) => {
                 walletAddress={userWalletAddress}
               />
             ) : (
-              <VStack justifyContent={'center'} alignItems={'center'} mt={'2'}>
+              <VStack justifyContent={"center"} alignItems={"center"} mt={"2"}>
                 <Text
                   style={[
                     styles.textStyle,
                     {
-                      fontWeight: 'bold',
+                      fontWeight: "bold",
                       color: commonColors.primaryColor,
                     },
-                  ]}>
+                  ]}
+                >
                   This item has no transactions yet...
                 </Text>
                 <Image
-                  alt={'no transaction'}
-                  source={require('../../assets/transactions-empty.png')}
+                  alt={"no transaction"}
+                  source={require("../../assets/transactions-empty.png")}
                   style={styles.noTransactionsImage}
                 />
               </VStack>
@@ -263,7 +264,7 @@ const NftItemHistoryScreen = (props: any) => {
       <Modal onBackdropPress={closeModal} isVisible={modalData.visible}>
         <View style={styles.modal}>
           {isAudioMimetype(modalData.mimetype) && (
-            <View style={{position: 'absolute', top: '50%'}}>
+            <View style={{ position: "absolute", top: "50%" }}>
               <AudioPlayer audioUrl={modalData.url} />
             </View>
           )}
@@ -279,16 +280,17 @@ const NftItemHistoryScreen = (props: any) => {
 
           {isVideoMimetype(modalData.mimetype) && (
             <TouchableOpacity
-              onPress={() => setVideoPaused(prev => !prev)}
+              onPress={() => setVideoPaused((prev) => !prev)}
               activeOpacity={1}
-              style={{height: hp('100%'), width: '100%'}}>
+              style={{ height: hp("100%"), width: "100%" }}
+            >
               <VideoPlayer
                 video={{
                   uri: modalData.url,
                 }}
                 autoplay
-                videoWidth={wp('100%')}
-                videoHeight={hp('100%')}
+                videoWidth={wp("100%")}
+                videoHeight={hp("100%")}
               />
             </TouchableOpacity>
           )}
@@ -299,34 +301,34 @@ const NftItemHistoryScreen = (props: any) => {
         onDeletePress={deleteItem}
         title={
           item.isCollection
-            ? 'Do you really want to delete \n(burn) this NFT Collection?'
-            : 'Do you really want to delete \n(burn) this NFT?'
+            ? "Do you really want to delete \n(burn) this NFT Collection?"
+            : "Do you really want to delete \n(burn) this NFT?"
         }
-        description={'You will not be able to undo this.'}
+        description={"You will not be able to undo this."}
         onClose={() => setDeleteModalOpen(false)}
         open={deleteModalOpen}
-        deleteButtonTitle={'Yes, burn 🔥'}
-        cancelButtonTitle={'No, cancel ✖️'}
+        deleteButtonTitle={"Yes, burn 🔥"}
+        cancelButtonTitle={"No, cancel ✖️"}
       />
     </Fragment>
-  );
-};
+  )
+}
 
-export default NftItemHistoryScreen;
+export default NftItemHistoryScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   videoPlayButton: {
-    position: 'absolute',
+    position: "absolute",
     zIndex: 99999,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: wp('60%'),
-    height: wp('40%'),
+    backgroundColor: "rgba(0,0,0,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+    width: wp("60%"),
+    height: wp("40%"),
   },
   contentContainer: {
     flex: 1,
@@ -337,71 +339,71 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   tokenImage: {
-    width: wp('60%'),
-    height: wp('40%'),
+    width: wp("60%"),
+    height: wp("40%"),
     borderRadius: 5,
   },
   justifyBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 20,
   },
   alignCenter: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   imageContainer: {
-    width: wp('60%'),
-    height: wp('40%'),
+    width: wp("60%"),
+    height: wp("40%"),
     borderRadius: 10,
     borderWidth: 1,
-    marginRight: wp('5%'),
-    marginLeft: wp('7%'),
-    borderColor: 'lightgrey',
+    marginRight: wp("5%"),
+    marginLeft: wp("7%"),
+    borderColor: "lightgrey",
   },
   tokenDescriptionContainer: {
     borderRadius: 5,
     marginLeft: 10,
     // flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-around',
-    width: wp('40%'),
+    alignItems: "flex-start",
+    justifyContent: "space-around",
+    width: wp("40%"),
     // height: wp('10%'),
     paddingRight: 10,
   },
   textStyle: {
     fontFamily: textStyles.lightFont,
-    color: 'black',
+    color: "black",
   },
   noTransactionsImage: {
     marginTop: 20,
-    resizeMode: 'stretch',
-    height: hp('21.50%'),
-    width: wp('47.69%'),
+    resizeMode: "stretch",
+    height: hp("21.50%"),
+    width: wp("47.69%"),
   },
   modal: {
     // backgroundColor: 'white',
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: wp('90%'),
-    height: wp('90%'),
+    justifyContent: "center",
+    alignItems: "center",
+    width: wp("90%"),
+    height: wp("90%"),
   },
   modalImage: {
-    width: wp('90%'),
-    height: wp('90%'),
+    width: wp("90%"),
+    height: wp("90%"),
     borderRadius: 10,
   },
   createButtonText: {
-    fontSize: hp('2%'),
-    color: '#fff',
+    fontSize: hp("2%"),
+    color: "#fff",
     fontFamily: textStyles.regularFont,
   },
   createButton: {
     backgroundColor: commonColors.primaryColor,
     borderRadius: 5,
-    height: hp('7%'),
+    height: hp("7%"),
     marginTop: 20,
   },
-});
+})

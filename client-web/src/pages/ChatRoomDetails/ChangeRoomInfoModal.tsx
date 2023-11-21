@@ -1,15 +1,15 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, Modal, TextField, Typography } from "@mui/material"
 
 interface IChangeRoomModal {
-  title: string;
-  open: boolean;
-  onClose: () => void;
-  onChange: (info: string) => void;
-  onSubmit: () => void;
+  title: string
+  open: boolean
+  onClose: () => void
+  onChange: (info: string) => void
+  onSubmit: () => void
 }
 
 const style = {
-  position: "absolute" as "absolute",
+  position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -21,7 +21,7 @@ const style = {
   display: "flex",
   flexDirection: "column",
   borderRadius: "10px",
-};
+}
 
 export function ChangeRoomInfoModal({
   title,
@@ -61,5 +61,5 @@ export function ChangeRoomInfoModal({
         </Button>
       </Box>
     </Modal>
-  );
+  )
 }

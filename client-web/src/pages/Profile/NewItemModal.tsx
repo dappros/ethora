@@ -1,52 +1,50 @@
-import * as React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import { Box } from "@mui/system";
-import { IconButton } from "@mui/material";
-import { Button, NativeSelect } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { useFormik } from "formik";
-import * as http from "../../http";
-import { useStoreState } from "../../store";
+import * as React from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import { Box } from "@mui/system"
+import { IconButton } from "@mui/material"
+import { Button, NativeSelect } from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
+import TextField from "@mui/material/TextField"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { useFormik } from "formik"
+import * as http from "../../http"
+import { useStoreState } from "../../store"
 
-type Props = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+type Properties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-export default function NewItemModal(props: Props) {
-  const [preview, setPreview] = React.useState<any>(null);
-  const [fileError, setFileError] = React.useState("");
-  const [file, setFile] = React.useState<File | null>(null);
-  const [loading, setLoading] = React.useState(false);
+export default function NewItemModal(properties: Properties) {
+  const [preview, setPreview] = React.useState<any>(null)
+  const [fileError, setFileError] = React.useState("")
+  const [file, setFile] = React.useState<File | null>(null)
+  const [loading, setLoading] = React.useState(false)
 
-  const setBalance = useStoreState((state) => state.setBalance);
-  const user = useStoreState((state) => state.user);
+  const setBalance = useStoreState((state) => state.setBalance)
+  const user = useStoreState((state) => state.user)
 
-  const fileRef = React.useRef<HTMLInputElement>(null);
+  const fileReference = React.useRef<HTMLInputElement>(null)
 
   const onImage = (event: any) => {
-    const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement
 
     if (input.files) {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      reader.onload = (e) => {
-        if (e) {
-          if (e.target?.result) {
-            setPreview(e.target.result);
-          }
+      reader.addEventListener("load", (e) => {
+        if (e && e.target?.result) {
+          setPreview(e.target.result)
         }
-      };
-      setFileError("");
-      setFile(input.files[0]);
-      reader.readAsDataURL(input.files[0]);
+      })
+      setFileError("")
+      setFile(input.files[0])
+      reader.readAsDataURL(input.files[0])
     }
-  };
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -54,24 +52,24 @@ export default function NewItemModal(props: Props) {
       rarity: "1",
     },
     validate: (values: Record<string, string>) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.tokenName) {
-        errors.tokenName = "Required";
+        errors.tokenName = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: async (values) => {
       if (!file) {
-        setFileError("required");
-        return;
+        setFileError("required")
+        return
       }
 
-      const fd = new FormData();
-      fd.append("files", file);
+      const fd = new FormData()
+      fd.append("files", file)
 
-      setLoading(true);
+      setLoading(true)
       http
         .uploadFile(fd)
         .then(async (res) => {
@@ -79,17 +77,21 @@ export default function NewItemModal(props: Props) {
             values.tokenName,
             res.data.results[0]._id,
             values.rarity
-          );
-          const balanceResp = await http.getBalance(user.walletAddress);
-          setBalance(balanceResp.data.balance);
-          props.setOpen(false);
+          )
+          const balanceResp = await http.getBalance(user.walletAddress)
+          setBalance(balanceResp.data.balance)
+          properties.setOpen(false)
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     },
-  });
+  })
 
   return (
-    <Dialog onClose={() => props.setOpen(false)} maxWidth={false} open={props.open}>
+    <Dialog
+      onClose={() => properties.setOpen(false)}
+      maxWidth={false}
+      open={properties.open}
+    >
       <Box style={{ width: "400px" }}>
         <DialogTitle
           style={{ display: "flex", justifyContent: "space-between" }}
@@ -97,7 +99,7 @@ export default function NewItemModal(props: Props) {
           Create new Item Token
           <IconButton
             onClick={() => {
-              props.setOpen(false);
+              properties.setOpen(false)
             }}
           >
             <CloseIcon />
@@ -130,7 +132,7 @@ export default function NewItemModal(props: Props) {
             >
               <input
                 onChange={onImage}
-                ref={fileRef}
+                ref={fileReference}
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
@@ -138,7 +140,7 @@ export default function NewItemModal(props: Props) {
               <Button
                 color="secondary"
                 variant="contained"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => fileReference.current?.click()}
               >
                 upload image
               </Button>
@@ -159,7 +161,7 @@ export default function NewItemModal(props: Props) {
               fullWidth
               variant="standard"
               onChange={(e) => {
-                formik.handleChange(e);
+                formik.handleChange(e)
               }}
               onBlur={formik.handleBlur}
               error={
@@ -181,8 +183,8 @@ export default function NewItemModal(props: Props) {
                   id: "uncontrolled-native",
                 }}
                 onChange={(e) => {
-                  console.log(e);
-                  formik.handleChange(e);
+                  console.log(e)
+                  formik.handleChange(e)
                 }}
               >
                 <option value={1}>1</option>
@@ -203,5 +205,5 @@ export default function NewItemModal(props: Props) {
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

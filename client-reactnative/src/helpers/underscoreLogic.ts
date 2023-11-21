@@ -5,19 +5,19 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-// This code replaces any caps in a string with "_" followed with respective small case - this is needed for cross-compatibility between Ethereum addresses and XMPP JIDs 
+// This code replaces any caps in a string with "_" followed with respective small case - this is needed for cross-compatibility between Ethereum addresses and XMPP JIDs
 
-export const underscoreManipulation = (str:string) => {
-  if(str){
-    const rep = str.replace(/([A-Z])/g, '_$1').toLowerCase();
+export const underscoreManipulation = (str: string) => {
+  if (str) {
+    const rep = str.replace(/([A-Z])/g, "_$1").toLowerCase()
     return rep
-  }else{
-    return 'invalid string passed'
+  } else {
+    return "invalid string passed"
   }
-};
+}
 
-export const reverseUnderScoreManipulation = (str:string) => {
-  return str.replace(/_([a-z])/gm, (m1:string, m2:string) => {
-    return m2.toUpperCase();
-  });
-};
+export const reverseUnderScoreManipulation = (str: string) => {
+  return str.replace(/_([a-z])/gm, (m1: string, m2: string) => {
+    return m2.toUpperCase()
+  })
+}

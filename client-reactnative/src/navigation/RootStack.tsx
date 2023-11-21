@@ -1,32 +1,32 @@
-import React, {useEffect} from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useStores} from '../stores/context';
-import HomeStack from './HomeStack';
-import AuthStack from './AuthStack';
-import {observer} from 'mobx-react-lite';
-import {Center, Spinner, View} from 'native-base';
-import {SafeAreaView} from 'react-native';
-import {RootStackParamList} from './types';
+import React, { useEffect } from "react"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { useStores } from "../stores/context"
+import HomeStack from "./HomeStack"
+import AuthStack from "./AuthStack"
+import { observer } from "mobx-react-lite"
+import { Center, Spinner, View } from "native-base"
+import { SafeAreaView } from "react-native"
+import { RootStackParamList } from "./types"
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const RootStack = observer(() => {
-  const {loginStore} = useStores();
+  const { loginStore } = useStores()
   const {
     setTokenFromAsyncStorage,
     setInitialDetailsFromAsyncStorage,
     userToken,
     loading,
-  } = loginStore;
+  } = loginStore
 
   useEffect(() => {
     // this action will first check
     // if the the user already has an
     // active session by retrieving
     // the token for async store
-    setInitialDetailsFromAsyncStorage();
-    setTokenFromAsyncStorage();
-  }, []);
+    setInitialDetailsFromAsyncStorage()
+    setTokenFromAsyncStorage()
+  }, [])
 
   return (
     <>
@@ -37,18 +37,18 @@ const RootStack = observer(() => {
           </Center>
         </View>
       ) : (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{ flex: 1 }}>
           <Stack.Navigator>
             {userToken ? (
               <Stack.Screen
-                options={{headerShown: false}}
-                name={'HomeStackScreen'}
+                options={{ headerShown: false }}
+                name={"HomeStackScreen"}
                 component={HomeStack}
               />
             ) : (
               <Stack.Screen
-                options={{headerShown: false, headerTransparent: true}}
-                name={'AuthStackScreen'}
+                options={{ headerShown: false, headerTransparent: true }}
+                name={"AuthStackScreen"}
                 component={AuthStack}
               />
             )}
@@ -56,7 +56,7 @@ const RootStack = observer(() => {
         </SafeAreaView>
       )}
     </>
-  );
-});
+  )
+})
 
-export default RootStack;
+export default RootStack
