@@ -133,7 +133,7 @@ export default function UsersTable({ currentApp, onAppChange }: Properties) {
     if (currentApp) {
       getInitialUsers(currentApp)
     }
-  }, [currentApp])
+  }, [currentApp, onAppChange])
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
     onAppChange(e.target.value)
