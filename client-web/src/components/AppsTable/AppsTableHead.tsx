@@ -1,14 +1,8 @@
-import {
-  TableHead,
-  TableRow,
-  TableCell,
-  TableSortLabel,
-  Tooltip,
-  Box,
-} from "@mui/material";
-import InfoIcon from "@mui/icons-material/Info";
+import { TableHead, TableRow, TableCell, Tooltip, Box } from "@mui/material"
+import InfoIcon from "@mui/icons-material/Info"
+import { FC } from "react"
 
-type CellId =
+export type CellId =
   | "displayName"
   | "users"
   | "sessions"
@@ -17,16 +11,17 @@ type CellId =
   | "files"
   | "web3"
   | "createdAt"
-  | "actions";
+  | "actions"
 
-type TableCellAlign = "inherit" | "left" | "center" | "right" | "justify";
+type TableCellAlign = "inherit" | "left" | "center" | "right" | "justify"
+type Order = "asc" | "desc"
 interface HeadCell {
-  disablePadding: boolean;
-  id: CellId;
-  label: string;
-  numeric: boolean;
-  description?: string;
-  align: TableCellAlign;
+  disablePadding: boolean
+  id: CellId
+  label: string
+  numeric: boolean
+  description?: string
+  align: TableCellAlign
 }
 
 const headCells: readonly HeadCell[] = [
@@ -103,8 +98,25 @@ const headCells: readonly HeadCell[] = [
     label: "Actions",
     align: "right",
   },
-];
-export const AppsTableHead = () => {
+]
+
+interface AppsTableHeadProps {
+  order: Order
+  orderBy: CellId
+  onRequestSort: (property: CellId) => void
+  isLoading: boolean
+}
+
+export const AppsTableHead: FC<AppsTableHeadProps> = ({
+  order,
+  orderBy,
+  onRequestSort,
+  isLoading,
+}) => {
+  const createSortHandler = (property) => () => {
+    onRequestSort(property)
+  }
+
   return (
     <TableHead>
       <TableRow>
@@ -113,22 +125,30 @@ export const AppsTableHead = () => {
             key={headCell.id}
             align={headCell.align}
             padding={headCell.disablePadding ? "none" : "normal"}
+            sortDirection={orderBy === headCell.id ? order : false}
           >
-            <Box style={{display: 'inline-flex', alignItems: 'center'}}>
-            {headCell.label}
-            {!!headCell.description && (
-              <Tooltip title={headCell.description}>
-                <InfoIcon
-                  color="primary"
-                  fontSize={"small"}
-                  sx={{ marginLeft: 1 }}
-                />
-              </Tooltip>
-            )}
+            <Box
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                cursor: isLoading ? "not-allowed" : "pointer",
+              }}
+              onClick={createSortHandler(headCell.id)}
+            >
+              {headCell.label}
+              {!!headCell.description && (
+                <Tooltip title={headCell.description}>
+                  <InfoIcon
+                    color="primary"
+                    fontSize={"small"}
+                    sx={{ marginLeft: 1 }}
+                  />
+                </Tooltip>
+              )}
             </Box>
           </TableCell>
         ))}
       </TableRow>
     </TableHead>
-  );
-};
+  )
+}
