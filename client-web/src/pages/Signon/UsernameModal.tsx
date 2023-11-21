@@ -1,35 +1,35 @@
-import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import { UsernameSignInForm } from "./UsernameSignInForm";
-import { UsernameSignUpForm } from "./UsernameSignUpForm";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { TLoginSuccessResponse } from "../../http";
+import React, { useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import Tab from "@mui/material/Tab"
+import TabContext from "@mui/lab/TabContext"
+import TabList from "@mui/lab/TabList"
+import TabPanel from "@mui/lab/TabPanel"
+import { UsernameSignInForm } from "./UsernameSignInForm"
+import { UsernameSignUpForm } from "./UsernameSignUpForm"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { TLoginSuccessResponse } from "../../http"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updateUser: (data: TLoginSuccessResponse) => void;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateUser: (data: TLoginSuccessResponse) => void
+}
 
-export function UsernameModal({ open, setOpen, updateUser }: TProps) {
-  const [tab, setTab] = useState("1");
+export function UsernameModal({ open, setOpen, updateUser }: TProperties) {
+  const [tab, setTab] = useState("1")
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTab(newValue);
-  };
+    setTab(newValue)
+  }
 
   const onClose = (e: any, reason: any) => {
     if (reason === "backdropClick") {
-      return;
+      return
     }
-  };
+  }
 
   return (
     <Dialog onClose={onClose} maxWidth={false} open={open}>
@@ -62,11 +62,14 @@ export function UsernameModal({ open, setOpen, updateUser }: TProps) {
             </TabPanel>
             {/* SIGN UP */}
             <TabPanel value="2">
-              <UsernameSignUpForm   updateUser={updateUser} closeModal={() => setOpen(false)} />
+              <UsernameSignUpForm
+                updateUser={updateUser}
+                closeModal={() => setOpen(false)}
+              />
             </TabPanel>
           </TabContext>
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

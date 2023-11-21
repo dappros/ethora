@@ -6,33 +6,33 @@ import {
   ListItemAvatar,
   ListItemButton,
   Typography,
-} from "@mui/material";
-import { Box, useTheme } from "@mui/system";
-import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router";
-import { getProvenanceTransacitons, IDocument } from "../../http";
-import { TBalance } from "../../store";
-import { ITransaction } from "../Profile/types";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { FullPageSpinner } from "../../components/FullPageSpinner";
+} from "@mui/material"
+import { Box, useTheme } from "@mui/system"
+import { format } from "date-fns"
+import React, { useEffect, useState } from "react"
+import { useHistory, useLocation } from "react-router"
+import { getProvenanceTransacitons, IDocument } from "../../http"
+import { TBalance } from "../../store"
+import { ITransaction } from "../Profile/types"
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt"
+import { FullPageSpinner } from "../../components/FullPageSpinner"
 
 export interface IProvenance {}
 
 const tokenTypes = {
   creation: "Token Creation",
-};
+}
 
 const UserBlock = ({
   name,
   balance,
   total,
 }: {
-  name: string;
-  balance: string;
-  total: string;
+  name: string
+  balance: string
+  total: string
 }) => {
-  const theme = useTheme();
+  const theme = useTheme()
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", width: "30%" }}>
@@ -54,21 +54,21 @@ const UserBlock = ({
         </Box>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
 const TransactionItem: React.FC<{ item: ITransaction }> = ({ item }) => {
-  const [expanded, setExpanded] = useState(false);
-  const history = useHistory();
+  const [expanded, setExpanded] = useState(false)
+  const history = useHistory()
   const senderName =
-    (item.senderFirstName || "") + " " + (item.senderLastName || "");
+    (item.senderFirstName || "") + " " + (item.senderLastName || "")
   const receiverName =
-    (item.receiverFirstName || "") + " " + (item.receiverLastName || "");
+    (item.receiverFirstName || "") + " " + (item.receiverLastName || "")
   return (
     <>
       <ListItem key={item.transactionHash}>
         <ListItemButton
-          onClick={() => setExpanded((prev) => !prev)}
+          onClick={() => setExpanded((previous) => !previous)}
           // sx={{ display: "flex", justifyContent: "space-between" }}
         >
           {item.type === tokenTypes.creation ? (
@@ -226,36 +226,36 @@ const TransactionItem: React.FC<{ item: ITransaction }> = ({ item }) => {
         </List>
       </Collapse>
     </>
-  );
-};
+  )
+}
 
 const Provenance: React.FC<IProvenance> = ({}) => {
   const location = useLocation<{
-    nftItem: TBalance & IDocument;
-    walletAddress: string;
-  }>();
-  const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  const [loading, setLoading] = useState(false);
+    nftItem: TBalance & IDocument
+    walletAddress: string
+  }>()
+  const [transactions, setTransactions] = useState<ITransaction[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const nftItem = location.state.nftItem;
+  const nftItem = location.state.nftItem
   const getTransactions = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       const res = await getProvenanceTransacitons(
         location.state.walletAddress,
         nftItem.nftId || nftItem._id
-      );
-      setTransactions(res.data.items.reverse());
+      )
+      setTransactions(res.data.items.reverse())
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   useEffect(() => {
-    getTransactions();
-  }, []);
-  if (!location.state.walletAddress) return <p>No Data</p>;
-  if (loading) return <FullPageSpinner />;
+    getTransactions()
+  }, [])
+  if (!location.state.walletAddress) return <p>No Data</p>
+  if (loading) return <FullPageSpinner />
   return (
     <Box>
       <Box
@@ -289,10 +289,10 @@ const Provenance: React.FC<IProvenance> = ({}) => {
       </Box>
       <List>
         {transactions.map((item) => {
-          return <TransactionItem item={item} key={item._id} />;
+          return <TransactionItem item={item} key={item._id} />
         })}
       </List>
     </Box>
-  );
-};
-export default Provenance;
+  )
+}
+export default Provenance

@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, { useState } from "react";
+import React, { useState } from "react"
 
 import {
   Text,
@@ -15,50 +15,50 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ImageBackground,
-} from "react-native";
+} from "react-native"
 
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from "react-native-responsive-screen"
 
-import IonIcons from "react-native-vector-icons/Ionicons";
+import IonIcons from "react-native-vector-icons/Ionicons"
 
-import CheckBox from "@react-native-community/checkbox";
+import CheckBox from "@react-native-community/checkbox"
 
-import { Input } from "native-base";
+import { Input } from "native-base"
 import {
   textStyles,
   regularLoginEmail,
   commonColors,
   loginScreenBackgroundImage,
-} from "../../../docs/config";
-import { showError, showSuccess } from "../../components/Toast/toast";
-import { httpPost } from "../../config/apiService";
+} from "../../../docs/config"
+import { showError, showSuccess } from "../../components/Toast/toast"
+import { httpPost } from "../../config/apiService"
 import {
   registerRegularEmailUrl,
   registerUserURL,
-} from "../../config/routesConstants";
-import { useStores } from "../../stores/context";
-import { AuthStackParamList } from "../../navigation/types";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { authStackRoutes } from "../../navigation/routes";
-import { Button } from "../../components/Button";
+} from "../../config/routesConstants"
+import { useStores } from "../../stores/context"
+import { AuthStackParamList } from "../../navigation/types"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { authStackRoutes } from "../../navigation/routes"
+import { Button } from "../../components/Button"
 
-const { mediumFont, lightFont, boldFont } = textStyles;
+const { mediumFont, lightFont, boldFont } = textStyles
 type RegisterScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   "Register"
->;
+>
 export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isSelected, setSelection] = useState(true);
-  const { apiStore } = useStores();
-  const [lastname, setLastname] = useState("");
+  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
+  const [passwordCheck, setPasswordCheck] = useState("")
+  const [firstname, setFirstname] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [isSelected, setSelection] = useState(true)
+  const { apiStore } = useStores()
+  const [lastname, setLastname] = useState("")
   const registerUser = async () => {
     const body = regularLoginEmail
       ? {
@@ -70,34 +70,37 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
           firstName: firstname,
           lastName: lastname,
           username,
-        };
+        }
     if (!firstname || !lastname || !username || !isSelected) {
-      showError("Error", "Please, fill all the fields");
-      return;
+      showError("Error", "Please, fill all the fields")
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     try {
       const res = await httpPost(
         registerRegularEmailUrl,
         body,
         apiStore.defaultToken
-      );
-      showSuccess("Registration", "User registered successfully, please check your email");
-      navigation.navigate(authStackRoutes.RegularLogin);
+      )
+      showSuccess(
+        "Registration",
+        "User registered successfully, please check your email"
+      )
+      navigation.navigate(authStackRoutes.RegularLogin)
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response.data)
       if (error?.response?.status === 400) {
-        showError("Error", "Someone already has that username. Try another?");
+        showError("Error", "Someone already has that username. Try another?")
       } else {
-        showError("Error", "Something went wrong");
+        showError("Error", "Something went wrong")
       }
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   const goBack = () => {
-    navigation.navigate(authStackRoutes.RegularLogin);
-  };
+    navigation.navigate(authStackRoutes.RegularLogin)
+  }
 
   return (
     <View testID="registerScreen" style={{ backgroundColor: "white", flex: 1 }}>
@@ -235,8 +238,8 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         </ImageBackground>
       </TouchableWithoutFeedback>
     </View>
-  );
-};
+  )
+}
 
 const loginStyles = StyleSheet.create({
   input: {
@@ -282,4 +285,4 @@ const loginStyles = StyleSheet.create({
     top: 7,
     zIndex: 99999,
   },
-});
+})

@@ -5,25 +5,25 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {Box, HStack, Text, View} from 'native-base';
-import AntIcon from 'react-native-vector-icons/AntDesign';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {TouchableOpacity} from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {appVersion, commonColors, textStyles} from '../../../docs/config';
-import {HomeStackNavigationProp} from '../../navigation/types';
+import React from "react"
+import { useNavigation } from "@react-navigation/native"
+import { Box, HStack, Text, View } from "native-base"
+import AntIcon from "react-native-vector-icons/AntDesign"
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome"
+import { TouchableOpacity } from "react-native"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { appVersion, commonColors, textStyles } from "../../../docs/config"
+import { HomeStackNavigationProp } from "../../navigation/types"
 
 interface SecondaryHeaderProps {
-  title: string;
-  isQR?: boolean;
-  type?: string;
-  showVersion?: boolean;
-  onQRPressed?: any;
-  isChatRoomDetail?: boolean;
-  roomJID?: string;
-  onBackPress?: () => void;
+  title: string
+  isQR?: boolean
+  type?: string
+  showVersion?: boolean
+  onQRPressed?: any
+  isChatRoomDetail?: boolean
+  roomJID?: string
+  onBackPress?: () => void
 }
 
 const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
@@ -36,27 +36,28 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
   roomJID,
   onBackPress,
 }) => {
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
   const onArrowClick = () => {
     if (onBackPress) {
-      onBackPress();
-      return;
+      onBackPress()
+      return
     }
-    navigation.goBack();
-  };
+    navigation.goBack()
+  }
   return (
-    <Box h={60} justifyContent={'center'} bg={commonColors.primaryDarkColor}>
+    <Box h={60} justifyContent={"center"} bg={commonColors.primaryDarkColor}>
       <HStack>
         <TouchableOpacity
           accessibilityLabel="Back button"
-          style={{flex: 0.12, justifyContent: 'center', alignItems: 'center'}}
-          onPress={onArrowClick}>
+          style={{ flex: 0.12, justifyContent: "center", alignItems: "center" }}
+          onPress={onArrowClick}
+        >
           <AntIcon
-            name={'arrowleft'}
-            style={{marginRight: 5, marginLeft: 5}}
-            size={hp('3%')}
-            color={'white'}
+            name={"arrowleft"}
+            style={{ marginRight: 5, marginLeft: 5 }}
+            size={hp("3%")}
+            color={"white"}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -67,43 +68,47 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           activeOpacity={1}
           onPress={() =>
             isChatRoomDetail &&
-            navigation.navigate('ChatDetailsScreen', {
+            navigation.navigate("ChatDetailsScreen", {
               roomName: title,
-              roomJID: roomJID || '',
+              roomJID: roomJID || "",
             })
-          }>
+          }
+        >
           <Text
             fontFamily={textStyles.semiBoldFont}
-            fontSize={hp('2.2%')}
-            color={'white'}>
+            fontSize={hp("2.2%")}
+            color={"white"}
+          >
             {title}
           </Text>
         </TouchableOpacity>
 
-        <View style={{marginLeft: 'auto', flex: 0.1}}>
+        <View style={{ marginLeft: "auto", flex: 0.1 }}>
           {isQR && (
             <TouchableOpacity
               accessibilityLabel="QR button"
               onPress={onQRPressed}
-              style={{marginRight: 10}}>
-              <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp('3.7%')} />
+              style={{ marginRight: 10 }}
+            >
+              <FontAwesomeIcon name="qrcode" color="#FFFF" size={hp("3.7%")} />
             </TouchableOpacity>
           )}
-          {type === 'transaction' && (
+          {type === "transaction" && (
             <TouchableOpacity
-              style={{flex: 0.2, alignItems: 'flex-end', marginRight: 10}}>
-              <AntIcon name="filter" color="#FFFF" size={hp('3%')} />
+              style={{ flex: 0.2, alignItems: "flex-end", marginRight: 10 }}
+            >
+              <AntIcon name="filter" color="#FFFF" size={hp("3%")} />
             </TouchableOpacity>
           )}
           {showVersion && (
-            <Text style={{color: 'white', position: 'absolute', right: 30}}>
+            <Text style={{ color: "white", position: "absolute", right: 30 }}>
               Version: {appVersion}
             </Text>
           )}
         </View>
       </HStack>
     </Box>
-  );
-};
+  )
+}
 
-export default SecondaryHeader;
+export default SecondaryHeader

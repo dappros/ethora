@@ -1,46 +1,45 @@
-import * as React from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Input from "@mui/material/Input";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import Box from "@mui/material/Box";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import FormHelperText from "@mui/material/FormHelperText";
-import { useFormik } from "formik";
-import { loginUsername, TLoginSuccessResponse } from "../../http";
-import { Typography } from "@mui/material";
-import { useHistory } from "react-router-dom";
-import { useStoreState } from "../../store";
+import * as React from "react"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import Input from "@mui/material/Input"
+import InputAdornment from "@mui/material/InputAdornment"
+import IconButton from "@mui/material/IconButton"
+import Box from "@mui/material/Box"
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import FormHelperText from "@mui/material/FormHelperText"
+import { useFormik } from "formik"
+import { loginUsername, TLoginSuccessResponse } from "../../http"
+import { Typography } from "@mui/material"
+import { useHistory } from "react-router-dom"
+import { useStoreState } from "../../store"
 
 const validate = (values: Record<string, string>) => {
-  const errors: Record<string, string> = {};
+  const errors: Record<string, string> = {}
 
   if (!values.username) {
-    errors.username = "Required";
+    errors.username = "Required"
   }
 
   if (!values.password) {
-    errors.password = "Required";
+    errors.password = "Required"
   } else if (values.password.length <= 2) {
-    errors.password = "Must be 2 characters or more";
+    errors.password = "Must be 2 characters or more"
   }
 
-  return errors;
-};
+  return errors
+}
 
-type TProps = {
-  closeModal: () => void;
-  updateUser: (data: TLoginSuccessResponse) => void;
+type TProperties = {
+  closeModal: () => void
+  updateUser: (data: TLoginSuccessResponse) => void
+}
 
-};
-
-export function UsernameSignInForm(props: TProps) {
-  const setUser = useStoreState((state) => state.setUser);
-  const history = useHistory();
+export function UsernameSignInForm(properties: TProperties) {
+  const setUser = useStoreState((state) => state.setUser)
+  const history = useHistory()
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -48,33 +47,31 @@ export function UsernameSignInForm(props: TProps) {
     },
     validate,
     onSubmit: (values) => {
-      setDisableSubmit(true);
+      setDisableSubmit(true)
       loginUsername(values.username, values.password)
         .then((result) => {
-          props.updateUser(result.data)
-          props.closeModal();
+          properties.updateUser(result.data)
+          properties.closeModal()
         })
         .catch((error) => {
-          console.log(error);
-          setHttpError("http Error");
-          if (error.response) {
-            if (
-              error.response.status === 404 ||
-              error.response.status === 401
-            ) {
-              setHttpError("Wrong credentials");
-            }
+          console.log(error)
+          setHttpError("http Error")
+          if (
+            error.response &&
+            (error.response.status === 404 || error.response.status === 401)
+          ) {
+            setHttpError("Wrong credentials")
           }
         })
         .finally(() => {
-          setDisableSubmit(false);
-        });
+          setDisableSubmit(false)
+        })
     },
-  });
+  })
 
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [disableSubmit, setDisableSubmit] = React.useState(false);
-  const [httpError, setHttpError] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [disableSubmit, setDisableSubmit] = React.useState(false)
+  const [httpError, setHttpError] = React.useState("")
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -136,5 +133,5 @@ export function UsernameSignInForm(props: TProps) {
         </Button>
       </Box>
     </form>
-  );
+  )
 }

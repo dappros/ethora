@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { Button, Container, Box } from "@mui/material";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { useHistory } from "react-router";
-import { EmailModal } from "./EmailModal";
-import { OwnerRegistration } from "./OwnerRegistrationModal";
-import { UsernameModal } from "./UsernameModal";
-import OwnerLogin from "./OwnerLogin";
-import { regularLoginEmail, regularLoginUsername } from "../../config/config";
-import { useStoreState } from "../../store";
-import { TLoginSuccessResponse } from "../../http";
+import React, { useState } from "react"
+import { Button, Container, Box } from "@mui/material"
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos"
+import { useHistory } from "react-router"
+import { EmailModal } from "./EmailModal"
+import { OwnerRegistration } from "./OwnerRegistrationModal"
+import { UsernameModal } from "./UsernameModal"
+import OwnerLogin from "./OwnerLogin"
+import { regularLoginEmail, regularLoginUsername } from "../../config/config"
+import { useStoreState } from "../../store"
+import { TLoginSuccessResponse } from "../../http"
 
 export interface IRegularSignIn {}
 
 export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
-  const setUser = useStoreState((state) => state.setUser);
-  const [openEmail, setOpenEmail] = useState(false);
-  const [openUsername, setOpenUsername] = useState(false);
+  const setUser = useStoreState((state) => state.setUser)
+  const [openEmail, setOpenEmail] = useState(false)
+  const [openUsername, setOpenUsername] = useState(false)
 
-  const [ownerRegistration, setOwnerRegistration] = useState(false);
-  const [ownerLogin, setOwnerLogin] = useState(false);
-  const history = useHistory();
+  const [ownerRegistration, setOwnerRegistration] = useState(false)
+  const [ownerLogin, setOwnerLogin] = useState(false)
+  const history = useHistory()
   const updateUserInfo = (loginData: TLoginSuccessResponse) => {
     setUser({
       _id: loginData.user._id,
@@ -38,9 +38,9 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
       isAllowedNewAppCreate: loginData.isAllowedNewAppCreate,
       isAgreeWithTerms: loginData.user.isAgreeWithTerms,
       stripeCustomerId: loginData.user.stripeCustomerId,
-      homeScreen:  loginData.user.homeScreen,
-    });
-  };
+      homeScreen: loginData.user.homeScreen,
+    })
+  }
 
   return (
     <Container
@@ -127,5 +127,5 @@ export const RegularSignIn: React.FC<IRegularSignIn> = ({}) => {
       />
       <OwnerLogin open={ownerLogin} setOpen={setOwnerLogin} />
     </Container>
-  );
-};
+  )
+}

@@ -1,28 +1,28 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import { IconButton, Modal, Typography } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import { useStoreState } from "../../store";
-import NoDataImage from "../../components/NoDataImage";
-import NewUserModal from "./NewUserModal";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Pagination from "@mui/material/Pagination";
-import CloseIcon from "@mui/icons-material/Close";
-import * as http from "../../http";
-import { EditAcl } from "../../components/EditAcl";
+import React, { ChangeEvent, useEffect, useState } from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import Box from "@mui/material/Box"
+import { IconButton, Modal, Typography } from "@mui/material"
+import AddCircleIcon from "@mui/icons-material/AddCircle"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
+import MenuItem from "@mui/material/MenuItem"
+import { useStoreState } from "../../store"
+import NoDataImage from "../../components/NoDataImage"
+import NewUserModal from "./NewUserModal"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import Pagination from "@mui/material/Pagination"
+import CloseIcon from "@mui/icons-material/Close"
+import * as http from "../../http"
+import { EditAcl } from "../../components/EditAcl"
 
 const boxStyle = {
-  position: "absolute" as "absolute",
+  position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
@@ -31,49 +31,51 @@ const boxStyle = {
   boxShadow: 24,
   borderRadius: "10px",
   p: 4,
-};
+}
 
 function hasACLAdmin(acl: http.ACL): boolean {
   const application = acl?.application
   if (application) {
-    const appKeys = Object.keys(application);
-    let hasAdmin = false;
-    for (let i = 0; i < appKeys.length; i++) {
-      if (application[appKeys[i]]?.admin === true) {
-        hasAdmin = true;
-        break;
+    const appKeys = Object.keys(application)
+    let hasAdmin = false
+    for (const appKey of appKeys) {
+      if (application[appKey]?.admin === true) {
+        hasAdmin = true
+        break
       }
     }
-    return hasAdmin;
+    return hasAdmin
   }
-  return false;
+  return false
 }
 
 export default function Users() {
-  const apps = useStoreState((state) => state.apps);
-  const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess);
-  const [showNewUser, setShowNewUser] = useState(false);
-  const [users, setUsers] = useState<http.IUser[]>([]);
-  const [currentApp, setCurrentApp] = useState<string>();
+  const apps = useStoreState((state) => state.apps)
+  const ownerAccess = useStoreState((state) => state.user.ACL?.ownerAccess)
+  const [showNewUser, setShowNewUser] = useState(false)
+  const [users, setUsers] = useState<http.IUser[]>([])
+  const [currentApp, setCurrentApp] = useState<string>()
   const [aclEditData, setAclEditData] = useState<{
-    modalOpen: boolean;
-    user: http.IUser | null;
+    modalOpen: boolean
+    user: http.IUser | null
   }>({
     modalOpen: false,
     user: null,
-  });
-  const [hasAdmin, setHasAdmin] = useState(false);
-  const ACL = useStoreState((state) => state.ACL.result.find(item => item.appId === currentApp));
+  })
+  const [hasAdmin, setHasAdmin] = useState(false)
+  const ACL = useStoreState((state) =>
+    state.ACL.result.find((item) => item.appId === currentApp)
+  )
 
   useEffect(() => {
-    setHasAdmin(hasACLAdmin(ACL));
-  }, [ACL]);
+    setHasAdmin(hasACLAdmin(ACL))
+  }, [ACL])
 
   const [pagination, setPagination] = useState<{
-    total: number;
-    limit: number;
-    offset: number;
-  }>();
+    total: number
+    limit: number
+    offset: number
+  }>()
 
   const getUsers = async (
     appId: string | null,
@@ -82,76 +84,76 @@ export default function Users() {
   ) => {
     try {
       if (appId) {
-        const getUsersResp = await http.getAppUsers(appId, limit, offset);
-        const { data } = getUsersResp;
+        const getUsersResp = await http.getAppUsers(appId, limit, offset)
+        const { data } = getUsersResp
         setPagination({
           limit: data.limit,
           offset: data.offset,
           total: data.total,
-        });
-        return data.items;
+        })
+        return data.items
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error)
     }
-    return [];
-  };
+    return []
+  }
 
   useEffect(() => {
-    if (ownerAccess && apps.length) {
-      setCurrentApp(apps[0]._id);
+    if (ownerAccess && apps.length > 0) {
+      setCurrentApp(apps[0]._id)
       getUsers(apps[0]._id).then((users) => {
-        setUsers(users);
-      });
+        setUsers(users)
+      })
     }
-  }, [apps, ownerAccess]);
+  }, [apps, ownerAccess])
   useEffect(() => {
-    if (!ownerAccess && apps.length) {
-      setCurrentApp(apps[0]._id);
+    if (!ownerAccess && apps.length > 0) {
+      setCurrentApp(apps[0]._id)
       getUsers(apps[0]._id).then((users) => {
-        setUsers(users);
-      });
+        setUsers(users)
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    console.log("Users mount");
-  }, []);
+    console.log("Users mount")
+  }, [])
 
   const onAppSelectChange = (e: SelectChangeEvent) => {
-    setCurrentApp(e.target.value);
+    setCurrentApp(e.target.value)
     getUsers(e.target.value).then((users) => {
-      setUsers(users);
-    });
-  };
+      setUsers(users)
+    })
+  }
 
   const onPagination = (event: ChangeEvent<unknown>, page: number) => {
-    let offset = 0;
+    let offset = 0
     if (page - 1 > 0) {
-      offset = (page - 1) * (pagination?.limit || 10);
+      offset = (page - 1) * (pagination?.limit || 10)
     }
 
     getUsers(currentApp || null, pagination?.limit || 10, offset).then(
       (users) => setUsers(users)
-    );
-  };
+    )
+  }
 
   const handleAclEditOpen = (user: http.IUser) =>
-    setAclEditData({ modalOpen: true, user });
+    setAclEditData({ modalOpen: true, user })
 
   const handleAclEditClose = () =>
-    setAclEditData({ modalOpen: false, user: null });
+    setAclEditData({ modalOpen: false, user: null })
 
   const updateUserDataAfterAclChange = (user: http.IOtherUserACL) => {
-    const oldUsers = users;
+    const oldUsers = users
     const indexToUpdate = oldUsers.findIndex(
       (item) => item._id === aclEditData.user._id
-    );
+    )
     if (indexToUpdate !== -1) {
     }
-    oldUsers[indexToUpdate]._id = user.result.userId;
-    setUsers(oldUsers);
-  };
+    oldUsers[indexToUpdate]._id = user.result.userId
+    setUsers(oldUsers)
+  }
 
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
@@ -174,7 +176,7 @@ export default function Users() {
                   <MenuItem key={app._id} value={app._id}>
                     {app.appName}
                   </MenuItem>
-                );
+                )
               })}
             </Select>
           </FormControl>
@@ -232,7 +234,9 @@ export default function Users() {
                   {user.email ? user.email : "-"}
                 </TableCell>
                 <TableCell align="right">
-                  {user.registrationChannelType ? user.registrationChannelType : "-"}
+                  {user.registrationChannelType
+                    ? user.registrationChannelType
+                    : "-"}
                 </TableCell>
                 <TableCell align="right">
                   <Box sx={{ width: "200px" }}>
@@ -273,7 +277,6 @@ export default function Users() {
         setUsers={setUsers}
         setOpen={setShowNewUser}
         appId={currentApp}
-
       />
       <Modal
         open={aclEditData.modalOpen}
@@ -295,5 +298,5 @@ export default function Users() {
         </Box>
       </Modal>
     </TableContainer>
-  );
+  )
 }

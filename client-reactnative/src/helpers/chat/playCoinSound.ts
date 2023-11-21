@@ -5,29 +5,29 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Player} from '@react-native-community/audio-toolkit';
+import { Player } from "@react-native-community/audio-toolkit"
 
 export const playCoinSound = (type: number) => {
-  let coinSound = '';
+  let coinSound = ""
   switch (type) {
     case 1:
-      coinSound = 'token1.mp3';
-      break;
+      coinSound = "token1.mp3"
+      break
 
     case 3:
-      coinSound = 'token3.mp3';
-      break;
+      coinSound = "token3.mp3"
+      break
 
     case 5:
-      coinSound = 'token5.mp3';
-      break;
+      coinSound = "token5.mp3"
+      break
 
     case 7:
-      coinSound = 'token7.mp3';
-      break;
+      coinSound = "token7.mp3"
+      break
     default:
-      coinSound = 'token7.mp3';
+      coinSound = "token7.mp3"
   }
-console.log(coinSound)
-  new Player(coinSound).play();
-};
+  console.log(coinSound)
+  new Player(coinSound).play()
+}

@@ -1,66 +1,66 @@
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import { Button, Icon, Typography } from "@mui/material";
-import { useStoreState } from "../../store";
-import { IconButton } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { Box } from "@mui/system";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import CloseIcon from "@mui/icons-material/Close";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import { useFormik } from "formik";
-import MenuItem from "@mui/material/MenuItem";
-import * as http from "../../http";
+import * as React from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import { Button, Icon, Typography } from "@mui/material"
+import { useStoreState } from "../../store"
+import { IconButton } from "@mui/material"
+import AddCircleIcon from "@mui/icons-material/AddCircle"
+import { Box } from "@mui/system"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import CloseIcon from "@mui/icons-material/Close"
+import TextField from "@mui/material/TextField"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import Select from "@mui/material/Select"
+import { useFormik } from "formik"
+import MenuItem from "@mui/material/MenuItem"
+import * as http from "../../http"
 
-type TProps = {
-  walletAddress: string;
-};
+type TProperties = {
+  walletAddress: string
+}
 
 type TNftBalance = {
-  tokenName: string;
-  balance: number | string;
-  total: number;
-  imagePreview: string;
-  contractTokenIds: string[];
-  nftId: string;
-  tokenType: "NFT";
-  nftFileUrl: string;
-  nftMetaUrl: string;
-  nftOriginalname: string;
-  nftMimetype: string;
-  createdAt: string;
-  updatedAt: string;
-  contractAddress: string;
-};
+  tokenName: string
+  balance: number | string
+  total: number
+  imagePreview: string
+  contractTokenIds: string[]
+  nftId: string
+  tokenType: "NFT"
+  nftFileUrl: string
+  nftMetaUrl: string
+  nftOriginalname: string
+  nftMimetype: string
+  createdAt: string
+  updatedAt: string
+  contractAddress: string
+}
 
-type TBalances = TNftBalance[];
+type TBalances = TNftBalance[]
 
-export default function OtherItemsTable(props: TProps) {
-  const [balances, setBalances] = React.useState<TBalances>([]);
+export default function OtherItemsTable(properties: TProperties) {
+  const [balances, setBalances] = React.useState<TBalances>([])
   React.useEffect(() => {
-    if (props.walletAddress) {
-      http.getPublicProfile(props.walletAddress).then((response) => {
-        console.log("getPublicProvile ", response);
+    if (properties.walletAddress) {
+      http.getPublicProfile(properties.walletAddress).then((response) => {
+        console.log("getPublicProvile", response)
         // @ts-ignore
         setBalances(
           response.data.balances.balance.filter(
-            (el: any) => el.tokenType === "NFT"
+            (element: any) => element.tokenType === "NFT"
           )
-        );
-      });
+        )
+      })
     }
-  }, [props.walletAddress]);
-  if (!balances.length) {
-    return null;
+  }, [properties.walletAddress])
+  if (balances.length === 0) {
+    return null
   }
   return (
     <TableContainer style={{ flex: 1, marginTop: "10px" }}>
@@ -94,5 +94,5 @@ export default function OtherItemsTable(props: TProps) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

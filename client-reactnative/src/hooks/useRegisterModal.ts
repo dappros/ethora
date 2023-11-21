@@ -1,9 +1,9 @@
-import {useState} from 'react';
+import { useState } from "react"
 
 export const useRegisterModal = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
 
   return {
     firstName,
@@ -12,5 +12,5 @@ export const useRegisterModal = () => {
     setLastName,
     modalOpen,
     setModalOpen,
-  };
-};
+  }
+}

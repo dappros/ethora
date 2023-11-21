@@ -5,6 +5,6 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-export const splitChatJid = (chatJid:string) => {
-    return chatJid.split('@')[0];
+export const splitChatJid = (chatJid: string) => {
+  return chatJid.split("@")[0]
 }

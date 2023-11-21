@@ -5,13 +5,13 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {format} from 'date-fns';
+import { format } from "date-fns"
 
-export const formatDate = date => {
+export const formatDate = (date) => {
   try {
-    return format(new Date(date), 'dd LLLL yyyy');
+    return format(new Date(date), "dd LLLL yyyy")
   } catch (error) {
-    console.log('ERROR: Cannot format date', error);
-    return '';
+    console.log("ERROR: Cannot format date", error)
+    return ""
   }
-};
+}

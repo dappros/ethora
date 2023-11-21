@@ -1,32 +1,32 @@
-import { MessageModel } from "@chatscope/chat-ui-kit-react";
-import { format } from "date-fns";
-import * as React from "react";
-import { useLocation } from "react-router-dom";
-import logo from "../assets/images/dpp.png";
-import { mobileEthoraBaseUrl } from "../constants";
-import { ILineChartData } from "../pages/Profile/types";
-import { TMessageHistory, useStoreState } from "../store";
+import { MessageModel } from "@chatscope/chat-ui-kit-react"
+import { format } from "date-fns"
+import * as React from "react"
+import { useLocation } from "react-router-dom"
+import logo from "../assets/images/dpp.png"
+import { mobileEthoraBaseUrl } from "../constants"
+import { ILineChartData } from "../pages/Profile/types"
+import { TMessageHistory, useStoreState } from "../store"
 
 export function useQuery() {
-  const { search } = useLocation();
+  const { search } = useLocation()
 
-  return React.useMemo(() => new URLSearchParams(search), [search]);
+  return React.useMemo(() => new URLSearchParams(search), [search])
 }
 export const truncateString = (input: string, textLength: number) => {
   return input.length > textLength
-    ? `${input.substring(0, textLength)}...`
-    : input;
-};
+    ? `${input.slice(0, Math.max(0, textLength))}...`
+    : input
+}
 
 export function checkNotificationsStatus() {
   if (!("Notification" in window)) {
-    return console.log("This browser does not support system notifications!");
+    return console.log("This browser does not support system notifications!")
   }
 
   if (Notification.permission !== "denied") {
     Notification.requestPermission((permission) => {
-      console.log(permission);
-    });
+      console.log(permission)
+    })
   }
 }
 export function sendBrowserNotification(
@@ -36,69 +36,71 @@ export function sendBrowserNotification(
   const notification = new Notification("New message from Ethora", {
     icon: logo,
     body: body,
-  });
-  notification.onclick = onNotificationClick;
+  })
+  notification.addEventListener("click", onNotificationClick)
 }
 
 export const produceNfmtItems = (array = []) => {
-  const result = [];
-  const rareTotal = 20;
-  const uniqueTotal = 1;
+  const result = []
+  const rareTotal = 20
+  const uniqueTotal = 1
 
   for (const item of array) {
     if (item.tokenType === "NFMT") {
-      for (let i = 0; i < item.balances.length; i++) {
-        const tokenBalance = item.balances[i];
-        const tokenType = +item.contractTokenIds[i];
-        const total = item.maxSupplies.find((supply, i) => tokenType === i + 1);
+      for (let index = 0; index < item.balances.length; index++) {
+        const tokenBalance = item.balances[index]
+        const tokenType = +item.contractTokenIds[index]
+        const total = item.maxSupplies.find(
+          (supply, index) => tokenType === index + 1
+        )
         const traits = item.traits.map((trait) =>
-          trait.find((el, i) => tokenType === i + 1)
-        );
-        total < rareTotal && traits.push("Rare");
-        total === uniqueTotal && traits.push("Unique!");
+          trait.find((element, index) => tokenType === index + 1)
+        )
+        total < rareTotal && traits.push("Rare")
+        total === uniqueTotal && traits.push("Unique!")
         const resItem = {
           ...item,
           balance: tokenBalance,
           nfmtType: tokenType,
           total: total,
           traits,
-        };
-        +tokenBalance > 0 && result.push(resItem);
+        }
+        ;+tokenBalance > 0 && result.push(resItem)
       }
     }
   }
-  return result;
-};
-export function isValidHexCode(str: string) {
-  if (!str) {
-    return true;
+  return result
+}
+export function isValidHexCode(string_: string) {
+  if (!string_) {
+    return true
   }
-  let regex = new RegExp(/^#([A-Fa-f0-9]{6}|)$/);
-  return regex.test(str) === true;
+  const regex = new RegExp(/^#([\dA-Fa-f]{6}|)$/)
+  return regex.test(string_) === true
 }
 export function replaceNotAllowedCharactersInDomain(domain: string) {
   // Define the regex pattern for disallowed characters
-  const disallowedPattern = /[^a-zA-Z0-9\-]/g;
+  const disallowedPattern = /[^\dA-Za-z\-]/g
 
   // Replace disallowed characters with an empty string
-  const cleanedDomain = domain.replace(disallowedPattern, "");
+  const cleanedDomain = domain.replaceAll(disallowedPattern, "")
 
-  return cleanedDomain;
+  return cleanedDomain
 }
 export const filterNftBalances = (item) => {
   return (
     (item.tokenType === "NFT" || item.tokenType === "NFMT") &&
     (item.balance > 0 ||
       (item.balances?.length && item?.balances?.some((item) => +item > 0)))
-  );
-};
+  )
+}
 
 interface IProfileLink {
-  firstName: string;
-  lastName: string;
-  walletAddress: string;
-  xmppId: string;
-  linkToken?: string;
+  firstName: string
+  lastName: string
+  walletAddress: string
+  xmppId: string
+  linkToken?: string
 }
 
 export const generateProfileLink = ({
@@ -108,150 +110,150 @@ export const generateProfileLink = ({
   xmppId,
   linkToken,
 }: IProfileLink) => {
-  const domainName = useStoreState.getState().config.domainName;
+  const domainName = useStoreState.getState().config.domainName
   return `${mobileEthoraBaseUrl}=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}&linkToken=${
     linkToken ?? ""
-  }&app=${domainName}`;
-};
+  }&app=${domainName}`
+}
 export const generateChatLink = ({ roomAddress }: { roomAddress: string }) => {
-  if (!roomAddress) return "";
-  const splitedAddress = roomAddress.split("@")[0];
-  const domainName = useStoreState.getState().config.domainName;
+  if (!roomAddress) return ""
+  const splitedAddress = roomAddress.split("@")[0]
+  const domainName = useStoreState.getState().config.domainName
 
-  return `${mobileEthoraBaseUrl}${splitedAddress}&app=${domainName}`;
-};
-interface IDocLink {
-  linkToken: string;
+  return `${mobileEthoraBaseUrl}${splitedAddress}&app=${domainName}`
+}
+interface IDocumentLink {
+  linkToken: string
 }
 
-export const generateDocumentLink = ({ linkToken }: IDocLink) => {
-  return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`;
-};
+export const generateDocumentLink = ({ linkToken }: IDocumentLink) => {
+  return `https://app-dev.dappros.com/v1/docs/share/${linkToken}`
+}
 
-export type TChartData = { date: string; y: number }[];
+export type TChartData = { date: string; y: number }[]
 
 export const transformDataForLineChart = (
   data: ILineChartData,
   dateFormat: string = "MM.dd.yyyy"
 ): TChartData => {
-  const result: TChartData = [];
+  const result: TChartData = []
   for (let index = 0; index < data.x.length; index++) {
-    const elementX = format(new Date(data.x[index]), dateFormat);
-    const elementY = data.y[index];
-    result.push({ date: elementX, y: elementY });
+    const elementX = format(new Date(data.x[index]), dateFormat)
+    const elementY = data.y[index]
+    result.push({ date: elementX, y: elementY })
   }
-  return result;
-};
+  return result
+}
 
 export type IMessagePosition = {
-  position: MessageModel["position"];
-  type: string;
-  separator?: string;
-};
+  position: MessageModel["position"]
+  type: string
+  separator?: string
+}
 
 export const dateToHumanReadableFormat = (date: string | Date) => {
   try {
-    return format(new Date(date), "yyyy MMMM dd HH:mm");
+    return format(new Date(date), "yyyy MMMM dd HH:mm")
   } catch (error) {
-    console.log(error);
-    return "";
+    console.log(error)
+    return ""
   }
-};
+}
 export const getPosition = (
-  arr: TMessageHistory[],
+  array: TMessageHistory[],
   message: TMessageHistory,
   index: number
 ) => {
-  const previousJID = arr[index - 1]?.data.senderJID?.split("/")[0];
-  const nextJID = arr[index + 1]?.data.senderJID?.split("/")[0];
-  const currentJID = message.data.senderJID?.split("/")[0];
+  const previousJID = array[index - 1]?.data.senderJID?.split("/")[0]
+  const nextJID = array[index + 1]?.data.senderJID?.split("/")[0]
+  const currentJID = message.data.senderJID?.split("/")[0]
 
-  let result: IMessagePosition = {
+  const result: IMessagePosition = {
     position: "single",
     type: "single",
-  };
+  }
 
-  if (arr[index - 1] && message) {
-    if (
-      format(new Date(arr[index - 1]?.date), "dd") !==
+  if (
+    array[index - 1] &&
+    message &&
+    format(new Date(array[index - 1]?.date), "dd") !==
       format(new Date(message.date), "dd")
-    ) {
-      result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy");
-    }
+  ) {
+    result.separator = format(new Date(message.date), "EEEE, dd LLLL yyyy")
   }
 
   if (previousJID !== currentJID && nextJID !== currentJID) {
-    return result;
+    return result
   }
 
   if (previousJID !== currentJID && nextJID === currentJID) {
-    result.position = "first";
-    result.type = "first";
-    return result;
+    result.position = "first"
+    result.type = "first"
+    return result
   }
 
   if (previousJID === currentJID && nextJID === currentJID) {
-    result.position = "normal";
-    result.type = "normal";
-    return result;
+    result.position = "normal"
+    result.type = "normal"
+    return result
   }
 
   if (
     previousJID === currentJID &&
     nextJID !== currentJID &&
-    arr[index - 1]?.data.isSystemMessage === "false"
+    array[index - 1]?.data.isSystemMessage === "false"
   ) {
-    result.position = "single";
-    result.type = "last";
-    return result;
+    result.position = "single"
+    result.type = "last"
+    return result
   }
 
-  return result;
-};
+  return result
+}
 
 export const stripHtml = (html: string) => {
-  let doc: any;
-  let str = html;
+  let document: any
+  let string_ = html
 
-  str = str.replace(/<br>/gi, "\n");
-  str = str.replace(/<p.*>/gi, "\n");
-  str = str.replace(/<(?:.|\s)*?>/g, "");
+  string_ = string_.replaceAll(/<br>/gi, "\n")
+  string_ = string_.replaceAll(/<p.*>/gi, "\n")
+  string_ = string_.replaceAll(/<(?:.|\s)*?>/g, "")
 
-  if (str.trim().length === 0) {
-    doc = new DOMParser().parseFromString(html, "text/html");
-  } else {
-    doc = new DOMParser().parseFromString(str, "text/html");
-  }
-  return doc.body.textContent || "";
-};
+  // eslint-disable-next-line prefer-const
+  document =
+    string_.trim().length === 0
+      ? new DOMParser().parseFromString(html, "text/html")
+      : new DOMParser().parseFromString(string_, "text/html")
+  return document.body.textContent || ""
+}
 
 export function preprocessInputKeysToJson(input: string) {
   // Add double quotes around the keys
-  return input.replace(/([\{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3');
+  return input.replaceAll(/([,{]\s*)(\w+)(\s*:)/g, '$1"$2"$3')
 }
 
 export function findObjectInString(input: string) {
-  const regex = /{([^}]+)}/g;
-  const matches = [...input.matchAll(regex)];
+  const regex = /{([^}]+)}/g
+  const matches = [...input.matchAll(regex)]
   if (matches) {
-    return matches.map(match => match[0]);
+    return matches.map((match) => match[0])
   }
 
-  return [];
+  return []
 }
 function findFirebaseConfig(input: string[]) {
-  return input.find(i => {
-    return i.includes('authDomain') ||  i.includes('apiKey')
+  return input.find((index) => {
+    return index.includes("authDomain") || index.includes("apiKey")
   })
 }
 
 export function getFirebaseConfigFromString(input: string) {
-  if(!input) return {}
-  const objects = findObjectInString(input);
+  if (!input) return {}
+  const objects = findObjectInString(input)
   const configString = findFirebaseConfig(objects)
-  const configJson = preprocessInputKeysToJson(configString);
-  const configObject = JSON.parse(configJson);
-  return configObject;
+  const configJson = preprocessInputKeysToJson(configString)
+  const configObject = JSON.parse(configJson)
+  return configObject
 }
 
 export function getTnc(
@@ -261,25 +263,22 @@ export function getTnc(
   email: string,
   date: string
 ) {
-  let customer: string;
+  let customer: string
 
-  if (company) {
-    customer =
-      company +
+  // eslint-disable-next-line prefer-const
+  customer = company
+    ? company +
       ", a company, represented by " +
       fname +
       " " +
       lname +
       ", an individual, available at e-mail address: " +
-      email;
-  } else {
-    customer =
-      fname +
+      email
+    : fname +
       " " +
       lname +
       ", an individual, available at e-mail address: " +
-      email;
-  }
+      email
   return `
   SaaS terms and conditions
 
@@ -802,5 +801,5 @@ export function getTnc(
   13.	Harmful software
   13.1	The Content must not contain or consist of, and you must not promote, distribute or execute by means of the Services, any viruses, worms, spyware, adware or other harmful or malicious software, programs, routines, applications or technologies.
   13.2	The Content must not contain or consist of, and you must not promote, distribute or execute by means of the Services, any software, programs, routines, applications or technologies that will or may have a material negative effect upon the performance of a computer or introduce material security risks to a computer.
-  `;
+  `
 }

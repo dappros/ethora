@@ -1,19 +1,19 @@
-import React, { useRef, useState } from "react";
-import { Box, Button, TextField, Tooltip, Typography } from "@mui/material";
-import * as http from "../../http";
-import { useParams } from "react-router";
-import { useStoreState } from "../../store";
-import { useFormik } from "formik";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { LoadingButton } from "@mui/lab";
-import InfoIcon from "@mui/icons-material/Info";
-import { getFirebaseConfigFromString } from "../../utils";
+import React, { useRef, useState } from "react"
+import { Box, Button, TextField, Tooltip, Typography } from "@mui/material"
+import * as http from "../../http"
+import { useParams } from "react-router"
+import { useStoreState } from "../../store"
+import { useFormik } from "formik"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { LoadingButton } from "@mui/lab"
+import InfoIcon from "@mui/icons-material/Info"
+import { getFirebaseConfigFromString } from "../../utils"
 
 export interface IServices {}
 type IFile = {
-  file?: File;
-  url: string;
-};
+  file?: File
+  url: string
+}
 
 const firebaseConfigExample = `{
   apiKey: "AIzaassdcefSyDgasd.-WrjLQadoYf0ads12dscxzsi_qO4g",
@@ -23,9 +23,9 @@ const firebaseConfigExample = `{
   messagingSenderId: "972933470054",
   appId: "1:972933470054:web:d4682e76ef02fdasdawdasd9b9cdaa7",
   measurementId: "G-WHMasd7asdxcvX4asdC8"
-}`;
+}`
 export const Services: React.FC<IServices> = ({}) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const [certificate, setCertificate] = useState({
     _id: "",
     createdAt: "",
@@ -40,88 +40,88 @@ export const Services: React.FC<IServices> = ({}) => {
     size: 0,
     updatedAt: "",
     userId: "",
-  });
-  const { appId } = useParams<{ appId: string }>();
-  const app = useStoreState((s) => s.apps.find((app) => app._id === appId));
+  })
+  const { appId } = useParams<{ appId: string }>()
+  const app = useStoreState((s) => s.apps.find((app) => app._id === appId))
 
-  const updateApp = useStoreState((s) => s.updateApp);
+  const updateApp = useStoreState((s) => s.updateApp)
 
-  const fileRef = useRef<HTMLInputElement>(null);
-  const { showSnackbar } = useSnackbar();
+  const fileReference = useRef<HTMLInputElement>(null)
+  const { showSnackbar } = useSnackbar()
   const [googleServisesJson, setGoogleServisesJson] = useState<IFile>({
     file: undefined,
     url: app?.coinImage || "",
-  });
+  })
   const [googleServisesPlist, setGoogleServisesPlist] = useState<IFile>({
     file: undefined,
     url: app?.coinImage || "",
-  });
-  const googleServisesJsonRef = useRef<HTMLInputElement>(null);
-  const googleServisesPlistRef = useRef<HTMLInputElement>(null);
+  })
+  const googleServisesJsonReference = useRef<HTMLInputElement>(null)
+  const googleServisesPlistReference = useRef<HTMLInputElement>(null)
 
   const uploadCertificate = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const fd = new FormData();
-      fd.append("files", e.target.files[0]);
-      const fileUploadResp = await http.httpWithAuth().post("/files", fd);
-      setCertificate(fileUploadResp.data.results[0]);
+      const fd = new FormData()
+      fd.append("files", e.target.files[0])
+      const fileUploadResp = await http.httpWithAuth().post("/files", fd)
+      setCertificate(fileUploadResp.data.results[0])
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleGoogleServisesJsonChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const l = event.target.files[0];
-    setGoogleServisesJson({ file: l, url: URL.createObjectURL(l) });
-  };
+    const l = event.target.files[0]
+    setGoogleServisesJson({ file: l, url: URL.createObjectURL(l) })
+  }
   const handleGoogleServisesPlistChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const l = event.target.files[0];
-    setGoogleServisesPlist({ file: l, url: URL.createObjectURL(l) });
-  };
+    const l = event.target.files[0]
+    setGoogleServisesPlist({ file: l, url: URL.createObjectURL(l) })
+  }
 
   const formik = useFormik({
     initialValues: {
       firebaseWebConfigString: app.firebaseWebConfigString || "",
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
-      return errors;
+      return errors
     },
     onSubmit: async ({ firebaseWebConfigString }, { setSubmitting }) => {
-      const data = new FormData();
+      const data = new FormData()
 
       firebaseWebConfigString &&
-        data.append("firebaseWebConfigString", firebaseWebConfigString);
+        data.append("firebaseWebConfigString", firebaseWebConfigString)
       googleServisesJson.file &&
-        data.append("googleServicesJson", googleServisesJson.file);
+        data.append("googleServicesJson", googleServisesJson.file)
       googleServisesPlist.file &&
-        data.append("GoogleServiceInfoPlist", googleServisesPlist.file);
-      setSubmitting(true);
+        data.append("GoogleServiceInfoPlist", googleServisesPlist.file)
+      setSubmitting(true)
       try {
-        const res = await http.updateAppSettings(appId, data);
-        updateApp(res.data.result);
+        const res = await http.updateAppSettings(appId, data)
+        updateApp(res.data.result)
       } catch (error) {
-        showSnackbar("error", "Cannot save settings");
-        console.log({ error });
+        showSnackbar("error", "Cannot save settings")
+        console.log({ error })
       }
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   const handleFirebaseConfigChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const value = e.target.value;
-    const config = getFirebaseConfigFromString(value);
+    const value = e.target.value
+    const config = getFirebaseConfigFromString(value)
     console.log(config)
-  };
+  }
 
   return (
     <Box>
@@ -172,7 +172,7 @@ export const Services: React.FC<IServices> = ({}) => {
           <TextField
             fullWidth
             id="outlined-configuration"
-            name={'firebaseWebConfigString'}
+            name={"firebaseWebConfigString"}
             placeholder={firebaseConfigExample}
             onChange={formik.handleChange}
             value={formik.values.firebaseWebConfigString}
@@ -189,7 +189,7 @@ export const Services: React.FC<IServices> = ({}) => {
 
         <input
           onChange={handleGoogleServisesJsonChange}
-          ref={googleServisesJsonRef}
+          ref={googleServisesJsonReference}
           type="file"
           accept=".json"
           style={{ display: "none" }}
@@ -198,7 +198,7 @@ export const Services: React.FC<IServices> = ({}) => {
           // disabled={loading}
           color="primary"
           variant="outlined"
-          onClick={() => googleServisesJsonRef?.current?.click()}
+          onClick={() => googleServisesJsonReference?.current?.click()}
         >
           {googleServisesJson?.file?.name || "Upload"}
         </Button>
@@ -209,7 +209,7 @@ export const Services: React.FC<IServices> = ({}) => {
         <Typography sx={{ mb: 1 }}>Google Services PLIST</Typography>
         <input
           onChange={handleGoogleServisesPlistChange}
-          ref={googleServisesPlistRef}
+          ref={googleServisesPlistReference}
           type="file"
           accept=".plist"
           style={{ display: "none" }}
@@ -218,7 +218,7 @@ export const Services: React.FC<IServices> = ({}) => {
           // disabled={loading}
           color="primary"
           variant="outlined"
-          onClick={() => googleServisesPlistRef?.current?.click()}
+          onClick={() => googleServisesPlistReference?.current?.click()}
         >
           {googleServisesPlist?.file?.name || "Upload"}
         </Button>
@@ -241,12 +241,15 @@ export const Services: React.FC<IServices> = ({}) => {
           <Typography>Push Notifications certificate (Apple)</Typography>
           <input
             onChange={uploadCertificate}
-            ref={fileRef}
+            ref={fileReference}
             type="file"
             accept="*/*"
             style={{ display: "none" }}
           />
-          <Button variant="outlined" onClick={() => fileRef.current?.click()}>
+          <Button
+            variant="outlined"
+            onClick={() => fileReference.current?.click()}
+          >
             {certificate.originalname || "Upload"}
           </Button>
         </Box>
@@ -276,5 +279,5 @@ export const Services: React.FC<IServices> = ({}) => {
         </LoadingButton>
       </Box>
     </Box>
-  );
-};
+  )
+}

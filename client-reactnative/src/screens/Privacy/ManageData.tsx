@@ -1,40 +1,40 @@
-import React, {useState} from 'react';
-import {VStack} from 'native-base';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { useState } from "react"
+import { VStack } from "native-base"
+import { Platform, StyleSheet, Text, View } from "react-native"
 
-import Share from 'react-native-share';
+import Share from "react-native-share"
 import RNFS, {
   DocumentDirectoryPath,
   DownloadDirectoryPath,
-} from 'react-native-fs';
-import {textStyles} from '../../../docs/config';
-import {DeleteDialog} from '../../components/Modals/DeleteDialog';
-import {showSuccess, showError} from '../../components/Toast/toast';
-import {httpDelete, httpGet} from '../../config/apiService';
-import {changeUserData} from '../../config/routesConstants';
-import {useStores} from '../../stores/context';
-import {Button} from '../../components/Button';
+} from "react-native-fs"
+import { textStyles } from "../../../docs/config"
+import { DeleteDialog } from "../../components/Modals/DeleteDialog"
+import { showSuccess, showError } from "../../components/Toast/toast"
+import { httpDelete, httpGet } from "../../config/apiService"
+import { changeUserData } from "../../config/routesConstants"
+import { useStores } from "../../stores/context"
+import { Button } from "../../components/Button"
 export interface IManageData {}
 
 export const ManageData: React.FC<IManageData> = ({}) => {
-  const {loginStore} = useStores();
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loginStore } = useStores()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const deleteAccount = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      await httpDelete(changeUserData, loginStore.userToken);
-      showSuccess('Success', 'Account deleted successfully');
-      loginStore.logOut();
+      await httpDelete(changeUserData, loginStore.userToken)
+      showSuccess("Success", "Account deleted successfully")
+      loginStore.logOut()
     } catch (error) {
-      console.log(error);
-      showError('Error', 'Something went wrong');
+      console.log(error)
+      showError("Error", "Something went wrong")
     }
-    setLoading(false);
+    setLoading(false)
 
-    setDeleteDialogOpen(false);
-  };
+    setDeleteDialogOpen(false)
+  }
   const writeFile = async (data: string) => {
     await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE)
     await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
@@ -42,32 +42,32 @@ export const ManageData: React.FC<IManageData> = ({}) => {
     const aPath = Platform.select({
       ios: DocumentDirectoryPath,
       android: DownloadDirectoryPath,
-    });
+    })
 
-    const fPath = aPath + '/' + 'data' + new Date().getTime() + '.json';
+    const fPath = aPath + "/" + "data" + new Date().getTime() + ".json"
     try {
       // console.log(base64)
-      await RNFS.writeFile(fPath, data, 'utf8');
+      await RNFS.writeFile(fPath, data, "utf8")
 
-      Share.open({url: Platform.OS === 'android' ? 'file://' + fPath : fPath});
+      Share.open({ url: Platform.OS === "android" ? "file://" + fPath : fPath })
     } catch (error) {
       console.log(error)
-      showError('Error', 'Cannot write file');
+      showError("Error", "Cannot write file")
     }
-  };
+  }
   const exportData = async () => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const {data} = await httpGet('/users/exportData', loginStore.userToken);
-      const dataString = JSON.stringify(data);
-      await writeFile(dataString);
+      const { data } = await httpGet("/users/exportData", loginStore.userToken)
+      const dataString = JSON.stringify(data)
+      await writeFile(dataString)
     } catch (error) {
-      showError('Error', 'Something went wrong');
-      console.log(error);
+      showError("Error", "Something went wrong")
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <VStack paddingX={5} marginTop={5}>
       <VStack>
@@ -79,9 +79,9 @@ export const ManageData: React.FC<IManageData> = ({}) => {
             data
           </Text>
         </View>
-        <View style={{alignItems: 'center', marginTop: 10}}>
+        <View style={{ alignItems: "center", marginTop: 10 }}>
           <Button
-            style={{width: '60%'}}
+            style={{ width: "60%" }}
             title="Download my data"
             onPress={exportData}
             loading={loading}
@@ -105,9 +105,9 @@ export const ManageData: React.FC<IManageData> = ({}) => {
               Any of your digital assets will be lost.
             </Text>
           </View>
-          <View style={{alignItems: 'center', marginTop: 10}}>
+          <View style={{ alignItems: "center", marginTop: 10 }}>
             <Button
-              style={{backgroundColor: 'red', width: '60%'}}
+              style={{ backgroundColor: "red", width: "60%" }}
               title="Delete my account"
               onPress={() => setDeleteDialogOpen(true)}
             />
@@ -119,30 +119,30 @@ export const ManageData: React.FC<IManageData> = ({}) => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         onDeletePress={deleteAccount}
-        title={'Delete Account'}
+        title={"Delete Account"}
         description={
-          ' This will result in a complete deletion of your account and assets. Are you sure you want to proceed?'
+          " This will result in a complete deletion of your account and assets. Are you sure you want to proceed?"
         }
       />
     </VStack>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,
-    color: 'black',
+    color: "black",
     fontSize: 16,
     marginVertical: 5,
   },
   description: {
     fontFamily: textStyles.regularFont,
-    color: 'black',
+    color: "black",
   },
   note: {
-    color: 'black',
+    color: "black",
     marginTop: 5,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     fontSize: 12,
   },
-});
+})

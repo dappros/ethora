@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from "react"
 import {
   Text,
   View,
@@ -9,31 +9,31 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
-} from "react-native";
-import SecondaryHeader from "../components/SecondaryHeader/SecondaryHeader";
+} from "react-native"
+import SecondaryHeader from "../components/SecondaryHeader/SecondaryHeader"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { commonColors, textStyles } from "../../docs/config";
-import AntIcon from "react-native-vector-icons/AntDesign";
-import FastImage from "react-native-fast-image";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import DocumentPicker from "react-native-document-picker";
-import { uploadFiles } from "../helpers/uploadFiles";
-import { useStores } from "../stores/context";
-import { showToast } from "../components/Toast/toast";
-import { useNavigation } from "@react-navigation/native";
-import { httpPost } from "../config/apiService";
-import { docsURL, fileUpload } from "../config/routesConstants";
-import CheckBox from "@react-native-community/checkbox";
-import Modal from "react-native-modal";
+} from "react-native-responsive-screen"
+import { commonColors, textStyles } from "../../docs/config"
+import AntIcon from "react-native-vector-icons/AntDesign"
+import FastImage from "react-native-fast-image"
+import { launchCamera, launchImageLibrary } from "react-native-image-picker"
+import DocumentPicker from "react-native-document-picker"
+import { uploadFiles } from "../helpers/uploadFiles"
+import { useStores } from "../stores/context"
+import { showToast } from "../components/Toast/toast"
+import { useNavigation } from "@react-navigation/native"
+import { httpPost } from "../config/apiService"
+import { docsURL, fileUpload } from "../config/routesConstants"
+import CheckBox from "@react-native-community/checkbox"
+import Modal from "react-native-modal"
 import {
   audioMimetypes,
   imageMimetypes,
   pdfMimemtype,
-} from "../constants/mimeTypes";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+} from "../constants/mimeTypes"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 interface MintScreenProps {}
 
@@ -44,21 +44,21 @@ const options = {
     path: "images",
   },
   saveToPhotos: true,
-};
+}
 
 const UploadDocumentsScreen = (props: MintScreenProps) => {
-  const { loginStore, walletStore, apiStore, debugStore } = useStores();
-  const navigation = useNavigation();
+  const { loginStore, walletStore, apiStore, debugStore } = useStores()
+  const navigation = useNavigation()
 
-  const [itemName, setItemName] = useState<string>("");
-  const [doctorsName, setDoctorsName] = useState<string>("");
-  const [reportType, setReportType] = useState<string>("");
-  const [reportKind, setReportKind] = useState<string>("");
+  const [itemName, setItemName] = useState<string>("")
+  const [doctorsName, setDoctorsName] = useState<string>("")
+  const [reportType, setReportType] = useState<string>("")
+  const [reportKind, setReportKind] = useState<string>("")
 
-  const [avatarSource, setAvatarSource] = useState<string | null>(null);
-  const [filePickResult, setFilePickResult] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<number>(1);
+  const [avatarSource, setAvatarSource] = useState<string | null>(null)
+  const [filePickResult, setFilePickResult] = useState<any>({})
+  const [loading, setLoading] = useState<boolean>(false)
+  const [selectedValue, setSelectedValue] = useState<number>(1)
   const [uploadedFile, setUploadedFile] = useState<any>({
     _id: "",
     createdAt: "",
@@ -73,21 +73,21 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
     size: 0,
     updatedAt: "",
     userId: "",
-  });
-  const [isModalVisible, setModalVisible] = useState<boolean>(false);
-  const [isSelected, setSelection] = useState<boolean>(true);
-  const [date, setDate] = useState(new Date());
+  })
+  const [isModalVisible, setModalVisible] = useState<boolean>(false)
+  const [isSelected, setSelection] = useState<boolean>(true)
+  const [date, setDate] = useState(new Date())
   const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
-  const [open, setOpen] = useState(false);
+    setModalVisible(!isModalVisible)
+  }
+  const [open, setOpen] = useState(false)
   const keyboardRef = useRef()
 
   const clearData = () => {
-    setLoading(false);
-    setAvatarSource(null);
-    setItemName("");
-    setSelection(false);
+    setLoading(false)
+    setAvatarSource(null)
+    setItemName("")
+    setSelection(false)
     setUploadedFile({
       _id: "",
       createdAt: "",
@@ -102,117 +102,117 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
       size: 0,
       updatedAt: "",
       userId: "",
-    });
-    setReportKind("");
-    setReportType("");
-    setAvatarSource(null);
-    setDoctorsName("");
-    setDate(new Date());
-  };
+    })
+    setReportKind("")
+    setReportType("")
+    setAvatarSource(null)
+    setDoctorsName("")
+    setDate(new Date())
+  }
 
   const selectNftQuantity = (value: number) => {
-    setSelectedValue(value);
-    setModalVisible(false);
-  };
+    setSelectedValue(value)
+    setModalVisible(false)
+  }
   const createNftItem = async () => {
-    let item = { files: [uploadedFile.location], documentName: itemName };
+    const item = { files: [uploadedFile.location], documentName: itemName }
 
     // alert(JSON.stringify(item))
-    const url = apiStore.defaultUrl + docsURL;
-    setLoading(true);
+    const url = apiStore.defaultUrl + docsURL
+    setLoading(true)
     try {
-      const res = await httpPost(url, item, loginStore.userToken);
+      const res = await httpPost(url, item, loginStore.userToken)
       // alert(JSON.stringify(res.data))
 
-      debugStore.addLogsApi(res.data);
-      walletStore.fetchWalletBalance(loginStore.userToken, true);
+      debugStore.addLogsApi(res.data)
+      walletStore.fetchWalletBalance(loginStore.userToken, true)
     } catch (error) {
-      showToast("error", "Error", "Cannot create item, try again later", "top");
-      console.log(error.response);
+      showToast("error", "Error", "Cannot create item, try again later", "top")
+      console.log(error.response)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const onUploadClick = async () => {
     if (!itemName.length) {
-      showToast("error", "Error", "Please fill the item name.", "top");
-      return;
+      showToast("error", "Error", "Please fill the item name.", "top")
+      return
     }
     if (!isSelected) {
-      showToast("error", "Error", "Please confirm distribution rights", "top");
-      return;
+      showToast("error", "Error", "Please confirm distribution rights", "top")
+      return
     }
 
-    await createNftItem();
+    await createNftItem()
     walletStore.fetchOwnTransactions(
       loginStore.initialData.walletAddress,
       100,
       0
-    );
+    )
     showToast(
       "success",
       "Success",
       "You minted new document, it will appear in your profile",
       "bottom"
-    );
-    clearData();
-  };
+    )
+    clearData()
+  }
 
   const chooseImageOption = () => {
     Alert.alert("Choose a file", "", [
       { text: "Open from files", onPress: () => setChatAvatar("files") },
       { text: "Dismiss", onPress: () => console.log("dismissed") },
-    ]);
-  };
+    ])
+  }
 
   const sendFiles = async (data: any) => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const url = apiStore.defaultUrl + fileUpload;
-      const response = await uploadFiles(data, loginStore.userToken, url);
-      setLoading(false);
+      const url = apiStore.defaultUrl + fileUpload
+      const response = await uploadFiles(data, loginStore.userToken, url)
+      setLoading(false)
 
-      setUploadedFile(response.results[0]);
-      debugStore.addLogsApi(response.results[0]);
+      setUploadedFile(response.results[0])
+      debugStore.addLogsApi(response.results[0])
       // alert(JSON.stringify(response.results[0]))
-      const isPdf = !!pdfMimemtype[response.results[0].mimetype];
+      const isPdf = !!pdfMimemtype[response.results[0].mimetype]
       setAvatarSource(
         isPdf
           ? response.results[0].locationPreview
           : response.results[0].location
-      );
+      )
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
 
   const setChatAvatar = async (type: string) => {
     if (type === "image") {
       launchImageLibrary(options, (response) => {
         if (response.didCancel) {
-          console.log("User cancelled image picker");
+          console.log("User cancelled image picker")
         } else if (response.error) {
-          console.log("ImagePicker Error: ", response.error);
+          console.log("ImagePicker Error: ", response.error)
         } else {
-          const data = new FormData();
+          const data = new FormData()
           data.append("files", {
             name: response.fileName,
             type: response.type,
             uri: response.uri,
-          });
-          sendFiles(data);
+          })
+          sendFiles(data)
         }
-      });
+      })
     } else if (type === "photo") {
       launchCamera(options, (response) => {
-        const data = new FormData();
+        const data = new FormData()
         data.append("files", {
           name: response.fileName,
           type: response.type,
           uri: response.uri,
-        });
-        sendFiles(data);
-      });
+        })
+        sendFiles(data)
+      })
     } else {
       try {
         const res = await DocumentPicker.pick({
@@ -222,25 +222,24 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
             DocumentPicker.types.video,
             DocumentPicker.types.pdf,
           ],
-        });
-        setFilePickResult(res[0]);
-        const data = new FormData();
+        })
+        setFilePickResult(res[0])
+        const data = new FormData()
         data.append("files", {
           name: res[0].name,
           type: res[0].type,
           uri: res[0].uri,
-        });
-        sendFiles(data);
+        })
+        sendFiles(data)
       } catch (err) {
         if (DocumentPicker.isCancel(err)) {
           // User cancelled the picker, exit any dialogs or menus and move on
         } else {
-          throw err;
+          throw err
         }
       }
     }
-  };
-
+  }
 
   return (
     <KeyboardAwareScrollView ref={keyboardRef}>
@@ -459,10 +458,10 @@ const UploadDocumentsScreen = (props: MintScreenProps) => {
         </View>
       </Modal>
     </KeyboardAwareScrollView>
-  );
-};
+  )
+}
 
-export default UploadDocumentsScreen;
+export default UploadDocumentsScreen
 
 const classes = StyleSheet.create({
   container: {
@@ -533,4 +532,4 @@ const classes = StyleSheet.create({
     color: "#fff",
     fontFamily: textStyles.regularFont,
   },
-});
+})

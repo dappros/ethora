@@ -1,4 +1,4 @@
-import { IMainMessage, TMessageHistory } from "../store";
+import { IMainMessage, TMessageHistory } from "../store"
 
 export const createMessage = (
   data: any,
@@ -6,7 +6,7 @@ export const createMessage = (
   id: string,
   from: string
 ) => {
-  let msg = {
+  const message = {
     id: Number(id),
     body: body.getText(),
     data: {
@@ -32,14 +32,14 @@ export const createMessage = (
       mainMessage: undefined,
     },
     roomJID: from,
-    date: new Date(+id.substring(0,13)).toISOString(),
+    date: new Date(+id.slice(0, 13)).toISOString(),
     key: Date.now() + Number(id),
     coinsInMessage: 0,
     numberOfReplies: [],
-  };
+  }
   if (data.attrs.mainMessage) {
     try {
-      const parsedMessage = JSON.parse(data.attrs.mainMessage);
+      const parsedMessage = JSON.parse(data.attrs.mainMessage)
       const mainMessage: IMainMessage = {
         text: parsedMessage.text || "",
         id: parsedMessage?.id,
@@ -59,14 +59,14 @@ export const createMessage = (
         nftActionType: parsedMessage.nftActionType,
         contractAddress: parsedMessage.contractAddress,
         roomJid: parsedMessage.roomJid,
-      };
-      msg.data.mainMessage = mainMessage;
+      }
+      message.data.mainMessage = mainMessage
     } catch (error) {
-      console.log(error, data.attrs.mainMessage);
+      console.log(error, data.attrs.mainMessage)
     }
   }
-  return msg;
-};
+  return message
+}
 
 export const createMainMessageForThread = (
   message: TMessageHistory
@@ -90,6 +90,6 @@ export const createMainMessageForThread = (
     contractAddress: "",
     roomJid: message.data.roomJid,
     nftId: "",
-  };
-  return JSON.stringify(data);
-};
+  }
+  return JSON.stringify(data)
+}

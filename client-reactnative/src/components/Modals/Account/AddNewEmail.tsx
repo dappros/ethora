@@ -5,23 +5,23 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {Input, Text, View} from 'native-base';
-import * as React from 'react';
-import Modal from 'react-native-modal';
-import {commonColors, textStyles} from '../../../../docs/config';
+import { Input, Text, View } from "native-base"
+import * as React from "react"
+import Modal from "react-native-modal"
+import { commonColors, textStyles } from "../../../../docs/config"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
+} from "react-native-responsive-screen"
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native"
 
 interface AddNewEmailModalProps {
-  setNewEmail: any;
-  submitEmail: any;
-  loading: boolean;
-  setAddEmailActive: any;
-  onBackdropPress: any;
-  isVisible: boolean;
+  setNewEmail: any
+  submitEmail: any
+  loading: boolean
+  setAddEmailActive: any
+  onBackdropPress: any
+  isVisible: boolean
 }
 
 const AddNewEmailModal = (props: AddNewEmailModalProps) => {
@@ -32,72 +32,75 @@ const AddNewEmailModal = (props: AddNewEmailModalProps) => {
     setAddEmailActive,
     onBackdropPress,
     isVisible,
-  } = props;
+  } = props
 
   return (
     <Modal
-      animationIn={'slideInUp'}
-      animationOut={'slideOutDown'}
+      animationIn={"slideInUp"}
+      animationOut={"slideOutDown"}
       onBackdropPress={onBackdropPress}
-      isVisible={isVisible}>
+      isVisible={isVisible}
+    >
       <View
-        bg={'white'}
-        height={hp('10%')}
-        flexDir={'row'}
+        bg={"white"}
+        height={hp("10%")}
+        flexDir={"row"}
         borderRadius={8}
-        alignItems={'center'}>
+        alignItems={"center"}
+      >
         <Input
           //   style={style.addEmailTextInputTextStyle}
           placeholder="Add Email"
-          onChangeText={email => setNewEmail(email)}
-          width={wp('66.66%')}
+          onChangeText={(email) => setNewEmail(email)}
+          width={wp("66.66%")}
           borderWidth={1}
           borderColor={commonColors.primaryColor}
-          backgroundColor={commonColors.primaryColor + '26'}
-          height={hp('5%')}
+          backgroundColor={commonColors.primaryColor + "26"}
+          height={hp("5%")}
           justifyContent="center"
-          padding={hp('1.23%')}
-          margin={hp('1.23%')}
-          borderRadius={hp('0.36%')}
-          color={'black'}
+          padding={hp("1.23%")}
+          margin={hp("1.23%")}
+          borderRadius={hp("0.36%")}
+          color={"black"}
         />
         <TouchableOpacity onPress={submitEmail} style={styles.submitButton}>
           {loading ? (
             <ActivityIndicator
               animating={loading}
               size="small"
-              color={'white'}
+              color={"white"}
             />
           ) : (
             <Text
-              fontSize={hp('1.47%')}
-              color={'#FFFFFF'}
-              fontFamily={textStyles.regularFont}>
+              fontSize={hp("1.47%")}
+              color={"#FFFFFF"}
+              fontFamily={textStyles.regularFont}
+            >
               Submit
             </Text>
           )}
         </TouchableOpacity>
       </View>
     </Modal>
-  );
-};
+  )
+}
 
-export default AddNewEmailModal;
+export default AddNewEmailModal
 
 const styles = StyleSheet.create({
   iconContainer: {
-    height: hp('2.3%'),
-    width: hp('2.3%'),
-    margin: hp('1.23%'),
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: hp("2.3%"),
+    width: hp("2.3%"),
+    margin: hp("1.23%"),
+    justifyContent: "center",
+    alignItems: "center",
   },
   submitButton: {
-    width: wp('16.53%'),
-    height: hp('4.31%'),
-    borderRadius: hp('0.36%'),
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: wp("16.53%"),
+    height: hp("4.31%"),
+    borderRadius: hp("0.36%"),
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: commonColors.primaryColor,
   },
-});
+})

@@ -1,14 +1,14 @@
-import  React from "react";
-import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
-import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
-import { Box } from "@mui/material";
-import { IBlockChain } from ".";
+import React from "react"
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined"
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined"
+import { Box } from "@mui/material"
+import { IBlockChain } from "."
 
-type Props = {
-  blockchain: IBlockChain;
-};
+type Properties = {
+  blockchain: IBlockChain
+}
 
-export default function NetworkHealth({ blockchain }: Props) {
+export default function NetworkHealth({ blockchain }: Properties) {
   return (
     <div
       className="dashboard-graph"
@@ -44,5 +44,5 @@ export default function NetworkHealth({ blockchain }: Props) {
         </div>
       </Box>
     </div>
-  );
+  )
 }

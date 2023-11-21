@@ -1,6 +1,6 @@
-import { appTitle } from "../../docs/config";
+import { appTitle } from "../../docs/config"
 
-export const projectId = "7858151c24b7ff1ccdac91b26abdf544";
+export const projectId = "7858151c24b7ff1ccdac91b26abdf544"
 
 export const providerMetadata = {
   name: appTitle,
@@ -11,4 +11,4 @@ export const providerMetadata = {
     native: "ethora://",
     universal: "https://eto.li",
   },
-};
+}

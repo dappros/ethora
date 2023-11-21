@@ -1,7 +1,7 @@
-import { observer } from "mobx-react-lite";
-import React, { useEffect, useRef, useState } from "react";
-import { GiftedChat, Send, Actions } from "react-native-gifted-chat";
-import { useStores } from "../../stores/context";
+import { observer } from "mobx-react-lite"
+import React, { useEffect, useRef, useState } from "react"
+import { GiftedChat, Send, Actions } from "react-native-gifted-chat"
+import { useStores } from "../../stores/context"
 import {
   deleteMessageStanza,
   getPaginatedArchive,
@@ -12,8 +12,8 @@ import {
   sendInvite,
   sendMediaMessageStanza,
   sendMessageStanza,
-} from "../../xmpp/stanzas";
-import MessageBody from "../../components/Chat/MessageBody";
+} from "../../xmpp/stanzas"
+import MessageBody from "../../components/Chat/MessageBody"
 import {
   ActivityIndicator,
   Animated,
@@ -23,28 +23,28 @@ import {
   Pressable,
   StyleSheet,
   Text,
-} from "react-native";
-import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
-import { format } from "date-fns";
+} from "react-native"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import { format } from "date-fns"
 import {
   reverseUnderScoreManipulation,
   underscoreManipulation,
-} from "../../helpers/underscoreLogic";
-import { ROUTES } from "../../constants/routes";
-import { ImageMessage } from "../../components/Chat/ImageMessage";
-import { ChatMediaModal } from "../../components/Modals/ChatMediaModal";
-import { Actionsheet, useDisclose, View } from "native-base";
-import { modalTypes } from "../../constants/modalTypes";
-import { systemMessage } from "../../helpers/systemMessage";
-import parseLink from "../../helpers/parseLink";
-import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
+} from "../../helpers/underscoreLogic"
+import { ROUTES } from "../../constants/routes"
+import { ImageMessage } from "../../components/Chat/ImageMessage"
+import { ChatMediaModal } from "../../components/Modals/ChatMediaModal"
+import { Actionsheet, useDisclose, View } from "native-base"
+import { modalTypes } from "../../constants/modalTypes"
+import { systemMessage } from "../../helpers/systemMessage"
+import parseLink from "../../helpers/parseLink"
+import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink"
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
-} from "react-native-audio-recorder-player";
-import RNFetchBlob from "react-native-blob-util";
+} from "react-native-audio-recorder-player"
+import RNFetchBlob from "react-native-blob-util"
 
 import {
   allowIsTyping,
@@ -54,97 +54,97 @@ import {
   metaRooms as predefinedMeta,
   ROOM_KEYS,
   textStyles,
-} from "../../../docs/config";
-import Entypo from "react-native-vector-icons/Entypo";
-import IonIcons from "react-native-vector-icons/Ionicons";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { fileUpload } from "../../config/routesConstants";
-import { httpUpload } from "../../config/apiService";
-import { showToast } from "../../components/Toast/toast";
-import DocumentPicker from "react-native-document-picker";
-import { pdfMimemtype } from "../../constants/mimeTypes";
-import { normalizeData } from "../../helpers/normalizeData";
-import { AudioMessage } from "../../components/Chat/AudioMessage";
-import AudioPlayer from "../../components/AudioPlayer/AudioPlayer";
-import RenderChatFooter from "../../components/Chat/RenderChatFooter";
-import { AudioSendButton } from "../../components/Chat/AudioSendButton";
-import { PdfMessage } from "../../components/Chat/PdfMessage";
-import { FileMessage } from "../../components/Chat/FileMessage";
-import { downloadFile } from "../../helpers/downloadFile";
-import { VideoMessage } from "../../components/Chat/VideoMessage";
-import { ChatComposer } from "../../components/Chat/Composer";
-import { mentionRegEx, parseValue } from "../../helpers/chat/inputUtils";
-import matchAll from "string.prototype.matchall";
-import { useDebounce } from "../../hooks/useDebounce";
-import Clipboard from "@react-native-clipboard/clipboard";
-import { MetaNavigation } from "../../components/Chat/MetaNavigation";
-import { asyncStorageGetItem } from "../../helpers/cache/asyncStorageGetItem";
-import { IMessageToSend } from "../../helpers/chat/createMessageObject";
-import { isAudioMimetype } from "../../helpers/checkMimetypes";
-import { IMessage } from "../../stores/chatStore";
+} from "../../../docs/config"
+import Entypo from "react-native-vector-icons/Entypo"
+import IonIcons from "react-native-vector-icons/Ionicons"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { fileUpload } from "../../config/routesConstants"
+import { httpUpload } from "../../config/apiService"
+import { showToast } from "../../components/Toast/toast"
+import DocumentPicker from "react-native-document-picker"
+import { pdfMimemtype } from "../../constants/mimeTypes"
+import { normalizeData } from "../../helpers/normalizeData"
+import { AudioMessage } from "../../components/Chat/AudioMessage"
+import AudioPlayer from "../../components/AudioPlayer/AudioPlayer"
+import RenderChatFooter from "../../components/Chat/RenderChatFooter"
+import { AudioSendButton } from "../../components/Chat/AudioSendButton"
+import { PdfMessage } from "../../components/Chat/PdfMessage"
+import { FileMessage } from "../../components/Chat/FileMessage"
+import { downloadFile } from "../../helpers/downloadFile"
+import { VideoMessage } from "../../components/Chat/VideoMessage"
+import { ChatComposer } from "../../components/Chat/Composer"
+import { mentionRegEx, parseValue } from "../../helpers/chat/inputUtils"
+import matchAll from "string.prototype.matchall"
+import { useDebounce } from "../../hooks/useDebounce"
+import Clipboard from "@react-native-clipboard/clipboard"
+import { MetaNavigation } from "../../components/Chat/MetaNavigation"
+import { asyncStorageGetItem } from "../../helpers/cache/asyncStorageGetItem"
+import { IMessageToSend } from "../../helpers/chat/createMessageObject"
+import { isAudioMimetype } from "../../helpers/checkMimetypes"
+import { IMessage } from "../../stores/chatStore"
 
-const audioRecorderPlayer = new AudioRecorderPlayer();
+const audioRecorderPlayer = new AudioRecorderPlayer()
 
 const ChatScreen = observer(({ route, navigation }: any) => {
   const { loginStore, chatStore, walletStore, apiStore, debugStore } =
-    useStores();
+    useStores()
 
-  const { firstName, lastName, walletAddress } = loginStore.initialData;
+  const { firstName, lastName, walletAddress } = loginStore.initialData
 
-  const { tokenTransferSuccess } = walletStore;
-  const duration = 2000;
+  const { tokenTransferSuccess } = walletStore
+  const duration = 2000
 
-  const fullName = firstName + " " + lastName;
+  const fullName = firstName + " " + lastName
 
-  const mediaButtonAnimation = new Animated.Value(1);
+  const mediaButtonAnimation = new Animated.Value(1)
 
-  const manipulatedWalletAddress = underscoreManipulation(walletAddress);
+  const manipulatedWalletAddress = underscoreManipulation(walletAddress)
 
-  const [modalType, setModalType] = useState(undefined);
-  const [showModal, setShowModal] = useState(false);
-  const [extraData, setExtraData] = useState({});
-  const [recording, setRecording] = useState(false);
-  const [fileUploadProgress, setFileUploadProgress] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const [composingUsername, setComposingUsername] = useState("");
-  const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false);
-  const [text, setText] = useState("");
-  const [selection, setSelection] = useState({ start: 0, end: 0 });
-  const debouncedChatText = useDebounce(text, 500);
-  const [onTapMessageObject, setOnTapMessageObject] = useState("");
-  const [isShowDeleteOption, setIsShowDeleteOption] = useState(true);
-  const [showEditOption, setShowEditOption] = useState(true);
-  const [showReplyOption, setShowReplyOption] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showViewThread, setShowViewThread] = useState(false);
-  const [showMetaNavigation, setShowMetaNavigation] = useState(true);
+  const [modalType, setModalType] = useState(undefined)
+  const [showModal, setShowModal] = useState(false)
+  const [extraData, setExtraData] = useState({})
+  const [recording, setRecording] = useState(false)
+  const [fileUploadProgress, setFileUploadProgress] = useState(0)
+  const [isTyping, setIsTyping] = useState(false)
+  const [composingUsername, setComposingUsername] = useState("")
+  const [isNftItemGalleryVisible, setIsNftItemGalleryVisible] = useState(false)
+  const [text, setText] = useState("")
+  const [selection, setSelection] = useState({ start: 0, end: 0 })
+  const debouncedChatText = useDebounce(text, 500)
+  const [onTapMessageObject, setOnTapMessageObject] = useState("")
+  const [isShowDeleteOption, setIsShowDeleteOption] = useState(true)
+  const [showEditOption, setShowEditOption] = useState(true)
+  const [showReplyOption, setShowReplyOption] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
+  const [showViewThread, setShowViewThread] = useState(false)
+  const [showMetaNavigation, setShowMetaNavigation] = useState(true)
 
-  const { isOpen, onOpen, onClose } = useDisclose();
-  const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([]);
+  const { isOpen, onOpen, onClose } = useDisclose()
+  const [metaRooms, setMetaRooms] = useState<IMetaRoom[]>([])
 
   const handleSetIsEditing = (value: boolean) => {
-    setIsEditing(value);
-  };
+    setIsEditing(value)
+  }
 
   const getMetaRooms = async () => {
-    const rooms = await asyncStorageGetItem("metaRooms");
-    setMetaRooms(rooms || predefinedMeta);
-  };
-  const giftedRef = useRef(null);
+    const rooms = await asyncStorageGetItem("metaRooms")
+    setMetaRooms(rooms || predefinedMeta)
+  }
+  const giftedRef = useRef(null)
 
   const path = Platform.select({
     ios: "audio.m4a",
     android: `${RNFetchBlob.fs.dirs.CacheDir}/audio.mp3`,
-  });
+  })
 
-  const { chatJid, chatName } = route.params;
+  const { chatJid, chatName } = route.params
   const [mediaModal, setMediaModal] = useState({
     open: false,
     url: "",
     type: "",
     message: {},
-  });
-  const room = chatStore.roomList.find((item) => item.jid === chatJid);
+  })
+  const room = chatStore.roomList.find((item) => item.jid === chatJid)
 
   const messages = chatStore.messages
     .filter((item: any) => {
@@ -153,56 +153,56 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       if (item.roomJid === chatJid) {
         if (item.isReply) {
           if (item.showInChannel) {
-            return true;
+            return true
           } else {
-            return false;
+            return false
           }
         } else {
-          return true;
+          return true
         }
       }
     })
-    .sort((a: any, b: any) => b._id - a._id);
+    .sort((a: any, b: any) => b._id - a._id)
 
   useEffect(() => {
-    chatStore.toggleShouldCount(false);
+    chatStore.toggleShouldCount(false)
     return () => {
-      chatStore.toggleShouldCount(true);
-    };
-  }, []);
+      chatStore.toggleShouldCount(true)
+    }
+  }, [])
 
   useEffect(() => {
     if (!chatStore.roomsInfoMap?.[chatJid]?.archiveRequested) {
-      getRoomArchiveStanza(chatJid, chatStore.xmpp);
+      getRoomArchiveStanza(chatJid, chatStore.xmpp)
     }
-    getMetaRooms();
-  }, [chatJid]);
+    getMetaRooms()
+  }, [chatJid])
 
   useEffect(() => {
     if (tokenTransferSuccess.success) {
       const message = systemMessage({
         ...tokenTransferSuccess,
         tokenAmount: tokenTransferSuccess.amount,
-      });
-      sendMessage(message, true);
-      walletStore.clearPreviousTransfer();
+      })
+      sendMessage(message, true)
+      walletStore.clearPreviousTransfer()
     }
-  }, [tokenTransferSuccess.success]);
+  }, [tokenTransferSuccess.success])
 
   useEffect(() => {
-    const lastMessage = messages?.[0];
+    const lastMessage = messages?.[0]
     chatStore.updateRoomInfo(chatJid, {
       archiveRequested: true,
       lastUserText: lastMessage?.text,
       lastUserName: lastMessage?.user?.name,
       lastMessageTime:
         lastMessage?.createdAt && format(lastMessage?.createdAt, "hh:mm"),
-    });
-  }, [!!messages]);
+    })
+  }, [!!messages])
 
   useEffect(() => {
-    pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp);
-  }, [debouncedChatText]);
+    pausedComposing(manipulatedWalletAddress, chatJid, chatStore.xmpp)
+  }, [debouncedChatText])
 
   useEffect(() => {
     if (
@@ -210,31 +210,31 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       chatStore.isComposing.manipulatedWalletAddress !==
         manipulatedWalletAddress
     ) {
-      setIsTyping(chatStore.isComposing.state);
-      setComposingUsername(chatStore.isComposing.username);
+      setIsTyping(chatStore.isComposing.state)
+      setComposingUsername(chatStore.isComposing.username)
     }
-  }, [chatStore.isComposing.state]);
+  }, [chatStore.isComposing.state])
 
   const renderMessage = (props) => {
-    return <MessageBody {...props} />;
-  };
+    return <MessageBody {...props} />
+  }
 
   const onLoadEarlier = () => {
     // messages.length - 1 means last message, but because chat is inverted it will the first message by date
 
-    const lastMessage = messages.length - 1;
+    const lastMessage = messages.length - 1
     // const lastMessage = 0;
     if (messages.length > 5) {
-      getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp);
-      chatStore.setChatMessagesLoading(true);
+      getPaginatedArchive(chatJid, messages[lastMessage]._id, chatStore.xmpp)
+      chatStore.setChatMessagesLoading(true)
     }
-  };
+  }
   const renderSuggestions: FC<MentionSuggestionsProps> = ({
     keyword,
     onSuggestionPress,
   }) => {
     if (keyword == null) {
-      return null;
+      return null
     }
 
     return (
@@ -272,23 +272,23 @@ const ChatScreen = observer(({ route, navigation }: any) => {
             </Pressable>
           ))}
       </View>
-    );
-  };
+    )
+  }
   const partTypes = [
     {
       trigger: "@", // Should be a single character like '@' or '#'
       renderSuggestions,
       textStyle: { fontWeight: "bold", color: "blue" }, // The mention style in the input
     },
-  ];
+  ]
 
   const sendMessage = (messageString: any, isSystemMessage: boolean) => {
-    const messageText = messageString[0].text;
-    const tokenAmount = messageString[0].tokenAmount || 0;
-    const receiverMessageId = messageString[0].receiverMessageId || 0;
+    const messageText = messageString[0].text
+    const tokenAmount = messageString[0].tokenAmount || 0
+    const receiverMessageId = messageString[0].receiverMessageId || 0
     const manipulatedWalletAddress = underscoreManipulation(
       loginStore.initialData.walletAddress
-    );
+    )
     const data = {
       senderFirstName: loginStore.initialData.firstName,
       senderLastName: loginStore.initialData.lastName,
@@ -302,39 +302,39 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       isReply: false,
       mainMessage: undefined,
       push: true,
-    };
-    const text = parseValue(messageText, partTypes).plainText;
-    const matches = Array.from(matchAll(messageText ?? "", mentionRegEx));
+    }
+    const text = parseValue(messageText, partTypes).plainText
+    const matches = Array.from(matchAll(messageText ?? "", mentionRegEx))
     matches.forEach((match) =>
       sendInvite(manipulatedWalletAddress, chatJid, match[4], chatStore.xmpp)
-    );
+    )
     sendMessageStanza(
       manipulatedWalletAddress,
       chatJid,
       text,
       data,
       chatStore.xmpp
-    );
-  };
+    )
+  }
 
   const getOtherUserDetails = (props: any) => {
-    const { avatar, name, _id } = props;
-    const firstName = name.split(" ")[0];
-    const lastName = name.split(" ")[1];
-    const xmppID = _id.split("@")[0];
+    const { avatar, name, _id } = props
+    const firstName = name.split(" ")[0]
+    const lastName = name.split(" ")[1]
+    const xmppID = _id.split("@")[0]
     // const {anotherUserWalletAddress} = this.props.loginReducer;
-    const walletAddress = reverseUnderScoreManipulation(xmppID);
+    const walletAddress = reverseUnderScoreManipulation(xmppID)
     //fetch transaction
 
     //check if user clicked their own avatar/profile
 
-    const theirXmppUsername = xmppID;
+    const theirXmppUsername = xmppID
     //this will get the other user's Avatar and description
     retrieveOtherUserVcard(
       loginStore.initialData.xmppUsername,
       theirXmppUsername,
       chatStore.xmpp
-    );
+    )
 
     loginStore.setOtherUserDetails({
       anotherUserFirstname: firstName,
@@ -342,36 +342,36 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       anotherUserLastSeen: {},
       anotherUserWalletAddress: walletAddress,
       anotherUserAvatar: avatar,
-    });
-  };
+    })
+  }
 
   const onUserAvatarPress = (props: any) => {
     //to set the current another user profile
     // otherUserStore.setUserData(firstName, lastName, avatar);
-    const xmppID = props._id.split("@")[0];
-    const walletAddress = reverseUnderScoreManipulation(xmppID);
+    const xmppID = props._id.split("@")[0]
+    const walletAddress = reverseUnderScoreManipulation(xmppID)
     if (walletAddress === loginStore.initialData.walletAddress) {
-      navigation.navigate(ROUTES.PROFILE);
-      return;
+      navigation.navigate(ROUTES.PROFILE)
+      return
     } else {
-      getOtherUserDetails(props);
-      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN);
+      getOtherUserDetails(props)
+      navigation.navigate(ROUTES.OTHERUSERPROFILESCREEN)
     }
-  };
+  }
   const onMediaMessagePress = (type: any, url: any, message) => {
-    setMediaModal({ open: true, type, url, message });
-  };
+    setMediaModal({ open: true, type, url, message })
+  }
 
   const closeMediaModal = () => {
-    setMediaModal({ type: "", open: false, url: "" });
-  };
+    setMediaModal({ type: "", open: false, url: "" })
+  }
 
   const handleInputChange = (t) => {
-    setText(t);
+    setText(t)
     setTimeout(() => {
-      isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp);
-    }, 2000);
-  };
+      isComposing(manipulatedWalletAddress, chatJid, fullName, chatStore.xmpp)
+    }, 2000)
+  }
 
   const renderMedia = (props: any) => {
     const {
@@ -388,13 +388,13 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       nftId,
       preview,
       nftName,
-    } = props.currentMessage;
-    let parsedWaveform = [];
+    } = props.currentMessage
+    let parsedWaveform = []
     if (waveForm) {
       try {
-        parsedWaveform = JSON.parse(waveForm);
+        parsedWaveform = JSON.parse(waveForm)
       } catch (error) {
-        console.log("cant parse wave");
+        console.log("cant parse wave")
       }
     }
     if (isImageMimetype(mimetype)) {
@@ -408,7 +408,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
             onMediaMessagePress(mimetype, image, props.currentMessage)
           }
         />
-      );
+      )
     } else if (isVideoMimetype(mimetype)) {
       return (
         <VideoMessage
@@ -418,7 +418,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
             onMediaMessagePress(mimetype, image, props.currentMessage)
           }
         />
-      );
+      )
     } else if (isAudioMimetype(mimetype)) {
       return (
         <AudioMessage
@@ -429,10 +429,10 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           }
           onLongPress={handleOnLongPress}
         />
-      );
+      )
     } else if (pdfMimemtype[mimetype]) {
       const pdfImage =
-        "https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw";
+        "https://play-lh.googleusercontent.com/BkRfMfIRPR9hUnmIYGDgHHKjow-g18-ouP6B2ko__VnyUHSi1spcc78UtZ4sVUtBH4g=w480-h960-rw"
       return (
         <PdfMessage
           url={preview || pdfImage}
@@ -441,7 +441,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
             onMediaMessagePress(mimetype, image, props.currentMessage)
           }
         />
-      );
+      )
     } else if (mimetype) {
       return (
         <FileMessage
@@ -449,25 +449,25 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           size={size}
           onPress={() => downloadFile(image, originalName)}
         />
-      );
+      )
     }
-  };
+  }
 
   const handleOnLongPress = (message: any) => {
-    let extraData = {};
+    let extraData = {}
     if (
       message.user._id.includes(
         underscoreManipulation(loginStore.initialData.walletAddress)
       )
     ) {
-      return;
+      return
     }
     if (
       !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
     ) {
-      const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0];
-      const walletFromJid = reverseUnderScoreManipulation(jid);
-      const token = loginStore.userToken;
+      const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0]
+      const walletFromJid = reverseUnderScoreManipulation(jid)
+      const token = loginStore.userToken
 
       extraData = {
         type: "transfer",
@@ -482,46 +482,46 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           loginStore.initialData.firstName +
           " " +
           loginStore.initialData.lastName,
-      };
+      }
     }
-    setShowModal(true);
-    setModalType(modalTypes.TOKENTRANSFER);
-    setExtraData(extraData);
-  };
+    setShowModal(true)
+    setModalType(modalTypes.TOKENTRANSFER)
+    setExtraData(extraData)
+  }
 
   const handleOnPress = (message: IMessage) => {
     if (!message.user._id.includes(manipulatedWalletAddress)) {
-      setIsShowDeleteOption(false);
-      setShowEditOption(false);
+      setIsShowDeleteOption(false)
+      setShowEditOption(false)
     }
 
     if (message.isReply) {
-      setShowReplyOption(false);
+      setShowReplyOption(false)
     }
 
     if (message.numberOfReplies > 0) {
-      setShowViewThread(true);
+      setShowViewThread(true)
     }
 
-    setOnTapMessageObject(message);
-    return onOpen();
-  };
+    setOnTapMessageObject(message)
+    return onOpen()
+  }
 
   const handleCopyText = () => {
-    Clipboard.setString(onTapMessageObject.text);
-    showToast("success", "Info", "Message copied", "top");
-    return onClose();
-  };
+    Clipboard.setString(onTapMessageObject.text)
+    showToast("success", "Info", "Message copied", "top")
+    return onClose()
+  }
 
   const handleEdit = () => {
     if (!onTapMessageObject.image || !onTapMessageObject.preview) {
-      setIsEditing(true);
-      setText(onTapMessageObject.text);
-      giftedRef?.current?.textInput?.focus();
+      setIsEditing(true)
+      setText(onTapMessageObject.text)
+      giftedRef?.current?.textInput?.focus()
     }
-    setShowEditOption(true);
-    onClose();
-  };
+    setShowEditOption(true)
+    onClose()
+  }
 
   //send delete message stanza
   const handleDelete = () => {
@@ -530,14 +530,14 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       chatJid,
       onTapMessageObject?._id as string,
       chatStore.xmpp
-    );
-  };
+    )
+  }
 
   const handleSendMessage = (messageString: any) => {
     if (isEditing) {
-      const messageText = messageString[0].text;
-      const tokenAmount = messageString[0].tokenAmount || 0;
-      const receiverMessageId = messageString[0].receiverMessageId || 0;
+      const messageText = messageString[0].text
+      const tokenAmount = messageString[0].tokenAmount || 0
+      const receiverMessageId = messageString[0].receiverMessageId || 0
       const data = {
         senderFirstName: loginStore.initialData.firstName,
         senderLastName: loginStore.initialData.lastName,
@@ -552,7 +552,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         mainMessage: undefined,
 
         push: true,
-      };
+      }
 
       sendReplaceMessageStanza(
         manipulatedWalletAddress,
@@ -561,23 +561,23 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         onTapMessageObject._id,
         data,
         chatStore.xmpp
-      );
-      setIsEditing(false);
+      )
+      setIsEditing(false)
     } else {
-      sendMessage(messageString, false);
+      sendMessage(messageString, false)
     }
-  };
+  }
 
   const handleReply = (message?: any) => {
-    setShowViewThread(false);
+    setShowViewThread(false)
     //navigate to thread screen with current message details.
-    getOtherUserDetails(message ? message.user : onTapMessageObject.user);
+    getOtherUserDetails(message ? message.user : onTapMessageObject.user)
     navigation.navigate(ROUTES.THREADS, {
       currentMessage: message ? message : onTapMessageObject,
       chatJid: chatJid,
       chatName: chatName,
-    });
-    onClose();
+    })
+    onClose()
 
     // if (type === 'open') {
     //   setIsReply(true);
@@ -588,25 +588,24 @@ const ChatScreen = observer(({ route, navigation }: any) => {
     //   setIsReply(false);
     //   setOnTapMessageObject('');
     // }
-  };
+  }
 
   const closeModal = () => {
-    setShowModal(false);
-  };
+    setShowModal(false)
+  }
 
   //on QRCode pressed function
   const QRPressed = () => {
-    setShowModal(true);
-    setModalType(modalTypes.GENERATEQR);
-    setExtraData({ link: chatJid, mode: "chat" });
-  };
+    setShowModal(true)
+    setModalType(modalTypes.GENERATEQR)
+    setExtraData({ link: chatJid, mode: "chat" })
+  }
 
   const handleChatLinks = (chatLink: string) => {
-    const parsedLink = parseLink(chatLink);
+    const parsedLink = parseLink(chatLink)
     if (parsedLink) {
       const chatJID =
-        parsedLink.searchParams.get("c") +
-        apiStore.xmppDomains.CONFERENCEDOMAIN;
+        parsedLink.searchParams.get("c") + apiStore.xmppDomains.CONFERENCEDOMAIN
       // navigation.navigate(ROUTES.ROOMSLIST);
       // // getUserRoomsStanza(
       // //   underscoreManipulation(loginStore.walletAddress),
@@ -617,16 +616,16 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         loginStore.initialData.walletAddress,
         navigation,
         chatStore.xmpp
-      );
-    } else showToast("error", "Error", "Invalid QR", "top");
-  };
+      )
+    } else showToast("error", "Error", "Invalid QR", "top")
+  }
 
   const animateMediaButtonIn = () => {
     Animated.spring(mediaButtonAnimation, {
       toValue: 2.5,
       useNativeDriver: true,
-    }).start();
-  };
+    }).start()
+  }
 
   const animateMediaButtonOut = () => {
     Animated.spring(mediaButtonAnimation, {
@@ -635,12 +634,12 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       tension: 40,
 
       friction: 3,
-    }).start();
-  };
+    }).start()
+  }
 
   const onStartRecord = async () => {
-    setRecording(true);
-    animateMediaButtonIn();
+    setRecording(true)
+    animateMediaButtonIn()
 
     const audioSet = {
       AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
@@ -648,39 +647,35 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.low,
       AVNumberOfChannelsKeyIOS: 2,
       AVFormatIDKeyIOS: AVEncodingOption.aac,
-    };
-    const result = await audioRecorderPlayer.startRecorder(
-      path,
-      audioSet,
-      true
-    );
-    console.log(result);
-  };
+    }
+    const result = await audioRecorderPlayer.startRecorder(path, audioSet, true)
+    console.log(result)
+  }
 
   const getWaveformArray = async (url: string) => {
     if (Platform.OS !== "ios") {
-      let ddd = await NativeModules.Waveform.getWaveformArray(url);
+      const ddd = await NativeModules.Waveform.getWaveformArray(url)
 
-      const data = JSON.parse(ddd);
-      return data;
+      const data = JSON.parse(ddd)
+      return data
     } else {
-      const res = await NativeModules.RNWaveform.loadAudioFile();
-      return res;
+      const res = await NativeModules.RNWaveform.loadAudioFile()
+      return res
     }
-  };
+  }
 
   function filterData(arr) {
-    const samples = 24;
-    const blockSize = Math.floor(arr.length / samples);
+    const samples = 24
+    const blockSize = Math.floor(arr.length / samples)
     const res = new Array(samples)
       .fill(0)
       .map((_, i) =>
         arr
           .slice(i * blockSize, (i + 1) * blockSize)
           .reduce((sum, val) => sum + Math.abs(val), 0)
-      );
+      )
 
-    return res;
+    return res
   }
 
   const getAudioData = async (url?: string) => {
@@ -688,11 +683,11 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       url ||
       (Platform.OS === "ios"
         ? `${RNFetchBlob.fs.dirs.CacheDir}/audioMessage.m4a`
-        : path);
-    const data = await getWaveformArray(audioPath);
-    const normalizedData = normalizeData(filterData(data));
-    return normalizedData;
-  };
+        : path)
+    const data = await getWaveformArray(audioPath)
+    const normalizedData = normalizeData(filterData(data))
+    return normalizedData
+  }
 
   const submitMediaMessage = (props: any, waveForm?: any) => {
     props.map(async (item: any) => {
@@ -718,27 +713,27 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         waveForm: JSON.stringify(waveForm),
         attachmentId: item._id,
         wrappable: true,
-      };
+      }
 
       sendMediaMessageStanza(
         manipulatedWalletAddress,
         chatJid,
         data,
         chatStore.xmpp
-      );
-    });
-  };
+      )
+    })
+  }
 
   const onStopRecord = async () => {
-    setRecording(false);
-    animateMediaButtonOut();
+    setRecording(false)
+    animateMediaButtonOut()
 
-    const result = await audioRecorderPlayer.stopRecorder();
+    const result = await audioRecorderPlayer.stopRecorder()
 
-    const filesApiURL = fileUpload;
-    const FormData = require("form-data");
-    let data = new FormData();
-    const waveform = await getAudioData();
+    const filesApiURL = fileUpload
+    const FormData = require("form-data")
+    const data = new FormData()
+    const waveform = await getAudioData()
     // let correctpath = '';
     // const str1 = 'file://';
     // const str2 = res.uri;
@@ -748,60 +743,60 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       uri: result,
       type: "audio/mpeg",
       name: "sound.mp3",
-    });
+    })
     try {
       const response = await httpUpload(
         filesApiURL,
         data,
         loginStore.userToken,
         setFileUploadProgress
-      );
-      setFileUploadProgress(0);
+      )
+      setFileUploadProgress(0)
 
       if (response.data.results.length) {
-        debugStore.addLogsApi(response.data.results);
-        submitMediaMessage(response.data.results, waveform);
+        debugStore.addLogsApi(response.data.results)
+        submitMediaMessage(response.data.results, waveform)
       }
     } catch (error) {
-      console.log(error);
-      showToast("error", "Error", "Cannot upload file, try again later", "top");
+      console.log(error)
+      showToast("error", "Error", "Cannot upload file, try again later", "top")
     }
-  };
+  }
 
   const sendAttachment = async () => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
         copyTo: "cachesDirectory",
-      });
+      })
 
-      const filesApiURL = fileUpload;
-      const FormData = require("form-data");
-      let data = new FormData();
+      const filesApiURL = fileUpload
+      const FormData = require("form-data")
+      const data = new FormData()
       data.append("files", {
         uri: res[0].uri,
         type: res[0].type,
         name: res[0].name,
-      });
-      const absolutePath = res[0].fileCopyUri;
+      })
+      const absolutePath = res[0].fileCopyUri
       const response = await httpUpload(
         filesApiURL,
         data,
         loginStore.userToken,
         setFileUploadProgress
-      );
-      setFileUploadProgress(0);
+      )
+      setFileUploadProgress(0)
       if (response.data.results?.length) {
-        debugStore.addLogsApi(response.data.results);
+        debugStore.addLogsApi(response.data.results)
         if (response.data.results[0].mimetype === "audio/mpeg") {
-          let wave = await getAudioData(absolutePath);
-          submitMediaMessage(response.data.results, wave);
+          const wave = await getAudioData(absolutePath)
+          submitMediaMessage(response.data.results, wave)
         } else {
-          submitMediaMessage(response.data.results);
+          submitMediaMessage(response.data.results)
         }
       }
     } catch (err) {
-      console.log(err);
+      console.log(err)
       if (DocumentPicker.isCancel(err)) {
         // User cancelled the picker, exit any dialogs or menus and move on
       } else {
@@ -810,15 +805,15 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           "Error",
           "Cannot upload file, try again later",
           "top"
-        );
-        throw err;
+        )
+        throw err
       }
     }
-  };
+  }
 
   const displayNftItems = async () => {
-    setIsNftItemGalleryVisible(true);
-  };
+    setIsNftItemGalleryVisible(true)
+  }
   const sendNftItemsFromGallery = (item) => {
     const data: IMessageToSend = {
       senderFirstName: loginStore.initialData.firstName,
@@ -836,27 +831,27 @@ const ChatScreen = observer(({ route, navigation }: any) => {
       push: true,
       roomJid: chatJid,
       receiverMessageId: "0",
-    };
+    }
 
     sendMediaMessageStanza(
       manipulatedWalletAddress,
       chatJid,
       data,
       chatStore.xmpp
-    );
-    setIsNftItemGalleryVisible(false);
-  };
+    )
+    setIsNftItemGalleryVisible(false)
+  }
 
   const onDeleteMessagePress = () => {
-    const messageId = onTapMessageObject._id;
+    const messageId = onTapMessageObject._id
     deleteMessageStanza(
       manipulatedWalletAddress + "@" + apiStore.xmppDomains.DOMAIN,
       chatJid,
       messageId,
       chatStore.xmpp
-    );
-    onClose();
-  };
+    )
+    onClose()
+  }
 
   const renderAttachment = () => {
     const options = walletStore.nftItems.length
@@ -864,15 +859,15 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           "Upload File": async () => await sendAttachment(),
           "Display an Item": async () => await displayNftItems(),
           Cancel: () => {
-            console.log("Cancel");
+            console.log("Cancel")
           },
         }
       : {
           "Upload File": async () => await sendAttachment(),
           Cancel: () => {
-            console.log("Cancel");
+            console.log("Cancel")
           },
-        };
+        }
     return (
       <View style={{ position: "relative" }}>
         <View
@@ -897,13 +892,13 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           />
         </View>
       </View>
-    );
-  };
+    )
+  }
 
   const renderSend = (props: any) => {
     const animateMediaButtonStyle = {
       transform: [{ scale: mediaButtonAnimation }],
-    };
+    }
     if (!props.text) {
       return (
         <AudioSendButton
@@ -911,7 +906,7 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           onPressIn={onStartRecord}
           onPressOut={onStopRecord}
         />
-      );
+      )
     }
     return (
       <Send {...props}>
@@ -919,8 +914,8 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           <IonIcons name="ios-send" color={"white"} size={hp("3%")} />
         </View>
       </Send>
-    );
-  };
+    )
+  }
 
   const renderComposer = (props) => {
     return (
@@ -930,22 +925,22 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         selection={selection}
         {...props}
       />
-    );
-  };
+    )
+  }
 
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
       (item) => item._id === currentMessage?.mainMessage?.id
-    );
+    )
     console.log(
       giftedRef.current?._messageContainerRef?.current?.scrollToIndex,
       "parent Index"
-    );
+    )
     giftedRef.current?._messageContainerRef?.current?.scrollToIndex({
       animated: true,
       index: parentIndex,
-    });
-  };
+    })
+  }
 
   return (
     <>
@@ -959,9 +954,9 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           onQRPressed={QRPressed}
           isChatRoomDetail={true}
           onBackPress={() => {
-            navigation.goBack();
+            navigation.goBack()
             chatStore.activeChats === ROOM_KEYS.groups &&
-              chatStore.changeActiveChats(ROOM_KEYS.official);
+              chatStore.changeActiveChats(ROOM_KEYS.official)
           }}
         />
         {isAudioMimetype(mediaModal.type) && (
@@ -1062,10 +1057,10 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         <Actionsheet
           isOpen={isOpen}
           onClose={() => {
-            onClose();
-            setIsShowDeleteOption(true);
-            setShowReplyOption(true);
-            setShowViewThread(false);
+            onClose()
+            setIsShowDeleteOption(true)
+            setShowReplyOption(true)
+            setShowViewThread(false)
           }}
         >
           <Actionsheet.Content>
@@ -1094,8 +1089,8 @@ const ChatScreen = observer(({ route, navigation }: any) => {
           chatId={chatJid.split("@")[0]}
           open={showMetaNavigation || chatStore.showMetaNavigation}
           onClose={() => {
-            setShowMetaNavigation(false);
-            chatStore.toggleMetaNavigation(false);
+            setShowMetaNavigation(false)
+            chatStore.toggleMetaNavigation(false)
           }}
         />
         <ChatMediaModal
@@ -1107,8 +1102,8 @@ const ChatScreen = observer(({ route, navigation }: any) => {
         />
       </ImageBackground>
     </>
-  );
-});
+  )
+})
 
 const styles = StyleSheet.create({
   usernameStyle: {
@@ -1124,6 +1119,6 @@ const styles = StyleSheet.create({
     paddingLeft: 7,
     marginBottom: 5,
   },
-});
+})
 
-export default ChatScreen;
+export default ChatScreen

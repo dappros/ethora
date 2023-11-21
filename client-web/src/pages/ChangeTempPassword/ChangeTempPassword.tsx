@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react"
 import {
   Box,
   Button,
@@ -10,72 +10,72 @@ import {
   InputLabel,
   OutlinedInput,
   Typography,
-} from "@mui/material";
-import { useHistory, useLocation, useParams } from "react-router";
-import { httpWithToken } from "../../http";
-import { config } from "../../config";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { FullPageSpinner } from "../../components/FullPageSpinner";
-import { VisibilityOff, Visibility, ErrorRounded } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { FormikErrors, FormikValues, useFormik } from "formik";
+} from "@mui/material"
+import { useHistory, useLocation, useParams } from "react-router"
+import { httpWithToken } from "../../http"
+import { config } from "../../config"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { FullPageSpinner } from "../../components/FullPageSpinner"
+import { VisibilityOff, Visibility, ErrorRounded } from "@mui/icons-material"
+import { LoadingButton } from "@mui/lab"
+import { FormikErrors, FormikValues, useFormik } from "formik"
 
-export interface IChangeTempPassword {}
+export interface IChangeTemporaryPassword {}
 export interface IResetPassword {}
 interface FormValues {
-  password: string;
-  repeatedPassword: string;
+  password: string
+  repeatedPassword: string
 }
 
 const validate = (values: FormikValues): FormikErrors<FormValues> => {
-  const errors: FormikErrors<FormValues> = {};
+  const errors: FormikErrors<FormValues> = {}
 
   if (!values.tempPassword) {
-    errors.repeatedPassword = "Must be 6 characters or more";
+    errors.repeatedPassword = "Must be 6 characters or more"
   }
   if (!values.password) {
-    errors.password = "";
+    errors.password = ""
   } else if (values.password.length <= 6) {
-    errors.password = "Must be 6 characters or more";
+    errors.password = "Must be 6 characters or more"
   }
   if (!values.repeatedPassword) {
-    errors.repeatedPassword = "";
+    errors.repeatedPassword = ""
   } else if (values.repeatedPassword.length <= 6) {
-    errors.repeatedPassword = "Must be 6 characters or more";
+    errors.repeatedPassword = "Must be 6 characters or more"
   }
 
   if (values.password !== values.repeatedPassword) {
     errors.repeatedPassword =
-      "Your new password and repeat password should match";
+      "Your new password and repeat password should match"
   }
 
-  return errors;
-};
-export const ChangeTempPassword: React.FC<IChangeTempPassword> = ({}) => {
-  const { search } = useLocation();
+  return errors
+}
+export const ChangeTempPassword: React.FC<IChangeTemporaryPassword> = ({}) => {
+  const { search } = useLocation()
 
-  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
-  const email = searchParams.get('email')
-  const tempPassword = searchParams.get('tempPassword')
+  const searchParameters = useMemo(() => new URLSearchParams(search), [search])
+  const email = searchParameters.get("email")
+  const temporaryPassword = searchParameters.get("tempPassword")
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showRepeatedPassword, setShowRepeatedPassword] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-  const history = useHistory();
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRepeatedPassword, setShowRepeatedPassword] = useState(false)
+  const [isLoading, setLoading] = useState(false)
+  const history = useHistory()
   const { showSnackbar } = useSnackbar()
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
   const handleClickShowRepeatedPassword = () =>
-    setShowRepeatedPassword((show) => !show);
+    setShowRepeatedPassword((show) => !show)
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const formik = useFormik({
     initialValues: {
-      tempPassword: tempPassword,
+      tempPassword: temporaryPassword,
       password: "",
       repeatedPassword: "",
     },
@@ -87,26 +87,29 @@ export const ChangeTempPassword: React.FC<IChangeTempPassword> = ({}) => {
     validate,
 
     onSubmit: async ({ password, tempPassword }, { setSubmitting }) => {
-      setSubmitting(true);
+      setSubmitting(true)
       try {
-        const res = await httpWithToken('1').post(
+        const res = await httpWithToken("1").post(
           "/users/set-permanent-password-with-temp-password",
           {
             tempPassword,
             password: password,
           }
-        );
-        history.push({pathname: '/signIn', search: `?email=${email}`});
-        showSnackbar("success", "Password changed successfully");
+        )
+        history.push({ pathname: "/signIn", search: `?email=${email}` })
+        showSnackbar("success", "Password changed successfully")
       } catch (error) {
-        showSnackbar("error", "Cannot change password " + error?.response?.data?.error || '');
+        showSnackbar(
+          "error",
+          "Cannot change password " + error?.response?.data?.error || ""
+        )
       }
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   if (isLoading) {
-    return <FullPageSpinner />;
+    return <FullPageSpinner />
   }
 
   return (
@@ -159,7 +162,9 @@ export const ChangeTempPassword: React.FC<IChangeTempPassword> = ({}) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 value={formik.values.tempPassword}
-                error={!!formik.touched.tempPassword && !!formik.errors.tempPassword}
+                error={
+                  !!formik.touched.tempPassword && !!formik.errors.tempPassword
+                }
               />
             </FormControl>
             <FormControl sx={{ width: "100%", mt: 2 }} variant="outlined">
@@ -240,5 +245,5 @@ export const ChangeTempPassword: React.FC<IChangeTempPassword> = ({}) => {
         </Box>
       </Box>
     </Container>
-  );
-};
+  )
+}

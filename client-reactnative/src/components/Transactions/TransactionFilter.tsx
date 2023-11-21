@@ -5,56 +5,59 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {HStack, Pressable, Text} from 'native-base';
-import React from 'react';
+import { HStack, Pressable, Text } from "native-base"
+import React from "react"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import {commonColors} from '../../../docs/config';
-import {FILTERS} from '../../constants/transactionsFilter';
+} from "react-native-responsive-screen"
+import { commonColors } from "../../../docs/config"
+import { FILTERS } from "../../constants/transactionsFilter"
 
-const FilterButton = ({title, active, ...props}: any) => {
-  const isButtonPressed = active.toLowerCase() === title.toLowerCase();
+const FilterButton = ({ title, active, ...props }: any) => {
+  const isButtonPressed = active.toLowerCase() === title.toLowerCase()
   return (
     <Pressable
-      accessibilityLabel={title + 'Transactions'}
-      bg={isButtonPressed ? 'gray.200' : 'white'}
-      {...props}>
+      accessibilityLabel={title + "Transactions"}
+      bg={isButtonPressed ? "gray.200" : "white"}
+      {...props}
+    >
       <HStack
-        width={wp('100%') / 3}
-        paddingY={'5'}
-        justifyContent={'center'}
-        alignItems={'center'}>
+        width={wp("100%") / 3}
+        paddingY={"5"}
+        justifyContent={"center"}
+        alignItems={"center"}
+      >
         <Text
-          fontSize={hp('2.216%')}
-          fontWeight={'bold'}
-          color={commonColors.primaryColor}>
+          fontSize={hp("2.216%")}
+          fontWeight={"bold"}
+          color={commonColors.primaryColor}
+        >
           {title}
         </Text>
       </HStack>
     </Pressable>
-  );
-};
+  )
+}
 
-export const TransactionFilter = ({activeFilter, setActiveFilter}: any) => {
+export const TransactionFilter = ({ activeFilter, setActiveFilter }: any) => {
   return (
-    <HStack w={'100%'} justifyContent={'space-between'}>
+    <HStack w={"100%"} justifyContent={"space-between"}>
       <FilterButton
         onPress={() => setActiveFilter(FILTERS.all)}
         active={activeFilter}
-        title={'All'}
+        title={"All"}
       />
       <FilterButton
         onPress={() => setActiveFilter(FILTERS.sent)}
         active={activeFilter}
-        title={'Sent'}
+        title={"Sent"}
       />
       <FilterButton
         onPress={() => setActiveFilter(FILTERS.received)}
         active={activeFilter}
-        title={'Received'}
+        title={"Received"}
       />
     </HStack>
-  );
-};
+  )
+}

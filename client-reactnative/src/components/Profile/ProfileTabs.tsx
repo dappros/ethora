@@ -1,24 +1,24 @@
-import { useNavigation } from "@react-navigation/native";
-import { HStack, VStack } from "native-base";
-import React, { useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native"
+import { HStack, VStack } from "native-base"
+import React, { useState } from "react"
+import { FlatList, Image, StyleSheet, Text, View } from "react-native"
 import {
   coinImagePath,
   coinReplacedName,
   commonColors,
   itemsTransfersAllowed,
   textStyles,
-} from "../../../docs/config";
-import { IDocument, TBalance } from "../../stores/types";
-import { NftListItem } from "../Transactions/NftListItem";
-import { DocumentListItem } from "./DocumentListItem";
-import { ProfileTab } from "./ProfileTab";
+} from "../../../docs/config"
+import { IDocument, TBalance } from "../../stores/types"
+import { NftListItem } from "../Transactions/NftListItem"
+import { DocumentListItem } from "./DocumentListItem"
+import { ProfileTab } from "./ProfileTab"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-import { NftMediaModal } from "../NftMediaModal";
-import { HomeStackNavigationProp } from "../../navigation/types";
+} from "react-native-responsive-screen"
+import { NftMediaModal } from "../NftMediaModal"
+import { HomeStackNavigationProp } from "../../navigation/types"
 
 const renderItem = ({ item, index }: { item: any; index: number }) => (
   <Item
@@ -27,15 +27,15 @@ const renderItem = ({ item, index }: { item: any; index: number }) => (
     balance={item.balance}
     index={index}
   />
-);
+)
 
 const Item = ({
   balance,
 }: {
-  tokenSymbol: string;
-  tokenName: string;
-  balance: string;
-  index: number;
+  tokenSymbol: string
+  tokenName: string
+  balance: string
+  index: number
 }) => (
   <HStack
     paddingX={10}
@@ -57,17 +57,17 @@ const Item = ({
       </Text>
     </VStack>
   </HStack>
-);
+)
 const RenderAssetItem = ({
   item,
   onClick,
   selectedItem,
   onAssetPress,
 }: {
-  item: any;
-  onClick: any;
-  selectedItem?: string;
-  onAssetPress: () => void;
+  item: any
+  onClick: any
+  selectedItem?: string
+  onAssetPress: () => void
 }) => (
   <NftListItem
     assetUrl={item.imagePreview || item.nftFileUrl}
@@ -83,17 +83,17 @@ const RenderAssetItem = ({
     // balance={item.balance._hex ? parseInt(item.balance._hex, 16) : item.balance}
     item={item}
   />
-);
+)
 
 export interface IProfileTabs {
-  activeAssetTab: number;
-  setActiveAssetTab: React.Dispatch<React.SetStateAction<number>>;
-  documents: IDocument[];
-  collections: Array<any>;
-  nftItems: Array<TBalance>;
-  coinsItems: Array<any>;
-  userWalletAddress: string;
-  itemsBalance: number | string;
+  activeAssetTab: number
+  setActiveAssetTab: React.Dispatch<React.SetStateAction<number>>
+  documents: IDocument[]
+  collections: Array<any>
+  nftItems: Array<TBalance>
+  coinsItems: Array<any>
+  userWalletAddress: string
+  itemsBalance: number | string
 }
 
 export const ProfileTabs: React.FC<IProfileTabs> = ({
@@ -106,13 +106,13 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
   coinsItems,
   itemsBalance,
 }) => {
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const navigation = useNavigation<HomeStackNavigationProp>()
 
   const [mediaModalData, setMediaModalData] = useState({
     open: false,
     url: "",
     mimetype: "",
-  });
+  })
 
   return (
     <View style={{ marginTop: hp("1%"), backgroundColor: "white" }}>
@@ -172,7 +172,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
                     open: true,
                     url: e.item.nftFileUrl,
                     mimetype: e.item.nftMimetype,
-                  });
+                  })
                 }}
               />
             )}
@@ -197,7 +197,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
                     open: true,
                     url: e.item.nftFileUrl,
                     mimetype: e.item.nftMimetype,
-                  });
+                  })
                 }}
               />
             )}
@@ -222,7 +222,7 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
                   navigation.navigate("DocumentHistoryScreen", {
                     item: e.item,
                     userWalletAddress: userWalletAddress,
-                  });
+                  })
                 }}
               />
             )}
@@ -240,8 +240,8 @@ export const ProfileTabs: React.FC<IProfileTabs> = ({
         mimetype={mediaModalData.mimetype}
       />
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   tokenIconStyle: {
@@ -262,4 +262,4 @@ const styles = StyleSheet.create({
     fontSize: hp("1.97%"),
     color: "#000000",
   },
-});
+})

@@ -5,42 +5,42 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message"
 
 export const showToast = (
-  type: 'success' | 'error',
+  type: "success" | "error",
   title: string,
   desc: string,
-  position: 'top' | 'bottom',
+  position: "top" | "bottom"
 ) => {
   Toast.show({
     type: type,
     text1: title,
     text2: desc,
     position: position,
-  });
-};
+  })
+}
 export const showError = (title: string, subtitle: string) => {
   Toast.show({
-    type: 'error',
+    type: "error",
     text1: title,
     text2: subtitle,
-    position: 'bottom',
-  });
-};
+    position: "bottom",
+  })
+}
 export const showInfo = (title: string, subtitle: string) => {
   Toast.show({
-    type: 'info',
+    type: "info",
     text1: title,
     text2: subtitle,
-    position: 'bottom',
-  });
-};
+    position: "bottom",
+  })
+}
 export const showSuccess = (title: string, subtitle: string) => {
   Toast.show({
-    type: 'success',
+    type: "success",
     text1: title,
     text2: subtitle,
-    position: 'bottom',
-  });
-};
+    position: "bottom",
+  })
+}

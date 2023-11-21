@@ -1,5 +1,5 @@
-import { useTheme } from "@mui/material";
-import React from "react";
+import { useTheme } from "@mui/material"
+import React from "react"
 import {
   LineChart,
   Line,
@@ -9,11 +9,11 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
+} from "recharts"
 
-type Props = {};
+type Properties = {}
 
-export default function TokensGraph({}: Props) {
+export default function TokensGraph({}: Properties) {
   const theme = useTheme()
   return (
     <div className="dashboard-graph" style={{ marginRight: "10px" }}>
@@ -47,5 +47,5 @@ export default function TokensGraph({}: Props) {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
+  )
 }

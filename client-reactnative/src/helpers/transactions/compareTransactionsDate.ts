@@ -5,23 +5,23 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {formatDate} from '../chat/formatDate';
+import { formatDate } from "../chat/formatDate"
 
 export const compareTransactionsDate = (transactions: any) => {
-  let currentDate = '';
+  let currentDate = ""
   return transactions.map((item: any) => {
-    let showDate = false;
-    let formattedDate = '';
-    const formattedTimestamp = formatDate(item.timestamp);
+    let showDate = false
+    let formattedDate = ""
+    const formattedTimestamp = formatDate(item.timestamp)
     if (!currentDate || currentDate !== formattedTimestamp) {
-      currentDate = formattedTimestamp;
-      showDate = true;
-      formattedDate = currentDate;
+      currentDate = formattedTimestamp
+      showDate = true
+      formattedDate = currentDate
     } else {
-      showDate = false;
+      showDate = false
     }
-    item.showDate = showDate;
-    item.formattedDate = formattedDate;
-    return item;
-  });
-};
+    item.showDate = showDate
+    item.formattedDate = formattedDate
+    return item
+  })
+}

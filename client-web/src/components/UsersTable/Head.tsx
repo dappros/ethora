@@ -5,34 +5,33 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-} from "@mui/material";
-import { IUser } from "../../http";
-import { visuallyHidden } from "@mui/utils";
+} from "@mui/material"
+import { IUser } from "../../http"
+import { visuallyHidden } from "@mui/utils"
 
-type Order = "asc" | "desc";
+type Order = "asc" | "desc"
 
-interface UsersTableProps {
-  numSelected: number;
+interface UsersTableProperties {
+  numSelected: number
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof IUser
-  ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
+  ) => void
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void
+  order: Order
+  orderBy: string
+  rowCount: number
 }
 interface HeadCell {
-  disablePadding: boolean;
-  id: keyof IUser | "actions";
-  disableSorting: boolean;
-  label: string;
-  numeric: boolean;
-  width?: number;
+  disablePadding: boolean
+  id: keyof IUser | "actions"
+  disableSorting: boolean
+  label: string
+  numeric: boolean
+  width?: number
 }
 
 const headCells: readonly HeadCell[] = [
- 
   {
     id: "firstName",
     numeric: true,
@@ -97,8 +96,8 @@ const headCells: readonly HeadCell[] = [
     label: "Actions",
     width: 100,
   },
-];
-export function UsersTableHead(props: UsersTableProps) {
+]
+export function UsersTableHead(properties: UsersTableProperties) {
   const {
     onSelectAllClick,
     order,
@@ -106,15 +105,15 @@ export function UsersTableHead(props: UsersTableProps) {
     numSelected,
     rowCount,
     onRequestSort,
-  } = props;
+  } = properties
   const createSortHandler =
     (property: keyof IUser | "actions") =>
     (event: React.MouseEvent<unknown>) => {
       if (property === "actions") {
-        return;
+        return
       }
-      onRequestSort(event, property);
-    };
+      onRequestSort(event, property)
+    }
 
   return (
     <TableHead>
@@ -154,5 +153,5 @@ export function UsersTableHead(props: UsersTableProps) {
         ))}
       </TableRow>
     </TableHead>
-  );
+  )
 }

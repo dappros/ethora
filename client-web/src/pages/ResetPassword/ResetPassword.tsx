@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Box,
   Container,
@@ -8,59 +8,59 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
-} from "@mui/material";
-import { FormikErrors, FormikValues, useFormik } from "formik";
-import { useHistory, useParams } from "react-router";
-import { LoadingButton } from "@mui/lab";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { httpWithToken } from "../../http";
-import { config } from "../../config";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useStoreState } from "../../store";
+} from "@mui/material"
+import { FormikErrors, FormikValues, useFormik } from "formik"
+import { useHistory, useParams } from "react-router"
+import { LoadingButton } from "@mui/lab"
+import Visibility from "@mui/icons-material/Visibility"
+import VisibilityOff from "@mui/icons-material/VisibilityOff"
+import { httpWithToken } from "../../http"
+import { config } from "../../config"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useStoreState } from "../../store"
 
 export interface IResetPassword {}
 interface FormValues {
-  password: string;
-  repeatedPassword: string;
+  password: string
+  repeatedPassword: string
 }
 
 const validate = (values: FormikValues): FormikErrors<FormValues> => {
-  const errors: FormikErrors<FormValues> = {};
+  const errors: FormikErrors<FormValues> = {}
 
   if (!values.password) {
-    errors.password = "";
+    errors.password = ""
   } else if (values.password.length <= 3) {
-    errors.password = "Must be 3 characters or more";
+    errors.password = "Must be 3 characters or more"
   }
   if (!values.repeatedPassword) {
-    errors.repeatedPassword = "";
+    errors.repeatedPassword = ""
   } else if (values.repeatedPassword.length <= 3) {
-    errors.repeatedPassword = "Must be 3 characters or more";
+    errors.repeatedPassword = "Must be 3 characters or more"
   }
 
   if (values.password !== values.repeatedPassword) {
-    errors.repeatedPassword = "Value must be equal to password";
+    errors.repeatedPassword = "Value must be equal to password"
   }
 
-  return errors;
-};
+  return errors
+}
 export const ResetPassword: React.FC<IResetPassword> = ({}) => {
-  const { token } = useParams<{ token: string }>();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showRepeatedPassword, setShowRepeatedPassword] = useState(false);
-  const history = useHistory();
-  const { showSnackbar } = useSnackbar();
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const { token } = useParams<{ token: string }>()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRepeatedPassword, setShowRepeatedPassword] = useState(false)
+  const history = useHistory()
+  const { showSnackbar } = useSnackbar()
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
   const handleClickShowRepeatedPassword = () =>
-    setShowRepeatedPassword((show) => !show);
-    const appToken = useStoreState(s => s.config.appToken)
+    setShowRepeatedPassword((show) => !show)
+  const appToken = useStoreState((s) => s.config.appToken)
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -74,22 +74,22 @@ export const ResetPassword: React.FC<IResetPassword> = ({}) => {
     validate,
 
     onSubmit: async ({ password }, { setSubmitting }) => {
-      setSubmitting(true);
+      setSubmitting(true)
       try {
         const res = await httpWithToken(appToken).post("/users/reset", {
           token,
           password: password,
-        });
-        console.log(res.data);
-        history.push("/");
-        showSnackbar("success", "Password changed successfully");
+        })
+        console.log(res.data)
+        history.push("/")
+        showSnackbar("success", "Password changed successfully")
       } catch (error) {
-        console.log(error);
-        showSnackbar("error", "Cannot change password");
+        console.log(error)
+        showSnackbar("error", "Cannot change password")
       }
-      setSubmitting(false);
+      setSubmitting(false)
     },
-  });
+  })
 
   return (
     <Container
@@ -102,7 +102,7 @@ export const ResetPassword: React.FC<IResetPassword> = ({}) => {
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
-          height: '100%'
+          height: "100%",
         }}
       >
         <form
@@ -193,5 +193,5 @@ export const ResetPassword: React.FC<IResetPassword> = ({}) => {
         </form>
       </Box>
     </Container>
-  );
-};
+  )
+}

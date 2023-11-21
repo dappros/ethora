@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Avatar,
   Box,
@@ -8,30 +8,32 @@ import {
   TextField,
   Typography,
   useTheme,
-} from "@mui/material";
-import { useFormik } from "formik";
-import { sha256 } from "js-sha256";
-import xmpp from "../../xmpp";
-import { useStoreState } from "../../store";
-import { CONFERENCEDOMAIN } from "../../constants";
-import { useHistory, useLocation } from "react-router";
-import { httpWithAuth } from "../../http";
-import { useSnackbar } from "../../context/SnackbarContext";
+} from "@mui/material"
+import { useFormik } from "formik"
+import { sha256 } from "js-sha256"
+import xmpp from "../../xmpp"
+import { useStoreState } from "../../store"
+import { CONFERENCEDOMAIN } from "../../constants"
+import { useHistory, useLocation } from "react-router"
+import { httpWithAuth } from "../../http"
+import { useSnackbar } from "../../context/SnackbarContext"
 
 export interface INewChat {}
 
 const NewChat: React.FC<INewChat> = ({}) => {
-  const theme = useTheme();
-  const user = useStoreState((state) => state.user);
-  const setActiveRoomFilter = useStoreState((state) => state.setActiveRoomFilter);
+  const theme = useTheme()
+  const user = useStoreState((state) => state.user)
+  const setActiveRoomFilter = useStoreState(
+    (state) => state.setActiveRoomFilter
+  )
 
-  const { showSnackbar } = useSnackbar();
-  const [loading, setLoading] = useState(false);
-  const history = useHistory();
+  const { showSnackbar } = useSnackbar()
+  const [loading, setLoading] = useState(false)
+  const history = useHistory()
   const location = useLocation<{
-    metaDirection?: string;
-    metaRoom: { roomJid: string };
-  }>();
+    metaDirection?: string
+    metaRoom: { roomJid: string }
+  }>()
   const formik = useFormik({
     initialValues: {
       chatName: "",
@@ -39,21 +41,21 @@ const NewChat: React.FC<INewChat> = ({}) => {
       chatImage: "",
     },
     onSubmit: async ({ chatName, description, chatImage }) => {
-      setLoading(true);
-      const randomNumber = Math.round(Math.random()*100000)
-      const name = chatName + new Date().getTime() + randomNumber;
-      const roomHash = sha256(name);
-      xmpp.createNewRoom(roomHash);
+      setLoading(true)
+      const randomNumber = Math.round(Math.random() * 100_000)
+      const name = chatName + Date.now() + randomNumber
+      const roomHash = sha256(name)
+      xmpp.createNewRoom(roomHash)
 
-      xmpp.setOwner(roomHash);
+      xmpp.setOwner(roomHash)
 
       xmpp.roomConfig(roomHash, {
         roomName: chatName,
         roomDescription: description,
-      });
+      })
 
-      xmpp.setRoomImage(roomHash, chatImage, "", "icon");
-      xmpp.subsribe(roomHash + CONFERENCEDOMAIN);
+      xmpp.setRoomImage(roomHash, chatImage, "", "icon")
+      xmpp.subsribe(roomHash + CONFERENCEDOMAIN)
       if (location.state?.metaDirection) {
         const body = {
           name: chatName,
@@ -62,31 +64,31 @@ const NewChat: React.FC<INewChat> = ({}) => {
             direction: location.state.metaDirection,
             roomJid: location.state.metaRoom.roomJid,
           },
-        };
-        const res = await httpWithAuth().post("/room", body);
+        }
+        const res = await httpWithAuth().post("/room", body)
       }
-      setActiveRoomFilter('private')
-      setLoading(false);
-      showSnackbar("success", "Room created successfully");
-      history.push("/chat/" + roomHash);
+      setActiveRoomFilter("private")
+      setLoading(false)
+      showSnackbar("success", "Room created successfully")
+      history.push("/chat/" + roomHash)
     },
-  });
+  })
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
+    setLoading(true)
 
     try {
-      const fd = new FormData();
-      fd.append("files", e.target.files[0]);
-      const fileUploadResp = await httpWithAuth().post("/files", fd);
-      formik.setValues((prev) => ({
-        ...prev,
+      const fd = new FormData()
+      fd.append("files", e.target.files[0])
+      const fileUploadResp = await httpWithAuth().post("/files", fd)
+      formik.setValues((previous) => ({
+        ...previous,
         chatImage: fileUploadResp.data.results[0].location,
-      }));
+      }))
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <Container maxWidth="xl" style={{ height: "calc(100vh - 80px)" }}>
       <Box
@@ -177,6 +179,6 @@ const NewChat: React.FC<INewChat> = ({}) => {
         </Box>
       </Box>
     </Container>
-  );
-};
-export default NewChat;
+  )
+}
+export default NewChat

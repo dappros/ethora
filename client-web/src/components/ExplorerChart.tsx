@@ -1,5 +1,5 @@
-import { useTheme } from "@mui/material";
-import React from "react";
+import { useTheme } from "@mui/material"
+import React from "react"
 import {
   LineChart,
   Line,
@@ -9,17 +9,17 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { TChartData } from "../utils";
+} from "recharts"
+import { TChartData } from "../utils"
 
-interface ExplorerChartProps {
-  data: TChartData;
+interface ExplorerChartProperties {
+  data: TChartData
 }
 
-export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({
-  data,
-}) => {
-  const theme = useTheme();
+export const ExplorerChart: React.FunctionComponent<
+  ExplorerChartProperties
+> = ({ data }) => {
+  const theme = useTheme()
   return (
     <ResponsiveContainer height={"100%"}>
       <LineChart
@@ -47,5 +47,5 @@ export const ExplorerChart: React.FunctionComponent<ExplorerChartProps> = ({
         />
       </LineChart>
     </ResponsiveContainer>
-  );
-};
+  )
+}

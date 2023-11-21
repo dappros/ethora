@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { LoadingButton } from "@mui/lab";
+import React, { useState } from "react"
+import { LoadingButton } from "@mui/lab"
 import {
   Dialog,
   Box,
@@ -12,18 +12,18 @@ import {
   Alert,
   Button,
   Typography,
-} from "@mui/material";
-import { useFormik } from "formik";
-import { agreeWithTerms } from "../http";
-import Tnc from "../pages/Signon/Tnc";
-import { useStoreState } from "../store";
-import CloseIcon from "@mui/icons-material/Close";
-import { useSnackbar } from "../context/SnackbarContext";
+} from "@mui/material"
+import { useFormik } from "formik"
+import { agreeWithTerms } from "../http"
+import Tnc from "../pages/Signon/Tnc"
+import { useStoreState } from "../store"
+import CloseIcon from "@mui/icons-material/Close"
+import { useSnackbar } from "../context/SnackbarContext"
 
 export interface IRegisterCompanyModal {
-  open: boolean;
-  onClose: () => void;
-  afterSubmit?: () => void;
+  open: boolean
+  onClose: () => void
+  afterSubmit?: () => void
 }
 
 export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
@@ -31,33 +31,33 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
   onClose,
   afterSubmit,
 }) => {
-  const user = useStoreState((state) => state.user);
-  const setUser = useStoreState((state) => state.setUser);
+  const user = useStoreState((state) => state.user)
+  const setUser = useStoreState((state) => state.setUser)
 
-  const [termsOpen, setTermsOpen] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const { showSnackbar } = useSnackbar();
+  const [termsOpen, setTermsOpen] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const { showSnackbar } = useSnackbar()
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const formik = useFormik({
     initialValues: {
       companyName: "",
     },
     onSubmit: async ({ companyName }) => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await agreeWithTerms(companyName);
-        setUser({ ...user, isAgreeWithTerms: true });
-        onClose();
-        afterSubmit();
+        const res = await agreeWithTerms(companyName)
+        setUser({ ...user, isAgreeWithTerms: true })
+        onClose()
+        afterSubmit()
       } catch (error) {
-        console.log(error);
-        showSnackbar("error", "Something went wrong");
+        console.log(error)
+        showSnackbar("error", "Something went wrong")
       }
-      setLoading(false);
+      setLoading(false)
     },
-  });
+  })
   return (
     <Dialog onClose={onClose} maxWidth={false} open={open}>
       <Box style={{ width: "600px" }}>
@@ -122,7 +122,7 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
                     I agree to the{" "}
                     <span
                       onClick={(e) => {
-                        setTermsOpen(true);
+                        setTermsOpen(true)
                       }}
                       style={{ cursor: "pointer", textDecoration: "underline" }}
                     >
@@ -184,5 +184,5 @@ export const RegisterCompanyModal: React.FC<IRegisterCompanyModal> = ({
         </Box>
       </Dialog>
     </Dialog>
-  );
-};
+  )
+}

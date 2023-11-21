@@ -5,118 +5,138 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {useNavigation} from '@react-navigation/native';
-import {Box, Divider, Menu} from 'native-base';
-import React, {useState} from 'react';
-import {TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { useNavigation } from "@react-navigation/native"
+import { Box, Divider, Menu } from "native-base"
+import React, { useState } from "react"
+import { TouchableOpacity } from "react-native"
+import Icon from "react-native-vector-icons/Entypo"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
 import {
   configDocuments,
   configNFT,
   itemsMintingAllowed,
-} from '../../../docs/config';
-import {useStores} from '../../stores/context';
-import SubMenu from './SubMenu';
-import {HomeStackNavigationProp} from '../../navigation/types';
-import {homeStackRoutes} from '../../navigation/routes';
+} from "../../../docs/config"
+import { useStores } from "../../stores/context"
+import SubMenu from "./SubMenu"
+import { HomeStackNavigationProp } from "../../navigation/types"
+import { homeStackRoutes } from "../../navigation/routes"
 
 export interface IMenuItem {
-  value: string;
-  label: string;
-  visible: boolean;
-  testID: string;
+  value: string
+  label: string
+  visible: boolean
+  testID: string
 }
-[];
+;[]
 
-const LOGOUT = 'LOGOUT';
+const LOGOUT = "LOGOUT"
 export const HeaderMenu = () => {
-  const navigation = useNavigation<HomeStackNavigationProp>();
-  const [open, setOpen] = useState(false);
+  const navigation = useNavigation<HomeStackNavigationProp>()
+  const [open, setOpen] = useState(false)
 
-  const {loginStore, debugStore} = useStores();
+  const { loginStore, debugStore } = useStores()
 
   const AccountMenuItems: IMenuItem[] = [
-    {value: homeStackRoutes.ProfileScreen, label: 'My profile', visible: true, testID: "itemProfileScreen"},
+    {
+      value: homeStackRoutes.ProfileScreen,
+      label: "My profile",
+      visible: true,
+      testID: "itemProfileScreen",
+    },
     {
       value: homeStackRoutes.TransactionsScreen,
-      label: 'Transactions',
+      label: "Transactions",
       visible: true,
-      testID: "itemTransaction"
+      testID: "itemTransaction",
     },
     // {value: homeStackRoutes.ACCOUNT, label: 'E-mails', visible: true},
     {
       value: homeStackRoutes.InviteFriendsScreen,
-      label: 'Referrals',
+      label: "Referrals",
       visible: true,
-      testID: "itemReferrals"
+      testID: "itemReferrals",
     },
     {
       value: homeStackRoutes.CoinPurchaseScreen,
-      label: 'Buy coins',
+      label: "Buy coins",
       visible: true,
-      testID: "itemBuyCoins"
+      testID: "itemBuyCoins",
     },
-  ];
+  ]
 
   const ActionsMenuItems: IMenuItem[] = [
-    {value: homeStackRoutes.NewChatScreen, label: 'New room', visible: true, testID: "itemNewRoom"},
-    {value: homeStackRoutes.ScanScreen, label: 'QR Scan', visible: true, testID: "itemScanScreen"},
+    {
+      value: homeStackRoutes.NewChatScreen,
+      label: "New room",
+      visible: true,
+      testID: "itemNewRoom",
+    },
+    {
+      value: homeStackRoutes.ScanScreen,
+      label: "QR Scan",
+      visible: true,
+      testID: "itemScanScreen",
+    },
     {
       value: homeStackRoutes.MintScreen,
-      label: 'Mint items',
+      label: "Mint items",
       visible: itemsMintingAllowed && configNFT,
-      testID: "itemMintItems"
+      testID: "itemMintItems",
     },
     {
       value: homeStackRoutes.UploadDocumentsScreen,
-      label: 'Upload Document',
+      label: "Upload Document",
       visible: configDocuments,
-      testID: "itemUploadDocument"
+      testID: "itemUploadDocument",
     },
-  ];
+  ]
 
   const SystemMenuItems: IMenuItem[] = [
     {
       value: homeStackRoutes.PrivacyAndDataScreen,
-      label: 'Privacy and Data',
+      label: "Privacy and Data",
       visible: true,
-      testID: "itemPrivacyData"
+      testID: "itemPrivacyData",
     },
     {
       value: homeStackRoutes.AuthenticationScreen,
-      label: 'Authentication',
+      label: "Authentication",
       visible: true,
-      testID: "itemAuthentication"
+      testID: "itemAuthentication",
     },
 
     {
       value: homeStackRoutes.DebugScreen,
-      label: 'Debug',
+      label: "Debug",
       visible: debugStore.debugMode,
-      testID: "itemDebug"
+      testID: "itemDebug",
     },
-    {value: LOGOUT, label: 'Sign out', visible: true, testID: "itemTransaction"},
-  ];
+    {
+      value: LOGOUT,
+      label: "Sign out",
+      visible: true,
+      testID: "itemTransaction",
+    },
+  ]
 
   const toggleMenu = () => {
-    open ? setOpen(false) : setOpen(true);
-  };
+    open ? setOpen(false) : setOpen(true)
+  }
 
   const onMenuItemPress = (value: string) => {
     if (value === LOGOUT) {
-      loginStore.logOut();
+      loginStore.logOut()
     } else {
-      navigation.navigate(value as never);
+      navigation.navigate(value as never)
     }
-  };
+  }
   return (
     <Box
       h="100%"
       w={50}
       alignItems="center"
       style={{
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
           width: 0,
           height: 5,
@@ -126,26 +146,29 @@ export const HeaderMenu = () => {
 
         elevation: 10,
       }}
-      justifyContent={'center'}>
+      justifyContent={"center"}
+    >
       <Menu
         accessibilityLabel="Menu"
         w="190"
-        testID='mainHeaderMenu'
+        testID="mainHeaderMenu"
         isOpen={open}
-        placement={'bottom'}
+        placement={"bottom"}
         onClose={() => setOpen(false)}
-        trigger={triggerProps => {
+        trigger={(triggerProps) => {
           return (
             <TouchableOpacity
               {...triggerProps}
-              testID='mainHeaderMenuButton'
-              style={{zIndex: 99999}}
+              testID="mainHeaderMenuButton"
+              style={{ zIndex: 99999 }}
               onPress={() => toggleMenu()}
-              accessibilityLabel="More options menu">
-              <Icon name="menu" color="#FFFFFF" size={hp('3%')} />
+              accessibilityLabel="More options menu"
+            >
+              <Icon name="menu" color="#FFFFFF" size={hp("3%")} />
             </TouchableOpacity>
-          );
-        }}>
+          )
+        }}
+      >
         <SubMenu
           title="ACCOUNT"
           menuItems={AccountMenuItems}
@@ -165,5 +188,5 @@ export const HeaderMenu = () => {
         />
       </Menu>
     </Box>
-  );
-};
+  )
+}

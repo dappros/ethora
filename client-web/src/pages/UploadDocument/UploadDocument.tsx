@@ -1,15 +1,15 @@
-import React, { useRef, useState } from "react";
-import { Box, Button, FormHelperText, TextField } from "@mui/material";
-import { useFormik } from "formik";
-import * as http from "../../http";
-import { useSnackbar } from "../../context/SnackbarContext";
+import React, { useRef, useState } from "react"
+import { Box, Button, FormHelperText, TextField } from "@mui/material"
+import { useFormik } from "formik"
+import * as http from "../../http"
+import { useSnackbar } from "../../context/SnackbarContext"
 
 export interface IUploadDocument {}
 
 const UploadDocument: React.FC<IUploadDocument> = ({}) => {
-  const [loading, setLoading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const { showSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false)
+  const fileReference = useRef<HTMLInputElement>(null)
+  const { showSnackbar } = useSnackbar()
   const [uploadedFile, setUploadedFile] = useState({
     _id: "",
     createdAt: "",
@@ -24,7 +24,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
     size: 0,
     updatedAt: "",
     userId: "",
-  });
+  })
 
   const formik = useFormik({
     initialValues: {
@@ -32,52 +32,52 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
       file: null,
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.documentName) {
-        errors.documentName = "Required";
+        errors.documentName = "Required"
       }
 
       if (!uploadedFile) {
-        errors.file = "File required";
+        errors.file = "File required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: async (values) => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const fileLocation = uploadedFile.location;
+        const fileLocation = uploadedFile.location
         const documentUploadRest = await http.httpWithAuth().post("/docs", {
           documentName: values.documentName,
           files: [fileLocation],
-        });
-        showSnackbar("success", "Document uploaded successfully");
+        })
+        showSnackbar("success", "Document uploaded successfully")
 
-        setLoading(false);
-      } catch (e) {
-        console.log(e);
-        showSnackbar("error", "Uploading failed");
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        showSnackbar("error", "Uploading failed")
 
-        setLoading(false);
+        setLoading(false)
       }
     },
-  });
+  })
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLoading(true);
-    console.log(e);
+    setLoading(true)
+    console.log(e)
     try {
-      const fd = new FormData();
-      fd.append("files", e.target.files[0]);
-      const fileUploadResp = await http.httpWithAuth().post("/files", fd);
-      setUploadedFile(fileUploadResp.data.results[0]);
-      formik.setValues(fileUploadResp.data.results[0]);
+      const fd = new FormData()
+      fd.append("files", e.target.files[0])
+      const fileUploadResp = await http.httpWithAuth().post("/files", fd)
+      setUploadedFile(fileUploadResp.data.results[0])
+      formik.setValues(fileUploadResp.data.results[0])
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
   return (
     <Box>
       <Box sx={{ width: "100%" }}>
@@ -112,7 +112,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
             >
               <input
                 onChange={onFileChange}
-                ref={fileRef}
+                ref={fileReference}
                 type="file"
                 style={{ display: "none" }}
               />
@@ -121,7 +121,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
                 id="uploadFile"
                 color="secondary"
                 variant="contained"
-                onClick={() => fileRef?.current?.click()}
+                onClick={() => fileReference?.current?.click()}
               >
                 Upload File
               </Button>
@@ -144,7 +144,7 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
               fullWidth
               variant="standard"
               onChange={(e) => {
-                formik.handleChange(e);
+                formik.handleChange(e)
               }}
               onBlur={formik.handleBlur}
               error={
@@ -158,7 +158,12 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
               }
             />
             <Box sx={{ margin: 2, display: "flex", justifyContent: "center" }}>
-              <Button id="submitUpload" disabled={loading} type="submit" variant="contained">
+              <Button
+                id="submitUpload"
+                disabled={loading}
+                type="submit"
+                variant="contained"
+              >
                 Create
               </Button>
             </Box>
@@ -166,6 +171,6 @@ const UploadDocument: React.FC<IUploadDocument> = ({}) => {
         </Box>
       </Box>
     </Box>
-  );
-};
-export default UploadDocument;
+  )
+}
+export default UploadDocument

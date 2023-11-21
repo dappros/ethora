@@ -1,31 +1,31 @@
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Box, Typography, useTheme } from "@mui/material";
-import { useHistory } from "react-router";
-import { IBlock } from "../pages/Profile/types";
-import { truncateString } from "../utils";
+import * as React from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import { Box, Typography, useTheme } from "@mui/material"
+import { useHistory } from "react-router"
+import { IBlock } from "../pages/Profile/types"
+import { truncateString } from "../utils"
 
-type TProps = {
-  blocks: IBlock[];
-};
+type TProperties = {
+  blocks: IBlock[]
+}
 
-export const BlocksTable: React.FC<TProps> = ({ blocks }) => {
-  const history = useHistory();
-  const theme = useTheme();
+export const BlocksTable: React.FC<TProperties> = ({ blocks }) => {
+  const history = useHistory()
+  const theme = useTheme()
   return (
-    <Box sx={{ padding: '10px' }}>
+    <Box sx={{ padding: "10px" }}>
       <TableContainer
         sx={{
           flex: 1,
           marginTop: "10px",
           border: "3px solid " + theme.palette.primary.main,
-          borderRadius: '10px',
+          borderRadius: "10px",
         }}
         component={Paper}
       >
@@ -58,7 +58,7 @@ export const BlocksTable: React.FC<TProps> = ({ blocks }) => {
               >
                 <TableCell
                   align="center"
-                  style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
                   onClick={() => history.push("/explorer/block/" + row.number)}
                 >
                   {row.number}
@@ -76,5 +76,5 @@ export const BlocksTable: React.FC<TProps> = ({ blocks }) => {
         </Table>
       </TableContainer>
     </Box>
-  );
-};
+  )
+}

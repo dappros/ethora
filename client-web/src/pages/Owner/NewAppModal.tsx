@@ -1,33 +1,33 @@
-import React, { useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import { useStoreState } from "../../store";
-import LoadingButton from "@mui/lab/LoadingButton";
-import * as http from "../../http";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { Button, Typography } from "@mui/material";
-import { useSnackbar } from "../../context/SnackbarContext";
+import React, { useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import { useFormik } from "formik"
+import TextField from "@mui/material/TextField"
+import { useStoreState } from "../../store"
+import LoadingButton from "@mui/lab/LoadingButton"
+import * as http from "../../http"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import { Button, Typography } from "@mui/material"
+import { useSnackbar } from "../../context/SnackbarContext"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-export default function NewAppModal({ open, setOpen }: TProps) {
-  const fileRef = React.useRef<HTMLInputElement>(null);
-  const setApp = useStoreState((state) => state.setApp);
-  const setUser = useStoreState((state) => state.setUser);
-  const user = useStoreState((state) => state.user);
+export default function NewAppModal({ open, setOpen }: TProperties) {
+  const fileReference = React.useRef<HTMLInputElement>(null)
+  const setApp = useStoreState((state) => state.setApp)
+  const setUser = useStoreState((state) => state.setUser)
+  const user = useStoreState((state) => state.user)
 
-  const [loading, setLoading] = useState(false);
-  const [preview, setPreview] = useState<string>("");
-  const { showSnackbar } = useSnackbar();
+  const [loading, setLoading] = useState(false)
+  const [preview, setPreview] = useState<string>("")
+  const { showSnackbar } = useSnackbar()
   const formik = useFormik({
     initialValues: {
       appName: "",
@@ -41,13 +41,13 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       appUrl: "",
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.appName) {
-        errors.appName = "Required";
+        errors.appName = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: ({
       appName,
@@ -58,70 +58,65 @@ export default function NewAppModal({ open, setOpen }: TProps) {
       usersCanFree,
       appUrl,
     }) => {
-      setLoading(true);
-      const fd = new FormData();
-      let file;
-      if (fileRef.current) {
-        const files = fileRef.current.files;
+      setLoading(true)
+      const fd = new FormData()
+      let file
+      if (fileReference.current) {
+        const files = fileReference.current.files
         if (files) {
-          file = files[0];
+          file = files[0]
         }
       }
 
       if (file) {
-        fd.append("file", file);
+        fd.append("file", file)
       }
-      fd.append("displayName", appName);
-      appDescription && fd.append("appDescription", appDescription.toString());
-      appGoogleId && fd.append("appGoogleId", appGoogleId.toString());
-      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString());
-      fd.append(
-        "defaultAccessProfileOpen",
-        defaultAccessProfileOpen.toString()
-      );
-      fd.append("usersCanFree", usersCanFree.toString());
-      appUrl && fd.append("appUrl", appUrl.toString());
+      fd.append("displayName", appName)
+      appDescription && fd.append("appDescription", appDescription.toString())
+      appGoogleId && fd.append("appGoogleId", appGoogleId.toString())
+      fd.append("defaultAccessAssetsOpen", defaultAccessAssetsOpen.toString())
+      fd.append("defaultAccessProfileOpen", defaultAccessProfileOpen.toString())
+      fd.append("usersCanFree", usersCanFree.toString())
+      appUrl && fd.append("appUrl", appUrl.toString())
 
       http
         .createApp(fd)
         .then((response) => {
-          setApp(response.data.app);
-          setOpen(false);
-          setUser({ ...user, homeScreen: "" });
+          setApp(response.data.app)
+          setOpen(false)
+          setUser({ ...user, homeScreen: "" })
         })
-        .catch((e) => {
+        .catch((error) => {
           showSnackbar(
             "error",
-            "Cannot create the app " + (e.response?.data?.error || "")
-          );
+            "Cannot create the app " + (error.response?.data?.error || "")
+          )
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     },
-  });
+  })
 
   const onImage = (event: any) => {
-    const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement
 
     if (input.files) {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
-      reader.onload = (e) => {
-        if (e) {
-          if (e.target?.result) {
-            setPreview(e.target.result as string);
-          }
+      reader.addEventListener("load", (e) => {
+        if (e && e.target?.result) {
+          setPreview(e.target.result as string)
         }
-      };
-      reader.readAsDataURL(input.files[0]);
+      })
+      reader.readAsDataURL(input.files[0])
     }
-  };
+  }
   const onClose = () => {
-    setOpen(false);
-    setPreview("");
-  };
+    setOpen(false)
+    setPreview("")
+  }
   return (
-    <Dialog onClose={onClose} open={open} >
-      <Box sx={{ padding: 1,}}>
+    <Dialog onClose={onClose} open={open}>
+      <Box sx={{ padding: 1 }}>
         <IconButton
           sx={{ position: "absolute", top: 0, right: 0 }}
           disabled={loading}
@@ -130,11 +125,11 @@ export default function NewAppModal({ open, setOpen }: TProps) {
           <CloseIcon />
         </IconButton>
         <DialogTitle sx={{ padding: 1 }}>New App</DialogTitle>
-        <Box sx={{ width:  '100%', padding: 1 }}>
+        <Box sx={{ width: "100%", padding: 1 }}>
           <form onSubmit={formik.handleSubmit} style={{ width: "300px" }}>
             <Box>
               <TextField
-              fullWidth
+                fullWidth
                 error={!!formik.touched.appName && !!formik.errors.appName}
                 margin="dense"
                 label="App Name"
@@ -170,7 +165,7 @@ export default function NewAppModal({ open, setOpen }: TProps) {
                 error={!!formik.touched.appUrl && !!formik.errors.appUrl}
               />
             </Box> */}
-           
+
             <LoadingButton
               loading={loading}
               variant="contained"
@@ -184,5 +179,5 @@ export default function NewAppModal({ open, setOpen }: TProps) {
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

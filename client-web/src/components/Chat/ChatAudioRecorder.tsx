@@ -1,41 +1,40 @@
-import React, { useCallback, useState } from "react";
-import xmpp from "../../xmpp";
-import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
-import { uploadFile } from "../../http";
-import { TProfile } from "../../pages/Profile/types";
-import { useStoreState } from "../../store";
-import { Box, CircularProgress } from "@mui/material";
-import { useSnackbar } from "../../context/SnackbarContext";
+import React, { useCallback, useState } from "react"
+import xmpp from "../../xmpp"
+import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder"
+import { uploadFile } from "../../http"
+import { TProfile } from "../../pages/Profile/types"
+import { useStoreState } from "../../store"
+import { Box, CircularProgress } from "@mui/material"
+import { useSnackbar } from "../../context/SnackbarContext"
 
-interface IProps {
-  profile: TProfile;
-  currentRoom: string;
-  roomData: any;
+interface IProperties {
+  profile: TProfile
+  currentRoom: string
+  roomData: any
 }
 
 export function ChatAudioMessageDialog({
   profile,
   currentRoom,
   roomData,
-}: IProps) {
-  const user = useStoreState((store) => store.user);
-  const [loading, setLoading] = useState(false);
-  const recorderControls = useAudioRecorder();
-  const { showSnackbar } = useSnackbar();
+}: IProperties) {
+  const user = useStoreState((store) => store.user)
+  const [loading, setLoading] = useState(false)
+  const recorderControls = useAudioRecorder()
+  const { showSnackbar } = useSnackbar()
   const addAudioElement = (blob: Blob) => {
-    setLoading(true);
-    let formData = new FormData();
-    formData.append("files", blob);
+    setLoading(true)
+    const formData = new FormData()
+    formData.append("files", blob)
     uploadFile(formData)
       .then((result) => {
-        let userAvatar = "";
+        let userAvatar = ""
         if (profile?.profileImage) {
-          userAvatar = profile?.profileImage;
+          userAvatar = profile?.profileImage
         }
 
         result.data.results.map(async (item: any) => {
-          
-          let data = {
+          const data = {
             firstName: user.firstName,
             lastName: user.lastName,
             walletAddress: user.walletAddress,
@@ -57,18 +56,17 @@ export function ChatAudioMessageDialog({
             waveForm: "",
             attachmentId: item._id,
             wrappable: true,
-            roomJid: currentRoom
-          };
-          xmpp.sendMediaMessageStanza(currentRoom, data);
-        });
+            roomJid: currentRoom,
+          }
+          xmpp.sendMediaMessageStanza(currentRoom, data)
+        })
       })
       .catch((error) => {
-        console.log(error);
-        showSnackbar("error", "An error occurred while loading your audio.");
-      });
-    setLoading(false);
-
-  };
+        console.log(error)
+        showSnackbar("error", "An error occurred while loading your audio.")
+      })
+    setLoading(false)
+  }
 
   return (
     <Box>
@@ -80,5 +78,5 @@ export function ChatAudioMessageDialog({
       </Box>
       {loading && <CircularProgress color={"secondary"} size={"20px"} />}
     </Box>
-  );
+  )
 }

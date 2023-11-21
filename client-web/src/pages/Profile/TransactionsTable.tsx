@@ -1,21 +1,21 @@
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { ITransaction, TTransactions } from "./types";
-import { Typography } from "@mui/material";
-import { useHistory } from "react-router";
+import * as React from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import { ITransaction, TTransactions } from "./types"
+import { Typography } from "@mui/material"
+import { useHistory } from "react-router"
 
-type TProps = {
-  transactions: ITransaction[];
-};
+type TProperties = {
+  transactions: ITransaction[]
+}
 
-export function TransactionsTable(props: TProps) {
-  const history = useHistory();
+export function TransactionsTable(properties: TProperties) {
+  const history = useHistory()
 
   return (
     <TableContainer style={{ flex: 1, marginTop: "10px" }} component={Paper}>
@@ -35,7 +35,7 @@ export function TransactionsTable(props: TProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.transactions.map((row) => (
+          {properties.transactions.map((row) => (
             <TableRow
               key={row._id}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -44,16 +44,14 @@ export function TransactionsTable(props: TProps) {
               <TableCell align="right">{row.tokenName}</TableCell>
               <TableCell align="right">{row.type}</TableCell>
               <TableCell
-                style={{cursor:'pointer', textDecoration: 'underline'}}
+                style={{ cursor: "pointer", textDecoration: "underline" }}
                 align="right"
                 onClick={() => history.push("/explorer/address/" + row.from)}
               >
                 {row.from}
               </TableCell>
               <TableCell
-                              style={{cursor:'pointer', textDecoration: 'underline'}}
-
-
+                style={{ cursor: "pointer", textDecoration: "underline" }}
                 align="right"
                 onClick={() => history.push("/explorer/address/" + row.to)}
               >
@@ -61,9 +59,7 @@ export function TransactionsTable(props: TProps) {
               </TableCell>
               <TableCell align="right">{row.blockNumber}</TableCell>
               <TableCell
-                               style={{cursor:'pointer', textDecoration: 'underline'}}
-
-
+                style={{ cursor: "pointer", textDecoration: "underline" }}
                 align="right"
                 onClick={() =>
                   history.push("/explorer/transactions/" + row.transactionHash)
@@ -76,5 +72,5 @@ export function TransactionsTable(props: TProps) {
         </TableBody>
       </Table>
     </TableContainer>
-  );
+  )
 }

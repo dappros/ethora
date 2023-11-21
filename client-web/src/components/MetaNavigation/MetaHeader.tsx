@@ -1,23 +1,23 @@
-import { Box, Button, Typography } from "@mui/material";
-import { IApiMetaRoom } from "./MetaNavigation";
-import { useHistory } from "react-router";
-const coin = '/coin.png'
+import { Box, Button, Typography } from "@mui/material"
+import { IApiMetaRoom } from "./MetaNavigation"
+import { useHistory } from "react-router"
+const coin = "/coin.png"
 export const MetaHeader = ({
   room,
   direction,
   previousRoom,
 }: {
-  room: IApiMetaRoom | undefined;
-  direction: string;
-  previousRoom: IApiMetaRoom | undefined;
+  room: IApiMetaRoom | undefined
+  direction: string
+  previousRoom: IApiMetaRoom | undefined
 }) => {
-  const history = useHistory();
+  const history = useHistory()
   const onCreateClick = () => {
     history.push("/newchat", {
       metaDirection: direction,
       metaRoom: previousRoom,
-    });
-  };
+    })
+  }
   if (!room?.name) {
     return (
       <Box
@@ -41,7 +41,7 @@ export const MetaHeader = ({
         </Box>
         <Button onClick={onCreateClick}>Create Meta Room</Button>
       </Box>
-    );
+    )
   }
   return (
     <Box
@@ -57,5 +57,5 @@ export const MetaHeader = ({
       </Typography>
       <Typography>{room.description}</Typography>
     </Box>
-  );
-};
+  )
+}

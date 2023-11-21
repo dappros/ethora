@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react"
 import {
   Message as KitMessage,
   MessageModel,
   MessageSeparator,
-} from "@chatscope/chat-ui-kit-react";
-import { differenceInHours, format, formatDistance, subDays } from "date-fns";
-import { TMessageHistory } from "../../../store";
-import { useHistory } from "react-router";
+} from "@chatscope/chat-ui-kit-react"
+import { differenceInHours, format, formatDistance, subDays } from "date-fns"
+import { TMessageHistory } from "../../../store"
+import { useHistory } from "react-router"
 import {
   Card,
   CardActionArea,
@@ -16,11 +16,11 @@ import {
   Typography,
   Divider,
   useTheme,
-} from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Box } from "@mui/system";
-import xmpp from "../../../xmpp";
-import { IButtons } from "../../../pages/ChatInRoom/Chat";
+} from "@mui/material"
+import MoreVertIcon from "@mui/icons-material/MoreVert"
+import { Box } from "@mui/system"
+import xmpp from "../../../xmpp"
+import { IButtons } from "../../../pages/ChatInRoom/Chat"
 import {
   isAudtioMimetype,
   isDocumentMimetype,
@@ -28,47 +28,47 @@ import {
   isImageMimetype,
   isPdfMimetype,
   isVideoMimetype,
-} from "../../../utils/mimetypes";
+} from "../../../utils/mimetypes"
 
-const coin = "/coin.png";
+const coin = "/coin.png"
 
 const docsIconUrl =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png";
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Microsoft_Office_Word_%282019%E2%80%93present%29.svg/2203px-Microsoft_Office_Word_%282019%E2%80%93present%29.svg.png"
 const excelIconUrl =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png";
-const fileIcon = "https://cdn-icons-png.flaticon.com/512/2246/2246713.png";
-const avatarPreviewUrl = "https://icotar.com/initials/";
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
+const fileIcon = "https://cdn-icons-png.flaticon.com/512/2246/2246713.png"
+const avatarPreviewUrl = "https://icotar.com/initials/"
 
 export interface IMessage {
-  message: TMessageHistory;
+  message: TMessageHistory
   position: {
-    type: string;
-    position: MessageModel["position"];
-    separator?: string;
-  };
-  is?: string;
-  onMessageButtonClick: (button: IButtons) => void;
-  toggleTransferDialog: (value: boolean, message: TMessageHistory) => void;
-  onMediaMessageClick: (value: boolean, message: TMessageHistory) => void;
+    type: string
+    position: MessageModel["position"]
+    separator?: string
+  }
+  is?: string
+  onMessageButtonClick: (button: IButtons) => void
+  toggleTransferDialog: (value: boolean, message: TMessageHistory) => void
+  onMediaMessageClick: (value: boolean, message: TMessageHistory) => void
 
-  onThreadClick?: () => void;
-  isThread?: boolean;
+  onThreadClick?: () => void
+  isThread?: boolean
 }
 
-type IDirection = "outgoing" | "incoming";
+type IDirection = "outgoing" | "incoming"
 
 const filterSameReplies = (messages: TMessageHistory[]) => {
-  const map = {};
-  const result: TMessageHistory[] = [];
-  messages.forEach((m) => {
-    const walletAddress = m.data.senderWalletAddress;
+  const map = {}
+  const result: TMessageHistory[] = []
+  for (const m of messages) {
+    const walletAddress = m.data.senderWalletAddress
     if (!map[walletAddress]) {
-      result.push(m);
-      map[walletAddress] = true;
+      result.push(m)
+      map[walletAddress] = true
     }
-  });
-  return result;
-};
+  }
+  return result
+}
 
 export const Message: React.FC<IMessage> = ({
   message,
@@ -79,50 +79,52 @@ export const Message: React.FC<IMessage> = ({
   onThreadClick,
   isThread,
 }) => {
-  const firstName = message.data.senderFirstName;
-  const lastName = message.data.senderLastName;
-  const messageJid = message.data.senderJID.split("/")[0];
-  const userJid = useMemo(() => xmpp.client?.jid?.toString().split("/")[0], []);
-  const isSameUser = userJid === messageJid;
-  const history = useHistory();
-  const theme = useTheme();
+  const firstName = message.data.senderFirstName
+  const lastName = message.data.senderLastName
+  const messageJid = message.data.senderJID.split("/")[0]
+  const userJid = useMemo(() => xmpp.client?.jid?.toString().split("/")[0], [])
+  const isSameUser = userJid === messageJid
+  const history = useHistory()
+  const theme = useTheme()
 
-  const [buttons, setButtons] = useState<IButtons[]>();
-  const [messageHovered, setMessageHovered] = useState(false);
+  const [buttons, setButtons] = useState<IButtons[]>()
+  const [messageHovered, setMessageHovered] = useState(false)
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const openMenu = Boolean(anchorEl);
+  const [anchorElement, setAnchorElement] = React.useState<null | HTMLElement>(
+    null
+  )
+  const openMenu = Boolean(anchorElement)
 
   const [messageDirection, setMessageDirection] =
-    useState<IDirection>("incoming");
+    useState<IDirection>("incoming")
 
   const openDialogMenu = () => {
-    setAnchorEl(null);
-    toggleTransferDialog(true, message);
-  };
+    setAnchorElement(null)
+    toggleTransferDialog(true, message)
+  }
 
   const openThreadView = () => {
-    onThreadClick();
-  };
+    onThreadClick()
+  }
 
   const fullViewImage = () => {
-    onMediaMessageClick(true, message);
-  };
+    onMediaMessageClick(true, message)
+  }
 
   const rightClick = (event: React.SyntheticEvent<HTMLElement>) => {
-    event.preventDefault();
-    openDialogMenu();
-  };
+    event.preventDefault()
+    openDialogMenu()
+  }
 
   const onMouseEnter = () => {
-    setMessageHovered(true);
-  };
+    setMessageHovered(true)
+  }
   const onMouseLeave = () => {
-    setMessageHovered(false);
-  };
+    setMessageHovered(false)
+  }
   const openFileInNewTab = (link: string) => {
-    window.open(link, "_blank");
-  };
+    window.open(link, "_blank")
+  }
 
   const ReplyComponent = () => {
     return (
@@ -207,22 +209,22 @@ export const Message: React.FC<IMessage> = ({
 
           <span
             dangerouslySetInnerHTML={{
-              __html: message.data?.mainMessage?.text.replace(
-                /\b(https?\:\/\/\S+)/gm,
+              __html: message.data?.mainMessage?.text.replaceAll(
+                /\b(https?:\/\/\S+)/gm,
                 '<a href="$1">$1</a>'
               ),
             }}
           ></span>
         </div>
       </Button>
-    );
-  };
+    )
+  }
 
   const renderMedia = () => {
     if (!message.data.isMediafile) {
-      return null;
+      return null
     }
-    const mimetype = message.data.mimetype;
+    const mimetype = message.data.mimetype
     if (isImageMimetype(mimetype)) {
       return (
         <Card sx={{ maxWidth: 200 }}>
@@ -240,15 +242,15 @@ export const Message: React.FC<IMessage> = ({
             />
           </CardActionArea>
         </Card>
-      );
+      )
     }
     if (isPdfMimetype(mimetype)) {
       return (
         <Card sx={{ maxWidth: 200 }}>
           <CardActionArea
             onClick={(event) => {
-              event.preventDefault();
-              window.open(message.data.location, "_blank");
+              event.preventDefault()
+              window.open(message.data.location, "_blank")
             }}
           >
             <CardMedia
@@ -264,7 +266,7 @@ export const Message: React.FC<IMessage> = ({
             />
           </CardActionArea>
         </Card>
-      );
+      )
     }
 
     if (isVideoMimetype(mimetype)) {
@@ -277,7 +279,7 @@ export const Message: React.FC<IMessage> = ({
           />
           Sorry, your browser doesn't support videos.
         </video>
-      );
+      )
     }
     if (isAudtioMimetype(mimetype)) {
       return (
@@ -285,7 +287,7 @@ export const Message: React.FC<IMessage> = ({
           <source src={message.data.location} type={mimetype} />
           Your browser does not support the audio element.
         </audio>
-      );
+      )
     }
 
     if (isDocumentMimetype(mimetype)) {
@@ -320,7 +322,7 @@ export const Message: React.FC<IMessage> = ({
             </Typography>
           </CardActionArea>
         </Box>
-      );
+      )
     }
     if (isExcelMimetype(mimetype)) {
       return (
@@ -353,7 +355,7 @@ export const Message: React.FC<IMessage> = ({
             </Typography>
           </CardActionArea>
         </Box>
-      );
+      )
     }
 
     return (
@@ -385,14 +387,14 @@ export const Message: React.FC<IMessage> = ({
           </Typography>
         </CardActionArea>
       </Box>
-    );
-  };
+    )
+  }
   useEffect(() => {
     if (message.data.quickReplies) {
-      setButtons(JSON.parse(message.data.quickReplies));
+      setButtons(JSON.parse(message.data.quickReplies))
     }
-    setMessageDirection(isSameUser ? "outgoing" : "incoming");
-  }, []);
+    setMessageDirection(isSameUser ? "outgoing" : "incoming")
+  }, [])
   if (message.data.isMediafile) {
   }
   return (
@@ -433,8 +435,8 @@ export const Message: React.FC<IMessage> = ({
                 : +firstName + " " + lastName
             }
             onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src = avatarPreviewUrl + firstName + " " + lastName;
+              currentTarget.onerror = null
+              currentTarget.src = avatarPreviewUrl + firstName + " " + lastName
             }}
             alt={firstName}
           />
@@ -453,7 +455,7 @@ export const Message: React.FC<IMessage> = ({
                   position: "absolute",
                   right: -20,
                   top: -10,
-                  zIndex: 99999,
+                  zIndex: 99_999,
                 }}
                 onClick={openDialogMenu}
               >
@@ -488,8 +490,8 @@ export const Message: React.FC<IMessage> = ({
             {!message.data.isMediafile && (
               <span
                 dangerouslySetInnerHTML={{
-                  __html: message.body.replace(
-                    /\b(https?\:\/\/\S+)/gm,
+                  __html: message.body.replaceAll(
+                    /\b(https?:\/\/\S+)/gm,
                     '<a href="$1">$1</a>'
                   ),
                 }}
@@ -572,7 +574,12 @@ export const Message: React.FC<IMessage> = ({
                   </Typography>
                 ) : (
                   <Typography fontSize={"12px"} textTransform={"none"}>
-                    <span style={{ fontWeight: "bold", color:theme.palette.primary.main }}>
+                    <span
+                      style={{
+                        fontWeight: "bold",
+                        color: theme.palette.primary.main,
+                      }}
+                    >
                       {message.numberOfReplies.length}{" "}
                       {message.numberOfReplies.length === 1
                         ? "Reply"
@@ -582,27 +589,15 @@ export const Message: React.FC<IMessage> = ({
                     {"Last reply "}
                     {differenceInHours(
                       new Date(),
-                      new Date(
-                        message.numberOfReplies[
-                          message.numberOfReplies.length - 1
-                        ].date
-                      )
+                      new Date(message.numberOfReplies.at(-1).date)
                     ) > 5
                       ? format(
-                          new Date(
-                            message.numberOfReplies[
-                              message.numberOfReplies.length - 1
-                            ].date
-                          ),
+                          new Date(message.numberOfReplies.at(-1).date),
                           "dd.MM hh:mm a"
                         )
                       : formatDistance(
                           subDays(
-                            new Date(
-                              message.numberOfReplies[
-                                message.numberOfReplies.length - 1
-                              ].date
-                            ),
+                            new Date(message.numberOfReplies.at(-1).date),
                             0
                           ),
                           new Date(),
@@ -622,12 +617,12 @@ export const Message: React.FC<IMessage> = ({
                       }
                       key={r.id}
                       onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
+                        currentTarget.onerror = null
                         currentTarget.src =
                           avatarPreviewUrl +
                           r.data.senderFirstName +
                           " " +
-                          r.data.senderLastName;
+                          r.data.senderLastName
                       }}
                       style={{
                         width: 20,
@@ -636,7 +631,7 @@ export const Message: React.FC<IMessage> = ({
                         marginRight: 3,
                       }}
                     />
-                  );
+                  )
                 })}
               </Box>
             )}
@@ -662,11 +657,11 @@ export const Message: React.FC<IMessage> = ({
                 >
                   {button.name}
                 </Button>
-              );
+              )
             })}
           </div>
         </Box>
       )}
     </div>
-  );
-};
+  )
+}

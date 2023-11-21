@@ -5,15 +5,16 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { getUserRoomsStanza, roomConfigurationForm } from "../../xmpp/stanzas";
+import { getUserRoomsStanza, roomConfigurationForm } from "../../xmpp/stanzas"
 
-export const renameTheRoom = (manipulatedWalletAddress:string, chatJid:string, roomConfig:{roomName:string}, xmpp:any, updateRoomInfo:(jid: string, data: any) => Promise<void>) => {
-    roomConfigurationForm(
-        manipulatedWalletAddress,
-        chatJid,
-        roomConfig,
-        xmpp
-    )
-    getUserRoomsStanza(manipulatedWalletAddress,xmpp);
-    updateRoomInfo(chatJid,{name:roomConfig.roomName});
-  };
+export const renameTheRoom = (
+  manipulatedWalletAddress: string,
+  chatJid: string,
+  roomConfig: { roomName: string },
+  xmpp: any,
+  updateRoomInfo: (jid: string, data: any) => Promise<void>
+) => {
+  roomConfigurationForm(manipulatedWalletAddress, chatJid, roomConfig, xmpp)
+  getUserRoomsStanza(manipulatedWalletAddress, xmpp)
+  updateRoomInfo(chatJid, { name: roomConfig.roomName })
+}

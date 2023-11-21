@@ -1,33 +1,37 @@
-import React, { useEffect, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import { NativeSelect } from "@mui/material";
-import { useFormik } from "formik";
-import TextField from "@mui/material/TextField";
-import LoadingButton from "@mui/lab/LoadingButton";
-import { httpWithAuth } from "../../http";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import ChageImage from "./ChangeImage";
-import defUserImage from "../../assets/images/def-ava.png";
-import { TBalance, useStoreState } from "../../store";
-import ItemsTable from "./ItemsTable";
+import React, { useEffect, useState } from "react"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
+import CloseIcon from "@mui/icons-material/Close"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import { NativeSelect } from "@mui/material"
+import { useFormik } from "formik"
+import TextField from "@mui/material/TextField"
+import LoadingButton from "@mui/lab/LoadingButton"
+import { httpWithAuth } from "../../http"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Checkbox from "@mui/material/Checkbox"
+import ChageImage from "./ChangeImage"
+import defUserImage from "../../assets/images/def-ava.png"
+import { TBalance, useStoreState } from "../../store"
+import ItemsTable from "./ItemsTable"
 
-type TProps = {
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  item: TBalance;
-};
+type TProperties = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  item: TBalance
+}
 
-export default function TransferItemsModal({ open, setOpen, item }: TProps) {
-  const [loading, setLoading] = useState(false);
-  const setBalance = useStoreState((state) => state.setBalance);
-  const balance = useStoreState((state) => state.balance);
+export default function TransferItemsModal({
+  open,
+  setOpen,
+  item,
+}: TProperties) {
+  const [loading, setLoading] = useState(false)
+  const setBalance = useStoreState((state) => state.setBalance)
+  const balance = useStoreState((state) => state.balance)
 
   const formik = useFormik({
     initialValues: {
@@ -35,16 +39,16 @@ export default function TransferItemsModal({ open, setOpen, item }: TProps) {
       to: "",
     },
     validate: (values) => {
-      const errors: Record<string, string> = {};
+      const errors: Record<string, string> = {}
 
       if (!values.to) {
-        errors.to = "Required";
+        errors.to = "Required"
       }
 
-      return errors;
+      return errors
     },
     onSubmit: (values) => {
-      setLoading(true);
+      setLoading(true)
       httpWithAuth()
         .post("tokens/transfer/items", {
           nftId: item.nftId,
@@ -52,17 +56,19 @@ export default function TransferItemsModal({ open, setOpen, item }: TProps) {
           amount: values.transferAmount,
         })
         .then(() => {
-          const index = balance.findIndex((el) => el.nftId === item.nftId);
-          const current = { ...balance[index] };
-          current.balance = current.balance - 1;
-          let newBalance = [...balance];
-          newBalance[index] = current;
-          setBalance(newBalance);
-          setOpen(false);
+          const index = balance.findIndex(
+            (element) => element.nftId === item.nftId
+          )
+          const current = { ...balance[index] }
+          current.balance = current.balance - 1
+          const newBalance = [...balance]
+          newBalance[index] = current
+          setBalance(newBalance)
+          setOpen(false)
         })
-        .finally(() => setLoading(false));
+        .finally(() => setLoading(false))
     },
-  });
+  })
 
   return (
     <Dialog onClose={() => setOpen(false)} open={open}>
@@ -87,15 +93,15 @@ export default function TransferItemsModal({ open, setOpen, item }: TProps) {
                   id: "uncontrolled-native",
                 }}
                 onChange={(e) => {
-                  formik.setFieldValue("transferAmount", e.target.value);
+                  formik.setFieldValue("transferAmount", e.target.value)
                 }}
               >
-                {Array.from({ length: item.balance }).map((el, index) => {
+                {Array.from({ length: item.balance }).map((element, index) => {
                   return (
                     <option key={index + 1} value={index + 1}>
                       {index + 1}
                     </option>
-                  );
+                  )
                 })}
                 {/* {apps.map((app) => {
                     return (
@@ -133,5 +139,5 @@ export default function TransferItemsModal({ open, setOpen, item }: TProps) {
         </Box>
       </Box>
     </Dialog>
-  );
+  )
 }

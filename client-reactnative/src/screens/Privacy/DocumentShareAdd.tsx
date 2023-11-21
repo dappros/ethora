@@ -1,44 +1,44 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
-import { HStack, Input, Text, View } from "native-base";
+import React, { useEffect, useRef, useState } from "react"
+import { StyleSheet } from "react-native"
+import { HStack, Input, Text, View } from "native-base"
 
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
-import { Select } from "native-base";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { Select } from "native-base"
 
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react-lite"
 
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { commonColors, textStyles } from "../../../docs/config";
-import QRCodeGenerator from "../../components/QRCodeGenerator";
-import { httpPost } from "../../config/apiService";
-import { shareLink } from "../../config/routesConstants";
-import { generateDocumentLink } from "../../helpers/generateDocumentLink";
-import { useStores } from "../../stores/context";
-import { Button } from "../../components/Button";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import { commonColors, textStyles } from "../../../docs/config"
+import QRCodeGenerator from "../../components/QRCodeGenerator"
+import { httpPost } from "../../config/apiService"
+import { shareLink } from "../../config/routesConstants"
+import { generateDocumentLink } from "../../helpers/generateDocumentLink"
+import { useStores } from "../../stores/context"
+import { Button } from "../../components/Button"
 
 export interface IDocumentShareAdd {}
 
-const HOUR = 60 * 60;
-const DAY = HOUR * 24;
-const WEEK = DAY * 7;
-const MONTH = WEEK * 4;
+const HOUR = 60 * 60
+const DAY = HOUR * 24
+const WEEK = DAY * 7
+const MONTH = WEEK * 4
 
 interface ISharedLink {
-  _id: string;
-  createdAt?: Date;
-  expiration: string;
-  memo: string;
-  resource: string;
-  token: string;
-  updatedAt: string;
-  userId: string;
-  walletAddress: string;
+  _id: string
+  createdAt?: Date
+  expiration: string
+  memo: string
+  resource: string
+  token: string
+  updatedAt: string
+  userId: string
+  walletAddress: string
 }
 
 export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
-  const [memo, setMemo] = useState("");
-  const [expiration, setExpiration] = useState("-1");
-  const [documentId, setDocumentId] = useState("");
+  const [memo, setMemo] = useState("")
+  const [expiration, setExpiration] = useState("-1")
+  const [documentId, setDocumentId] = useState("")
 
   const [createdLink, setCreatedLink] = useState<ISharedLink>({
     _id: "",
@@ -49,14 +49,14 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
     updatedAt: "",
     userId: "",
     walletAddress: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const { loginStore, walletStore } = useStores();
-  const inputRef = useRef();
+  })
+  const [loading, setLoading] = useState(false)
+  const { loginStore, walletStore } = useStores()
+  const inputRef = useRef()
 
   useEffect(() => {
-    walletStore.getDocuments(loginStore.initialData.walletAddress);
-  }, []);
+    walletStore.getDocuments(loginStore.initialData.walletAddress)
+  }, [])
 
   const generateLink = async () => {
     const body = {
@@ -67,16 +67,16 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
       memo: memo,
       resource: "document",
       documentId: documentId,
-    };
-    setLoading(true);
-    try {
-      const { data } = await httpPost(shareLink, body, loginStore.userToken);
-      setCreatedLink(data.sharelinkData);
-    } catch (error) {
-      console.log(error);
     }
-    setLoading(false);
-  };
+    setLoading(true)
+    try {
+      const { data } = await httpPost(shareLink, body, loginStore.userToken)
+      setCreatedLink(data.sharelinkData)
+    } catch (error) {
+      console.log(error)
+    }
+    setLoading(false)
+  }
   if (!walletStore.documents.length) {
     return (
       <View style={{ marginHorizontal: 20 }}>
@@ -84,7 +84,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
           You have no documents to share. Please, create one
         </Text>
       </View>
-    );
+    )
   }
   return (
     <KeyboardAwareScrollView
@@ -151,7 +151,7 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
                 label={item.documentName}
                 value={item._id}
               />
-            );
+            )
           })}
         </Select>
       </View>
@@ -204,8 +204,8 @@ export const DocumentShareAdd: React.FC<IDocumentShareAdd> = observer(({}) => {
         />
       )}
     </KeyboardAwareScrollView>
-  );
-});
+  )
+})
 const styles = StyleSheet.create({
   title: {
     fontFamily: textStyles.semiBoldFont,
@@ -229,4 +229,4 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontSize: 12,
   },
-});
+})

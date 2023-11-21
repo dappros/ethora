@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   ChatContainer,
   ConversationHeader,
   MessageInput,
   MessageList,
   TypingIndicator,
-} from "@chatscope/chat-ui-kit-react";
+} from "@chatscope/chat-ui-kit-react"
 import {
   Box,
   Checkbox,
@@ -13,43 +13,43 @@ import {
   IconButton,
   Typography,
   useTheme,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { Message } from "../Messages/Message";
-import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store";
-import xmpp from "../../../xmpp";
-import DOMPurify from "dompurify";
-import { SystemMessage } from "../Messages/SystemMessage";
-import CustomMessageInput from "./CustomMessageInput";
-import { TProfile } from "../../../pages/Profile/types";
-import { IMessagePosition } from "../../../pages/ChatInRoom/Chat";
-import { getPosition, stripHtml } from "../../../utils";
-import { useHistory, useParams } from "react-router";
-import { createMainMessageForThread } from "../../../utils/createMessage";
+} from "@mui/material"
+import CloseIcon from "@mui/icons-material/Close"
+import { Message } from "../Messages/Message"
+import { TMessageHistory, TUserChatRooms, useStoreState } from "../../../store"
+import xmpp from "../../../xmpp"
+import DOMPurify from "dompurify"
+import { SystemMessage } from "../Messages/SystemMessage"
+import CustomMessageInput from "./CustomMessageInput"
+import { TProfile } from "../../../pages/Profile/types"
+import { IMessagePosition } from "../../../pages/ChatInRoom/Chat"
+import { getPosition, stripHtml } from "../../../utils"
+import { useHistory, useParams } from "react-router"
+import { createMainMessageForThread } from "../../../utils/createMessage"
 
-interface ThreadContainerProps {
+interface ThreadContainerProperties {
   roomData: {
-    jid: string;
-    name: string;
-    room_background: string;
-    room_thumbnail: string;
-    users_cnt: string;
-  };
-  handleSetThreadView: (value: boolean) => void;
-  isThreadView: boolean;
-  chooseRoom: (jid: string) => void;
-  profile: TProfile;
-  currentPickedRoom: TUserChatRooms;
-  currentRoom: string;
-  onYReachStart: () => void;
-  sendFile: (file: File, isReply: boolean) => void;
-  showInChannel: boolean;
-  toggleMediaModal: (value: boolean, message?: TMessageHistory) => void;
-  handleShowInChannel: (show: boolean) => void;
-  toggleTransferDialog: (value: boolean, message?: TMessageHistory) => void;
+    jid: string
+    name: string
+    room_background: string
+    room_thumbnail: string
+    users_cnt: string
+  }
+  handleSetThreadView: (value: boolean) => void
+  isThreadView: boolean
+  chooseRoom: (jid: string) => void
+  profile: TProfile
+  currentPickedRoom: TUserChatRooms
+  currentRoom: string
+  onYReachStart: () => void
+  sendFile: (file: File, isReply: boolean) => void
+  showInChannel: boolean
+  toggleMediaModal: (value: boolean, message?: TMessageHistory) => void
+  handleShowInChannel: (show: boolean) => void
+  toggleTransferDialog: (value: boolean, message?: TMessageHistory) => void
 }
 
-const ThreadContainer: React.FC<ThreadContainerProps> = ({
+const ThreadContainer: React.FC<ThreadContainerProperties> = ({
   roomData,
   handleSetThreadView,
   isThreadView,
@@ -65,57 +65,57 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
 }) => {
   const currentThreadViewMessage = useStoreState(
     (store) => store.currentThreadViewMessage
-  );
-  const [myThreadMessage, setMyThreadMessage] = useState("");
+  )
+  const [myThreadMessage, setMyThreadMessage] = useState("")
 
-  const user = useStoreState((store) => store.user);
-  const userChatRooms = useStoreState((store) => store.userChatRooms);
-  const messages = useStoreState((state) => state.historyMessages);
+  const user = useStoreState((store) => store.user)
+  const userChatRooms = useStoreState((store) => store.userChatRooms)
+  const messages = useStoreState((state) => state.historyMessages)
 
-  const { roomJID } = useParams<{ roomJID: string }>();
-  const theme = useTheme();
+  const { roomJID } = useParams<{ roomJID: string }>()
+  const theme = useTheme()
   const threadWindowMessages = messages.filter(
     (item: TMessageHistory) =>
       item.roomJID.includes(roomJID) &&
       item.data.isReply &&
       item.data?.mainMessage?.id === currentThreadViewMessage.id
-  );
+  )
   const currentUntrackedChatRoom = useStoreState(
     (store) => store.currentUntrackedChatRoom
-  );
-  const loaderArchive = useStoreState((store) => store.loaderArchive);
-  const history = useHistory();
+  )
+  const loaderArchive = useStoreState((store) => store.loaderArchive)
+  const history = useHistory()
   const setThreadMessage = (value: string) => {
-    setMyThreadMessage(value);
+    setMyThreadMessage(value)
     xmpp.isComposing(
       user.walletAddress,
       roomData.jid,
       user.firstName + " " + user.lastName
-    );
-  };
+    )
+  }
   const handleChatDetailClick = () => {
-    history.push("/chatDetails/" + currentUntrackedChatRoom);
-  };
+    history.push("/chatDetails/" + currentUntrackedChatRoom)
+  }
 
   const handlePaste = (event: any) => {
-    let item = Array.from(event.clipboardData.items).find((x: any) =>
+    const item = [...event.clipboardData.items].find((x: any) =>
       /^image\//.test(x.type)
-    );
+    )
     if (item) {
       // @ts-ignore
-      let blob = item.getAsFile();
-      sendFile(blob, false);
+      const blob = item.getAsFile()
+      sendFile(blob, false)
     }
-  };
+  }
   const sendThreadMessage = (button: any) => {
     if (myThreadMessage.trim().length > 0) {
-      let userAvatar = "";
+      let userAvatar = ""
       if (profile?.profileImage) {
-        userAvatar = profile?.profileImage;
+        userAvatar = profile?.profileImage
       }
-      const clearMessageFromHtml = DOMPurify.sanitize(myThreadMessage);
-      const finalMessageTxt = stripHtml(clearMessageFromHtml);
-      handleShowInChannel(false);
+      const clearMessageFromHtml = DOMPurify.sanitize(myThreadMessage)
+      const finalMessageTxt = stripHtml(clearMessageFromHtml)
+      handleShowInChannel(false)
       if (finalMessageTxt.trim().length > 0) {
         const data = {
           senderFirstName: user.firstName,
@@ -131,12 +131,12 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
           mainMessage: createMainMessageForThread(currentThreadViewMessage),
           showInChannel: showInChannel,
           push: true,
-        };
+        }
 
-        xmpp.sendMessageStanza(currentRoom, finalMessageTxt, data);
+        xmpp.sendMessageStanza(currentRoom, finalMessageTxt, data)
       }
     }
-  };
+  }
 
   return (
     <ChatContainer
@@ -206,18 +206,17 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
         }}
         disableOnYReachWhenNoScroll={true}
         typingIndicator={
-          !!userChatRooms.filter((e) => e.jid === currentRoom)[0]
-            ?.composing && (
+          !!userChatRooms.find((e) => e.jid === currentRoom)?.composing && (
             <TypingIndicator
               style={{ opacity: ".6" }}
               content={
-                userChatRooms.filter((e) => e.jid === currentRoom)[0]?.composing
+                userChatRooms.find((e) => e.jid === currentRoom)?.composing
               }
             />
           )
         }
       >
-        {threadWindowMessages.map((message, index, arr) =>
+        {threadWindowMessages.map((message, index, array) =>
           message.data.isSystemMessage === "false" ? (
             <Message
               onMediaMessageClick={toggleMediaModal}
@@ -225,7 +224,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
               isThread={true}
               key={message.id}
               is={"Message"}
-              position={getPosition(arr, message, index)}
+              position={getPosition(array, message, index)}
               message={message}
               onMessageButtonClick={sendThreadMessage}
             />
@@ -250,12 +249,12 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
                 fontSize: "1.2em",
               }}
             >
-              {!loaderArchive ? (
+              {loaderArchive ? (
+                "Loading..."
+              ) : (
                 <span>
                   {!currentRoom && "To get started, please select a chat room."}
                 </span>
-              ) : (
-                "Loading..."
               )}
             </MessageList.Content>
           ))}
@@ -304,7 +303,7 @@ const ThreadContainer: React.FC<ThreadContainerProps> = ({
         </div>
       )}
     </ChatContainer>
-  );
-};
+  )
+}
 
-export default ThreadContainer;
+export default ThreadContainer

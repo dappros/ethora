@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from "react"
 
 import {
   Box,
@@ -9,70 +9,70 @@ import {
   Select,
   TextField,
   Typography,
-} from "@mui/material";
-import { FormikErrors, useFormik } from "formik";
-import countries from "../../assets/countries.json";
-import { LoadingButton } from "@mui/lab";
-import { getSubscriptions, getUserCompany, httpWithAuth } from "../../http";
-import { useSnackbar } from "../../context/SnackbarContext";
-import { useStoreState } from "../../store";
-import { useHistory, useLocation } from "react-router";
-type Props = {};
+} from "@mui/material"
+import { FormikErrors, useFormik } from "formik"
+import countries from "../../assets/countries.json"
+import { LoadingButton } from "@mui/lab"
+import { getSubscriptions, getUserCompany, httpWithAuth } from "../../http"
+import { useSnackbar } from "../../context/SnackbarContext"
+import { useStoreState } from "../../store"
+import { useHistory, useLocation } from "react-router"
+type Properties = {}
 interface FormValues {
-  companyName: string;
-  companyAddress: string;
-  town: string;
-  region: string;
-  postCode: string;
-  country: string;
-  businessPhoneNumber: string;
-  companyRegistrationNumber: string;
-  taxNumber: string;
+  companyName: string
+  companyAddress: string
+  town: string
+  region: string
+  postCode: string
+  country: string
+  businessPhoneNumber: string
+  companyRegistrationNumber: string
+  taxNumber: string
 }
 
 const validate = (values: FormValues): FormikErrors<FormValues> => {
-  const errors: FormikErrors<FormValues> = {};
-  Object.entries(values).forEach(([key, value]) => {
+  const errors: FormikErrors<FormValues> = {}
+  for (const [key, value] of Object.entries(values)) {
     if (value.length < 3 && key !== "companyRegistrationNumber") {
-      errors[key] = "Must be 3 characters or more";
+      errors[key] = "Must be 3 characters or more"
     }
     if (value.length < 5 && key === "companyAddress") {
-      errors[key] = "Must be 3 characters or more";
+      errors[key] = "Must be 3 characters or more"
     }
-  });
-  return errors;
-};
-const Organizations: React.FC<Props> = ({}) => {
-  const { showSnackbar } = useSnackbar();
-  const setUser = useStoreState((s) => s.setUser);
-  const location = useLocation();
-  const user = useStoreState((s) => s.user);
-  const history = useHistory();
+  }
+  return errors
+}
+const Organizations: React.FC<Properties> = ({}) => {
+  const { showSnackbar } = useSnackbar()
+  const setUser = useStoreState((s) => s.setUser)
+  const location = useLocation()
+  const user = useStoreState((s) => s.user)
+  const history = useHistory()
   const getCompany = async () => {
-    const res = await getUserCompany(user.token);
-    setUser({ ...user, company: res.data.result });
-  };
-  const payment = new URLSearchParams(location.search).get("payment");
+    const res = await getUserCompany(user.token)
+    setUser({ ...user, company: res.data.result })
+  }
+  const payment = new URLSearchParams(location.search).get("payment")
 
   const getUserSubscriptions = async () => {
     try {
-      const res = await getSubscriptions();
-      console.log(res.data);
+      const res = await getSubscriptions()
+      console.log(res.data)
       setUser({
         ...user,
         paymentMethods: res.data.paymentMethods,
         subscriptions: res.data.subscriptions,
-      });
+      })
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
   useEffect(() => {
     if (payment === "success") {
-      showSnackbar("success", "Success! Payment received.");
+      showSnackbar("success", "Success! Payment received.")
     }
-    getUserSubscriptions();
-  }, []);
+    getUserSubscriptions()
+  }, [])
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -113,30 +113,30 @@ const Organizations: React.FC<Props> = ({}) => {
         phoneNumber: businessPhoneNumber,
         registrationNumber: companyRegistrationNumber,
         payeReference: taxNumber,
-      };
-      setSubmitting(true);
+      }
+      setSubmitting(true)
       try {
-        const res = await httpWithAuth().post("/company/", body);
-        await getCompany();
-        if (user.subscriptions.data.length) {
-          history.push("/");
+        const res = await httpWithAuth().post("/company/", body)
+        await getCompany()
+        if (user.subscriptions.data.length > 0) {
+          history.push("/")
         } else {
-          history.push("/payments");
+          history.push("/payments")
         }
-        showSnackbar("success", "Company added");
+        showSnackbar("success", "Company added")
       } catch (error) {
-        showSnackbar("error", "Something went wrong");
-        console.log(error);
+        showSnackbar("error", "Something went wrong")
+        console.log(error)
       }
 
-      resetForm();
-      setSubmitting(false);
+      resetForm()
+      setSubmitting(false)
     },
-  });
+  })
 
   useEffect(() => {
-    getCompany();
-  }, []);
+    getCompany()
+  }, [])
 
   return (
     <Container maxWidth="xl">
@@ -239,7 +239,7 @@ const Organizations: React.FC<Props> = ({}) => {
                     <MenuItem value={country.name} key={country.name}>
                       {country.name}
                     </MenuItem>
-                  );
+                  )
                 })}
               </Select>
             </FormControl>
@@ -293,7 +293,7 @@ const Organizations: React.FC<Props> = ({}) => {
         </form>
       </Box>
     </Container>
-  );
-};
+  )
+}
 
-export default Organizations;
+export default Organizations

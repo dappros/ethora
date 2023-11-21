@@ -5,14 +5,14 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
-export const asyncStorageGetItem = async key => {
+export const asyncStorageGetItem = async (key) => {
   try {
-    const res = await AsyncStorage.getItem(key);
-    if (!res) return '';
-    return JSON.parse(res);
+    const res = await AsyncStorage.getItem(key)
+    if (!res) return ""
+    return JSON.parse(res)
   } catch (e) {
-    console.log('ERROR: Cannot get item from asyncStorage');
+    console.log("ERROR: Cannot get item from asyncStorage")
   }
-};
+}

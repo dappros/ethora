@@ -5,28 +5,28 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { Input, View, Text, TextArea, KeyboardAvoidingView } from "native-base";
-import * as React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import Modal from "react-native-modal";
-import { commonColors, textStyles } from "../../../../docs/config";
+import { Input, View, Text, TextArea, KeyboardAvoidingView } from "native-base"
+import * as React from "react"
+import { StyleSheet, TouchableOpacity } from "react-native"
+import Modal from "react-native-modal"
+import { commonColors, textStyles } from "../../../../docs/config"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from "react-native-responsive-screen"
 
 interface ProfileModalProps {
-  isVisible: boolean;
-  onBackdropPress: any;
-  modalType: "name" | "description" | "";
-  isDescriptionEditable: boolean;
-  description: string;
-  onDescriptionChange: any;
-  setDescription: any;
-  firstName: string;
-  lastName: string;
-  onNameChange: any;
-  setNewName: any;
+  isVisible: boolean
+  onBackdropPress: any
+  modalType: "name" | "description" | ""
+  isDescriptionEditable: boolean
+  description: string
+  onDescriptionChange: any
+  setDescription: any
+  firstName: string
+  lastName: string
+  onNameChange: any
+  setNewName: any
 }
 
 const ProfileModal = (props: ProfileModalProps) => {
@@ -42,7 +42,7 @@ const ProfileModal = (props: ProfileModalProps) => {
     lastName,
     onNameChange,
     setNewName,
-  } = props;
+  } = props
 
   const modalContent = () => {
     if (modalType === "description") {
@@ -87,7 +87,7 @@ const ProfileModal = (props: ProfileModalProps) => {
             </View>
           </TouchableOpacity>
         </View>
-      ) : null;
+      ) : null
     }
 
     if (modalType === "name") {
@@ -143,9 +143,9 @@ const ProfileModal = (props: ProfileModalProps) => {
             </View>
           </TouchableOpacity>
         </View>
-      );
+      )
     }
-  };
+  }
 
   return (
     <Modal
@@ -155,13 +155,13 @@ const ProfileModal = (props: ProfileModalProps) => {
       isVisible={isVisible}
       onBackdropPress={onBackdropPress}
     >
-        <View>{modalContent()}</View>
+      <View>{modalContent()}</View>
     </Modal>
-  );
-};
+  )
+}
 
-export default ProfileModal;
+export default ProfileModal
 
 const styles = StyleSheet.create({
   container: {},
-});
+})

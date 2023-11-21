@@ -1,6 +1,6 @@
-import React, { CSSProperties } from "react";
-import styles from "../../styles/AppDetails.module.css";
-import { TCustomDetails } from "../../pages/AppBuilder/AppBuilder";
+import React, { CSSProperties } from "react"
+import styles from "../../styles/AppDetails.module.css"
+import { TCustomDetails } from "../../pages/AppBuilder/AppBuilder"
 
 const inputStyle = {
   height: "60px",
@@ -13,7 +13,7 @@ const inputStyle = {
   background: "#e8e8e8",
   boxShadow: "4px 4px 12px #c5c5c5,\n        -4px -4px 12px #ffffff",
   transition: "all 0.3s",
-} as CSSProperties;
+} as CSSProperties
 const textInputStyle = {
   border: "none",
   marginLeft: "10px",
@@ -22,42 +22,42 @@ const textInputStyle = {
   background: "#e8e8e8",
   boxShadow: "4px 4px 12px #c5c5c5,\n        -4px -4px 12px #ffffff",
   transition: "0.3s",
-} as CSSProperties;
-const label = { display: "flex", flexDirection: "column" } as CSSProperties;
+} as CSSProperties
+const label = { display: "flex", flexDirection: "column" } as CSSProperties
 //interfaces
 interface TAppDetails {
-  appName: string;
-  appTitle: string;
+  appName: string
+  appTitle: string
 
-  primaryColor: string;
-  secondaryColor: string;
-  coinSymbol: string;
-  coinName: string;
-  bundleId: string;
-  currentScreenIndex: string | number;
-  email: string;
-  emailEmpty: boolean;
-  emailInvalid: boolean;
-  appNameEmpty: boolean;
-  bundleIdEmpty: boolean;
-  setAppName: (value: string) => void;
-  setAppTitle: (value: string) => void;
-  setBundleId: (value: string) => void;
-  setEmail: (value: string) => void;
-  handleLogoChange: (event: any) => void;
-  handleLoginScreenBackgroundChange: (event: any) => void;
-  setPrimaryColor: (value: string) => void;
-  setSecondaryColor: (value: string) => void;
-  handleCoinLogoChange: (event: any) => void;
-  setCoinSymbol: (value: string) => void;
-  setCoinName: (value: string) => void;
-  handleClear: (screenIndex: number) => void;
-  logo: File;
-  loginScreenBackground: File;
-  coinLogo?: File;
+  primaryColor: string
+  secondaryColor: string
+  coinSymbol: string
+  coinName: string
+  bundleId: string
+  currentScreenIndex: string | number
+  email: string
+  emailEmpty: boolean
+  emailInvalid: boolean
+  appNameEmpty: boolean
+  bundleIdEmpty: boolean
+  setAppName: (value: string) => void
+  setAppTitle: (value: string) => void
+  setBundleId: (value: string) => void
+  setEmail: (value: string) => void
+  handleLogoChange: (event: any) => void
+  handleLoginScreenBackgroundChange: (event: any) => void
+  setPrimaryColor: (value: string) => void
+  setSecondaryColor: (value: string) => void
+  handleCoinLogoChange: (event: any) => void
+  setCoinSymbol: (value: string) => void
+  setCoinName: (value: string) => void
+  handleClear: (screenIndex: number) => void
+  logo: File
+  loginScreenBackground: File
+  coinLogo?: File
 }
 
-export default function AppDetails(props: any) {
+export default function AppDetails(properties: any) {
   const {
     appName,
     appTitle,
@@ -84,7 +84,7 @@ export default function AppDetails(props: any) {
     setCoinSymbol,
     setCoinName,
     handleClear,
-  } = props;
+  } = properties
 
   //handle to clear form data for a given screen
 
@@ -186,8 +186,8 @@ export default function AppDetails(props: any) {
             `}
         </style>
       </div>
-    );
-  };
+    )
+  }
 
   //Component for displaying form in the second screen
   const screen1 = () => {
@@ -265,8 +265,8 @@ export default function AppDetails(props: any) {
         </style>
         <br />
       </>
-    );
-  };
+    )
+  }
 
   return (
     <div className={"leftSection"}>
@@ -310,5 +310,5 @@ export default function AppDetails(props: any) {
           `}
       </style>
     </div>
-  );
+  )
 }

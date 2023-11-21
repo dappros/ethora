@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
-import GavelIcon from "@mui/icons-material/Gavel";
-import * as http from "../../http";
-import { Box } from "@mui/material";
+import React, { useState, useEffect } from "react"
+import GavelIcon from "@mui/icons-material/Gavel"
+import * as http from "../../http"
+import { Box } from "@mui/material"
 
-type Props = {
-  appToken?: string;
-};
+type Properties = {
+  appToken?: string
+}
 
-export default function Contracts({ appToken }: Props) {
-  const [count, setCount] = useState(0);
+export default function Contracts({ appToken }: Properties) {
+  const [count, setCount] = useState(0)
   useEffect(() => {
     if (appToken) {
       http
         .httpWithToken(appToken)
         .get("/explorer/count/contract")
         .then((response) => {
-          setCount(response.data.count);
-        });
+          setCount(response.data.count)
+        })
     }
-  }, [appToken]);
+  }, [appToken])
 
   return (
     <div
@@ -56,5 +56,5 @@ export default function Contracts({ appToken }: Props) {
         </div>
       </Box>
     </div>
-  );
+  )
 }

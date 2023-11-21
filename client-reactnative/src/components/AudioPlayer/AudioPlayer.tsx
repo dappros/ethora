@@ -5,7 +5,7 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import {
   StyleSheet,
   Text,
@@ -13,62 +13,68 @@ import {
   Image,
   SafeAreaView,
   TouchableOpacity,
-} from "react-native";
-import Slider from "react-native-slider";
-import AudioRecorderPlayer from "react-native-audio-recorder-player";
-import PlayButton from "./PlayButton";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+} from "react-native"
+import Slider from "react-native-slider"
+import AudioRecorderPlayer from "react-native-audio-recorder-player"
+import PlayButton from "./PlayButton"
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 
-import { commonColors, textStyles } from "../../../docs/config";
-import { heightPercentageToDP } from "react-native-responsive-screen";
-const { primaryColor } = commonColors;
+import { commonColors, textStyles } from "../../../docs/config"
+import { heightPercentageToDP } from "react-native-responsive-screen"
+const { primaryColor } = commonColors
 
-export default function AudioPlayer({ audioUrl, closePlayer }: { audioUrl: any, closePlayer: () => void }) {
-  const [isAlreadyPlay, setisAlreadyPlay] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [timeElapsed, setTimeElapsed] = useState(0);
-  const [percent, setPercent] = useState(0);
+export default function AudioPlayer({
+  audioUrl,
+  closePlayer,
+}: {
+  audioUrl: any
+  closePlayer: () => void
+}) {
+  const [isAlreadyPlay, setisAlreadyPlay] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [timeElapsed, setTimeElapsed] = useState(0)
+  const [percent, setPercent] = useState(0)
   const [audioRecorderPlayer, setAudioRecordedPlayer] = useState(
     new AudioRecorderPlayer()
-  );
+  )
 
   const changeTime = async (seconds: any) => {
     // 50 / duration
-    let seektime = (seconds / 100) * duration;
-    setTimeElapsed(seektime);
-    audioRecorderPlayer.seekToPlayer(seektime);
-  };
+    const seektime = (seconds / 100) * duration
+    setTimeElapsed(seektime)
+    audioRecorderPlayer.seekToPlayer(seektime)
+  }
   const onStartPress = async () => {
-    setisAlreadyPlay(true);
-    audioRecorderPlayer.startPlayer(audioUrl);
-    audioRecorderPlayer.setVolume(1.0);
+    setisAlreadyPlay(true)
+    audioRecorderPlayer.startPlayer(audioUrl)
+    audioRecorderPlayer.setVolume(1.0)
 
     audioRecorderPlayer.addPlayBackListener(async (e) => {
       if (e.currentPosition === e.duration) {
-        audioRecorderPlayer.stopPlayer();
-        setisAlreadyPlay(false);
+        audioRecorderPlayer.stopPlayer()
+        setisAlreadyPlay(false)
       }
-      let currentPresent = Math.round(
+      const currentPresent = Math.round(
         (Math.floor(e.currentPosition) / Math.floor(e.duration)) * 100
-      );
-      setTimeElapsed(e.currentPosition);
-      setPercent(currentPresent);
-      setDuration(e.duration);
-    });
-  };
+      )
+      setTimeElapsed(e.currentPosition)
+      setPercent(currentPresent)
+      setDuration(e.duration)
+    })
+  }
 
   useEffect(() => {
-    onStartPress();
+    onStartPress()
     return () => {
-      audioRecorderPlayer.stopPlayer();
-      audioRecorderPlayer.removePlayBackListener();
-    };
-  }, [audioUrl]);
+      audioRecorderPlayer.stopPlayer()
+      audioRecorderPlayer.removePlayBackListener()
+    }
+  }, [audioUrl])
 
   const onPausePress = async () => {
-    setisAlreadyPlay(false);
-    audioRecorderPlayer.pausePlayer();
-  };
+    setisAlreadyPlay(false)
+    audioRecorderPlayer.pausePlayer()
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,7 +85,13 @@ export default function AudioPlayer({ audioUrl, closePlayer }: { audioUrl: any, 
           <PlayButton onPress={() => onPausePress()} state="pause" />
         )}
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start'}}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "flex-start",
+        }}
+      >
         <View style={styles.seekbar}>
           <Slider
             minimumValue={0}
@@ -100,12 +112,12 @@ export default function AudioPlayer({ audioUrl, closePlayer }: { audioUrl: any, 
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={closePlayer} style={{marginLeft: 'auto'}}>
+        <TouchableOpacity onPress={closePlayer} style={{ marginLeft: "auto" }}>
           <MaterialIcons name="close" color={"white"} size={30} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -163,4 +175,4 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   trackname: { alignItems: "center", marginTop: 32 },
-});
+})

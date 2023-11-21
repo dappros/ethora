@@ -300,14 +300,14 @@ export const getGraphs = (
   startDate: string,
   endDate: string
 ) => {
-  const params = new URLSearchParams()
-  params.append("startDate", startDate)
-  params.append("endDate", endDate)
+  const parameters = new URLSearchParams();
+  parameters.append("startDate", startDate);
+  parameters.append("endDate", endDate);
 
   return httpWithAuth().get<GraphData>(
-    "/apps/graph-statistic/" + appId + "?" + params.toString()
-  )
-}
+    "/apps/graph-statistic/" + appId + "?" + parameters.toString()
+  );
+};
 
 export function getBalance(walletAddress: string) {
   const user = useStoreState.getState().user
@@ -369,7 +369,7 @@ export function getSubscriptions() {
 export function registerSignature(
   walletAddress: string,
   signature: string,
-  msg: string,
+  message: string,
   firstName: string,
   lastName: string
 ) {
@@ -381,7 +381,7 @@ export function registerSignature(
       loginType: "signature",
       walletAddress,
       signature,
-      msg,
+      msg: message,
       firstName,
       lastName,
     },
@@ -392,7 +392,7 @@ export function registerSignature(
 export function loginSignature(
   walletAddress: string,
   signature: string,
-  msg: string
+  message: string
 ) {
   const appToken = useStoreState.getState().config.appToken
 
@@ -402,7 +402,7 @@ export function loginSignature(
       loginType: "signature",
       walletAddress,
       signature,
-      msg,
+      msg: message,
     },
     { headers: { Authorization: appToken } }
   )
@@ -640,8 +640,8 @@ export function getAppUsers(
   orderBy: string = "createdAt",
   order: string = "asc"
 ) {
-  const owner = useStoreState.getState().user
-  const params = new URLSearchParams({
+  const owner = useStoreState.getState().user;
+  const parameters = new URLSearchParams({
     limit: limit.toString(),
     offset: offset.toString(),
     orderBy,
@@ -649,7 +649,7 @@ export function getAppUsers(
   })
 
   return http.get<ExplorerRespose<IUser[]>>(
-    `/users/${appId}?${params.toString()}`,
+    `/users/${appId}?${parameters.toString()}`,
     {
       headers: { Authorization: owner.token },
     }

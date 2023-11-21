@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Button, Checkbox, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Paper from "@mui/material/Paper"
+import { Button, Checkbox, Typography } from "@mui/material"
 import {
   ACL,
   getUserAcl,
@@ -16,50 +16,47 @@ import {
   IUserAcl,
   TPermission,
   updateUserAcl,
-} from "../http";
-import { Box } from "@mui/system";
-import { FullPageSpinner } from "./FullPageSpinner";
-import { useStoreState } from "../store";
-import { useSnackbar } from "../context/SnackbarContext";
+} from "../http"
+import { Box } from "@mui/system"
+import { FullPageSpinner } from "./FullPageSpinner"
+import { useStoreState } from "../store"
+import { useSnackbar } from "../context/SnackbarContext"
 
 export interface IEditAcl {
-  updateData?(user: IOtherUserACL): void;
-  onAclError?: () => void;
-  user: IUser;
+  updateData?(user: IOtherUserACL): void
+  onAclError?: () => void
+  user: IUser
 }
 
-const label = { inputProps: { "aria-label": "Checkbox" } };
+const label = { inputProps: { "aria-label": "Checkbox" } }
 type TKeys =
   | "appCreate"
   | "appPush"
   | "appSettings"
   | "appStats"
   | "appTokens"
-  | "appUsers";
+  | "appUsers"
 
-const checkDisabled = (arr: Array<string> | undefined, property: string) => {
-  if (!arr) return false;
-  return !!arr.find((item) => item === property);
-};
+const checkDisabled = (array: Array<string> | undefined, property: string) => {
+  if (!array) return false
+  return !!array.find((item) => item === property)
+}
 const checkAdminEnabled = (acl: TPermission) => {
-  if (!acl) return false;
-  return !!Object.entries(acl).find((item) => item[0] === "admin" && !!item[1]);
-};
+  if (!acl) return false
+  return !!Object.entries(acl).find((item) => item[0] === "admin" && !!item[1])
+}
 const Row = ({
   name,
   row,
   onChange,
   disableAllRow,
 }: {
-  name: TKeys;
-  row: TPermission;
-  disableAllRow: boolean;
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement>,
-    keyToChange: TKeys
-  ) => void;
+  name: TKeys
+  row: TPermission
+  disableAllRow: boolean
+  onChange: (e: React.ChangeEvent<HTMLInputElement>, keyToChange: TKeys) => void
 }) => {
-  const isOwner = useStoreState((state) => state.user?.ACL?.ownerAccess);
+  const isOwner = useStoreState((state) => state.user?.ACL?.ownerAccess)
   return (
     <TableRow
       sx={{
@@ -71,9 +68,9 @@ const Row = ({
       </TableCell>
       <TableCell
         style={{
-          backgroundColor: !checkDisabled(row?.disabled, "create")
-            ? "white"
-            : "lightgrey",
+          backgroundColor: checkDisabled(row?.disabled, "create")
+            ? "lightgrey"
+            : "white",
         }}
         align="left"
       >
@@ -90,9 +87,9 @@ const Row = ({
       </TableCell>
       <TableCell
         style={{
-          backgroundColor: !checkDisabled(row?.disabled, "read")
-            ? "white"
-            : "lightgrey",
+          backgroundColor: checkDisabled(row?.disabled, "read")
+            ? "lightgrey"
+            : "white",
         }}
         align="left"
       >
@@ -106,9 +103,9 @@ const Row = ({
       </TableCell>
       <TableCell
         style={{
-          backgroundColor: !checkDisabled(row?.disabled, "update")
-            ? "white"
-            : "lightgrey",
+          backgroundColor: checkDisabled(row?.disabled, "update")
+            ? "lightgrey"
+            : "white",
         }}
         align="left"
       >
@@ -122,9 +119,9 @@ const Row = ({
       </TableCell>
       <TableCell
         style={{
-          backgroundColor: !checkDisabled(row?.disabled, "delete")
-            ? "white"
-            : "lightgrey",
+          backgroundColor: checkDisabled(row?.disabled, "delete")
+            ? "lightgrey"
+            : "white",
         }}
         align="left"
       >
@@ -138,9 +135,9 @@ const Row = ({
       </TableCell>
       <TableCell
         style={{
-          backgroundColor: !checkDisabled(row?.disabled, "admin")
-            ? "white"
-            : "lightgrey",
+          backgroundColor: checkDisabled(row?.disabled, "admin")
+            ? "lightgrey"
+            : "white",
         }}
         align="left"
       >
@@ -153,121 +150,121 @@ const Row = ({
         />
       </TableCell>
     </TableRow>
-  );
-};
+  )
+}
 
 export const EditAcl: React.FC<IEditAcl> = ({
   updateData,
   onAclError,
   user,
 }) => {
-  const [userAcl, setUserAcl] = useState<IOtherUserACL>({ result: user.acl });
+  const [userAcl, setUserAcl] = useState<IOtherUserACL>({ result: user.acl })
   const [userAclApplicationKeys, setUserAclApplicationKeys] = useState<
     Array<TKeys>
-  >([]);
-  const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>(
-    []
-  );
+  >([])
+  const [userAclNetworkKeys, setUserAclNetworkKeys] = useState<Array<TKeys>>([])
   const acl = useStoreState((state) =>
     state.ACL.result.find((a) => a.appId === userAcl?.result?.appId)
-  );
+  )
   const myAcl = {
     result: acl,
-  };
-  const [loading, setLoading] = useState(false);
-  const { showSnackbar } = useSnackbar();
+  }
+  const [loading, setLoading] = useState(false)
+  const { showSnackbar } = useSnackbar()
   const getAcl = async () => {
-    setUserAcl({ result: user.acl });
-    const appKeys = Object.keys(userAcl.result.application) as TKeys[];
-    const networkKeys = Object.keys(userAcl.result.network) as TKeys[];
-    setUserAclApplicationKeys(appKeys);
-    setUserAclNetworkKeys(networkKeys);
-  };
+    setUserAcl({ result: user.acl })
+    const appKeys = Object.keys(userAcl.result.application) as TKeys[]
+    const networkKeys = Object.keys(userAcl.result.network) as TKeys[]
+    setUserAclApplicationKeys(appKeys)
+    setUserAclNetworkKeys(networkKeys)
+  }
   const onApplicationAclChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     keyToChange: TKeys
   ) => {
-    setUserAcl((prev) => ({
+    setUserAcl((previous) => ({
       result: {
-        ...prev!.result,
+        ...previous!.result,
         application: {
-          ...prev!.result!.application,
+          ...previous!.result!.application,
           [keyToChange]: {
-            ...prev!.result!.application[keyToChange],
+            ...previous!.result!.application[keyToChange],
             [e.target.name]: e.target.checked,
           },
         },
       },
-    }));
-  };
+    }))
+  }
   const onNetworkAclChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     keyToChange: TKeys
   ) => {
-    setUserAcl((prev) => ({
+    setUserAcl((previous) => ({
       result: {
-        ...prev!.result,
+        ...previous!.result,
         network: {
-          ...prev!.result!.network,
+          ...previous!.result!.network,
           netStats: {
-            ...prev!.result!.network.netStats,
+            ...previous!.result!.network.netStats,
             [e.target.name]: e.target.checked,
           },
         },
       },
-    }));
-  };
+    }))
+  }
 
   const updateAcl = async () => {
-    setLoading(true);
-    let application: ACL = JSON.parse(JSON.stringify(userAcl!.result!.application));
-    let network: ACL = JSON.parse(JSON.stringify(userAcl!.result!.network));
+    setLoading(true)
+    const application: ACL = JSON.parse(
+      JSON.stringify(userAcl!.result!.application)
+    )
+    const network: ACL = JSON.parse(JSON.stringify(userAcl!.result!.network))
 
     try {
       const filteredApplication = Object.fromEntries(
         Object.entries(application).map((item) => {
-          delete item[1].disabled;
-          return item;
+          delete item[1].disabled
+          return item
         })
-      );
+      )
       const filteredNetwork = Object.fromEntries(
         Object.entries(network).map((item) => {
-          delete item[1].disabled;
+          delete item[1].disabled
 
-          return item;
+          return item
         })
-      );
+      )
 
       const body = {
         application: filteredApplication,
         network: filteredNetwork,
-      } as IAclBody;
+      } as IAclBody
 
-      const aclRes = await updateUserAcl(user._id, user.appId, body);
-      const updatedUserAcl = aclRes.data as IOtherUserACL;
+      const aclRes = await updateUserAcl(user._id, user.appId, body)
+      const updatedUserAcl = aclRes.data as IOtherUserACL
       if (updateData) {
-        updateData(updatedUserAcl);
+        updateData(updatedUserAcl)
       }
-      showSnackbar("success", "ACL updated successfully");
+      showSnackbar("success", "ACL updated successfully")
     } catch (error) {
       showSnackbar(
         "error",
         "Cannot change ACL " +
           error?.response?.data?.error?.details[0]?.message || ""
-      );
-      console.log(error);
+      )
+      console.log(error)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
     if (user) {
-      getAcl();
+      getAcl()
     }
-  }, [user]);
+  }, [user])
 
   if (loading) {
-    return <FullPageSpinner />;
+    return <FullPageSpinner />
   }
 
   return (
@@ -291,8 +288,8 @@ export const EditAcl: React.FC<IEditAcl> = ({
           <TableBody>
             {myAcl.result &&
               userAclApplicationKeys.map((row) => {
-                const application = userAcl!.result.application[row];
-                const myApplicationAcl = myAcl!.result.application[row];
+                const application = userAcl!.result.application[row]
+                const myApplicationAcl = myAcl!.result.application[row]
 
                 return (
                   <Row
@@ -303,7 +300,7 @@ export const EditAcl: React.FC<IEditAcl> = ({
                     row={application}
                     key={row}
                   />
-                );
+                )
               })}
           </TableBody>
         </Table>
@@ -327,8 +324,8 @@ export const EditAcl: React.FC<IEditAcl> = ({
           </TableHead>
           <TableBody>
             {userAclNetworkKeys.map((row) => {
-              const network = userAcl!.result.network.netStats;
-              const myNetworkAcl = myAcl!.result.network.netStats;
+              const network = userAcl!.result.network.netStats
+              const myNetworkAcl = myAcl!.result.network.netStats
 
               return (
                 <Row
@@ -339,7 +336,7 @@ export const EditAcl: React.FC<IEditAcl> = ({
                   row={network}
                   key={row}
                 />
-              );
+              )
             })}
           </TableBody>
         </Table>
@@ -357,5 +354,5 @@ export const EditAcl: React.FC<IEditAcl> = ({
         </Button>
       </Box>
     </>
-  );
-};
+  )
+}

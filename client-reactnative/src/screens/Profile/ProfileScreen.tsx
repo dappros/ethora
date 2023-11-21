@@ -4,77 +4,76 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import {
   SafeAreaView,
   Text,
   View,
   TouchableOpacity,
   Linking,
-} from "react-native";
+} from "react-native"
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from "react-native-responsive-screen"
 
-import { Avatar, HStack, VStack } from "native-base";
+import { Avatar, HStack, VStack } from "native-base"
 
-import { observer } from "mobx-react-lite";
-import Hyperlink from "react-native-hyperlink";
+import { observer } from "mobx-react-lite"
+import Hyperlink from "react-native-hyperlink"
 
-import { useNavigation } from "@react-navigation/native";
-import AntIcon from "react-native-vector-icons/AntDesign";
+import { useNavigation } from "@react-navigation/native"
+import AntIcon from "react-native-vector-icons/AntDesign"
 
-import DocumentPicker from "react-native-document-picker";
-import { commonColors, textStyles } from "../../../docs/config";
-import ProfileModal from "../../components/Modals/Profile/ProfileModal";
-import { QRModal } from "../../components/Modals/QR/QRModal";
-import TransactionsList from "../../components/Nft/NftTransactionList";
-import { ProfileTabs } from "../../components/Profile/ProfileTabs";
-import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader";
-import { showToast } from "../../components/Toast/toast";
-import { httpUploadPut } from "../../config/apiService";
-import { changeUserData, fileUpload } from "../../config/routesConstants";
-import { pattern1, pattern2 } from "../../helpers/chat/chatLinkpattern";
-import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink";
-import parseLink from "../../helpers/parseLink";
-import { generateProfileLink } from "../../helpers/generateProfileLink";
-import { useStores } from "../../stores/context";
-import { updateVCard } from "../../xmpp/stanzas";
-import { uploadFiles } from "../../helpers/uploadFiles";
+import DocumentPicker from "react-native-document-picker"
+import { commonColors, textStyles } from "../../../docs/config"
+import ProfileModal from "../../components/Modals/Profile/ProfileModal"
+import { QRModal } from "../../components/Modals/QR/QRModal"
+import TransactionsList from "../../components/Nft/NftTransactionList"
+import { ProfileTabs } from "../../components/Profile/ProfileTabs"
+import SecondaryHeader from "../../components/SecondaryHeader/SecondaryHeader"
+import { showToast } from "../../components/Toast/toast"
+import { httpUploadPut } from "../../config/apiService"
+import { changeUserData, fileUpload } from "../../config/routesConstants"
+import { pattern1, pattern2 } from "../../helpers/chat/chatLinkpattern"
+import openChatFromChatLink from "../../helpers/chat/openChatFromChatLink"
+import parseLink from "../../helpers/parseLink"
+import { generateProfileLink } from "../../helpers/generateProfileLink"
+import { useStores } from "../../stores/context"
+import { updateVCard } from "../../xmpp/stanzas"
+import { uploadFiles } from "../../helpers/uploadFiles"
 
-const { primaryColor, primaryDarkColor } = commonColors;
+const { primaryColor, primaryDarkColor } = commonColors
 
 export const ProfileScreen = observer(() => {
-  const { loginStore, walletStore, chatStore, apiStore } = useStores();
+  const { loginStore, walletStore, chatStore, apiStore } = useStores()
 
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const { setOffset, setTotal, clearPaginationData, transactions } =
-    walletStore;
+  const { setOffset, setTotal, clearPaginationData, transactions } = walletStore
 
   const { userAvatar, userDescription, initialData, updateUserDisplayName } =
-    loginStore;
+    loginStore
 
-  const { firstName, lastName, walletAddress } = initialData;
+  const { firstName, lastName, walletAddress } = initialData
 
-  const coinData = walletStore.balance;
+  const coinData = walletStore.balance
 
-  const [activeTab, setActiveTab] = useState(0);
-  const [activeAssetTab, setActiveAssetTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0)
+  const [activeAssetTab, setActiveAssetTab] = useState(1)
 
-  const [itemsBalance, setItemsBalance] = useState(0);
+  const [itemsBalance, setItemsBalance] = useState(0)
 
-  const [modalType, setModalType] = useState<"name" | "description" | "">("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState<"name" | "description" | "">("")
+  const [modalVisible, setModalVisible] = useState(false)
 
-  const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [qrModalVisible, setQrModalVisible] = useState(false)
 
-  const [isDescriptionEditable, setIsDescriptionEditable] = useState(false);
-  const [descriptionLocal, setDescriptionLocal] = useState(userDescription);
-  const [firstNameLocal, setFirstNameLocal] = useState(firstName);
-  const [lastNameLocal, setLastNameLocal] = useState(lastName);
-  const userAvatarLocal = userAvatar;
+  const [isDescriptionEditable, setIsDescriptionEditable] = useState(false)
+  const [descriptionLocal, setDescriptionLocal] = useState(userDescription)
+  const [firstNameLocal, setFirstNameLocal] = useState(firstName)
+  const [lastNameLocal, setLastNameLocal] = useState(lastName)
+  const userAvatarLocal = userAvatar
   const [uploadedAvatar, setUploadedAvatar] = useState({
     _id: "",
     createdAt: "",
@@ -89,22 +88,22 @@ export const ProfileScreen = observer(() => {
     size: 0,
     updatedAt: "",
     userId: "",
-  });
+  })
 
   useEffect(() => {
-    setOffset(0);
-    setTotal(0);
-    walletStore.fetchOwnTransactions(walletAddress, walletStore.limit, 0);
-    walletStore.fetchWalletBalance(loginStore.userToken, true);
-    walletStore.getDocuments(walletAddress);
+    setOffset(0)
+    setTotal(0)
+    walletStore.fetchOwnTransactions(walletAddress, walletStore.limit, 0)
+    walletStore.fetchWalletBalance(loginStore.userToken, true)
+    walletStore.getDocuments(walletAddress)
 
     return () => {
-      clearPaginationData();
-    };
-  }, []);
+      clearPaginationData()
+    }
+  }, [])
   useEffect(() => {
-    setDescriptionLocal(userDescription);
-  }, [userDescription]);
+    setDescriptionLocal(userDescription)
+  }, [userDescription])
 
   const calculateAssetsCount = () => {
     setItemsBalance(
@@ -112,43 +111,43 @@ export const ProfileScreen = observer(() => {
         (acc, item) => (acc += parseFloat(item.balance.toString())),
         0
       )
-    );
-  };
+    )
+  }
 
   useEffect(() => {
-    calculateAssetsCount();
-    return () => {};
-  }, [walletStore.nftItems, coinData]);
+    calculateAssetsCount()
+    return () => {}
+  }, [walletStore.nftItems, coinData])
 
   const onNamePressed = () => {
-    setModalType("name");
-    setModalVisible(true);
-  };
+    setModalType("name")
+    setModalVisible(true)
+  }
 
   const onDescriptionPressed = () => {
-    setIsDescriptionEditable(true);
-    setModalType("description");
-    setModalVisible(true);
-  };
+    setIsDescriptionEditable(true)
+    setModalType("description")
+    setModalVisible(true)
+  }
 
   //changes the user description locally
   const onDescriptionChange = (text: string) => {
-    setDescriptionLocal(text);
-  };
+    setDescriptionLocal(text)
+  }
 
   //when user clicks on the backdrop of the modal
   const onBackdropPress = () => {
-    setFirstNameLocal(firstName);
-    setLastNameLocal(lastName);
-    setDescriptionLocal(userDescription);
-    setIsDescriptionEditable(!isDescriptionEditable);
-    setModalVisible(false);
-  };
+    setFirstNameLocal(firstName)
+    setLastNameLocal(lastName)
+    setDescriptionLocal(userDescription)
+    setIsDescriptionEditable(!isDescriptionEditable)
+    setModalVisible(false)
+  }
 
   //changes the user's profile name locally
   const onNameChange = (type: "firstName" | "lastName", text: string) => {
-    type === "firstName" ? setFirstNameLocal(text) : setLastNameLocal(text);
-  };
+    type === "firstName" ? setFirstNameLocal(text) : setLastNameLocal(text)
+  }
 
   const setDescription = async () => {
     if (userAvatarLocal || descriptionLocal) {
@@ -157,23 +156,23 @@ export const ProfileScreen = observer(() => {
         descriptionLocal,
         firstName + " " + lastName,
         chatStore.xmpp
-      );
+      )
     }
 
     if (!descriptionLocal) {
-      updateVCard(userAvatarLocal, "No description", null, chatStore.xmpp);
+      updateVCard(userAvatarLocal, "No description", null, chatStore.xmpp)
     }
-    const formData = new FormData();
-    formData.append("description", descriptionLocal);
+    const formData = new FormData()
+    formData.append("description", descriptionLocal)
     await httpUploadPut(
       changeUserData,
       formData,
       loginStore.userToken,
       console.log
-    );
-    setIsDescriptionEditable(false);
-    setModalVisible(false);
-  };
+    )
+    setIsDescriptionEditable(false)
+    setModalVisible(false)
+  }
 
   const setNewName = () => {
     //call api to dapp server to change username
@@ -183,87 +182,82 @@ export const ProfileScreen = observer(() => {
       const bodyData = {
         firstName: firstNameLocal,
         lastName: lastNameLocal,
-      };
+      }
       updateVCard(
         userAvatarLocal,
         descriptionLocal,
         firstNameLocal + " " + lastNameLocal,
         chatStore.xmpp
-      );
-      updateUserDisplayName(bodyData);
+      )
+      updateUserDisplayName(bodyData)
     } else {
-      setFirstNameLocal(firstName);
-      showToast("error", "Error", "First name is required", "top");
+      setFirstNameLocal(firstName)
+      showToast("error", "Error", "First name is required", "top")
     }
-    setModalVisible(false);
-  };
+    setModalVisible(false)
+  }
 
   const handleChatLinks = (url: string) => {
-    const parsedChatId = parseLink(url);
+    const parsedChatId = parseLink(url)
     if (parsedChatId) {
-      const chatJID = parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN;
+      const chatJID = parsedChatId + apiStore.xmppDomains.CONFERENCEDOMAIN
       //argument url can be a chatlink or simple link
       //first check if url is a chat link if yes then open chatlink else open the link via browser
       if (pattern1.test(url) || pattern2.test(url)) {
-        openChatFromChatLink(
-          chatJID,
-          walletAddress,
-          navigation,
-          chatStore.xmpp
-        );
+        openChatFromChatLink(chatJID, walletAddress, navigation, chatStore.xmpp)
       } else {
-        Linking.openURL(url);
+        Linking.openURL(url)
       }
     }
-  };
+  }
 
   const QRPressed = () => {
     // const xmppId =
     //   loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN;
     // const profileLink = `=profileLink&firstName=${firstName}&lastName=${lastName}&walletAddress=${walletAddress}&xmppId=${xmppId}`;
-    setQrModalVisible(true);
-  };
+    setQrModalVisible(true)
+  }
 
   const sendFiles = async (data: any) => {
     try {
-      const url = fileUpload;
-      const response = await uploadFiles(data, loginStore.userToken, url);
-      const file = response.results[0];
-      setUploadedAvatar(file);
-      const formData = new FormData();
-      formData.append("description", descriptionLocal);
-      formData.append("file", file.location);
+      const url = fileUpload
+      const response = await uploadFiles(data, loginStore.userToken, url)
+      const file = response.results[0]
+      setUploadedAvatar(file)
+      const formData = new FormData()
+      formData.append("description", descriptionLocal)
+      formData.append("file", file.location)
       await httpUploadPut(
         changeUserData,
         formData,
         loginStore.userToken,
         console.log
-      );
-      updateVCard(file.location, descriptionLocal, null, chatStore.xmpp);
+      )
+      updateVCard(file.location, descriptionLocal, null, chatStore.xmpp)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
   //change user avatar
   const onAvatarPress = async () => {
     try {
       const res = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.images],
-      });
-      const formData = new FormData();
+      })
+      const formData = new FormData()
       formData.append("files", {
         name: res.name,
         type: res.type,
         uri: res.uri,
-      });
-      sendFiles(formData);
+      })
+      sendFiles(formData)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
+  }
   const onTransactionNumberPress = () => {
-    setActiveTab(1);
-  };
+    setActiveTab(1)
+  }
   // shows profile tabs which contain documents, items... or transactions
   const loadTabContent = () => {
     if (activeTab === 0) {
@@ -278,7 +272,7 @@ export const ProfileScreen = observer(() => {
           nftItems={walletStore.nftItems}
           itemsBalance={itemsBalance}
         />
-      );
+      )
     }
 
     if (activeTab === 1) {
@@ -293,14 +287,14 @@ export const ProfileScreen = observer(() => {
                   walletAddress,
                   walletStore.limit,
                   walletStore.offset
-                );
+                )
               }
             }}
           />
         </View>
-      );
+      )
     }
-  };
+  }
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={{ backgroundColor: primaryDarkColor, flex: 1 }}>
@@ -478,5 +472,5 @@ export const ProfileScreen = observer(() => {
         })}
       />
     </SafeAreaView>
-  );
-});
+  )
+})
