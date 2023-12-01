@@ -17,9 +17,9 @@ import { textStyles } from "../../../docs/config"
 import { useStores } from "../../stores/context"
 import { format } from "date-fns"
 import dayjs from "dayjs"
-import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types"
+import { HomeStackNavigationProp } from "../../navigation/types"
 
-interface RoomListProperties {
+interface RoomListProps {
   jid: string
   name: string
   counter: number
@@ -28,9 +28,9 @@ interface RoomListProperties {
   length: number
 }
 
-const removeStringSplits = (string_: string) => {
-  if (string_) {
-    return string_.trim().split(/\s+/).join(" ")
+const removeStringSplits = (str: string) => {
+  if (str) {
+    return str.trim().split(/\s+/).join(" ")
   }
 }
 const getTime = (time: Date | undefined) => {
@@ -42,36 +42,34 @@ const getTime = (time: Date | undefined) => {
     const now = Date.now()
     //@ts-ignore
     const isMoreThanADay = now - time > oneday
-    return isMoreThanADay
-      ? dayjs(time).locale("en").format("MMM D")
-      : format(new Date(time), "hh:mm")
-  } catch {
+    if (isMoreThanADay) {
+      return dayjs(time).locale("en").format("MMM D")
+    } else {
+      return format(new Date(time), "hh:mm")
+    }
+  } catch (error) {
     return null
   }
 }
 export const RoomListItem = observer(
-  ({ jid, name, participants, length, index }: RoomListProperties) => {
+  ({ jid, name, participants }: RoomListProps) => {
     const { chatStore } = useStores()
     const room = chatStore.roomsInfoMap[jid]
-    const navigation = useNavigation<HomeStackNavigationProperty>()
-    const isLast = index === length - 1
+    const navigation = useNavigation<HomeStackNavigationProp>()
 
     const defaultText = "Tap to view and join the conversation."
 
     const navigateToChat = () => {
       chatStore.updateBadgeCounter(jid, "CLEAR")
+      //@ts-ignore
       navigation.navigate("ChatScreen", { chatJid: jid, chatName: name })
     }
-    console.log(
-      "chatStore.roomsInfoMap[jid]?.counter",
-      chatStore.roomsInfoMap[jid]?.counter
-    )
     return (
-      <View>
+      <View style={[{ backgroundColor: "white" }]}>
         <Box pl="4" pr="5" py="2">
           <TouchableOpacity onPress={navigateToChat}>
-            <HStack space={4}>
-              <View justifyContent={"center"} backgroundColor={"transparent"}>
+            <HStack justifyContent="space-between" space={3}>
+              <View justifyContent={"center"}>
                 <RoomListItemIcon
                   name={name}
                   jid={jid}
@@ -129,8 +127,10 @@ export const RoomListItem = observer(
                           fontFamily={textStyles.regularFont}
                           fontSize={hp("1.5%")}
                           accessibilityLabel={"Last Message"}
-                          color="#8F8F8F"
-                          fontWeight={400}
+                          color="coolGray.600"
+                          _dark={{
+                            color: "warmGray.100",
+                          }}
                         >
                           {room?.lastUserText.length > 10
                             ? removeStringSplits(room?.lastUserText)?.slice(
@@ -143,39 +143,16 @@ export const RoomListItem = observer(
                     </HStack>
                   ) : (
                     <Text
-                      color="#8F8F8F"
-                      fontWeight={400}
+                      color="coolGray.600"
+                      _dark={{
+                        color: "warmGray.200",
+                      }}
                       fontFamily={textStyles.regularFont}
                     >
                       {defaultText}
                     </Text>
                   )}
-                  {chatStore.roomsInfoMap[jid]?.counter ? (
-                    <Box
-                      backgroundColor={"#0052CD"}
-                      borderRadius={7}
-                      paddingLeft={1.5}
-                      paddingTop={0.7}
-                      paddingBottom={0.7}
-                      paddingRight={1.5}
-                    >
-                      <Text color={"#fff"}>
-                        {chatStore.roomsInfoMap[jid]?.counter}
-                      </Text>
-                    </Box>
-                  ) : null}
                 </HStack>
-                {!isLast && (
-                  <Box
-                    height={0.45}
-                    backgroundColor={"#E8EDF2"}
-                    marginTop={2}
-                    position={"absolute"}
-                    width={"100%"}
-                    bottom={-10}
-                    left={0}
-                  ></Box>
-                )}
               </VStack>
             </HStack>
           </TouchableOpacity>

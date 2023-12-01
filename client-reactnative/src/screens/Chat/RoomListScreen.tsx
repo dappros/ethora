@@ -9,7 +9,7 @@ type ScreenProps = NativeStackScreenProps<HomeStackParamList, "RoomsListScreem">
 
 const RoomListScreen = observer(({}: ScreenProps) => {
   return (
-    <View flex={1} backgroundColor={"white"}>
+    <View flex={1} backgroundColor={"#fff"}>
       <RoomsTabBar />
     </View>
   )

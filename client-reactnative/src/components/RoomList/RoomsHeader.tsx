@@ -4,17 +4,19 @@ import { HeaderMenu } from "../MainHeader/HeaderMenu"
 import React from "react"
 import { useStores } from "../../stores/context"
 
-const RoomsHeader = () => {
+const RoomsHeader = ({ style }) => {
   const { loginStore } = useStores()
   return (
     <Box
       style={{
         borderBottomLeftRadius: 15,
         borderBottomRightRadius: 15,
+        width: "100%",
+        height: 75,
         position: "absolute",
         top: 0,
         left: 0,
-        zIndex: -4,
+        ...style,
       }}
       height={hp("10%")}
       justifyContent={"flex-end"}

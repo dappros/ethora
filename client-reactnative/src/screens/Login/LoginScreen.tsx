@@ -5,7 +5,6 @@ import { heightPercentageToDP as hp } from "react-native-responsive-screen"
 import { ImageBackground } from "react-native"
 import {
   appTitle,
-  commonColors,
   googleSignIn,
   googleWebClientId,
   loginScreenBackgroundImage,
@@ -161,13 +160,11 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
       : onAppleLogin())
   }
 
+  const navigateToRegisterScreen = () => navigation.navigate("Register")
+
   useEffect(() => {
     if (address && isConnected) sendWalletMessage()
   }, [address, isConnected])
-  const connectMetamask = async () => {
-    return open()
-  }
-
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -192,7 +189,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           resizeMode={"cover"}
           position={"absolute"}
           top={55}
-          left={"0px"}
+          left={0}
         />
         <View
           justifyContent={"flex-end"}
@@ -221,16 +218,15 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           <Stack>
             {googleSignIn && (
               <GoogleSignInButton apiStore={apiStore} loginStore={loginStore} />
-            )}
-            <CreateAccountButton />
+          )}
+            <CreateAccountButton
+              navigateToRegisterScreen={navigateToRegisterScreen}
+            />
 
             {regularLogin && <ReqularLoginLabel navigation={navigation} />}
-            <SocialButtons
-              connectMetamask={connectMetamask}
-              onAppleButtonPress={onAppleButtonPress}
-              loginStore={loginStore}
-              apiStore={apiStore}
-            />
+            <View marginTop={45}>
+              <SocialButtons />
+            </View>
           </Stack>
         </View>
       </View>

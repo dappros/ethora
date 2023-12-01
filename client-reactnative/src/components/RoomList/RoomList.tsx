@@ -32,6 +32,7 @@ import { HeaderMenu } from "../MainHeader/HeaderMenu"
 import Icon from "react-native-vector-icons/FontAwesome"
 import RoomsCategories from "./RoomsCategories"
 import RoomsHeader from "./RoomsHeader"
+import { LinearGradient } from "react-native-linear-gradient"
 
 interface IRoomList {
   roomsList: roomListProperties[]
@@ -90,7 +91,7 @@ export const RoomList: React.FC<IRoomList> = observer(
         Animated.spring(panY, {
           toValue: 0,
           useNativeDriver: false,
-          tension: 10, // Adjust the tension value for a smoother appearance
+          // tension: 10, // Adjust the tension value for a smoother appearance
         }).start()
       },
     })
@@ -139,7 +140,12 @@ export const RoomList: React.FC<IRoomList> = observer(
 
     console.log("searchValue", searchValue)
     const createRoomBlock = (
-      <View paddingLeft={4} paddingRight={4} width={"full"}>
+      <View
+        {...panResponder.panHandlers}
+        paddingLeft={4}
+        paddingRight={4}
+        width={"full"}
+      >
         <View
           style={{
             flexDirection: "row",
@@ -154,19 +160,19 @@ export const RoomList: React.FC<IRoomList> = observer(
             style={[
               {
                 position: "absolute",
-                left: "50%", // Adjust the initial position based on your design
+                left: "50%",
               },
               { transform: [{ translateX }] },
             ]}
           >
-            <Text style={{ color: "gray", opacity: searchValue ? 0 : 1 }}>
+            <Text style={{ color: "#8F8F8F", opacity: searchValue ? 0 : 1 }}>
               Search..
             </Text>
 
             <Icon
               name="search"
-              style={{ position: "absolute", top: -3, left: -35 }}
-              size={24}
+              style={{ position: "absolute", top: 3, left: -22 }}
+              size={15}
               color="#888"
             />
           </Animated.View>
@@ -209,7 +215,7 @@ export const RoomList: React.FC<IRoomList> = observer(
 
     const translateY = panY.interpolate({
       inputRange: [-300, 0, 300],
-      outputRange: [-50, 0, 50],
+      outputRange: [-100, 0, 100],
       extrapolate: "clamp",
     })
     // /*{...panResponder.panHandlers}*/
@@ -217,13 +223,12 @@ export const RoomList: React.FC<IRoomList> = observer(
     return (
       <>
         <View
-          flex={1}
-          // style={{
-          //   flex: 1,
-          //   justifyContent: "center",
-          //   alignItems: "center",
-          //   transform: [{ translateY }],
-          // }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            // transform: [{ translateY }],
+          }}
         >
           <View
             justifyContent={"center"}
@@ -231,11 +236,21 @@ export const RoomList: React.FC<IRoomList> = observer(
             w={"full"}
             flex={1}
           >
-            <RoomsHeader />
-            <View paddingTop={100}>
-              {createRoomBlock}
-              {searchValue && <RoomsCategories />}
-            </View>
+            <LinearGradient
+              colors={["#ECF0F4", "#fff"]}
+              style={{ width: "100%", position: "relative" }}
+            >
+              <RoomsHeader />
+              <View
+                style={{
+                  paddingTop: 90,
+                }}
+              >
+                {createRoomBlock}
+                {!searchValue ? <RoomsCategories /> : null}
+              </View>
+            </LinearGradient>
+
             <FlatList
               nestedScrollEnabled={true}
               style={{ width: "100%" }}
@@ -250,6 +265,7 @@ export const RoomList: React.FC<IRoomList> = observer(
               // onEndReached={() => setShowCreateButton(true)}
               onEndReachedThreshold={0.1} //
               keyExtractor={(item: any) => `${item.jid}`}
+              {...panResponder.panHandlers}
               renderItem={({ item, index }) => {
                 return (
                   <RoomListItem
