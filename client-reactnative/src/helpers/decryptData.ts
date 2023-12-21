@@ -64,7 +64,7 @@ export class DataDecryptor implements IDataDecryptor {
     return result
   }
   async checkMessageType<
-    T extends string | string[] | TEncryptedObject | TEncryptedObject[]
+    T extends string | string[] | TEncryptedObject | TEncryptedObject[],
   >(
     message: T
   ): Promise<string | string[] | TEncryptedObject | TEncryptedObject[]> {

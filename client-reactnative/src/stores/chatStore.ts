@@ -187,7 +187,7 @@ export class ChatStore {
   roomsInfoMap: any = { isUpdated: 0 }
   chatLinkInfo: any = {}
   blackList: BlackListUser[] = []
-  allMessagesArrived: boolean = false
+  allMessagesArrived = false
   replaceMessageList: replaceMessageListItemProps[] = []
   metaRooms: IMetaRoom[] = []
   recentRealtimeChat: recentRealtimeChatProps = {
@@ -198,7 +198,7 @@ export class ChatStore {
     system: false,
     shouldUpdateChatScreen: false,
   }
-  shouldCount: boolean = true
+  shouldCount = true
   roomRoles: any = []
   isOnline = false
   showMetaNavigation = false

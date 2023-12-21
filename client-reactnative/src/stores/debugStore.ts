@@ -4,7 +4,7 @@ import { RootStore } from "./context"
 export class DebugStore {
   xmppLogs: any = []
   apiLogs: any = []
-  debugMode: boolean = false
+  debugMode = false
   stores: RootStore | {} = {}
 
   constructor(stores: any) {
