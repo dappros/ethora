@@ -77,11 +77,9 @@ export const MainHeader = observer(() => {
       // if current chat room is not meta one - navigate to latest meta room
       if (
         //@ts-ignore
-        !(
-          //@ts-ignore
-          chatStore.roomList.find((item) => item.jid === route.params?.chatJid)
-            ?.meta
-        )
+        !//@ts-ignore
+        chatStore.roomList.find((item) => item.jid === route.params?.chatJid)
+          ?.meta
       ) {
         await navigateToLatestMetaRoom()
         chatStore.changeActiveChats(key)

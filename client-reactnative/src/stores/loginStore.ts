@@ -36,10 +36,10 @@ export interface InitialDataProps {
 }
 //interfaces and types
 export class LoginStore {
-  isFetching: boolean = false
-  loading: boolean = false
-  error: boolean = false
-  errorMessage: string = ""
+  isFetching = false
+  loading = false
+  error = false
+  errorMessage = ""
   initialData: InitialDataProps = {
     firstName: "",
     lastName: "",
@@ -57,15 +57,15 @@ export class LoginStore {
     email: "",
     cryptoKey: "",
   }
-  userDescription: string = ""
-  userAvatar: string = ""
-  anotherUserAvatar: string = ""
-  anotherUserDescription: string = ""
-  anotherUserFirstname: string = "Loading"
-  anotherUserLastname: string = "..."
+  userDescription = ""
+  userAvatar = ""
+  anotherUserAvatar = ""
+  anotherUserDescription = ""
+  anotherUserFirstname = "Loading"
+  anotherUserLastname = "..."
   anotherUserLastSeen: any = {}
   anotherUserWalletAddress: any = {}
-  isPreviousUser: boolean = false
+  isPreviousUser = false
   pushSubscriptionData: any = {
     ok: false,
     subscription_info: {
@@ -88,12 +88,12 @@ export class LoginStore {
       updatedAt: 0,
     },
   }
-  skipForever: boolean = false
+  skipForever = false
   stores: RootStore
-  userToken: string = ""
-  refreshToken: string = ""
-  walletAddress: string = ""
-  xmppUsername: string = ""
+  userToken = ""
+  refreshToken = ""
+  walletAddress = ""
+  xmppUsername = ""
 
   constructor(stores: RootStore) {
     makeAutoObservable(this)

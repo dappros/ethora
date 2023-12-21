@@ -793,7 +793,7 @@ const TOKENS: Record<TTokensMode, string> = {
 
 const APP_TOKEN = TOKENS[appEndpoint]
 
-const logoWidth: string = "70%" //represents the percentage of the width of device
+const logoWidth = "70%" //represents the percentage of the width of device
 const logoHeight = 70 //represents the percetage of the height of the device
 
 const defaultBotsList = [
@@ -813,7 +813,7 @@ export const ROOM_KEYS: Record<string, string> = {
 export const xmppPushUrl = "https://push.dxmpp.com:7777/api/v1"
 
 //weather to show title in the login screen or not. For logo image that already has title, set the below property to false
-const isLogoTitle: boolean = false
+const isLogoTitle = false
 export const appWallets = ["0xB91F341f948469D77D607E36E5264aB0e0479c9C"]
 
 // LOGIN SCREEN
