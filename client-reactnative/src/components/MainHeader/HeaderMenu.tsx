@@ -5,36 +5,36 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import { useNavigation } from "@react-navigation/native"
-import { Box, Divider, Menu } from "native-base"
-import React, { useState } from "react"
-import { TouchableOpacity } from "react-native"
-import Icon from "react-native-vector-icons/Entypo"
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
+import { useNavigation } from "@react-navigation/native";
+import { Box, Divider, Menu } from "native-base";
+import React, { useState } from "react";
+import { TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/Entypo";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import {
   configDocuments,
   configNFT,
   itemsMintingAllowed,
-} from "../../../docs/config"
-import { useStores } from "../../stores/context"
-import SubMenu from "./SubMenu"
-import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types"
-import { homeStackRoutes } from "../../navigation/routes"
+} from "../../../docs/config";
+import { useStores } from "../../stores/context";
+import SubMenu from "./SubMenu";
+import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types";
+import { homeStackRoutes } from "../../navigation/routes";
 
 export interface IMenuItem {
-  value: string
-  label: string
-  visible: boolean
-  testID: string
+  value: string;
+  label: string;
+  visible: boolean;
+  testID: string;
 }
-;[]
+[];
 
-const LOGOUT = "LOGOUT"
+const LOGOUT = "LOGOUT";
 export const HeaderMenu = () => {
-  const navigation = useNavigation<HomeStackNavigationProperty>()
-  const [open, setOpen] = useState(false)
+  const navigation = useNavigation<HomeStackNavigationProperty>();
+  const [open, setOpen] = useState(false);
 
-  const { loginStore, debugStore } = useStores()
+  const { loginStore, debugStore } = useStores();
 
   const AccountMenuItems: IMenuItem[] = [
     {
@@ -62,7 +62,7 @@ export const HeaderMenu = () => {
       visible: true,
       testID: "itemBuyCoins",
     },
-  ]
+  ];
 
   const ActionsMenuItems: IMenuItem[] = [
     {
@@ -89,7 +89,7 @@ export const HeaderMenu = () => {
       visible: configDocuments,
       testID: "itemUploadDocument",
     },
-  ]
+  ];
 
   const SystemMenuItems: IMenuItem[] = [
     {
@@ -117,19 +117,19 @@ export const HeaderMenu = () => {
       visible: true,
       testID: "itemTransaction",
     },
-  ]
+  ];
 
   const toggleMenu = () => {
-    open ? setOpen(false) : setOpen(true)
-  }
+    open ? setOpen(false) : setOpen(true);
+  };
 
   const onMenuItemPress = (value: string) => {
     if (value === LOGOUT) {
-      loginStore.logOut()
+      loginStore.logOut();
     } else {
-      navigation.navigate(value as never)
+      navigation.navigate(value as never);
     }
-  }
+  };
   return (
     <Box
       h="100%"
@@ -163,9 +163,9 @@ export const HeaderMenu = () => {
               onPress={() => toggleMenu()}
               accessibilityLabel="More options menu"
             >
-              <Icon name="menu" color="#FFFFFF" size={hp("3%")} />
+              <Icon name="menu" color="#0052CD" size={hp("3%")} />
             </TouchableOpacity>
-          )
+          );
         }}
       >
         <SubMenu
@@ -187,5 +187,5 @@ export const HeaderMenu = () => {
         />
       </Menu>
     </Box>
-  )
-}
+  );
+};

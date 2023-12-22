@@ -5,20 +5,20 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React from "react"
-import { textStyles } from "../../../docs/config"
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import { Box, Text, View } from "native-base"
-import { observer } from "mobx-react-lite"
-import { useStores } from "../../stores/context"
-import FastImage from "react-native-fast-image"
+import React from "react";
+import { textStyles } from "../../../docs/config";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { Box, Text, View } from "native-base";
+import { observer } from "mobx-react-lite";
+import { useStores } from "../../stores/context";
+import FastImage from "react-native-fast-image";
 
 export const RoomListItemIcon = observer(
   ({ name, jid }: { name: string; counter: number; jid: string }) => {
-    const { chatStore } = useStores()
-    const room = chatStore.roomList.find((item) => item.jid === jid)
+    const { chatStore } = useStores();
+    const room = chatStore.roomList.find((item) => item.jid === jid);
     return (
-      <View height={hp("9%")} width={hp("9%")} borderRadius={hp("4.5%")}>
+      <>
         {room?.roomThumbnail ? (
           <FastImage
             source={{
@@ -27,24 +27,29 @@ export const RoomListItemIcon = observer(
             }}
             resizeMode={FastImage.resizeMode.cover}
             style={{
+              borderColor: "#8F8F8F",
+              borderWidth: 1,
               borderRadius: hp("4.5%"),
-              width: "100%",
-              height: "100%",
+              width: 65,
+              height: 65,
             }}
           />
         ) : (
           <Box
-            backgroundColor={"#0052CD"}
-            borderRadius={hp("4.5%")}
-            width={"100%"}
-            height={"100%"}
+            style={{
+              borderColor: "#8F8F8F",
+              borderWidth: 1,
+              borderRadius: hp("4.5%"),
+              width: 65,
+              height: 65,
+              backgroundColor: "#0052CD",
+            }}
             alignItems={"center"}
             justifyContent={"center"}
           >
             <Text
               style={{
                 color: "white",
-                marginRight: 3,
                 fontFamily: textStyles.boldFont,
                 textTransform: "uppercase",
                 textAlign: "center",
@@ -54,7 +59,7 @@ export const RoomListItemIcon = observer(
             </Text>
           </Box>
         )}
-      </View>
-    )
+      </>
+    );
   }
-)
+);

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   ImageBackground,
@@ -7,64 +7,64 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native"
+} from "react-native";
 
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from "react-native-responsive-screen"
-import Modal from "react-native-modal"
+} from "react-native-responsive-screen";
+import Modal from "react-native-modal";
 
-import { HStack, Image, Input, VStack } from "native-base"
+import { HStack, Image, Input, VStack } from "native-base";
 import {
   loginScreenBackgroundImage,
   logoPath,
   textStyles,
   regularLoginEmail,
   commonColors,
-} from "../../../docs/config"
-import { showError } from "../../components/Toast/toast"
-import { useStores } from "../../stores/context"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList } from "../../navigation/types"
-import { Button } from "../../components/Button"
-import EmailIcon from "../../assets/icons/email.svg"
-import StarIcon from "../../assets/icons/star.svg"
-import ArrowDownIcon from "../../assets/icons/arrowDown.svg"
-import CloseIcon from "../../assets/icons/close.svg"
-import EyeCrossedIcon from "../../assets/icons/eyeCrossed.svg"
-import EyeOpenIcon from "../../assets/icons/eyeOpen.svg"
-import SocialButtons from "../../components/Login/SocialButtons"
+} from "../../../docs/config";
+import { showError } from "../../components/Toast/toast";
+import { useStores } from "../../stores/context";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/types";
+import { Button } from "../../components/Button";
+import EmailIcon from "../../assets/icons/email.svg";
+import StarIcon from "../../assets/icons/star.svg";
+import ArrowDownIcon from "../../assets/icons/arrowDown.svg";
+import CloseIcon from "../../assets/icons/close.svg";
+import EyeCrossedIcon from "../../assets/icons/eyeCrossed.svg";
+import EyeOpenIcon from "../../assets/icons/eyeOpen.svg";
+import SocialButtons from "../../components/Login/SocialButtons";
 
-type ScreenProps = NativeStackScreenProps<AuthStackParamList, "RegularLogin">
+type ScreenProps = NativeStackScreenProps<AuthStackParamList, "RegularLogin">;
 
 export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
-  const [userName, setUserName] = useState("")
-  const [password, setPassword] = useState("")
-  const [userNameFocused, setUserNameFocused] = useState(false)
-  const [passwordFocused, setPasswordFocused] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setisLoading] = useState(false)
-  const { loginStore } = useStores()
-  const [resetModalOpen, setResetModalOpen] = useState(false)
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [userNameFocused, setUserNameFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
+  const { loginStore } = useStores();
+  const [resetModalOpen, setResetModalOpen] = useState(false);
 
   const onSubmit = async () => {
     if (!userName || !password) {
-      return
+      return;
     }
-    setisLoading(true)
+    setisLoading(true);
     try {
-      await loginStore.regularLogin({ username: userName, password })
+      await loginStore.regularLogin({ username: userName, password });
     } catch (error: any) {
-      console.log(error.response.data)
+      console.log(error.response.data);
       if (error?.response?.status === 409) {
-        showError("Error", "This email is not verified")
+        showError("Error", "This email is not verified");
       } else {
-        showError("Error", "Something went wrong")
+        showError("Error", "Something went wrong");
       }
     }
-    setisLoading(false)
-  }
+    setisLoading(false);
+  };
 
   return (
     <>
@@ -116,15 +116,16 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
               // transform: "translateX(-50%)",
             }}
           >
-            <ArrowDownIcon />
             <TouchableOpacity
+              style={{ alignItems: "center" }}
               onPress={() => navigation.navigate("LoginScreen")}
             >
+              <ArrowDownIcon />
               <Text
                 style={{
                   marginTop: 17,
                   color: "#E8EDF2",
-                  fontFamily: textStyles.varelaRoundReqular,
+                  fontFamily: textStyles.regularFont,
                 }}
               >
                 Back to Sign in
@@ -136,7 +137,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
               <Text
                 style={{
                   color: "#0052CD",
-                  fontFamily: textStyles.varelaRoundReqular,
+                  fontFamily: textStyles.regularFont,
                   fontSize: hp("4.5%"),
                   marginBottom: 24,
                 }}
@@ -148,7 +149,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
                 accessibilityLabel="Enter your username"
                 maxLength={30}
                 marginBottom={4}
-                fontFamily={textStyles.varelaRoundReqular}
+                fontFamily={textStyles.regularFont}
                 fontSize={hp("1.6%")}
                 color={"black"}
                 value={userName}
@@ -192,7 +193,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
                 testID={"loginPassword"}
                 accessibilityLabel="Enter your password"
                 marginBottom={2}
-                fontFamily={textStyles.varelaRoundReqular}
+                fontFamily={textStyles.regularFont}
                 fontSize={hp("1.6%")}
                 color={"black"}
                 onFocus={() => setPasswordFocused(true)}
@@ -284,9 +285,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
               >
                 or
               </Text>
-              <View style={{ alignItems: "center", justifyContent: "center" }}>
-                <SocialButtons border={true} />
-              </View>
+              <SocialButtons border={true} />
             </VStack>
           </VStack>
         </View>
@@ -312,8 +311,8 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
         </Modal>
       )}
     </>
-  )
-}
+  );
+};
 const styles = StyleSheet.create({
   modal: {
     backgroundColor: "white",
@@ -331,4 +330,4 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
   },
-})
+});

@@ -1,10 +1,10 @@
-import {View} from 'native-base';
-import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
-import Modal from 'react-native-modal';
-import {TokensOrItemsTransfer} from '../TransactionModal/TokensOrItemsTransfer';
-import {ChatLongTapUserActions} from './ChatLongTapUserActions';
-import {IDataForTransfer} from './types';
+import { View } from "native-base";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
+import Modal from "react-native-modal";
+import { TokensOrItemsTransfer } from "../TransactionModal/TokensOrItemsTransfer";
+import { ChatLongTapUserActions } from "./ChatLongTapUserActions";
+import { IDataForTransfer } from "./types";
 
 export interface IChatLongTapModal {
   open: boolean;
@@ -25,28 +25,30 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
 
   const closeModal = () => {
     onClose();
-    setUserActionsHidden(false)
+    setUserActionsHidden(false);
   };
   return (
     <Modal
       onBackdropPress={closeModal}
-      animationIn={'slideInUp'}
-      animationOut={'slideOutDown'}
+      animationIn={"slideInUp"}
+      animationOut={"slideOutDown"}
       style={{
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
       }}
       onDismiss={closeModal}
-      isVisible={open}>
+      isVisible={open}
+    >
       <View
-        shadow={'2'}
-        borderRadius={'10'}
-        pb={'1'}
+        shadow={"2"}
+        borderRadius={"10"}
+        pb={"1"}
         style={{
-          backgroundColor: 'white',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+          backgroundColor: "white",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <TokensOrItemsTransfer
           closeModal={closeModal}
           hideUserActions={hideUserActions}

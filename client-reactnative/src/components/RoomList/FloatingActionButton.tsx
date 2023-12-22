@@ -5,11 +5,11 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import { commonColors } from '../../../docs/config';
+import React from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import { commonColors } from "../../../docs/config";
 
-export const FloatingActionButton = ({action, style, children}:any) => {
+export const FloatingActionButton = ({ action, style, children }: any) => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={action}>
       {children}
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: 50,
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 999
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999,
   },
 });

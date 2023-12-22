@@ -4,7 +4,7 @@ You may not use this file except in compliance with the License.
 You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
 */
 
-import React, { useState } from "react"
+import React, { useState } from "react";
 
 import {
   Text,
@@ -16,104 +16,104 @@ import {
   Keyboard,
   ImageBackground,
   ActivityIndicator,
-} from "react-native"
-import CheckBox from "@react-native-community/checkbox"
+} from "react-native";
+import CheckBox from "@react-native-community/checkbox";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen"
+} from "react-native-responsive-screen";
 
-import IonIcons from "react-native-vector-icons/Ionicons"
+import IonIcons from "react-native-vector-icons/Ionicons";
 
-import { HStack, Input, VStack } from "native-base"
+import { HStack, Input, VStack } from "native-base";
 import {
   textStyles,
   regularLoginEmail,
   commonColors,
   loginScreenBackgroundImage,
-} from "../../../docs/config"
-import { showError, showSuccess } from "../../components/Toast/toast"
-import { httpPost } from "../../config/apiService"
+} from "../../../docs/config";
+import { showError, showSuccess } from "../../components/Toast/toast";
+import { httpPost } from "../../config/apiService";
 import {
   registerRegularEmailUrl,
   registerUserURL,
-} from "../../config/routesConstants"
-import { useStores } from "../../stores/context"
-import { AuthStackParamList } from "../../navigation/types"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { authStackRoutes } from "../../navigation/routes"
-import { Button } from "../../components/Button"
-import whiteBg from "../../assets/whiteBg.png"
-import ArrowLeft from "../../assets/icons/arrowLeft.svg"
-import EmailIcon from "../../assets/icons/email.svg"
-import CloseIcon from "../../assets/icons/close.svg"
-import StarIcon from "../../assets/icons/star.svg"
-import UserIcon from "../../assets/icons/user.svg"
-import SocialButtons from "../../components/Login/SocialButtons"
-import RegisterSecondStep from "../../components/Login/RegisterSecondStep"
-import RegisterThirdStep from "./RegisterThirdStep"
+} from "../../config/routesConstants";
+import { useStores } from "../../stores/context";
+import { AuthStackParamList } from "../../navigation/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { authStackRoutes } from "../../navigation/routes";
+import { Button } from "../../components/Button";
+import whiteBg from "../../assets/whiteBg.png";
+import ArrowLeft from "../../assets/icons/arrowLeft.svg";
+import EmailIcon from "../../assets/icons/email.svg";
+import CloseIcon from "../../assets/icons/close.svg";
+import StarIcon from "../../assets/icons/star.svg";
+import UserIcon from "../../assets/icons/user.svg";
+import SocialButtons from "../../components/Login/SocialButtons";
+import RegisterSecondStep from "../../components/Login/RegisterSecondStep";
+import RegisterThirdStep from "./RegisterThirdStep";
 
-const { mediumFont, lightFont, boldFont } = textStyles
+const { mediumFont, lightFont, boldFont } = textStyles;
 type RegisterScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   "Register"
->
+>;
 export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
-  const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
-  const [userName, setUserName] = useState("")
-  const [userNameFocused, setUserNameFocused] = useState(false)
-  const [passwordFocused, setPasswordFocused] = useState(false)
-  const [userNameError, setUserNameError] = useState("")
-  const [emailFocused, setEmailFocused] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [isSelected, setSelection] = useState(true)
-  const { apiStore } = useStores()
-  const [activeStep, setActiveStep] = useState(1)
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userNameFocused, setUserNameFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [userNameError, setUserNameError] = useState("");
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isSelected, setSelection] = useState(true);
+  const { apiStore } = useStores();
+  const [activeStep, setActiveStep] = useState(1);
   const registerUser = async () => {
-    const nameAndSurname = userName.split(" ")
+    const nameAndSurname = userName.split(" ");
     if (nameAndSurname.length < 2) {
-      setUserNameError("Please, enter your name and surname")
+      setUserNameError("Please, enter your name and surname");
     }
     const body = {
       firstName: nameAndSurname[0],
       lastName: nameAndSurname[1],
       email,
-    }
-    console.log("nameAndSurname", nameAndSurname)
+    };
+    console.log("nameAndSurname", nameAndSurname);
     if (!userName || !email || !isSelected) {
-      showError("Error", "Please, fill all the fields")
-      return
+      showError("Error", "Please, fill all the fields");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await httpPost(registerRegularEmailUrl, body, apiStore.defaultToken)
+      await httpPost(registerRegularEmailUrl, body, apiStore.defaultToken);
       showSuccess(
         "Registration",
         "User registered successfully, please check your email"
-      )
-      setActiveStep(2)
+      );
+      setActiveStep(2);
       // navigation.navigate(authStackRoutes.RegularLogin)
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error.response.data);
       if (error?.response?.status === 400) {
-        showError("Error", "Someone already has that username. Try another?")
+        showError("Error", "Someone already has that username. Try another?");
       } else {
-        showError("Error", "Something went wrong")
+        showError("Error", "Something went wrong");
       }
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
   const goBack = () => {
     if (activeStep === 1) {
-      navigation.navigate(authStackRoutes.RegularLogin)
+      navigation.navigate(authStackRoutes.RegularLogin);
     } else {
-      setActiveStep(activeStep - 1)
+      setActiveStep(activeStep - 1);
     }
-  }
+  };
 
-  const goNext = () => setActiveStep(activeStep + 1)
+  const goNext = () => setActiveStep(activeStep + 1);
 
   return (
     <View testID="registerScreen" style={{ backgroundColor: "white", flex: 1 }}>
@@ -191,7 +191,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                         <Text
                           style={{
                             color: "#0052CD",
-                            fontFamily: textStyles.varelaRoundReqular,
+                            fontFamily: textStyles.regularFont,
                             fontSize: hp("4.5%"),
                             marginBottom: 24,
                           }}
@@ -202,7 +202,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           testID={"loginUsername"}
                           accessibilityLabel="Enter your username"
                           marginBottom={2}
-                          fontFamily={textStyles.varelaRoundReqular}
+                          fontFamily={textStyles.regularFont}
                           fontSize={hp("1.6%")}
                           color={"black"}
                           onFocus={() => setUserNameFocused(true)}
@@ -242,7 +242,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           <Text
                             style={{
                               color: "#FF0000",
-                              fontFamily: textStyles.varelaRoundReqular,
+                              fontFamily: textStyles.regularFont,
                               fontSize: hp("1.6%"),
                               marginBottom: 15,
                             }}
@@ -256,7 +256,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           accessibilityLabel="Enter your username"
                           maxLength={30}
                           marginBottom={4}
-                          fontFamily={textStyles.varelaRoundReqular}
+                          fontFamily={textStyles.regularFont}
                           fontSize={hp("1.6%")}
                           color={"black"}
                           value={email}
@@ -317,7 +317,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                         />
                         <Text
                           style={{
-                            fontFamily: textStyles.varelaRoundReqular,
+                            fontFamily: textStyles.regularFont,
                             color: "#0052CD",
                             fontSize: 12,
                           }}
@@ -327,7 +327,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                         <TouchableOpacity>
                           <Text
                             style={{
-                              fontFamily: textStyles.varelaRoundReqular,
+                              fontFamily: textStyles.regularFont,
                               color: "#0052CD",
                               fontSize: 12,
                               textDecorationLine: "underline",
@@ -382,14 +382,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                         >
                           or
                         </Text>
-                        <View
-                          style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <SocialButtons border={true} />
-                        </View>
+                        <SocialButtons border={true} />
                       </VStack>
                     </>
                   ) : activeStep === 2 ? (
@@ -404,5 +397,5 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         </ImageBackground>
       </TouchableWithoutFeedback>
     </View>
-  )
-}
+  );
+};

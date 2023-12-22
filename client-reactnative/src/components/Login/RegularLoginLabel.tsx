@@ -1,9 +1,9 @@
-import { TouchableOpacity } from "react-native"
+import { TouchableOpacity } from "react-native";
 
-import { HStack, Text } from "native-base"
+import { HStack, Text } from "native-base";
 
-import { commonColors, textStyles } from "../../../docs/config"
-import React from "react"
+import { commonColors, textStyles } from "../../../docs/config";
+import React from "react";
 
 function RegularLoginLabel({ navigation }) {
   return (
@@ -34,7 +34,7 @@ function RegularLoginLabel({ navigation }) {
         </Text>
       </TouchableOpacity>
     </HStack>
-  )
+  );
 }
 
-export default RegularLoginLabel
+export default RegularLoginLabel;

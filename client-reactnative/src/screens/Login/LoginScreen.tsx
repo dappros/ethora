@@ -1,8 +1,8 @@
-import { Box, Image, Spinner, Stack, Text, View } from "native-base"
-import React, { useEffect, useMemo, useState } from "react"
-import ReqularLoginLabel from "../../components/Login/RegularLoginLabel"
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import { ImageBackground } from "react-native"
+import { Box, Image, Spinner, Stack, Text, View } from "native-base";
+import React, { useEffect, useMemo, useState } from "react";
+import ReqularLoginLabel from "../../components/Login/RegularLoginLabel";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { ImageBackground } from "react-native";
 import {
   appTitle,
   googleSignIn,
@@ -11,50 +11,50 @@ import {
   logoPath,
   regularLogin,
   textStyles,
-} from "../../../docs/config"
-import SocialButtons from "../../components/Login/SocialButtons"
-import { useStores } from "../../stores/context"
-import { observer } from "mobx-react-lite"
+} from "../../../docs/config";
+import SocialButtons from "../../components/Login/SocialButtons";
+import { useStores } from "../../stores/context";
+import { observer } from "mobx-react-lite";
 import {
   handleAppleLogin,
   loginOrRegisterSocialUser,
-} from "../../helpers/login/socialLoginHandle"
-import { socialLoginType } from "../../constants/socialLoginConstants"
-import { httpPost } from "../../config/apiService"
-import { GoogleSignin } from "@react-native-google-signin/google-signin"
-import { useRegisterModal } from "../../hooks/useRegisterModal"
-import { UserNameModal } from "../../components/Modals/Login/UserNameModal"
-import { checkWalletExist } from "../../config/routesConstants"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { AuthStackParamList as AuthStackParameterList } from "../../navigation/types"
+} from "../../helpers/login/socialLoginHandle";
+import { socialLoginType } from "../../constants/socialLoginConstants";
+import { httpPost } from "../../config/apiService";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { useRegisterModal } from "../../hooks/useRegisterModal";
+import { UserNameModal } from "../../components/Modals/Login/UserNameModal";
+import { checkWalletExist } from "../../config/routesConstants";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList as AuthStackParameterList } from "../../navigation/types";
 import {
   useWalletConnectModal,
   WalletConnectModal,
-} from "@walletconnect/modal-react-native"
-import { ethers } from "ethers"
-import { signMessage } from "../../helpers/signMessage"
-import { projectId, providerMetadata } from "../../constants/walletConnect"
-import CreateAccountButton from "../../components/Login/CreateAccountButton"
-import GoogleSignInButton from "../../components/Login/GoogleSignInButton"
+} from "@walletconnect/modal-react-native";
+import { ethers } from "ethers";
+import { signMessage } from "../../helpers/signMessage";
+import { projectId, providerMetadata } from "../../constants/walletConnect";
+import CreateAccountButton from "../../components/Login/CreateAccountButton";
+import GoogleSignInButton from "../../components/Login/GoogleSignInButton";
 
 type LoginScreenProperties = NativeStackScreenProps<
   AuthStackParameterList,
   "LoginScreen"
->
+>;
 
 const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
-  const { loginStore, apiStore } = useStores()
-  const { isFetching } = loginStore
+  const { loginStore, apiStore } = useStores();
+  const { isFetching } = loginStore;
   const [externalWalletModalData, setExternalWalletModalData] = useState({
     walletAddress: "",
     message: "",
-  })
-  const [signedMessage, setSignedMessage] = useState("")
-  const { open, isConnected, provider, address } = useWalletConnectModal()
+  });
+  const [signedMessage, setSignedMessage] = useState("");
+  const { open, isConnected, provider, address } = useWalletConnectModal();
   const web3Provider = useMemo(
     () => (provider ? new ethers.providers.Web3Provider(provider) : undefined),
     [provider]
-  )
+  );
   const {
     firstName,
     lastName,
@@ -62,14 +62,14 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
     setLastName,
     modalOpen,
     setModalOpen,
-  } = useRegisterModal()
-  const [appleUser, setAppleUser] = useState({})
+  } = useRegisterModal();
+  const [appleUser, setAppleUser] = useState({});
   useEffect(() => {
     GoogleSignin.configure({
       forceCodeForRefreshToken: true,
       webClientId: googleWebClientId,
-    })
-  }, [])
+    });
+  }, []);
 
   const onAppleButtonPress = async () => {
     const user = await handleAppleLogin(
@@ -77,7 +77,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
       loginStore.loginUser,
       loginStore.registerUser,
       socialLoginType.APPLE
-    )
+    );
 
     await loginOrRegisterSocialUser(
       user,
@@ -85,27 +85,27 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
       loginStore.loginUser,
       loginStore.registerUser,
       socialLoginType.APPLE
-    )
-  }
+    );
+  };
 
   const openModalForWallet = (message: string) => {
     setExternalWalletModalData({
       message,
       walletAddress: address,
-    })
-    setModalOpen(true)
-  }
+    });
+    setModalOpen(true);
+  };
 
   const sendWalletMessage = async () => {
-    const walletExist = await checkExternalWalletExist()
-    const messageToSend = walletExist ? "Login" : "Registration"
+    const walletExist = await checkExternalWalletExist();
+    const messageToSend = walletExist ? "Login" : "Registration";
     const res = await signMessage({
       web3Provider: web3Provider,
       method: "personal_sign",
       message: messageToSend,
-    })
-    const message = res.result
-    setSignedMessage(message)
+    });
+    const message = res.result;
+    setSignedMessage(message);
     walletExist
       ? loginStore.loginExternalWallet({
           walletAddress: address,
@@ -113,9 +113,9 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           loginType: "signature",
           msg: "Login",
         })
-      : openModalForWallet(message)
-    provider?.disconnect()
-  }
+      : openModalForWallet(message);
+    provider?.disconnect();
+  };
   const checkExternalWalletExist = async () => {
     try {
       await httpPost(
@@ -124,14 +124,14 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           walletAddress: address,
         },
         apiStore.defaultToken
-      )
-      return true
+      );
+      return true;
     } catch {
-      return false
+      return false;
     }
-  }
+  };
   const onAppleLogin = async () => {
-    const user = { ...appleUser, firstName, lastName }
+    const user = { ...appleUser, firstName, lastName };
 
     const dataObject = {
       loginType: socialLoginType.APPLE,
@@ -142,10 +142,10 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-    }
-    await loginStore.registerUser(dataObject, user)
-    setModalOpen(false)
-  }
+    };
+    await loginStore.registerUser(dataObject, user);
+    setModalOpen(false);
+  };
 
   const onModalSubmit = async () => {
     await (externalWalletModalData.message
@@ -157,14 +157,14 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           firstName,
           lastName,
         })
-      : onAppleLogin())
-  }
+      : onAppleLogin());
+  };
 
-  const navigateToRegisterScreen = () => navigation.navigate("Register")
+  const navigateToRegisterScreen = () => navigation.navigate("Register");
 
   useEffect(() => {
-    if (address && isConnected) sendWalletMessage()
-  }, [address, isConnected])
+    if (address && isConnected) sendWalletMessage();
+  }, [address, isConnected]);
   return (
     <ImageBackground
       source={loginScreenBackgroundImage}
@@ -218,13 +218,13 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
           <Stack>
             {googleSignIn && (
               <GoogleSignInButton apiStore={apiStore} loginStore={loginStore} />
-          )}
+            )}
             <CreateAccountButton
               navigateToRegisterScreen={navigateToRegisterScreen}
             />
 
             {regularLogin && <ReqularLoginLabel navigation={navigation} />}
-            <View marginTop={45}>
+            <View marginTop={45} alignItems={"center"}>
               <SocialButtons />
             </View>
           </Stack>
@@ -246,7 +246,7 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
         providerMetadata={providerMetadata}
       />
     </ImageBackground>
-  )
-})
+  );
+});
 
-export default LoginScreen
+export default LoginScreen;

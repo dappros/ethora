@@ -1,24 +1,24 @@
-import React, { useState } from "react"
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native"
-import { Input } from "native-base"
-import { textStyles } from "../../../docs/config"
-import EyeCrossedIcon from "../../assets/icons/eyeCrossed.svg"
-import EyeOpenIcon from "../../assets/icons/eyeOpen.svg"
-import StarIcon from "../../assets/icons/star.svg"
+import React, { useState } from "react";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import { Input } from "native-base";
+import { textStyles } from "../../../docs/config";
+import EyeCrossedIcon from "../../assets/icons/eyeCrossed.svg";
+import EyeOpenIcon from "../../assets/icons/eyeOpen.svg";
+import StarIcon from "../../assets/icons/star.svg";
 
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import { View } from "native-base"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { View } from "native-base";
 const RegisterThirdStep = () => {
-  const [newPassword, setNewPassword] = useState("")
-  const [showNewPassword, setShowPassword] = useState(false)
-  const [newPasswordFocused, setNewPasswordFocused] = useState(false)
-  const [temporaryPassword, setTemporaryPassword] = useState("")
-  const [showTemporaryPassword, setShowTemporaryPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowPassword] = useState(false);
+  const [newPasswordFocused, setNewPasswordFocused] = useState(false);
+  const [temporaryPassword, setTemporaryPassword] = useState("");
+  const [showTemporaryPassword, setShowTemporaryPassword] = useState(false);
   const [temporaryPasswordFocused, setTemporaryPasswordFocused] =
-    useState(false)
-  const [repeatPassword, setRepeatPassword] = useState("")
-  const [showRepeatPassword, setShowRepeatPassword] = useState(false)
-  const [repeatPasswordFocused, setRepeatPasswordFocused] = useState(false)
+    useState(false);
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [repeatPasswordFocused, setRepeatPasswordFocused] = useState(false);
 
   return (
     <>
@@ -26,7 +26,7 @@ const RegisterThirdStep = () => {
         <Text
           style={{
             color: "#0052CD",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: hp("4.5%"),
             marginBottom: 24,
           }}
@@ -36,7 +36,7 @@ const RegisterThirdStep = () => {
         <Text
           style={{
             color: "#0052CD",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: 15,
             marginBottom: 24,
           }}
@@ -47,7 +47,7 @@ const RegisterThirdStep = () => {
       <View>
         <Input
           marginBottom={2}
-          fontFamily={textStyles.varelaRoundReqular}
+          fontFamily={textStyles.regularFont}
           fontSize={hp("1.6%")}
           color={"black"}
           onFocus={() => setTemporaryPasswordFocused(true)}
@@ -69,7 +69,7 @@ const RegisterThirdStep = () => {
         <Text
           style={{
             color: "#8F8F8F",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: 12,
             marginBottom: 15,
             textAlign: "right",
@@ -79,7 +79,7 @@ const RegisterThirdStep = () => {
         </Text>
         <Input
           marginBottom={2}
-          fontFamily={textStyles.varelaRoundReqular}
+          fontFamily={textStyles.regularFont}
           fontSize={hp("1.6%")}
           color={"black"}
           onFocus={() => setNewPasswordFocused(true)}
@@ -108,7 +108,7 @@ const RegisterThirdStep = () => {
         />
         <Input
           marginBottom={2}
-          fontFamily={textStyles.varelaRoundReqular}
+          fontFamily={textStyles.regularFont}
           fontSize={hp("1.6%")}
           color={"black"}
           onFocus={() => setRepeatPasswordFocused(true)}
@@ -162,7 +162,7 @@ const RegisterThirdStep = () => {
         </TouchableOpacity>
       </View>
     </>
-  )
-}
+  );
+};
 
-export default RegisterThirdStep
+export default RegisterThirdStep;

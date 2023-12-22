@@ -1,19 +1,19 @@
-import React from "react"
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native"
-import { textStyles } from "../../../docs/config"
+import React from "react";
+import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import { textStyles } from "../../../docs/config";
 
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import { View } from "native-base"
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { View } from "native-base";
 
 interface RegisterSecondStepProps {
-  email: string
-  goNext: () => void
+  email: string;
+  goNext: () => void;
 }
 
 function maskEmail(email: string): string {
-  const [username, domain] = email.split("@")
-  const maskedUsername = username[0] + "*".repeat(username.length - 1)
-  return `${maskedUsername}@${domain}`
+  const [username, domain] = email.split("@");
+  const maskedUsername = username[0] + "*".repeat(username.length - 1);
+  return `${maskedUsername}@${domain}`;
 }
 
 const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
@@ -23,7 +23,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
         <Text
           style={{
             color: "#0052CD",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: hp("4.5%"),
             marginBottom: 24,
           }}
@@ -33,7 +33,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
         <Text
           style={{
             color: "8F8F8F",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: 15,
             marginBottom: 24,
           }}
@@ -46,7 +46,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
           <Text
             style={{
               color: "#0052CD",
-              fontFamily: textStyles.varelaRoundReqular,
+              fontFamily: textStyles.regularFont,
               fontSize: 15,
             }}
           >
@@ -55,7 +55,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
           <Text
             style={{
               color: "#0052CD",
-              fontFamily: textStyles.varelaRoundReqular,
+              fontFamily: textStyles.regularFont,
               fontSize: 15,
             }}
           >
@@ -67,7 +67,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
           <Text
             style={{
               color: "#0052CD",
-              fontFamily: textStyles.varelaRoundReqular,
+              fontFamily: textStyles.regularFont,
               fontSize: 15,
             }}
           >
@@ -76,7 +76,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
           <Text
             style={{
               color: "#0052CD",
-              fontFamily: textStyles.varelaRoundReqular,
+              fontFamily: textStyles.regularFont,
               fontSize: 15,
             }}
           >
@@ -88,7 +88,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
         <Text
           style={{
             color: "#0052CD",
-            fontFamily: textStyles.varelaRoundReqular,
+            fontFamily: textStyles.regularFont,
             fontSize: 15,
             textAlign: "center",
           }}
@@ -120,7 +120,7 @@ const RegisterSecondStep = ({ email, goNext }: RegisterSecondStepProps) => {
         </TouchableOpacity>
       </View>
     </>
-  )
-}
+  );
+};
 
-export default RegisterSecondStep
+export default RegisterSecondStep;

@@ -5,18 +5,18 @@ You may obtain a copy of the License at https://github.com/dappros/ethorablob/ma
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import {LoginManager, AccessToken} from 'react-native-fbsdk-next';
-import auth from '@react-native-firebase/auth';
-import {sha256} from 'react-native-sha256';
-import {checkEmailExist} from '../../config/routesConstants';
-import {httpGet} from '../../config/apiService';
-import {showToast} from '../../components/Toast/toast';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {Alert, Platform} from 'react-native';
+import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import auth from "@react-native-firebase/auth";
+import { sha256 } from "react-native-sha256";
+import { checkEmailExist } from "../../config/routesConstants";
+import { httpGet } from "../../config/apiService";
+import { showToast } from "../../components/Toast/toast";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { Alert, Platform } from "react-native";
 import appleAuth, {
   appleAuthAndroid,
-} from '@invertase/react-native-apple-authentication';
-import {v4 as uuid} from 'uuid';
+} from "@invertase/react-native-apple-authentication";
+import { v4 as uuid } from "uuid";
 
 export const loginOrRegisterSocialUser = async (
   user: any,
@@ -24,7 +24,7 @@ export const loginOrRegisterSocialUser = async (
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
-  loginType: string,
+  loginType: string
 ) => {
   const url = checkEmailExist + user.email;
   try {
@@ -33,7 +33,7 @@ export const loginOrRegisterSocialUser = async (
       loginUser(loginType, user.authToken, user.uid, user);
     } else {
       const dataObject =
-        loginType === 'apple'
+        loginType === "apple"
           ? {
               loginType: loginType,
               authToken: user.authToken,
@@ -41,8 +41,8 @@ export const loginOrRegisterSocialUser = async (
               password: user.uid,
               username: user.email,
               email: user.email,
-              firstName: user.firstName || 'Anonymous',
-              lastName: user.lastName || 'Raccoon',
+              firstName: user.firstName || "Anonymous",
+              lastName: user.lastName || "Raccoon",
             }
           : {
               firstName: user.firstName,
@@ -57,10 +57,10 @@ export const loginOrRegisterSocialUser = async (
     }
   } catch (error) {
     showToast(
-      'error',
-      'Error',
-      'Something went wrong, please try again later',
-      'top',
+      "error",
+      "Error",
+      "Something went wrong, please try again later",
+      "top"
     );
   }
 };
@@ -69,37 +69,37 @@ export const handleFaceBookLogin = async (
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
-  type: string,
+  type: string
 ) => {
   LoginManager.logOut();
 
   // Attempt login with permissions
   const result = await LoginManager.logInWithPermissions([
-    'public_profile',
-    'email',
+    "public_profile",
+    "email",
   ]);
 
   if (result.isCancelled) {
-    throw 'User cancelled the login process';
+    throw "User cancelled the login process";
   }
 
   // Once signed in, get the users AccesToken
   const data = await AccessToken.getCurrentAccessToken();
 
   if (!data) {
-    throw 'Something went wrong obtaining access token';
+    throw "Something went wrong obtaining access token";
   }
 
   // Create a Firebase credential with the AccessToken
   const facebookCredential = auth.FacebookAuthProvider.credential(
-    data.accessToken,
+    data.accessToken
   );
 
   let facebookUser = await auth().signInWithCredential(facebookCredential);
 
-  let hashUID = '';
+  let hashUID = "";
 
-  await sha256(facebookUser.user.uid).then(hash => {
+  await sha256(facebookUser.user.uid).then((hash) => {
     hashUID = hash;
   });
 
@@ -117,32 +117,32 @@ export const handleFaceBookLogin = async (
     defaultToken,
     loginUser,
     registerSocialUser,
-    type,
+    type
   );
 };
 
 const signInGoogle = (googleCredential: any, callback: any) => {
   auth()
     .signInWithCredential(googleCredential)
-    .then(data => callback(data))
-    .catch(error => {
+    .then((data) => callback(data))
+    .catch((error) => {
       if (
         error.message ===
-        '[auth/network-request-failed] A network error (such as timeout, interrupted connection or unreachable host) has occurred.'
+        "[auth/network-request-failed] A network error (such as timeout, interrupted connection or unreachable host) has occurred."
       ) {
         Alert.alert(
-          'No Internet Connection',
-          'Connect your phone to the Internet by using an available Wi-Fi or cellular network.',
+          "No Internet Connection",
+          "Connect your phone to the Internet by using an available Wi-Fi or cellular network.",
           [
             {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel'),
+              text: "Cancel",
+              onPress: () => console.log("Cancel"),
             },
             {
-              text: 'Retry',
+              text: "Retry",
               onPress: () => handleGoogleLogin(),
             },
-          ],
+          ]
         );
       }
     });
@@ -152,12 +152,12 @@ export const handleGoogleLogin = async (
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
-  type: string,
+  type: string
 ) => {
   LoginManager.logOut();
 
   // Get the users ID token
-  const {idToken} = await GoogleSignin.signIn();
+  const { idToken } = await GoogleSignin.signIn();
 
   // Create a Google credential with the token
   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
@@ -167,9 +167,9 @@ export const handleGoogleLogin = async (
 
   const googleUser = await auth().signInWithCredential(googleCredential);
 
-  let hashUID = '';
+  let hashUID = "";
 
-  await sha256(googleUser.user.uid).then(hash => {
+  await sha256(googleUser.user.uid).then((hash) => {
     hashUID = hash;
   });
 
@@ -187,7 +187,7 @@ export const handleGoogleLogin = async (
     defaultToken,
     loginUser,
     registerSocialUser,
-    type,
+    type
   );
 };
 
@@ -195,18 +195,18 @@ export const handleAppleLogin = async (
   defaultToken: string,
   loginUser: any,
   registerSocialUser: any,
-  type: string,
+  type: string
 ) => {
   let appleUser = {
-    loginType: 'apple',
-    authToken: '',
-    displayName: '',
-    uid: '',
-    email: '',
+    loginType: "apple",
+    authToken: "",
+    displayName: "",
+    uid: "",
+    email: "",
   };
   LoginManager.logOut();
   // performs login request
-  if (Platform.OS === 'android') {
+  if (Platform.OS === "android") {
     // Generate secure, random values for state and nonce
     const rawNonce = uuid();
     const state = uuid();
@@ -214,11 +214,11 @@ export const handleAppleLogin = async (
     // Configure the request
     appleAuthAndroid.configure({
       // The Service ID you registered with Apple
-      clientId: 'com.ethora.service',
+      clientId: "com.ethora.service",
 
       // Return URL added to your Apple dev console. We intercept this redirect, but it must still match
       // the URL you provided to Apple. It can be an empty route on your backend as it's never called.
-      redirectUri: 'https://ethora-668e9.firebaseapp.com/__/auth/handler',
+      redirectUri: "https://ethora-668e9.firebaseapp.com/__/auth/handler",
 
       // The type of response requested - code, id_token, or both.
       responseType: appleAuthAndroid.ResponseType.ALL,
@@ -237,18 +237,18 @@ export const handleAppleLogin = async (
     // Open the browser window for user sign in
     const responseFromApple = await appleAuthAndroid.signIn();
 
-    const {id_token, nonce} = responseFromApple;
+    const { id_token, nonce } = responseFromApple;
 
     const appleCredentialAndroid = auth.AppleAuthProvider.credential(
       id_token,
-      nonce,
+      nonce
     );
     const data = await auth().signInWithCredential(appleCredentialAndroid);
     let hashUID = await sha256(data.user.uid);
     let user = {
-      loginType: 'apple',
+      loginType: "apple",
       authToken: id_token,
-      displayName: '',
+      displayName: "",
       uid: hashUID,
       email: data.additionalUserInfo.profile.email,
       firstName: data.user.displayName,
@@ -265,22 +265,22 @@ export const handleAppleLogin = async (
 
     // Ensure Apple returned a user identityToken
     if (!appleAuthRequestResponse.identityToken) {
-      throw 'Apple Sign-In failed - no identify token returned';
+      throw "Apple Sign-In failed - no identify token returned";
     }
 
     // Create a Firebase credential from the response
-    const {identityToken, nonce} = appleAuthRequestResponse;
+    const { identityToken, nonce } = appleAuthRequestResponse;
     const appleCredential = auth.AppleAuthProvider.credential(
       identityToken,
-      nonce,
+      nonce
     );
 
     const data = await auth().signInWithCredential(appleCredential);
     let hashUID = await sha256(data.user.uid);
     let user = {
-      loginType: 'apple',
+      loginType: "apple",
       authToken: identityToken,
-      displayName: '',
+      displayName: "",
       uid: hashUID,
       email: data.additionalUserInfo.profile.email,
       firstName: data.user.displayName,

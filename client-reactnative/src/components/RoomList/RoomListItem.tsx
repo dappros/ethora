@@ -5,65 +5,66 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React from "react"
-import { useNavigation } from "@react-navigation/native"
-import { RoomListItemIcon } from "./RoomListItemIcon"
-import { Box, HStack, Text, View, VStack } from "native-base"
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import MaterialIcon from "react-native-vector-icons/MaterialIcons"
-import { observer } from "mobx-react-lite"
-import { TouchableOpacity } from "react-native"
-import { textStyles } from "../../../docs/config"
-import { useStores } from "../../stores/context"
-import { format } from "date-fns"
-import dayjs from "dayjs"
-import { HomeStackNavigationProp } from "../../navigation/types"
+import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { RoomListItemIcon } from "./RoomListItemIcon";
+import { Box, HStack, Text, View, VStack } from "native-base";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import { observer } from "mobx-react-lite";
+import { TouchableOpacity } from "react-native";
+import { textStyles } from "../../../docs/config";
+import { useStores } from "../../stores/context";
+import { format } from "date-fns";
+import dayjs from "dayjs";
+import { HomeStackNavigationProp } from "../../navigation/types";
 
 interface RoomListProps {
-  jid: string
-  name: string
-  counter: number
-  participants: string | number
-  index: number
-  length: number
+  jid: string;
+  name: string;
+  counter: number;
+  participants: string | number;
+  index: number;
+  length: number;
 }
 
 const removeStringSplits = (str: string) => {
   if (str) {
-    return str.trim().split(/\s+/).join(" ")
+    return str.trim().split(/\s+/).join(" ");
   }
-}
+};
 const getTime = (time: Date | undefined) => {
   if (!time) {
-    return null
+    return null;
   }
   try {
-    const oneday = 60 * 60 * 24 * 1000
-    const now = Date.now()
+    const oneday = 60 * 60 * 24 * 1000;
+    const now = Date.now();
     //@ts-ignore
-    const isMoreThanADay = now - time > oneday
+    const isMoreThanADay = now - time > oneday;
     if (isMoreThanADay) {
-      return dayjs(time).locale("en").format("MMM D")
+      return dayjs(time).locale("en").format("MMM D");
     } else {
-      return format(new Date(time), "hh:mm")
+      return format(new Date(time), "hh:mm");
     }
   } catch (error) {
-    return null
+    return null;
   }
-}
+};
 export const RoomListItem = observer(
   ({ jid, name, participants }: RoomListProps) => {
-    const { chatStore } = useStores()
-    const room = chatStore.roomsInfoMap[jid]
-    const navigation = useNavigation<HomeStackNavigationProp>()
+    const { chatStore } = useStores();
+    const room = chatStore.roomsInfoMap[jid];
+    const navigation = useNavigation<HomeStackNavigationProp>();
 
-    const defaultText = "Tap to view and join the conversation."
+    const defaultText = "Tap to view and join the conversation.";
 
     const navigateToChat = () => {
-      chatStore.updateBadgeCounter(jid, "CLEAR")
+      chatStore.updateBadgeCounter(jid, "CLEAR");
       //@ts-ignore
-      navigation.navigate("ChatScreen", { chatJid: jid, chatName: name })
-    }
+      navigation.navigate("ChatScreen", { chatJid: jid, chatName: name });
+    };
+
     return (
       <View style={[{ backgroundColor: "white" }]}>
         <Box pl="4" pr="5" py="2">
@@ -81,12 +82,14 @@ export const RoomListItem = observer(
                 flex={1}
                 space={0.5}
                 position={"relative"}
+                borderBottomColor={"#E8EDF2"}
+                borderBottomWidth={1}
               >
                 <HStack justifyContent={"space-between"} alignItems={"center"}>
                   <Text
                     numberOfLines={1}
-                    fontSize={hp("2%")}
-                    fontFamily={textStyles.semiBoldFont}
+                    fontSize={14}
+                    fontFamily={textStyles.regularFont}
                     accessibilityLabel="Name"
                     _dark={{
                       color: "warmGray.50",
@@ -95,13 +98,15 @@ export const RoomListItem = observer(
                   >
                     {name}
                   </Text>
-                  <Text
-                    fontSize="xs"
-                    fontFamily={textStyles.mediumFont}
-                    color="#8F8F8F"
-                  >
-                    {getTime(room?.lastMessageTime)}
-                  </Text>
+                  <VStack>
+                    <Text
+                      fontSize={12}
+                      fontFamily={textStyles.mediumFont}
+                      color="#8F8F8F"
+                    >
+                      {getTime(room?.lastMessageTime)}
+                    </Text>
+                  </VStack>
                 </HStack>
                 <HStack>
                   {name && room?.lastUserName && room?.lastUserText ? (
@@ -116,12 +121,10 @@ export const RoomListItem = observer(
                           fontFamily={textStyles.semiBoldFont}
                           fontSize={hp("1.7%")}
                           color="#8F8F8F"
-                          fontWeight={600}
                         >
                           {room?.lastUserName && room?.lastUserName + ":"}
                         </Text>
                       </Box>
-
                       <Box>
                         <Text
                           fontFamily={textStyles.regularFont}
@@ -152,12 +155,34 @@ export const RoomListItem = observer(
                       {defaultText}
                     </Text>
                   )}
+                  {room?.counter > 0 && (
+                    <Box
+                      style={{
+                        backgroundColor: `${
+                          room?.muted ? "#E8EDF2" : "#0052CD"
+                        }`,
+                        borderRadius: 8,
+                        height: hp(3),
+                        width: hp(3),
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        color={`${room?.muted ? "#0052CD" : "white"}`}
+                        fontWeight={"semibold"}
+                        fontSize={"xs"}
+                      >
+                        {room?.counter}
+                      </Text>
+                    </Box>
+                  )}
                 </HStack>
               </VStack>
             </HStack>
           </TouchableOpacity>
         </Box>
       </View>
-    )
+    );
   }
-)
+);

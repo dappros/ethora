@@ -1,34 +1,38 @@
-import { HStack, Icon, View } from "native-base"
-import { appleSignIn, facebookSignIn } from "../../../docs/config"
-import SocialButton from "../Buttons/SocialButton"
-import { heightPercentageToDP as hp } from "react-native-responsive-screen"
-import FontAwesomeIcon from "react-native-vector-icons/FontAwesome"
+import { HStack, Icon, View } from "native-base";
+import { appleSignIn, facebookSignIn } from "../../../docs/config";
+import SocialButton from "../Buttons/SocialButton";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import {
   handleAppleLogin,
   handleFaceBookLogin,
   loginOrRegisterSocialUser,
-} from "../../helpers/login/socialLoginHandle"
-import { socialLoginType } from "../../constants/socialLoginConstants"
-import AntIcon from "react-native-vector-icons/AntDesign"
-import MetamaskIcon from "../../assets/metamask.svg"
-import React from "react"
-import { useStores } from "../../stores/context"
-import { projectId, providerMetadata } from "../../constants/walletConnect"
-import { WalletConnectModal } from "@walletconnect/modal-react-native"
+} from "../../helpers/login/socialLoginHandle";
+import { socialLoginType } from "../../constants/socialLoginConstants";
+import AntIcon from "react-native-vector-icons/AntDesign";
+import MetamaskIcon from "../../assets/metamask.svg";
+import React from "react";
+import { useStores } from "../../stores/context";
+import { projectId, providerMetadata } from "../../constants/walletConnect";
+import { WalletConnectModal } from "@walletconnect/modal-react-native";
 
 interface SocialButtonsProps {
-  border?: boolean
+  border?: boolean;
+  connectMetamask?: string;
 }
 
-const SocialButtons = ({ border = false }: SocialButtonsProps) => {
-  const { loginStore, apiStore } = useStores()
+const SocialButtons = ({
+  border = false,
+  connectMetamask,
+}: SocialButtonsProps) => {
+  const { loginStore, apiStore } = useStores();
   const onAppleButtonPress = async () => {
     const user = await handleAppleLogin(
       apiStore.defaultToken,
       loginStore.loginUser,
       loginStore.registerUser,
       socialLoginType.APPLE
-    )
+    );
 
     await loginOrRegisterSocialUser(
       user,
@@ -36,15 +40,16 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
       loginStore.loginUser,
       loginStore.registerUser,
       socialLoginType.APPLE
-    )
-  }
-  const connectMetamask = async () => {
-    return open()
-  }
+    );
+  };
   return (
     <HStack
-      style={{ justifyContent: "center", alignItems: "center" }}
-      space={"25px"}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "80%",
+      }}
     >
       {facebookSignIn && (
         <View accessibilityLabel="Sign in with Facebook">
@@ -56,7 +61,7 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
                 size={hp("2.8%")}
                 as={FontAwesomeIcon}
                 name={"facebook"}
-                marginLeft={"7px"}
+                marginLeft={"9px"}
               />
             }
             onPress={() => {
@@ -65,7 +70,7 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
                 loginStore.loginUser,
                 loginStore.registerUser,
                 socialLoginType.FACEBOOK
-              )
+              );
             }}
           />
         </View>
@@ -80,6 +85,7 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
                 size={hp("2.8%")}
                 as={AntIcon}
                 name={"apple1"}
+                marginBottom={"2px"}
               />
             }
             onPress={onAppleButtonPress}
@@ -90,7 +96,7 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
         <SocialButton
           border={border}
           icon={<MetamaskIcon width={hp("2.8%")} />}
-          onPress={connectMetamask}
+          // onPress={connectMetamask}
         />
       </View>
       <WalletConnectModal
@@ -98,6 +104,6 @@ const SocialButtons = ({ border = false }: SocialButtonsProps) => {
         providerMetadata={providerMetadata}
       />
     </HStack>
-  )
-}
-export default SocialButtons
+  );
+};
+export default SocialButtons;
