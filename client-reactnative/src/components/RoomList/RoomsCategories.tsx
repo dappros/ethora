@@ -160,6 +160,7 @@ const RoomsCategories = () => {
         paddingRight: 20,
       }}
       space={"xl"}
+      zIndex={2}
     >
       {buttons.map((item) => {
         if (!item.show) return null;

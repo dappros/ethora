@@ -5,14 +5,14 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../stores/context";
 import { RoomList } from "./RoomList";
 import { checkIsDefaultChat } from "../../helpers/chat/checkIsDefaultChat";
 import { roomListProps } from "../../stores/chatStore";
+import _ from "lodash";
 
-var _ = require("lodash");
 const ROOM_KEYS = {
   official: "official",
   private: "private",
@@ -21,39 +21,46 @@ const ROOM_KEYS = {
 
 export const RoomsTabBar = observer(() => {
   const { chatStore } = useStores();
-  const privateRooms = chatStore.roomList?.filter((item: any) => {
-    const splitedJid = item?.jid?.split("@")[0];
 
-    const isDefaultChat = checkIsDefaultChat(splitedJid);
+  const privateRooms = useMemo(
+    () =>
+      chatStore.roomList?.filter((item) => {
+        const splitedJid = item?.jid?.split("@")[0];
+        const isDefaultChat = checkIsDefaultChat(splitedJid);
+        return (
+          item.participants < 3 &&
+          !isDefaultChat &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
+          !item.meta
+        );
+      }),
+    [chatStore.roomList, chatStore.roomsInfoMap]
+  );
 
-    if (
-      item.participants < 3 &&
-      !isDefaultChat &&
-      !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
-      !item.meta
-    ) {
-      return item;
-    }
-  });
-  const official = chatStore.roomList.filter((item) => {
-    const splitedJid = item?.jid?.split("@")[0];
-    const isDefaultChat = checkIsDefaultChat(splitedJid);
-    if (isDefaultChat || chatStore.roomsInfoMap[item.jid]?.isFavourite) {
-      return item;
-    }
-  });
-  const groups = chatStore.roomList.filter((item: any) => {
-    const splitedJid = item?.jid?.split("@")[0];
-    const isDefaultChat = checkIsDefaultChat(splitedJid);
-    if (
-      item.participants > 2 &&
-      !isDefaultChat &&
-      !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
-      !item.meta
-    ) {
-      return item;
-    }
-  });
+  const official = useMemo(
+    () =>
+      chatStore.roomList.filter((item) => {
+        const splitedJid = item?.jid?.split("@")[0];
+        const isDefaultChat = checkIsDefaultChat(splitedJid);
+        return isDefaultChat || chatStore.roomsInfoMap[item.jid]?.isFavourite;
+      }),
+    [chatStore.roomList, chatStore.roomsInfoMap]
+  );
+
+  const groups = useMemo(
+    () =>
+      chatStore.roomList.filter((item) => {
+        const splitedJid = item?.jid?.split("@")[0];
+        const isDefaultChat = checkIsDefaultChat(splitedJid);
+        return (
+          item.participants > 2 &&
+          !isDefaultChat &&
+          !chatStore.roomsInfoMap[item.jid]?.isFavourite &&
+          !item.meta
+        );
+      }),
+    [chatStore.roomList, chatStore.roomsInfoMap]
+  );
 
   const getRooms = useCallback(() => {
     if (chatStore.activeChats === ROOM_KEYS.official) {
@@ -62,20 +69,20 @@ export const RoomsTabBar = observer(() => {
     const roomsWithDate = privateRooms
       .concat(groups)
       .filter((item) => chatStore.roomsInfoMap[item.jid]?.lastMessageTime);
-
     const roomsWithoutDate = privateRooms
       .concat(groups)
       .filter((item) => !chatStore.roomsInfoMap[item.jid]?.lastMessageTime);
-
     return _.orderBy(
       roomsWithDate,
-      (el: any) => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
+      (el) => chatStore.roomsInfoMap[el.jid]?.lastMessageTime,
       "desc"
     ).concat(roomsWithoutDate) as roomListProps[];
   }, [
-    chatStore.roomList,
     chatStore.activeChats,
-    chatStore.roomsInfoMap.isUpdated,
+    official,
+    privateRooms,
+    groups,
+    chatStore.roomsInfoMap,
   ]);
 
   useEffect(() => {
