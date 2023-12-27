@@ -10,7 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useStores } from "../../stores/context";
 import { RoomListItem } from "./RoomListItem";
 import { View, Text, HStack } from "native-base";
-import { Animated, FlatList, TextInput } from "react-native";
+import { Animated, FlatList, TextInput, Easing } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types";
 import { roomListProps as roomListProperties } from "../../stores/chatStore";
@@ -81,24 +81,32 @@ export const RoomList: React.FC<IRoomList> = observer(
 
     const scrollY = useRef(new Animated.Value(0)).current;
 
-    // Parallax animation for createRoomBlock
     const createRoomBlockOpacity = scrollY.interpolate({
       inputRange: [0, 50, 100],
-      outputRange: [0, 0.5, 1],
+      outputRange: [1, 0.5, 0],
       extrapolate: "clamp",
     });
 
     const createRoomBlockTranslateY = scrollY.interpolate({
       inputRange: [0, 100],
-      outputRange: [0, 84],
+      outputRange: [84, 0],
       extrapolate: "clamp",
     });
 
     const createContentTranslateY = scrollY.interpolate({
-      inputRange: [0, 50],
-      outputRange: [0, 84],
+      inputRange: [0, 100],
+      outputRange: [100, 0],
       extrapolate: "clamp",
+      easing: Easing.linear,
     });
+
+    const headerHeigth = scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: [0, 100],
+      extrapolate: "clamp",
+      easing: Easing.linear,
+    });
+
     const createRoomBlock = (
       <Animated.View
         style={{
@@ -160,7 +168,7 @@ export const RoomList: React.FC<IRoomList> = observer(
           <TouchableOpacity
             style={{
               marginTop: 8,
-              marginBottom: 20,
+              marginBottom: 8,
               backgroundColor: "#0052CD",
               height: 37,
               alignItems: "center",
@@ -176,6 +184,16 @@ export const RoomList: React.FC<IRoomList> = observer(
           </TouchableOpacity>
         </View>
       </Animated.View>
+    );
+
+    const roomListHeader = () => (
+      <Animated.View
+        style={{
+          height: headerHeigth,
+          width: "100%",
+          backgroundColor: "transparent",
+        }}
+      ></Animated.View>
     );
 
     return (
@@ -205,6 +223,7 @@ export const RoomList: React.FC<IRoomList> = observer(
             flex={1}
           >
             <FlatList
+              ListHeaderComponent={roomListHeader}
               nestedScrollEnabled={true}
               style={{ width: "100%" }}
               data={searchValue ? allRooms : sortedRoomsList}
@@ -216,6 +235,7 @@ export const RoomList: React.FC<IRoomList> = observer(
                   useNativeDriver: false,
                 }
               )}
+              contentOffset={{ x: 0, y: 100 }}
               renderItem={({ item, index }) => {
                 return (
                   <RoomListItem
