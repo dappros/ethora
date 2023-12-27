@@ -26,6 +26,7 @@ import { LinearGradient } from "react-native-linear-gradient";
 
 interface IRoomList {
   roomsList: roomListProperties[];
+  currentCategoryIndex: number;
 }
 
 export const RoomList: React.FC<IRoomList> = observer(
@@ -78,73 +79,103 @@ export const RoomList: React.FC<IRoomList> = observer(
       setAllRooms(newRooms.filter((room) => room.name.includes(value)));
     };
 
-    const createRoomBlock = (
-      <View paddingLeft={4} paddingRight={4} width={"full"}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#fff",
-            width: "100%",
-            borderRadius: 25,
-            position: "relative",
-          }}
-        >
-          <Animated.View
-            style={[
-              {
-                position: "absolute",
-                left: "50%",
-              },
-              { transform: [{ translateX }] },
-            ]}
-          >
-            <Text style={{ color: "#8F8F8F", opacity: searchValue ? 0 : 1 }}>
-              Search..
-            </Text>
+    const scrollY = useRef(new Animated.Value(0)).current;
 
-            <Icon
-              name="search"
-              style={{ position: "absolute", top: 3, left: -22 }}
-              size={15}
-              color="#888"
-            />
-          </Animated.View>
-          <View style={{ flex: 1, justifyContent: "center" }}>
-            <TextInput
-              ref={inputReference}
-              onFocus={handleSearchFocus}
-              onBlur={handleSearchBlur}
-              onChangeText={handleSearchChange}
-              value={searchValue}
-              style={{
-                paddingLeft: 46,
-                width: "100%",
-                height: 37,
-                paddingRight: 15,
-              }}
-              caretHidden={!placeholderAnimationEnded}
-            />
+    // Parallax animation for createRoomBlock
+    const createRoomBlockOpacity = scrollY.interpolate({
+      inputRange: [0, 50, 100],
+      outputRange: [0, 0.5, 1],
+      extrapolate: "clamp",
+    });
+
+    const createRoomBlockTranslateY = scrollY.interpolate({
+      inputRange: [0, 100],
+      outputRange: [0, 84],
+      extrapolate: "clamp",
+    });
+
+    const createContentTranslateY = scrollY.interpolate({
+      inputRange: [0, 50],
+      outputRange: [0, 84],
+      extrapolate: "clamp",
+    });
+    const createRoomBlock = (
+      <Animated.View
+        style={{
+          opacity: createRoomBlockOpacity,
+          transform: [{ translateY: createRoomBlockTranslateY }],
+          paddingLeft: 4,
+          paddingRight: 4,
+          width: "100%",
+        }}
+      >
+        <View paddingLeft={4} paddingRight={4} width={"full"}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#fff",
+              width: "100%",
+              borderRadius: 25,
+              position: "relative",
+            }}
+          >
+            <Animated.View
+              style={[
+                {
+                  position: "absolute",
+                  left: "50%",
+                },
+                { transform: [{ translateX }] },
+              ]}
+            >
+              <Text style={{ color: "#8F8F8F", opacity: searchValue ? 0 : 1 }}>
+                Search..
+              </Text>
+
+              <Icon
+                name="search"
+                style={{ position: "absolute", top: 3, left: -22 }}
+                size={15}
+                color="#888"
+              />
+            </Animated.View>
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <TextInput
+                ref={inputReference}
+                onFocus={handleSearchFocus}
+                onBlur={handleSearchBlur}
+                onChangeText={handleSearchChange}
+                value={searchValue}
+                style={{
+                  paddingLeft: 46,
+                  width: "100%",
+                  height: 37,
+                  paddingRight: 15,
+                }}
+                caretHidden={!placeholderAnimationEnded}
+              />
+            </View>
           </View>
+          <TouchableOpacity
+            style={{
+              marginTop: 8,
+              marginBottom: 20,
+              backgroundColor: "#0052CD",
+              height: 37,
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 30,
+            }}
+            onPress={() => navigation.navigate("NewChatScreen")}
+          >
+            <HStack space={2} alignItems={"center"} justifyContent={"center"}>
+              <Icon name="plus" size={9} color="#fff" />
+              <Text style={{ color: "#fff" }}>New chat</Text>
+            </HStack>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={{
-            marginTop: 8,
-            marginBottom: 20,
-            backgroundColor: "#0052CD",
-            height: 37,
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 30,
-          }}
-          onPress={() => navigation.navigate("NewChatScreen")}
-        >
-          <HStack space={2} alignItems={"center"} justifyContent={"center"}>
-            <Icon name="plus" size={9} color="#fff" />
-            <Text style={{ color: "#fff" }}>New chat</Text>
-          </HStack>
-        </TouchableOpacity>
-      </View>
+      </Animated.View>
     );
 
     return (
@@ -161,15 +192,12 @@ export const RoomList: React.FC<IRoomList> = observer(
             style={{ width: "100%", position: "relative" }}
           >
             <RoomsHeader style={undefined} />
-            <View
-              style={{
-                paddingTop: 84,
-              }}
-            >
-              {createRoomBlock}
+            {createRoomBlock}
+            <Animated.View style={{ paddingTop: createContentTranslateY }}>
               {!searchValue ? <RoomsCategories /> : null}
-            </View>
+            </Animated.View>
           </LinearGradient>
+
           <View
             justifyContent={"center"}
             alignItems={"center"}
@@ -177,12 +205,17 @@ export const RoomList: React.FC<IRoomList> = observer(
             flex={1}
           >
             <FlatList
-              // ListHeaderComponent={createRoomBlock}
               nestedScrollEnabled={true}
               style={{ width: "100%" }}
               data={searchValue ? allRooms : sortedRoomsList}
               onEndReachedThreshold={0.1}
               keyExtractor={(item: any) => `${item.jid}`}
+              onScroll={Animated.event(
+                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                {
+                  useNativeDriver: false,
+                }
+              )}
               renderItem={({ item, index }) => {
                 return (
                   <RoomListItem
