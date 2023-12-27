@@ -21,7 +21,7 @@ const RoomsHeader = ({ style }) => {
       style={{
         borderBottomLeftRadius: 15,
         borderBottomRightRadius: 15,
-        zIndex: 12,
+        zIndex: 2,
         width: "100%",
         height: 75,
         position: "absolute",

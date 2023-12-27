@@ -55,7 +55,7 @@ export const RoomList: React.FC<IRoomList> = observer(
     useEffect(() => {
       const placeholderMoveAnimation = Animated.timing(placeholderAnim, {
         toValue: isFocused ? 1 : 0,
-        duration: 200,
+        duration: 300,
         useNativeDriver: false,
       });
       placeholderMoveAnimation.start(({ finished }) => {
@@ -107,6 +107,10 @@ export const RoomList: React.FC<IRoomList> = observer(
       easing: Easing.linear,
     });
 
+    const handleTextInputFocus = () => {
+      inputReference.current?.focus();
+    };
+
     const createRoomBlock = (
       <Animated.View
         style={{
@@ -118,15 +122,15 @@ export const RoomList: React.FC<IRoomList> = observer(
         }}
       >
         <View paddingLeft={4} paddingRight={4} width={"full"}>
-          <View
+          <TouchableOpacity
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: "#fff",
+              backgroundColor: "#ffff",
               width: "100%",
               borderRadius: 25,
-              position: "relative",
             }}
+            onPress={handleTextInputFocus}
           >
             <Animated.View
               style={[
@@ -137,7 +141,12 @@ export const RoomList: React.FC<IRoomList> = observer(
                 { transform: [{ translateX }] },
               ]}
             >
-              <Text style={{ color: "#8F8F8F", opacity: searchValue ? 0 : 1 }}>
+              <Text
+                style={{
+                  color: "#8F8F8F",
+                  opacity: placeholderAnimationEnded ? 0 : 1,
+                }}
+              >
                 Search..
               </Text>
 
@@ -156,32 +165,38 @@ export const RoomList: React.FC<IRoomList> = observer(
                 onChangeText={handleSearchChange}
                 value={searchValue}
                 style={{
-                  paddingLeft: 46,
+                  paddingLeft: 50,
                   width: "100%",
                   height: 37,
                   paddingRight: 15,
+                  paddingBottom: 8,
                 }}
                 caretHidden={!placeholderAnimationEnded}
               />
             </View>
-          </View>
-          <TouchableOpacity
+          </TouchableOpacity>
+          <View
             style={{
               marginTop: 8,
               marginBottom: 8,
-              backgroundColor: "#0052CD",
-              height: 37,
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 30,
             }}
-            onPress={() => navigation.navigate("NewChatScreen")}
           >
-            <HStack space={2} alignItems={"center"} justifyContent={"center"}>
-              <Icon name="plus" size={9} color="#fff" />
-              <Text style={{ color: "#fff" }}>New chat</Text>
-            </HStack>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#0052CD",
+                height: 37,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 30,
+              }}
+              onPress={() => navigation.navigate("NewChatScreen")}
+            >
+              <HStack space={2} alignItems={"center"} justifyContent={"center"}>
+                <Icon name="plus" size={9} color="#fff" />
+                <Text style={{ color: "#fff" }}>New chat</Text>
+              </HStack>
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     );
