@@ -92,6 +92,7 @@ import {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { HomeStackNavigationProp } from "../../navigation/types";
 import { TCombinedMimeType } from "../../constants/mimeTypes";
+import Toolbar from "./Toolbar";
 
 //interfaces and types
 export type containerType = "main" | "thread";
@@ -136,21 +137,17 @@ interface ISystemMessage {
 
 //styles
 const styles = StyleSheet.create({
-  sendButton: {
-    backgroundColor: commonColors.primaryDarkColor,
-    borderRadius: 100,
-    padding: 5,
-    marginRight: 5,
-    paddingLeft: 7,
-    marginBottom: 5,
-  },
+  sendButton: {},
   attachmentContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   attachmentActionContainer: {
     width: hp("4%"),
-    height: hp("4%"),
+    height: hp("3%"),
+    transform: [{ scaleX: -1 }],
+    display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -933,9 +930,17 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       );
     }
     return (
-      <Send {...sendProps}>
+      <Send
+        {...sendProps}
+        containerStyle={{
+          backgroundColor: "transparent",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <View style={[styles.sendButton]}>
-          <IonIcons name="ios-send" color={"white"} size={hp("3%")} />
+          <IonIcons name="ios-send" color={"#0052CD"} size={hp("3%")} />
         </View>
       </Send>
     );
@@ -960,25 +965,23 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           },
         };
     return (
-      <View style={styles.renderAttachmentContainerStyle}>
-        <View
-          accessibilityLabel="Choose attachment"
-          style={styles.attachmentContainer}
-        >
-          <Actions
-            containerStyle={styles.attachmentActionContainer}
-            icon={() => (
-              <Entypo
-                accessibilityLabel="Send Attachment"
-                name="attachment"
-                color={"black"}
-                size={hp("3%")}
-              />
-            )}
-            options={options}
-            optionTintColor="#000000"
-          />
-        </View>
+      <View
+        accessibilityLabel="Choose attachment"
+        style={styles.attachmentContainer}
+      >
+        <Actions
+          containerStyle={styles.attachmentActionContainer}
+          icon={() => (
+            <Entypo
+              accessibilityLabel="Send Attachment"
+              name="attachment"
+              color="#0052CD"
+              size={hp("3%")}
+            />
+          )}
+          options={options}
+          optionTintColor="#000000"
+        />
       </View>
     );
   };
@@ -1260,12 +1263,19 @@ const ChatContainer = observer((props: ChatContainerProps) => {
 
   return (
     <>
-      <ImageBackground
-        style={{ width: "100%", height: "100%", zIndex: 0 }}
-        source={{
-          uri: roomDetails.roomBackground
-            ? roomDetails.roomBackground
-            : defaultChatBackgroundTheme[0].value,
+      {/* <ImageBackground
+    style={{ width: "100%", height: "100%", zIndex: 0 }}
+    source={{
+      uri: roomDetails.roomBackground
+        ? roomDetails.roomBackground
+        : defaultChatBackgroundTheme[0].value,
+    }}/> */}
+      <View
+        style={{
+          width: "100%",
+          height: "100%",
+          zIndex: 0,
+          backgroundColor: "#E8EDF2",
         }}
       >
         {containerType === "main" ? (
@@ -1297,6 +1307,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           </View>
         )}
         <GiftedChat
+          renderInputToolbar={Toolbar}
           ref={giftedRef}
           renderSend={renderSend}
           renderActions={renderAttachment}
@@ -1381,6 +1392,10 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               onPress: handleChatLinks,
             },
           ]}
+          messagesContainerStyle={{
+            paddingBottom: 42,
+            backgroundColor: "#E8EDF2",
+          }}
         />
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
@@ -1427,7 +1442,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           onClose={closeLongTapModal}
           dataForTransfer={dataForLongTapModal}
         />
-      </ImageBackground>
+      </View>
     </>
   );
 });

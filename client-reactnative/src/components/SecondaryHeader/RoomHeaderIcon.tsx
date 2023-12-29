@@ -12,13 +12,27 @@ import { Box, Text, View } from "native-base";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../stores/context";
 import FastImage from "react-native-fast-image";
+import { TouchableOpacity } from "react-native";
 
-export const RoomListItemIcon = observer(
-  ({ name, jid }: { name: string; jid: string }) => {
+export const RoomHeaderIcon = observer(
+  ({
+    name,
+    jid,
+    onClick,
+  }: {
+    name: string;
+    jid: string;
+    onClick: () => void;
+  }) => {
     const { chatStore } = useStores();
     const room = chatStore.roomList.find((item) => item.jid === jid);
+
+    const handleClick = () => {
+      onClick?.();
+    };
+
     return (
-      <>
+      <TouchableOpacity onPress={handleClick}>
         {room?.roomThumbnail ? (
           <FastImage
             source={{
@@ -27,11 +41,9 @@ export const RoomListItemIcon = observer(
             }}
             resizeMode={FastImage.resizeMode.cover}
             style={{
-              borderColor: "#8F8F8F",
-              borderWidth: 1,
               borderRadius: hp("4.5%"),
-              width: 65,
-              height: 65,
+              width: 48,
+              height: 48,
             }}
           />
         ) : (
@@ -59,7 +71,7 @@ export const RoomListItemIcon = observer(
             </Text>
           </Box>
         )}
-      </>
+      </TouchableOpacity>
     );
   }
 );

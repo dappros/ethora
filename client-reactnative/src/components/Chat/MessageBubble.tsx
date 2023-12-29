@@ -5,29 +5,29 @@ You may obtain a copy of the License at https://github.com/dappros/ethora/blob/m
 Note: linked open-source libraries and components may be subject to their own licenses.
 */
 
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   StyleSheet,
   Image,
   Animated,
   TouchableWithoutFeedback,
   TouchableOpacity,
-} from 'react-native';
+} from "react-native";
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import {colors} from '../../constants/messageColors';
-import {MessageImage, Time} from 'react-native-gifted-chat';
-import {coinImagePath, commonColors, textStyles} from '../../../docs/config';
-import {QuickReplies} from './QuickReplies';
-import {MessageText} from './MessageText';
-import {Box, HStack, Text, View} from 'native-base';
-import {observer} from 'mobx-react-lite';
-import {containerType} from './ChatContainer';
-import {IMessage, roomListProps} from '../../stores/chatStore';
-import {isSameDay, isSameUser} from '../../helpers/chat/chatUtils';
-import {useStores} from '../../stores/context';
+} from "react-native-responsive-screen";
+import { colors } from "../../constants/messageColors";
+import { MessageImage, Time } from "react-native-gifted-chat";
+import { coinImagePath, commonColors, textStyles } from "../../../docs/config";
+import { QuickReplies } from "./QuickReplies";
+import { MessageText } from "./MessageText";
+import { Box, HStack, Text, View } from "native-base";
+import { observer } from "mobx-react-lite";
+import { containerType } from "./ChatContainer";
+import { IMessage, roomListProps } from "../../stores/chatStore";
+import { isSameDay, isSameUser } from "../../helpers/chat/chatUtils";
+import { useStores } from "../../stores/context";
 
 // const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -46,7 +46,7 @@ interface BubbleProps {
   tickStyle?: any;
   renderUsername?: any;
   renderTime?: any;
-  position: 'left' | 'right';
+  position: "left" | "right";
   renderCustomView?: any;
   nextMessage?: any;
   containerToNextStyle?: any;
@@ -65,7 +65,7 @@ interface BubbleProps {
 }
 
 const Bubble = observer((props: BubbleProps) => {
-  const {chatStore} = useStores();
+  const { chatStore } = useStores();
   const [width, setWidth] = useState(0);
 
   const {
@@ -96,22 +96,22 @@ const Bubble = observer((props: BubbleProps) => {
   } = props;
 
   const room: roomListProps = chatStore.roomList.find(
-    item => item.jid === currentMessage.roomJid,
+    (item) => item.jid === currentMessage.roomJid
   ) || {
-    avatar: '',
+    avatar: "",
     counter: 0,
-    createdAt: '',
+    createdAt: "",
     jid: currentMessage.roomJid,
-    lastUserName: '',
-    lastUserText: '',
-    name: '',
+    lastUserName: "",
+    lastUserText: "",
+    name: "",
     participants: 0,
     isFavourite: false,
     muted: false,
     priority: 0,
-    roomBackground: '',
+    roomBackground: "",
     roomBackgroundIndex: 0,
-    roomThumbnail: '',
+    roomThumbnail: "",
   };
 
   const onLongPressHandle = () => {
@@ -188,9 +188,10 @@ const Bubble = observer((props: BubbleProps) => {
       return (
         <View style={styles.content.usernameView}>
           <Text
-            color={'white'}
-            fontSize={hp('2%')}
-            fontFamily={textStyles.lightFont}>
+            color={"#0052CD"}
+            fontSize={hp("2%")}
+            fontFamily={textStyles.lightFont}
+          >
             {username}
           </Text>
         </View>
@@ -211,8 +212,10 @@ const Bubble = observer((props: BubbleProps) => {
           timeTextStyle={{
             left: {
               fontFamily: textStyles.lightFont,
+              color: "#8F8F8F",
             },
             right: {
+              color: "#8F8F8F",
               fontFamily: textStyles.lightFont,
             },
           }}
@@ -231,7 +234,7 @@ const Bubble = observer((props: BubbleProps) => {
           </Text>
           <Image
             source={coinImagePath}
-            resizeMode={'contain'}
+            resizeMode={"contain"}
             style={styles[position].tokenIconStyle}
           />
         </View>
@@ -241,18 +244,15 @@ const Bubble = observer((props: BubbleProps) => {
   const renderReplyCount = () => {
     if (currentMessage.numberOfReplies) {
       const replyConst =
-        currentMessage.numberOfReplies > 1 ? 'replies' : 'reply';
-      let text = ' reply';
-      if (currentMessage.numberOfReplies > 1) {
-        text = ' replies';
-      }
+        currentMessage.numberOfReplies - 1 > 1 ? "replies" : "reply";
       return (
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
           <TouchableOpacity onPress={() => handleReply(currentMessage)}>
             <Text
               fontFamily={textStyles.regularFont}
-              color={commonColors.primaryColor}>
-              {currentMessage.numberOfReplies} {replyConst} (tap to review)
+              color={commonColors.primaryColor}
+            >
+              {currentMessage.numberOfReplies - 1} {replyConst} (tap to review)
             </Text>
           </TouchableOpacity>
         </HStack>
@@ -265,7 +265,7 @@ const Bubble = observer((props: BubbleProps) => {
       try {
         quickReplies = JSON.parse(currentMessage.quickReplies);
       } catch (error) {
-        console.log(error, 'cannot parse quick replies');
+        console.log(error, "cannot parse quick replies");
       }
       return (
         <QuickReplies
@@ -273,7 +273,7 @@ const Bubble = observer((props: BubbleProps) => {
           roomJid={currentMessage.roomJid}
           roomName={room.name}
           width={width}
-          messageAuthor={currentMessage.user._id.split('@')[0]}
+          messageAuthor={currentMessage.user._id.split("@")[0]}
         />
       );
     }
@@ -340,8 +340,7 @@ const Bubble = observer((props: BubbleProps) => {
   };
 
   const AnimatedStyle = {
-    backgroundColor:
-      position === 'left' ? colors.leftBubbleBackground : colors.defaultBlue,
+    backgroundColor: position === "left" ? "white" : "#C9E0FA",
   };
 
   const replyComponent = () => {
@@ -349,41 +348,42 @@ const Bubble = observer((props: BubbleProps) => {
       <TouchableOpacity onPress={() => scrollToParentMessage(currentMessage)}>
         <HStack
           style={styles[position].replyWrapper}
-          alignItems={'center'}
-          justifyContent={'flex-start'}
-          minH={hp('6%')}
+          alignItems={"center"}
+          justifyContent={"flex-start"}
+          minH={hp("6%")}
           w="100%"
-          bg={'white'}>
+          bg={"white"}
+        >
           <View
             margin={2}
             borderRadius={5}
-            height={hp('4%')}
-            width={wp('2%')}
+            height={hp("4%")}
+            width={wp("2%")}
             bg={
-              position === 'left'
+              position === "left"
                 ? colors.leftBubbleBackground
                 : colors.defaultBlue
             }
           />
-          <View justifyContent={'center'}>
-            <Text fontSize={hp('1.5%')} fontFamily={textStyles.boldFont}>
-              {currentMessage.mainMessage?.userName || 'N/A'}
+          <View justifyContent={"center"}>
+            <Text fontSize={hp("1.5%")} fontFamily={textStyles.boldFont}>
+              {currentMessage.mainMessage?.userName || "N/A"}
             </Text>
             {currentMessage.mainMessage?.imagePreview ? (
               <Image
-                source={{uri: currentMessage.mainMessage.imagePreview}}
+                source={{ uri: currentMessage.mainMessage.imagePreview }}
                 style={{
-                  height: hp('10%'),
-                  width: hp('10%'),
+                  height: hp("10%"),
+                  width: hp("10%"),
                 }}
               />
             ) : null}
             {!currentMessage.mainMessage?.imagePreview && (
-              <Text fontSize={hp('1.5%')} fontFamily={textStyles.mediumFont}>
+              <Text fontSize={hp("1.5%")} fontFamily={textStyles.mediumFont}>
                 {currentMessage?.mainMessage?.text}
               </Text>
             )}
-            <Text color={'blue.100'}>{currentMessage.showInChannel}</Text>
+            <Text color={"blue.100"}>{currentMessage.showInChannel}</Text>
           </View>
         </HStack>
       </TouchableOpacity>
@@ -393,12 +393,14 @@ const Bubble = observer((props: BubbleProps) => {
   const isEditedComponent = () => {
     return (
       <Box
-        style={styles[position ? position : 'left'].editWraper}
-        alignItems={'flex-end'}>
+        style={styles[position ? position : "left"].editWraper}
+        alignItems={"flex-end"}
+      >
         <Text
           fontFamily={textStyles.lightFont}
-          fontSize={hp('1.2%')}
-          color={'white'}>
+          fontSize={hp("1.2%")}
+          color={"white"}
+        >
           edited
         </Text>
       </Box>
@@ -408,12 +410,13 @@ const Bubble = observer((props: BubbleProps) => {
   return (
     <View
       accessibilityLabel="Message Menu"
-      onLayout={e => setBubbleWidth(e.nativeEvent.layout.width)}
+      onLayout={(e) => setBubbleWidth(e.nativeEvent.layout.width)}
       style={[
         styles[position].container,
         containerStyle && containerStyle[position],
-        {position: 'relative'},
-      ]}>
+        { position: "relative" },
+      ]}
+    >
       <Animated.View
         style={[
           styles[position].wrapper,
@@ -421,29 +424,33 @@ const Bubble = observer((props: BubbleProps) => {
           styledBubbleToPrevious(),
           wrapperStyle && wrapperStyle[position],
           AnimatedStyle,
-          // {maxWidth: 200}
-        ]}>
-        {containerType === 'main' ? replyComponent() : null}
-        {!isSameUser(currentMessage, previousMessage)
+          { maxWidth: 260 },
+        ]}
+      >
+        {containerType === "main" ? replyComponent() : null}
+        {!isSameUser(currentMessage, previousMessage) && position !== "right"
           ? renderUsernameHandle()
           : null}
         <TouchableWithoutFeedback
           onPress={() => onPressMessage()}
           onLongPress={() => onLongPressHandle()}
           accessibilityTraits="text"
-          {...props.touchableProps}>
+          {...props.touchableProps}
+        >
           <View>
             {renderBubbleContent()}
             <View
               style={[
                 styles[position].bottom,
                 bottomContainerStyle && bottomContainerStyle[position],
-              ]}>
+              ]}
+            >
               <View
                 style={{
-                  flexDirection: position === 'left' ? 'row-reverse' : 'row',
-                  alignItems: 'center',
-                }}>
+                  flexDirection: position === "left" ? "row-reverse" : "row",
+                  alignItems: "center",
+                }}
+              >
                 {!!currentMessage.isEdited && isEditedComponent()}
                 {renderTokenCount()}
                 {renderTimeHandle()}
@@ -479,8 +486,8 @@ const styles = {
       borderBottomWidth: 0,
     },
     editWraper: {
-      alignItems: 'flex-end',
-      justifyContent: 'center',
+      alignItems: "flex-end",
+      justifyContent: "center",
       paddingBottom: 5,
     },
     wrapper: {
@@ -488,32 +495,32 @@ const styles = {
       backgroundColor: colors.leftBubbleBackground,
       marginRight: 60,
       minHeight: 20,
-      justifyContent: 'flex-end',
+      justifyContent: "flex-end",
       minWidth: 100,
     },
     tokenContainerStyle: {
-      flexDirection: 'row',
+      flexDirection: "row",
       marginRight: 10,
       marginBottom: 5,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
     },
     tokenIconStyle: {
-      height: hp('2%'),
-      width: hp('2%'),
+      height: hp("2%"),
+      width: hp("2%"),
     },
     tokenTextStyle: {
       color: colors.white,
       fontFamily: textStyles.regularFont,
       fontSize: 10,
-      fontWeight: 'bold',
-      backgroundColor: 'transparent',
-      textAlign: 'right',
+      fontWeight: "bold",
+      backgroundColor: "transparent",
+      textAlign: "right",
     },
     numberOfRepliesContainerStyle: {
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      alignItems: "center",
     },
     containerToNext: {
       borderBottomLeftRadius: 3,
@@ -522,8 +529,8 @@ const styles = {
       borderTopLeftRadius: 3,
     },
     bottom: {
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
+      flexDirection: "row",
+      justifyContent: "flex-start",
     },
   }),
   right: StyleSheet.create({
@@ -531,8 +538,8 @@ const styles = {
       marginTop: 2,
     },
     editWraper: {
-      alignItems: 'flex-start',
-      justifyContent: 'center',
+      alignItems: "flex-start",
+      justifyContent: "center",
       paddingBottom: 5,
     },
     replyWrapper: {
@@ -549,42 +556,42 @@ const styles = {
       backgroundColor: colors.defaultBlue,
       marginLeft: 60,
       minHeight: 20,
-      justifyContent: 'flex-end',
+      justifyContent: "flex-end",
       minWidth: 100,
     },
     containerToNext: {
       borderBottomRightRadius: 3,
     },
     tokenContainerStyle: {
-      flexDirection: 'row',
+      flexDirection: "row",
       marginLeft: 10,
       marginBottom: 5,
-      justifyContent: 'flex-end',
-      alignItems: 'center',
+      justifyContent: "flex-end",
+      alignItems: "center",
     },
     tokenIconStyle: {
-      height: hp('2%'),
-      width: hp('2%'),
+      height: hp("2%"),
+      width: hp("2%"),
     },
     tokenTextStyle: {
       color: colors.white,
       fontFamily: textStyles.regularFont,
       fontSize: 10,
-      fontWeight: 'bold',
-      backgroundColor: 'transparent',
-      textAlign: 'right',
+      fontWeight: "bold",
+      backgroundColor: "transparent",
+      textAlign: "right",
     },
     numberOfRepliesContainerStyle: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "flex-end",
+      alignItems: "center",
     },
     containerToPrevious: {
       borderTopRightRadius: 3,
     },
     bottom: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
+      flexDirection: "row",
+      justifyContent: "flex-end",
     },
   }),
   content: StyleSheet.create({
@@ -595,23 +602,24 @@ const styles = {
       color: colors.white,
     },
     tickView: {
-      flexDirection: 'row',
+      flexDirection: "row",
       marginRight: 10,
     },
     username: {
       top: -3,
       left: 0,
       fontSize: 12,
-      backgroundColor: 'transparent',
-      color: '#aaa',
+      backgroundColor: "transparent",
+      color: "#aaa",
     },
     usernameView: {
-      flexDirection: 'row',
+      flexDirection: "row",
       marginHorizontal: 10,
+      color: "#0052CD",
     },
     userTextStyleLeft: {
       fontFamily: textStyles.regularFont,
-      color: '#FFFF',
+      color: "#FFFF",
     },
   }),
 };

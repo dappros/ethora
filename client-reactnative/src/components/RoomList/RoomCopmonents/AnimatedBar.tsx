@@ -48,9 +48,11 @@ const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
           onSearchChange={handleSearchChange}
           searchValue={searchValue}
         />
-        <NewChatButton
-          navigateToNewChat={() => navigation.navigate("NewChatScreen")}
-        />
+        {!searchValue ? (
+          <NewChatButton
+            navigateToNewChat={() => navigation.navigate("NewChatScreen")}
+          />
+        ) : null}
       </View>
     </Animated.View>
   );
