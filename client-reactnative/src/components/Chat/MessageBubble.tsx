@@ -189,8 +189,8 @@ const Bubble = observer((props: BubbleProps) => {
         <View style={styles.content.usernameView}>
           <Text
             color={"#0052CD"}
-            fontSize={hp("2%")}
-            fontFamily={textStyles.lightFont}
+            fontSize={14}
+            fontFamily={textStyles.semiBoldFont}
           >
             {username}
           </Text>
@@ -211,6 +211,7 @@ const Bubble = observer((props: BubbleProps) => {
           {...props}
           timeTextStyle={{
             left: {
+              textAlign: "right",
               fontFamily: textStyles.lightFont,
               color: "#8F8F8F",
             },
@@ -244,7 +245,7 @@ const Bubble = observer((props: BubbleProps) => {
   const renderReplyCount = () => {
     if (currentMessage.numberOfReplies) {
       const replyConst =
-        currentMessage.numberOfReplies - 1 > 1 ? "replies" : "reply";
+        currentMessage.numberOfReplies > 1 ? "replies" : "reply";
       return (
         <HStack style={styles[position].numberOfRepliesContainerStyle}>
           <TouchableOpacity onPress={() => handleReply(currentMessage)}>
@@ -252,7 +253,7 @@ const Bubble = observer((props: BubbleProps) => {
               fontFamily={textStyles.regularFont}
               color={commonColors.primaryColor}
             >
-              {currentMessage.numberOfReplies - 1} {replyConst} (tap to review)
+              {currentMessage.numberOfReplies} {replyConst} (tap to review)
             </Text>
           </TouchableOpacity>
         </HStack>
@@ -341,6 +342,7 @@ const Bubble = observer((props: BubbleProps) => {
 
   const AnimatedStyle = {
     backgroundColor: position === "left" ? "white" : "#C9E0FA",
+    paddingVertical: 4,
   };
 
   const replyComponent = () => {
@@ -379,7 +381,11 @@ const Bubble = observer((props: BubbleProps) => {
               />
             ) : null}
             {!currentMessage.mainMessage?.imagePreview && (
-              <Text fontSize={hp("1.5%")} fontFamily={textStyles.mediumFont}>
+              <Text
+                fontSize={hp("1.5%")}
+                fontFamily={textStyles.mediumFont}
+                color={"#000000"}
+              >
                 {currentMessage?.mainMessage?.text}
               </Text>
             )}
@@ -447,8 +453,10 @@ const Bubble = observer((props: BubbleProps) => {
             >
               <View
                 style={{
-                  flexDirection: position === "left" ? "row-reverse" : "row",
-                  alignItems: "center",
+                  flexDirection:
+                    position === "left" ? "row-reverse" : "row-reverse",
+                  alignItems: "flex-end",
+                  flex: 1,
                 }}
               >
                 {!!currentMessage.isEdited && isEditedComponent()}
@@ -457,8 +465,6 @@ const Bubble = observer((props: BubbleProps) => {
                 {/* {renderTicksHandle()} */}
               </View>
             </View>
-
-            <View></View>
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>
@@ -619,7 +625,8 @@ const styles = {
     },
     userTextStyleLeft: {
       fontFamily: textStyles.regularFont,
-      color: "#FFFF",
+      color: "#000000",
+      fontSize: 14,
     },
   }),
 };

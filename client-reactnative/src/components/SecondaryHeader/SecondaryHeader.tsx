@@ -106,7 +106,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
             {title}
           </Text>
           <Text style={{ color: "#8F8F8F", textAlign: "center" }}>
-            {room?.counter} members
+            {room?.participants} {room?.participants > 1 ? "members" : "member"}
           </Text>
         </TouchableOpacity>
 

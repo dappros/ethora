@@ -304,14 +304,15 @@ export const ProfileScreen = observer(() => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={{ backgroundColor: primaryDarkColor, flex: 1 }}>
-        <SecondaryHeader
+        {/* <SecondaryHeader
           title={"User's profile"}
           isQR
           onQRPressed={QRPressed}
           onBackPress={() =>
             activeTab === 1 ? setActiveTab(0) : navigation.goBack()
           }
-        />
+        /> */}
+        <View style={{ height: 97, backgroundColor: "transparent" }}></View>
 
         <View style={{ zIndex: +1, alignItems: "center" }}>
           <HStack
