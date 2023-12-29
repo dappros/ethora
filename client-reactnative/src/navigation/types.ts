@@ -33,7 +33,6 @@ export type AuthStackParamList = {
   LoginScreen: undefined;
   Logout: undefined;
   SplashScreen: undefined;
-  RegularLogin: undefined;
   Register: undefined;
   ResetPasswordScreen: undefined;
 };

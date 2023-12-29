@@ -95,7 +95,7 @@ const SocialButtons = ({
       <View accessibilityLabel="Sign in with Metamask">
         <SocialButton
           border={border}
-          icon={<MetamaskIcon width={hp("2.8%")} />}
+          icon={<MetamaskIcon width={hp("2.8%")} height={hp("2.8%")} />}
           // onPress={connectMetamask}
         />
       </View>

@@ -27,6 +27,7 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
     onClose();
     setUserActionsHidden(false);
   };
+
   return (
     <Modal
       onBackdropPress={closeModal}
@@ -35,6 +36,7 @@ export const ChatLongTapModal: React.FC<IChatLongTapModal> = ({
       style={{
         justifyContent: "center",
         alignItems: "center",
+        opacity: 0.1,
       }}
       onDismiss={closeModal}
       isVisible={open}

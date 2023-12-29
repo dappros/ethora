@@ -71,14 +71,6 @@ export const RoomList: React.FC<IRoomList> = observer(
     );
 
     const scrollY = useRef(new Animated.Value(0)).current;
-
-    const headerHeigth = scrollY.interpolate({
-      inputRange: [0, 100],
-      outputRange: [0, 100],
-      extrapolate: "clamp",
-      easing: Easing.linear,
-    });
-
     return (
       <View
         style={{
@@ -101,9 +93,7 @@ export const RoomList: React.FC<IRoomList> = observer(
           flex={1}
         >
           <FlatList
-            ListHeaderComponent={() => (
-              <RoomListHeader headerHeight={headerHeigth} />
-            )}
+            ListHeaderComponent={() => <RoomListHeader scrollY={scrollY} />}
             nestedScrollEnabled={true}
             style={{ width: "100%" }}
             data={searchValue ? allRooms : sortedRoomsList}

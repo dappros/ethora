@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import {
   ActivityIndicator,
-  ImageBackground,
-  Keyboard,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,18 +13,14 @@ import {
 } from "react-native-responsive-screen";
 import Modal from "react-native-modal";
 
-import { HStack, Image, Input, VStack } from "native-base";
+import { Input, VStack } from "native-base";
 import {
-  loginScreenBackgroundImage,
-  logoPath,
   textStyles,
   regularLoginEmail,
   commonColors,
 } from "../../../docs/config";
 import { showError } from "../../components/Toast/toast";
 import { useStores } from "../../stores/context";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../navigation/types";
 import { Button } from "../../components/Button";
 import EmailIcon from "../../assets/icons/email.svg";
 import StarIcon from "../../assets/icons/star.svg";
@@ -35,10 +29,21 @@ import CloseIcon from "../../assets/icons/close.svg";
 import EyeCrossedIcon from "../../assets/icons/eyeCrossed.svg";
 import EyeOpenIcon from "../../assets/icons/eyeOpen.svg";
 import SocialButtons from "../../components/Login/SocialButtons";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/types";
+import { authStackRoutes } from "../../navigation/routes";
 
-type ScreenProps = NativeStackScreenProps<AuthStackParamList, "RegularLogin">;
+interface ExtendedScreenProps
+  extends NativeStackScreenProps<AuthStackParamList, "LoginScreen"> {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
+export const RegularLoginModal: FC<ExtendedScreenProps> = ({
+  isOpen,
+  onClose,
+  navigation,
+}) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [userNameFocused, setUserNameFocused] = useState(false);
@@ -68,30 +73,19 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
 
   return (
     <>
-      <ImageBackground
-        source={loginScreenBackgroundImage}
-        style={{
-          width: "100%",
-          height: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+      <Modal
+        onBackdropPress={onClose}
+        animationIn={"slideInUp"}
+        animationOut={"slideOutDown"}
+        isVisible={isOpen}
+        style={{ width: wp("100%") }}
       >
-        <Image
-          alt="App logo Ethora"
-          source={logoPath}
-          position={"absolute"}
-          top={55}
-          resizeMode={"cover"}
-          left={"7%"}
-        />
-
         <View
           style={{
             position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "100%",
+            bottom: -20,
+            left: -20,
+            width: wp("100%"),
             backgroundColor: "#fff",
             shadowColor: "#000",
             shadowOpacity: 0.5,
@@ -118,7 +112,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
           >
             <TouchableOpacity
               style={{ alignItems: "center" }}
-              onPress={() => navigation.navigate("LoginScreen")}
+              onPress={onClose}
             >
               <ArrowDownIcon />
               <Text
@@ -153,8 +147,9 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
                 fontSize={hp("1.6%")}
                 color={"black"}
                 value={userName}
-                borderWidth={userNameFocused ? 2 : 0}
-                borderColor={userNameFocused ? "#0052CD" : ""}
+                borderWidth={userNameFocused ? 2 : 2}
+                borderColor={"transparent"}
+                focusOutlineColor={userNameFocused ? "#0052CD" : "transparent"}
                 backgroundColor={userNameFocused ? "#fff" : "#E8EDF2"}
                 borderRadius={15}
                 // paddingLeft={10}
@@ -198,8 +193,9 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
                 color={"black"}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                borderWidth={passwordFocused ? 2 : 0}
-                borderColor={passwordFocused ? "#0052CD" : ""}
+                borderWidth={userNameFocused ? 2 : 2}
+                borderColor={"transparent"}
+                focusOutlineColor={passwordFocused ? "#0052CD" : "transparent"}
                 backgroundColor={passwordFocused ? "#fff" : "#E8EDF2"}
                 secureTextEntry={!showPassword}
                 value={password}
@@ -222,9 +218,7 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
               />
               <TouchableOpacity
                 onPress={() =>
-                  !regularLoginEmail
-                    ? setResetModalOpen(true)
-                    : navigation.navigate("ResetPasswordScreen")
+                  navigation.navigate(authStackRoutes.ResetPasswordScreen)
                 }
                 style={{ alignSelf: "flex-end" }}
               >
@@ -289,7 +283,8 @@ export const RegularLoginScreen = ({ navigation }: ScreenProps) => {
             </VStack>
           </VStack>
         </View>
-      </ImageBackground>
+      </Modal>
+
       {!regularLoginEmail && (
         <Modal
           onBackdropPress={() => setResetModalOpen(false)}

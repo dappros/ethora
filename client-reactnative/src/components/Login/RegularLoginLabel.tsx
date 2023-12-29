@@ -2,10 +2,10 @@ import { TouchableOpacity } from "react-native";
 
 import { HStack, Text } from "native-base";
 
-import { commonColors, textStyles } from "../../../docs/config";
+import { textStyles } from "../../../docs/config";
 import React from "react";
 
-function RegularLoginLabel({ navigation }) {
+function RegularLoginLabel({ setOpen }) {
   return (
     <HStack justifyContent={"center"} marginTop={"30px"} space={"6px"}>
       <Text
@@ -20,7 +20,7 @@ function RegularLoginLabel({ navigation }) {
       <TouchableOpacity
         testID="login-with-cred"
         accessibilityLabel="Log in with password"
-        onPress={() => navigation.navigate("RegularLogin")}
+        onPress={setOpen}
       >
         <Text
           style={{

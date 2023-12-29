@@ -4,17 +4,14 @@ import { textStyles } from "../../../docs/config";
 
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { View } from "native-base";
+import { showError, showSuccess } from "../Toast/toast";
 import { httpPost } from "../../config/apiService";
-import {
-  registerRegularEmailUrl,
-  resetPasswordURL,
-} from "../../config/routesConstants";
+import { resetPasswordURL } from "../../config/routesConstants";
 import { useStores } from "../../stores/context";
-import { showSuccess, showError } from "../Toast/toast";
 
-interface RegisterSecondStepProps {
+interface ResetSecondStepProps {
   email: string;
-  username: string;
+  goNext: () => void;
 }
 
 function maskEmail(email: string): string {
@@ -23,7 +20,7 @@ function maskEmail(email: string): string {
   return `${maskedUsername}@${domain}`;
 }
 
-const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
+const ResetSecondStep = ({ email }: ResetSecondStepProps) => {
   const { apiStore } = useStores();
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -40,32 +37,20 @@ const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
     return () => clearInterval(intervalId);
   }, [countdown]);
 
-  const registerUser = async () => {
+  const resetPassword = async () => {
     setCountdown(30);
     setLoading(true);
-    const nameAndSurname = username.split(" ");
-
-    const body = {
-      firstName: nameAndSurname[0],
-      lastName: nameAndSurname[1],
-      email,
-    };
     try {
-      await httpPost(registerRegularEmailUrl, body, apiStore.defaultToken);
-      showSuccess(
-        "Registration",
-        "User registered successfully, please check your email"
-      );
+      await httpPost(resetPasswordURL, { email }, apiStore.defaultToken);
+      showSuccess("Success", "Check your email");
     } catch (error) {
-      console.log(error.response.data);
       if (error?.response?.status === 400) {
-        showError("Error", "Someone already has that username. Try another?");
-      } else {
         showError("Error", "Something went wrong");
       }
     }
     setLoading(false);
   };
+
   return (
     <>
       <View>
@@ -87,7 +72,7 @@ const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
             marginBottom: 24,
           }}
         >
-          We sent a confirmation email to {maskEmail(email)}.
+          We sent an email to {maskEmail(email)}
         </Text>
       </View>
       <View>
@@ -112,26 +97,6 @@ const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
             process.
           </Text>
         </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              color: "#0052CD",
-              fontFamily: textStyles.regularFont,
-              fontSize: 15,
-            }}
-          >
-            {"\u2022 "}
-          </Text>
-          <Text
-            style={{
-              color: "#0052CD",
-              fontFamily: textStyles.regularFont,
-              fontSize: 15,
-            }}
-          >
-            If you don`t see it, check your spam folder.
-          </Text>
-        </View>
       </View>
       <View marginTop={"25%"}>
         <Text
@@ -142,10 +107,10 @@ const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
             textAlign: "center",
           }}
         >
-          Still can`t find the email?
+          Still can't find the email?
         </Text>
         <TouchableOpacity
-          onPress={registerUser}
+          onPress={resetPassword}
           style={{
             borderRadius: 15,
             width: "100%",
@@ -175,4 +140,4 @@ const RegisterSecondStep = ({ email, username }: RegisterSecondStepProps) => {
   );
 };
 
-export default RegisterSecondStep;
+export default ResetSecondStep;

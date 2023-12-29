@@ -28,6 +28,7 @@ import { containerType } from "./ChatContainer";
 import { IMessage, roomListProps } from "../../stores/chatStore";
 import { isSameDay, isSameUser } from "../../helpers/chat/chatUtils";
 import { useStores } from "../../stores/context";
+import CoinIcon from "../../assets/coin.svg";
 
 // const {isSameUser, isSameDay, StylePropType} = utils;
 
@@ -227,17 +228,32 @@ const Bubble = observer((props: BubbleProps) => {
   };
 
   const renderTokenCount = () => {
-    if (currentMessage.tokenAmount) {
+    // console.log("tokens:", currentMessage);
+    if (currentMessage.tokenAmount > 1) {
       return (
-        <View style={[styles[position].tokenContainerStyle]}>
-          <Text style={[styles[position].tokenTextStyle]}>
-            {currentMessage.tokenAmount}
+        <View
+          style={[
+            styles[position].tokenContainerStyle,
+            {
+              position: "absolute",
+              top: 18,
+              backgroundColor: "white",
+              height: 25,
+              width: 45,
+              borderRadius: 21,
+              right: 0,
+            },
+          ]}
+        >
+          <CoinIcon style={styles[position].tokenIconStyle} />
+          <Text
+            style={[
+              styles[position].tokenTextStyle,
+              { color: "#FDB01D", marginLeft: 4 },
+            ]}
+          >
+            +{currentMessage.tokenAmount}
           </Text>
-          <Image
-            source={coinImagePath}
-            resizeMode={"contain"}
-            style={styles[position].tokenIconStyle}
-          />
         </View>
       );
     }

@@ -9,6 +9,7 @@ import { RecordingSecondsCounter } from "../Recorder/RecordingSecondsCounter";
 import Entypo from "react-native-vector-icons/Entypo";
 import { commonColors } from "../../../docs/config";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import MicrophoneIcon from "../../assets/icons/microphone.svg";
 
 interface IAudioSendButton {
   onPressIn: () => void;
@@ -35,7 +36,8 @@ export const AudioSendButton: React.FC<IAudioSendButton> = ({
             //   animateMediaButtonStyle,
           ]}
         >
-          <Entypo name="mic" color={"#0052CD"} size={hp("3%")} />
+          {/* <Entypo name="mic" color={"#0052CD"} size={hp("3%")} /> */}
+          <MicrophoneIcon size={hp("3%")} />
         </Animated.View>
       </TouchableWithoutFeedback>
       {recording && (

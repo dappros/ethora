@@ -36,6 +36,8 @@ import { signMessage } from "../../helpers/signMessage";
 import { projectId, providerMetadata } from "../../constants/walletConnect";
 import CreateAccountButton from "../../components/Login/CreateAccountButton";
 import GoogleSignInButton from "../../components/Login/GoogleSignInButton";
+import { RegularLoginModal } from "./RegularLoginModal";
+import { useRoute } from "@react-navigation/native";
 
 type LoginScreenProperties = NativeStackScreenProps<
   AuthStackParameterList,
@@ -45,11 +47,14 @@ type LoginScreenProperties = NativeStackScreenProps<
 const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
   const { loginStore, apiStore } = useStores();
   const { isFetching } = loginStore;
+  const route = useRoute();
+
   const [externalWalletModalData, setExternalWalletModalData] = useState({
     walletAddress: "",
     message: "",
   });
   const [signedMessage, setSignedMessage] = useState("");
+  const [defaultLoginOpen, setDefaultLoginOpen] = useState(false);
   const { open, isConnected, provider, address } = useWalletConnectModal();
   const web3Provider = useMemo(
     () => (provider ? new ethers.providers.Web3Provider(provider) : undefined),
@@ -223,7 +228,9 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
               navigateToRegisterScreen={navigateToRegisterScreen}
             />
 
-            {regularLogin && <ReqularLoginLabel navigation={navigation} />}
+            {regularLogin && (
+              <ReqularLoginLabel setOpen={() => setDefaultLoginOpen(true)} />
+            )}
             <View marginTop={45} alignItems={"center"}>
               <SocialButtons />
             </View>
@@ -245,6 +252,15 @@ const LoginScreen = observer(({ navigation }: LoginScreenProperties) => {
         projectId={projectId}
         providerMetadata={providerMetadata}
       />
+
+      <View style={{ position: "absolute" }}>
+        <RegularLoginModal
+          isOpen={defaultLoginOpen}
+          onClose={() => setDefaultLoginOpen(false)}
+          navigation={navigation}
+          route={route}
+        />
+      </View>
     </ImageBackground>
   );
 });

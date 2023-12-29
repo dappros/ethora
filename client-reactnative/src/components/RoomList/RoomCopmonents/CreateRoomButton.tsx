@@ -3,7 +3,7 @@ import { View, Text, HStack } from "native-base";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { TouchableOpacity } from "react-native";
 
-const NewChatButton = ({ setModalVisible }) => {
+const NewChatButton = ({ setModalVisible, disabled = false }) => {
   const handleClick = () => {
     setModalVisible(true);
   };
@@ -24,6 +24,7 @@ const NewChatButton = ({ setModalVisible }) => {
             borderRadius: 30,
           }}
           onPress={handleClick}
+          disabled={disabled}
         >
           <HStack space={2} alignItems={"center"} justifyContent={"center"}>
             <Icon name="plus" size={9} color="#fff" />

@@ -9,8 +9,6 @@ import React, { useState } from "react";
 import {
   Text,
   View,
-  Platform,
-  StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
@@ -18,52 +16,34 @@ import {
   ActivityIndicator,
 } from "react-native";
 import CheckBox from "@react-native-community/checkbox";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-
-import IonIcons from "react-native-vector-icons/Ionicons";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 import { HStack, Input, VStack } from "native-base";
-import {
-  textStyles,
-  regularLoginEmail,
-  commonColors,
-  loginScreenBackgroundImage,
-} from "../../../docs/config";
+import { textStyles, regularLoginEmail } from "../../../docs/config";
 import { showError, showSuccess } from "../../components/Toast/toast";
 import { httpPost } from "../../config/apiService";
-import {
-  registerRegularEmailUrl,
-  registerUserURL,
-} from "../../config/routesConstants";
+import { registerRegularEmailUrl } from "../../config/routesConstants";
 import { useStores } from "../../stores/context";
 import { AuthStackParamList } from "../../navigation/types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { authStackRoutes } from "../../navigation/routes";
-import { Button } from "../../components/Button";
 import whiteBg from "../../assets/whiteBg.png";
 import ArrowLeft from "../../assets/icons/arrowLeft.svg";
 import EmailIcon from "../../assets/icons/email.svg";
 import CloseIcon from "../../assets/icons/close.svg";
-import StarIcon from "../../assets/icons/star.svg";
 import UserIcon from "../../assets/icons/user.svg";
 import SocialButtons from "../../components/Login/SocialButtons";
 import RegisterSecondStep from "../../components/Login/RegisterSecondStep";
-import RegisterThirdStep from "./RegisterThirdStep";
+import RegisterThirdStep from "../../components/Login/RegisterThirdStep";
 
-const { mediumFont, lightFont, boldFont } = textStyles;
 type RegisterScreenProps = NativeStackScreenProps<
   AuthStackParamList,
   "Register"
 >;
 export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [userNameFocused, setUserNameFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
   const [userNameError, setUserNameError] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -94,7 +74,6 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
         "User registered successfully, please check your email"
       );
       setActiveStep(2);
-      // navigation.navigate(authStackRoutes.RegularLogin)
     } catch (error) {
       console.log(error.response.data);
       if (error?.response?.status === 400) {
@@ -107,13 +86,11 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
   };
   const goBack = () => {
     if (activeStep === 1) {
-      navigation.navigate(authStackRoutes.RegularLogin);
+      navigation.navigate(authStackRoutes.LoginScreen);
     } else {
       setActiveStep(activeStep - 1);
     }
   };
-
-  const goNext = () => setActiveStep(activeStep + 1);
 
   return (
     <View testID="registerScreen" style={{ backgroundColor: "white", flex: 1 }}>
@@ -207,8 +184,11 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           color={"black"}
                           onFocus={() => setUserNameFocused(true)}
                           onBlur={() => setUserNameFocused(false)}
-                          borderWidth={userNameFocused ? 2 : 0}
-                          borderColor={userNameFocused ? "#0052CD" : ""}
+                          borderWidth={userNameFocused ? 2 : 2}
+                          borderColor={"transparent"}
+                          focusOutlineColor={
+                            userNameFocused ? "#0052CD" : "transparent"
+                          }
                           backgroundColor={userNameFocused ? "#fff" : "#E8EDF2"}
                           value={userName}
                           onChangeText={setUserName}
@@ -260,8 +240,11 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           fontSize={hp("1.6%")}
                           color={"black"}
                           value={email}
-                          borderWidth={emailFocused ? 2 : 0}
-                          borderColor={emailFocused ? "#0052CD" : ""}
+                          borderWidth={emailFocused ? 2 : 2}
+                          borderColor={"transparent"}
+                          focusOutlineColor={
+                            emailFocused ? "#0052CD" : "transparent"
+                          }
                           backgroundColor={emailFocused ? "#fff" : "#E8EDF2"}
                           borderRadius={15}
                           onChangeText={setEmail}
@@ -279,7 +262,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                           rightElement={
                             email ? (
                               <TouchableOpacity
-                                onPress={() => setUserName("")}
+                                onPress={() => setEmail("")}
                                 style={{
                                   backgroundColor: "#0052CD",
                                   borderRadius: 4,
@@ -386,7 +369,7 @@ export const RegisterScreen = ({ navigation }: RegisterScreenProps) => {
                       </VStack>
                     </>
                   ) : activeStep === 2 ? (
-                    <RegisterSecondStep email={email} goNext={goNext} />
+                    <RegisterSecondStep email={email} username={userName} />
                   ) : (
                     <RegisterThirdStep />
                   )}

@@ -136,7 +136,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           <RoomHeaderIcon
             name={room?.name}
             jid={room?.jid}
-            onClick={handleGoToChatSettings}
+            onClick={onQRPressed}
           />
         </View>
       </HStack>

@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
 import { Animated, Easing } from "react-native";
 import RoomsCategories from "../RoomsCategories";
@@ -29,9 +29,9 @@ const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
   });
 
   const createRoomBlockTranslateY = scrollY.interpolate({
-    inputRange: [0, 100],
+    inputRange: [0, 300],
     outputRange: [84, 0],
-    easing: Easing.sin(1024),
+    easing: Easing.linear,
   });
 
   const createRoomBlock = (
@@ -52,7 +52,10 @@ const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
           setPlaceholderAnimationEnded={setPlaceholderAnimationEnded}
         />
         {!placeholderAnimationEnded ? (
-          <NewChatButton setModalVisible={setModalVisible} />
+          <NewChatButton
+            setModalVisible={setModalVisible}
+            // disabled={}
+          />
         ) : null}
       </View>
     </Animated.View>
