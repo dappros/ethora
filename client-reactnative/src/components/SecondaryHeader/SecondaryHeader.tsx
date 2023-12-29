@@ -9,14 +9,14 @@ import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Box, HStack, Text, View } from "native-base";
 import AntIcon from "react-native-vector-icons/AntDesign";
-import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import { TouchableOpacity } from "react-native";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
 import { appVersion, commonColors, textStyles } from "../../../docs/config";
 import { HomeStackNavigationProp } from "../../navigation/types";
-import colors from "native-base/lib/typescript/theme/base/colors";
 import { useStores } from "../../stores/context";
-import { RoomListItemIcon } from "../RoomList/RoomListItemIcon";
 import { RoomHeaderIcon } from "./RoomHeaderIcon";
 
 interface SecondaryHeaderProps {
@@ -62,7 +62,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
 
   return (
     <Box
-      h={97}
+      h={67}
       justifyContent={"center"}
       bg={"white"}
       borderBottomRadius={15}
@@ -92,7 +92,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={{}}
+          style={{ width: widthPercentageToDP(60) }}
           accessibilityLabel="Screen title"
           activeOpacity={1}
           onPress={handleGoToChatSettings}
@@ -102,6 +102,7 @@ const SecondaryHeader: React.FC<SecondaryHeaderProps> = ({
             fontSize={hp("2.2%")}
             color={"black"}
             textAlign="center"
+            numberOfLines={1}
           >
             {title}
           </Text>

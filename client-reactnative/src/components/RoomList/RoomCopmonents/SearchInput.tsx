@@ -4,10 +4,14 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { widthPercentageToDP } from "react-native-responsive-screen";
 import { View } from "native-base";
 
-const SearchInput = ({ onSearchChange, searchValue }) => {
+const SearchInput = ({
+  onSearchChange,
+  searchValue,
+  placeholderAnimationEnded,
+  setPlaceholderAnimationEnded,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [placeholderAnimationEnded, setPlaceholderAnimationEnded] =
-    useState(false);
+
   const inputReference = useRef(null);
   const placeholderAnim = useRef(new Animated.Value(0)).current;
 

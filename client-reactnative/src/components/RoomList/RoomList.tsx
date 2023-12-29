@@ -15,6 +15,7 @@ import { roomListProps as roomListProperties } from "../../stores/chatStore";
 import RoomListHeader from "./RoomCopmonents/RoomListHeader";
 import AnimatedRoomCategoryBlock from "./RoomCopmonents/AnimatedBar";
 import RoomsHeader from "./RoomsHeader";
+import NewChatModal from "../Modals/NewChatModal";
 
 interface IRoomList {
   roomsList: roomListProperties[];
@@ -41,6 +42,7 @@ export const RoomList: React.FC<IRoomList> = observer(
       [roomsList, chatStore.roomsInfoMap]
     );
     const [allRooms, setAllRooms] = useState([...chatStore.roomList]);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const [searchValue, setSearchValue] = useState("");
 
@@ -90,6 +92,7 @@ export const RoomList: React.FC<IRoomList> = observer(
           handleSearchChange={handleSearchChange}
           searchValue={searchValue}
           scrollY={scrollY}
+          setModalVisible={setModalVisible}
         />
         <View
           justifyContent={"center"}
@@ -128,6 +131,10 @@ export const RoomList: React.FC<IRoomList> = observer(
             }}
           />
         </View>
+        <NewChatModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
       </View>
     );
   }

@@ -11,6 +11,8 @@ const Toolbar = (props) => {
         paddingHorizontal: 22,
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
+        borderTopColor: "transparent",
+        borderTopWidth: 0,
         shadowColor: "#000000",
         shadowOffset: { width: -3, height: 0 },
         shadowOpacity: 0.25,

@@ -1,25 +1,26 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import LinearGradient from "react-native-linear-gradient";
 import { Animated, Easing } from "react-native";
 import RoomsCategories from "../RoomsCategories";
 import { View } from "native-base";
 import SearchInput from "./SearchInput";
 import NewChatButton from "./CreateRoomButton";
-import { useNavigation } from "@react-navigation/native";
-import { HomeStackNavigationProp } from "../../../navigation/types";
 
 interface AnimatedRoomCategoryBlockProps {
   handleSearchChange: (value: any) => void;
   searchValue: string;
   scrollY: any;
+  setModalVisible: any;
 }
 
 const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
   handleSearchChange,
   searchValue,
   scrollY,
+  setModalVisible,
 }) => {
-  const navigation = useNavigation<HomeStackNavigationProp>();
+  const [placeholderAnimationEnded, setPlaceholderAnimationEnded] =
+    useState(false);
 
   const createRoomBlockOpacity = scrollY.interpolate({
     inputRange: [0, 50, 100],
@@ -47,11 +48,11 @@ const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
         <SearchInput
           onSearchChange={handleSearchChange}
           searchValue={searchValue}
+          placeholderAnimationEnded={placeholderAnimationEnded}
+          setPlaceholderAnimationEnded={setPlaceholderAnimationEnded}
         />
-        {!searchValue ? (
-          <NewChatButton
-            navigateToNewChat={() => navigation.navigate("NewChatScreen")}
-          />
+        {!placeholderAnimationEnded ? (
+          <NewChatButton setModalVisible={setModalVisible} />
         ) : null}
       </View>
     </Animated.View>
@@ -69,7 +70,7 @@ const AnimatedRoomCategoryBlock: FC<AnimatedRoomCategoryBlockProps> = ({
           zIndex: -1,
         }}
       />
-      {!searchValue ? <RoomsCategories /> : null}
+      {!placeholderAnimationEnded ? <RoomsCategories /> : null}
     </LinearGradient>
   );
 };

@@ -52,8 +52,8 @@ export const RoomHeaderIcon = observer(
               borderColor: "#8F8F8F",
               borderWidth: 1,
               borderRadius: hp("4.5%"),
-              width: 65,
-              height: 65,
+              width: 48,
+              height: 48,
               backgroundColor: "#0052CD",
             }}
             alignItems={"center"}

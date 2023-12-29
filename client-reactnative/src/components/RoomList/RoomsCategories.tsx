@@ -1,5 +1,4 @@
 import { HStack, Text, View, VStack } from "native-base";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { defaultMetaRoom, ROOM_KEYS, textStyles } from "../../../docs/config";
 import React from "react";
 import { useStores } from "../../stores/context";
@@ -7,6 +6,7 @@ import { homeStackRoutes } from "../../navigation/routes";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { httpGet } from "../../config/apiService";
 import { HomeStackNavigationProp as HomeStackNavigationProperty } from "../../navigation/types";
+import { TouchableOpacity } from "react-native";
 
 const buttons = [
   {
