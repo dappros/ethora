@@ -53,9 +53,10 @@ class XmppService {
   lastName = "";
   nickname = "";
 
-  connect(username, password) {
+  connect(username, password, resource = 'web') {
     this.client = xmpp.client({
       service: XMPP_SERVICE,
+      resource,
       username,
       password,
     });
@@ -76,7 +77,7 @@ class XmppService {
 
     this.client
       .start()
-      .then(() => {})
+      .then(() => { })
       .catch((error) => {
         console.log(error);
         this.client.stop();
@@ -317,19 +318,112 @@ class XmppService {
       room = `${room}@${XMPP_CONFERENCE}`;
     }
 
-    const message = xml(
-      "iq",
-      {
-        to: room,
-        type: "get",
-        id: "getConfiguration",
-      },
-      xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
-    );
+    const id = `get-room-configuration:${Date.now().toString()}`
 
-    console.log("-----> ", message.toString());
+    let stanzaHdlrPointer;
 
-    this.client.send(message);
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "result") {
+          console.log("stanza to string ", stanza.toString())
+          const config = parseRoomConfigStanza(stanza)
+          resolve(config)
+        }
+
+        if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "error") {
+          unsubscribe()
+          reject()
+        }
+      }
+
+      this.client?.on("stanza", stanzaHdlrPointer);
+
+      const msg = xml(
+        "iq",
+        {
+          to: room,
+          type: "get",
+          id: id,
+        },
+        xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
+      );
+
+      this.client.send(msg)
+    })
+
+    const timeoutPromise = XmppService.createTimeoutPromise(1000, unsubscribe)
+
+    return Promise.race([responsePromise, timeoutPromise]);
+  }
+
+  saveRoomConfig(room, name, description) {
+    if (!room.includes("@")) {
+      room = `${room}@${XMPP_CONFERENCE}`;
+    }
+
+    const id = `save-room-configuration:${Date.now().toString()}`
+    let stanzaHdlrPointer;
+
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is("iq") && stanza.attrs.id === id) {
+          console.log("stanza to string ", stanza.toString())
+          resolve()
+        }
+
+        // if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "error") {
+        //   unsubscribe()
+        //   reject()
+        // }
+      }
+
+      this.client?.on("stanza", stanzaHdlrPointer);
+
+      const msg = xml(
+        "iq",
+        {
+          to: room,
+          type: "set",
+          id: id,
+        },
+        xml(
+          "query",
+          { xmlns: "http://jabber.org/protocol/muc#owner" },
+          xml(
+            "x",
+            { xmlns: "jabber:x:data", type: "submit" },
+            xml(
+              "field",
+              { var: "FORM_TYPE" },
+              xml("value", {}, "http://jabber.org/protocol/muc#roomconfig")
+            ),
+            xml(
+              "field",
+              { var: "muc#roomconfig_roomname" },
+              xml("value", {}, name)
+            ),
+            xml(
+              "field",
+              { var: "muc#roomconfig_roomdesc" },
+              xml("value", {}, description)
+            )
+          )
+        )
+      );
+      console.log('==> sending ', msg.toString())
+      this.client.send(msg)
+    })
+
+    const timeoutPromise = XmppService.createTimeoutPromise(1000, unsubscribe)
+    return Promise.race([responsePromise, timeoutPromise]);
   }
 
   roomConfig(room, roomName, roomDescription = "") {
@@ -538,21 +632,23 @@ class XmppService {
   }
 
   stop() {
-    this.client.stop();
+    if (this.client) {
+      this.client.stop();
+    }
   }
 
   // Bookmarks (XEP-0048)
   async getBookmarks() {
     const bookmarkRequest =
-    xml(
-      'iq', { type: 'get' },
       xml(
-        'query', { xmlns: NS.PRIVATE } ,
+        'iq', { type: 'get' },
         xml(
-          'storage', { xmlns: NS.BOOKMARKS },
+          'query', { xmlns: NS.PRIVATE },
+          xml(
+            'storage', { xmlns: NS.BOOKMARKS },
+          ),
         ),
-      ),
-    )
+      )
     const result = await this.client.iqCaller.request(bookmarkRequest)
     const bookmarks = []
     result.getChildren('query')
@@ -580,7 +676,7 @@ class XmppService {
           }),
         ),
       )
-    console.log({bookmarks})
+    console.log({ bookmarks })
     return bookmarks
   }
 
@@ -631,4 +727,47 @@ class XmppService {
   }
 }
 
+XmppService.createTimeoutPromise = function (ms, unsubscribe) {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      try {
+        unsubscribe()
+      } catch (e) { }
+      reject()
+    }, ms)
+  })
+}
+
 export default new XmppService();
+
+
+function parseRoomConfigStanza(stanza) {
+  let roomconfig = {}
+  stanza.getChild('query').getChild('x').getChildren('field').forEach(field => {
+    const _var = field.attrs.var;
+
+    switch (_var) {
+      case 'muc#roomconfig_roomname': {
+        if (field.getChild('value')) {
+          roomconfig.roomname = field.getChild('value').getText()
+        } else {
+          roomconfig.roomname = ""
+        }
+        break;
+      }
+      case 'muc#roomconfig_roomdesc': {
+        if (field.getChild('value')) {
+          roomconfig.roomdesc = field.getChild('value').getText()
+        } else {
+          roomconfig.roomdesc = ""
+        }
+        break;
+      }
+      default: {
+
+      }
+    }
+  })
+
+  return roomconfig
+}

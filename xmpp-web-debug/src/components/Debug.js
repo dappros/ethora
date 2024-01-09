@@ -1,5 +1,6 @@
 import { useState } from "react";
 import xmppService from "../XmppService";
+import { RoomConfig } from "./RoomConfig";
 
 export default function Debug() {
   const [username, setUsername] = useState("");
@@ -28,7 +29,6 @@ export default function Debug() {
 
   const getRooms = async () => {
     let getRoomsResp = await xmppService.getRooms();
-    console.log("getRooms ", getRoomsResp.toString());
   };
 
   const onFirstName = (e) => {
@@ -61,6 +61,7 @@ export default function Debug() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button onClick={onLogin}>Connect</button>
+        <button onClick={() => xmppService.stop()}>Disconnect</button>
       </div>
 
       <div style={{ paddingTop: "10px" }}>
@@ -83,9 +84,6 @@ export default function Debug() {
             onChange={onLastName}
           />
         </label>
-      </div>
-      <div style={{ paddingTop: "10px" }}>
-        <button onClick={() => xmppService.stop()}>Disconnect</button>
       </div>
       <div style={{ paddingTop: "10px" }}>
         <button onClick={getRooms}>getRooms</button>
@@ -263,21 +261,19 @@ export default function Debug() {
           </button>
         </div>
       </div>
+      <RoomConfig style={{margin: '10px'}}></RoomConfig>
       <div style={{ paddingTop: "10px" }}>
         <div>Room config</div>
         <div>
-          <input type="text" />
-        </div>
-        <div>
           <input
             type="text"
-            placeholder="room local jid"
+            placeholder="room localpart"
             value={room}
             onChange={(e) => setRoom(e.target.value)}
           />
           <input
             type="text"
-            placeholder="Room Name"
+            placeholder="Room Title"
             value={roomName}
             onChange={(e) => setRoomName(e.target.value)}
           />
