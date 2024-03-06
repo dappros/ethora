@@ -7,10 +7,9 @@ Please see the main readme file in the root folder [https://github.com/dappros/e
 ## How to deploy
 
 There are three ways to build your React.js app using Ethora engine (this repo):
-1. Deployed automatically - just register at https://ethora.com/ create a new Application there and use the web interface to customize your app appearance. Your app is hosted and deployed automatically in our cloud. You can use your own domain name and branding.
-2. Dedicated server image from Ethora/Dappros. Obtain a self-install server image from us directly or via AWS Marketplace. Your web application will be hosted on your server / AWS instance. It will be deployed automatically after you complete the initial set up steps.
-3. Build manually using this repo, self host and deploy manually.
-
+1. Via **web dashboard (no code)** - just register at https://ethora.com/ create a new Application there and use the web interface to customize your app appearance. Your app is hosted and deployed automatically in our cloud. You can switch to your own domain name and branding using dashboard settings. 
+2. Build **manually using this repo**, self host and deploy your web application manually. 
+3. **Dedicated server image** from Ethora/Dappros. Obtain a self-install server image from us directly or via AWS Marketplace. Your web application will be hosted on your server / AWS instance. It will be deployed automatically after you complete the initial set up steps. In this configuration, your API, push/messaging and other services will also be hosted in your own dedicated server.
 
 (c) Dappros Ltd, UK, 2018-2024
 
@@ -25,6 +24,8 @@ Create .env file in the root of the client-web with the following structure
 
 ### `VITE_APP_API_URL=https://api.ethoradev.com/v1`
 ### `VITE_APP_DOMAIN_NAME=ethoradev.com`
+
+Note: normally there is .env.example you can use, just copy it to .env and edit the endpoints if needed.
 
 ## Available Scripts
 
