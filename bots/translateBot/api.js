@@ -9,8 +9,8 @@ const http = axios.create({
 
 export const botLogin = async (username, password) => {
     try {
-        const request = await http.post('users/login', {
-            username: username,
+        const request = await http.post('users/login-with-email', {
+            email: username,
             password: password
         }, {
             headers: {
