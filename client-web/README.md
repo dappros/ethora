@@ -12,7 +12,7 @@ There are three ways to build your React.js app using Ethora engine (this repo):
 3. Build manually using this repo, self host and deploy manually.
 
 
-(c) Dappros Ltd, UK, 2018-2023
+(c) Dappros Ltd, UK, 2018-2024
 
 ---
 
