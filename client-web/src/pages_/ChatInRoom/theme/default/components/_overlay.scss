@@ -1,0 +1,41 @@
+@import "../variables";
+
+.#{$prefix}-overlay {
+
+  box-sizing: border-box;
+  @include flex-row;
+  justify-content: center;
+  align-items: center;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  backdrop-filter: blur(10%);
+
+  // Content must be above opacity layer
+  &__content {
+    z-index: 220;
+  }
+  
+  // Opacity layer
+  &::before {
+    box-sizing: border-box;
+    content: "";
+    background-color: $overlay-bg-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+  }
+  
+  &--blur::before {
+    backdrop-filter: blur(2px);
+  }
+  
+  &--grayscale::before {
+    backdrop-filter: grayscale(50%);
+  }
+}

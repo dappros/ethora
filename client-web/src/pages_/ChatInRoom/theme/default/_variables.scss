@@ -1,0 +1,808 @@
+// Variables
+//
+//
+
+@import "helpers/functions";
+
+// Main class prefix
+$prefix: "cs" !default;
+
+// Grid breakpoints
+//
+// Breakpoints for responsive view
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+) !default;
+
+// Default font family
+//
+
+$default-font-family: Helvetica Neue, Segoe UI, Helvetica, Arial, sans-serif;
+
+// Colors
+//
+
+$color-primary: #c6e3fa !default;
+$color-primary-light: #f6fbff !default;
+$color-primary-dark: #6ea9d7 !default;
+$color-primary-dark: #6EAAD8 !default;
+
+$color-secondary: #91ECEC !default;
+$color-secondary-light: #C2F9F9 !default;
+$color-secondary-dark: #64D3D3 !default;
+
+// Material text colors
+// http://marcodiiga.github.io/rgba-to-rgb-conversion
+// Hex values are calculated based on white background 
+// If you change background color rgb color will change, that is why its better to use rgba with opacity!
+$color-text: rgba(0, 0, 0, .87) !default; // #212121
+$color-text-medium: rgba(0, 0, 0, .60) !default; // #666666
+$color-text-disabled: rgba(0, 0, 0, .38) !default; // #9e9e9e
+$color-text-inverted: invert($color-text); 
+
+// Base colors
+//
+// It's not recommended to change this colors because white is white and black is... black :)
+$color-white: #fff !default;
+$color-black: #000 !default;
+
+$default-bg-color: $color-white !default;
+
+// Element colors
+//
+
+$default-border-color: rgba-to-rgb(rgba(scale-color($color-primary-dark, $saturation: -55%), 0.4), $default-bg-color) !default;
+
+// State colors
+//
+
+$color-hover: $color-text !default;
+$color-bg-hover: rgba-to-rgb(rgba($color-primary-dark, 0.08), $default-bg-color) !default;
+$color-focus: $color-text !default;
+$color-bg-focus: rgba-to-rgb(rgba($color-primary-dark, 0.24), $color-primary-light) !default;
+$color-selected: darken($color-primary-dark, 25%) !default;
+$color-bg-selected: $color-bg-focus !default;
+$color-activated: darken($color-primary-dark, 25%)  !default;
+$color-bg-activated: $color-bg-focus !default;
+$color-active: $color-primary-dark !default;
+$color-bg-active: $color-bg-activated !default;
+$color-disabled: $color-text-disabled !default;
+$color-bg-disabled: rgba(0, 0, 0, .38) !default;
+
+// Functional colors
+//
+
+$color-danger: #ec1212 !default;
+$color-error: $color-danger !default;
+
+// Border radius
+//
+// Default border radius for elements
+
+$default-border-radius: 0.7em !default;
+
+// Opacity
+//
+
+$disabled-opacity: 0.38 !default;
+
+///////////////////////////////////////// Components /////////////////////////////////////////
+
+// Avatar
+// 
+
+// Sizes
+$avatar-xs-width: 16px !default;
+$avatar-sm-width: 26px !default;
+$avatar-md-width: 42px !default;
+$avatar-lg-width: 68px !default;
+$avatar-fluid-width: 100% !default;
+
+// Avatar group
+// 
+
+// Sizes
+$avatar-group-xs-width: 16px !default;
+$avatar-group-sm-width: 32px !default;
+$avatar-group-md-width: 100% !default;
+$avatar-group-lg-width: 80px !default;
+$avatar-group-fluid-width: 100% !default;
+
+$avatar-group-md-min-width: 40px !default; 
+
+// Buttons
+// 
+// General button element and dedicated (function specific) buttons
+
+// Borders
+$button-border: solid 1px $default-border-color !default;
+$button-border-radius: $default-border-radius !default;
+
+// Colors
+$button-color: $color-primary-dark !default;
+$button-bg-color: transparent !default;
+
+// Fonts
+$button-font-size: 1em !default;
+$button-line-height: 1.5 !default;
+
+// Opacity
+$button-hover-opacity: 0.6 !default;
+$button-disabled-opacity: $disabled-opacity !default;
+
+// Spacing
+$button-margin: 0.1em 0.2em !default;
+$button-padding: 0.2em 0.7em !default;
+
+// Add user button 
+
+$button-adduser-color: $button-color !default;
+$button-adduser-bg-color: $button-bg-color !default;
+
+// Arrow button
+
+$button-arrow-color: $button-color !default;
+$button-arrow-bg-color: $button-bg-color !default;
+
+// Ellipsis button
+
+$button-ellipis-color: $button-color !default;
+$button-ellipis-bg-color: $button-bg-color !default;
+
+// Info button
+
+$button-info-color: $button-color !default;
+$button-info-bg-color: $button-bg-color !default;
+
+// Star button
+
+$button-star-color: $button-color !default;
+$button-star-bg-color: $button-bg-color !default;
+
+// Video call button
+
+$button-videocall-color: $button-color !default;
+$button-videocall-bg-color: $button-bg-color !default; 
+
+// Voice call button
+
+$button-voicecall-color: $button-color !default;
+$button-voicecall-bg-color: $button-bg-color !default;
+
+// Send button
+
+$button-send-color: $button-color !default;
+$button-send-bg-color: $button-bg-color !default;
+
+// Attachment button
+
+$button-attachment-color: $button-color !default;
+$button-attachment-bg-color: $button-bg-color !default;
+
+// Chat container
+//
+
+// Borders
+$chat-container-message-input-border-top: solid 1px $default-border-color !default;
+$chat-container-message-input-border-right: solid 0px $default-border-color !default;
+$chat-container-message-input-border-bottom: solid 0px $default-border-color !default;
+$chat-container-message-input-border-left: solid 0px $default-border-color !default;
+
+// Colors 
+$chat-container-color: $color-text !default;
+$chat-container-bg-color: $default-bg-color !default;
+$chat-container-message-input-color: $color-text !default;
+$chat-container-message-input-bg-color: $default-bg-color !default;
+$chat-container-input-toolbox-color: $color-text !default;
+$chat-container-input-toolbox-bg-color: $default-bg-color !default;
+
+// Sizes
+$chat-container-min-width: 180px !default;
+
+// Conversation
+//
+
+// Borders
+$conversation-border-top: 0 !default;
+$conversation-border-right: 0 !default;
+$conversation-border-bottom: 0 !default;
+$conversation-border-left: 0 !default;
+$conversation-active-border-top: 0 !default;
+$conversation-active-border-right: 0 !default;
+$conversation-active-border-bottom: 0 !default;
+$conversation-active-border-left: 0 !default;
+$conversation-activated-border-top: 0 !default;
+$conversation-activated-border-right: 0 !default;
+$conversation-activated-border-bottom: 0 !default;
+$conversation-activated-border-left: 0 !default;
+
+// Colors
+$conversation-color: $color-text !default;
+$conversation-bg-color: $default-bg-color !default;
+$conversation-unread-color: $color-white !default;
+$conversation-unread-bg-color: $color-danger !default;
+$conversation-hover-bg-color: $color-bg-hover !default;
+$conversation-unread-dot-color: #2e63e8 !default;
+$conversation-name-color: $color-text !default;
+$conversation-name-activated-color: $color-activated !default;
+$conversation-info-color: $color-text-medium !default;
+$conversation-info-activated-color: $color-activated !default;
+$conversation-active-color: $conversation-color !default;
+$conversation-active-bg-color: $color-bg-active !default;
+$conversation-activated-color: $color-activated !default;
+$conversation-activated-bg-color: $color-bg-activated !default;
+
+// Fonts
+$conversation-font-family: $default-font-family !default;
+$conversation-unread-font-size: 0.75em !default;
+$conversation-last-sender-name-font-weight: normal !default;
+$conversation-info-content-font-weight: normal !default;
+$conversation-info-activated-font-weight: normal !default;
+$conversation-activated-font-weight: normal !default;
+$conversation-name-activated-font-weight: normal !default;
+
+// Sizes
+$conversation-unread-dot-width: 0.7em !default;
+
+// Spacing
+$conversation-operations-margin: 0 0 0 auto !default;
+$conversation-last-activity-time-margin: 0 0 0 auto !default;
+$chat-container-input-toolbox-margin: 0 !default;
+$chat-container-input-toolbox-padding: 0 0.8em 0.17em 0 !default;
+
+// Conversation header
+//
+
+// Borders
+$conversation-header-border-top: solid 0px $default-border-color !default;
+$conversation-header-border-right: solid 0px $default-border-color !default;
+$conversation-header-border-bottom: solid 1px $default-border-color !default;
+$conversation-header-border-left: solid 0px $default-border-color !default;
+
+// Colors
+$conversation-header-bg-color: $color-primary-light !default;
+$conversation-header-color: color-by-background($conversation-header-bg-color, $color-text, $color-text-inverted) !default;
+$conversation-header-user-name-color: $conversation-header-color !default;
+$conversation-header-user-name-bg-color: $conversation-header-bg-color !default;
+$conversation-header-info-color: color-by-background($conversation-header-bg-color, $color-text-medium, $color-text-inverted) !default;
+$conversation-header-info-bg-color: $conversation-header-bg-color !default;
+$conversation-header-action-button-color: normal !default;
+$conversation-header-action-button-bg-color: transparent !default;
+$conversation-header-actions-color: $color-text !default;
+$conversation-header-actions-bg-color: transparent !default;
+
+// Fonts
+$conversation-header-font-family: $default-font-family !default;
+$conversation-header-font-size: 1em !default;
+
+// Sizes
+$conversation-header-content-min-width: 0 !default;
+
+// Spacing
+$conversation-header-actions-margin: 0 0 0 0.5em !default;
+
+// Conversation list
+//
+
+// Colors
+$conversation-list-color: $color-text !default;
+$conversation-list-bg-color: transparent !default;
+$conversation-list-loading-more-bg-color: transparent !default;
+
+// Sizes
+$conversation-list-loading-more-height: 1.2em !default;
+
+// Spacing
+$conversation-list-loading-more-padding: 2px 0 !default;
+
+// Expansion panel
+//
+
+// Borders
+$expansion-panel-border: solid 1px $default-border-color !default;
+
+// Colors
+$expansion-panel-color: $color-text !default;
+$expansion-panel-bg-color: $default-bg-color !default;
+$expansion-panel-header-color: $color-text-medium !default;
+$expansion-panel-header-bg-color: $color-primary-light !default;
+$expansion-panel-header-hover-color: $expansion-panel-header-color !default;
+$expansion-panel-header-hover-bg-color: $color-bg-hover !default;
+$expansion-panel-header-open-color: $expansion-panel-header-color !default;
+$expansion-panel-header-open-bg-color: $expansion-panel-header-bg-color !default;
+$expansion-panel-content-color: $color-text !default;
+$expansion-panel-content-bg-color: $default-bg-color !default;
+$expansion-panel-content-open-color: $expansion-panel-content-color !default;
+$expansion-panel-content-open-bg-color: $expansion-panel-content-bg-color !default;
+
+// Fonts 
+$expansion-panel-font-family: $default-font-family !default;
+$expansion-panel-font-weight: normal !default;
+$expansion-panel-font-size: inherit !default;
+$expansion-panel-font-variant: normal !default;
+
+$expansion-panel-header-font-family: $default-font-family !default;
+$expansion-panel-header-font-weight: bold !default;
+$expansion-panel-header-font-size: 0.75em !default;
+$expansion-panel-header-font-variant: normal !default;
+
+$expansion-panel-content-font-family: $default-font-family !default;
+$expansion-panel-content-font-weight: normal !default;
+$expansion-panel-content-font-size: 0.8em !default;
+$expansion-panel-content-font-variant: normal !default;
+
+
+// Input toolbox
+//
+
+// Colors
+$input-toolbox-send-btn-color: $color-secondary !default;
+$input-toolbox-upload-btn-color: $color-secondary !default;
+
+// Fonts
+$input-toolbox-btn-font-size: 1.2em !default;
+
+// Spacing
+$input-toolbox-btn-margin: 0 0.5em 0 0 !default;
+$input-toolbox-margin: 0 !default;
+$input-toolbox-padding: 0 0 0.4em 0 !default;
+
+// Loader
+//
+
+// Borders
+$loader-border-width: 0.2em !default;
+
+// Colors
+$loader-color: $color-text !default;
+$loader-bg-color: transparent !default;
+$loader-spinner-color: $color-primary-dark !default;
+$loader-spinner-bg-color: $color-primary !default;
+
+// Sizes
+$loader-width: 1.8em !default;
+$loader-height: 1.8em !default;
+
+// Main container
+//
+
+// Borders
+$main-container-border: solid 1px $default-border-color !default;
+$main-container-conversation-list-border-top: solid 0px $default-border-color !default;
+$main-container-conversation-list-border-right: solid 1px $default-border-color !default;
+$main-container-conversation-list-border-bottom: solid 0px $default-border-color !default;
+$main-container-conversation-list-border-left: solid 0px $default-border-color !default;
+$main-container-chat-container-border-right: solid 0px $default-border-color !default;
+$main-container-sidebar-right-border-top: solid 0px $default-border-color !default;
+$main-container-sidebar-right-border-right: solid 0px $default-border-color !default;
+$main-container-sidebar-right-border-bottom: solid 0px $default-border-color !default;
+$main-container-sidebar-right-border-left: solid 1px $default-border-color !default;
+
+// Colors
+$main-container-color: $color-text !default;
+$main-container-bg-color: $default-bg-color !default;
+
+// Fonts
+$main-container-font-size: 1rem !default; // Font size for child elements are relative to this size
+
+// Sizes
+$main-container-conversation-list-flex-basis: 300px !default;
+$main-container-sidebar-width: 300px !default;
+$main-container-sidebar-min-width: $main-container-sidebar-width !default;
+
+$main-container-sidebar-left-max-width: 320px !default;
+$main-container-sidebar-right-min-width: 150px !default;
+$main-container-sidebar-right-max-width: 320px !default;
+
+// Message
+// 
+
+// Boolean flags
+$show-message-incoming-sender-name: false !default;
+$show-message-incoming-single-sender-name: true !default;
+$show-message-incoming-first-sender-name: true !default;
+$show-message-incoming-last-sender-name: false !default;
+
+$show-message-outgoing-sender-name: false !default;
+$show-message-outgoing-single-sender-name: false !default;
+$show-message-outgoing-first-sender-name: false !default;
+$show-message-outgoing-last-sender-name: false !default;
+
+$show-message-incoming-sent-time: false !default;
+$show-message-incoming-single-sent-time: true !default;
+$show-message-incoming-first-sent-time: true !default;
+$show-message-incoming-last-sent-time: false !default;
+
+$show-message-outgoing-sent-time: false !default;
+$show-message-outgoing-single-sent-time: true !default;
+$show-message-outgoing-first-sent-time: true !default;
+$show-message-outgoing-last-sent-time: false !default;
+
+// Avatar flags
+$show-message-incoming-avatar: false !default;
+$show-message-incoming-single-avatar: true !default;
+$show-message-incoming-first-avatar: false !default;
+$show-message-incoming-last-avatar: true !default;
+
+$show-message-outgoing-avatar: false !default;
+$show-message-outgoing-single-avatar: true !default;
+$show-message-outgoing-first-avatar: false !default;
+$show-message-outgoing-last-avatar: true !default;
+
+// Borders
+$message-base-radius: $default-border-radius !default;
+
+$message-border-radius: 0 !default;
+
+// Border radius for single incoming message
+$message-incoming-single-border-radius: $message-border-radius !default;
+
+// Border radius for first incoming message
+$message-incoming-first-border-radius: $message-border-radius $message-border-radius $message-border-radius 0 !default;
+
+// Border radius for last incoming message
+$message-incoming-last-border-radius: 0 $message-border-radius $message-border-radius $message-border-radius !default;
+
+// Border radius for single outgoing message
+$message-outgoing-single-border-radius: $message-border-radius !default;
+
+// Border radius for first outgoing message
+$message-outgoing-first-border-radius: $message-border-radius $message-border-radius 0 $message-border-radius !default;
+
+// Border radius for last outgoing message
+$message-outgoing-last-border-radius: $message-border-radius $message-border-radius $message-border-radius $message-border-radius !default;
+
+// Border radius for content
+$message-content-border-radius: $message-base-radius $message-base-radius $message-base-radius $message-base-radius !default;
+
+// Border radius for normal incoming message content
+$message-incoming-content-border-radius: 0 $message-base-radius $message-base-radius 0 !default;
+
+// Border radius for single incoming message content
+$message-incoming-content-single-border-radius: 0 $message-base-radius $message-base-radius $message-base-radius !default;
+
+// Border radius for first incoming message content
+$message-incoming-content-first-border-radius: 0 $message-base-radius $message-base-radius 0 !default;
+
+// Border radius for last incoming message content
+$message-incoming-content-last-border-radius: 0 $message-base-radius 0 $message-base-radius !default;
+
+// Border radius for normal outgoing message content
+$message-outgoing-content-border-radius: $message-base-radius 0 0 $message-base-radius !default;
+
+// Border radius for single outgoing message content
+$message-outgoing-content-single-border-radius: $message-base-radius $message-base-radius 0 $message-base-radius !default;
+
+// Border radius for first outgoing message content
+$message-outgoing-content-first-border-radius: $message-base-radius 0 0 $message-base-radius !default;
+
+// Border radius for last outgoing message content
+$message-outgoing-content-last-border-radius: $message-base-radius 0 $message-base-radius $message-base-radius !default;
+
+// Colors
+$message-color: $color-text !default;
+$message-bg-color: transparent !default;
+
+$message-header-color: lighten($color-text, 30) !default;
+$message-header-bg-color: transparent !default;
+
+$message-footer-color: lighten($color-text, 30) !default;
+$message-footer-bg-color: transparent !default;
+
+$message-incoming-color: $message-color !default;
+$message-incoming-bg-color: $message-bg-color !default;
+
+$message-outgoing-color: $message-color !default;
+$message-outgoing-bg-color: transparent !default;
+
+$message-sender-name-color: $message-header-color !default;
+$message-sender-name-bg-color: transparent !default;
+
+$message-sent-time-color: $message-header-color !default;
+$message-sent-time-bg-color: transparent !default;
+
+$message-content-color: $color-text !default;
+$message-content-bg-color: $color-primary !default;
+
+$message-content-incoming-color: $color-text !default;
+$message-content-incoming-bg-color: $message-content-bg-color !default;
+
+$message-content-outgoing-color: $color-text !default;
+$message-content-outgoing-bg-color: $color-primary-dark !default;
+
+// Fonts
+$message-font-size: 1em !default;
+$message-font-family: $default-font-family !default;
+
+$message-content-font-family: $default-font-family !default;
+$message-content-font-weight: normal !default;
+$message-content-font-size: 0.91em !default;
+$message-content-font-variant: normal !default;
+
+// Sizes
+$message-avatar-width: 42px !default;
+
+// Spacing
+$message-margin:0; // Default margin for message
+$message-only-child-margin: 0.2em 0 0 0 !default;
+$message-not-only-child-margin: 0.2em 0 0 0 !default;
+
+$message-header-margin: 0 0.2em 0.1em 0.2em !default;
+$message-footer-margin: 0.1em 0.2em 0 0.2em !default;
+
+$message-content-margin-top: 0 !default;
+$message-monologue-margin-top: 0.4em !default;
+
+$message-avatar-horizontal-margin: 8px !default; // Pixels because need to calculate with avatar width
+$message-avatar-margin: 0 $message-avatar-horizontal-margin 0 0 !default;
+$message-incoming-avatar-margin: 0 $message-avatar-horizontal-margin 0 0 !default;
+$message-outgoing-avatar-margin: 0 0 0 $message-avatar-horizontal-margin !default;
+
+// Message group
+//
+
+// Borders
+$message-group-message-base-radius: $default-border-radius !default;
+// Border radius for normal incoming message content
+$message-group-incoming-message-content-border-radius: 0 $message-group-message-base-radius $message-group-message-base-radius 0 !default;
+// Border radius for single incoming message content
+$message-group-incoming-message-content-single-border-radius: 0 $message-group-message-base-radius $message-group-message-base-radius $message-group-message-base-radius !default;
+// Border radius for first message content in incoming group
+$message-group-incoming-message-content-first-border-radius: 0 $message-group-message-base-radius $message-group-message-base-radius 0 !default;
+// Border radius for last message content in incoming group
+$message-group-incoming-message-content-last-border-radius: 0 $message-group-message-base-radius 0 $message-group-message-base-radius !default;
+// Border radius for normal outgoing message content
+$message-group-outgoing-message-content-border-radius: $message-group-message-base-radius 0 0 $message-group-message-base-radius !default;
+// Border radius for single outgoing message content
+$message-group-outgoing-message-content-single-border-radius: $message-group-message-base-radius $message-group-message-base-radius 0 $message-group-message-base-radius !default;
+// Border radius for first message content in outgoing group
+$message-group-outgoing-message-content-first-border-radius: $message-group-message-base-radius 0 0 $message-group-message-base-radius !default;
+// Border radius for last message content in outgoing group
+$message-group-outgoing-message-content-last-border-radius: $message-group-message-base-radius 0 $message-group-message-base-radius $message-group-message-base-radius !default;
+
+//  Colors
+$message-group-header-color: $color-text-medium !default;
+$message-group-header-bg-color: transparent !default;
+$message-group-footer-color: $color-text-medium !default;
+$message-group-footer-bg-color: transparent !default;
+$message-group-message-content-bg-color: $color-primary !default;
+
+$message-group-message-content-incoming-color: $color-text !default;
+$message-group-message-content-incoming-bg-color: $message-group-message-content-bg-color !default;
+
+$message-group-message-content-outgoing-color: $color-text !default;
+$message-group-message-content-outgoing-bg-color: $color-primary-dark !default;
+
+// Fonts
+$message-group-header-font-size: 0.8em !default;
+$message-group-header-font-family: $default-font-family !default;
+
+$message-group-footer-font-size: 0.8em !default;
+$message-group-footer-font-family: $default-font-family !default;
+
+// Spacing
+$message-group-margin: 0.4em 0 0 0 !default;
+$message-group-header-margin: 0 0 0.2em 0 !default;
+$message-group-footer-margin: 0.2em 0 0 0 !default;
+
+$message-group-avatar-horizontal-margin: 8px;
+
+$message-group-header-padding: 0 !default;
+$message-group-footer-padding: 0 !default;
+
+// Message input
+//
+
+// Borders
+$message-input-border-top: none !default;
+$message-input-border-right: none !default;
+$message-input-border-bottom: none !default;
+$message-input-border-left: none !default;
+
+$message-input-content-editor-wrapper-border-radius: $default-border-radius !default;
+
+$message-input-content-editor-border-top-width: 0 !default;    // These variables
+$message-input-content-editor-border-right-width: 0 !default;  // are used
+$message-input-content-editor-border-bottom-width: 0 !default; // for some calculations
+$message-input-content-editor-border-left-width: 0 !default;   // by _message-input.scss
+
+$message-input-content-editor-border-top: $message-input-content-editor-border-top-width none !default;
+$message-input-content-editor-border-right: $message-input-content-editor-border-right-width none !default;
+$message-input-content-editor-border-bottom: $message-input-content-editor-border-bottom-width none !default;
+$message-input-content-editor-border-left: $message-input-content-editor-border-left-width none !default;
+
+// Colors
+$message-input-bg-color: $default-bg-color !default;
+$message-input-content-editor-color: $color-text !default;
+$message-input-content-editor-wrapper-bg-color: $color-primary !default;
+$message-input-content-editor-container-bg-color: $message-input-content-editor-wrapper-bg-color !default;
+$message-input-content-editor-bg-color: $message-input-content-editor-wrapper-bg-color !default;
+$message-input-content-editor-disabled-color: $color-text-medium !default;
+$message-input-content-editor-disabled-bg-color: rgba($message-input-content-editor-bg-color, 0.38) !default;
+
+// Fonts
+$message-input-content-editor-font-family: $default-font-family !default;
+$message-input-content-editor-container-font-size: 0.94em !default;
+
+// Sizes
+$message-input-max-lines: 4;
+
+// Spacing
+$message-input-placeholder-color: $color-text-disabled !default;
+$message-input-padding: 0 !default;
+
+$message-input-content-editor-wrapper-margin: 0 !default;
+$message-input-content-editor-wrapper-padding: 0.6em 0.9em !default;
+$message-input-content-editor-container-padding-top: 0em !default;     // These variables
+$message-input-content-editor-container-padding-right: 0em !default;   // are used 
+$message-input-content-editor-container-padding-bottom: 0em !default;  // for some calculations
+$message-input-content-editor-container-padding-left: 0em !default;    // by _message-input.scss
+$message-input-content-editor-container-padding: $message-input-content-editor-container-padding-top $message-input-content-editor-container-padding-right $message-input-content-editor-container-padding-bottom $message-input-content-editor-container-padding-left !default;
+
+// !!! Be careful, when set this to unitless value - calculations below will not work properly
+// Also check if scroll is working properly after changing this value
+$message-input-content-editor-container-line-height: 1.35em !default;
+
+// Message list
+//
+
+// Colors
+$message-list-color: $color-text !default;
+$message-list-bg-color: $default-bg-color !default;
+$message-list-typing-indicator-bg-color: $color-white !default;
+$message-list-loading-more-bg-color: $color-white !default;
+
+// Sizes
+$message-list-loading-more-height: 1.2em !default;
+
+// Spacing
+$message-list-scroll-wrapper-padding: 0 1.2em 0 0.8em !default;
+$message-list-loading-more-padding: 2px 0 !default;
+$message-list-message-separator-margin-top: 1.2em !default;
+
+// Message separator
+//
+
+// Colors
+$message-separator-color: $color-primary-dark !default;
+$message-separator-bg-color: $default-bg-color !default;
+$message-separator-font-size: 0.8em !default;
+$message-separator-font-family: $default-font-family !default;
+
+$message-separator-content-color: $message-separator-color !default;
+$message-separator-content-bg-color: $message-separator-bg-color !default;
+
+$message-separator-line-color: $message-separator-color !default;
+
+// Spacing
+$message-separator-left-line-margin: 0 1em 0 0 !default;
+$message-separator-right-line-margin: 0 0 0 1em !default;
+
+// Overlay
+//
+
+// Colors
+$overlay-bg-color: rgba(198,227,250,0.38) !default;
+
+// Search
+//
+
+// Borders
+$search-border-radius: $default-border-radius !default;
+
+//  Colors
+$search-bg-color: $color-primary !default;
+$search-color: $color-text !default;
+$search-icon-color: $color-primary-dark !default;
+$search-clear-icon-color: $search-icon-color !default;
+$search-clear-icon-color-hover: rgba($color-primary-dark, 0.6) !default;
+$search-placeholder-color: $color-text !default;
+$search-input-bg-color: $search-bg-color !default;
+$search-disabled-color: $color-disabled !default;
+$search-disabled-bg-color: $search-bg-color !default;
+$search-input-disabled-bg-color: $search-disabled-bg-color !default;
+
+// Fonts
+$search-font-family: inherit !default;
+$search-font-size: inherit !default;
+$search-input-font-family: inherit !default;
+$search-input-font-size: 0.8em !default;
+
+// Opacity
+$search-disabled-opacity: $disabled-opacity !default;
+
+// Sidebar
+//
+
+// Colors
+$sidebar-right-bg-color: $default-bg-color !default;
+$sidebar-left-bg-color: $default-bg-color !default;
+
+// Status
+// 
+
+// Colors
+$status-available-color: #00a27e !default;
+$status-unavailable-color: #a66d00 !default;
+$status-away-color: #fc8b00 !default;
+$status-dnd-color: $color-danger !default;
+$status-invisible-color: #c2d1d9 !default;
+$status-eager-color: #ffee00 !default;
+
+$status-selected-color: $color-selected !default;
+$status-selected-bg-color: $color-bg-selected !default;
+
+$status-available-name-color: $color-text !default;
+$status-unavailable-name-color: $color-text !default;
+$status-away-name-color: $color-text !default;
+$status-dnd-name-color: $color-text !default;
+$status-invisible-name-color: $color-text !default;
+$status-eager-name-color: $color-text !default;
+
+// Fonts
+$status-xs-fontsize: 1em !default;
+$status-sm-fontsize: 1em !default;
+$status-md-fontsize: 1em !default;
+$status-lg-fontsize: 1em !default;
+
+// Sizes
+$status-xs-width: 4px !default;
+$status-sm-width: 8px !default;
+$status-md-width: 11px !default;
+$status-lg-width: 14px !default;
+$status-fluid-width: 100% !default;
+
+// Spacing
+$status-name-margin: 0 0 0 0.58em !default;
+
+// Status list
+// 
+
+// Colors
+$status-list-color: $color-text !default;
+$status-list-bg-color: $default-bg-color !default;
+
+$status-list-margin: 0 !default;
+$status-list-padding: 1em !default;
+
+$status-list-item-margin: 0 !default;
+$status-list-item-padding: 0.4em 0.8em!default;
+
+$status-list-item-hover-color: $color-text-medium !default;
+$status-list-item-hover-bg-color: $color-bg-hover !default;
+
+$status-list-item-focus-color: $color-focus !default;
+$status-list-item-focus-bg-color: $color-bg-focus !default;
+
+$status-list-item-selected-color: $color-selected !default;
+$status-list-item-selected-bg-color: $color-bg-selected !default;
+
+$status-list-item-active-color: $color-text !default;
+$status-list-item-active-bg-color: $color-bg-active !default;
+
+// Typing indicator
+//
+
+// Colors
+$typing-indicator-text-color: $color-primary-dark !default;
+$typing-indicator-text-bg-color: transparent !default;
+
+$typing-indicator-indicator-bg-color: transparent !default;
+$typing-indicator-dot-bg-color: $color-primary-dark !default;
+
+// Fonts
+$typing-indicator-font-family: $default-font-family !default;
+$typing-indicator-font-size: inherit !default;
+
+// Sizes
+$typing-indicator-dot-size: 4px !default;
+
+// Spacing
+$typing-indicator-dot-spacing: 3px !default;
+$typing-indicator-text-margin: 0 0 0 0.5em !default;

@@ -1,0 +1,117 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-avatar {
+  
+  $avatar-class: &;
+  
+  position: relative;
+  width: $avatar-md-width;
+  height: $avatar-md-width;
+  border-radius: 50%;
+  box-sizing: border-box;
+  
+  & > img {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    > img {
+      filter: brightness(115%);
+    }
+  }
+
+  &#{&}--xs {
+    width: $avatar-xs-width;
+    height: $avatar-xs-width;
+    min-width: $avatar-xs-width;;
+    min-height: $avatar-xs-width;
+  }
+
+  &#{&}--sm {
+    width: $avatar-sm-width;
+    height: $avatar-sm-width;
+    min-width: $avatar-sm-width;;
+    min-height: $avatar-sm-width;
+  }
+  
+  &#{&}--md
+  {
+    width: $avatar-md-width;
+    height: $avatar-md-width;
+    min-width: $avatar-md-width;;
+    min-height: $avatar-md-width;
+  }
+
+  &#{&}--lg {
+    width: $avatar-lg-width;
+    height: $avatar-lg-width;
+    min-width: $avatar-lg-width;;
+    min-height: $avatar-lg-width;
+  }
+  
+    &#{&}--fluid {
+    width: $avatar-fluid-width;
+    height: $avatar-fluid-width;
+    .#{$prefix}-status {
+      right: 5%;
+      width: 22%;
+      height: 22%
+    }
+  }
+  
+  // Status position and size
+  & .#{$prefix}-status {
+    box-sizing: border-box;
+    position: absolute;
+    right:-1px;
+    bottom: 3%;
+    
+    &__bullet  {
+      box-sizing: content-box;
+      border: solid 2px #fff;
+    }
+
+    $status-class: #{$prefix}-status;
+    $bullet-class: #{$prefix}-status__bullet;
+    
+    &--xs,
+    &--xs:not(.#{$status-class}--named) {
+      
+      @include status-size("xs", 1);
+      right: 0;
+      bottom: 0;
+      
+    }
+
+    &--sm,
+    &--sm:not(.#{$status-class}--named) {
+      
+      @include status-size("sm", 2);
+      
+      right: -3px;
+      bottom: -1px;
+    }
+    
+    &--md,
+    &--md:not(.#{$status-class}--named) {
+      @include status-size("md", 2);
+    }
+
+    &--lg,  
+    &--lg:not(.#{$status-class}--named) {
+
+      @include status-size("lg", 2);
+      bottom:4%;
+      
+    }
+    
+  }
+  
+  &#{$avatar-class}--active {
+    
+  }
+}

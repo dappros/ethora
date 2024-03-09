@@ -1,0 +1,245 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-status {
+
+  box-sizing: border-box;
+  $status-class: &;
+  $bullet-class: #{$status-class}__bullet;
+  $name-class: #{$status-class}__name;
+  
+  position:relative;
+  @include flex-row;
+  align-items: center;
+  flex-wrap: nowrap;
+  font-size: $status-md-fontsize;
+  
+  #{$bullet-class} {
+    box-sizing: content-box;
+    width: $status-md-width;
+    height: $status-md-width;
+    border-radius: 50%;
+    position: relative;
+
+    // Bubble
+    perspective: 200px;
+    perspective-origin: 50% 50%;
+    // End Bubble
+    
+  }
+  
+  &--selected {
+    color: $status-selected-color;
+    background-color: $status-selected-bg-color;
+  }
+  
+  &--named {
+    width: auto;
+    height:auto;
+  }
+  
+  &__name {
+    margin: $status-name-margin;
+    line-height: 1.5;
+  }
+  
+  @at-root .#{$prefix}-avatar:hover #{$bullet-class}:before,
+  &:hover #{$bullet-class}:before {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    top: 1%;
+    left: 5%;
+    border-radius: 50%;
+    z-index: 2;
+
+    filter: blur(0);
+    height: 80%;
+    width: 40%;
+    background: radial-gradient(
+                    circle at 130% 130%,
+                    rgba(255, 255, 255, 0) 0,
+                    rgba(255, 255, 255, 0) 46%,
+                    rgba(255, 255, 255, 0.8) 50%,
+                    rgba(255, 255, 255, 0.8) 58%,
+                    rgba(255, 255, 255, 0) 60%,
+                    rgba(255, 255, 255, 0) 100%
+    );
+
+    transform: translateX(131%) translateY(58%) rotateZ(168deg) rotateX(10deg);
+  }
+  
+  @at-root .#{$prefix}-avatar:hover #{$bullet-class}:after, // For hover on parent avatar
+  &:hover #{$bullet-class}:after {
+    box-sizing: border-box;
+    content: "";
+    position: absolute;
+    top: 5%;
+    left: 10%;
+    width: 80%;
+    height: 80%;  
+    border-radius: 100%;
+    filter: blur(1px);
+    z-index: 2;
+    transform: rotateZ(-30deg);
+
+    display: block;
+    background: radial-gradient(
+                    circle at 50% 80%,
+                    rgba(255, 255, 255, 0),
+                    rgba(255, 255, 255, 0) 74%,
+                    white 80%,
+                    white 84%,
+                    rgba(255, 255, 255, 0) 100%
+    );
+    
+
+    animation: #{$prefix}-bubble-anim 2s ease-out infinite;
+  }
+  
+  
+  &--available {
+
+    #{$bullet-class} {
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-available-color, 10),
+                      $status-available-color
+      );
+    }
+    
+    #{$name-class} {
+      color: $status-available-name-color;
+    }
+    
+  }
+     
+  &--unavailable {
+    #{$bullet-class} {
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-unavailable-color, 25),
+                      $status-unavailable-color
+      );
+    }
+
+    #{$name-class} {
+      color: $status-unavailable-name-color;
+    }
+    
+  }
+  
+  &--away {
+
+    #{$bullet-class} {
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-away-color, 35),
+                      $status-away-color
+      );
+    }
+
+    #{$name-class} {
+      color: $status-away-name-color;
+    }
+    
+  }
+  
+  &--dnd {
+
+    #{$bullet-class} {
+      background-color: $status-dnd-color;
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-dnd-color, 30),
+                      $status-dnd-color
+      );
+    }
+    
+    #{$name-class} {
+      color: $status-dnd-name-color;
+    }
+    
+  }
+
+  &--invisible {
+    #{$bullet-class} {
+      background-color: $status-invisible-color;
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-invisible-color, 25),
+                      $status-invisible-color
+      );
+    }
+
+    #{$name-class} {
+      color: $status-invisible-name-color;
+    }
+  }
+  
+  // Eager to chat
+  &--eager {
+    #{$bullet-class} {
+      background: radial-gradient(
+                      circle at 3px 3px,
+                      lighten($status-eager-color, 40),
+                      $status-eager-color
+      );
+    }
+
+    #{$name-class} {
+      color: $status-eager-name-color;
+    }
+    
+  }
+  
+  // Sized
+  &--xs:not(&--named) {
+    @include status-size("xs");
+  }
+
+  &--sm:not(&--named) {
+    @include status-size("sm");
+  }
+
+  &--md:not(&--named) {
+    @include status-size("md");
+  }
+
+  &--lg:not(&--named) {
+    @include status-size("lg");
+  }
+
+  &--fluid {
+    width: $status-fluid-width;
+    height: $status-fluid-width;
+    #{$bullet-class} {
+      width: $status-fluid-width;
+      min-width: $status-fluid-width;
+      height: $status-fluid-width;
+    }
+  }
+  
+  @keyframes #{$prefix}-bubble-anim {
+    0% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scaleY(0.95) scaleX(1.05);
+    }
+    48% {
+      transform: scaleY(1.1) scaleX(0.9);
+    }
+    68% {
+      transform: scaleY(0.98) scaleX(1.02);
+    }
+    80% {
+      transform: scaleY(1.02) scaleX(0.98);
+    }
+    97%,
+    100% {
+      transform: scale(1);
+    }
+  }
+    
+}

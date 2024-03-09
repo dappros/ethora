@@ -1,0 +1,80 @@
+@import "../variables";
+@import "../helpers/mixins";
+
+.#{$prefix}-expansion-panel {
+
+  $panel-class: &;
+  box-sizing: border-box;
+  @include flex-column;
+  color: $expansion-panel-color;
+  background-color: $expansion-panel-bg-color;
+  border: $expansion-panel-border;
+  
+  font-family: $expansion-panel-font-family;
+  font-weight: $expansion-panel-font-weight;
+  font-size: $expansion-panel-font-size;
+  font-variant: $expansion-panel-font-variant;
+  
+  &__header {
+    box-sizing: border-box;
+    @include flex-row;
+    color: $expansion-panel-header-color;
+    background-color: $expansion-panel-header-bg-color;
+    font-family: $expansion-panel-header-font-family;
+    font-weight: $expansion-panel-header-font-weight;
+    font-size: $expansion-panel-header-font-size;
+    font-variant: $expansion-panel-header-font-variant;
+    user-select: none;
+    padding: 0.8em 0.8em;
+    align-items: center;
+    user-select:none;
+    cursor:pointer;
+  }
+
+  &__header:hover {
+    color:$expansion-panel-header-hover-color;
+    background-color: $expansion-panel-header-hover-bg-color;
+  }
+
+  &__title {
+    box-sizing: border-box;
+    flex-grow:1;
+  }
+
+  &__icon {
+    box-sizing: border-box;
+    margin-left:1em;
+    margin-right:0.5em;
+  }
+  
+  &__content {
+    display:none;
+    color: $expansion-panel-content-color;
+    background-color: $expansion-panel-content-bg-color;
+    font-family: $expansion-panel-content-font-family;
+    font-weight: $expansion-panel-content-font-weight;
+    font-size: $expansion-panel-content-font-size;
+    font-variant: $expansion-panel-content-font-variant;
+    padding: 0.4em 0.8em;
+  }
+  
+  &--open &__content {
+    display:block;
+    color: $expansion-panel-content-open-color;
+    background-color:$expansion-panel-content-open-bg-color;
+  }
+
+  &--closed &__content {
+    display:none;
+  }
+  
+  &--open &__header {
+      color: $expansion-panel-header-open-color;
+      background-color:$expansion-panel-header-open-bg-color;
+  }
+  
+  &--closed {
+    
+  }
+  
+}

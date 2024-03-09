@@ -1,7 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { BrowserRouter as Router } from "react-router-dom"
-import App from "./App"
+import App_ from "./App_"
 import reportWebVitals from "./reportWebVitals"
 import CssBaseline from "@mui/material/CssBaseline"
 import { Web3ReactProvider } from "@web3-react/core"
@@ -19,7 +18,7 @@ if (config.DISABLE_STRICT) {
   root.render(
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
-      <App />
+      <App_ />
     </Web3ReactProvider>
   )
 } else {
@@ -27,7 +26,7 @@ if (config.DISABLE_STRICT) {
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
       <React.StrictMode>
-        <App />
+        <App_ />
       </React.StrictMode>
     </Web3ReactProvider>
   )
