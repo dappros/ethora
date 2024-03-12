@@ -15,7 +15,6 @@ import { LoadingButton } from "@mui/lab"
 import Visibility from "@mui/icons-material/Visibility"
 import VisibilityOff from "@mui/icons-material/VisibilityOff"
 import { httpWithToken } from "../../http"
-import { config } from "../../config"
 import { useSnackbar } from "../../context/SnackbarContext"
 import { useStoreState } from "../../store"
 

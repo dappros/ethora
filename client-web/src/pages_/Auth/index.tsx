@@ -7,7 +7,7 @@ import Container from "@mui/material/Container"
 import { useWeb3React } from "@web3-react/core"
 import { useEffect, useState } from "react"
 import FacebookLogin from "react-facebook-login"
-import { useHistory, useLocation, useParams } from "react-router-dom"
+import { useHistory, useLocation } from "react-router-dom"
 import { injected } from "../../connector"
 import * as http from "../../http"
 import { useStoreState } from "../../store"
@@ -20,7 +20,6 @@ import {
   facebookSignIn,
   googleSignIn,
   metamaskSignIn,
-  regularLogin,
   regularLoginEmail,
 } from "../../config/config"
 import { signInWithGoogle } from "../../services/firebase"
@@ -69,25 +68,23 @@ export default function Signon() {
     }
   }, [query])
 
+  // metamask
   useEffect(() => {
-    console.log("active", active)
     if (active) {
       console.log(active, account)
 
       if (account && !user.firstName) {
         http
           .checkExtWallet(account)
-          .then(async (result) => {
+          .then(async () => {
             console.log("login user")
             const signer = library.getSigner()
             const message = "Login"
             const signature = await signer.signMessage(message)
             const resp = await http.loginSignature(account, signature, message)
-            const user = resp.data.user
 
             updateUserInfo(resp.data)
 
-            // history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
           .catch((error) => {
             console.log(error)
@@ -123,7 +120,6 @@ export default function Signon() {
           res.credential.accessToken,
           loginType
         )
-        const user = loginRes.data.user
 
         updateUserInfo(loginRes.data)
         history.push("/organizations")
@@ -133,8 +129,6 @@ export default function Signon() {
           res.credential.accessToken,
           loginType
         )
-        const user = loginRes.data.user
-
         updateUserInfo(loginRes.data)
       }
     } catch (error) {
@@ -142,30 +136,29 @@ export default function Signon() {
       showSnackbar("error", "Cannot authenticate user")
     }
   }
+
+  // stripe
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
       if (user.stripeCustomerId && user.company.length === 0) {
         history.push(`/organizations`)
         return
       }
+
       if (user.stripeCustomerId && user.paymentMethods.data.length === 0) {
         history.push(`/payments`)
         return
       }
-      // if (lastAuthUrl.current) {
-      //   history.push(lastAuthUrl.current);
-      //   return;
-      // }
+
       history.push(`/home`)
       return
     }
-    if (user.firstName && !user.xmppPassword) {
-      history.push("/owner")
-      return
-    }
   }, [user])
+
   const updateUserInfo = async (loginData: http.TLoginSuccessResponse) => {
+
     const res = await http.getUserCompany(loginData.token)
+
     setUser({
       _id: loginData.user._id,
       firstName: loginData.user.firstName,
@@ -189,6 +182,7 @@ export default function Signon() {
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     })
+
     xmpp.init(
       loginData.user.defaultWallet.walletAddress,
       loginData?.user.xmppPassword as string
@@ -215,7 +209,6 @@ export default function Signon() {
           loginType,
           info.accessToken
         )
-        const user = loginRes.data.user
         updateUserInfo(loginRes.data)
       } else {
         const loginRes = await http.loginSocial(
@@ -224,7 +217,6 @@ export default function Signon() {
           loginType,
           info.accessToken
         )
-        const user = loginRes.data.user
         updateUserInfo(loginRes.data)
       }
     } catch (error) {

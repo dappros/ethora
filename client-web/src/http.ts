@@ -325,6 +325,7 @@ export function getTransactions(walletAddress: string) {
     `/explorer/transactions?walletAddress=${walletAddress}`
   )
 }
+
 export function getProvenanceTransacitons(walletAddress: string, nftId) {
   return http.get<ExplorerRespose<ITransaction[]>>(
     `/explorer/transactions?walletAddress`,
@@ -336,18 +337,23 @@ export function getProvenanceTransacitons(walletAddress: string, nftId) {
     }
   )
 }
+
 export function getExplorerHistory() {
   return http.get<ILineChartData>(`/explorer/history`)
 }
+
 export function getUserCompany(token: string) {
   return httpWithToken(token).get<{ result: ICompany[] }>(`/company`)
 }
+
 export function getExplorerBlocks(blockNumber: number | string = "") {
   return http.get<ExplorerRespose<IBlock[]>>(`/explorer/blocks/` + blockNumber)
 }
+
 export function getTransactionDetails(transactionHash: string) {
   return http.get<ITransaction>(`/explorer/transactions/` + transactionHash)
 }
+
 export function checkExtWallet(walletAddress: string) {
   const appToken = useStoreState.getState().config.appToken
 

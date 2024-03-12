@@ -96,7 +96,7 @@ export const ChangeTempPassword: React.FC<IChangeTemporaryPassword> = ({}) => {
             password: password,
           }
         )
-        history.push({ pathname: "/signIn", search: `?email=${email}` })
+        history.push({ pathname: "/auth", search: `?email=${email}` })
         showSnackbar("success", "Password changed successfully")
       } catch (error) {
         showSnackbar(
