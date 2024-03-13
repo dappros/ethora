@@ -100,7 +100,7 @@ export const connectToRooms = async (xmpp, jid, connectData) => {
             console.log('rooms list ', rooms)
 
             for (const room of rooms) {
-                connectRoom(xmpp, jid, process.env.DEFAULT_ROOM, connectData, statusSendWelcomeMessage);
+                connectRoom(xmpp, jid, room, connectData, statusSendWelcomeMessage);
             }
         } else {
             connectRoom(xmpp, jid, process.env.DEFAULT_ROOM, connectData, statusSendWelcomeMessage);
