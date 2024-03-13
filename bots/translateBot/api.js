@@ -187,7 +187,7 @@ export const translateText = async(text) => {
 
     try{
         let detectResponse = await axios.post(
-            `https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}`
+            `https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}`,
             {
                 q: text
             }
