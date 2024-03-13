@@ -87,7 +87,7 @@ export const connectingToNewRoom = (xmpp, roomJID, connectData) => {
     })
 }
 
-export const connectToRooms = (xmpp, jid, connectData) => {
+export const connectToRooms = async (xmpp, jid, connectData) => {
     if (process.env.DEFAULT_ROOM) {
         let statusSendWelcomeMessage = false;
         if (messages.general.welcomeMessage) {
@@ -95,7 +95,17 @@ export const connectToRooms = (xmpp, jid, connectData) => {
         }
 
         console.log('=> Connecting to the default room');
-        connectRoom(xmpp, jid, process.env.DEFAULT_ROOM, connectData, statusSendWelcomeMessage);
+        if (process.env.DEFAULT_ROOM.split(",").length > 1) {
+            const rooms = process.env.DEFAULT_ROOM.split(",")
+            console.log('rooms list ', rooms)
+
+            for (const room of rooms) {
+                connectRoom(xmpp, jid, process.env.DEFAULT_ROOM, connectData, statusSendWelcomeMessage);
+            }
+        } else {
+            connectRoom(xmpp, jid, process.env.DEFAULT_ROOM, connectData, statusSendWelcomeMessage);
+        }
+        
 
     } else {
         console.log('=> Default room not found');
