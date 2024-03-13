@@ -180,10 +180,29 @@ export const updateApiData = async (id, data) => {
 export const translateText = async(text) => {
     const API_KEY = process.env.GOOGLE_TOKEN;
 
+    const langsMap = {
+        'en': 'es',
+        'es': 'en'
+    }
+
     try{
+        let detectResponse = await axios.post(`https://translation.googleapis.com/language/translate/v2/detect?key=${API_KEY}`)
+
+        let lang = ''
+
+        if (detectResponse.data.data.detections[0]) {
+            lang = detectResponse.data.data.detections[0][0].language
+        }
+
+        let target = langsMap[lang]
+
+        if (!target) {
+            target = 'es'
+        }
+
         let res = await axios.post(
             `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`,
-            { q: text, target: "es" }
+            { q: text, target: target }
         );
         return res.data.data.translations[0].translatedText;
     }catch (error) {
