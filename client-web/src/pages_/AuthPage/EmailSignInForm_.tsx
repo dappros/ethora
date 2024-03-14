@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 import Input from "@mui/material/Input"
@@ -12,8 +12,7 @@ import InputLabel from "@mui/material/InputLabel"
 import FormHelperText from "@mui/material/FormHelperText"
 import { useFormik } from "formik"
 import { useHistory, useLocation } from "react-router"
-import { loginEmail, TLoginSuccessResponse } from "../../http"
-import { useStoreState } from "../../store"
+import { loginEmail } from "../../http_"
 import { useSnackbar } from "../../context/SnackbarContext"
 
 const validate = (values: Record<string, string>) => {
@@ -34,12 +33,7 @@ const validate = (values: Record<string, string>) => {
   return errors
 }
 
-type TProperties = {
-  closeModal: () => void
-  updateUser: (data: TLoginSuccessResponse) => void
-}
-
-export function EmailSingInForm(properties: TProperties) {
+export function EmailSingInForm_() {
   const history = useHistory()
   const { search } = useLocation()
 
@@ -49,6 +43,7 @@ export function EmailSingInForm(properties: TProperties) {
   const [disable, setDisable] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { showSnackbar } = useSnackbar()
+
   const formik = useFormik({
     initialValues: {
       email: email || "",
@@ -64,14 +59,12 @@ export function EmailSingInForm(properties: TProperties) {
               pathname: "/tempPassword",
               search: `?email=${values.email}&tempPassword=${values.password}`,
             })
-            return
+          } else {
+            resp.data
+            history.replace('/')
           }
-          const user = resp.data.user
-          properties.updateUser(resp.data)
-          properties.closeModal()
         })
-        .catch((error) => {
-          console.log(error)
+        .catch(() => {
           showSnackbar("error", "Cannot sign in")
         })
         .finally(() => setDisable(false))

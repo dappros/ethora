@@ -1,10 +1,10 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles"
-import { useStoreState } from "./store"
+import { useZustandStore } from "./store_"
 
-import { firebase } from "./services/firebase"
+import { firebase } from "./services/firebase_"
 import {
   getFirebaseConfigFromString,
-} from "./utils"
+} from "./utils/index_"
 import { FullPageSpinner } from "./components_/FullPageSpinner"
 
 import "./pages/ChatInRoom/theme/default/main.scss"
@@ -13,16 +13,17 @@ import { history } from "./utils/history"
 import { SnackbarContextProvider } from "./context/SnackbarContext"
 import "./index.css"
 import { useEffect, useState } from "react"
-import * as http from "./http"
+import * as http from "./http_"
 import { AppConfigNotFound } from "./components_/AppConfigNotFound"
+import { Routes_ } from "./Routes_"
 
 function App_() {
   const [loading, setLoading] = useState(true)
   const [isAppConfigError, setIsAppConfigError] = useState(false)
 
-  const primaryColor = useStoreState((s) => s.config.primaryColor)
-  const secondaryColor = useStoreState((s) => s.config.secondaryColor)
-  const setConfig = useStoreState((state) => state.setConfig)
+  const primaryColor = useZustandStore((s) => s.applicationConfig.primaryColor)
+  const secondaryColor = useZustandStore((s) => s.applicationConfig.secondaryColor)
+  const setApplicationConfig = useZustandStore((state) => state.setApplicationConfig)
 
   const lightTheme = createTheme({
     palette: {
@@ -39,10 +40,9 @@ function App_() {
         res.data.result.firebaseWebConfigString
       )
       const config = { ...res.data.result, firebaseConfig }
-      setConfig(config)
+      setApplicationConfig(config)
       firebase.init()
     } catch (error) {
-      useStoreState.persist.clearStorage()
       setIsAppConfigError(true)
     }
 
@@ -50,7 +50,7 @@ function App_() {
   }
 
   useEffect(() => {
-    // getAppConfig()
+    getAppConfig()
   }, [])
 
   return (
@@ -71,9 +71,8 @@ function App_() {
             {
               !isAppConfigError && !loading && (
                 <>
-                  <div>app</div>
+                  <Routes_ />
                 </>
-
               )
             }
           </div>

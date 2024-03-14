@@ -51,7 +51,7 @@
     "recharts": "^2.1.14",
     "typescript": "^4.8.3",
     "web-vitals": "^2.1.4",
-    "zustand": "^4.1.1"
+    "zustand": "^4.5.2"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
