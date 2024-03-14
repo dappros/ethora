@@ -18,9 +18,9 @@ const CustomMessage: React.FC<CustomMessageProps> = ({ message, isUser }) => {
     <CustomMessageContainer isUser={isUser}>
       <CustomMessageBubble isUser={isUser}>
         <CustomUserName>{message.user.name}</CustomUserName>
-        <CustomMessageText>{message.text}</CustomMessageText>
+        <CustomMessageText>{message.body}</CustomMessageText>
         <CustomMessageTimestamp>
-          {new Date(message.timestamp).toLocaleTimeString()}
+          {new Date(message.date).toLocaleTimeString()}
         </CustomMessageTimestamp>
       </CustomMessageBubble>
     </CustomMessageContainer>

@@ -10,8 +10,8 @@ function* fetchMessagesSaga() {
         resolve([
           {
             id: uuidv4(),
-            text: "This is a simulated message",
-            timestamp: new Date().toISOString(),
+            body: "This is a simulated message",
+            date: new Date().toISOString(),
             user: { id: uuidv4(), name: "Bot", avatar: "" },
           },
         ]),

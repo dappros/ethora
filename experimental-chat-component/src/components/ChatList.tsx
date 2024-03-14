@@ -23,8 +23,8 @@ function ChatList<TMessage extends IMessage>({
     const requiredAttributes: (keyof IMessage)[] = [
       "id",
       "user",
-      "timestamp",
-      "text",
+      "date",
+      "body",
     ];
     let isValid = true;
 
@@ -74,10 +74,10 @@ function ChatList<TMessage extends IMessage>({
           ) : (
             <Message key={message.id} isUser={isUser} {...refProp}>
               <MessageTimestamp>
-                {new Date(message.timestamp).toLocaleTimeString()}
+                {new Date(message.date).toLocaleTimeString()}
               </MessageTimestamp>
               <UserName>{message.user.name}: </UserName>
-              <MessageText>{message.text}</MessageText>
+              <MessageText>{message.body}</MessageText>
             </Message>
           );
         })}

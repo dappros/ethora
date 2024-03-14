@@ -33,8 +33,8 @@ const ChatRoom: React.FC = () => {
     const newMessage = {
       id: uuidv4(),
       user: { id: "2", name: "You", avatar: "" },
-      timestamp: new Date().toISOString(),
-      text: messageText,
+      date: new Date().toISOString(),
+      body: messageText,
     };
     dispatch(addMessage(newMessage));
     setMessageText("");
