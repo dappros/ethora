@@ -14,7 +14,7 @@ export interface IMessage {
   roomJID?: string; // room id 
   key?: string; // workaround to solve a problem of messages uniqueness - additional, local timestamp to solve when XMPP server sends duplicate timestamps (TO DO: depricate / review) 
   coinsInMessage?: string; // store only - message coins counter 
-  numberOfReplies?: number; // store only - counter of replies in a thread (if applicable)
+  numberOfReplies?: number; // store only - array of replies in a thread (if applicable) - includes messages IDs so that client app can display relevant message previews for the thread
 }
 
 export interface IRoom {
