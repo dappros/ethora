@@ -34,6 +34,7 @@ import { useSnackbar } from "../context/SnackbarContext"
 import { Helmet } from "react-helmet"
 
 import Owner from "./Owner"
+import { ChatWrapper } from "./ChatWrapper"
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"))
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
@@ -198,7 +199,8 @@ export const Routes = () => {
         </Route>
         <Route path="/regularSignIn" component={RegularSignIn} />
 
-        <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
+        {/* <AuthRoute path="/chat/:roomJID" component={ChatInRoom} /> */}
+        <AuthRoute path="/chat/:roomJID" component={ChatWrapper} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />
         <AuthRoute path="/editApp/:appId" component={AppEdit} />
 

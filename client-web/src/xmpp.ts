@@ -11,6 +11,8 @@ export class XmppClass {
   public client!: Client
 
   init(walletAddress: string, password: string) {
+    return
+    
     if (!password) {
       return
     }
