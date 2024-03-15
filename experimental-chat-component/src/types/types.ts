@@ -7,13 +7,13 @@ export interface IUser {
 }
 
 export interface IMessage {
-  id: string;
-  user: IUser;
-  date: Date | string;
-  body: string;
-  roomJID?: string;
-  key?: string;
-  coinsInMessage?: string;
+  id: string; // message ID (aka timestamp in microseconds)
+  user: IUser; 
+  date: Date | string; // date converted from id / timestamp (e.g. "2024-02-18T03:24:33.102Z")
+  body: string; // message body 
+  roomJID?: string; // room id 
+  key?: string; // workaround to solve a problem of messages uniqueness - additional, local timestamp to solve when XMPP server sends duplicate timestamps (TO DO: depricate / review) 
+  coinsInMessage?: string; // store only - message coins counter 
   numberOfReplies?: number;
 }
 
