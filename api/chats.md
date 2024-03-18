@@ -333,6 +333,9 @@ subsribe(address: string) {
     });
     this.client.send(presence);
   }
+```
+
+```
   presenceInRoom(room: string) {
     const presence = xml(
       "presence",
