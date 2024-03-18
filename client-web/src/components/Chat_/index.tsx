@@ -1,3 +1,7 @@
+import { Conversation, ConversationList, MainContainer, Search, Sidebar } from "@chatscope/chat-ui-kit-react"
+import { Box, Container } from "@mui/material"
+import { useEffect } from "react"
+
 type TChatProps = {
   xmppPassword: string,
   walletAddress: string,
@@ -9,7 +13,25 @@ type TChatProps = {
 }
 
 export function Chat_(props: TChatProps) {
+  useEffect(() => {
+
+  }, [])
+
   return (
-    <div>Chat_ {JSON.stringify(props, null, 2)}</div>
+    <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
+      <Box style={{ paddingBlock: "20px", height: "100%" }}>
+        <MainContainer responsive>
+          <Sidebar position="left" scrollable={false}>
+            <Search placeholder="Search..." />
+            <ConversationList loading={false}>
+              <Conversation
+                name="room1"
+              >
+              </Conversation>
+            </ConversationList>
+          </Sidebar>
+        </MainContainer>
+      </Box>
+    </Container >
   )
 }
