@@ -1,6 +1,15 @@
 import { xml } from "@xmpp/client";
 import { Element } from "ltx";
 
+// TO DO: we are thinking to refactor this code in the following way:
+// each stanza will be parsed for 'type'
+// then it will be handled based on the type
+// XMPP parsing will be done universally as a pre-processing step
+// then handlers for different types will work with a Javascript object
+// types: standard, coin transfer, is composing, attachment (media), token (nft) or smart contract 
+// types can be added into our chat protocol (XMPP stanza add field type="") to make it easier to parse here
+
+
 export const createMessage = (
   data: any,
   body: any,
