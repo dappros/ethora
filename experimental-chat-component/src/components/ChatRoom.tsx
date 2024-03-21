@@ -2,27 +2,32 @@ import React, { useState, useEffect } from "react";
 import {
   ChatContainer,
   InputContainer,
-  Message,
   MessageInput,
-  MessageText,
-  MessageTimestamp,
-  MessagesList,
   SendButton,
-  UserName,
 } from "./styled/StyledComponents";
 import { useSelector, useDispatch } from "react-redux";
 import { addMessage } from "../store/chatSlice";
 import { RootState } from "../store";
 import { v4 as uuidv4 } from "uuid";
 import ChatList from "./ChatList";
-import { badMessages, goodMessages, rooms } from "../mock";
+import { rooms } from "../mock";
 import CustomMessage from "./CustomMessage";
+import xmppClient from "../networking/xmppClient";
 
-const ChatRoom: React.FC = () => {
+interface ChatRoomProps {
+  roomJID?: string;
+}
+
+const ChatRoom: React.FC<ChatRoomProps> = ({
+  roomJID = "e8b1e5297ac89ceb78341dd870ab12150d9903f4e6e799a8176b13f47ff22553@conference.dev.dxmpp.com",
+}) => {
+  const client = xmppClient;
   const [currentRoom] = useState(rooms[0]);
   const [messageText, setMessageText] = useState("");
 
   const messages = useSelector((state: RootState) => state.chat.messages);
+  const { user } = useSelector((state: RootState) => state.chatSettingStore);
+
   const dispatch = useDispatch();
 
   const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,28 +42,31 @@ const ChatRoom: React.FC = () => {
       body: messageText,
     };
     dispatch(addMessage(newMessage));
-    setMessageText("");
     dispatch({ type: "chat/fetchMessages" });
+    xmppClient.sendMessage(
+      roomJID,
+      "Rom",
+      "L",
+      "",
+      user.walletAddress,
+      messageText
+    );
+    setMessageText("");
   };
 
   useEffect(() => {
     dispatch({ type: "chat/fetchMessages" });
   }, [dispatch]);
 
+  useEffect(() => {
+    client.presence();
+    client.getRooms();
+    client.presenceInRoom(roomJID);
+  }, []);
+
   return (
     <ChatContainer>
       <h2>{currentRoom.name}</h2>
-      {/* <MessagesList>
-        {messages.map((message, index) => (
-          <Message key={message.id} isUser={message.user.name === "You"}>
-            <MessageTimestamp>
-              {new Date(message.timestamp).toLocaleTimeString()}
-            </MessageTimestamp>
-            <UserName>{message.user.name}: </UserName>
-            <MessageText>{message.text}</MessageText>
-          </Message>
-        ))}
-      </MessagesList> */}
       <ChatList messages={messages} CustomMessage={CustomMessage} />
       <InputContainer>
         <MessageInput

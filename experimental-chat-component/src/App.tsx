@@ -1,10 +1,10 @@
 import "./App.css";
-import ChatRoom from "./components/ChatRoom";
+import { ChatWrapper } from "./components/ChatWrapper";
 
 function App() {
   return (
     <div className="App">
-      <ChatRoom />
+      <ChatWrapper />
     </div>
   );
 }

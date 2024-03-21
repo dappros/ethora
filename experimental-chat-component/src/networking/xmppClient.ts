@@ -1,455 +1,295 @@
-// import xmpp from "@xmpp/client";
-// import { Element } from "ltx";
-// import {
-//   VITE_APP_XMPP_SERVICE,
-//   VITE_XMPP_HOST,
-//   VITE_XMPP_SERVICE,
-// } from "../config/apiService";
-// import uuid from "react-native-uuid";
-
-// const xml = xmpp.xml;
-
-// const XMPP_SERVICE = VITE_XMPP_SERVICE;
-// const XMPP_HOST = VITE_XMPP_HOST;
-
-// class WsClient {
-//   service = "";
-//   username = "";
-//   password = "";
-//   client: xmpp.Client | null = null;
-//   resource = "";
-
-//   constructor(service: string) {
-//     this.service = service;
-//     this.username = "";
-//     this.password = "";
-//     this.resource = Date.now().toString();
-//   }
-
-//   checkOnline() {
-//     return this.client && this.client.status === "online";
-//   }
-
-//   login(username: string, password: string) {
-//     try {
-//       return new Promise((resolve, reject) => {
-//         this.username = username;
-//         this.password = password;
-
-//         if (!this.client) {
-//           this.client = xmpp.client({
-//             username: this.username,
-//             password: this.password,
-//             service: this.service,
-//             resource: this.resource,
-//           });
-
-//           this.client.on("online", (jid: unknown) => {
-//             const message = xml("presence");
-
-//             if (this.client) {
-//               this.client.send(message);
-//               resolve(jid);
-//             }
-//           });
-
-//           this.client.on("error", (error: any) => {
-//             console.log("xmpp on error ", error);
-//             reject(error);
-//           });
-
-//           this.client.on("stanza", this.stanzaHandler);
-
-//           return this.client.start();
-//         }
-//       });
-//     } catch (error) {
-//       console.log("login error");
-//     }
-//   }
-
-//   stanzaHandler = async (stanza: Element) => {
-//     // console.log(stanza.toString());
-
-//     runInAction(async () => {
-//       if (stanza.is("message")) {
-//         // we handling massage stanza with result in different place
-//         if (!stanza.getChild("result")) {
-//           const from = stanza.attrs.from;
-
-//           const fromLocalJid = from.split("@")[0];
-//           const username = from.split("/")[1];
-
-//           if (true) {
-//             const text = stanza.getChild("body")?.getText();
-
-//             if (text) {
-//               let FN = runInAction(() => rootStore.chatStore.vCards[username]);
-
-//               if (!FN) {
-//                 // console.log('looking for FN');
-//                 FN = (await this.getFN(username)) as string;
-
-//                 runInAction(() => rootStore.chatStore.addVcard(username, FN));
-//               }
-//               runInAction(() =>
-//                 rootStore.chatStore.addMessages([
-//                   {
-//                     _id: uuid.v4().toString(),
-//                     text: text,
-//                     createdAt: new Date(),
-//                     FN: FN,
-//                     username: username,
-//                     fromLocalJid: fromLocalJid,
-//                     user: {
-//                       _id: username,
-//                       name: FN,
-//                     },
-//                   },
-//                 ])
-//               );
-
-//               rootStore.chatStore.setChatChanged();
-//               console.log(`New message from ${from}: ${text}`);
-//             }
-//           }
-//         }
-//       }
-//     });
-//   };
-
-//   async subscribe(roomName: string) {
-//     try {
-//       if (this.client) {
-//         const message = xml(
-//           "iq",
-//           {
-//             to: `${roomName}@${VITE_XMPP_SERVICE}`,
-//             type: "set",
-//             id: "newSubscription",
-//           },
-//           xml(
-//             "subscribe",
-//             { xmlns: "urn:xmpp:mucsub:0", nick: this.client?.jid?.getLocal() },
-//             xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
-//             xml("event", { node: "urn:xmpp:mucsub:nodes:presence" })
-//           )
-//         );
-
-//         // console.log('-----> ', message.toString());
-
-//         this.client.send(message);
-//       }
-//     } catch (error) {
-//       console.log("sub error");
-//     }
-//   }
-
-//   async presence(roomName: string) {
-//     try {
-//       if (this.client) {
-//         let message = xml(
-//           "presence",
-//           {
-//             to: `${roomName}@${VITE_XMPP_SERVICE}/${this.username}`,
-//           },
-//           xml("x", "http://jabber.org/protocol/muc")
-//         );
-//         // console.log('--------->', message.toString());
-
-//         this.client.send(message);
-//       }
-//     } catch (error) {
-//       console.log("presence error");
-//     }
-//   }
-
-//   sendMessage(roomName: string, text: string) {
-//     if (this.client) {
-//       const message = xml(
-//         "message",
-//         {
-//           to: `${roomName}@${XMPP_SERVICE}`,
-//           type: "groupchat",
-//           id: "sendMessage",
-//         },
-//         xml("data", {
-//           xmlns: XMPP_SERVICE,
-//         }),
-//         xml("body", {}, text)
-//       );
-
-//       console.log("-----> ", message.toString());
-
-//       try {
-//         this.client.send(message);
-//         console.log("message sent");
-//       } catch (error) {
-//         console.log("err sending", error);
-//       }
-//     }
-//   }
-
-//   getHistory(roomName: string, max: number) {
-//     const id = `get-history:${Date.now().toString()}`;
-
-//     let stanzaHdlrPointer: (stanza: any) => Promise<void>;
-
-//     const unsubscribe = () => {
-//       this.client?.off("stanza", stanzaHdlrPointer);
-//     };
-
-//     const responsePromise = new Promise((resolve, reject) => {
-//       let messages: Element[] = [];
-
-//       stanzaHdlrPointer = async (stanza) => {
-//         if (
-//           stanza.is("message") &&
-//           stanza.attrs.from &&
-//           stanza.attrs.from.startsWith(roomName)
-//         ) {
-//           const result = stanza.getChild("result");
-
-//           if (result) {
-//             const messageEl = result.getChild("forwarded")?.getChild("message");
-
-//             messages.push(messageEl);
-//           }
-//         }
-
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs?.["id"] === id &&
-//           stanza.attrs?.["type"] === "result"
-//         ) {
-//           let result = [];
-
-//           for (const msg of messages) {
-//             const text = msg.getChild("body")?.getText();
-//             if (text) {
-//               const from = msg.attrs["from"];
-//               const time = msg.getChild("archived")?.attrs.id;
-
-//               const fromLocalJid = from.split("@")[0];
-//               const username = from.split("/")[1];
-
-//               let FN = runInAction(() => rootStore.chatStore.vCards[username]);
-
-//               if (!FN) {
-//                 FN = (await this.getFN(username)) as string;
-//                 runInAction(() => rootStore.chatStore.addVcard(username, FN));
-//               }
-
-//               result.push({
-//                 text,
-//                 username,
-//                 FN: FN,
-//                 fromLocalJid: fromLocalJid,
-//                 _id: uuid.v4().toString(),
-//                 createdAt: new Date(time / 1000),
-//               });
-//             }
-//           }
-//           unsubscribe();
-//           const transformedMessages = result.map((msg) => ({
-//             _id: msg._id,
-//             text: msg.text,
-//             createdAt: msg.createdAt,
-//             fromLocalJid: msg.fromLocalJid,
-//             FN: msg.FN,
-//             username: msg.username,
-//             user: {
-//               _id: msg.username,
-//               name: msg.FN,
-//             },
-//           }));
-//           runInAction(() =>
-//             rootStore.chatStore.addMessages(transformedMessages)
-//           );
-//           resolve(transformedMessages);
-//         }
-
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs.id === id &&
-//           stanza.attrs.type !== "result"
-//         ) {
-//           unsubscribe();
-//           reject();
-//         }
-//       };
-
-//       this.client?.on("stanza", stanzaHdlrPointer);
-
-//       const message = xml(
-//         "iq",
-//         {
-//           type: "set",
-//           to: `${roomName}@${XMPP_SERVICE}`,
-//           id: id,
-//         },
-//         xml(
-//           "query",
-//           { xmlns: "urn:xmpp:mam:2" },
-//           xml(
-//             "set",
-//             { xmlns: "http://jabber.org/protocol/rsm" },
-//             xml("max", {}, max.toString()),
-//             xml("before")
-//           )
-//         )
-//       );
-
-//       this.client?.send(message);
-//     });
-
-//     const timeoutPromise = createTimeoutPromise(2000, unsubscribe);
-
-//     return Promise.race([responsePromise, timeoutPromise]);
-//   }
-
-//   getFN(name: string) {
-//     const id = `get-FN:${Date.now().toString()}`;
-
-//     let stanzaHdlrPointer: (stanza: any) => void;
-
-//     const unsubscribe = () => {
-//       this.client?.off("stanza", stanzaHdlrPointer);
-//     };
-
-//     const responsePromise = new Promise((resolve, reject) => {
-//       stanzaHdlrPointer = (stanza) => {
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs.id === id &&
-//           stanza.attrs.type === "result"
-//         ) {
-//           const FN = stanza.getChild("vCard")?.getChild("FN")?.getText();
-//           unsubscribe();
-//           resolve(FN);
-//         }
-
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs.id === id &&
-//           stanza.attrs.type === "error"
-//         ) {
-//           unsubscribe();
-//           reject();
-//         }
-//       };
-
-//       this.client?.on("stanza", stanzaHdlrPointer);
-
-//       const msg = xml(
-//         "iq",
-//         {
-//           type: "get",
-//           id: id,
-//           to: `${name}@${XMPP_HOST}`,
-//         },
-//         xml("vCard", {
-//           xmlns: "vcard-temp",
-//         })
-//       );
-
-//       // console.log('--------------------------------- >>>>>>> ', msg.toString());
-//       this.client?.send(msg);
-//     });
-
-//     const timeoutPromise = createTimeoutPromise(1000, unsubscribe);
-
-//     return Promise.race([responsePromise, timeoutPromise]);
-//   }
-
-//   getRoomTitle(roomName: string): Promise<string> {
-//     const id = `get-room-title:${Date.now().toString()}`;
-
-//     let stanzaHdlrPointer: (stanza: any) => void;
-
-//     const unsubscribe = () => {
-//       this.client?.off("stanza", stanzaHdlrPointer);
-//     };
-
-//     const responsePromise = new Promise((resolve, reject) => {
-//       stanzaHdlrPointer = (stanza) => {
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs.id === id &&
-//           stanza.attrs.type === "result"
-//         ) {
-//           const fields = stanza
-//             .getChild("query")
-//             ?.getChild("x")
-//             ?.getChildren("field");
-
-//           let roomTitle = "";
-//           fields.forEach(
-//             (el: {
-//               attrs: { [x: string]: string };
-//               getChild: (arg0: string) => {
-//                 (): any;
-//                 new (): any;
-//                 getText: { (): string; new (): any };
-//               };
-//             }) => {
-//               if (el.attrs["var"] === "muc#roomconfig_roomname") {
-//                 roomTitle = el.getChild("value")?.getText();
-//               }
-//             }
-//           );
-//           unsubscribe();
-//           resolve(roomTitle);
-//         }
-
-//         if (
-//           stanza.is("iq") &&
-//           stanza.attrs.id === id &&
-//           stanza.attrs.type === "error"
-//         ) {
-//           unsubscribe();
-//           reject();
-//         }
-//       };
-
-//       this.client?.on("stanza", stanzaHdlrPointer);
-
-//       const message = xml(
-//         "iq",
-//         {
-//           id: id,
-//           to: `${roomName}@${XMPP_SERVICE}`,
-//           type: "get",
-//         },
-//         xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
-//       );
-//       this.client?.send(message);
-//     });
-
-//     const timeoutPromise: Promise<any> = createTimeoutPromise(
-//       1000,
-//       unsubscribe
-//     );
-
-//     return Promise.race([responsePromise, timeoutPromise]);
-//   }
-// }
-
-// function createTimeoutPromise(
-//   ms: number | undefined,
-//   unsubscribe: { (): void; (): void; (): void; (): void }
-// ) {
-//   return new Promise((_, reject) => {
-//     setTimeout(() => {
-//       try {
-//         unsubscribe();
-//       } catch (e) {}
-//       reject();
-//     }, ms);
-//   });
-// }
-
-// const wsClient = new WsClient(VITE_APP_XMPP_SERVICE);
-// export { wsClient };
-
-export {};
+import xmpp, { xml, Client } from "@xmpp/client";
+import { walletToUsername } from "../helpers/walletUsername";
+import {
+  getListOfRooms,
+  onGetLastMessageArchive,
+  onMessageHistory,
+  onPresenceInRoom,
+  onRealtimeMessage,
+} from "./stanzaHandlers";
+
+export class XmppClient {
+  public client!: Client;
+  public devServer: string | undefined;
+
+  //core functions
+  init(walletAddress: string, password: string) {
+    //maybe add here devServer
+    try {
+      if (!password) {
+        return;
+      }
+
+      if (this.client) {
+        return;
+      }
+
+      this.client = xmpp.client({
+        service: `wss://${this?.devServer || "dev.dxmpp.com:5443"}/ws`,
+        username: walletToUsername(walletAddress),
+        password,
+      });
+
+      this.client.setMaxListeners(20);
+      this.client.start();
+
+      this.client.on("online", (jid) => {
+        getListOfRooms(this);
+      });
+      this.client.on("stanza", (stanza) => console.log("New message:", stanza)); //is used to show all the nessages sent and got
+
+      this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
+      this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
+      this.client.on("stanza", (stanza) => onMessageHistory(stanza));
+      this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
+      this.client.on("stanza", (stanza) =>
+        onGetLastMessageArchive(stanza, this)
+      );
+
+      this.client.on("offline", () => console.log("offline"));
+
+      this.client.on("error", (error) => {
+        console.log("xmmpp on error", error);
+        // this.stop();
+
+        console.log("xmmpp error, terminating collection");
+      });
+      console.log("successfull init");
+    } catch (error) {
+      console.error("An error occurred during initialization:", error);
+    }
+  }
+
+  presence = () => {
+    try {
+      this.client.send(xml("presence"));
+      console.log("successfull presence");
+    } catch (error) {
+      console.error("An error occurred while sending presence:", error);
+    }
+  };
+
+  subsribe = (address: string) => {
+    try {
+      const message = xml(
+        "iq",
+        {
+          from: this.client?.jid?.toString(),
+          to: address,
+          type: "set",
+          id: "newSubscription",
+        },
+        xml(
+          "subscribe",
+          {
+            xmlns: "urn:xmpp:mucsub:0",
+            nick: this.client?.jid?.getLocal(),
+          },
+          xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
+          xml("event", { node: "urn:xmpp:mucsub:nodes:presence" }),
+          xml("event", { node: "urn:xmpp:mucsub:nodes:subscribers" })
+        )
+      );
+
+      this.client.send(message);
+      console.log("successfull subscribe");
+    } catch (error) {
+      console.error("An error occurred while subscribing:", error);
+    }
+  };
+
+  unsubscribe = (address: string) => {
+    try {
+      const message = xml(
+        "iq",
+        {
+          from: this.client?.jid?.toString(),
+          to: address,
+          type: "set",
+          id: "unsubscribe",
+        },
+        xml("unsubscribe", { xmlns: "urn:xmpp:mucsub:0" })
+      );
+
+      this.client.send(message);
+    } catch (error) {
+      console.error("An error occurred while unsubscribing:", error);
+    }
+  };
+
+  getRooms = () => {
+    try {
+      const message = xml(
+        "iq",
+        {
+          type: "get",
+          from: this.client.jid?.toString(),
+          id: "getUserRooms",
+        },
+        xml("query", { xmlns: "ns:getrooms" })
+      );
+      this.client.send(message);
+      console.log("getRooms");
+    } catch (error) {
+      console.error("An error occurred while getting rooms:", error);
+    }
+  };
+
+  //room functions
+  leaveTheRoom = (roomJID: string) => {
+    try {
+      const presence = xml("presence", {
+        from: this.client.jid?.toString(),
+        to: roomJID + "/" + this.client.jid?.getLocal(),
+        type: "unavailable",
+      });
+      this.client.send(presence);
+    } catch (error) {
+      console.error("An error occurred while leaving the room:", error);
+    }
+  };
+
+  presenceInRoom = (roomJID: string) => {
+    try {
+      const presence = xml(
+        "presence",
+        {
+          from: this.client.jid?.toString(),
+          to: roomJID + "/" + this.client.jid?.getLocal(),
+          id: "presenceInRoom",
+        },
+        xml("x", "http://jabber.org/protocol/muc")
+      );
+      this.client.send(presence);
+      console.log("presence");
+    } catch (error) {
+      console.error("An error occurred while setting presence in room:", error);
+    }
+  };
+
+  getArchive = (userJID: string) => {
+    const message = xml(
+      "iq",
+      { type: "set", id: userJID },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2", queryid: "userArchive" },
+        xml("set", { xmlns: "http://jabber.org/protocol/rsm" }, xml("before"))
+      )
+    );
+    this.client.send(message);
+    console.log("getArchive");
+  };
+
+  getPaginatedArchive = (
+    chatJID: string,
+    firstUserMessageID: string,
+    amount: number
+  ) => {
+    // if (xmppMessagesHandler.lastMsgId === firstUserMessageID) {
+    //   return
+    // }
+    // xmppMessagesHandler.isGettingMessages = true
+    // xmppMessagesHandler.isGettingFirstMessages = true
+    // useStoreState.getState().setLoaderArchive(true)
+    const message = xml(
+      "iq",
+      {
+        type: "set",
+        to: chatJID,
+        id: "paginatedArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, String(amount)),
+          xml("before", {}, firstUserMessageID)
+        )
+      )
+    );
+    this.client.send(message);
+  };
+
+  getAndReceiveRoomInfo = (roomJID: string) => {
+    const message = xml(
+      "iq",
+      {
+        from: this.client.jid?.toString(),
+        id: "roomInfo",
+        to: roomJID,
+        type: "get",
+      },
+      xml("query", { xmlns: "http://jabber.org/protocol/disco#info" })
+    );
+    return this.client.sendReceive(message);
+  };
+
+  getLastMessageArchive(roomJID: string) {
+    // xmppMessagesHandler.isGettingMessages = true
+    const message = xml(
+      "iq",
+      {
+        type: "set",
+        to: roomJID,
+        id: "GetArchive",
+      },
+      xml(
+        "query",
+        { xmlns: "urn:xmpp:mam:2" },
+        xml(
+          "set",
+          { xmlns: "http://jabber.org/protocol/rsm" },
+          xml("max", {}, "1"),
+          xml("before")
+        )
+      )
+    );
+    this.client.send(message);
+  }
+
+  //messages
+  sendMessage = (
+    roomJID: string,
+    firstName: string,
+    lastName: string,
+    photo: string,
+    walletAddress: string,
+    userMessage: string,
+    notDisplayedValue?: string
+  ) => {
+    try {
+      const message = xml(
+        "message",
+        {
+          to: roomJID,
+          type: "groupchat",
+          id: "sendMessage",
+        },
+        xml("data", {
+          xmlns: `wss://${this?.devServer || "dev.dxmpp.com:5443"}/ws`,
+          senderFirstName: firstName,
+          senderLastName: lastName,
+          photoURL: photo,
+          senderJID: this.client.jid?.toString(),
+          senderWalletAddress: walletAddress,
+          roomJid: roomJID,
+          isSystemMessage: false,
+          tokenAmount: 0,
+          quickReplies: [],
+          notDisplayedValue: notDisplayedValue ? notDisplayedValue : "",
+        }),
+        xml("body", {}, userMessage)
+      );
+      this.client.send(message);
+    } catch (error) {
+      console.error("An error occurred while sending message:", error);
+    }
+  };
+}
+
+const xmppClient = new XmppClient();
+
+export default xmppClient;

@@ -4,6 +4,7 @@ import chatReducer from "./chatSlice";
 import roomMessagesReducer from "./roomMessagesSlice";
 import loginReducer from "./loginSlice";
 import rootSaga from "./sagas";
+import chatSettingsReducer from "./chatSettingsSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   chat: chatReducer,
   roomMessages: roomMessagesReducer,
   loginStore: loginReducer,
+  chatSettingStore: chatSettingsReducer,
 });
 
 export const store = configureStore({

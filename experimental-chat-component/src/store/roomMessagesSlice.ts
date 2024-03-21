@@ -20,7 +20,7 @@ export const roomMessagesSlice = createSlice({
       state[key] = messages;
     },
     addMessage(
-      //ads 1 message to array
+      //adds 1 message to array
       state,
       action: PayloadAction<{ key: string; message: IMessage }>
     ) {
