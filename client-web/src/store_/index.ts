@@ -1,14 +1,14 @@
 import create from "zustand";
-import { XmppSliceInterface, createXmppSlice } from "./xmpp";
+import { ChatSliceInterface, createChatSlice } from "./chat";
 
-export const useZusttandStore = create<XmppSliceInterface>()((...a) => ({
-  ...createXmppSlice(...a)
+export const useChatStore = create<ChatSliceInterface>()((...a) => ({
+  ...createChatSlice(...a)
 }))
 
 declare global {
   interface Window {
-  useZusttandStore?: any;
+  useChatStore?: any;
   }
-  }
+}
 
-window.useZusttandStore = useZusttandStore
+window.useChatStore = useChatStore

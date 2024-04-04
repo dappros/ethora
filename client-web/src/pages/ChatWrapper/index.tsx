@@ -1,5 +1,6 @@
 import { Chat_ } from "../../components/Chat_"
 import { useStoreState } from "../../store"
+import { walletToUsername } from "../../utils/walletManipulation"
 
 export function ChatWrapper() {
   const { 
@@ -7,18 +8,22 @@ export function ChatWrapper() {
     defaultChatRooms
   } = useStoreState(state => state)
 
-  const defaultRooms = defaultChatRooms.map((el) => el.jid.split('@')[0])
+  const xmppUsername = walletToUsername(walletAddress)
+
+  const defaultRooms = defaultChatRooms.map((el) => el.jid)
 
   return (
     <>
       <Chat_ 
         xmppPassword={xmppPassword}
+        xmppUsername={xmppUsername}
         walletAddress={walletAddress}
         firstName={firstName}
         lastName={lastName}
         profileImage={profileImage}
-        defaultRooms={defaultRooms}
-        xmppConnectionUrl="wss://dev.dxmpp.com:5443/ws"
+        initRooms={defaultRooms}
+        isRestrictedToInitRooms={true}
+        xmppService="wss://dev.dxmpp.com:5443/ws"
       />
     </>
   )
