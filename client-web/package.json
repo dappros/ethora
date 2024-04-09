@@ -56,7 +56,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build-prod": "BUILD_PATH='./build-prod' react-scripts build",
-    "start": "vite",
+    "start": "vite --port 4242",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint .",

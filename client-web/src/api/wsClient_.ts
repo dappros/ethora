@@ -194,7 +194,7 @@ export const wsClient = {
       this.client.send(message)
     })
 
-    const timeoutPromise = createTimeoutPromise(2000, unsubscribe)
+    const timeoutPromise = createTimeoutPromise(10000, unsubscribe)
 
     try {
       const res = await Promise.race([responsePromise, timeoutPromise]);

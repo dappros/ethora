@@ -1,0 +1,48 @@
+.header {
+    box-sizing: border-box;
+    color: #000000de;
+    background-color: #f6fbff;
+    font-family: Helvetica Neue, Segoe UI, Helvetica, Arial, sans-serif;
+    font-size: 1em;
+    flex-shrink: 0;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-top: solid 0px #d1dbe3;
+    border-right: solid 0px #d1dbe3;
+    border-bottom: solid 1px #d1dbe3;
+    border-left: solid 0px #d1dbe3;
+    padding: .6em .9em;
+}
+
+.content {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    order: 3;
+    flex-grow: 2;
+    justify-content: center;
+    min-width: 0;
+}
+
+.title {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+    color: #000000de;
+    background-color: #f6fbff;
+}
+
+.info {
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #0009;
+    background-color: #f6fbff;
+    font-weight: 400;
+    font-size: .9em;
+}

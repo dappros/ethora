@@ -1,0 +1,19 @@
+.input {
+    border-top: solid 1px #d1dbe3;
+    border-right: solid 0px #d1dbe3;
+    border-bottom: solid 0px #d1dbe3;
+    border-left: solid 0px #d1dbe3;
+    margin-top: auto;
+    padding: .3em 0;
+    color: #000000de;
+    background-color: #fff;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.tools {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+}

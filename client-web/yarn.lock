@@ -297,9 +297,9 @@
     to-fast-properties "^2.0.0"
 
 "@chatscope/chat-ui-kit-react@^1.9.7":
-  version "1.9.8"
-  resolved "https://registry.npmjs.org/@chatscope/chat-ui-kit-react/-/chat-ui-kit-react-1.9.8.tgz"
-  integrity sha512-CLcZfSLORUATQEB4IeM75bp7e8v5dpJbggIHG0WrUEWHbQ/E6eI77kFZXqQT4bI00gMOevifqavScutaLZqcxQ==
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@chatscope/chat-ui-kit-react/-/chat-ui-kit-react-1.10.1.tgz#cdf7ebef607bc527205eb8614ce4b8ac9f585b1e"
+  integrity sha512-pJIxvM9zR2oPk601P/S3Du1lZZSQcv76+8/IUhhWo88oy1iqiw2yk71T3nzE0sr8kRfZ8FoSSxOjVx9j7amjow==
   dependencies:
     "@chatscope/chat-ui-kit-styles" "^1.2.0"
     "@fortawesome/fontawesome-free" "^5.12.1"

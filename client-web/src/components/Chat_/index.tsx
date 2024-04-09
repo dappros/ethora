@@ -1,9 +1,13 @@
-import { Avatar, Conversation, ConversationList, MainContainer, Search, Sidebar } from "@chatscope/chat-ui-kit-react"
 import { Box, Container } from "@mui/material"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { wsClient } from "../../api/wsClient_"
 import { RoomType } from "../../store_/chat"
 import { useChatStore } from "../../store_"
+import { ChatMainContainer } from "./ChatMainContainer"
+import ChatSidebar from "./ChatSidebar"
+import { ChatContainer } from "./ChatContainer"
+import { ConversationsList } from "./ConversationList"
+import { MessageInput } from "./MessageInput"
 
 type TChatProps = {
   xmppPassword: string,
@@ -19,22 +23,20 @@ type TChatProps = {
 
 export function Chat_(props: TChatProps) {
   const { xmppService, xmppPassword, xmppUsername, initRooms, isRestrictedToInitRooms } = props
-  const setTooms = useChatStore(state => state.setRooms)
+  const setRooms = useChatStore(state => state.setRooms)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
+  const setMessages = useChatStore(state => state.setMessages)
   const rooms = useChatStore(state => state.rooms)
   const currentRoom = useChatStore(state => state.currentRoom)
+  const messages = useChatStore(state => state.messages)
 
-  useEffect(() => {
-    console.log('mounted')
-  }, [])
+  const [isInit, setIsInit] = useState(false)
 
   useEffect(() => {
     (async () => {
-      console.log('init')
       wsClient.init(xmppService, xmppUsername, xmppPassword)
       try {
         await wsClient.connect()
-        console.log('online')
         let rooms = await wsClient.getRooms()
 
         if (!rooms) {
@@ -51,10 +53,11 @@ export function Chat_(props: TChatProps) {
         const recentMesssages = []
 
         for (const room of rooms) {
-          const recentMsg = await wsClient.getHistory(room.jid, 1)
+        const recentMsgs = await wsClient.getHistory(room.jid, 10) as Record<string, string>[]
 
-          if (recentMsg && recentMsg[0]) {
-            recentMesssages.push(recentMsg[0])
+          if (recentMsgs && recentMsgs[0]) {
+            setMessages(room.jid, recentMsgs)
+            recentMesssages.push(recentMsgs[0])
           }
         }
 
@@ -71,8 +74,9 @@ export function Chat_(props: TChatProps) {
           }
         })
 
-        setTooms(roomsForState)
+        setRooms(roomsForState)
         setCurrentRoom(roomsForState[0])
+        setIsInit(true)
       } catch (e) {
         console.log("=-> xmpp connection error")
         console.log(e)
@@ -84,38 +88,23 @@ export function Chat_(props: TChatProps) {
     setCurrentRoom(rooms[index])
   }
 
+  const onYReachStart = () => {
+    console.log("loading more messages")
+  }
+
   return (
-    <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
+    <>
+      <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
       <Box style={{ paddingBlock: "20px", height: "100%" }}>
-        <MainContainer responsive>
-          <Sidebar position="left" scrollable={false}>
-            <Search placeholder="Search..." />
-            <ConversationList loading={false}>
-              {
-                rooms.map((el, index) => (
-                  <Conversation
-                    active={currentRoom.jid === el.jid}
-                    key={el.jid}
-                    name={el.title}
-                    info={el.recentMessage.text}
-                    onClick={() => onConversationClick(index)}
-                    unreadCnt={1}
-                    lastActivityTime={1}
-                  >
-                    <Avatar
-                      src={
-                        el.room_thumbnail === "none"
-                          ? "https://icotar.com/initials/" + el.title
-                          : el.room_thumbnail
-                      }
-                    />
-                  </Conversation>
-                ))
-              }
-            </ConversationList>
-          </Sidebar>
-        </MainContainer>
+        <ChatMainContainer>
+          <ChatSidebar>
+            <ConversationsList />
+          </ChatSidebar>
+          <ChatContainer />
+        </ChatMainContainer>
       </Box>
     </Container >
+    </>
+
   )
 }
