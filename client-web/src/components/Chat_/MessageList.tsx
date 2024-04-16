@@ -22,10 +22,9 @@ export function MessageList() {
 
     const handleScroll = () => {
       setScrollTop(scrollElement.scrollTop)
-      console.log("111 ", scrollElement.scrollTop)
 
       if (scrollElement.scrollTop < 100) {
-        console.log("scrollElement.scrollTop < 100")
+        // console.log("scrollElement.scrollTop < 100")
       }
     }
 

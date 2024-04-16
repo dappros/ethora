@@ -7,8 +7,10 @@ import { ChatMainContainer } from "./ChatMainContainer"
 import ChatSidebar from "./ChatSidebar"
 import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
+import { PostFileResponseType } from "./types/postFileResponse"
+import { AxiosResponse } from "axios"
 
-type TChatProps = {
+export type TChatProps = {
   xmppPassword: string,
   xmppUsername: string,
   walletAddress?: string,
@@ -18,6 +20,7 @@ type TChatProps = {
   initRooms: string[],
   xmppService: string,
   isRestrictedToInitRooms: boolean,
+  sendFile?: (formData: FormData) => Promise<AxiosResponse<any, any>>,
 }
 
 export function Chat_(props: TChatProps) {
@@ -34,6 +37,7 @@ export function Chat_(props: TChatProps) {
   } = props
 
   const [isLoading, setIsLoading] = useState(true)
+  const [showSidebar, setShowSideBar] = useState(false)
 
   const setRooms = useChatStore(state => state.setRooms)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
@@ -116,6 +120,14 @@ export function Chat_(props: TChatProps) {
     }
   }, [xmppStatus, isInitCompleted])
 
+  useEffect(() => {
+    if (isRestrictedToInitRooms && initRooms.length === 1) {
+      setShowSideBar(false)
+    } else {
+      setShowSideBar(true)
+    }
+  }, [isRestrictedToInitRooms, initRooms])
+
   return (
     <>
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
@@ -124,14 +136,17 @@ export function Chat_(props: TChatProps) {
           {isLoading && <div>Loading</div>}
           {!isLoading && (
             <>
-              <ChatSidebar>
-              <ConversationsList />
-              </ChatSidebar>
-              <ChatContainer />
+              {
+                showSidebar && (
+                  <ChatSidebar>
+                    <ConversationsList />
+                  </ChatSidebar>
+                )
+              }
+              <ChatContainer {...props} />
             </>
           )}
         </ChatMainContainer>
-
       </Box>
     </Container >
     </>

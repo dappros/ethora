@@ -1,0 +1,16 @@
+export type PostFileResponseType = {
+    userId: string,
+    ownerKey: string,
+    location: string,
+    locationPreview?: string,
+    duration?: string,
+    originalname: string,
+    filename: string,
+    mimetype: string,
+    size: string,
+    expiresAt: string,
+    isPrivate: string,
+    _id: string,
+    createdAt: string,
+    updatedAt: string,
+}

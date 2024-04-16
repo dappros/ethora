@@ -1,7 +1,6 @@
 import xmpp from "@xmpp/client";
 import { Element } from "ltx";
 
-import { UserType } from "../store_/chat";
 import { useChatStore } from "../store_";
 
 const xml = xmpp.xml;
@@ -314,7 +313,47 @@ export const wsClient = {
       console.log("=-> error ", e)
       return null
     }
+  },
+
+  async sendMediaMessage(to: string, data: Record<string, string>) {
+    const user = useChatStore.getState().user
+    const message = xml(
+      'message',
+      {
+        to: to,
+        type: 'groupchat',
+        id: 'sendMessage'
+      },
+      xml(
+        'data',
+        {
+          xmlns: this.service,
+          senderFirstName: user.firstName,
+          senderLastName: user.lastName,
+          photoURL: user.profileImage,
+          senderWalletAddress: user.walletAddress,
+          senderJID: this.client.jid.toString(),
+          roomJid: to,
+          isSystemMessage: false,
+          tokenAmount: 0,
+          quickReplies: '',
+          notDisplayedValue: '',
+          isMediafile: true,
+          location: data.location,
+          locationPreview: data.locationPreview,
+          mimetype: data.mimetype
+        }
+      ),
+      xml(
+        'body',
+        {},
+        'media'
+      )
+    )
+
+    this.client.send(message)
   }
+
 }
 
 function createTimeoutPromise(ms, unsubscribe) {

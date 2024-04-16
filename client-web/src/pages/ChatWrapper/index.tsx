@@ -1,4 +1,5 @@
 import { Chat_ } from "../../components/Chat_"
+import { uploadFile } from "../../http"
 import { useStoreState } from "../../store"
 import { walletToUsername } from "../../utils/walletManipulation"
 
@@ -20,7 +21,8 @@ export function ChatWrapper() {
       firstName={firstName}
       lastName={lastName}
       profileImage={profileImage}
-      initRooms={defaultRooms}
+      sendFile={uploadFile}
+      initRooms={[defaultRooms[0]]}
       isRestrictedToInitRooms={true}
       xmppService="wss://dev.dxmpp.com:5443/ws"
     />
