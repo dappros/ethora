@@ -8,7 +8,7 @@ export function ChatContainer() {
         <div className={styles.container}>
             <ChatHeader />
             <MessageList />
-            <MessageInput />
+            {/* <MessageInput /> */}
         </div>
     )
 }

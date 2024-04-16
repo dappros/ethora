@@ -1,6 +1,8 @@
 import xmpp from "@xmpp/client";
 import { Element } from "ltx";
-import { MessageType } from "../types/xmpp";
+
+import { UserType } from "../store_/chat";
+import { useChatStore } from "../store_";
 
 const xml = xmpp.xml;
 
@@ -10,9 +12,11 @@ export const wsClient = {
   host: '',
   coference: '',
 
-  init(service: string, username: string, password: string ) {
+  init(service: string, username: string, password: string) {
     this.host = service.match(/wss:\/\/([^:/]+)/)[1]
     this.conference = `conference.${this.host}`
+    this.username = username
+    this.service = service
 
     this.client = xmpp.client({
       service: service,
@@ -33,6 +37,14 @@ export const wsClient = {
         this.client.on("close", () => console.log("=-> xmpp client on close"))
         this.client.on("disconnect", () => console.log("=-> xmpp client on disconnect"))
         this.client.on("error", reject)
+        this.client.on("error", () => {
+          useChatStore.getState().setXmppStatus("error")
+        })
+        this.client.on("offlien", () => console.log("=-> on offline"))
+
+        this.client.on("status", (status) => console.log("=-> on status ", status))
+
+        this.client.on("stanza", this.realTimeHandler)
 
         this.client.start()
       } else {
@@ -47,9 +59,31 @@ export const wsClient = {
     }
   },
 
+  realTimeHandler(stanza: Element) {
+    if (stanza.is("message") && stanza.attrs["type"] === 'groupchat') {
+      const msg = stanza
+      const text = msg.getChild('body')?.getText()
+
+      if (text) {
+        let parsedEl: Record<string, string> = {}
+
+        parsedEl.text = text
+        parsedEl.from = msg.attrs['from']
+        parsedEl.id = msg.getChild('archived')?.attrs['id']
+        const data = msg.getChild('data')
+
+        for (const [key, value] of Object.entries(data.attrs)) {
+          parsedEl[key] = value as string
+        }
+
+        useChatStore.getState().addMessages(msg.attrs["from"].split("/")[0], [parsedEl])
+      }
+    }
+  },
+
   presence(rooms: string[]) {
     rooms
-      .map((el) => `${el}@${this.conference}/${this.client.jid?.getLocal()}`)
+      .map((el) => `${el}/${this.client.jid?.getLocal()}`)
       .forEach((to) => {
         this.client.send(
           xml(
@@ -61,10 +95,10 @@ export const wsClient = {
             xml("x", "http://jabber.org/protocol/muc")
           )
         )
-    })
+      })
   },
 
-  async getRooms(): Promise<Array<{name: string, users_cnt: string, room_background: string, room_thumbnail: string, jid: string}> | null> {
+  async getRooms(): Promise<Array<{ name: string, users_cnt: string, room_background: string, room_thumbnail: string, jid: string }> | null> {
     const id = `get-rooms:${Date.now().toString()}`
 
     let stanzaHdlrPointer;
@@ -79,7 +113,7 @@ export const wsClient = {
           const fields = stanza.getChild('query')?.getChildren('room')
 
           const response = fields.map((el: Element) => {
-            const {name, users_cnt, room_background, room_thumbnail, jid} = el.attrs
+            const { name, users_cnt, room_background, room_thumbnail, jid } = el.attrs
             return {
               name, users_cnt, room_background, room_thumbnail, jid
             }
@@ -112,7 +146,7 @@ export const wsClient = {
 
     try {
       const res = await Promise.race([responsePromise, timeoutPromise]);
-      return res as Array<{name: string, users_cnt: string, room_background: string, room_thumbnail: string, jid: string}>
+      return res as Array<{ name: string, users_cnt: string, room_background: string, room_thumbnail: string, jid: string }>
     } catch (e) {
       return null
     }
@@ -131,14 +165,11 @@ export const wsClient = {
       let messages: Element[] = []
 
       stanzaHdlrPointer = (stanza) => {
-        if (stanza.is('message') && stanza.attrs['from'] && stanza.attrs['from'].startsWith(room)) {
-          const result = stanza.getChild('result')
+        const result = stanza.getChild('result')
 
-          if (result) {
-            const messageEl = result.getChild('forwarded')?.getChild('message')
-  
-            messages.push(messageEl)
-          }
+        if (stanza.is('message') && stanza.attrs['from'] && stanza.attrs['from'].startsWith(room) && result) {
+          const messageEl = result.getChild('forwarded')?.getChild('message')
+          messages.push(messageEl)
         }
 
         if (stanza.is('iq') && stanza.attrs['id'] === id && stanza.attrs['type'] === 'result') {
@@ -191,6 +222,86 @@ export const wsClient = {
           )
         )
       )
+      this.client.send(message)
+    })
+
+    const timeoutPromise = createTimeoutPromise(10000, unsubscribe)
+
+    try {
+      const res = await Promise.race([responsePromise, timeoutPromise]);
+      return res
+    } catch (e) {
+      console.log("=-> error ", e)
+      return null
+    }
+  },
+
+  async sendTextMessage(to: string, text: string) {
+    const user = useChatStore.getState().user
+    const message = xml(
+      'message',
+      {
+        to: to,
+        type: 'groupchat',
+        id: 'sendMessage'
+      },
+      xml(
+        'data',
+        {
+          xmlns: this.service,
+          senderFirstName: user.firstName,
+          senderLastName: user.lastName,
+          photoURL: user.profileImage,
+          senderWalletAddress: user.walletAddress,
+          senderJID: this.client.jid.toString(),
+          roomJid: to,
+          isSystemMessage: false,
+          tokenAmount: 0,
+          quickReplies: '',
+          notDisplayedValue: ''
+        }
+      ),
+      xml(
+        'body',
+        {},
+        text
+      )
+    )
+
+    let stanzaHdlrPointer;
+
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is("message") && stanza.attrs["from"] === `${to}/${this.username}`) {
+          const msg = stanza
+          const text = msg.getChild('body')?.getText()
+
+          if (text) {
+            let parsedEl: Record<string, string> = {}
+
+            parsedEl.text = text
+            parsedEl.from = msg.attrs['from']
+            parsedEl.id = msg.getChild('archived')?.attrs['id']
+            const data = msg.getChild('data')
+
+            for (const [key, value] of Object.entries(data.attrs)) {
+              parsedEl[key] = value as string
+            }
+
+            console.log({parsedEl})
+
+            unsubscribe()
+            resolve(parsedEl)
+          }
+        }
+      }
+
+      this.client.on("stanza", stanzaHdlrPointer)
+
       this.client.send(message)
     })
 

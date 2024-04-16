@@ -13,18 +13,16 @@ export function ChatWrapper() {
   const defaultRooms = defaultChatRooms.map((el) => el.jid)
 
   return (
-    <>
-      <Chat_ 
-        xmppPassword={xmppPassword}
-        xmppUsername={xmppUsername}
-        walletAddress={walletAddress}
-        firstName={firstName}
-        lastName={lastName}
-        profileImage={profileImage}
-        initRooms={defaultRooms}
-        isRestrictedToInitRooms={true}
-        xmppService="wss://dev.dxmpp.com:5443/ws"
-      />
-    </>
+    <Chat_ 
+      xmppPassword={xmppPassword}
+      xmppUsername={xmppUsername}
+      walletAddress={walletAddress}
+      firstName={firstName}
+      lastName={lastName}
+      profileImage={profileImage}
+      initRooms={defaultRooms}
+      isRestrictedToInitRooms={true}
+      xmppService="wss://dev.dxmpp.com:5443/ws"
+    />
   )
 }

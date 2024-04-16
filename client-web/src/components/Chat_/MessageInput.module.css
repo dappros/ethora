@@ -1,10 +1,10 @@
-.input {
+.massage-input-root {
     border-top: solid 1px #d1dbe3;
     border-right: solid 0px #d1dbe3;
     border-bottom: solid 0px #d1dbe3;
     border-left: solid 0px #d1dbe3;
     margin-top: auto;
-    padding: .3em 0;
+    padding: .3em 1em;
     color: #000000de;
     background-color: #fff;
     display: flex;
@@ -16,4 +16,22 @@
     display: flex;
     flex-direction: row;
     box-sizing: border-box;
+}
+
+.input-wrapper {
+    box-sizing: border-box;
+    position: relative;
+    background-color: #c6e3fa;
+    margin: 0;
+    padding: .6em .9em;
+    border-radius: .7em;
+    flex-grow: 1;
+}
+
+.input-wrapper input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background-color: #c6e3fa;
 }

@@ -7,7 +7,6 @@ import { ChatMainContainer } from "./ChatMainContainer"
 import ChatSidebar from "./ChatSidebar"
 import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
-import { MessageInput } from "./MessageInput"
 
 type TChatProps = {
   xmppPassword: string,
@@ -22,89 +21,119 @@ type TChatProps = {
 }
 
 export function Chat_(props: TChatProps) {
-  const { xmppService, xmppPassword, xmppUsername, initRooms, isRestrictedToInitRooms } = props
+  const {
+    xmppService,
+    xmppPassword,
+    xmppUsername,
+    initRooms,
+    isRestrictedToInitRooms,
+    firstName,
+    lastName,
+    profileImage,
+    walletAddress
+  } = props
+
+  const [isLoading, setIsLoading] = useState(true)
+
   const setRooms = useChatStore(state => state.setRooms)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
   const setMessages = useChatStore(state => state.setMessages)
-  const rooms = useChatStore(state => state.rooms)
-  const currentRoom = useChatStore(state => state.currentRoom)
-  const messages = useChatStore(state => state.messages)
+  const csSetUser = useChatStore(state => state.csSetUser)
+  const xmppStatus = useChatStore(state => state.xmppStatus)
+  const isInitCompleted = useChatStore(state => state.isInitCompleted)
+  const setIsInitCompleted = useChatStore(state => state.setIsInitCompleted)
 
-  const [isInit, setIsInit] = useState(false)
+  csSetUser({firstName, lastName, profileImage, walletAddress})
 
   useEffect(() => {
-    (async () => {
-      wsClient.init(xmppService, xmppUsername, xmppPassword)
-      try {
-        await wsClient.connect()
-        let rooms = await wsClient.getRooms()
+    const beforeunloadHandler = (event) => {
+      event.returnValue = 'Are you sure you want to leave this page?';
+    }
+    window.addEventListener('beforeunload', beforeunloadHandler)
 
-        if (!rooms) {
-          rooms = await wsClient.getRooms()
-        }
-
-        if (isRestrictedToInitRooms) {
-          rooms = rooms.filter((el => {
-            return initRooms.includes(el.jid)
-          }))
-        }
-
-        await wsClient.presence(rooms.map(el => el.jid))
-        const recentMesssages = []
-
-        for (const room of rooms) {
-        const recentMsgs = await wsClient.getHistory(room.jid, 10) as Record<string, string>[]
-
-          if (recentMsgs && recentMsgs[0]) {
-            setMessages(room.jid, recentMsgs)
-            recentMesssages.push(recentMsgs[0])
-          }
-        }
-
-        let roomsForState: RoomType[] = rooms.map((el, index) => {
-          return {
-            jid: el.jid,
-            title: el.name,
-            usersCnt: el.users_cnt,
-            roomBackground: el.room_background,
-            room_thumbnail: el.room_thumbnail,
-            groupName: '',
-            newMessagesCount: 0,
-            recentMessage: recentMesssages[index]
-          }
-        })
-
-        setRooms(roomsForState)
-        setCurrentRoom(roomsForState[0])
-        setIsInit(true)
-      } catch (e) {
-        console.log("=-> xmpp connection error")
-        console.log(e)
-      }
-    })()
+    return () => window.removeEventListener('beforeunload', beforeunloadHandler)
   }, [])
 
-  const onConversationClick = (index: number) => {
-    setCurrentRoom(rooms[index])
+  const initFunc = async () => {
+    try {
+      wsClient.init(xmppService, xmppUsername, xmppPassword)
+      await wsClient.connect()
+
+      wsClient.presence(initRooms)
+      let rooms = await wsClient.getRooms()
+
+      if (!rooms) {
+        rooms = await wsClient.getRooms()
+      }
+
+      if (isRestrictedToInitRooms) {
+        rooms = rooms.filter((el => {
+          return initRooms.includes(el.jid)
+        }))
+      }
+
+      await wsClient.presence(rooms.map(el => el.jid))
+      const recentMesssages = []
+
+      for (const room of rooms) {
+      const recentMsgs = await wsClient.getHistory(room.jid, 10) as Record<string, string>[]
+
+        if (recentMsgs && recentMsgs[0]) {
+          setMessages(room.jid, recentMsgs)
+          recentMesssages.push(recentMsgs[9])
+        }
+      }
+
+      let roomsForState: RoomType[] = rooms.map((el, index) => {
+        return {
+          jid: el.jid,
+          title: el.name,
+          usersCnt: el.users_cnt,
+          roomBackground: el.room_background,
+          room_thumbnail: el.room_thumbnail,
+          groupName: '',
+          newMessagesCount: 0,
+          recentMessage: recentMesssages[index]
+        }
+      })
+
+      setRooms(roomsForState)
+      setCurrentRoom(roomsForState[0])
+      setIsLoading(false)
+    } catch (e) {
+      console.log("")
+      console.log(e)
+    }
   }
 
-  const onYReachStart = () => {
-    console.log("loading more messages")
-  }
+  useEffect(() => {
+    initFunc().then(() => setIsInitCompleted(true))
+  }, [])
+
+  useEffect(() => {
+    if (xmppStatus === 'error' && !isInitCompleted) {
+      initFunc().then(() => setIsInitCompleted(true))
+    }
+  }, [xmppStatus, isInitCompleted])
 
   return (
     <>
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
       <Box style={{ paddingBlock: "20px", height: "100%" }}>
         <ChatMainContainer>
-          <ChatSidebar>
-            <ConversationsList />
-          </ChatSidebar>
-          <ChatContainer />
+          {isLoading && <div>Loading</div>}
+          {!isLoading && (
+            <>
+              <ChatSidebar>
+              <ConversationsList />
+              </ChatSidebar>
+              <ChatContainer />
+            </>
+          )}
         </ChatMainContainer>
+
       </Box>
     </Container >
     </>
-
   )
 }

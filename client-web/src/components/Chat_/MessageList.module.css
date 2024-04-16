@@ -12,11 +12,10 @@
 .scroll {
     position: relative;
     height: 100%;
-    overflow: hidden !important;
+    overflow-y: scroll;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     padding: 0 1.2em 0 .8em;
-    border: 1px solid red;
 }
