@@ -5,7 +5,7 @@ import profileImg from '../../../assets/images/profilepic.png'
 export function Message(props) {
     const {message} = props
     return (
-        <div className={cn(styles.message, {[styles.incomming]: true})}>
+        <div data-id={message.id} className={cn(styles.message, {[styles.incomming]: true})}>
             <div className={styles['avatar-wrapper']}>
                 <img className={styles.avatar} src={profileImg} />
             </div>

@@ -196,6 +196,7 @@ export const wsClient = {
         }
 
         if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "error") {
+          console.log(stanza.toString())
           unsubscribe()
           reject()
         }
@@ -221,6 +222,8 @@ export const wsClient = {
           )
         )
       )
+
+      console.log(message.toString())
       this.client.send(message)
     })
 

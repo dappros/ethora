@@ -3,70 +3,110 @@ import { useChatStore } from '../../store_'
 import { Message } from './Message'
 
 import styles from './MessageList.module.css'
+import { wsClient } from '../../api/wsClient_';
 
-export function MessageList() {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const messages = useChatStore(state => state.messages)
+interface ScrollParams {
+  top: number;
+  height: number;
+}
+
+type MessageListProps = {
+  messages: Record<string, string>[]
+}
+
+export function MessageList(props: MessageListProps) {
+  const contentRef = useRef<HTMLDivElement>(null)
   const currentRoom = useChatStore(state => state.currentRoom)
+  const rooms = useChatStore(state => state.rooms)
+  const addMessages = useChatStore(state => state.addMessages)
+  const allLoaded = false
 
-  const [scrollTop, setScrollTop] = useState(0)
+  let scrollTimeout = 0;
 
-  const roomMessages = messages[currentRoom?.jid]
+  const roomMessages = props.messages
 
-  useEffect(() => {
-    const scrollElement = scrollRef.current
+  const loadMoreMessages = async (jid: string, before: string) => {
+    const room = rooms.find((el => el.jid === jid))
 
-    if (!scrollElement) {
+    if (room.loading || room.allLoaded) {
       return
     }
 
-    const handleScroll = () => {
-      setScrollTop(scrollElement.scrollTop)
+    const res = await wsClient.getHistory(room.jid, 10, Number(before))
+    addMessages(room.jid, res as Record<string, string>[])
+  }
 
-      if (scrollElement.scrollTop < 100) {
-        // console.log("scrollElement.scrollTop < 100")
+  const getScrollParams = (): ScrollParams | null => {
+    const content = contentRef.current
+    if (!content) {
+      return null
+    }
+
+    return {
+      top: content.scrollTop,
+      height: content.scrollHeight
+    }
+  }
+
+  const checkIfLoadMoreMessages = (): void => {
+    const messages = useChatStore.getState().messages[currentRoom.jid]
+    const params = getScrollParams()
+    if (!params) {
+      return
+    }
+
+    if (params.top < 100 && !allLoaded) {
+      console.log('loading more... ', currentRoom.jid, messages[0].id)
+      loadMoreMessages(currentRoom.jid, messages[0].id)
+    }
+  }
+
+  const onScroll = () => {
+    window.clearTimeout(scrollTimeout)
+    scrollTimeout = window.setTimeout(() => checkIfLoadMoreMessages(), 50)
+  }
+
+  const scrollToBottom = () => {
+    const content = contentRef.current
+    if (content) {
+      const height = content.clientHeight
+      const scrollHeight = content.scrollHeight
+
+      if (scrollHeight > height) {
+        content.scrollTop = scrollHeight - height
       }
     }
 
-    handleScroll()
+  }
 
-    scrollElement.addEventListener("scroll", handleScroll)
+  useEffect(() => {
+    const content = contentRef.current
+    if (content) {
+      content.addEventListener("scroll", onScroll)
+    }
 
-    return () => scrollElement.removeEventListener("scroll", handleScroll)
+    return () => content.removeEventListener("scroll", onScroll)
   }, [])
 
   useEffect(() => {
-    const scrollEl = scrollRef.current
-
-    if (!scrollEl) {
-      return
-    }
-
-    const handleScrollToBottom = () => {
-      const scrollHeight = scrollEl.scrollHeight
-
-      scrollEl.scrollTop = scrollHeight
-    }
-
-    handleScrollToBottom()
-  }, [roomMessages])
+    scrollToBottom()
+  }, [currentRoom])
 
   return (
     <div className={styles.list}>
-      {
-        roomMessages && roomMessages.length && (
-          <div ref={scrollRef} className={styles.scroll}>
-            {
-              roomMessages && roomMessages.map((el) => {
-                return (
-                  <Message key={el.id} message={el}></Message>
-                )
-              })
-            }
-          </div>
-        )
-      }
-
+        {
+          roomMessages && roomMessages.length && (
+            <div ref={contentRef} className={styles.scroll}>
+              {
+                roomMessages && roomMessages.map((el) => {
+                  return (
+                    <Message key={el.id} message={el}></Message>
+                  )
+                })
+              }
+            </div>
+          )
+        }
     </div>
   )
 }

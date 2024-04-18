@@ -24,7 +24,9 @@ export type RoomType = {
   room_thumbnail: string;
   groupName?: string;
   newMessagesCount: number;
-  recentMessage: Record<string, string> | null
+  recentMessage: Record<string, string> | null;
+  loading: boolean;
+  allLoaded: boolean;
 }
 
 export type UserType = {
@@ -63,6 +65,8 @@ const currentRoomInitState = {
   groupName: '',
   newMessagesCount: 0,
   recentMessage: null,
+  loading: false,
+  allLoaded: false,
 }
 
 const initUserState = {
@@ -100,7 +104,11 @@ export const createChatSlice: StateCreator<
   },
 
   addMessages(jid, messages) {
-    set((state) => ({...state, messages: {...state.messages, [jid]: [...state.messages[jid], ...messages]}}))
+    const storeMessages = get().messages[jid]
+    messages = messages.filter((el) => {
+      return storeMessages.findIndex(msg => msg.id === el.id) === -1
+    })
+    set((state) => ({...state, messages: {...state.messages, [jid]: [...messages, ...state.messages[jid]]}}))
   },
 
   csSetUser(user) {
