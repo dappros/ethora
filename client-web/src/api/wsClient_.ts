@@ -184,6 +184,10 @@ export const wsClient = {
               parsedEl.id = msg.getChild('archived')?.attrs['id']
               const data = msg.getChild('data')
 
+              if (!data || !data.attrs) {
+                continue
+              }
+
               for (const [key, value] of Object.entries(data.attrs)) {
                 parsedEl[key] = value
               }

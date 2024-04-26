@@ -39,17 +39,18 @@ export type UserType = {
 export interface ChatSliceInterface {
   user: UserType;
   currentRoom: RoomType;
-  rooms: RoomType[];
+  rooms: Record<string, RoomType>;
   messages: Record<string, Record<string, string>[]>;
   isInitCompleted: boolean;
   xmppStatus: string;
   setCurrentRoom: (room: RoomType) => void;
-  setRooms: (rooms: RoomType[]) => void;
+  setRooms: (rooms: Record<string, RoomType>) => void;
   setMessages: (jid: string, messages: Record<string, string>[]) => void;
   csSetUser: (user: UserType) => void;
   addMessages: (jid: string, messages: Record<string, string>[]) => void;
   setIsInitCompleted: (val: boolean) => void;
   setXmppStatus: (val: string) => void;
+  setLoading: (jid: string, isLoading: boolean) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -84,7 +85,7 @@ export const createChatSlice: StateCreator<
 > = (set, get) => ({
   user: initUserState,
   currentRoom: currentRoomInitState,
-  rooms: [],
+  rooms: {},
   messages: {},
   isInitCompleted: false,
   xmppStatus: '',
@@ -95,8 +96,26 @@ export const createChatSlice: StateCreator<
     set((state) => ({ ...state, currentRoom: room }))
   },
 
-  setRooms(rooms: RoomType[]) {
+  setRooms(rooms: Record<string, RoomType>) {
     set((state) => ({...state, rooms: rooms}))
+  },
+
+  setLoading(jid, isLoading) {
+    set((state) => {
+      if (state.currentRoom.jid === jid) {
+        return {
+          ...state,
+          rooms: {...state.rooms, [jid]: {...state.rooms[jid], loading: isLoading}},
+          currentRoom: {...state.currentRoom, loading: isLoading}
+        }
+      } else {
+        return {
+          ...state,
+          rooms: {...state.rooms, [jid]: {...state.rooms[jid], loading: isLoading}},
+        }
+      }
+
+    })
   },
 
   setMessages(jid, messages) {

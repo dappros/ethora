@@ -7,8 +7,9 @@ import { ChatMainContainer } from "./ChatMainContainer"
 import ChatSidebar from "./ChatSidebar"
 import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
-import { PostFileResponseType } from "./types/postFileResponse"
 import { AxiosResponse } from "axios"
+
+import 'overlayscrollbars/overlayscrollbars.css';
 
 export type TChatProps = {
   xmppPassword: string,
@@ -80,7 +81,7 @@ export function Chat_(props: TChatProps) {
       const recentMesssages = []
 
       for (const room of rooms) {
-      const recentMsgs = await wsClient.getHistory(room.jid, 10) as Record<string, string>[]
+      const recentMsgs = await wsClient.getHistory(room.jid, 30) as Record<string, string>[]
 
         if (recentMsgs && recentMsgs[0]) {
           setMessages(room.jid, recentMsgs)
@@ -88,8 +89,10 @@ export function Chat_(props: TChatProps) {
         }
       }
 
-      let roomsForState: RoomType[] = rooms.map((el, index) => {
-        return {
+      let roomsForState: Record<string, RoomType> = {}
+
+      rooms.forEach((el, index) => {
+        roomsForState[el.jid] = {
           jid: el.jid,
           title: el.name,
           usersCnt: el.users_cnt,
@@ -97,12 +100,14 @@ export function Chat_(props: TChatProps) {
           room_thumbnail: el.room_thumbnail,
           groupName: '',
           newMessagesCount: 0,
-          recentMessage: recentMesssages[index]
+          recentMessage: recentMesssages[index],
+          loading: false,
+          allLoaded: false
         }
       })
 
       setRooms(roomsForState)
-      setCurrentRoom(roomsForState[0])
+      setCurrentRoom(roomsForState[Object.keys(roomsForState)[0]])
       setIsLoading(false)
     } catch (e) {
       console.log("")

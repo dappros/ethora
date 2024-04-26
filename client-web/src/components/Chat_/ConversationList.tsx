@@ -13,7 +13,8 @@ export function ConversationsList() {
     return (
         <div>
             {
-                rooms.map((room) => {
+                Object.keys(rooms).map((jid) => {
+                    const room = rooms[jid]
                     return (
                         <ConversationItem key={room.jid} onClick={() => onConversationClick(room)} active={currentRoom.jid === room.jid} room={room} />
                     )

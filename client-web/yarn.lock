@@ -5584,6 +5584,11 @@ optionator@^0.9.3:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
 
+overlayscrollbars@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/overlayscrollbars/-/overlayscrollbars-2.7.2.tgz#c25186649cb7d131d897e36ed42bee31168b48cf"
+  integrity sha512-wc5RWeObKo6aIYG5pDohoiWh2nMX1LZ1/9nJpaicM7tGgyXupf6gvbaodnPg8mIfxg0Q+BnPbt4Q5qiL1isb0A==
+
 p-limit@^2.0.0, p-limit@^2.2.0:
   version "2.3.0"
   resolved "https://registry.npmjs.org/p-limit/-/p-limit-2.3.0.tgz"
