@@ -25,7 +25,7 @@ export class XmppClient {
         return;
       }
 
-      // connect to XMPP server 
+      // connect to XMPP server
       this.client = xmpp.client({
         service: `wss://${this?.devServer || "dev.dxmpp.com:5443"}/ws`, // TO DO: move this to config file ?
         username: walletToUsername(walletAddress),
