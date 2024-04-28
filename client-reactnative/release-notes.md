@@ -174,4 +174,4 @@ Messages from the Ethora development team:
 * fixed issue with uploading files from Gallery (iOS)
 * fixed issue: user isn't able to scroll transaction after NFT minting
 * fixed issue: transactions history doesn't display due to wrong timestamp
-* fixed issue: after item tranferring the number of coins is displayed on the Transactions screen instead of the amount of this specific NFT in user's wallet
+* fixed issue: after item transferring the number of coins is displayed on the Transactions screen instead of the amount of this specific NFT in user's wallet

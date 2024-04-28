@@ -65,7 +65,7 @@ export class AccountStore {
 
       if (res.data.success || res.data === "") {
         this.getEmailList(token)
-        showToast("success", "Success", "Email added succesfully", "top")
+        showToast("success", "Success", "Email added successfully", "top")
       } else {
         runInAction(() => {
           this.error = true
