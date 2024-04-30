@@ -5,6 +5,8 @@ import { wsClient } from "../../api/wsClient_"
 import { useChatStore } from "../../store_"
 import { AxiosResponse } from "axios"
 import { SendFileModal } from "./SendFileModal"
+import { PaperClipIcon } from "./Icons/PaperClipIcon"
+import { PaperPlaneIcon } from "./Icons/PaperPlane"
 
 type MessageInputProps = {
   sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>
@@ -21,15 +23,18 @@ export function MessageInput(props: MessageInputProps) {
 
   const [text, setText] = useState('')
 
+  const send = async () => {
+    setText('')
+
+    const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
+    if (message) {
+      // 
+    }
+  }
+
   const handleKeyPress = async (e) => {
     if (e.key == 'Enter') {
-      setText('')
-
-      const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
-      if (message) {
-        // 
-      }
-
+      send()
     }
   }
 
@@ -55,11 +60,20 @@ export function MessageInput(props: MessageInputProps) {
       </form>
       <div className={styles.tools}>
         {
-          sendFile && <button onClick={onFile}>send file</button>
+          sendFile && (
+            <button className="send-file-btn" onClick={onFile}>
+              <PaperClipIcon />
+            </button>
+          )
         }
       </div>
       <div className={styles['input-wrapper']}>
         <input onKeyDown={(e) => handleKeyPress(e)} type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your message here"></input>
+      </div>
+      <div className={styles['right-tools']}>
+        <button className="send-file-btn" onClick={send}>
+          <PaperPlaneIcon />
+        </button>
       </div>
       {file &&  <SendFileModal roomJid={currentRoom.jid} file={file} sendFile={sendFile} onClose={() => setFile(null)} />}
     </div>

@@ -12,11 +12,8 @@ export function ConversationItem(props) {
                 <div className={styles.name}>
                     {props.room.title}
                 </div>
-                {/* <div className={styles.info}>
-                    {props.room.recentMessage?.text}
-                </div> */}
                 <div className={styles.info}>
-                    {props.room.loading.toString()}
+                    {props.room.recentMessage?.text}
                 </div>
             </div>
             <div className={styles.activity}>16:00</div>

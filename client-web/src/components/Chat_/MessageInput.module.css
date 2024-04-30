@@ -35,3 +35,9 @@
     outline: none;
     background-color: #c6e3fa;
 }
+
+.right-tools {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

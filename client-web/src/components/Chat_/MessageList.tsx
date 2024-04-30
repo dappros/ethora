@@ -108,7 +108,7 @@ export function MessageList(props: MessageListProps) {
       <div className={styles.list} ref={outerRef}>
         <div className={styles.scroll} ref={contentRef}>
           {
-            props.messages.map((el) => {
+            messages.map((el) => {
               return (
                 <Message key={el.id} message={el}></Message>
               )
@@ -117,6 +117,5 @@ export function MessageList(props: MessageListProps) {
         </div>
       </div>
     </>
-
   )
 }

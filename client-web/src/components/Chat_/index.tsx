@@ -9,7 +9,7 @@ import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
 import { AxiosResponse } from "axios"
 
-import 'overlayscrollbars/overlayscrollbars.css';
+import "./index.css"
 
 export type TChatProps = {
   xmppPassword: string,
@@ -135,7 +135,7 @@ export function Chat_(props: TChatProps) {
   }, [isRestrictedToInitRooms, initRooms])
 
   return (
-    <>
+    <div className="ChatApp">
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
       <Box style={{ paddingBlock: "20px", height: "100%" }}>
         <ChatMainContainer>
@@ -155,6 +155,6 @@ export function Chat_(props: TChatProps) {
         </ChatMainContainer>
       </Box>
     </Container >
-    </>
+    </div>
   )
 }
