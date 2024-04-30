@@ -39,6 +39,7 @@ export function Chat_(props: TChatProps) {
 
   const [isLoading, setIsLoading] = useState(true)
   const [showSidebar, setShowSideBar] = useState(false)
+  // const isInit
 
   const setRooms = useChatStore(state => state.setRooms)
   const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
@@ -60,6 +61,7 @@ export function Chat_(props: TChatProps) {
   }, [])
 
   const initFunc = async () => {
+    console.log('initFunc')
     try {
       wsClient.init(xmppService, xmppUsername, xmppPassword)
       await wsClient.connect()
@@ -67,9 +69,7 @@ export function Chat_(props: TChatProps) {
       wsClient.presence(initRooms)
       let rooms = await wsClient.getRooms()
 
-      if (!rooms) {
-        rooms = await wsClient.getRooms()
-      }
+      console.log({rooms: rooms})
 
       if (isRestrictedToInitRooms) {
         rooms = rooms.filter((el => {
@@ -116,8 +116,9 @@ export function Chat_(props: TChatProps) {
   }
 
   useEffect(() => {
+    console.log("xmppUsername ", xmppUsername)
     initFunc().then(() => setIsInitCompleted(true))
-  }, [])
+  }, [xmppUsername])
 
   useEffect(() => {
     if (xmppStatus === 'error' && !isInitCompleted) {

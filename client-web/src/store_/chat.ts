@@ -1,4 +1,5 @@
 import { StateCreator } from "zustand";
+import { wsClient } from "../api/wsClient_";
 
 export type MessageType = {
   text: string;
@@ -51,6 +52,8 @@ export interface ChatSliceInterface {
   setIsInitCompleted: (val: boolean) => void;
   setXmppStatus: (val: string) => void;
   setLoading: (jid: string, isLoading: boolean) => void;
+  loadMoreMessages: (jid: string) => void;
+  setCurrentRoomLoading: (isLoading: boolean) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -136,5 +139,35 @@ export const createChatSlice: StateCreator<
 
   setXmppStatus(status) {
     set((state) => ({...state, xmppStatus: status}))
+  },
+
+  setCurrentRoomLoading(isLoading: boolean) {
+    set(state => {
+      const currentRoom = state.currentRoom
+
+      return {
+        ...state,
+        currentRoom: {
+          ...currentRoom,
+          loading: isLoading
+        }
+      }
+    })
+  },
+
+  async loadMoreMessages(jid: string) {
+    const {loading, allLoaded} = get().currentRoom
+    if (loading || allLoaded) {
+      return
+    }
+
+    get().setCurrentRoomLoading(true)
+    const roomMessages = get().messages[jid]
+
+    wsClient.getHistory(jid, 20, Number(roomMessages[0].id))
+      .then((resp) => {
+        get().addMessages(jid, resp as Record<string, string>[])
+        get().setCurrentRoomLoading(false)
+      })
   }
 });
