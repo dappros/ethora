@@ -85,7 +85,7 @@ export function Chat_(props: TChatProps) {
 
         if (recentMsgs && recentMsgs[0]) {
           setMessages(room.jid, recentMsgs)
-          recentMesssages.push(recentMsgs[9])
+          recentMesssages.push(recentMsgs[recentMsgs.length - 1])
         }
       }
 
