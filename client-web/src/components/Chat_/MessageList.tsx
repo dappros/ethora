@@ -3,7 +3,7 @@ import { Message } from './Message'
 import styles from './MessageList.module.css'
 import { RoomType } from '../../store_/chat';
 import { useEffect, useRef } from 'react';
-import { block_scroll, unblock_scroll } from './block_scroll';
+import { block_scroll } from './block_scroll';
 import { useChatStore } from '../../store_';
 
 interface ScrollParams {
@@ -105,7 +105,6 @@ export function MessageList(props: MessageListProps) {
 
   return (
     <>
-      <div><button onClick={() => blockScroll()}>osd</button></div>
       <div className={styles.list} ref={outerRef}>
         <div className={styles.scroll} ref={contentRef}>
           {
