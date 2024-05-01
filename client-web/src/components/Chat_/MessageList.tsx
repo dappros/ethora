@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Message } from './Message'
 
 import styles from './MessageList.module.css'
@@ -5,15 +6,26 @@ import { RoomType } from '../../store_/chat';
 import { useEffect, useRef } from 'react';
 import { block_scroll } from './block_scroll';
 import { useChatStore } from '../../store_';
+import { ChatDateDevider } from './ChatDateDevider';
 
 interface ScrollParams {
   top: number;
   height: number;
 }
 
+type Message = Record<string, string>
+
 type MessageListProps = {
-  messages: Record<string, string>[],
+  messages: Message[],
   currentRoom: RoomType
+}
+
+const isTheSameDay = (date1: Date, date2: Date) => {
+    return (
+        (date1.getDate() === date2.getDate()) &&
+        (date1.getMonth() === date2.getMonth()) &&
+        (date1.getFullYear() === date2.getFullYear())
+    );
 }
 
 export function MessageList(props: MessageListProps) {
@@ -73,6 +85,12 @@ export function MessageList(props: MessageListProps) {
     timeoutRef.current = window.setTimeout(() => checkIfLoadMoreMessages(), 50);
   }
 
+  const isMessageFirstOfDate = (message: Message, index: number) => {
+    // console.log(index, message.created, new Date(Number(message.created)))
+    // console.log(index === 0 || new Date(message.created), new Date(messages[index - 1].created))
+    return index === 0 || !isTheSameDay(new Date(Number(message.created)), new Date(Number(messages[index - 1].created)));
+  }
+
   useEffect(() => {
     scrollToBottom()
     blockScroll()
@@ -108,9 +126,14 @@ export function MessageList(props: MessageListProps) {
       <div className={styles.list} ref={outerRef}>
         <div className={styles.scroll} ref={contentRef}>
           {
-            messages.map((el) => {
+            messages.map((message, index) => {
               return (
-                <Message key={el.id} message={el}></Message>
+                <React.Fragment key={message.id}>
+                  { isMessageFirstOfDate(message, index) && (
+                    <ChatDateDevider key={message.created} date={message.created} />
+                  ) }
+                  <Message  message={message}></Message>
+                </React.Fragment>
               )
             })
           }

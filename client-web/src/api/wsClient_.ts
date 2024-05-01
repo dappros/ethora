@@ -182,6 +182,7 @@ export const wsClient = {
               parsedEl.text = text
               parsedEl.from = msg.attrs['from']
               parsedEl.id = msg.getChild('archived')?.attrs['id']
+              parsedEl.created = parsedEl.id.slice(0, 13)
               const data = msg.getChild('data')
 
               if (!data || !data.attrs) {
