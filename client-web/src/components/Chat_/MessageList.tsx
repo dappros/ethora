@@ -119,6 +119,20 @@ export function MessageList(props: MessageListProps) {
     }
   }, [messages])
 
+  const isGroup = (message, index) => {
+    if (index === 0 || message.isSystemMessage === "true") {
+      return false
+    }
+
+    const prevMessage = messages[index - 1]
+
+    if (prevMessage.from !== message.from) {
+      return false
+    }
+
+    return true
+  }
+
   return (
     <>
       <div className={styles.list} ref={outerRef}>
@@ -130,7 +144,7 @@ export function MessageList(props: MessageListProps) {
                   { isMessageFirstOfDate(message, index) && (
                     <ChatDateDevider key={message.created} date={message.created} />
                   ) }
-                  <Message  message={message}></Message>
+                  <Message isGroup={isGroup(message, index)} message={message}></Message>
                 </React.Fragment>
               )
             })
