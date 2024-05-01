@@ -2,6 +2,12 @@
     display: flex;
     margin-bottom: 10px;
 
+    ~.system {
+        justify-content: center;
+        color: rgb(110, 169, 215);
+        font-size: 0.8em;
+    }
+
     ~.me {
         justify-content: flex-end;
 

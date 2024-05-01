@@ -126,7 +126,7 @@ export function MessageList(props: MessageListProps) {
 
     const prevMessage = messages[index - 1]
 
-    if (prevMessage.from !== message.from) {
+    if (prevMessage.from !== message.from || prevMessage.isSystemMessage === "true") {
       return false
     }
 
