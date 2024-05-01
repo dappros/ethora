@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Message } from './Message'
+import { Message } from './Message/Message'
 
 import styles from './MessageList.module.css'
 import { RoomType } from '../../store_/chat';
@@ -86,8 +86,6 @@ export function MessageList(props: MessageListProps) {
   }
 
   const isMessageFirstOfDate = (message: Message, index: number) => {
-    // console.log(index, message.created, new Date(Number(message.created)))
-    // console.log(index === 0 || new Date(message.created), new Date(messages[index - 1].created))
     return index === 0 || !isTheSameDay(new Date(Number(message.created)), new Date(Number(messages[index - 1].created)));
   }
 

@@ -29,6 +29,7 @@ export const wsClient = {
       if (this.client) {
         this.client.on("online", (jid) => {
           console.log("xmpp on online")
+          console.log(jid.toString())
           this.client.send(xml("presence"))
           resolve(jid)
         })
@@ -151,6 +152,10 @@ export const wsClient = {
     }
   },
 
+  isMe(from: string) {
+    return from.endsWith(this.client.jid.getLocal())
+  },
+
   async getHistory(room: string, max: number, before?: number) {
     const id = `get-history:${Date.now().toString()}`
 
@@ -183,6 +188,7 @@ export const wsClient = {
               parsedEl.from = msg.attrs['from']
               parsedEl.id = msg.getChild('archived')?.attrs['id']
               parsedEl.created = parsedEl.id.slice(0, 13)
+              parsedEl.isMe = this.isMe(parsedEl.from)
               const data = msg.getChild('data')
 
               if (!data || !data.attrs) {
