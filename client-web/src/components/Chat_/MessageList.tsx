@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Message } from './Message/Message'
 
 import styles from './MessageList.module.css'
-import { RoomType } from '../../store_/chat';
+import { MessageType, RoomType } from '../../store_/chat';
 import { useEffect, useRef } from 'react';
 import { block_scroll } from './block_scroll';
 import { useChatStore } from '../../store_';
@@ -13,10 +13,8 @@ interface ScrollParams {
   height: number;
 }
 
-type Message = Record<string, string>
-
 type MessageListProps = {
-  messages: Message[],
+  messages: MessageType[],
   currentRoom: RoomType
 }
 
@@ -35,6 +33,7 @@ export function MessageList(props: MessageListProps) {
   const timeoutRef = useRef(0)
   const scrollParams = useRef<ScrollParams | null>(null)
   const loadMoreMessages = useChatStore((state) => state.loadMoreMessages)
+  const getThreadMessages = useChatStore((state) => state.getThreadMessages)
 
   const scrollToBottom = (): void => {
     const content = contentRef.current;
@@ -85,7 +84,7 @@ export function MessageList(props: MessageListProps) {
     timeoutRef.current = window.setTimeout(() => checkIfLoadMoreMessages(), 50);
   }
 
-  const isMessageFirstOfDate = (message: Message, index: number) => {
+  const isMessageFirstOfDate = (message: MessageType, index: number) => {
     return index === 0 || !isTheSameDay(new Date(Number(message.created)), new Date(Number(messages[index - 1].created)));
   }
 
@@ -139,12 +138,20 @@ export function MessageList(props: MessageListProps) {
         <div className={styles.scroll} ref={contentRef}>
           {
             messages.map((message, index) => {
+              let threadMessages;
+
+              if (message.mainMessage?.id) {
+                threadMessages = getThreadMessages(message.mainMessage?.id)
+              } else {
+                threadMessages = null
+              }
+
               return (
                 <React.Fragment key={message.id}>
                   { isMessageFirstOfDate(message, index) && (
                     <ChatDateDevider key={message.created} date={message.created} />
                   ) }
-                  <Message isGroup={isGroup(message, index)} message={message}></Message>
+                  <Message isGroup={isGroup(message, index)} message={message} threadMessages={threadMessages}></Message>
                 </React.Fragment>
               )
             })

@@ -2,6 +2,7 @@ import xmpp from "@xmpp/client";
 import { Element } from "ltx";
 
 import { useChatStore } from "../store_";
+import { MessageType } from "../store_/chat";
 
 const xml = xmpp.xml;
 
@@ -156,7 +157,7 @@ export const wsClient = {
     return from.endsWith(this.client.jid.getLocal())
   },
 
-  async getHistory(room: string, max: number, before?: number) {
+  async getHistory(room: string, max: number, before?: number): Promise<MessageType[]> {
     const id = `get-history:${Date.now().toString()}`
 
     let stanzaHdlrPointer;
@@ -177,7 +178,7 @@ export const wsClient = {
         }
 
         if (stanza.is('iq') && stanza.attrs['id'] === id && stanza.attrs['type'] === 'result') {
-          let result: Record<string, string>[] = []
+          let mainMessages: Record<string, string>[] = []
 
           for (const msg of messages) {
             const text = msg.getChild('body')?.getText()
@@ -199,11 +200,27 @@ export const wsClient = {
                 parsedEl[key] = value
               }
 
-              result.push(parsedEl)
+              // ignore messages wich has isReply but there is no mainMessage field
+              if (parsedEl.isReply === "true" && !parsedEl.mainMessage) {
+                continue
+              }
+
+              if (parsedEl.mainMessage) {
+                try {
+                  parsedEl.mainMessage = JSON.parse(parsedEl.mainMessage)
+                } catch (e) {
+                  // ignore message if mainMessage is not parsable
+                  continue;
+                }
+              }
+
+              // if (parsedEl.mainMessage)
+
+              mainMessages.push(parsedEl)
             }
           }
           unsubscribe()
-          resolve(result)
+          resolve(mainMessages)
         }
 
         if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "error") {

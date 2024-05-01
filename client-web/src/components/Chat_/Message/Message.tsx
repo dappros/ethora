@@ -3,9 +3,34 @@ import profileImg from '../../../assets/images/profilepic.png'
 
 import "./Message.scss"
 import { MoreIcon } from '../Icons/MoreIcon'
+import { MessageType } from '../../../store_/chat'
 
-export function Message(props) {
-    const { message, isGroup } = props
+type Props = {
+    message: MessageType,
+    isGroup: boolean,
+    threadMessages: MessageType[] | null
+}
+
+export function Message(props: Props) {
+    const { message, isGroup, threadMessages } = props
+
+    let replyContent;
+
+    if (threadMessages) {
+        const repliesCount = threadMessages.length
+        let text = repliesCount === 1 ? `${repliesCount} Reply` : `${repliesCount} Replies`
+
+        replyContent = (
+            <div>
+                <div>
+                    <span>{text}</span>
+                </div>
+
+            </div>
+        )
+    } else {
+        replyContent = null
+    }
 
     let content;
 
@@ -38,6 +63,10 @@ export function Message(props) {
                                 {message.text}
                             </div>
                         </div>
+                        {
+                            replyContent
+                        }
+
                     </div>
                 </div>
             </div>

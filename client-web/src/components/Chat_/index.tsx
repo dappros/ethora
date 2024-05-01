@@ -48,6 +48,7 @@ export function Chat_(props: TChatProps) {
   const xmppStatus = useChatStore(state => state.xmppStatus)
   const isInitCompleted = useChatStore(state => state.isInitCompleted)
   const setIsInitCompleted = useChatStore(state => state.setIsInitCompleted)
+  const setThreadMessages = useChatStore(state => state.setThreadMessages)
 
   csSetUser({firstName, lastName, profileImage, walletAddress})
 
@@ -61,7 +62,6 @@ export function Chat_(props: TChatProps) {
   }, [])
 
   const initFunc = async () => {
-    console.log('initFunc')
     try {
       wsClient.init(xmppService, xmppUsername, xmppPassword)
       await wsClient.connect()
@@ -81,10 +81,25 @@ export function Chat_(props: TChatProps) {
       const recentMesssages = []
 
       for (const room of rooms) {
-      const recentMsgs = await wsClient.getHistory(room.jid, 30) as Record<string, string>[]
+        let recentMsgs = await wsClient.getHistory(room.jid, 30)
+
+        let threadsMsgs = []
+
+        recentMsgs = recentMsgs.filter((el) => {
+          if (el.mainMessage) {
+            threadsMsgs.push(el)
+          }
+
+          if (el.mainMessage && el.showInChannel === "false") {
+            return false
+          }
+
+          return true;
+        })
 
         if (recentMsgs && recentMsgs[0]) {
           setMessages(room.jid, recentMsgs)
+          setThreadMessages(threadsMsgs)
           recentMesssages.push(recentMsgs[recentMsgs.length - 1])
         }
       }

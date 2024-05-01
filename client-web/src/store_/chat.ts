@@ -1,21 +1,42 @@
 import { StateCreator } from "zustand";
 import { wsClient } from "../api/wsClient_";
 
-export type MessageType = {
-  text: string;
-  FN: string;
-  username: string;
-  fromLocalJid: string;
-  timestamp: number;
-  id: number;
-  date: string;
+export type TreadLinkMessage = {
+  text: string,
+  id: number,
+  userName: string,
+  createdAt: string,
+  size: string,
+  duration: string,
+  waveForm: string,
+  attachmentId: string,
+  wrappable: string,
+  nftActionType: string,
+  contractAddress: string,
+  roomJid: string,
+  nftId: string
 }
 
-type jid = string;
-type date = string;
-
-export type DateMessasges = Record<date, MessageType[]>
-export type AllMessagesType = Record<jid, DateMessasges>
+export type MessageType = {
+  text: string;
+  from: string;
+  id: string;
+  created: string;
+  isMe: boolean;
+  xmlns: string;
+  senderJID: string;
+  senderFirstName: string;
+  senderLastName: string;
+  senderWalletAddress: string;
+  isSystemMessage: "true" | "false";
+  tokenAmount: string;
+  mucname: string;
+  roomJid: string;
+  isReply: "true" | "false";
+  showInChannel: "true" | "false";
+  push: "true" | "false";
+  mainMessage?: TreadLinkMessage
+}
 
 export type RoomType = {
   jid: string;
@@ -41,19 +62,22 @@ export interface ChatSliceInterface {
   user: UserType;
   currentRoom: RoomType;
   rooms: Record<string, RoomType>;
-  messages: Record<string, Record<string, string>[]>;
+  messages: Record<string, MessageType[]>;
+  threadsMessages: Record<string, MessageType[]>;
   isInitCompleted: boolean;
   xmppStatus: string;
   setCurrentRoom: (room: RoomType) => void;
   setRooms: (rooms: Record<string, RoomType>) => void;
-  setMessages: (jid: string, messages: Record<string, string>[]) => void;
+  setMessages: (jid: string, messages: MessageType[]) => void;
   csSetUser: (user: UserType) => void;
-  addMessages: (jid: string, messages: Record<string, string>[]) => void;
+  addMessages: (jid: string, messages: MessageType[]) => void;
   setIsInitCompleted: (val: boolean) => void;
   setXmppStatus: (val: string) => void;
   setLoading: (jid: string, isLoading: boolean) => void;
   loadMoreMessages: (jid: string) => void;
   setCurrentRoomLoading: (isLoading: boolean) => void;
+  setThreadMessages: (messages: MessageType[]) => void;
+  getThreadMessages: (id: number) => MessageType[] | null;
 }
 
 function jsonClone(obj: Object) {
@@ -90,8 +114,23 @@ export const createChatSlice: StateCreator<
   currentRoom: currentRoomInitState,
   rooms: {},
   messages: {},
+  threadsMessages: {},
   isInitCompleted: false,
   xmppStatus: '',
+
+  setThreadMessages: (messages) => {
+    for (const message of messages) {
+      const id = message.mainMessage?.id
+      if (id) {
+        const prevMessages = get().threadsMessages[message.mainMessage?.id] || []
+        set(state => ({...state, threadsMessages: {...state.threadsMessages, [id]: [...prevMessages, message]}}))
+      }
+    }
+  },
+
+  getThreadMessages: (id: number) => {
+    return get().threadsMessages[id] || null
+  },
 
   setIsInitCompleted: (val) => set((state) => ({...state, isInitCompleted: val})),
 
@@ -164,9 +203,22 @@ export const createChatSlice: StateCreator<
     get().setCurrentRoomLoading(true)
     const roomMessages = get().messages[jid]
 
-    wsClient.getHistory(jid, 20, Number(roomMessages[0].id))
+    wsClient.getHistory(jid, 30, Number(roomMessages[0].id))
       .then((resp) => {
-        get().addMessages(jid, resp as Record<string, string>[])
+        let replies = []
+        resp = resp.filter((el) => {
+          if (el.mainMessage) {
+            replies.push(el)
+          }
+
+          if (el.mainMessage && el.showInChannel === "false") {
+            return false
+          }
+
+          return true;
+        })
+        get().setThreadMessages(replies)
+        get().addMessages(jid, resp)
         get().setCurrentRoomLoading(false)
       })
   }

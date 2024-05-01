@@ -11,7 +11,7 @@ export function ChatWrapper() {
 
   const xmppUsername = walletToUsername(walletAddress)
 
-  const defaultRooms = defaultChatRooms.map((el) => el.jid)
+  const defaultRooms = defaultChatRooms.map((el) => el.jid).concat("974add7ad347cd39b5fff2c16939003a27ce74f038cdc9884c03575e28078394@conference.dev.dxmpp.com")
 
   return (
     <Chat_ 
