@@ -1,4 +1,5 @@
 import {DateTime} from 'luxon'
+import styles from "./ChatDateDevider.module.css"
 
 type Props = {
     date: string
@@ -28,7 +29,7 @@ export const ChatDateDevider = (props: Props) => {
     }
 
     return (
-        <div>
+        <div className={styles.devider}>
             <span>{ text }</span>
         </div>
     )
