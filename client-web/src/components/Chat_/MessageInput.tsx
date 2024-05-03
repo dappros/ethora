@@ -7,13 +7,15 @@ import { AxiosResponse } from "axios"
 import { SendFileModal } from "./SendFileModal"
 import { PaperClipIcon } from "./Icons/PaperClipIcon"
 import { PaperPlaneIcon } from "./Icons/PaperPlane"
+import { MessageType } from "../../store_/chat"
 
 type MessageInputProps = {
-  sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>
+  sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,
+  threadMessages?: MessageType[] | null
 }
 
 export function MessageInput(props: MessageInputProps) {
-  const { sendFile } = props;
+  const { sendFile, threadMessages } = props;
 
   const [file, setFile] = useState<File>(null)
 
@@ -24,6 +26,10 @@ export function MessageInput(props: MessageInputProps) {
   const [text, setText] = useState('')
 
   const send = async () => {
+    if (threadMessages) {
+      console.log("sending message to thread")
+    }
+
     setText('')
 
     const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>

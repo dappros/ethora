@@ -3,13 +3,12 @@ import { useEffect, useState } from "react"
 import { wsClient } from "../../api/wsClient_"
 import { RoomType } from "../../store_/chat"
 import { useChatStore } from "../../store_"
-import { ChatMainContainer } from "./ChatMainContainer"
 import ChatSidebar from "./ChatSidebar"
 import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
 import { AxiosResponse } from "axios"
 
-import "./index.css"
+import "./index.scss"
 
 export type TChatProps = {
   xmppPassword: string,
@@ -50,16 +49,16 @@ export function Chat_(props: TChatProps) {
   const setIsInitCompleted = useChatStore(state => state.setIsInitCompleted)
   const setThreadMessages = useChatStore(state => state.setThreadMessages)
 
-  csSetUser({firstName, lastName, profileImage, walletAddress})
+  csSetUser({ firstName, lastName, profileImage, walletAddress })
 
-  useEffect(() => {
-    const beforeunloadHandler = (event) => {
-      event.returnValue = 'Are you sure you want to leave this page?';
-    }
-    window.addEventListener('beforeunload', beforeunloadHandler)
+  // useEffect(() => {
+  //   const beforeunloadHandler = (event) => {
+  //     event.returnValue = 'Are you sure you want to leave this page?';
+  //   }
+  //   window.addEventListener('beforeunload', beforeunloadHandler)
 
-    return () => window.removeEventListener('beforeunload', beforeunloadHandler)
-  }, [])
+  //   return () => window.removeEventListener('beforeunload', beforeunloadHandler)
+  // }, [])
 
   const initFunc = async () => {
     try {
@@ -69,7 +68,7 @@ export function Chat_(props: TChatProps) {
       wsClient.presence(initRooms)
       let rooms = await wsClient.getRooms()
 
-      console.log({rooms: rooms})
+      console.log({ rooms: rooms })
 
       if (isRestrictedToInitRooms) {
         rooms = rooms.filter((el => {
@@ -152,24 +151,24 @@ export function Chat_(props: TChatProps) {
   return (
     <div className="ChatApp">
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
-      <Box style={{ paddingBlock: "20px", height: "100%" }}>
-        <ChatMainContainer>
-          {isLoading && <div>Loading</div>}
-          {!isLoading && (
-            <>
-              {
-                showSidebar && (
-                  <ChatSidebar>
-                    <ConversationsList />
-                  </ChatSidebar>
-                )
-              }
-              <ChatContainer {...props} />
-            </>
-          )}
-        </ChatMainContainer>
-      </Box>
-    </Container >
+        <Box style={{ paddingBlock: "20px", height: "100%" }}>
+          <div className="ChatApp__inner">
+            {isLoading && <div>Loading</div>}
+            {!isLoading && (
+              <>
+                {
+                  showSidebar && (
+                    <ChatSidebar>
+                      <ConversationsList />
+                    </ChatSidebar>
+                  )
+                }
+                <ChatContainer {...props} />
+              </>
+            )}
+          </div>
+        </Box>
+      </Container >
     </div>
   )
 }

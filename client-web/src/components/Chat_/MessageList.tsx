@@ -138,13 +138,7 @@ export function MessageList(props: MessageListProps) {
         <div className={styles.scroll} ref={contentRef}>
           {
             messages.map((message, index) => {
-              let threadMessages;
-
-              if (message.mainMessage?.id) {
-                threadMessages = getThreadMessages(message.mainMessage?.id)
-              } else {
-                threadMessages = null
-              }
+              let threadMessages = getThreadMessages(Number(message.id))
 
               return (
                 <React.Fragment key={message.id}>

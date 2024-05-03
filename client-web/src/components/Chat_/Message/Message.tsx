@@ -4,24 +4,31 @@ import profileImg from '../../../assets/images/profilepic.png'
 import "./Message.scss"
 import { MoreIcon } from '../Icons/MoreIcon'
 import { MessageType } from '../../../store_/chat'
+import { useChatStore } from '../../../store_'
 
 type Props = {
     message: MessageType,
     isGroup: boolean,
     threadMessages: MessageType[] | null
+    showActions?: boolean
 }
 
 export function Message(props: Props) {
-    const { message, isGroup, threadMessages } = props
+    const { message, isGroup, threadMessages, showActions = 'true' } = props
+    const setCurrentThreadMessage = useChatStore(state => state.setCurrentThreadMessage)
 
-    let replyContent;
+    const onThreadInfClick = () => {
+        setCurrentThreadMessage(message)
+    }
+
+    let threadInfContent;
 
     if (threadMessages) {
         const repliesCount = threadMessages.length
         let text = repliesCount === 1 ? `${repliesCount} Reply` : `${repliesCount} Replies`
 
-        replyContent = (
-            <div>
+        threadInfContent = (
+            <div className='thread-inf-content' onClick={onThreadInfClick}>
                 <div>
                     <span>{text}</span>
                 </div>
@@ -29,7 +36,7 @@ export function Message(props: Props) {
             </div>
         )
     } else {
-        replyContent = null
+        threadInfContent = null
     }
 
     let content;
@@ -55,16 +62,18 @@ export function Message(props: Props) {
                                         {`${message.senderFirstName} ${message.senderLastName}`}
                                     </strong>
                                 )}
-                                <button className="menu-btn">
-                                    <MoreIcon />
-                                </button>
+                                { showActions && (
+                                    <button className="menu-btn">
+                                        <MoreIcon />
+                                    </button>
+                                ) }
                             </div>
                             <div>
                                 {message.text}
                             </div>
                         </div>
                         {
-                            replyContent
+                            threadInfContent
                         }
 
                     </div>

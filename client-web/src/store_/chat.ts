@@ -64,6 +64,7 @@ export interface ChatSliceInterface {
   rooms: Record<string, RoomType>;
   messages: Record<string, MessageType[]>;
   threadsMessages: Record<string, MessageType[]>;
+  currentThreadMessage: MessageType | null;
   isInitCompleted: boolean;
   xmppStatus: string;
   setCurrentRoom: (room: RoomType) => void;
@@ -78,6 +79,7 @@ export interface ChatSliceInterface {
   setCurrentRoomLoading: (isLoading: boolean) => void;
   setThreadMessages: (messages: MessageType[]) => void;
   getThreadMessages: (id: number) => MessageType[] | null;
+  setCurrentThreadMessage: (message: MessageType | null) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -115,10 +117,12 @@ export const createChatSlice: StateCreator<
   rooms: {},
   messages: {},
   threadsMessages: {},
+  currentThreadMessage: null,
   isInitCompleted: false,
   xmppStatus: '',
 
   setThreadMessages: (messages) => {
+    console.log('setThreadMessages ', messages)
     for (const message of messages) {
       const id = message.mainMessage?.id
       if (id) {
@@ -131,6 +135,8 @@ export const createChatSlice: StateCreator<
   getThreadMessages: (id: number) => {
     return get().threadsMessages[id] || null
   },
+
+  setCurrentThreadMessage: (message: MessageType | null) => set((state) => ({...state, currentThreadMessage: message})),
 
   setIsInitCompleted: (val) => set((state) => ({...state, isInitCompleted: val})),
 

@@ -1,0 +1,61 @@
+.ChatApp button {
+    background-color: transparent;
+    border: none;
+}
+
+.ChatApp .send-file-btn {
+    color: #6ea9d7;
+    cursor: pointer;
+}
+
+.ChatApp {
+    .ChatApp__inner {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+        overflow: auto;
+        border: solid 1px #d1dbe3;
+        box-sizing: border-box;
+        color: #000000de;
+        background-color: #fff;
+        font-size: 1rem;
+    }
+
+    .chat {
+        display: flex;
+        flex-grow: 1;
+        height: 100%;
+    }
+
+    .chat-middle {
+        order: 1;
+        z-index: 1;
+        flex-grow: 1;
+        flex-basis: 65%;
+        border-right: solid 0px #d1dbe3;
+    
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-width: 180px;
+        color: #000000de;
+        background-color: #fff;
+    }
+
+    .chat-right {
+        order: 1;
+        z-index: 1;
+        flex-grow: 1;
+        flex-basis: 65%;
+        border-right: solid 0px #d1dbe3;
+    
+        box-sizing: border-box;
+        display: flex;
+        height: 100%;
+        min-width: 180px;
+        color: #000000de;
+        background-color: #fff;
+    }
+}

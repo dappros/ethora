@@ -1,0 +1,178 @@
+.thread {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+
+    .thread-header {
+        box-sizing: border-box;
+        color: #000000de;
+        background-color: #f6fbff;
+        font-size: 1em;
+        flex-shrink: 0;
+        user-select: none;
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        border-top: solid 0px #d1dbe3;
+        border-right: solid 0px #d1dbe3;
+        border-bottom: solid 1px #d1dbe3;
+        border-left: solid 1px #d1dbe3;
+        padding: .6em .9em;
+    
+        .content {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+    
+            button {
+                cursor: pointer;
+            }
+        }
+    
+        .title {
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 700;
+            color: #000000de;
+            background-color: #f6fbff;
+        }
+    
+        .info {
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #0009;
+            background-color: #f6fbff;
+            font-weight: 400;
+            font-size: .9em;
+        }
+    }
+
+    .list {
+        display: flex;
+        box-sizing: border-box;
+        width: 100%;
+        flex-grow: 1;
+        overflow: hidden;
+        min-height: 1.25em;
+        position: relative;
+        color: #000000de;
+        background-color: #fff;
+    }
+
+    .scroll {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        overflow-y: scroll;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0 1.2em 0 .8em;
+    }
+
+    .thread-messages {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        min-height: 1.25em;
+        position: relative;
+        color: #000000de;
+        background-color: #fff;
+        .thread-message-inner {
+            height: 100%;
+            overflow-y: auto;
+        }
+    }
+
+    .thread-message-row {
+        display: flex;
+        margin-bottom: 10px;
+    
+        ~.system {
+            justify-content: center;
+            color: rgb(110, 169, 215);
+            font-size: 0.8em;
+        }
+    
+        ~.me {
+            justify-content: flex-end;
+    
+            .message {
+                flex-direction: row-reverse;
+            }
+        }
+    
+        .message {
+            display: flex;
+        }
+    
+        .contentWrapper {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            margin-left: 8px;
+            margin-right: 8px;
+            min-width: 220px;
+            position: relative;
+    
+            .menu-btn {
+                position: absolute;
+                top: 15px;
+                right: 0;
+                color: gray;
+            }
+        }
+    
+    
+        .avatar-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            width: 42px;
+        }
+    
+        .avatar {
+            border-radius: 50%;
+            box-sizing: border-box;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+        }
+    
+        .content {
+            border-radius: .7em;
+            background-color: #c6e3fa;
+            margin-top: 0;
+            padding: 20px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            font-weight: 400;
+            font-size: .91em;
+            font-variant: normal;
+        }
+    
+        .thread-inf-content {
+            cursor: pointer;
+        }
+    }
+
+    .thread-main-message {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        position: sticky;
+        z-index: 100;
+        top: 0;
+        background-color: white;
+        border-bottom: 1px solid grey;
+    }
+}
