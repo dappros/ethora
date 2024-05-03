@@ -55,7 +55,7 @@
 
     .content {
         border-radius: .7em;
-        background-color: #c6e3fa;
+        background-color: #6ea9d7;
         margin-top: 0;
         padding: 20px;
         white-space: pre-wrap;
@@ -68,5 +68,11 @@
 
     .thread-inf-content {
         cursor: pointer;
+    }
+
+    .message-date {
+        color: rgb(198, 227, 250);
+        font-size: 12px;
+        margin-top: 10px;
     }
 }

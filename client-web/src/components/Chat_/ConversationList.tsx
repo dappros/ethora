@@ -4,12 +4,12 @@ import { useChatStore } from "../../store_";
 export function ConversationsList() {
     const rooms = useChatStore((state) => state.rooms)
     const setCurrentRoom = useChatStore((state) => state.setCurrentRoom)
-    const setCurrentThreadMessageId = useChatStore((state) => state.setCurrentThreadMessageId)
+    const setCurrentThreadMessage = useChatStore((state) => state.setCurrentThreadMessage)
     const currentRoom = useChatStore((state) => state.currentRoom)
 
     const onConversationClick = (room) => {
         setCurrentRoom(room)
-        setCurrentThreadMessageId(null)
+        setCurrentThreadMessage(null)
     }
 
     return (

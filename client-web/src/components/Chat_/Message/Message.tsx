@@ -5,6 +5,7 @@ import "./Message.scss"
 import { MoreIcon } from '../Icons/MoreIcon'
 import { MessageType } from '../../../store_/chat'
 import { useChatStore } from '../../../store_'
+import { DateTime } from 'luxon'
 
 type Props = {
     message: MessageType,
@@ -48,6 +49,18 @@ export function Message(props: Props) {
             </div>
         )
     } else {
+        let messagePayload;
+
+        if (message.isMediafile === "true" && !message.locationPreview) {
+            content = null
+        }
+
+        if (message.isMediafile === "true" && message.locationPreview) {
+            messagePayload = <img src={message.locationPreview}></img>
+        } else {
+            messagePayload = message.text
+        }
+
         content = (
             <div data-id={message.id} className={cn("chat-message-row", { "me": message.isMe })}>
                 <div className="message">
@@ -69,8 +82,9 @@ export function Message(props: Props) {
                                 ) }
                             </div>
                             <div>
-                                {message.text}
+                                {messagePayload}
                             </div>
+                            <div className='message-date'>{DateTime.fromMillis(Number(message.created)).toFormat('dd.LL hh:mm a') }</div>
                         </div>
                         {
                             threadInfContent

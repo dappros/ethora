@@ -36,6 +36,8 @@ export type MessageType = {
   showInChannel: "true" | "false";
   push: "true" | "false";
   mainMessage?: TreadLinkMessage
+  isMediafile?: "true" | "false";
+  locationPreview?: string;
 }
 
 export type RoomType = {
