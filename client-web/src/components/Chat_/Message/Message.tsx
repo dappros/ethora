@@ -56,7 +56,7 @@ export function Message(props: Props) {
         }
 
         if (message.isMediafile === "true" && message.locationPreview) {
-            messagePayload = <img src={message.locationPreview}></img>
+            messagePayload = <img className="message-image" src={message.locationPreview}></img>
         } else {
             messagePayload = message.text
         }

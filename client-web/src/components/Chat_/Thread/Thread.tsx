@@ -18,7 +18,7 @@ export const Thread = ({currentThreadMessage}: Props) => {
         <div className="thread">
             <ThreadHeader currentRoom={currentRoom} />
             <ThreadMessages threadMessages={threadMessages} currentThreadMessage={currentThreadMessage} />
-            <MessageInput threadMessages={threadMessages} sendFile={null} />
+            <MessageInput mainMessage={currentThreadMessage} sendFile={null} />
         </div>
     )
 }

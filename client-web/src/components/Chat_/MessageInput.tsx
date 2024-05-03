@@ -1,23 +1,27 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styles from "./MessageInput.module.css"
 
 import { wsClient } from "../../api/wsClient_"
 import { useChatStore } from "../../store_"
 import { AxiosResponse } from "axios"
 import { SendFileModal } from "./SendFileModal"
+import { Dialog } from '@headlessui/react'
 import { PaperClipIcon } from "./Icons/PaperClipIcon"
 import { PaperPlaneIcon } from "./Icons/PaperPlane"
 import { MessageType } from "../../store_/chat"
 
+import "./MessageInput.scss"
+
 type MessageInputProps = {
   sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,
-  threadMessages?: MessageType[] | null
+  mainMessage?: MessageType | null
 }
 
 export function MessageInput(props: MessageInputProps) {
-  const { sendFile, threadMessages } = props;
+  const { sendFile, mainMessage } = props;
+  const [blockControls, setBlockControls] = useState(false)
 
-  const [file, setFile] = useState<File>(null)
+  const [file, setFile] = useState<File | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -26,15 +30,15 @@ export function MessageInput(props: MessageInputProps) {
   const [text, setText] = useState('')
 
   const send = async () => {
-    if (threadMessages) {
-      console.log("sending message to thread")
-    }
+    if (mainMessage) {
+      console.log("!!!!!!!!!!!! sending message to thread")
 
-    setText('')
+      await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
 
-    const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
-    if (message) {
-      // 
+      setText('')
+    } else {
+      const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
+      setText('')
     }
   }
 
@@ -51,7 +55,7 @@ export function MessageInput(props: MessageInputProps) {
   }
 
   const onFileChange = async (e) => {
-    console.log(e.target.files)
+    console.log('onFileChange')
     const file = e.target.files[0]
 
     if (file) {
@@ -59,12 +63,35 @@ export function MessageInput(props: MessageInputProps) {
     }
   }
 
+  const onFileSend = async () => {
+    const fd = new FormData()
+
+    fd.append("files", file)
+
+    try {
+      setBlockControls(true)
+      let result = await sendFile(fd)
+
+      if (result.data.success) {
+        const fileOnServer = result.data.results[0]
+
+        wsClient.sendMediaMessage(currentRoom.jid, fileOnServer)
+      }
+
+      setBlockControls(false)
+      setFile(null)
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
   return (
-    <div className={styles['massage-input-root']}>
+    <div className={'massage-input-root'}>
       <form style={{ display: 'none' }}>
         <input onChange={onFileChange} type="file" ref={fileInputRef} />
       </form>
-      <div className={styles.tools}>
+      <div className={'tools'}>
         {
           sendFile && (
             <button className="send-file-btn" onClick={onFile}>
@@ -73,15 +100,28 @@ export function MessageInput(props: MessageInputProps) {
           )
         }
       </div>
-      <div className={styles['input-wrapper']}>
+      <div className={'input-wrapper'}>
         <input onKeyDown={(e) => handleKeyPress(e)} type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your message here"></input>
       </div>
-      <div className={styles['right-tools']}>
+      <div className={'right-tools'}>
         <button className="send-file-btn" onClick={send}>
           <PaperPlaneIcon />
         </button>
       </div>
-      {file &&  <SendFileModal roomJid={currentRoom.jid} file={file} sendFile={sendFile} onClose={() => setFile(null)} />}
+      {
+        file && (
+          <Dialog className="file-dialog" open={!!file} onClose={() => { }}>
+            <Dialog.Panel className="inner">
+              <p>
+                <img className={'preview-image'} src={URL.createObjectURL(file)}></img>
+              </p>
+
+              <button disabled={blockControls} onClick={onFileSend}>Send</button>
+              <button disabled={blockControls} onClick={() => { setFile(null) }}>Cancel</button>
+            </Dialog.Panel>
+          </Dialog>
+        )
+      }
     </div>
   )
 }

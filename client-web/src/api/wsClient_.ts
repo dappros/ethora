@@ -216,6 +216,9 @@ export const wsClient = {
 
               // if (parsedEl.mainMessage)
 
+              if (parsedEl.id === "1714744580359848") {
+                console.log("!!!!!!!!!!!!!!!!! ", parsedEl)
+              }
               mainMessages.push(parsedEl)
             }
           }
@@ -332,6 +335,103 @@ export const wsClient = {
 
       this.client.on("stanza", stanzaHdlrPointer)
 
+      this.client.send(message)
+    })
+
+    const timeoutPromise = createTimeoutPromise(10000, unsubscribe)
+
+    try {
+      const res = await Promise.race([responsePromise, timeoutPromise]);
+      return res
+    } catch (e) {
+      console.log("=-> error ", e)
+      return null
+    }
+  },
+
+  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string) {
+    const user = useChatStore.getState().user
+    const message = xml(
+      'message',
+      {
+        to: to,
+        type: 'groupchat',
+        id: 'sendMessage'
+      },
+      xml(
+        'data',
+        {
+          xmlns: this.service,
+          senderFirstName: user.firstName,
+          senderLastName: user.lastName,
+          photoURL: user.profileImage,
+          senderWalletAddress: user.walletAddress,
+          senderJID: this.client.jid.toString(),
+          roomJid: to,
+          isSystemMessage: false,
+          tokenAmount: 0,
+          quickReplies: '',
+          notDisplayedValue: '',
+          showInChannel: "false",
+          mainMessage: JSON.stringify({
+            attachmentId: "",
+            contractAddress: "",
+            createdAt: "",
+            duration: "",
+            id: Number(mainMessage.id),
+            nftActionType: "",
+            nftId: "",
+            roomJid: "",
+            size: "",
+            text: mainMessage.text,
+            userName: `${mainMessage.senderFirstName} ${mainMessage.senderLastName}`,
+            waveForm: "",
+            wrappable: ""
+          })
+        }
+      ),
+      xml(
+        'body',
+        {},
+        text
+      )
+    )
+
+    let stanzaHdlrPointer;
+
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is("message") && stanza.attrs["from"] === `${to}/${this.username}`) {
+          const msg = stanza
+          const text = msg.getChild('body')?.getText()
+
+          if (text) {
+            let parsedEl: Record<string, string> = {}
+
+            parsedEl.text = text
+            parsedEl.from = msg.attrs['from']
+            parsedEl.id = msg.getChild('archived')?.attrs['id']
+            const data = msg.getChild('data')
+
+            for (const [key, value] of Object.entries(data.attrs)) {
+              parsedEl[key] = value as string
+            }
+
+            console.log({parsedEl})
+
+            unsubscribe()
+            resolve(parsedEl)
+          }
+        }
+      }
+
+      this.client.on("stanza", stanzaHdlrPointer)
+
+      console.log("sending ", message.toString())
       this.client.send(message)
     })
 
