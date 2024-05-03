@@ -45,7 +45,7 @@ export const wsClient = {
 
         this.client.on("status", (status) => console.log("=-> on status ", status))
 
-        this.client.on("stanza", this.realTimeHandler)
+        this.client.on("stanza", this.realTimeHandler.bind(this))
 
         this.client.start()
       } else {
@@ -64,20 +64,47 @@ export const wsClient = {
     if (stanza.is("message") && stanza.attrs["type"] === 'groupchat') {
       const msg = stanza
       const text = msg.getChild('body')?.getText()
+      const attrs = msg.getChild('data')?.attrs
+      const archived = msg.getChild('archived')
 
-      if (text) {
-        let parsedEl: Record<string, string> = {}
+      if (text && attrs) {
+        let parsedEl: any = {}
 
         parsedEl.text = text
-        parsedEl.from = msg.attrs['from']
-        parsedEl.id = msg.getChild('archived')?.attrs['id']
-        const data = msg.getChild('data')
+        parsedEl.from = msg.attrs.from
+        parsedEl.id = archived.attrs.id
+        parsedEl.created = parsedEl.id.slice(0, 13)
+        parsedEl.isMe = this.isMe(parsedEl.from)
 
-        for (const [key, value] of Object.entries(data.attrs)) {
-          parsedEl[key] = value as string
+        
+        for (const [key, value] of Object.entries(attrs)) {
+          parsedEl[key] = value
         }
 
-        useChatStore.getState().addMessages(msg.attrs["from"].split("/")[0], [parsedEl])
+        if (parsedEl.isReply === "true" && !parsedEl.mainMessage) {
+          return
+        }
+
+        if (parsedEl.mainMessage) {
+          try {
+            parsedEl.mainMessage = JSON.parse(parsedEl.mainMessage)
+          } catch (e) {
+            // ignore message if mainMessage is not parsable
+            return;
+          }
+        }
+
+        if (parsedEl.mainMessage) {
+          // useChatStore.getState().setThreadMessages([parsedEl])
+
+          useChatStore.getState().setNewThreadMessage(parsedEl)
+
+          if (parsedEl.mainMessage && parsedEl.showInChannel === "true") {
+            useChatStore.getState().addNewMessage(parsedEl.from.split("/")[0], parsedEl)
+          }
+        } else {
+          useChatStore.getState().addNewMessage(parsedEl.from.split("/")[0], parsedEl)
+        }
       }
     }
   },
@@ -214,11 +241,6 @@ export const wsClient = {
                 }
               }
 
-              // if (parsedEl.mainMessage)
-
-              if (parsedEl.id === "1714744580359848") {
-                console.log("!!!!!!!!!!!!!!!!! ", parsedEl)
-              }
               mainMessages.push(parsedEl)
             }
           }
@@ -349,7 +371,7 @@ export const wsClient = {
     }
   },
 
-  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string) {
+  async sendTextMessageToThread (to: string, mainMessage: MessageType, text: string) {
     const user = useChatStore.getState().user
     const message = xml(
       'message',
@@ -373,6 +395,7 @@ export const wsClient = {
           quickReplies: '',
           notDisplayedValue: '',
           showInChannel: "false",
+          isReply: "true",
           mainMessage: JSON.stringify({
             attachmentId: "",
             contractAddress: "",

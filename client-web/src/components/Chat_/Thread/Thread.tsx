@@ -12,12 +12,12 @@ type Props = {
 
 export const Thread = ({currentThreadMessage}: Props) => {
     const currentRoom = useChatStore(state => state.currentRoom)
-    const getThreadMessages = useChatStore(state => state.getThreadMessages)
-    const threadMessages = getThreadMessages(Number(currentThreadMessage.id))
+    const threadsMessages = useChatStore(state => state.threadsMessages)
+    const _threadMessages = threadsMessages[Number(currentThreadMessage.id)]
     return (
         <div className="thread">
             <ThreadHeader currentRoom={currentRoom} />
-            <ThreadMessages threadMessages={threadMessages} currentThreadMessage={currentThreadMessage} />
+            <ThreadMessages threadMessages={_threadMessages} currentThreadMessage={currentThreadMessage} />
             <MessageInput mainMessage={currentThreadMessage} sendFile={null} />
         </div>
     )

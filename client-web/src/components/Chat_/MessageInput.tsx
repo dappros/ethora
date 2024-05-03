@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-import styles from "./MessageInput.module.css"
+import { useRef, useState } from "react"
 
 import { wsClient } from "../../api/wsClient_"
 import { useChatStore } from "../../store_"
 import { AxiosResponse } from "axios"
-import { SendFileModal } from "./SendFileModal"
 import { Dialog } from '@headlessui/react'
 import { PaperClipIcon } from "./Icons/PaperClipIcon"
 import { PaperPlaneIcon } from "./Icons/PaperPlane"

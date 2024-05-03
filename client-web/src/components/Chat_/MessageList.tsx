@@ -33,7 +33,7 @@ export function MessageList(props: MessageListProps) {
   const timeoutRef = useRef(0)
   const scrollParams = useRef<ScrollParams | null>(null)
   const loadMoreMessages = useChatStore((state) => state.loadMoreMessages)
-  const getThreadMessages = useChatStore((state) => state.getThreadMessages)
+  const threadMessages = useChatStore((state) => state.threadsMessages)
 
   const scrollToBottom = (): void => {
     const content = contentRef.current;
@@ -138,14 +138,14 @@ export function MessageList(props: MessageListProps) {
         <div className={styles.scroll} ref={contentRef}>
           {
             messages.map((message, index) => {
-              let threadMessages = getThreadMessages(Number(message.id))
+              let _threadMessages = threadMessages[Number(message.id)]
 
               return (
                 <React.Fragment key={message.id}>
                   { isMessageFirstOfDate(message, index) && (
                     <ChatDateDevider key={message.created} date={message.created} />
                   ) }
-                  <Message isGroup={isGroup(message, index)} message={message} threadMessages={threadMessages}></Message>
+                  <Message isGroup={isGroup(message, index)} message={message} threadMessages={_threadMessages}></Message>
                 </React.Fragment>
               )
             })

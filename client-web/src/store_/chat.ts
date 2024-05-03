@@ -82,6 +82,8 @@ export interface ChatSliceInterface {
   setThreadMessages: (messages: MessageType[]) => void;
   getThreadMessages: (id: number) => MessageType[] | null;
   setCurrentThreadMessage: (message: MessageType | null) => void;
+  addNewMessage: (jid: string, message: MessageType) => void;
+  setNewThreadMessage: (message: MessageType) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -124,7 +126,6 @@ export const createChatSlice: StateCreator<
   xmppStatus: '',
 
   setThreadMessages: (messages) => {
-    console.log('setThreadMessages ', messages)
     for (const message of messages) {
       const id = message.mainMessage?.id
       if (id) {
@@ -136,6 +137,15 @@ export const createChatSlice: StateCreator<
 
   getThreadMessages: (id: number) => {
     return get().threadsMessages[id] || null
+  },
+
+  setNewThreadMessage: (message) => {
+    console.log('setNewThreadMessage')
+    const id = message.mainMessage?.id
+    if (id) {
+      const prevMessages = get().threadsMessages[message.mainMessage?.id] || []
+      set(state => ({...state, threadsMessages: {...state.threadsMessages, [id]: [...prevMessages, message]}}))
+    }
   },
 
   setCurrentThreadMessage: (message: MessageType | null) => set((state) => ({...state, currentThreadMessage: message})),
@@ -178,6 +188,14 @@ export const createChatSlice: StateCreator<
       return storeMessages.findIndex(msg => msg.id === el.id) === -1
     })
     set((state) => ({...state, messages: {...state.messages, [jid]: [...messages, ...state.messages[jid]]}}))
+  },
+
+  addNewMessage(jid, message) {
+    const storeMessages = get().messages[jid]
+
+    if (storeMessages.findIndex(msg => msg.id === message.id) === -1) {
+      set((state) => ({...state, messages: {...state.messages, [jid]: [...state.messages[jid], message]}}))
+    }
   },
 
   csSetUser(user) {
