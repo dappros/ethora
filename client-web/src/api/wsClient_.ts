@@ -61,7 +61,17 @@ export const wsClient = {
   },
 
   realTimeHandler(stanza: Element) {
-    if (stanza.is("message") && stanza.attrs["type"] === 'groupchat') {
+    
+    // realtime delete events
+    if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('delete')) {
+      const messageId = stanza.getChild('delete').attrs["id"]
+      const roomJid = stanza.attrs["from"].split('/')[0]
+      
+      useChatStore.getState().deleteMessage(roomJid, messageId)
+    }
+
+    // realtime messages
+    if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('archived')) {
       const msg = stanza
       const text = msg.getChild('body')?.getText()
       const attrs = msg.getChild('data')?.attrs

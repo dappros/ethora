@@ -9,7 +9,6 @@ export function ConversationsList() {
 
     const onConversationClick = (room, e) => {
         e.preventDefault()
-        console.log(e)
 
         setCurrentRoom(room)
         setCurrentThreadMessage(null)
