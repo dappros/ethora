@@ -26,11 +26,16 @@ export function MessageInput(props: MessageInputProps) {
   const currentRoom = useChatStore(state => state.currentRoom)
   const editMessage = useChatStore(state => state.editMessage)
   const setEditMessage = useChatStore(state => state.setEditMessage)
+  const doEditMessage = useChatStore(state => state.doEditMessage)
 
   const [text, setText] = useState('')
 
   const send = async () => {
-    if (mainMessage) {
+    if (editMessage) {
+      wsClient.editMessage(currentRoom.jid, text, editMessage.id)
+      setEditMessage(null)
+      doEditMessage(currentRoom.jid, text, editMessage.id)
+    } else if (mainMessage) {
       await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
 
       setText('')

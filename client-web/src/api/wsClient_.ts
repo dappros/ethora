@@ -61,12 +61,12 @@ export const wsClient = {
   },
 
   realTimeHandler(stanza: Element) {
-    
+
     // realtime delete events
     if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('delete')) {
       const messageId = stanza.getChild('delete').attrs["id"]
       const roomJid = stanza.attrs["from"].split('/')[0]
-      
+
       useChatStore.getState().deleteMessage(roomJid, messageId)
     }
 
@@ -595,15 +595,6 @@ export const wsClient = {
   },
 
   deleteMessage(to: string, messageId: string) {
-    // <message
-    //   from="olek@localhost"
-    //   id="1635229272917013"
-    //   to="test_olek@conference.localhost"
-    //   type="groupchat">
-    //   <body>Wow</body>
-    //   <delete id="1635229272917013" />
-    // </message>;
-
     const stanza = xml(
       "message",
       {
@@ -614,6 +605,24 @@ export const wsClient = {
       xml("body", "wow"),
       xml("delete", {
         id: messageId,
+      })
+    )
+
+    this.client.send(stanza)
+  },
+
+  editMessage(roomJID: string, newText: string, messageId: string) {
+    const stanza = xml(
+      "message",
+      {
+        id: "replaceMessage",
+        type: "groupchat",
+        to: roomJID,
+      },
+      xml("replace", {
+        id: messageId,
+        xmlns: "urn:xmpp:message-correct:0",
+        text: newText,
       })
     )
 

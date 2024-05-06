@@ -88,6 +88,7 @@ export interface ChatSliceInterface {
   leaveCurrentRoom: () => void;
   deleteMessage: (roomJid: string, messageId: string) => void;
   setEditMessage: (message: MessageType | null) => void;
+  doEditMessage: (roomJid: string, text: string, messageId: string) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -296,5 +297,24 @@ export const createChatSlice: StateCreator<
 
   setEditMessage(message) {
     set(state => ({...state, editMessage: message}))
+  },
+
+  doEditMessage(roomJid, text, messageId) {
+    const messages = get().messages[roomJid]
+
+    if (messages) {
+      const newMessages = messages.map(el => {
+        if (el.id === messageId) {
+          return {
+            ...el,
+            text: text
+          }
+        } else {
+          return el
+        }
+      })
+
+      set(state => ({...state, messages: {...state.messages, [roomJid]: [...newMessages]}}))
+    }
   }
 });
