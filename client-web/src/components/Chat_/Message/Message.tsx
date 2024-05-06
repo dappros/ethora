@@ -21,12 +21,18 @@ export function Message(props: Props) {
     const { message, isGroup, threadMessages, showActions = 'true' } = props
     const setCurrentThreadMessage = useChatStore(state => state.setCurrentThreadMessage)
     const deleteMessage = useChatStore(state => state.deleteMessage)
+    const setEditMessage = useChatStore(state => state.setEditMessage)
 
     const [showMeDialog, setShowMeDialog] = useState(false)
     const [showOtherDialog, setShowOtherDialog] = useState(false)
 
     const onThreadInfClick = () => {
         setCurrentThreadMessage(message)
+    }
+
+    const onEdit = () => {
+        setEditMessage(message)
+        setShowMeDialog(false)
     }
 
     const onMessageMenuClick = () => {
@@ -121,7 +127,7 @@ export function Message(props: Props) {
                                 <button>Reply</button>
                             </div>
                             <div>
-                                <button>Edit</button>
+                                <button onClick={onEdit}>Edit</button>
                             </div>
                             <div>
                                 <button onClick={onDelete}>Delte</button>

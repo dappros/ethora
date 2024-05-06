@@ -24,6 +24,8 @@ export function MessageInput(props: MessageInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const currentRoom = useChatStore(state => state.currentRoom)
+  const editMessage = useChatStore(state => state.editMessage)
+  const setEditMessage = useChatStore(state => state.setEditMessage)
 
   const [text, setText] = useState('')
 
@@ -81,42 +83,58 @@ export function MessageInput(props: MessageInputProps) {
 
   }
 
+  const cancelEdit = () => {
+    setEditMessage(null)
+  }
+
   return (
-    <div className={'massage-input-root'}>
-      <form style={{ display: 'none' }}>
-        <input onChange={onFileChange} type="file" ref={fileInputRef} />
-      </form>
-      <div className={'tools'}>
+    <>
+      {
+        editMessage && (
+          <div className="edit-message">
+            <div>Edit Message</div>
+            <div>{editMessage.text}</div>
+            <div>
+              <button onClick={cancelEdit}>cancel</button></div>
+            </div>
+        )
+      }
+      <div className={'massage-input-root'}>
+        <form style={{ display: 'none' }}>
+          <input onChange={onFileChange} type="file" ref={fileInputRef} />
+        </form>
+        <div className={'tools'}>
+          {
+            sendFile && (
+              <button className="send-file-btn" onClick={onFile}>
+                <PaperClipIcon />
+              </button>
+            )
+          }
+        </div>
+        <div className={'input-wrapper'}>
+          <input onKeyDown={(e) => handleKeyPress(e)} type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your message here"></input>
+        </div>
+        <div className={'right-tools'}>
+          <button className="send-file-btn" onClick={send}>
+            <PaperPlaneIcon />
+          </button>
+        </div>
         {
-          sendFile && (
-            <button className="send-file-btn" onClick={onFile}>
-              <PaperClipIcon />
-            </button>
+          file && (
+            <Dialog className="file-dialog" open={!!file} onClose={() => { }}>
+              <Dialog.Panel className="inner">
+                <p>
+                  <img className={'preview-image'} src={URL.createObjectURL(file)}></img>
+                </p>
+
+                <button disabled={blockControls} onClick={onFileSend}>Send</button>
+                <button disabled={blockControls} onClick={() => { setFile(null) }}>Cancel</button>
+              </Dialog.Panel>
+            </Dialog>
           )
         }
       </div>
-      <div className={'input-wrapper'}>
-        <input onKeyDown={(e) => handleKeyPress(e)} type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type your message here"></input>
-      </div>
-      <div className={'right-tools'}>
-        <button className="send-file-btn" onClick={send}>
-          <PaperPlaneIcon />
-        </button>
-      </div>
-      {
-        file && (
-          <Dialog className="file-dialog" open={!!file} onClose={() => { }}>
-            <Dialog.Panel className="inner">
-              <p>
-                <img className={'preview-image'} src={URL.createObjectURL(file)}></img>
-              </p>
-
-              <button disabled={blockControls} onClick={onFileSend}>Send</button>
-              <button disabled={blockControls} onClick={() => { setFile(null) }}>Cancel</button>
-            </Dialog.Panel>
-          </Dialog>
-        )
-      }
-    </div>
+    </>
   )
 }

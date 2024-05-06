@@ -69,6 +69,7 @@ export interface ChatSliceInterface {
   currentThreadMessage: MessageType | null;
   isInitCompleted: boolean;
   xmppStatus: string;
+  editMessage: MessageType | null;
   setCurrentRoom: (room: RoomType) => void;
   setRooms: (rooms: Record<string, RoomType>) => void;
   setMessages: (jid: string, messages: MessageType[]) => void;
@@ -86,6 +87,7 @@ export interface ChatSliceInterface {
   setNewThreadMessage: (message: MessageType) => void;
   leaveCurrentRoom: () => void;
   deleteMessage: (roomJid: string, messageId: string) => void;
+  setEditMessage: (message: MessageType | null) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -126,6 +128,7 @@ export const createChatSlice: StateCreator<
   currentThreadMessage: null,
   isInitCompleted: false,
   xmppStatus: '',
+  editMessage: null,
 
   setThreadMessages: (messages) => {
     for (const message of messages) {
@@ -289,5 +292,9 @@ export const createChatSlice: StateCreator<
       set((state) => ({...state, currentRoom: {...currentRoom}, rooms: {...newRooms}}))
     }
 
+  },
+
+  setEditMessage(message) {
+    set(state => ({...state, editMessage: message}))
   }
 });
