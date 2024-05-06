@@ -84,6 +84,7 @@ export interface ChatSliceInterface {
   setCurrentThreadMessage: (message: MessageType | null) => void;
   addNewMessage: (jid: string, message: MessageType) => void;
   setNewThreadMessage: (message: MessageType) => void;
+  leaveCurrentRoom: () => void;
 }
 
 function jsonClone(obj: Object) {
@@ -251,5 +252,30 @@ export const createChatSlice: StateCreator<
         get().addMessages(jid, resp)
         get().setCurrentRoomLoading(false)
       })
+  },
+
+  leaveCurrentRoom() {
+    let currentRoom = get().currentRoom
+    const rooms = get().rooms
+    const keys = Object.keys(rooms)
+    const len = keys.length
+
+    const index = keys.findIndex(el => el === currentRoom.jid)
+    
+    if (len === 1) {
+
+    } else {
+      let nextIndex = (len - 1) !== index ? index + 1 : index - 1
+
+      const nextCurrentRoomJid = keys[nextIndex]
+
+      const newRooms = {...rooms}
+      delete newRooms[currentRoom.jid]
+
+      currentRoom = rooms[nextCurrentRoomJid]
+
+      set((state) => ({...state, currentRoom: {...currentRoom}, rooms: {...newRooms}}))
+    }
+
   }
 });

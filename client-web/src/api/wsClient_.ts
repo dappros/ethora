@@ -76,7 +76,7 @@ export const wsClient = {
         parsedEl.created = parsedEl.id.slice(0, 13)
         parsedEl.isMe = this.isMe(parsedEl.from)
 
-        
+
         for (const [key, value] of Object.entries(attrs)) {
           parsedEl[key] = value
         }
@@ -107,6 +107,14 @@ export const wsClient = {
         }
       }
     }
+  },
+
+  leaveTheRoom(room: string) {
+    const presence = xml("presence", {
+      to: room + "/" + this.client.jid?.getLocal(),
+      type: "unavailable",
+    })
+    this.client.send(presence)
   },
 
   presence(rooms: string[]) {
@@ -415,7 +423,7 @@ export const wsClient = {
               parsedEl[key] = value as string
             }
 
-            console.log({parsedEl})
+            console.log({ parsedEl })
 
             unsubscribe()
             resolve(parsedEl)
@@ -439,7 +447,7 @@ export const wsClient = {
     }
   },
 
-  async sendTextMessageToThread (to: string, mainMessage: MessageType, text: string) {
+  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string) {
     const user = useChatStore.getState().user
     const message = xml(
       'message',
@@ -512,7 +520,7 @@ export const wsClient = {
               parsedEl[key] = value as string
             }
 
-            console.log({parsedEl})
+            console.log({ parsedEl })
 
             unsubscribe()
             resolve(parsedEl)

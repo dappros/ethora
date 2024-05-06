@@ -3,11 +3,19 @@ import { Dialog } from "@headlessui/react"
 
 import './ChatHeader.scss'
 import { useState } from 'react'
+import { wsClient } from '../../api/wsClient_'
 
 export function ChatHeader() {
     const currentRoom = useChatStore((state) => state.currentRoom)
+    const leaveCurrentRoom = useChatStore((state) => state.leaveCurrentRoom)
 
     const [showLeaveModal, setShowLeaveModal] = useState(false)
+
+    const onLeave = () => {
+        wsClient.leaveTheRoom(currentRoom.jid)
+        leaveCurrentRoom()
+        setShowLeaveModal(false)
+    }
 
     return (
         <div className={"room-header"}>
@@ -23,6 +31,10 @@ export function ChatHeader() {
                 <Dialog.Panel className="inner">
                     <p>
                         Are you shoure
+                    </p>
+                    <p>
+                        <button onClick={onLeave}>Leave</button>
+                        <button>Cancel</button>
                     </p>
                 </Dialog.Panel>
             </Dialog>
