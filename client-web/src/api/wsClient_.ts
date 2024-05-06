@@ -62,6 +62,14 @@ export const wsClient = {
 
   realTimeHandler(stanza: Element) {
 
+    // realtime replace (edit) events
+    if (stanza.is("message") && stanza.attrs["type"] === "groupchat" && stanza.getChild("replace")) {
+      const roomJid = stanza.attrs["from"].split('/')[0]
+      const {id, text} = stanza.getChild('replace').attrs
+
+      useChatStore.getState().doEditMessage(roomJid, text, id)
+    }
+
     // realtime delete events
     if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('delete')) {
       const messageId = stanza.getChild('delete').attrs["id"]

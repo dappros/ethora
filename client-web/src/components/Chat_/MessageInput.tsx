@@ -35,9 +35,9 @@ export function MessageInput(props: MessageInputProps) {
       wsClient.editMessage(currentRoom.jid, text, editMessage.id)
       setEditMessage(null)
       doEditMessage(currentRoom.jid, text, editMessage.id)
+      setText('')
     } else if (mainMessage) {
       await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
-
       setText('')
     } else {
       const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
