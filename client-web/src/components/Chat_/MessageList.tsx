@@ -145,7 +145,7 @@ export function MessageList(props: MessageListProps) {
                   { isMessageFirstOfDate(message, index) && (
                     <ChatDateDevider key={message.created} date={message.created} />
                   ) }
-                  <Message isGroup={isGroup(message, index)} message={message} threadMessages={_threadMessages}></Message>
+                  <Message key={message.id} isGroup={isGroup(message, index)} message={message} threadMessages={_threadMessages}></Message>
                 </React.Fragment>
               )
             })

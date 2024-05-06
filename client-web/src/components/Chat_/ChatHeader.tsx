@@ -18,7 +18,7 @@ export function ChatHeader() {
     }
 
     return (
-        <div className={"room-header"}>
+        <div className={"room-header"} data-jid={currentRoom.jid}>
             <div className={"content"}>
                 <div className={"title"}>{currentRoom.title}</div>
 

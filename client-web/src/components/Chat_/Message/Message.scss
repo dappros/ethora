@@ -10,10 +10,10 @@
 
     ~.me {
         justify-content: flex-end;
+    }
 
-        .message {
-            flex-direction: row-reverse;
-        }
+    .me .message {
+        flex-direction: row-reverse;
     }
 
     .message {
@@ -78,5 +78,14 @@
 
     .message-image {
         max-width: 200px;
+    }
+}
+
+.chat-message-row[data-isme="true"] {
+    justify-content: flex-end;
+    display: flex;
+
+    .message {
+        flex-direction: row-reverse;
     }
 }

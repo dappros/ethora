@@ -582,6 +582,32 @@ export const wsClient = {
     )
 
     this.client.send(message)
+  },
+
+  deleteMessage(to: string, messageId: string) {
+    // <message
+    //   from="olek@localhost"
+    //   id="1635229272917013"
+    //   to="test_olek@conference.localhost"
+    //   type="groupchat">
+    //   <body>Wow</body>
+    //   <delete id="1635229272917013" />
+    // </message>;
+
+    const stanza = xml(
+      "message",
+      {
+        to: to,
+        id: "deleteMessageStanza",
+        type: "groupchat",
+      },
+      xml("body", "wow"),
+      xml("delete", {
+        id: messageId,
+      })
+    )
+
+    this.client.send(stanza)
   }
 
 }

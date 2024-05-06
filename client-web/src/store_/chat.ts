@@ -85,6 +85,7 @@ export interface ChatSliceInterface {
   addNewMessage: (jid: string, message: MessageType) => void;
   setNewThreadMessage: (message: MessageType) => void;
   leaveCurrentRoom: () => void;
+  deleteMessage: (roomJid: string, messageId: string) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -189,6 +190,17 @@ export const createChatSlice: StateCreator<
       return storeMessages.findIndex(msg => msg.id === el.id) === -1
     })
     set((state) => ({...state, messages: {...state.messages, [jid]: [...messages, ...state.messages[jid]]}}))
+  },
+
+  deleteMessage(roomJid, messageId) {
+    const messages = get().messages
+    const roomMessages = messages[roomJid]
+
+    if (roomMessages) {
+      const newMessages = roomMessages.filter((msg) => msg.id !== messageId)
+
+      set(state => ({...state, messages: {...messages, [roomJid]: newMessages}}))
+    }
   },
 
   addNewMessage(jid, message) {
