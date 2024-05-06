@@ -1,0 +1,14 @@
+.create-new-chat-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    padding: 20px;
+
+    button {
+        background-color: green;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+    }
+}

@@ -23,7 +23,7 @@ export function ChatWrapper() {
       profileImage={profileImage}
       sendFile={uploadFile}
       initRooms={defaultRooms}
-      isRestrictedToInitRooms={true}
+      isRestrictedToInitRooms={false}
       xmppService="wss://dev.dxmpp.com:5443/ws"
     />
   )

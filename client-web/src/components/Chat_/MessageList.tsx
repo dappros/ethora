@@ -137,7 +137,7 @@ export function MessageList(props: MessageListProps) {
       <div className={styles.list} ref={outerRef}>
         <div className={styles.scroll} ref={contentRef}>
           {
-            messages.map((message, index) => {
+            messages && messages.map((message, index) => {
               let _threadMessages = threadMessages[Number(message.id)]
 
               return (

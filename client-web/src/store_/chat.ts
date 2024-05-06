@@ -193,8 +193,12 @@ export const createChatSlice: StateCreator<
   addNewMessage(jid, message) {
     const storeMessages = get().messages[jid]
 
-    if (storeMessages.findIndex(msg => msg.id === message.id) === -1) {
-      set((state) => ({...state, messages: {...state.messages, [jid]: [...state.messages[jid], message]}}))
+    if (!storeMessages) {
+      set((state) => ({...state, messages: {...state.messages, [jid]: [message]}}))
+    } else {
+      if (storeMessages.findIndex(msg => msg.id === message.id) === -1) {
+        set((state) => ({...state, messages: {...state.messages, [jid]: [...state.messages[jid], message]}}))
+      }
     }
   },
 

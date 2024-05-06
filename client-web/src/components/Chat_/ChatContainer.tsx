@@ -16,6 +16,7 @@ export function ChatContainer(props: TChatProps) {
 
     return (
         <div className="chat">
+
             <div className="chat-middle">
                 <ChatHeader />
                 <MessageList key={currentRoom.jid} currentRoom={currentRoom} messages={currentRoomMessages} />

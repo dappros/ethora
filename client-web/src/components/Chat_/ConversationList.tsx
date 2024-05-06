@@ -7,7 +7,10 @@ export function ConversationsList() {
     const setCurrentThreadMessage = useChatStore((state) => state.setCurrentThreadMessage)
     const currentRoom = useChatStore((state) => state.currentRoom)
 
-    const onConversationClick = (room) => {
+    const onConversationClick = (room, e) => {
+        e.preventDefault()
+        console.log(e)
+
         setCurrentRoom(room)
         setCurrentThreadMessage(null)
     }
@@ -18,7 +21,7 @@ export function ConversationsList() {
                 Object.keys(rooms).map((jid) => {
                     const room = rooms[jid]
                     return (
-                        <ConversationItem key={room.jid} onClick={() => onConversationClick(room)} active={currentRoom.jid === room.jid} room={room} />
+                        <ConversationItem key={room.jid} onClick={(e) => onConversationClick(room, e)} active={currentRoom.jid === room.jid} room={room} />
                     )
                 })
             }

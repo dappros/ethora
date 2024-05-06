@@ -29,8 +29,6 @@ export function MessageInput(props: MessageInputProps) {
 
   const send = async () => {
     if (mainMessage) {
-      console.log("!!!!!!!!!!!! sending message to thread")
-
       await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
 
       setText('')
@@ -53,7 +51,6 @@ export function MessageInput(props: MessageInputProps) {
   }
 
   const onFileChange = async (e) => {
-    console.log('onFileChange')
     const file = e.target.files[0]
 
     if (file) {

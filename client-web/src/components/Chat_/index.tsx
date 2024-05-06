@@ -9,6 +9,7 @@ import { ConversationsList } from "./ConversationList"
 import { AxiosResponse } from "axios"
 
 import "./index.scss"
+import { CreateNewChat } from "./CreateNewChat"
 
 export type TChatProps = {
   xmppPassword: string,
@@ -164,6 +165,7 @@ export function Chat_(props: TChatProps) {
                   )
                 }
                 <ChatContainer {...props} />
+                <CreateNewChat sendFile={props.sendFile} />
               </>
             )}
           </div>
