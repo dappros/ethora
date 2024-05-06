@@ -8,10 +8,18 @@ export function ConversationItem(props) {
         e.preventDefault()
     }
 
+    let avatar
+
+    if (props.room.room_thumbnail !== 'none') {
+        avatar = <img src={props.room.room_thumbnail}></img>
+    } else {
+        avatar = null
+    }
+
     return (
         <div onContextMenu={onContextMenu} className={cn(styles.conversation, {[styles.active]: props.active})} onClick={props.onClick}>
             <div className={styles.avatar}>
-                <img src={props.room.room_thumbnail}></img>
+                { avatar }
             </div>
             <div className={styles.content}>
                 <div className={styles.name}>
