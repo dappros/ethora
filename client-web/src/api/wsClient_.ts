@@ -65,7 +65,7 @@ export const wsClient = {
     // realtime replace (edit) events
     if (stanza.is("message") && stanza.attrs["type"] === "groupchat" && stanza.getChild("replace")) {
       const roomJid = stanza.attrs["from"].split('/')[0]
-      const {id, text} = stanza.getChild('replace').attrs
+      const { id, text } = stanza.getChild('replace').attrs
 
       useChatStore.getState().doEditMessage(roomJid, text, id)
     }
@@ -152,54 +152,161 @@ export const wsClient = {
       })
   },
 
-  setOwner(to: string) {
-    const message = xml(
-      "iq",
-      {
-        to: to,
-        id: "setOwner",
-        type: "set",
-      },
-      xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" })
-    )
+  presenceForCreate(room: string) {
+    let stanzaHdlrPointer;
 
-    this.client.send(message)
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is('presence') && stanza.attrs['from'].split('/')[0] === room) {
+          const xEls = stanza.getChildren('x')
+
+          if (xEls.length === 2) {
+            console.log({ xEls })
+            const x = xEls.find(el => el.attrs["xmlns"] === "http://jabber.org/protocol/muc#user")
+
+            if (x) {
+              const statuses = x.getChildren('status')
+
+              if (!statuses) {
+                unsubscribe()
+                reject("!statuses")
+              }
+
+              const codes = statuses.map((el) => el.attrs['code'])
+
+              console.log({codes})
+
+              if (codes.includes('201') && codes.includes('110')) {
+                unsubscribe()
+                resolve("success")
+              } else {
+                unsubscribe()
+                reject("no 201 & 110")
+              }
+            } else {
+              unsubscribe()
+              reject("-")
+            }
+          }
+        }
+      }
+
+      this.client.on("stanza", stanzaHdlrPointer)
+
+      const message = xml(
+        "presence",
+        {
+          to: `${room}/${this.client.jid.getLocal()}`
+        },
+        xml("x", "http://jabber.org/protocol/muc")
+      )
+
+      this.client.send(message)
+    })
+
+    const timeoutPromise = createTimeoutPromise(2000, unsubscribe)
+
+    return Promise.race([responsePromise, timeoutPromise])
+  },
+
+  setOwner(to: string) {
+    const id = `set-owner:${Date.now().toString()}`
+
+    let stanzaHdlrPointer;
+
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.is("iq") && stanza.attrs["id"] === id && stanza.attrs["type"] === "result") {
+          unsubscribe()
+          resolve("setOwner success")
+        }
+      }
+
+      this.client.on("stanza", stanzaHdlrPointer)
+
+      const message = xml(
+        "iq",
+        {
+          to: to,
+          id: id,
+          type: "set",
+        },
+        xml("query", { xmlns: "http://jabber.org/protocol/muc#owner" }, xml("x", {xmlns: "jabber:x:data", type: "submit"}))
+      )
+  
+      this.client.send(message)
+    })
+    
+    const timeoutPromise = createTimeoutPromise(2000, unsubscribe)
+
+    return Promise.race([responsePromise, timeoutPromise])
   },
 
   roomConfig(to: string, data: { roomName: string; roomDescription?: string }) {
-    const message = xml(
-      "iq",
-      {
-        id: "roomConfig",
-        to: to,
-        type: "set",
-      },
-      xml(
-        "query",
-        { xmlns: "http://jabber.org/protocol/muc#owner" },
+    const id = `room-config:${Date.now().toString()}`
+
+    let stanzaHdlrPointer;
+
+    const unsubscribe = () => {
+      this.client.off('stanza', stanzaHdlrPointer)
+    }
+
+    const responsePromise = new Promise((resolve, reject) => {
+      stanzaHdlrPointer = (stanza) => {
+        if (stanza.attrs["id"] === id && stanza.attrs["type"] === "result") {
+          unsubscribe()
+          resolve("room-config success")
+        }
+      }
+
+      this.client.on("stanza", stanzaHdlrPointer)
+
+      const message = xml(
+        "iq",
+        {
+          id: id,
+          to: to,
+          type: "set",
+        },
         xml(
-          "x",
-          { xmlns: "jabber:x:data", type: "submit" },
+          "query",
+          { xmlns: "http://jabber.org/protocol/muc#owner" },
           xml(
-            "field",
-            { var: "FORM_TYPE" },
-            xml("value", {}, "http://jabber.org/protocol/muc#roomconfig")
-          ),
-          xml(
-            "field",
-            { var: "muc#roomconfig_roomname" },
-            xml("value", {}, data.roomName)
-          ),
-          xml(
-            "field",
-            { var: "muc#roomconfig_roomdesc" },
-            xml("value", {}, data.roomDescription)
+            "x",
+            { xmlns: "jabber:x:data", type: "submit" },
+            xml(
+              "field",
+              { var: "FORM_TYPE" },
+              xml("value", {}, "http://jabber.org/protocol/muc#roomconfig")
+            ),
+            xml(
+              "field",
+              { var: "muc#roomconfig_roomname" },
+              xml("value", {}, data.roomName)
+            ),
+            xml(
+              "field",
+              { var: "muc#roomconfig_roomdesc" },
+              xml("value", {}, data.roomDescription)
+            )
           )
         )
       )
-    )
+  
+      this.client.send(message)
+    })
 
-    this.client.send(message)
+    const timeoutPromise = createTimeoutPromise(2000, unsubscribe)
+
+    return Promise.race([responsePromise, timeoutPromise])
   },
 
   setRoomIcon(to: string, roomIconUrl: string) {

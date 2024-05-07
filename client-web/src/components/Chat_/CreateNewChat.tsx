@@ -4,6 +4,7 @@ import { Dialog } from "@headlessui/react"
 import { sha256 } from "js-sha256"
 import { wsClient } from "../../api/wsClient_"
 import { AxiosResponse } from "axios"
+import { useChatStore } from "../../store_"
 
 type Props = {
     sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,
@@ -14,6 +15,7 @@ export const CreateNewChat = (props: Props) => {
     const [showNewChatModal, setShowNewChatModal] = useState(false)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const addNewRoom = useChatStore(state => state.addNewRoom)
 
     const [file, setFile] = useState<File | null>(null)
 
@@ -26,7 +28,7 @@ export const CreateNewChat = (props: Props) => {
         setShowNewChatModal(false)
     }
 
-    const onCreate = () => {
+    const onCreate = async () => {
         if (file) {
             // sendFile, get link for the setRoomIcon
         }
@@ -34,10 +36,43 @@ export const CreateNewChat = (props: Props) => {
         const chatNameWithSalt = name + Date.now() + randomNumber
         const roomHash = sha256(chatNameWithSalt)
         const roomJid = `${roomHash}@${import.meta.env.VITE_APP_XMPP_CONFERENCE}`
-        wsClient.presence([roomJid])
-        wsClient.setOwner(roomJid)
-        wsClient.roomConfig(roomJid, {roomName: name, roomDescription: description})
-        wsClient.setRoomIcon(roomJid, "")
+
+        try {
+            await wsClient.presenceForCreate(roomJid)
+            await wsClient.setOwner(roomJid)
+            await wsClient.roomConfig(roomJid, {roomName: name, roomDescription: description})
+            const rooms = await wsClient.getRooms()
+            const newRoom = rooms.find((el) => el.jid === roomJid)
+
+            if (newRoom) {
+                addNewRoom({
+                    jid: newRoom.jid,
+                    title: newRoom.name,
+                    usersCnt: newRoom.users_cnt,
+                    roomBackground: newRoom.room_background,
+                    room_thumbnail: newRoom.room_thumbnail,
+                    newMessagesCount: 0,
+                    recentMessage: null,
+                    loading: false,
+                    allLoaded: true,
+                })
+
+                setShowNewChatModal(false)
+                setName('')
+                setDescription('')
+                setFile(null)
+            }
+        } catch (e) {
+            console.log(e)
+        }
+
+        // ([roomJid])
+        // await sleep(1000)
+        // wsClient.setOwner(roomJid)
+        // await sleep(1000)
+        // wsClient.roomConfig(roomJid, {roomName: name, roomDescription: description})
+        // await sleep(1000)
+        // wsClient.setRoomIcon(roomJid, "")
     }
 
     return (

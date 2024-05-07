@@ -48,7 +48,7 @@ export type RoomType = {
   room_thumbnail: string;
   groupName?: string;
   newMessagesCount: number;
-  recentMessage: Record<string, string> | null;
+  recentMessage: MessageType | null;
   loading: boolean;
   allLoaded: boolean;
 }
@@ -89,6 +89,7 @@ export interface ChatSliceInterface {
   deleteMessage: (roomJid: string, messageId: string) => void;
   setEditMessage: (message: MessageType | null) => void;
   doEditMessage: (roomJid: string, text: string, messageId: string) => void;
+  addNewRoom: (room: RoomType) => void;
 }
 
 function jsonClone(obj: Object) {
@@ -164,6 +165,10 @@ export const createChatSlice: StateCreator<
 
   setRooms(rooms: Record<string, RoomType>) {
     set((state) => ({...state, rooms: rooms}))
+  },
+
+  addNewRoom(room: RoomType) {
+    set((state) => ({...state, rooms: {...state.rooms, [room.jid]: room}, currentRoom: {...room}}))
   },
 
   setLoading(jid, isLoading) {
