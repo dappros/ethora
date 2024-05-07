@@ -49,11 +49,20 @@ export function Message(props: Props) {
         setShowOtherDialog(false)
     }
 
+    const onBlock = () => {
+        const localUserJid = message.from.split('/')[1]
+        wsClient.blockUser(`${localUserJid}`)
+    }
+
     const onDelete = () => {
         const roomJid = message.from.split('/')[0]
         wsClient.deleteMessage(roomJid, message.id)
         deleteMessage(roomJid, message.id)
         setShowMeDialog(false)
+    }
+
+    const onGetBlockList = () => {
+        wsClient.getBlockList()
     }
 
     let threadInfContent;
@@ -144,12 +153,16 @@ export function Message(props: Props) {
                 </Dialog>
                 <Dialog className="file-dialog" open={showOtherDialog} onClose={() => setShowOtherDialog(false)}>
                     <Dialog.Panel className="inner">
-                        <p>
-                            Are you shoure
-                        </p>
-                        <p>
-                            <button>other</button>
-                        </p>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                            <div>
+                                <div>
+                                    <button onClick={onReply}>Reply</button>
+                                </div>
+                                <div>
+                                    <button onClick={onBlock}>Block</button>
+                                </div>
+                            </div>
+                        </div>
                     </Dialog.Panel>
                 </Dialog>
 

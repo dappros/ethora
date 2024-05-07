@@ -61,7 +61,7 @@ export const wsClient = {
   },
 
   realTimeHandler(stanza: Element) {
-
+    // console.log("console ", stanza.toString())
     // realtime replace (edit) events
     if (stanza.is("message") && stanza.attrs["type"] === "groupchat" && stanza.getChild("replace")) {
       const roomJid = stanza.attrs["from"].split('/')[0]
@@ -634,6 +634,36 @@ export const wsClient = {
       })
     )
 
+    this.client.send(stanza)
+  },
+
+  blockUser(localUserJid: string) {
+    const stanza = xml(
+      "iq",
+      {
+        type: "set",
+        id: "addToBlackList",
+      },
+      xml("query", {
+        xmlns: "ns:deepx:muc:user:block",
+        user: `${localUserJid}@${this.host}`,
+      })
+    )
+
+    this.client.send(stanza)
+  },
+
+  getBlockList() {
+    const stanza = xml(
+      "iq",
+      {
+        type: "get",
+        id: "blackList",
+      },
+      xml("query", {
+        xmlns: "ns:deepx:muc:user:blocklist",
+      })
+    )
     this.client.send(stanza)
   }
 

@@ -9,11 +9,9 @@ type Props = {
 
 export const ThreadHeader = ({ currentRoom }: Props) => {
     const setCurrentThreadMessage = useChatStore(state => state.setCurrentThreadMessage)
-    const setInitReplyMessage = useChatStore(state => state.setInitReplyMessage)
 
     const onThreadCloseButtonClick = () => {
         setCurrentThreadMessage(null)
-        setInitReplyMessage(null)
     }
     
     return (
