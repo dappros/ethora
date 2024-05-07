@@ -5,6 +5,7 @@ import { ThreadMessages } from "./ThreadMessages"
 
 import "./Thread.scss"
 import { MessageType } from "../../../store_/chat"
+import { useState } from "react"
 
 type Props = {
     currentThreadMessage?: MessageType
@@ -12,6 +13,7 @@ type Props = {
 
 export const Thread = ({ currentThreadMessage }: Props) => {
     const currentRoom = useChatStore(state => state.currentRoom)
+    const [shouldSendToTheRoom, setShouldSendToTheRoom] = useState(false)
 
     let content
 
@@ -22,7 +24,17 @@ export const Thread = ({ currentThreadMessage }: Props) => {
         <div className="thread">
             <ThreadHeader currentRoom={currentRoom} />
             <ThreadMessages threadMessages={_threadMessages} currentThreadMessage={currentThreadMessage} />
-            <MessageInput mainMessage={currentThreadMessage} sendFile={null} />
+            <div style={{padding: "10px"}}>
+                <input 
+                    type="checkbox" 
+                    onChange={() => setShouldSendToTheRoom(!shouldSendToTheRoom)} 
+                    id="scales" 
+                    name="scales" 
+                    checked={shouldSendToTheRoom} 
+                />
+                <label htmlFor="scales">Also send to the room</label>
+            </div>
+            <MessageInput mainMessage={currentThreadMessage} shouldSendToTheRoom={shouldSendToTheRoom} sendFile={null} />
         </div>
     )
 

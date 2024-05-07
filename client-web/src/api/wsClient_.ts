@@ -465,7 +465,7 @@ export const wsClient = {
     }
   },
 
-  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string) {
+  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string, showInChannel: boolean = false) {
     const user = useChatStore.getState().user
     const message = xml(
       'message',
@@ -488,7 +488,7 @@ export const wsClient = {
           tokenAmount: 0,
           quickReplies: '',
           notDisplayedValue: '',
-          showInChannel: "false",
+          showInChannel: showInChannel,
           isReply: "true",
           mainMessage: JSON.stringify({
             attachmentId: "",
@@ -666,7 +666,6 @@ export const wsClient = {
     )
     this.client.send(stanza)
   }
-
 }
 
 function createTimeoutPromise(ms, unsubscribe) {

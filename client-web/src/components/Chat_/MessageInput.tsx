@@ -13,10 +13,11 @@ import "./MessageInput.scss"
 type MessageInputProps = {
   sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,
   mainMessage?: MessageType | null
+  shouldSendToTheRoom?: boolean
 }
 
 export function MessageInput(props: MessageInputProps) {
-  const { sendFile, mainMessage } = props;
+  const { sendFile, mainMessage, shouldSendToTheRoom } = props;
   const [blockControls, setBlockControls] = useState(false)
 
   const [file, setFile] = useState<File | null>(null)
@@ -37,8 +38,13 @@ export function MessageInput(props: MessageInputProps) {
       doEditMessage(currentRoom.jid, text, editMessage.id)
       setText('')
     } else if (mainMessage) {
-      await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
-      setText('')
+      if (shouldSendToTheRoom) {
+        await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text, true)
+      } else {
+        await wsClient.sendTextMessageToThread(currentRoom.jid, mainMessage, text)
+        setText('')
+      }
+
     } else {
       const message = await wsClient.sendTextMessage(currentRoom.jid, text) as Record<string, string>
       setText('')
