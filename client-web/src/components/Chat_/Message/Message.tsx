@@ -43,6 +43,12 @@ export function Message(props: Props) {
         }
     }
 
+    const onReply = () => {
+        setCurrentThreadMessage(message)
+        setShowMeDialog(false)
+        setShowOtherDialog(false)
+    }
+
     const onDelete = () => {
         const roomJid = message.from.split('/')[0]
         wsClient.deleteMessage(roomJid, message.id)
@@ -124,7 +130,7 @@ export function Message(props: Props) {
                     <Dialog.Panel className="inner">
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                             <div>
-                                <button>Reply</button>
+                                <button onClick={onReply}>Reply</button>
                             </div>
                             <div>
                                 <button onClick={onEdit}>Edit</button>

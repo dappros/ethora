@@ -15,7 +15,7 @@ const isTheSameDay = (date1: Date, date2: Date) => {
 }
 
 type Props = {
-  threadMessages: MessageType[]
+  threadMessages: MessageType[] | null
   currentThreadMessage: MessageType
 }
 
@@ -65,7 +65,7 @@ export function ThreadMessages(props: Props) {
       <div className={"scroll"} ref={contentRef}>
         <ThreadMainMessage message={currentThreadMessage} />
         {
-          props.threadMessages.map((message, index) => {
+          props.threadMessages && props.threadMessages.map((message, index) => {
 
             return (
               <React.Fragment key={message.id}>

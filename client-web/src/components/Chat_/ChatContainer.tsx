@@ -11,6 +11,7 @@ export function ChatContainer(props: TChatProps) {
     const messages = useChatStore(state => state.messages)
     const currentRoom = useChatStore(state => state.currentRoom)
     const currentThreadMessage = useChatStore(state => state.currentThreadMessage)
+    const initReplyMessage = useChatStore(state => state.initReplyMessage)
 
     const currentRoomMessages = messages[currentRoom.jid]
 
@@ -22,9 +23,9 @@ export function ChatContainer(props: TChatProps) {
                 <MessageList key={currentRoom.jid} currentRoom={currentRoom} messages={currentRoomMessages} />
                 <MessageInput sendFile={sendFile} />
             </div>
-            {currentThreadMessage && (
+            {(currentThreadMessage || initReplyMessage) && (
                 <div className="chat-right">
-                    <Thread currentThreadMessage={currentThreadMessage} />
+                    <Thread currentThreadMessage={currentThreadMessage} initReplyMessage={initReplyMessage} />
                 </div>
             )}
         </div>

@@ -316,5 +316,5 @@ export const createChatSlice: StateCreator<
 
       set(state => ({...state, messages: {...state.messages, [roomJid]: [...newMessages]}}))
     }
-  }
+  },
 });
