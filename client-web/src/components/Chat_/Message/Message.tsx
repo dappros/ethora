@@ -112,6 +112,12 @@ export function Message(props: Props) {
                     </div>
                     <div className="contentWrapper">
                         <div className="content">
+                            { message.mainMessage && (
+                                <div style={{marginLeft: '10px', color: "rgb(32, 105, 223"}}>
+                                    <div>{message.mainMessage.userName}</div>
+                                    <div>{message.mainMessage.text}</div>
+                                </div>
+                            ) }
                             <div className="header">
                                 {!isGroup && (
                                     <strong>
@@ -132,7 +138,6 @@ export function Message(props: Props) {
                         {
                             threadInfContent
                         }
-
                     </div>
                 </div>
                 <Dialog className="file-dialog" open={showMeDialog} onClose={() => setShowMeDialog(false)}>
