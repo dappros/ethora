@@ -19,10 +19,10 @@ interface ChatRoomProps {
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({
-  roomJID = "e8b1e5297ac89ceb78341dd870ab12150d9903f4e6e799a8176b13f47ff22553@conference.dev.dxmpp.com",
+  roomJID = "cc39004bf432f6dc34b47cd64251236c9ae65eadd890daef3ff7dbc94c3caecb@conference.dev.dxmpp.com",
 }) => {
   const client = xmppClient;
-  const [currentRoom] = useState(rooms[0]);
+  const [currentRoom, setCurrentRoom] = useState(rooms[0]);
   const [messageText, setMessageText] = useState("");
 
   const messages = useSelector((state: RootState) => state.chat.messages);
@@ -37,16 +37,20 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   const sendMessage = () => {
     const newMessage = {
       id: uuidv4(),
-      user: { id: "2", name: "You", avatar: "" },
+      user: {
+        id: user.walletAddress,
+        name: `${user.firstName} ${user.lastName}`,
+        avatar: "",
+      },
       date: new Date().toISOString(),
       body: messageText,
     };
-    dispatch(addMessage(newMessage));
+    // dispatch(addMessage(newMessage));
     dispatch({ type: "chat/fetchMessages" });
     xmppClient.sendMessage(
       roomJID,
-      "Rom",
-      "L",
+      user.firstName,
+      user.lastName,
       "",
       user.walletAddress,
       messageText
@@ -59,21 +63,30 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   }, [dispatch]);
 
   useEffect(() => {
-    client.presence();
-    client.getRooms();
-    client.presenceInRoom(roomJID);
+    setTimeout(() => {
+      client
+        .presence()
+        .then(() => client.getRooms())
+        .then(() => client.presenceInRoom(roomJID))
+        .then(() => {
+          client.getPaginatedArchive(roomJID, user._id, 30); // Called after all other actions
+        })
+        .catch((error) => {
+          console.error("Error handling client operations:", error);
+        });
+    }, 1000); // Delay of 1 second before initiating the sequence
   }, []);
 
   return (
     <ChatContainer>
       <h2>{currentRoom.name}</h2>
-      <ChatList messages={messages} CustomMessage={CustomMessage} />
+      <ChatList messages={messages} CustomMessage={CustomMessage} user={user} />
       <InputContainer>
         <MessageInput
           type="text"
           value={messageText}
           onChange={handleMessageChange}
-          placeholder="Type a message..."
+          placeholder="Message..."
         />
         <SendButton onClick={sendMessage}>Send</SendButton>
       </InputContainer>

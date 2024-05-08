@@ -6,16 +6,19 @@ import {
   MessageText,
   MessageTimestamp,
 } from "./styled/StyledComponents";
-import { IMessage } from "../types/types";
+import { IMessage, User } from "../types/types";
+import SystemMessage from "./SystemMessage";
 
 interface ChatListProps<TMessage extends IMessage> {
   messages: TMessage[];
   CustomMessage?: React.ComponentType<{ message: TMessage; isUser: boolean }>;
+  user: User;
 }
 
 function ChatList<TMessage extends IMessage>({
   messages,
   CustomMessage,
+  user,
 }: ChatListProps<TMessage>) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,30 +61,31 @@ function ChatList<TMessage extends IMessage>({
 
   return (
     <MessagesList>
-      <MessagesList>
-        {messages.map((message, index) => {
-          const isUser = message.user.id === "2";
-          const refProp =
-            index === messages.length - 1 ? { ref: scrollRef } : {};
+      {messages.map((message, index) => {
+        const isUser = message.user.id === user.walletAddress;
+        const refProp = index === messages.length - 1 ? { ref: scrollRef } : {};
 
-          return CustomMessage ? (
-            <CustomMessage
-              key={message.id}
-              message={message}
-              isUser={isUser}
-              {...refProp}
-            />
-          ) : (
-            <Message key={message.id} isUser={isUser} {...refProp}>
-              <MessageTimestamp>
-                {new Date(message.date).toLocaleTimeString()}
-              </MessageTimestamp>
-              <UserName>{message.user.name}: </UserName>
-              <MessageText>{message.body}</MessageText>
-            </Message>
-          );
-        })}
-      </MessagesList>
+        // if (message.isSystemMessage) {
+        //   return <SystemMessage key={message.id} messageText={message.body} />;
+        // }
+
+        return CustomMessage ? (
+          <CustomMessage
+            key={message.id}
+            message={message}
+            isUser={isUser}
+            {...refProp}
+          />
+        ) : (
+          <Message key={message.id} isUser={isUser} {...refProp}>
+            <MessageTimestamp>
+              {new Date(message.date).toLocaleTimeString()}
+            </MessageTimestamp>
+            <UserName>{message.user.name}: </UserName>
+            <MessageText>{message.body}</MessageText>
+          </Message>
+        );
+      })}
     </MessagesList>
   );
 }

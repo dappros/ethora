@@ -13,7 +13,7 @@ export const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    addMessage: (state, action: PayloadAction<IMessage | UserType>) => {
+    addMessage: (state, action: PayloadAction<IMessage>) => {
       state.messages.push(action.payload);
     },
     addMessages: (state, action: PayloadAction<IMessage[]>) => {
@@ -22,9 +22,13 @@ export const chatSlice = createSlice({
     setMessages: (state, action: PayloadAction<IMessage[]>) => {
       state.messages = action.payload;
     },
+    resetMessages: (state) => {
+      state.messages = [];
+    },
   },
 });
 
-export const { addMessage, setMessages, addMessages } = chatSlice.actions;
+export const { addMessage, setMessages, addMessages, resetMessages } =
+  chatSlice.actions;
 
 export default chatSlice.reducer;

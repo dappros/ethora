@@ -6,6 +6,7 @@ export const ChatContainer = styled.div`
   height: 100vh;
   padding: 24px;
   box-sizing: border-box;
+  /* border: 10px solid yellow; */
 `;
 
 export const MessagesList = styled.div`
@@ -15,6 +16,7 @@ export const MessagesList = styled.div`
   flex-direction: column;
   height: 100%;
   padding: 24px;
+  background-color: #e8edf2;
 `;
 
 export const MessageTimestamp = styled.div`
@@ -42,7 +44,10 @@ export const UserName = styled.span`
 
 export const InputContainer = styled.div`
   display: flex;
-  margin-top: 20px;
+  margin-top: 24px;
+  border-radius: 15px 15px 0px 0px;
+  box-shadow: 1px -1px 10px 0 rgba(0, 0, 0, 0.25);
+  padding: 30px 11px;
 `;
 
 export const MessageInput = styled.input`
@@ -70,19 +75,20 @@ export const SendButton = styled.button`
 //
 export const CustomMessageContainer = styled.div<{ isUser: boolean }>`
   display: flex;
-  flex-direction: column;
-  align-items: ${(props) => (props.isUser ? "flex-end" : "flex-start")};
+  flex-direction: ${(props) => (!props.isUser ? "row" : "row-reverse")};
+  align-items: end;
   margin: 10px 0;
+  gap: 5px;
 `;
 
 export const CustomMessageBubble = styled.div<{ isUser: boolean }>`
   max-width: 60%;
-  padding: 12px;
-  border-radius: 20px;
-  background-color: ${(props) => (props.isUser ? "green" : "blue")};
-  border: 1px solid sandybrown;
-  color: ${(props) => (props.isUser ? "white" : "white")};
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.2);
+  padding: 12px 8px;
+  border-radius: ${(props) =>
+    props.isUser ? "15px 15px 0px 15px" : "15px 15px 15px 0px"};
+  background-color: #ffffff;
+  color: #000000;
+  text-align: left;
 `;
 
 export const CustomMessageText = styled.p`
@@ -90,13 +96,37 @@ export const CustomMessageText = styled.p`
   word-wrap: break-word;
 `;
 
-export const CustomUserName = styled.span`
-  font-weight: bold;
-  margin-bottom: 5px;
+export const CustomUserName = styled.span<{ isUser: boolean }>`
+  font-family: "Open Sans", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: ${(props) => (props.isUser ? "#12B829" : "#0052cd")};
 `;
 
 export const CustomMessageTimestamp = styled.span`
   font-size: 0.75rem;
-  color: white;
   align-self: flex-end;
+  color: #8f8f8f;
+`;
+
+export const CustomMessagePhoto = styled.img`
+  width: 45px;
+  aspect-ratio: 1/1;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 100px;
+`;
+
+export const CustomMessagePhotoContainer = styled.div``;
+
+export const CustomSystemMessage = styled.div`
+  width: 100%;
+  text-align: center;
+`;
+
+export const CustomSystemMessageText = styled.p`
+  margin: 0;
+  word-wrap: break-word;
+  color: #000000;
 `;

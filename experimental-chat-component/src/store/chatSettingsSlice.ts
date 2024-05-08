@@ -8,15 +8,15 @@ interface ChatState {
 
 const initialState: ChatState = {
   user: {
-    _id: "65831a646edcd3cee0545757",
-    walletAddress: "0x6816810a7Fe04FC9b800f9D11564C0e4aEC25D78",
-    xmppPassword: "HDC7qnWI16",
-
-    firstName: "Yuki",
-    lastName: "R",
     description: "",
     token: "",
     profileImage: "",
+    _id: "65495bdae5b326bb1b2d33e7",
+    walletAddress: "0x6C394B10F5Da4141b99DB2Ad424C5688c3f202B3",
+    xmppPassword: "Q9MIMMhZVe",
+
+    firstName: "Roman",
+    lastName: "Leshchukh",
   },
   defaultChatRooms: [],
 };

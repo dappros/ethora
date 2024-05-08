@@ -13,23 +13,18 @@ export interface IMessage {
   body: string; // message body
   roomJID?: string; // room id
   key?: string; // workaround to solve a problem of messages uniqueness - additional, local timestamp to solve when XMPP server sends duplicate timestamps (TO DO: depricate / review)
-  coinsInMessage?: string; // store only - message coins counter
-  numberOfReplies?: number; // store only - array of replies in a thread (if applicable) - includes messages IDs so that client app can display relevant message previews for the thread
-}
-
-export interface IUser {
-  id: string | null;
-  name: string | null;
-  avatar?: string | null;
-  xmmpPass?: string | null;
-  userJID?: string | null;
+  coinsInMessage?: string | number; // store only - message coins counter
+  numberOfReplies?: number[] | number; // store only - array of replies in a thread (if applicable) - includes messages IDs so that client app can display relevant message previews for the thread
+  isSystemMessage?: boolean;
+  isMediafile?: boolean;
 }
 
 export interface IRoom {
   id: string;
   name: string;
-  users: IUser[];
-  messages: IMessage[];
+  jid: string;
+  // users: IUser[];
+  // messages: IMessage[];
 }
 
 export interface UserType extends IMessage {
@@ -43,10 +38,15 @@ export interface User {
   _id: string;
   xmppPassword: string;
   walletAddress: string;
+  firstName: string;
+  lastName: string;
 
-  firstName?: string;
-  lastName?: string;
   description?: string;
   token?: string;
   profileImage?: string;
+}
+
+export interface XmppState {
+  client: any;
+  loading: boolean;
 }

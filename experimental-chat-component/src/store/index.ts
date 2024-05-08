@@ -3,8 +3,9 @@ import createSagaMiddleware from "redux-saga";
 import chatReducer from "./chatSlice";
 import roomMessagesReducer from "./roomMessagesSlice";
 import loginReducer from "./loginSlice";
-import rootSaga from "./sagas";
+// import rootSaga from "./sagas";
 import chatSettingsReducer from "./chatSettingsSlice";
+import xmppSlice from "./xmppSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   roomMessages: roomMessagesReducer,
   loginStore: loginReducer,
   chatSettingStore: chatSettingsReducer,
+  xmpp: xmppSlice,
 });
 
 export const store = configureStore({
@@ -29,4 +31,4 @@ export const store = configureStore({
 
 export type RootState = ReturnType<typeof rootReducer>;
 
-sagaMiddleware.run(rootSaga);
+// sagaMiddleware.run(rootSaga);

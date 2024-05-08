@@ -38,7 +38,7 @@ export class XmppClient {
       this.client.on("online", (jid) => {
         getListOfRooms(this);
       });
-      this.client.on("stanza", (stanza) => console.log("New message:", stanza)); //is used to show all the messages sent and got
+      // this.client.on("stanza", (stanza) => console.log("New message:", stanza)); //is used to show all the messages sent and got
 
       this.client.on("stanza", (stanza) => onRealtimeMessage(stanza));
       this.client.on("stanza", (stanza) => onPresenceInRoom(stanza));
@@ -61,43 +61,47 @@ export class XmppClient {
     }
   }
 
-  presence = () => {
-    try {
-      this.client.send(xml("presence"));
-      console.log("successfull presence");
-    } catch (error) {
-      console.error("An error occurred while sending presence:", error);
-    }
-  };
+  presence() {
+    return new Promise((resolve, reject) => {
+      try {
+        this.client.send(xml("presence"));
+        console.log("Successful presence");
+        resolve("Presence sent successfully");
+      } catch (error) {
+        console.error("Error sending presence:", error);
+        reject(error);
+      }
+    });
+  }
 
-  subsribe = (address: string) => {
-    try {
-      const message = xml(
-        "iq",
-        {
-          from: this.client?.jid?.toString(),
-          to: address,
-          type: "set",
-          id: "newSubscription",
-        },
-        xml(
-          "subscribe",
+  subscribe(address: string) {
+    return new Promise((resolve, reject) => {
+      try {
+        const message = xml(
+          "iq",
           {
-            xmlns: "urn:xmpp:mucsub:0",
-            nick: this.client?.jid?.getLocal(),
+            from: this.client?.jid?.toString(),
+            to: address,
+            type: "set",
+            id: "newSubscription",
           },
-          xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
-          xml("event", { node: "urn:xmpp:mucsub:nodes:presence" }),
-          xml("event", { node: "urn:xmpp:mucsub:nodes:subscribers" })
-        )
-      );
-
-      this.client.send(message);
-      console.log("successfull subscribe");
-    } catch (error) {
-      console.error("An error occurred while subscribing:", error);
-    }
-  };
+          xml(
+            "subscribe",
+            { xmlns: "urn:xmpp:mucsub:0", nick: this.client?.jid?.getLocal() },
+            xml("event", { node: "urn:xmpp:mucsub:nodes:messages" }),
+            xml("event", { node: "urn:xmpp:mucsub:nodes:presence" }),
+            xml("event", { node: "urn:xmpp:mucsub:nodes:subscribers" })
+          )
+        );
+        this.client.send(message);
+        console.log("Successful subscribe");
+        resolve("Subscription successful");
+      } catch (error) {
+        console.error("Error subscribing:", error);
+        reject(error);
+      }
+    });
+  }
 
   unsubscribe = (address: string) => {
     try {
@@ -119,21 +123,33 @@ export class XmppClient {
   };
 
   getRooms = () => {
-    try {
-      const message = xml(
-        "iq",
-        {
-          type: "get",
-          from: this.client.jid?.toString(),
-          id: "getUserRooms",
-        },
-        xml("query", { xmlns: "ns:getrooms" })
-      );
-      this.client.send(message);
-      console.log("getRooms");
-    } catch (error) {
-      console.error("An error occurred while getting rooms:", error);
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        const message = xml(
+          "iq",
+          {
+            type: "get",
+            from: this.client.jid?.toString(),
+            id: "getUserRooms",
+          },
+          xml("query", { xmlns: "ns:getrooms" })
+        );
+
+        this.client
+          .send(message)
+          .then(() => {
+            console.log("getRooms successfully sent");
+            resolve("Request to get rooms sent successfully");
+          })
+          .catch((error: any) => {
+            console.error("Failed to send getRooms request:", error);
+            reject(error);
+          });
+      } catch (error) {
+        console.error("An error occurred while getting rooms:", error);
+        reject(error);
+      }
+    });
   };
 
   //room functions
@@ -151,21 +167,36 @@ export class XmppClient {
   };
 
   presenceInRoom = (roomJID: string) => {
-    try {
-      const presence = xml(
-        "presence",
-        {
-          from: this.client.jid?.toString(),
-          to: roomJID + "/" + this.client.jid?.getLocal(),
-          id: "presenceInRoom",
-        },
-        xml("x", "http://jabber.org/protocol/muc")
-      );
-      this.client.send(presence);
-      console.log("presence");
-    } catch (error) {
-      console.error("An error occurred while setting presence in room:", error);
-    }
+    return new Promise((resolve, reject) => {
+      try {
+        const presence = xml(
+          "presence",
+          {
+            from: this.client.jid?.toString(),
+            to: `${roomJID}/${this.client.jid?.getLocal()}`,
+            id: "presenceInRoom",
+          },
+          xml("x", { xmlns: "http://jabber.org/protocol/muc" })
+        );
+
+        this.client
+          .send(presence)
+          .then(() => {
+            console.log("Presence in room successfully sent");
+            resolve("Presence in room sent successfully");
+          })
+          .catch((error: any) => {
+            console.error("Failed to send presence in room:", error);
+            reject(error);
+          });
+      } catch (error) {
+        console.error(
+          "An error occurred while setting presence in room:",
+          error
+        );
+        reject(error);
+      }
+    });
   };
 
   getArchive = (userJID: string) => {
@@ -179,7 +210,6 @@ export class XmppClient {
       )
     );
     this.client.send(message);
-    console.log("getArchive");
   };
 
   getPaginatedArchive = (
