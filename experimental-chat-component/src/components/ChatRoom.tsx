@@ -13,12 +13,12 @@ import ChatList from "./ChatList";
 import { rooms } from "../mock";
 import CustomMessage from "./CustomMessage";
 import xmppClient from "../networking/xmppClient";
-import { IUser } from "../types/types";
+import { User } from "../types/types";
 import { setUser } from "../store/chatSettingsSlice";
 
 interface ChatRoomProps {
   roomJID?: string;
-  defaultUser?: IUser;
+  defaultUser: User;
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({
@@ -75,21 +75,21 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   useEffect(() => {
     setTimeout(() => {
       client
-        .presence()
-        .then(() => client.getRooms())
-        .then(() => client.presenceInRoom(roomJID))
-        .then(() => {
-          client.getPaginatedArchive(roomJID, mainUser._id, 30); // Called after all other actions
-        })
+        .init(mainUser.walletAddress, mainUser.xmppPassword)
+        .then(() =>
+          client
+            .presence()
+            .then(() => client.getRooms())
+            .then(() => client.presenceInRoom(roomJID))
+            .then(() => {
+              client.getPaginatedArchive(roomJID, mainUser._id, 30); // Called after all other actions
+            })
+        )
         .catch((error) => {
           console.error("Error handling client operations:", error);
         });
     }, 1000); // Delay of 1 second before initiating the sequence
   }, []);
-
-  useEffect(() => {
-    console.log("messages", messages);
-  }, [messages]);
 
   return (
     <ChatContainer>

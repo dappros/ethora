@@ -2,7 +2,7 @@ import React, { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { setUser } from "../store/chatSettingsSlice";
-import ChatRoom from "./ChatRoom";
+import ChatRoom from "./ChatRoom.1";
 import xmppClient from "../networking/xmppClient";
 
 interface ChatWrapperProps {}

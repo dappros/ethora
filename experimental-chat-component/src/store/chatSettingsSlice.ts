@@ -11,12 +11,12 @@ const initialState: ChatState = {
     description: "",
     token: "",
     profileImage: "",
-    _id: "",
-    walletAddress: "",
-    xmppPassword: "",
+    _id: "65495bdae5b326bb1b2d33e7",
+    walletAddress: "0x6C394B10F5Da4141b99DB2Ad424C5688c3f202B3",
+    xmppPassword: "Q9MIMMhZVe",
 
-    firstName: "",
-    lastName: "",
+    firstName: "Roman",
+    lastName: "Leshchukh",
   },
   defaultChatRooms: [],
 };

@@ -1,18 +1,9 @@
 export interface IUser {
-  id?: string | null;
-  name?: string | null;
+  id: string | null;
+  name: string | null;
   avatar?: string | null;
   xmmpPass?: string | null;
   userJID?: string | null;
-  _id?: string;
-  xmppPassword: string;
-  walletAddress: string;
-  firstName: string;
-  lastName: string;
-
-  description?: string;
-  token?: string;
-  profileImage?: string;
 }
 
 export interface IMessage {
