@@ -53,6 +53,7 @@ export function Chat_(props: TChatProps) {
   const isInitCompleted = useChatStore((state) => state.isInitCompleted)
   const setIsInitCompleted = useChatStore((state) => state.setIsInitCompleted)
   const setThreadMessages = useChatStore((state) => state.setThreadMessages)
+  const currentRoom = useChatStore((state) => state.currentRoom)
 
   csSetUser({ firstName, lastName, profileImage, walletAddress })
 
@@ -153,8 +154,6 @@ export function Chat_(props: TChatProps) {
     }
   }, [isRestrictedToInitRooms, initRooms])
 
-  console.log(props)
-
   return (
     <div className="ChatApp">
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
@@ -170,8 +169,9 @@ export function Chat_(props: TChatProps) {
                 )}
                 <Provider store={store}>
                   <ChatRoom
-                    roomJID="5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d@conference.dev.dxmpp.com"
-                    defaultUser={props}
+                    key={currentRoom.jid}
+                    roomJID={currentRoom.jid}
+                    defaultUser={{ ...props, _id: props.walletAddress }}
                   />
                 </Provider>
                 {/* <ChatContainer {...props} /> */}
