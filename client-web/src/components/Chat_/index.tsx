@@ -10,18 +10,22 @@ import { AxiosResponse } from "axios"
 
 import "./index.scss"
 import { CreateNewChat } from "./CreateNewChat"
+import ChatRoom from "../../../../experimental-chat-component/src/components/ChatRoom"
+import { store } from "../../../../experimental-chat-component/src/store"
+
+import { Provider } from "react-redux"
 
 export type TChatProps = {
-  xmppPassword: string,
-  xmppUsername: string,
-  walletAddress?: string,
-  firstName: string,
-  lastName: string,
-  profileImage: string,
-  initRooms: string[],
-  xmppService: string,
-  isRestrictedToInitRooms: boolean,
-  sendFile?: (formData: FormData) => Promise<AxiosResponse<any, any>>,
+  xmppPassword: string
+  xmppUsername: string
+  walletAddress?: string
+  firstName: string
+  lastName: string
+  profileImage: string
+  initRooms: string[]
+  xmppService: string
+  isRestrictedToInitRooms: boolean
+  sendFile?: (formData: FormData) => Promise<AxiosResponse<any, any>>
 }
 
 export function Chat_(props: TChatProps) {
@@ -34,21 +38,21 @@ export function Chat_(props: TChatProps) {
     firstName,
     lastName,
     profileImage,
-    walletAddress
+    walletAddress,
   } = props
 
   const [isLoading, setIsLoading] = useState(true)
   const [showSidebar, setShowSideBar] = useState(false)
   // const isInit
 
-  const setRooms = useChatStore(state => state.setRooms)
-  const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
-  const setMessages = useChatStore(state => state.setMessages)
-  const csSetUser = useChatStore(state => state.csSetUser)
-  const xmppStatus = useChatStore(state => state.xmppStatus)
-  const isInitCompleted = useChatStore(state => state.isInitCompleted)
-  const setIsInitCompleted = useChatStore(state => state.setIsInitCompleted)
-  const setThreadMessages = useChatStore(state => state.setThreadMessages)
+  const setRooms = useChatStore((state) => state.setRooms)
+  const setCurrentRoom = useChatStore((state) => state.setCurrentRoom)
+  const setMessages = useChatStore((state) => state.setMessages)
+  const csSetUser = useChatStore((state) => state.csSetUser)
+  const xmppStatus = useChatStore((state) => state.xmppStatus)
+  const isInitCompleted = useChatStore((state) => state.isInitCompleted)
+  const setIsInitCompleted = useChatStore((state) => state.setIsInitCompleted)
+  const setThreadMessages = useChatStore((state) => state.setThreadMessages)
 
   csSetUser({ firstName, lastName, profileImage, walletAddress })
 
@@ -72,12 +76,12 @@ export function Chat_(props: TChatProps) {
       console.log({ rooms: rooms })
 
       if (isRestrictedToInitRooms) {
-        rooms = rooms.filter((el => {
+        rooms = rooms.filter((el) => {
           return initRooms.includes(el.jid)
-        }))
+        })
       }
 
-      await wsClient.presence(rooms.map(el => el.jid))
+      await wsClient.presence(rooms.map((el) => el.jid))
       const recentMesssages = []
 
       for (const room of rooms) {
@@ -94,7 +98,7 @@ export function Chat_(props: TChatProps) {
             return false
           }
 
-          return true;
+          return true
         })
 
         if (recentMsgs && recentMsgs[0]) {
@@ -113,11 +117,11 @@ export function Chat_(props: TChatProps) {
           usersCnt: el.users_cnt,
           roomBackground: el.room_background,
           room_thumbnail: el.room_thumbnail,
-          groupName: '',
+          groupName: "",
           newMessagesCount: 0,
           recentMessage: recentMesssages[index],
           loading: false,
-          allLoaded: false
+          allLoaded: false,
         }
       })
 
@@ -136,7 +140,7 @@ export function Chat_(props: TChatProps) {
   }, [xmppUsername])
 
   useEffect(() => {
-    if (xmppStatus === 'error' && !isInitCompleted) {
+    if (xmppStatus === "error" && !isInitCompleted) {
       initFunc().then(() => setIsInitCompleted(true))
     }
   }, [xmppStatus, isInitCompleted])
@@ -149,6 +153,8 @@ export function Chat_(props: TChatProps) {
     }
   }, [isRestrictedToInitRooms, initRooms])
 
+  console.log(props)
+
   return (
     <div className="ChatApp">
       <Container maxWidth="xl" style={{ height: "calc(100vh - 68px)" }}>
@@ -157,20 +163,24 @@ export function Chat_(props: TChatProps) {
             {isLoading && <div>Loading</div>}
             {!isLoading && (
               <>
-                {
-                  showSidebar && (
-                    <ChatSidebar>
-                      <ConversationsList />
-                    </ChatSidebar>
-                  )
-                }
-                <ChatContainer {...props} />
+                {showSidebar && (
+                  <ChatSidebar>
+                    <ConversationsList />
+                  </ChatSidebar>
+                )}
+                <Provider store={store}>
+                  <ChatRoom
+                    roomJID="5dc237d5792e95ba96240223e14ee00b13d2548c5cdfcf2e27ca67a0b11f5b9d@conference.dev.dxmpp.com"
+                    defaultUser={props}
+                  />
+                </Provider>
+                {/* <ChatContainer {...props} /> */}
                 <CreateNewChat sendFile={props.sendFile} />
               </>
             )}
           </div>
         </Box>
-      </Container >
+      </Container>
     </div>
   )
 }

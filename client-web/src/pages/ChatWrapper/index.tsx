@@ -4,21 +4,26 @@ import { useStoreState } from "../../store"
 import { walletToUsername } from "../../utils/walletManipulation"
 
 export function ChatWrapper() {
-  const { 
+  const {
     user: { xmppPassword, walletAddress, firstName, lastName, profileImage },
-    defaultChatRooms
-  } = useStoreState(state => state)
+    defaultChatRooms,
+  } = useStoreState((state) => state)
 
   const xmppUsername = walletToUsername(walletAddress)
 
-  const defaultRooms = defaultChatRooms.map((el) => el.jid).concat("974add7ad347cd39b5fff2c16939003a27ce74f038cdc9884c03575e28078394@conference.dev.dxmpp.com")
+  const defaultRooms = defaultChatRooms
+    .map((el) => el.jid)
+    .concat(
+      "974add7ad347cd39b5fff2c16939003a27ce74f038cdc9884c03575e28078394@conference.dev.dxmpp.com"
+    )
 
   return (
-    <Chat_ 
+    <Chat_
       xmppPassword={xmppPassword}
       xmppUsername={xmppUsername}
       walletAddress={walletAddress}
       firstName={firstName}
+      чц
       lastName={lastName}
       profileImage={profileImage}
       sendFile={uploadFile}
