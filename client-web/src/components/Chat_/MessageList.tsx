@@ -118,14 +118,6 @@ export function MessageList(props: MessageListProps) {
     }
   }, [messages])
 
-  useEffect(() => {
-    if (messages) {
-      if (messages[messages.length - 1].isMe) {
-        scrollToBottom()
-      }
-    }
-  }, [messages])
-
   const isGroup = (message, index) => {
     if (index === 0 || message.isSystemMessage === "true") {
       return false
