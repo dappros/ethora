@@ -25,7 +25,7 @@ export const Thread = ({ currentThreadMessage }: Props) => {
             <ThreadHeader currentRoom={currentRoom} />
             <ThreadMessages threadMessages={_threadMessages} currentThreadMessage={currentThreadMessage} />
             <div style={{padding: "10px"}}>
-                <input 
+                <input
                     type="checkbox" 
                     onChange={() => setShouldSendToTheRoom(!shouldSendToTheRoom)} 
                     id="scales" 

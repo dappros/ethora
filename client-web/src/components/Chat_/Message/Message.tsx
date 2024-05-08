@@ -112,7 +112,7 @@ export function Message(props: Props) {
                     </div>
                     <div className="contentWrapper">
                         <div className="content">
-                            { (message.mainMessage && !showActions) && (
+                            { (message.mainMessage && showActions) && (
                                 <div style={{marginLeft: '10px', color: "rgb(32, 105, 223"}}>
                                     <div>{message.mainMessage.userName}</div>
                                     <div>{message.mainMessage.text}</div>
