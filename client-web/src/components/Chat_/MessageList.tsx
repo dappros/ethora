@@ -7,6 +7,8 @@ import { useEffect, useRef } from 'react';
 import { block_scroll } from './block_scroll';
 import { useChatStore } from '../../store_';
 import { ChatDateDevider } from './ChatDateDevider';
+import { MessageInput } from './MessageInput';
+import { AxiosResponse } from 'axios';
 
 interface ScrollParams {
   top: number;
@@ -15,7 +17,8 @@ interface ScrollParams {
 
 type MessageListProps = {
   messages: MessageType[],
-  currentRoom: RoomType
+  currentRoom: RoomType,
+  sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,
 }
 
 const isTheSameDay = (date1: Date, date2: Date) => {
@@ -152,6 +155,7 @@ export function MessageList(props: MessageListProps) {
           }
         </div>
       </div>
+      <MessageInput scrollToBottom={scrollToBottom} sendFile={props.sendFile} />
     </>
   )
 }
