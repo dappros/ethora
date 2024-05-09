@@ -20,7 +20,8 @@ function ChatList<TMessage extends IMessage>({
   CustomMessage,
   user,
 }: ChatListProps<TMessage>) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null); // Ref for the end of messages
+  const messagesContainerRef = useRef<HTMLDivElement>(null); // Ref for the scrollable container
 
   function validateMessages(messages: TMessage[]): boolean {
     const requiredAttributes: (keyof IMessage)[] = [
@@ -30,7 +31,6 @@ function ChatList<TMessage extends IMessage>({
       "body",
     ];
     let isValid = true;
-
     messages.forEach((message, index) => {
       const missingAttributes = requiredAttributes.filter(
         (attr) => !(attr in message)
@@ -44,14 +44,17 @@ function ChatList<TMessage extends IMessage>({
         isValid = false;
       }
     });
-
     return isValid;
   }
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (): void => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView();
     }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
   if (!validateMessages(messages)) {
@@ -60,32 +63,29 @@ function ChatList<TMessage extends IMessage>({
   }
 
   return (
-    <MessagesList>
+    <MessagesList ref={messagesContainerRef}>
       {messages.map((message, index) => {
         const isUser = message.user.id === user.walletAddress;
-        const refProp = index === messages.length - 1 ? { ref: scrollRef } : {};
-
-        // if (message.isSystemMessage) {
-        //   return <SystemMessage key={message.id} messageText={message.body} />;
-        // }
-
-        return CustomMessage ? (
-          <CustomMessage
-            key={message.id}
-            message={message}
-            isUser={isUser}
-            {...refProp}
-          />
-        ) : (
-          <Message key={message.id} isUser={isUser} {...refProp}>
-            <MessageTimestamp>
-              {new Date(message.date).toLocaleTimeString()}
-            </MessageTimestamp>
-            <UserName>{message.user.name}: </UserName>
-            <MessageText>{message.body}</MessageText>
-          </Message>
+        if (message.isSystemMessage === "true") {
+          return <SystemMessage key={message.id} messageText={message.body} />;
+        }
+        const MessageComponent = CustomMessage || Message;
+        return (
+          <MessageComponent key={message.id} message={message} isUser={isUser}>
+            {!CustomMessage && (
+              <>
+                <MessageTimestamp>
+                  {new Date(message.date).toLocaleTimeString()}
+                </MessageTimestamp>
+                <UserName>{message.user.name}: </UserName>
+                <MessageText>{message.body}</MessageText>
+              </>
+            )}
+          </MessageComponent>
         );
       })}
+      <div ref={messagesEndRef} />{" "}
+      {/* Invisible div to mark the end of messages */}
     </MessagesList>
   );
 }

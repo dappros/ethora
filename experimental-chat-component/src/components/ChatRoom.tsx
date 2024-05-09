@@ -1,32 +1,37 @@
 import React, { useState, useEffect } from "react";
 import {
   ChatContainer,
+  ChatContainerHeader,
+  ChatContainerHeaderLabel,
   InputContainer,
   MessageInput,
   SendButton,
 } from "./styled/StyledComponents";
 import { useSelector, useDispatch } from "react-redux";
-import { addMessage } from "../store/chatSlice";
+import { addMessage, resetMessages } from "../store/chatSlice";
 import { RootState } from "../store";
 import { v4 as uuidv4 } from "uuid";
 import ChatList from "./ChatList";
 import { rooms } from "../mock";
 import CustomMessage from "./CustomMessage";
 import xmppClient from "../networking/xmppClient";
-import { User } from "../types/types";
+import { IRoom, User } from "../types/types";
 import { setUser } from "../store/chatSettingsSlice";
 
 interface ChatRoomProps {
   roomJID?: string;
   defaultUser: User;
+  isLoading?: boolean;
+  defaultRoom: IRoom;
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({
-  roomJID = "cc39004bf432f6dc34b47cd64251236c9ae65eadd890daef3ff7dbc94c3caecb@conference.dev.dxmpp.com",
   defaultUser,
+  isLoading = false,
+  defaultRoom,
 }) => {
   const client = xmppClient;
-  const [currentRoom, setCurrentRoom] = useState(rooms[0]);
+  const [currentRoom, setCurrentRoom] = useState(defaultRoom);
   const [messageText, setMessageText] = useState("");
 
   const messages = useSelector((state: RootState) => state.chat.messages);
@@ -37,6 +42,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   useEffect(() => {
     dispatch(setUser(mainUser));
   }, []);
+
+  useEffect(() => {
+    dispatch(resetMessages());
+  }, [currentRoom]);
 
   const dispatch = useDispatch();
 
@@ -58,7 +67,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     // dispatch(addMessage(newMessage));
     dispatch({ type: "chat/fetchMessages" });
     xmppClient.sendMessage(
-      roomJID,
+      defaultRoom.jid,
       mainUser.firstName,
       mainUser.lastName,
       "",
@@ -80,9 +89,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
           client
             .presence()
             .then(() => client.getRooms())
-            .then(() => client.presenceInRoom(roomJID))
+            .then(() => client.presenceInRoom(defaultRoom.jid))
             .then(() => {
-              client.getPaginatedArchive(roomJID, mainUser._id, 30); // Called after all other actions
+              client.getPaginatedArchive(defaultRoom.jid, mainUser._id, 30); // Called after all other actions
             })
         )
         .catch((error) => {
@@ -91,9 +100,18 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     }, 1000); // Delay of 1 second before initiating the sequence
   }, []);
 
+  if (isLoading) return <>Loading ...</>;
+
   return (
     <ChatContainer>
-      <h2>{currentRoom.name}</h2>
+      <ChatContainerHeader>
+        <ChatContainerHeaderLabel>
+          {currentRoom?.title}
+        </ChatContainerHeaderLabel>
+        <ChatContainerHeaderLabel>
+          {currentRoom?.usersCnt} users
+        </ChatContainerHeaderLabel>
+      </ChatContainerHeader>
       <ChatList
         messages={messages}
         CustomMessage={CustomMessage}

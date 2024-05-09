@@ -17,7 +17,6 @@ export const createMessage = (
   id: string,
   from: string
 ) => {
-  console.log(data);
   const message = {
     id: id,
     body: body.getText(),
@@ -27,6 +26,8 @@ export const createMessage = (
     coinsInMessage: data?.coinsInMessage,
     numberOfReplies: data?.numberOfReplies,
     isSystemMessage: data?.isSystemMessage,
+    isMediafile: data?.isMediafile,
+    locationPreview: data?.locationPreview,
     user: {
       id: data?.senderWalletAddress,
       name: `${data?.senderFirstName} ${data?.senderLastName}`,

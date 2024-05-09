@@ -170,7 +170,8 @@ export function Chat_(props: TChatProps) {
                 <Provider store={store}>
                   <ChatRoom
                     key={currentRoom.jid}
-                    roomJID={currentRoom.jid}
+                    defaultRoom={currentRoom}
+                    isLoading={isLoading}
                     defaultUser={{ ...props, _id: props.walletAddress }}
                   />
                 </Provider>

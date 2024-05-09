@@ -5,9 +5,24 @@ export const ChatContainer = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
-  padding: 24px;
   box-sizing: border-box;
+  background-color: #e8edf2;
   /* border: 10px solid yellow; */
+`;
+
+export const ChatContainerHeader = styled.div`
+  display: flex;
+  border-radius: 0px 0px 15px 15px;
+  box-shadow: 1px -1px 10px 0 rgba(0, 0, 0, 0.25);
+  padding: 30px 11px;
+  background-color: #fff;
+  flex-direction: column;
+`;
+
+export const ChatContainerHeaderLabel = styled.div`
+  color: #0052cd;
+  font-weight: 600;
+  font-size: 18px;
 `;
 
 export const MessagesList = styled.div`
@@ -17,7 +32,6 @@ export const MessagesList = styled.div`
   flex-direction: column;
   height: 100%;
   padding: 24px;
-  background-color: #e8edf2;
 `;
 
 export const MessageTimestamp = styled.div`
@@ -45,17 +59,16 @@ export const UserName = styled.span`
 
 export const InputContainer = styled.div`
   display: flex;
-  margin-top: 24px;
   border-radius: 15px 15px 0px 0px;
-  box-shadow: 1px -1px 10px 0 rgba(0, 0, 0, 0.25);
   padding: 30px 11px;
+  background-color: #fff;
 `;
 
 export const MessageInput = styled.input`
   flex-grow: 1;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: none;
   margin-right: 10px;
 `;
 
@@ -64,8 +77,9 @@ export const SendButton = styled.button`
   border: none;
   border-radius: 8px;
   background-color: #007bff;
-  color: white;
+  color: black;
   cursor: pointer;
+  box-shadow: 1px -1px 10px 0 rgba(0, 0, 0, 0.25);
 
   &:hover {
     background-color: #0056b3;
@@ -119,7 +133,9 @@ export const CustomMessagePhoto = styled.img`
   border-radius: 100px;
 `;
 
-export const CustomMessagePhotoContainer = styled.div``;
+export const CustomMessagePhotoContainer = styled.div`
+  margin: 0;
+`;
 
 export const CustomSystemMessage = styled.div`
   width: 100%;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { IMessage } from "../types/types";
 import {
   CustomMessageTimestamp,
@@ -15,10 +15,14 @@ interface CustomMessageProps {
   isUser: boolean;
 }
 
-const CustomMessage: React.FC<CustomMessageProps> = ({ message, isUser }) => {
+const CustomMessage: React.FC<CustomMessageProps> = forwardRef<
+  HTMLDivElement,
+  CustomMessageProps
+>(({ message, isUser }, ref) => {
   return (
-    <CustomMessageContainer isUser={isUser}>
+    <CustomMessageContainer key={message.id} isUser={isUser} ref={ref}>
       <CustomMessagePhotoContainer>
+        {/* {message.user.avatar !== "" && ( */}
         <CustomMessagePhoto
           src={
             message.user.avatar ||
@@ -26,11 +30,14 @@ const CustomMessage: React.FC<CustomMessageProps> = ({ message, isUser }) => {
           }
           alt="userIcon"
         />
+        {/* )} */}
       </CustomMessagePhotoContainer>
       <CustomMessageBubble isUser={isUser}>
         <CustomUserName isUser={isUser}>{message.user.name}</CustomUserName>
-        {message?.isMediafile ? (
-          <></>
+        {message?.isMediafile === "true" ? (
+          <CustomMessagePhotoContainer>
+            <img src={message.locationPreview} alt="media" />
+          </CustomMessagePhotoContainer>
         ) : (
           <CustomMessageText>{message.body}</CustomMessageText>
         )}
@@ -40,6 +47,6 @@ const CustomMessage: React.FC<CustomMessageProps> = ({ message, isUser }) => {
       </CustomMessageBubble>
     </CustomMessageContainer>
   );
-};
+});
 
 export default CustomMessage;

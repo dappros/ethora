@@ -15,14 +15,17 @@ export interface IMessage {
   key?: string; // workaround to solve a problem of messages uniqueness - additional, local timestamp to solve when XMPP server sends duplicate timestamps (TO DO: depricate / review)
   coinsInMessage?: string | number; // store only - message coins counter
   numberOfReplies?: number[] | number; // store only - array of replies in a thread (if applicable) - includes messages IDs so that client app can display relevant message previews for the thread
-  isSystemMessage?: boolean;
-  isMediafile?: boolean;
+  isSystemMessage?: string;
+  isMediafile?: string;
+  locationPreview?: string;
 }
 
 export interface IRoom {
   id: string;
   name: string;
   jid: string;
+  title: string;
+  usersCnt: number;
   // users: IUser[];
   // messages: IMessage[];
 }
