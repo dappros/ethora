@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Message } from '../Message/Message'
 
-import { MessageType } from '../../../store_/chat';
+import { MessageType } from '../store_/chat';
 import { useEffect, useRef } from 'react';
 import { ChatDateDevider } from '../ChatDateDevider';
 import { ThreadMainMessage } from './ThreadMainMessage';

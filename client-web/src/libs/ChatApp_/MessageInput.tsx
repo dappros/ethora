@@ -1,12 +1,12 @@
 import { useRef, useState } from "react"
 
-import { wsClient } from "../../api/wsClient_"
-import { useChatStore } from "../../store_"
+import { wsClient } from "./wsClient_"
+import { useChatStore } from "./store_"
 import { AxiosResponse } from "axios"
 import { Dialog } from '@headlessui/react'
 import { PaperClipIcon } from "./Icons/PaperClipIcon"
 import { PaperPlaneIcon } from "./Icons/PaperPlane"
-import { MessageType } from "../../store_/chat"
+import { MessageType } from "./store_/chat"
 
 import "./MessageInput.scss"
 

@@ -1,7 +1,6 @@
 import { TChatProps } from "."
-import { useChatStore } from "../../store_"
+import { useChatStore } from "./store_"
 import { ChatHeader } from "./ChatHeader"
-import { MessageInput } from "./MessageInput"
 import { MessageList } from "./MessageList"
 import { Thread } from "./Thread/Thread"
 

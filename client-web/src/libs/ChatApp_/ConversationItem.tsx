@@ -1,5 +1,4 @@
 import cn from "classnames"
-import { Menu, Transition } from '@headlessui/react'
 
 import styles from "./ConversationItem.module.css"
 

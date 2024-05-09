@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { wsClient } from "../api/wsClient_";
+import { wsClient } from "../wsClient_";
 
 export type TreadLinkMessage = {
   text: string,

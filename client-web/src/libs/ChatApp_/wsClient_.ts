@@ -1,8 +1,8 @@
 import xmpp from "@xmpp/client";
 import { Element } from "ltx";
 
-import { useChatStore } from "../store_";
-import { MessageType } from "../store_/chat";
+import { useChatStore } from "./store_";
+import { MessageType } from "./store_/chat";
 
 const xml = xmpp.xml;
 
@@ -772,7 +772,33 @@ export const wsClient = {
       })
     )
     this.client.send(stanza)
-  }
+  },
+
+  // setPrivateXmlRooms(rooms: any) => {
+  //   //     <iq type="set" id="1001">
+  //   //   <query xmlns="jabber:iq:private">
+  //   //     <exodus xmlns="exodus:prefs">
+  //   //       <defaultnick>Hamlet</defaultnick>
+  //   //     </exodus>
+  //   //   </query>
+  //   // </iq>
+  //   const roomsToSet = JSON.stringify(rooms)
+
+  //   const stanza = xml(
+  //     "iq",
+  //     {
+  //       id: "privateXml",
+  //       type: "set",
+  //     },
+  //     xml(
+  //       "query",
+  //       { xmlns: "jabber:iq:private" },
+  //       xml("", { xmlns: "exodus:prefs" }, xml("rooms", {}, roomsToSet))
+  //     )
+  //   )
+
+  //   this.client.send(stanza)
+  // }
 }
 
 function createTimeoutPromise(ms, unsubscribe) {

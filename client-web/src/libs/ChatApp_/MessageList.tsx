@@ -2,10 +2,10 @@ import * as React from 'react'
 import { Message } from './Message/Message'
 
 import styles from './MessageList.module.css'
-import { MessageType, RoomType } from '../../store_/chat';
+import { MessageType, RoomType } from './store_/chat';
 import { useEffect, useRef } from 'react';
 import { block_scroll } from './block_scroll';
-import { useChatStore } from '../../store_';
+import { useChatStore } from './store_';
 import { ChatDateDevider } from './ChatDateDevider';
 import { MessageInput } from './MessageInput';
 import { AxiosResponse } from 'axios';

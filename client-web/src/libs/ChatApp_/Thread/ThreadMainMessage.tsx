@@ -1,4 +1,4 @@
-import { MessageType } from "../../../store_/chat"
+import { MessageType } from "../store_/chat"
 import profileImg from '../../../assets/images/profilepic.png'
 
 type Props = {

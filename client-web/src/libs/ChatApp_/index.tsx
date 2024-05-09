@@ -1,8 +1,8 @@
 import { Box, Container } from "@mui/material"
 import { useEffect, useState } from "react"
-import { wsClient } from "../../api/wsClient_"
-import { RoomType } from "../../store_/chat"
-import { useChatStore } from "../../store_"
+import { wsClient } from "./wsClient_"
+import { RoomType } from "./store_/chat"
+import { useChatStore } from "./store_"
 import ChatSidebar from "./ChatSidebar"
 import { ChatContainer } from "./ChatContainer"
 import { ConversationsList } from "./ConversationList"
@@ -24,7 +24,7 @@ export type TChatProps = {
   sendFile?: (formData: FormData) => Promise<AxiosResponse<any, any>>,
 }
 
-export function Chat_(props: TChatProps) {
+export function ChatApp_(props: TChatProps) {
   const {
     xmppService,
     xmppPassword,

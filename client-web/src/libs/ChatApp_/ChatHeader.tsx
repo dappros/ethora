@@ -1,9 +1,9 @@
-import { useChatStore } from '../../store_'
+import { useChatStore } from './store_'
 import { Dialog } from "@headlessui/react"
 
 import './ChatHeader.scss'
 import { useState } from 'react'
-import { wsClient } from '../../api/wsClient_'
+import { wsClient } from './wsClient_'
 
 export function ChatHeader() {
     const currentRoom = useChatStore((state) => state.currentRoom)

@@ -1,5 +1,5 @@
 import { ConversationItem } from "./ConversationItem";
-import { useChatStore } from "../../store_";
+import { useChatStore } from "./store_";
 
 export function ConversationsList() {
     const rooms = useChatStore((state) => state.rooms)

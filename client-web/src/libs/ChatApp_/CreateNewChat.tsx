@@ -2,9 +2,9 @@ import { useState } from "react"
 import "./CreateNewChat.scss"
 import { Dialog } from "@headlessui/react"
 import { sha256 } from "js-sha256"
-import { wsClient } from "../../api/wsClient_"
+import { wsClient } from "./wsClient_"
 import { AxiosResponse } from "axios"
-import { useChatStore } from "../../store_"
+import { useChatStore } from "./store_"
 
 type Props = {
     sendFile: (formData: FormData) => Promise<AxiosResponse<any, any>>,

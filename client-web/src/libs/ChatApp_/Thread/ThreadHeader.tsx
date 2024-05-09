@@ -1,7 +1,7 @@
-import { RoomType } from "../../../store_/chat"
+import { RoomType } from "../store_/chat"
 import { MdClose } from "react-icons/md";
 
-import { useChatStore } from "../../../store_";
+import { useChatStore } from "../store_";
 
 type Props = {
     currentRoom: RoomType

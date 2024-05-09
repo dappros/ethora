@@ -3,12 +3,12 @@ import profileImg from '../../../assets/images/profilepic.png'
 
 import "./Message.scss"
 import { MoreIcon } from '../Icons/MoreIcon'
-import { MessageType } from '../../../store_/chat'
-import { useChatStore } from '../../../store_'
+import { MessageType } from '../store_/chat'
+import { useChatStore } from '../store_'
 import { DateTime } from 'luxon'
 import { Dialog } from '@headlessui/react'
 import { useState } from 'react'
-import { wsClient } from '../../../api/wsClient_'
+import { wsClient } from '../wsClient_'
 
 type Props = {
     message: MessageType,

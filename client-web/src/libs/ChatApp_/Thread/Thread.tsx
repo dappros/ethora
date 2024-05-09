@@ -1,10 +1,10 @@
-import { useChatStore } from "../../../store_"
+import { useChatStore } from "../store_"
 import { MessageInput } from "../MessageInput"
 import { ThreadHeader } from "./ThreadHeader"
 import { ThreadMessages } from "./ThreadMessages"
 
 import "./Thread.scss"
-import { MessageType } from "../../../store_/chat"
+import { MessageType } from "../store_/chat"
 import { useState } from "react"
 
 type Props = {
