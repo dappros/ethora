@@ -17,7 +17,7 @@ export interface ChatSliceInterface extends ModelState {
   doConnected: () => void;
   doShow: () => void;
   doChatMarkedAsRead: (chatId: string) => void;
-  doActionReceivedNewMessage: (message: ModelChatMessage) => void;
+  doReceivedNewMessage: (message: ModelChatMessage) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -37,7 +37,7 @@ export const createChatSlice: ImmerStateCreator<
   doConnected: () => set(s => {s.connection = 'connected'}),
   doShow: () => set((state) => {state.visible = true}),
   doChatMarkedAsRead: () => {},
-  doActionReceivedNewMessage: (message: ModelChatMessage) => {
+  doReceivedNewMessage: (message: ModelChatMessage) => {
     const state = get()
     const chatId = message.from.chatId
     const oldChat = getChat(state.chatList, chatId)
