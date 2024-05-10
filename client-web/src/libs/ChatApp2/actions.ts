@@ -1,3 +1,4 @@
+import { ModelChatMessage } from "./models";
 import { useChatStore } from "./store/useChatStore";
 import { websocketConnect } from "./websocket";
 const getState = useChatStore.getState
@@ -31,6 +32,12 @@ export function actionMarkChatAsRead(chatId: string) {
 }
 
 export function actionChatMarkedAsRead(chatId: string) {
-    const store = getState()
-    store.doChatMarkedAsRead(chatId)
+    const state = getState()
+    state.doChatMarkedAsRead(chatId)
+}
+
+export function actionReceivedNewMessage(message: ModelChatMessage) {
+    const state = getState()
+
+    state.doActionReceivedNewMessage()
 }

@@ -1,5 +1,7 @@
 import { StateCreator } from "zustand";
-import { ModelState, ModelMeUser } from "../models";
+import { ModelState, ModelMeUser, ModelChatMessage } from "../models";
+import getChat from "../utils/getChat";
+import { setChat } from "../utils/setChat";
 
 type ImmerStateCreator<T> = StateCreator<
   T,
@@ -15,6 +17,7 @@ export interface ChatSliceInterface extends ModelState {
   doConnected: () => void;
   doShow: () => void;
   doChatMarkedAsRead: (chatId: string) => void;
+  doActionReceivedNewMessage: (message: ModelChatMessage) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -33,5 +36,29 @@ export const createChatSlice: ImmerStateCreator<
   doDisconnected: () => set(s => {s.connection = 'disconnected'}),
   doConnected: () => set(s => {s.connection = 'connected'}),
   doShow: () => set((state) => {state.visible = true}),
-  doChatMarkedAsRead: () => {}
+  doChatMarkedAsRead: () => {},
+  doActionReceivedNewMessage: (message: ModelChatMessage) => {
+    const state = get()
+    const chatId = message.from.chatId
+    const oldChat = getChat(state.chatList, chatId)
+
+    if (oldChat) {
+      let hasUnread;
+
+      const isMyMessage = (message.from.nickname === state.me.xmppUsername)
+      if (isMyMessage) {
+        hasUnread = oldChat.hasUnread
+      } else {
+        hasUnread = !(chatId === state.chatId)
+      }
+
+      const newChat = {
+        ...oldChat,
+        hasUnread: hasUnread,
+        messages: oldChat.messages.concat([message])
+      }
+
+      state.chatList = setChat(state.chatList, newChat)
+    }
+  }
 });

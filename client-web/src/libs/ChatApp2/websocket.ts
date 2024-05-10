@@ -1,8 +1,10 @@
-import { connect } from "http2";
 import { LikeWebSocket } from "./libs/LikeWebSocket";
 import { useChatStore } from "./store/useChatStore";
 import { parseJSON } from "./utils/parseJson";
 import { ModelChatMessage } from "./models";
+import getChat from "./utils/getChat";
+import getMessage from "./utils/getMessage";
+import { actionReceivedNewMessage } from "./actions";
 const getState = useChatStore.getState
 const log = console.log
 
@@ -84,5 +86,15 @@ function processMessage(data: any) {
 
 function handleChatNewMessage(message: ModelChatMessage) {
     const state = getState()
-    // message.from
+
+    const chatId = message.from.chatId
+    const chat = getChat(state.chatList, chatId)
+
+    if (!chat) {
+        // TODO
+    }
+
+    if (!getMessage(chat.messages, message.id)) {
+        actionReceivedNewMessage(message)
+    }
 }
