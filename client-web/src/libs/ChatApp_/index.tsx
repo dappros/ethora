@@ -10,6 +10,7 @@ import { AxiosResponse } from "axios"
 
 import "./index.scss"
 import { CreateNewChat } from "./CreateNewChat"
+import { ModelChat } from "./models"
 
 export type TChatProps = {
   xmppPassword: string,
@@ -24,7 +25,7 @@ export type TChatProps = {
   sendFile?: (formData: FormData) => Promise<AxiosResponse<any, any>>,
 }
 
-export function ChatApp_(props: TChatProps) {
+export function ChatApp(props: TChatProps) {
   const {
     xmppService,
     xmppPassword,
@@ -39,27 +40,6 @@ export function ChatApp_(props: TChatProps) {
 
   const [isLoading, setIsLoading] = useState(true)
   const [showSidebar, setShowSideBar] = useState(false)
-  // const isInit
-
-  const setRooms = useChatStore(state => state.setRooms)
-  const setCurrentRoom = useChatStore(state => state.setCurrentRoom)
-  const setMessages = useChatStore(state => state.setMessages)
-  const csSetUser = useChatStore(state => state.csSetUser)
-  const xmppStatus = useChatStore(state => state.xmppStatus)
-  const isInitCompleted = useChatStore(state => state.isInitCompleted)
-  const setIsInitCompleted = useChatStore(state => state.setIsInitCompleted)
-  const setThreadMessages = useChatStore(state => state.setThreadMessages)
-
-  csSetUser({ firstName, lastName, profileImage, walletAddress })
-
-  // useEffect(() => {
-  //   const beforeunloadHandler = (event) => {
-  //     event.returnValue = 'Are you sure you want to leave this page?';
-  //   }
-  //   window.addEventListener('beforeunload', beforeunloadHandler)
-
-  //   return () => window.removeEventListener('beforeunload', beforeunloadHandler)
-  // }, [])
 
   const initFunc = async () => {
     try {
@@ -69,8 +49,6 @@ export function ChatApp_(props: TChatProps) {
       wsClient.presence(initRooms)
       let rooms = await wsClient.getRooms()
 
-      console.log({ rooms: rooms })
-
       if (isRestrictedToInitRooms) {
         rooms = rooms.filter((el => {
           return initRooms.includes(el.jid)
@@ -78,33 +56,51 @@ export function ChatApp_(props: TChatProps) {
       }
 
       await wsClient.presence(rooms.map(el => el.jid))
-      const recentMesssages = []
 
       for (const room of rooms) {
-        let recentMsgs = await wsClient.getHistory(room.jid, 30)
-
-        let threadsMsgs = []
-
-        recentMsgs = recentMsgs.filter((el) => {
-          if (el.mainMessage) {
-            threadsMsgs.push(el)
-          }
-
-          if (el.mainMessage && el.showInChannel === "false") {
-            return false
-          }
-
-          return true;
-        })
-
-        if (recentMsgs && recentMsgs[0]) {
-          setMessages(room.jid, recentMsgs)
-          setThreadMessages(threadsMsgs)
-          recentMesssages.push(recentMsgs[recentMsgs.length - 1])
-        }
+        let msg = await wsClient.getHistory(room.jid, 1)
       }
 
-      let roomsForState: Record<string, RoomType> = {}
+      let chatList: Array<ModelChat> = []
+
+      // id: string;
+      // title: string;
+      // usersCnt: string;
+      // background: string;
+      // thumbnail: string;
+      // lastOpened: number;
+      // messages: Array<ModelChatMessage>;
+      // threadsMessages: Record<string, ModelChatMessage[]>;
+      // editMessage: ModelChatMessage | null;
+      // hasUnread: boolean;
+      // muted: boolean;
+      // loading: boolean;
+      // sending: boolean;
+      // allLoaded: boolean;
+      // hasLoaded: boolean;
+
+      for (const chat of rooms) {
+        chatList.push({
+          id: chat.jid,
+          title: chat.name,
+          usersCnt: chat.users_cnt,
+          background: chat.room_background,
+          thumbnail: chat.room_thumbnail,
+          // TODO - get this from server
+          lastOpened: 0,
+          messages: [],
+          threadsMessages: {},
+          editMessage: null,
+          hasUnread: false,
+          muted: false,
+          loading: false,
+          sending: false,
+          allLoaded: false,
+          hasLoaded: false
+
+
+        })
+      }
 
       rooms.forEach((el, index) => {
         roomsForState[el.jid] = {

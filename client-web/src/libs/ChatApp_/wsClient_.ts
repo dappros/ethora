@@ -2,7 +2,7 @@ import xmpp from "@xmpp/client";
 import { Element } from "ltx";
 
 import { useChatStore } from "./store_";
-import { MessageType } from "./store_/chat";
+import { ModelChatMessage } from "./models";
 
 const xml = xmpp.xml;
 
@@ -385,7 +385,7 @@ export const wsClient = {
     return from.endsWith(this.client.jid.getLocal())
   },
 
-  async getHistory(room: string, max: number, before?: number): Promise<MessageType[]> {
+  async getHistory(room: string, max: number, before?: number): Promise<ModelChatMessage[]> {
     const id = `get-history:${Date.now().toString()}`
 
     let stanzaHdlrPointer;
@@ -572,7 +572,7 @@ export const wsClient = {
     }
   },
 
-  async sendTextMessageToThread(to: string, mainMessage: MessageType, text: string, showInChannel: boolean = false) {
+  async sendTextMessageToThread(to: string, mainMessage: ModelChatMessage, text: string, showInChannel: boolean = false) {
     const user = useChatStore.getState().user
     const message = xml(
       'message',
