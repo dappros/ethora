@@ -31,7 +31,20 @@ export function actionResync() {
     console.log('actionResync')
 }
 
-export function actionMarkChatAsRead(chatId: string) {
+export function actionMarkChatAsRead(chatId: string, force = false) {
+    const store = getState()
+
+    if (!force) {
+        const chat = getChat(store.chatList, chatId)
+
+        if (!chat.hasUnread) {
+            return Promise.resolve()
+        }
+    }
+
+    actionChatMarkedAsRead(chatId)
+
+    // TODO request to store chatRead timestamp
 }
 
 export function actionChatMarkedAsRead(chatId: string) {

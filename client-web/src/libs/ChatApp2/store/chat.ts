@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { ModelState, ModelMeUser, ModelChatMessage } from "../models";
+import { ModelState, ModelMeUser, ModelChatMessage, ModelChat } from "../models";
 import getChat from "../utils/getChat";
 import { setChat } from "../utils/setChat";
 
@@ -31,12 +31,22 @@ export const createChatSlice: ImmerStateCreator<
   chatId: null,
   chatList: [],
   me: null,
-  doBootstraped: (user: ModelMeUser) => set((state) => {state.me = user}),
-  doConnect: () => set(state => {state.connection = 'connecting'}),
+  doBootstraped: (user: ModelMeUser) => set((s) => {s.me = user}),
+  doConnect: () => set(s => {s.connection = 'connecting'}),
   doDisconnected: () => set(s => {s.connection = 'disconnected'}),
   doConnected: () => set(s => {s.connection = 'connected'}),
-  doShow: () => set((state) => {state.visible = true}),
-  doChatMarkedAsRead: () => {},
+  doShow: () => set((s) => {s.visible = true}),
+  doChatMarkedAsRead: (chatId: string, ) => {
+    const state = get()
+    const chatList = state.chatList
+    const oldChat = getChat(chatList, chatId)
+    const newChat: ModelChat = {
+      ...oldChat,
+      hasUnread: false
+    }
+
+    set((s) => s.chatList = setChat(chatList, newChat))
+  },
   doReceivedNewMessage: (message: ModelChatMessage) => {
     const state = get()
     const chatId = message.from.chatId
@@ -58,7 +68,7 @@ export const createChatSlice: ImmerStateCreator<
         messages: oldChat.messages.concat([message])
       }
 
-      state.chatList = setChat(state.chatList, newChat)
+      set((s) => s.chatList = setChat(state.chatList, newChat))
     }
   }
 });
