@@ -99,6 +99,9 @@ export function actionPostMessageFromQueue(chatId: string) {
             chat.sending = true
 
             return sendPostQueueMessage(queueMessage)
+                .then((message: ModelChatMessage) => {
+                    state.doDequeueSuccessfulMessage(queueMessage, message)
+                })
         }
 
         function sendPostQueueMessage(queueMessage: ModelChatMessage) {
@@ -106,7 +109,7 @@ export function actionPostMessageFromQueue(chatId: string) {
             const state = getState()
 
             // TODO xmpp awaitSend
-            return
+            return Promise.resolve(queueMessage)
         }
     }
 }
