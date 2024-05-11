@@ -27,7 +27,10 @@ export class LikeWebSocket {
 
         this.client.on('disconnect', () => {this.onclose()})
         this.client.on('error', () => log('xmpp cliet error'))
-        this.client.on('online', () => this.onmessage({status: 'online'}))
+        this.client.on('online', () => {
+            this.onmessage({status: 'online'})
+            this.initPresence()
+        })
         this.client.on('stanza', this.onStanza)
         this.client.on('status', (status) => console.log(status))
         this.client.start()
@@ -49,6 +52,14 @@ export class LikeWebSocket {
 
     close() {
         this.client.stop()
+    }
+
+    requestChatList() {
+
+    }
+
+    initPresence() {
+
     }
 }
 

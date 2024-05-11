@@ -1,4 +1,5 @@
 import { uploadFile } from "../../http"
+import ChatApp from "../../libs/ChatApp2/components/ChatApp"
 import { Temp } from "../../libs/ChatApp2/tmp/Temp"
 import { useStoreState } from "../../store"
 import { walletToUsername } from "../../utils/walletManipulation"
@@ -15,14 +16,7 @@ export function ChatWrapper() {
 
   return (
     <div>
-      <Temp 
-        xmppUsername={xmppUsername} 
-        xmppPassword={xmppPassword} 
-        firstName={firstName} 
-        lastName={lastName}
-        profileImage={profileImage}
-        walletAddress={walletAddress}
-      />
+      <ChatApp />
     </div>
   )
 }

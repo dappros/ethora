@@ -6,7 +6,8 @@ import { websocketConnect } from "./websocket";
 const getState = useChatStore.getState
 const log = console.log
 
-export function actionBootstrap() {
+export function bootstrapChatWithUser() {
+    actionConnect()
 }
 
 export function actionConnect() {
@@ -29,6 +30,13 @@ export function actionShow() {
 
 export function actionResync() {
     console.log('actionResync')
+    const store = getState()
+
+    if (store.resyncing) {
+        return store.resyncing
+    }
+
+    
 }
 
 export function actionMarkChatAsRead(chatId: string, force = false) {
@@ -103,17 +111,21 @@ export function actionPostMessageFromQueue(chatId: string) {
                     state.doDequeueSuccessfulMessage(queueMessage, message)
                 })
                 .catch(() => {
-                    state.doDequeueFailedMessage()
+                    state.doDequeueFailedMessage(queueMessage)
+
+                    return actionPostMessageFromQueue(chatId)
                 })
         }
+    }
 
-        function sendPostQueueMessage(queueMessage: ModelChatMessage) {
-            const chatId = queueMessage.from.chatId
-            const state = getState()
+    return Promise.resolve();
 
-            // TODO xmpp awaitSend
-            return Promise.resolve(queueMessage)
-        }
+    function sendPostQueueMessage(queueMessage: ModelChatMessage) {
+        const chatId = queueMessage.from.chatId
+        const state = getState()
+
+        // TODO xmpp awaitSend
+        return Promise.resolve(queueMessage)
     }
 }
 

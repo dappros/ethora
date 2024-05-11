@@ -25,6 +25,7 @@ import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
 import { walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
+import { bootstrapChatWithUser } from "../libs/ChatApp2/actions"
 
 const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {
@@ -154,6 +155,7 @@ const AppTopNav = () => {
 
   useEffect(() => {
     xmpp.init(user.walletAddress, user?.xmppPassword as string)
+    bootstrapChatWithUser()
   }, [])
 
   const navigateToLatestMetaRoom = async () => {

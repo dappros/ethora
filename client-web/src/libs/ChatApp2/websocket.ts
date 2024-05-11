@@ -1,4 +1,4 @@
-import { LikeWebSocket } from "./libs/LikeWebSocket";
+import { LikeWebSocket } from "./xmpp/LikeWebSocket";
 import { useChatStore } from "./store/useChatStore";
 import { parseJSON } from "./utils/parseJson";
 import { ModelChatMessage } from "./models";
@@ -10,7 +10,7 @@ const log = console.log
 
 const RECONNECT_TIMEOUT = 10 * 1000;
 
-let websocket: LikeWebSocket | null = null;
+export let websocket: LikeWebSocket | null = null;
 
 let connecting: Promise<any> | null = null;
 
