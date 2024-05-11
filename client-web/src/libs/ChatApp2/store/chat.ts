@@ -18,6 +18,7 @@ export interface ChatSliceInterface extends ModelState {
   doShow: () => void;
   doChatMarkedAsRead: (chatId: string) => void;
   doReceivedNewMessage: (message: ModelChatMessage) => void;
+  doQueueMessage: (queueMessage: ModelChatMessage) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -70,5 +71,19 @@ export const createChatSlice: ImmerStateCreator<
 
       set((s) => s.chatList = setChat(state.chatList, newChat))
     }
+  },
+  doQueueMessage: (quequeMessage: ModelChatMessage) => {
+    const state = get()
+    const chatId = quequeMessage.from.chatId
+    const oldChat = getChat(state.chatList, chatId)
+    const oldMessages = oldChat.messages
+
+    const newMessages = oldMessages.concat(quequeMessage)
+    const newChat: ModelChat = {
+      ...oldChat,
+      messages: newMessages
+    }
+
+    set(s => s.chatList = setChat(s.chatList, newChat))
   }
 });

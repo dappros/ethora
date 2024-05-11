@@ -15,29 +15,32 @@ export interface ModelThreadLinkMessage {
 }
 
 export interface ModelChatMessage {
+    id: string;
     text: string;
     from: {
         chatId: string;
         nickname: string;
     },
-    id: string;
     created: string;
-    isMe: boolean;
-    xmlns: string;
-    senderJID: string;
-    senderFirstName: string;
-    senderLastName: string;
-    senderWalletAddress: string;
-    isSystemMessage: "true" | "false";
-    tokenAmount: string;
-    mucname: string;
-    roomJid: string;
-    isReply: "true" | "false";
-    showInChannel: "true" | "false";
-    push: "true" | "false";
-    mainMessage?: ModelThreadLinkMessage
-    isMediafile?: "true" | "false";
-    locationPreview?: string;
+    dataAttrs: {
+        isMe: boolean;
+        xmlns: string;
+        senderJID: string;
+        senderFirstName: string;
+        senderLastName: string;
+        senderWalletAddress: string;
+        isSystemMessage: "true" | "false";
+        tokenAmount: string;
+        mucname: string;
+        roomJid: string;
+        isReply: "true" | "false";
+        showInChannel: "true" | "false";
+        push: "true" | "false";
+        mainMessage?: ModelThreadLinkMessage
+        isMediafile?: "true" | "false";
+        locationPreview?: string;
+    },
+    status?: 'queued' | 'failed'
 }
 
 export interface ModelChat {

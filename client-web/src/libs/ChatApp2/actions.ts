@@ -47,6 +47,70 @@ export function actionMarkChatAsRead(chatId: string, force = false) {
     // TODO request to store chatRead timestamp
 }
 
+let queueMessageId = 0;
+
+export function actionPostMessage(chatId: string, text: string) {
+    const store = getState()
+    const chat = getChat(store.chatList, chatId)
+
+    const queueMessage: ModelChatMessage = {
+        id: `queue-${ queueMessageId++ }`,
+        text,
+        from: {
+            chatId: chatId,
+            nickname: store.me.xmppUsername
+        },
+        created: Date.now().toString(),
+        dataAttrs: {
+            isMe: true,
+            xmlns: '',
+            senderJID: '',
+            senderFirstName: store.me.firstName,
+            senderLastName: store.me.lastName,
+            senderWalletAddress: store.me.walletAddress,
+            isSystemMessage: "false",
+            tokenAmount: '',
+            mucname: '',
+            roomJid: '',
+            isReply: "false",
+            showInChannel: "true",
+            push: "true",
+        },
+        status: 'queued'
+    }
+
+    return actionQueueMessage(queueMessage)
+}
+
+export function actionQueueMessage(queueMessage: ModelChatMessage) {
+    getState().doQueueMessage(queueMessage)
+    actionPostMessageFromQueue(queueMessage.from.chatId)
+}
+
+export function actionPostMessageFromQueue(chatId: string) {
+    const state = getState()
+
+    const chat = getChat(state.chatList, chatId)
+
+    if (!chat.sending) {
+        const queueMessage = chat.messages.find(item => item.status === 'queued')
+
+        if (queueMessage) {
+            chat.sending = true
+
+            return sendPostQueueMessage(queueMessage)
+        }
+
+        function sendPostQueueMessage(queueMessage: ModelChatMessage) {
+            const chatId = queueMessage.from.chatId
+            const state = getState()
+
+            // TODO xmpp awaitSend
+            return
+        }
+    }
+}
+
 export function actionChatMarkedAsRead(chatId: string) {
     const state = getState()
     state.doChatMarkedAsRead(chatId)
