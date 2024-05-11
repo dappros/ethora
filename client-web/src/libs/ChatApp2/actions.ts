@@ -102,6 +102,9 @@ export function actionPostMessageFromQueue(chatId: string) {
                 .then((message: ModelChatMessage) => {
                     state.doDequeueSuccessfulMessage(queueMessage, message)
                 })
+                .catch(() => {
+                    state.doDequeueFailedMessage()
+                })
         }
 
         function sendPostQueueMessage(queueMessage: ModelChatMessage) {

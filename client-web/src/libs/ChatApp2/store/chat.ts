@@ -20,6 +20,7 @@ export interface ChatSliceInterface extends ModelState {
   doReceivedNewMessage: (message: ModelChatMessage) => void;
   doQueueMessage: (queueMessage: ModelChatMessage) => void;
   doDequeueSuccessfulMessage: (queueMessage: ModelChatMessage, message: ModelChatMessage) => void;
+  doDequeueFailedMessage: (queueMessage: ModelChatMessage) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -87,15 +88,36 @@ export const createChatSlice: ImmerStateCreator<
 
     set(s => s.chatList = setChat(s.chatList, newChat))
   },
-  doDequeueSuccessfulMessage: (quequeMessage: ModelChatMessage, message: ModelChatMessage) => {
+  doDequeueSuccessfulMessage: (queueMessage: ModelChatMessage, message: ModelChatMessage) => {
     const state = get()
-    const chatId = quequeMessage.from.chatId
+    const chatId = queueMessage.from.chatId
     const oldChat = getChat(state.chatList, chatId)
     const oldMessages = oldChat.messages
-    const index = oldMessages.indexOf(quequeMessage)
+    const index = oldMessages.indexOf(queueMessage)
     const newMessages = oldMessages.concat([])
 
     newMessages[index] = message
+    const newChat: ModelChat = {
+      ...oldChat,
+      messages: newMessages,
+      sending: false
+    }
+
+    set(s => s.chatList = setChat(s.chatList, newChat))
+  },
+  doDequeueFailedMessage: (queueMessage: ModelChatMessage) => {
+    const state = get()
+    const chatId = queueMessage.from.chatId
+    const oldChat = getChat(state.chatList, chatId)
+    const oldMessages = oldChat.messages
+
+    const index = oldMessages.indexOf(queueMessage)
+    const newMessages = oldMessages.concat([])
+    const newMessage: ModelChatMessage = {
+      ...queueMessage,
+      status: 'failed'
+    }
+    newMessages[index] = newMessage
     const newChat: ModelChat = {
       ...oldChat,
       messages: newMessages,
