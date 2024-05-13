@@ -10,7 +10,6 @@ export default function ChatAppEmbeded() {
     const chatId = useChatStore(state => state.chatId)
     const chatList = useChatStore(state => state.chatList)
 
-
     return (
         <div>
             <div>ChatAppEmbeded</div>

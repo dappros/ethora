@@ -1,4 +1,7 @@
 import { ModelChat } from "../models"
+import { ChatListItem } from "./ChatListItem/ChatListItem"
+
+import "./ChatList.scss"
 
 interface Props {
     chatList: Array<ModelChat>,
@@ -7,6 +10,20 @@ interface Props {
 
 export default function ChatList(props: Props) {
     return (
-        <div>ChatList</div>
+        <div className="ChatList">
+            {
+                props.chatList.map((chat) => {
+                    const id = chat.id
+                    const selected = (id === props.chatId)
+                    return (
+                        <ChatListItem
+                            chat={chat}
+                            selected={selected}
+                            key={id}
+                        />
+                    )
+                })
+            }
+        </div>
     )
 }
