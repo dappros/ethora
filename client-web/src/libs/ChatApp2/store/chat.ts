@@ -36,7 +36,7 @@ export const createChatSlice: ImmerStateCreator<
   inited: false,
   connection: 'disconnected',
   resyncing: null,
-  visible: true,
+  visible: false,
   focused: false,
   chatId: null,
   chatList: null,

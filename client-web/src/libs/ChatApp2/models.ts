@@ -67,15 +67,16 @@ export interface ModelMeUser {
     walletAddress?: string;
     xmppPassword: string;
     xmppUsername: string;
-  }
+}
 
 export interface ModelState {
     inited: boolean;
     connection: 'connecting' | 'connected' | 'disconnected';
     resyncing: Promise<void> | null;
-    visible: boolean;
-    focused: boolean;
     chatId: string | null;
     chatList: Array<ModelChat> | null;
     me: ModelMeUser | null;
+    // only for widget
+    visible: boolean;
+    focused: boolean;
 }

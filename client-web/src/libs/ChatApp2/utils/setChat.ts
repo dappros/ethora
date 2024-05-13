@@ -14,5 +14,7 @@ export function setChat(chatList: Array<ModelChat>, chat: ModelChat) {
         newChatList.push(chat)
     }
 
-    return getSortedChatList(newChatList)
+    return newChatList
+
+    // return getSortedChatList(newChatList)
 }

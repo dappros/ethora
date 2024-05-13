@@ -1,9 +1,9 @@
-import ChatApp from "../../libs/ChatApp2/components/ChatApp"
+import ChatAppEmbedded from "../../libs/ChatApp2/components/ChatAppEmbedded"
 
 export function ChatWrapper() {
   return (
     <div>
-      <ChatApp />
+      <ChatAppEmbedded />
     </div>
   )
 }

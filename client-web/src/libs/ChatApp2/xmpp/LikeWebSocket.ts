@@ -108,7 +108,6 @@ export class LikeWebSocket {
     }
 
     isMe(from: string) {
-        console.log("from ", from)
         return from.endsWith(this.client.jid.getLocal())
     }
 }

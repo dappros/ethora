@@ -6,6 +6,7 @@ import getMessage from "./utils/getMessage";
 import { wsConnect } from "./ws";
 import { chatList } from "./xmpp/xmppCombinedRequests/chatList";
 import { getHistory } from "./xmpp/xmppRequests/getHistory";
+
 const getState = useChatStore.getState
 const log = console.log
 
@@ -22,6 +23,7 @@ export function actionConnect() {
     return wsConnect()
 }
 
+// only for widget type
 export function actionShow() {
     const store = getState()
 
@@ -47,16 +49,17 @@ export function actionResync() {
     const promise = chatList()
         .then((chatList: Array<ModelChat>) => {
             store.doResynced(chatList)
+            const newState = getState()
             if (chatList.length > 0) {
-                actionOpenChat(chatList[0].id)
+                actionOpenChat(newState.chatList[0].id)
             }
-
         })
 
     store.doResync(promise)
 }
 
 export function actionOpenChat(chatId: string) {
+    console.log('actionOpenChat ', chatId)
     const state = getState()
 
     const chat = getChat(state.chatList, chatId)
@@ -70,9 +73,14 @@ export function actionOpenChat(chatId: string) {
     // then
     state.doOpenChat(chat.id)
 
+    return Promise.all([
+        actionLoadMoreMessages(chatId),
+        actionMarkChatAsRead(chatId)
+    ]).then(() => chat)
 }
 
 export function actionLoadMoreMessages(chatId: string) {
+    console.log('actionLoadMoreMessages')
     const state = getState()
 
     const chat = getChat(state.chatList, chatId)
@@ -86,12 +94,10 @@ export function actionLoadMoreMessages(chatId: string) {
 
     const firstMessageId = (firstMessage) ? firstMessage.id : null
 
-    getHistory(chatId, MESSAGES_COUNT, firstMessageId)
+    return getHistory(chatId, MESSAGES_COUNT, firstMessageId)
         .then((messages) => {
             state.doLoadedMoreMessages(chatId, messages)
         })
-
-
 }
 
 export function actionMarkChatAsRead(chatId: string, force = false) {
