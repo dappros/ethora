@@ -23,6 +23,7 @@ export async function getRooms(): Promise<any> {
       stanzaHdlrPointer = (stanza: Element) => {
         if (stanza.is("iq") && stanza.attrs.id === id && stanza.attrs.type === "result") {
           const fields = stanza.getChild('query')?.getChildren('room')
+          console.log(fields.toString())
 
           const response = fields.map((el: Element) => {
             const { name, users_cnt, room_background, room_thumbnail, jid } = el.attrs

@@ -46,6 +46,7 @@ export interface ModelChatMessage {
 export interface ModelChat {
     id: string;
     title: string;
+    description?: string;
     usersCnt: string;
     background: string;
     thumbnail: string;

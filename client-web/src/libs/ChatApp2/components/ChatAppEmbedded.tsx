@@ -5,24 +5,31 @@ import ChatList from "./ChatList"
 import ChatMessages from "./ChatMessages"
 import ChatInput from "./ChatInput/ChatInput"
 
+import './ChatAppEmbedded.scss'
+import { ChatHeader } from "./ChatHeader"
+
 export default function ChatAppEmbeded() {
     const inited = useChatStore(state => state.inited)
     const chatId = useChatStore(state => state.chatId)
     const chatList = useChatStore(state => state.chatList)
 
+    const chat = inited && getChat(chatList, chatId)
+
     return (
-        <div>
-            <div>ChatAppEmbeded</div>
+        <div className="ChatAppEmbedded">
             {!inited ?
-                (<div>loading...</div>) :
+                (<div className="ChatAppEmbedded__loading">loading...</div>) :
                 (
-                    <div>
-                        <ChatList chatId={chatId} chatList={chatList} />
-                        <div>
-                            <ChatMessages chat={getChat(chatList, chatId)} />
-                            <ChatInput chat={getChat(chatList, chatId)} chatId={chatId} />
+                    <>
+                        <div className="ChatAppEmbedded__left">
+                            <ChatList chatId={chatId} chatList={chatList} />
                         </div>
-                    </div>
+                        <div className="ChatAppEmbedded__right">
+                            <ChatHeader chat={chat}/>
+                            <ChatMessages chat={chat} />
+                            <ChatInput chat={chat} chatId={chatId} />
+                        </div>
+                    </>
                 )
             }
         </div>

@@ -1,0 +1,16 @@
+.ChatHeader {
+    box-sizing: border-box;
+    color: #000000de;
+    background-color: #f6fbff;
+    font-size: 1em;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    border-top: solid 0px #d1dbe3;
+    border-right: solid 0px #d1dbe3;
+    border-bottom: solid 1px #d1dbe3;
+    border-left: solid 0px #d1dbe3;
+    height: 48px;
+    justify-content: space-between;
+}
