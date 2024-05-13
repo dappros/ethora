@@ -1,16 +1,15 @@
 import { useEffect } from "react"
 import { useChatStore } from "../store/useChatStore"
+import getChat from "../utils/getChat"
+import ChatList from "./ChatList"
+import ChatMessages from "./ChatMessages"
+import ChatInput from "./ChatInput/ChatInput"
 
 export default function ChatAppEmbeded() {
     const inited = useChatStore(state => state.inited)
     const chatId = useChatStore(state => state.chatId)
     const chatList = useChatStore(state => state.chatList)
 
-    useEffect(() => {
-        if (inited) {
-            console.log(chatId)
-        }
-    }, [inited, chatId])
 
     return (
         <div>
@@ -19,7 +18,11 @@ export default function ChatAppEmbeded() {
                 (<div>loading...</div>) :
                 (
                     <div>
-                        content
+                        <ChatList chatId={chatId} chatList={chatList} />
+                        <div>
+                            <ChatMessages chat={getChat(chatList, chatId)} />
+                            <ChatInput chat={getChat(chatList, chatId)} chatId={chatId} />
+                        </div>
                     </div>
                 )
             }
