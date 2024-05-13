@@ -49,7 +49,6 @@ export interface ModelChat {
     usersCnt: string;
     background: string;
     thumbnail: string;
-    lastOpened: number;
     messages: Array<ModelChatMessage>;
     threadsMessages: Record<string, ModelChatMessage[]>;
     editMessage: ModelChatMessage | null;
@@ -73,7 +72,7 @@ export interface ModelMeUser {
 export interface ModelState {
     inited: boolean;
     connection: 'connecting' | 'connected' | 'disconnected';
-    resyncing: 'true' | null;
+    resyncing: Promise<void> | null;
     visible: boolean;
     focused: boolean;
     chatId: string | null;

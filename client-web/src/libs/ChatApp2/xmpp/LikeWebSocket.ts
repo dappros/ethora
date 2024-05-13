@@ -84,7 +84,7 @@ export class LikeWebSocket {
             parsedEl.text = text
             parsedEl.from = this.parseMucFromAttr(msg.attrs.from)
             parsedEl.created = parsedEl.id.slice(0, 13)
-            parsedEl.isMe = ws.isMe(parsedEl.from)
+            parsedEl.isMe = this.isMe(msg.attrs.from)
 
             parsedEl.dataAttrs = dataAttrs
 
@@ -108,6 +108,7 @@ export class LikeWebSocket {
     }
 
     isMe(from: string) {
+        console.log("from ", from)
         return from.endsWith(this.client.jid.getLocal())
     }
 }

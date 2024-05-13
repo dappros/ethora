@@ -24,6 +24,10 @@ export interface ChatSliceInterface extends ModelState {
   doDequeueSuccessfulMessage: (queueMessage: ModelChatMessage, message: ModelChatMessage) => void;
   doDequeueFailedMessage: (queueMessage: ModelChatMessage) => void;
   doResynced: (chatList: Array<ModelChat>) => void;
+  doResync: (promise: Promise<void>) => void;
+  doOpenChat: (chatId: string) => void;
+  doLoadMoreMessages: (chatId: string) => void;
+  doLoadedMoreMessages: (chatId: string, messages: Array<ModelChatMessage>) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -32,7 +36,7 @@ export const createChatSlice: ImmerStateCreator<
   inited: false,
   connection: 'disconnected',
   resyncing: null,
-  visible: false,
+  visible: true,
   focused: false,
   chatId: null,
   chatList: null,
@@ -40,7 +44,9 @@ export const createChatSlice: ImmerStateCreator<
   doBootstraped: (user: ModelMeUser) => set((s) => {s.me = user}),
   doConnect: () => set(s => {s.connection = 'connecting'}),
   doDisconnected: () => set(s => {s.connection = 'disconnected'}),
-  doConnected: () => set(s => {s.connection = 'connected'}),
+  doConnected: () => set(s => {
+    s.connection = 'connected'
+  }),
   doShow: () => set((s) => {s.visible = true}),
   doChatMarkedAsRead: (chatId: string, ) => {
     const state = get()
@@ -130,7 +136,43 @@ export const createChatSlice: ImmerStateCreator<
     set(s => s.chatList = setChat(s.chatList, newChat))
   },
   doResynced: (chatList: Array<ModelChat>) => {
-    log('chat slice: doResynced')
-    set((s) => ({...s, inited: true, resyncing: null, chatList: chatList,}))
+    set((s) => ({
+      ...s,
+      inited: true,
+      resyncing: null,
+      chatList: chatList
+    }))
+  },
+  doResync: (promise) => set(s => {s.resyncing = promise}),
+  doOpenChat: (chatId: string) => set(s => ({...s, visible: true, chatId: chatId})),
+  doLoadMoreMessages: (chatId: string) => {
+    const state = get()
+    const chatList = state.chatList
+
+    const oldChat = getChat(chatList, chatId)
+    const newChat = {
+      ...oldChat,
+      loading: true,
+    }
+
+    const newChatList = setChat(chatList, newChat)
+    set(s => {s.chatList = newChatList})
+  },
+  doLoadedMoreMessages: (chatId: string, messages: Array<ModelChatMessage>) => {
+    const state = get()
+    const oldChat = getChat(state.chatList, chatId)
+    const allLoaded = (messages.length === 0)
+    
+    const newMessages = messages.concat(oldChat.messages)
+
+    const newChat: ModelChat = {
+      ...oldChat,
+      loading: false,
+      hasLoaded: true,
+      allLoaded: allLoaded,
+      messages: newMessages
+    }
+
+    set(s => {s.chatList = setChat(s.chatList, newChat)})
   }
 });

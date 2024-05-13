@@ -1,14 +1,21 @@
-import { ModelChatMessage, ModelMeUser } from "./models";
+import { ModelChat, ModelChatMessage, ModelMeUser } from "./models";
 import { useChatStore } from "./store/useChatStore";
 import getChat from "./utils/getChat";
+import getChatFirstMessage from "./utils/getChatFirstMessage";
 import getMessage from "./utils/getMessage";
 import { wsConnect } from "./ws";
+import { chatList } from "./xmpp/xmppCombinedRequests/chatList";
+import { getHistory } from "./xmpp/xmppRequests/getHistory";
 const getState = useChatStore.getState
 const log = console.log
 
+const MESSAGES_COUNT = 15
+
 export function bootstrapChatWithUser(user: ModelMeUser) {
     getState().doBootstraped(user)
-    actionConnect()
+    actionConnect().then(() => {
+        actionResync()
+    })
 }
 
 export function actionConnect() {
@@ -36,6 +43,55 @@ export function actionResync() {
     if (store.resyncing) {
         return store.resyncing
     }
+
+    const promise = chatList()
+        .then((chatList: Array<ModelChat>) => {
+            store.doResynced(chatList)
+            if (chatList.length > 0) {
+                actionOpenChat(chatList[0].id)
+            }
+
+        })
+
+    store.doResync(promise)
+}
+
+export function actionOpenChat(chatId: string) {
+    const state = getState()
+
+    const chat = getChat(state.chatList, chatId)
+
+    if (!chat) {
+        return
+    }
+
+    // TODO request to save timestamp
+    
+    // then
+    state.doOpenChat(chat.id)
+
+}
+
+export function actionLoadMoreMessages(chatId: string) {
+    const state = getState()
+
+    const chat = getChat(state.chatList, chatId)
+
+    if (chat.loading || chat.allLoaded) {
+        return Promise.resolve()
+    }
+
+    state.doLoadMoreMessages(chatId)
+    const firstMessage = getChatFirstMessage(chat)
+
+    const firstMessageId = (firstMessage) ? firstMessage.id : null
+
+    getHistory(chatId, MESSAGES_COUNT, firstMessageId)
+        .then((messages) => {
+            state.doLoadedMoreMessages(chatId, messages)
+        })
+
+
 }
 
 export function actionMarkChatAsRead(chatId: string, force = false) {

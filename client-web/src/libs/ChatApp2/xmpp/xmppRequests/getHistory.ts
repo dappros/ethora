@@ -4,7 +4,7 @@ import { ws } from "../../ws";
 import { xml } from "@xmpp/client";
 import { parseJSON } from "../../utils/parseJson";
 
-export function getHistory(room: string, max: number, before?: number): Promise<ModelChatMessage[]> {
+export function getHistory(room: string, max: number, before: string | null): Promise<ModelChatMessage[]> {
     const id = `get-history:${Date.now().toString()}`
 
     let stanzaHdlrPointer;
@@ -40,7 +40,7 @@ export function getHistory(room: string, max: number, before?: number): Promise<
               parsedEl.text = text
               parsedEl.from = ws.parseMucFromAttr(msg.attrs.from)
               parsedEl.created = parsedEl.id.slice(0, 13)
-              parsedEl.isMe = ws.isMe(parsedEl.from)
+              parsedEl.isMe = ws.isMe(msg.attrs.from)
 
               parsedEl.dataAttrs = data.attrs
 
@@ -66,7 +66,7 @@ export function getHistory(room: string, max: number, before?: number): Promise<
         }
       }
 
-      this.client?.on("stanza", stanzaHdlrPointer);
+      ws.client?.on("stanza", stanzaHdlrPointer);
 
       const message = xml(
         "iq",

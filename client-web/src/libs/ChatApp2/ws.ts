@@ -45,12 +45,7 @@ export function wsConnect() {
         ws.onmessage = function(message) {
             log('ws: message', message)
 
-            const data = parseJSON(message.data);
-            if (!data) {
-                return;
-            }
-
-            if (data.status === 'online' && connecting) {
+            if (message.status === 'online' && connecting) {
                 log('ws: connected')
                 connecting = null;
 
@@ -59,7 +54,7 @@ export function wsConnect() {
                 return
             }
 
-            processMessage(data)
+            processMessage(message)
         }
     })
 
