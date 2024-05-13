@@ -1,17 +1,18 @@
-import { ModelChatMessage } from "./models";
+import { ModelChatMessage, ModelMeUser } from "./models";
 import { useChatStore } from "./store/useChatStore";
 import getChat from "./utils/getChat";
 import getMessage from "./utils/getMessage";
-import { websocketConnect } from "./websocket";
+import { wsConnect } from "./ws";
 const getState = useChatStore.getState
 const log = console.log
 
-export function bootstrapChatWithUser() {
+export function bootstrapChatWithUser(user: ModelMeUser) {
+    getState().doBootstraped(user)
     actionConnect()
 }
 
 export function actionConnect() {
-    return websocketConnect()
+    return wsConnect()
 }
 
 export function actionShow() {
@@ -35,8 +36,6 @@ export function actionResync() {
     if (store.resyncing) {
         return store.resyncing
     }
-
-    
 }
 
 export function actionMarkChatAsRead(chatId: string, force = false) {
@@ -70,7 +69,6 @@ export function actionPostMessage(chatId: string, text: string) {
         },
         created: Date.now().toString(),
         dataAttrs: {
-            isMe: true,
             xmlns: '',
             senderJID: '',
             senderFirstName: store.me.firstName,
@@ -84,6 +82,7 @@ export function actionPostMessage(chatId: string, text: string) {
             showInChannel: "true",
             push: "true",
         },
+        isMe: true,
         status: 'queued'
     }
 

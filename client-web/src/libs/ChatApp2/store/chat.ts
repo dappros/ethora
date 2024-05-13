@@ -3,6 +3,8 @@ import { ModelState, ModelMeUser, ModelChatMessage, ModelChat } from "../models"
 import getChat from "../utils/getChat";
 import { setChat } from "../utils/setChat";
 
+const log = console.log
+
 type ImmerStateCreator<T> = StateCreator<
   T,
   [["zustand/immer", never], never],
@@ -21,6 +23,7 @@ export interface ChatSliceInterface extends ModelState {
   doQueueMessage: (queueMessage: ModelChatMessage) => void;
   doDequeueSuccessfulMessage: (queueMessage: ModelChatMessage, message: ModelChatMessage) => void;
   doDequeueFailedMessage: (queueMessage: ModelChatMessage) => void;
+  doResynced: (chatList: Array<ModelChat>) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -32,7 +35,7 @@ export const createChatSlice: ImmerStateCreator<
   visible: false,
   focused: false,
   chatId: null,
-  chatList: [],
+  chatList: null,
   me: null,
   doBootstraped: (user: ModelMeUser) => set((s) => {s.me = user}),
   doConnect: () => set(s => {s.connection = 'connecting'}),
@@ -125,5 +128,9 @@ export const createChatSlice: ImmerStateCreator<
     }
 
     set(s => s.chatList = setChat(s.chatList, newChat))
+  },
+  doResynced: (chatList: Array<ModelChat>) => {
+    log('chat slice: doResynced')
+    set((s) => ({...s, inited: true, resyncing: null, chatList: chatList,}))
   }
 });

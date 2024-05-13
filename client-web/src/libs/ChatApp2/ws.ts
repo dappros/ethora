@@ -10,40 +10,40 @@ const log = console.log
 
 const RECONNECT_TIMEOUT = 10 * 1000;
 
-export let websocket: LikeWebSocket | null = null;
+export let ws: LikeWebSocket | null = null;
 
 let connecting: Promise<any> | null = null;
 
-export function websocketConnect() {
+export function wsConnect() {
     if (connecting) {
         return connecting;
     }
 
-    if (websocket) {
+    if (ws) {
         return Promise.resolve();
     }
 
     getState().doConnect()
 
     connecting = new Promise((resolve) => {
-        resetWebsocket()
+        resetWs()
 
         const state = getState()
-        log('websocket: connecting...')
+        log('ws: connecting...')
         // TODO mv inline literal string
-        websocket = new LikeWebSocket('wss://dev.dxmpp.com:5443/ws', state.me.xmppUsername, state.me.xmppPassword)
+        ws = new LikeWebSocket('wss://dev.dxmpp.com:5443/ws', state.me.xmppUsername, state.me.xmppPassword)
 
-        websocket.onclose = () => {
-            log('websocket: connection was closed')
+        ws.onclose = () => {
+            log('ws: connection was closed')
 
             connecting = null
             state.doDisconnected()
-            resetWebsocket()
-            window.setTimeout(websocketConnect, RECONNECT_TIMEOUT);
+            resetWs()
+            window.setTimeout(wsConnect, RECONNECT_TIMEOUT);
         }
 
-        websocket.onmessage = function(message) {
-            log('websocket: message', message)
+        ws.onmessage = function(message) {
+            log('ws: message', message)
 
             const data = parseJSON(message.data);
             if (!data) {
@@ -51,7 +51,7 @@ export function websocketConnect() {
             }
 
             if (data.status === 'online' && connecting) {
-                log('websocket: connected')
+                log('ws: connected')
                 connecting = null;
 
                 getState().doConnected()
@@ -66,13 +66,13 @@ export function websocketConnect() {
     return connecting;
 }
 
-function resetWebsocket() {
-    if (websocket) {
-        delete websocket.onmessage;
-        delete websocket.onclose;
+function resetWs() {
+    if (ws) {
+        delete ws.onmessage;
+        delete ws.onclose;
 
-        websocket.close();
-        websocket = null;
+        ws.close();
+        ws = null;
     }
 }
 

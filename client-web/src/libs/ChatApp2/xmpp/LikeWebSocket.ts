@@ -18,17 +18,17 @@ export class LikeWebSocket {
         this.conference = `conference.${this.host}`
         this.username = username
         this.service = url
-    
+
         this.client = xmpp.client({
-          service: url,
-          username: username,
-          password: password,
+            service: url,
+            username: username,
+            password: password,
         })
 
-        this.client.on('disconnect', () => {this.onclose()})
+        this.client.on('disconnect', () => { this.onclose() })
         this.client.on('error', () => log('xmpp cliet error'))
         this.client.on('online', () => {
-            this.onmessage({status: 'online'})
+            this.onmessage({ status: 'online' })
             this.initPresence()
         })
         this.client.on('stanza', this.onStanza)
@@ -39,7 +39,7 @@ export class LikeWebSocket {
     onStanza(stanza: Element) {
         // if we have direct archived child it is not getHistory request
         if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('archived')) {
-            const parsed = realtimeMessageParser(stanza)
+            const parsed = this.realtimeMessageParser(stanza)
             if (parsed) {
                 const data = {
                     operation: 'chat_new_message',
@@ -61,35 +61,53 @@ export class LikeWebSocket {
     initPresence() {
 
     }
-}
 
-function realtimeMessageParser(stanza: Element): any {
-    const msg = stanza
-    const text = msg.getChild('body')?.getText()
-    const dataAttrs = msg.getChild('data')?.attrs
-    const archived = msg.getChild('archived')
+    parseMucFromAttr(from) {
+        const [chatId, nickname] = from.split('/')
 
-    if (text && dataAttrs) {
-        let parsedEl: any = {}
-
-        parsedEl.text = text
-        parsedEl.from = parseMucFromAttr(msg.attrs.from)
-        parsedEl.id = archived.attrs.id
-        parsedEl.dataAttrs = dataAttrs
-
-        if (parsedEl.dataAttrs.mainMessage) {
-            parsedEl.dataAttrs.mainMessage = parseJSON(parsedEl.dataAttrs.mainMessage)
+        return {
+            chatId,
+            nickname
         }
-
-        return parsedEl
     }
-}
 
-function parseMucFromAttr(from) {
-    const [chatId, nickname] = from.split('/')
+    realtimeMessageParser(stanza: Element): any {
+        const msg = stanza
+        const text = msg.getChild('body')?.getText()
+        const dataAttrs = msg.getChild('data')?.attrs
+        const archived = msg.getChild('archived')
 
-    return {
-        chatId,
-        nickname
+        if (text && dataAttrs) {
+            let parsedEl: any = {}
+
+            parsedEl.id = archived.attrs.id
+            parsedEl.text = text
+            parsedEl.from = this.parseMucFromAttr(msg.attrs.from)
+            parsedEl.created = parsedEl.id.slice(0, 13)
+            parsedEl.isMe = ws.isMe(parsedEl.from)
+
+            parsedEl.dataAttrs = dataAttrs
+
+            if (parsedEl.dataAttrs.mainMessage) {
+                parsedEl.dataAttrs.mainMessage = parseJSON(parsedEl.dataAttrs.mainMessage)
+            }
+
+            return parsedEl
+        }
+    }
+
+    createTimeoutPromise(ms, unsubscribe) {
+        return new Promise((_, reject) => {
+            setTimeout(() => {
+                try {
+                    unsubscribe()
+                } catch (e) { }
+                reject()
+            }, ms)
+        })
+    }
+
+    isMe(from: string) {
+        return from.endsWith(this.client.jid.getLocal())
     }
 }

@@ -154,8 +154,14 @@ const AppTopNav = () => {
   }, [firebaseAppId])
 
   useEffect(() => {
-    xmpp.init(user.walletAddress, user?.xmppPassword as string)
-    bootstrapChatWithUser()
+    // xmpp.init(user.walletAddress, user?.xmppPassword as string)
+    bootstrapChatWithUser({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      xmppPassword: user.xmppPassword,
+      xmppUsername: walletToUsername(user.walletAddress),
+      walletAddress: user.walletAddress
+    })
   }, [])
 
   const navigateToLatestMetaRoom = async () => {

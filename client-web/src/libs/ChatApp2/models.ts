@@ -23,7 +23,6 @@ export interface ModelChatMessage {
     },
     created: string;
     dataAttrs: {
-        isMe: boolean;
         xmlns: string;
         senderJID: string;
         senderFirstName: string;
@@ -41,6 +40,7 @@ export interface ModelChatMessage {
         locationPreview?: string;
     },
     status?: 'queued' | 'failed'
+    isMe?: boolean;
 }
 
 export interface ModelChat {
@@ -73,10 +73,10 @@ export interface ModelMeUser {
 export interface ModelState {
     inited: boolean;
     connection: 'connecting' | 'connected' | 'disconnected';
-    resyncing: Promise<void> | null;
+    resyncing: 'true' | null;
     visible: boolean;
     focused: boolean;
     chatId: string | null;
-    chatList: Array<ModelChat>;
+    chatList: Array<ModelChat> | null;
     me: ModelMeUser | null;
 }
