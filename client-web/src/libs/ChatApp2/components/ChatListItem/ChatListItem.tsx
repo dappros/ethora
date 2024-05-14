@@ -43,7 +43,7 @@ export function ChatListItem({chat, selected}: Props) {
                     { chat.title }
                 </div>
                 <div className="ChatListItem__last">
-                    {lastMessage.text}
+                    {/* {lastMessage.text} */}
                 </div>
                 {renderUnread()}
             </div>
