@@ -73,10 +73,14 @@ export function actionOpenChat(chatId: string) {
     // then
     state.doOpenChat(chat.id)
 
-    return Promise.all([
-        actionLoadMoreMessages(chatId),
-        actionMarkChatAsRead(chatId)
-    ]).then(() => chat)
+    if (!chat.hasLoaded) {
+        return Promise.all([
+            actionLoadMoreMessages(chatId),
+            actionMarkChatAsRead(chatId)
+        ]).then(() => chat)
+    } else {
+        return actionMarkChatAsRead(chatId)
+    }
 }
 
 export function actionLoadMoreMessages(chatId: string) {

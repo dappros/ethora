@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { ChatDateDivider } from "./ChatDateDivider";
 import { ChatMessage } from "./ChatMessage/ChatMessage";
 import getChatLastMessage from "../utils/getChatLastMessage";
-import { blockScroll } from "../utils/blockScroll";
+import { blockScroll, unblockScroll } from "../utils/blockScroll";
 import { actionLoadMoreMessages } from "../actions";
 import getChatFirstMessage from "../utils/getChatFirstMessage";
 
@@ -78,6 +78,14 @@ export default class ChatMessages extends React.Component<Props> {
                 }
             }
         }
+
+        if (prevProps.visible !== this.props.visible) {
+            if (this.props.visible) {
+                this.blockScroll();
+            } else {
+                this.unblockScroll();
+            }
+        }
     }
 
     checkIfLoadMoreMessages = () => {
@@ -100,11 +108,15 @@ export default class ChatMessages extends React.Component<Props> {
         this.scrollTimeout = window.setTimeout(() => this.checkIfLoadMoreMessages(), 50);
     }
 
-
-
     blockScroll = () => {
         if (this.refContent) {
             blockScroll(this.refContent)
+        }
+    }
+
+    unblockScroll = () => {
+        if (this.refContent) {
+            unblockScroll(this.refContent)
         }
     }
 
