@@ -32,7 +32,6 @@ export class LikeWebSocket {
             this.initPresence()
         })
         this.client.on('stanza', this.onStanza)
-        this.client.on('status', (status) => console.log(status))
         this.client.start()
     }
 

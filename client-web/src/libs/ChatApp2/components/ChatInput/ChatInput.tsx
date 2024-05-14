@@ -6,7 +6,6 @@ interface Props {
 }
 
 export default function ChatInput(props: Props) {
-    console.log('ChatInput props ', props)
     return (
         <div>ChatInput</div>
     )

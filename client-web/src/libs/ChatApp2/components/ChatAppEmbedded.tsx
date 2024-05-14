@@ -12,6 +12,7 @@ export default function ChatAppEmbeded() {
     const inited = useChatStore(state => state.inited)
     const chatId = useChatStore(state => state.chatId)
     const chatList = useChatStore(state => state.chatList)
+    const visible = useChatStore(state => state.visible)
 
     const chat = inited && getChat(chatList, chatId)
 
@@ -26,7 +27,7 @@ export default function ChatAppEmbeded() {
                         </div>
                         <div className="ChatAppEmbedded__right">
                             <ChatHeader chat={chat}/>
-                            <ChatMessages chat={chat} />
+                            <ChatMessages chat={chat} visible={visible} />
                             <ChatInput chat={chat} chatId={chatId} />
                         </div>
                     </>

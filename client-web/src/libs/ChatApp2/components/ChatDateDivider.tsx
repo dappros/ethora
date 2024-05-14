@@ -1,5 +1,7 @@
 import {DateTime} from 'luxon'
 
+import "./ChatAppEmbedded.scss"
+
 type Props = {
     date: string
 }

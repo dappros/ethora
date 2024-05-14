@@ -7,4 +7,9 @@
     position: relative;
     color: #000000de;
     background-color: #fff;
+
+    &__content {
+        overflow-y: scroll;
+        height: 100%;
+    }
 }

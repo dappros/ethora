@@ -14,6 +14,7 @@ const MESSAGES_COUNT = 15
 
 export function bootstrapChatWithUser(user: ModelMeUser) {
     getState().doBootstraped(user)
+    getState().doShow()
     actionConnect().then(() => {
         actionResync()
     })
@@ -59,7 +60,6 @@ export function actionResync() {
 }
 
 export function actionOpenChat(chatId: string) {
-    console.log('actionOpenChat ', chatId)
     const state = getState()
 
     const chat = getChat(state.chatList, chatId)
