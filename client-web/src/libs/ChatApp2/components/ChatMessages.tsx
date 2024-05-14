@@ -190,7 +190,7 @@ export default class ChatMessages extends React.Component<Props> {
                         {this.isMessageFirstOfDate(message, index) && (
                             <ChatDateDivider key={message.created} date={message.created} />
                         )}
-                        <ChatMessage key={message.id} />
+                        <ChatMessage key={message.id} message={message} />
                     </React.Fragment>
                 )
 
