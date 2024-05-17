@@ -1,5 +1,8 @@
 .ChatListItem {
     display: flex;
+    padding-top: 10px;
+    padding: 10px;
+    cursor: pointer;
 
     &_selected {
         background-color: #d5e7f5;

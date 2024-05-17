@@ -28,7 +28,7 @@ export default function ChatAppEmbeded() {
                         <div className="ChatAppEmbedded__right">
                             <ChatHeader chat={chat}/>
                             <ChatMessages chat={chat} visible={visible} />
-                            <ChatInput chat={chat} chatId={chatId} />
+                            <ChatInput key={chat.id} chat={chat} visible={true} chatId={chatId} on_input_resize={() => {}} />
                         </div>
                     </>
                 )

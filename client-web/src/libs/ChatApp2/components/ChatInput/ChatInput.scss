@@ -1,0 +1,118 @@
+.ChatInput {
+    display: flex;
+    align-items: flex-end;
+
+    margin: 12px 16px 16px;
+    padding: 4px 4px 4px 16px;
+
+    border-radius: 24px;
+    background-color: #f1f2f7;
+
+    touch-action: none;
+
+    &__actions {
+        display: flex;
+
+        height: 40px;
+    }
+
+    &__action-button {
+        display: flex;
+        align-items: center;
+
+        cursor: pointer;
+
+        opacity: 0.56;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &__file {
+        &::after {
+            width: 24px;
+            height: 24px;
+
+            content: ' ';
+
+            background: url('../img/attach.svg') no-repeat;
+        }
+    }
+
+    &__attach {
+        &::after {
+            width: 24px;
+            height: 24px;
+
+            content: ' ';
+
+            background: url('../img/attach.svg') no-repeat;
+        }
+    }
+
+    &__location {
+        margin-left: 9px;
+
+        &::after {
+            width: 24px;
+            height: 24px;
+
+            content: ' ';
+
+            background: url('../img/location.svg') no-repeat;
+            background-position: center;
+        }
+    }
+
+    &__textarea {
+        font-family: inherit;
+        font-size: 16px;
+        line-height: 20px;
+
+        display: block;
+        overflow: hidden;
+
+        box-sizing: border-box;
+        width: 100%;
+        padding: 10px 16px;
+
+        resize: none;
+
+        border: none;
+        outline: none;
+        background-color: transparent;
+    }
+
+    &__send-button {
+        display: flex;
+        flex-shrink: 0;
+        justify-content: center;
+        align-items: center;
+
+        width: 40px;
+        height: 40px;
+
+        cursor: pointer;
+
+        border-radius: 50%;
+        background-color: #157ee1;
+
+        &::after {
+            width: 24px;
+            height: 24px;
+            margin-left: 1px;
+
+            content: '';
+
+            background-image: url('../img/send.svg');
+            background-repeat: no-repeat;
+
+            transition: opacity 150ms ease-out;
+        }
+
+        &:hover::after {
+            opacity: 0.8;
+        }
+    }
+}

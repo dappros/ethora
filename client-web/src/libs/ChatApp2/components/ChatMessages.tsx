@@ -177,6 +177,20 @@ export default class ChatMessages extends React.Component<Props> {
         }
     }
 
+    isGroup = (message, index, messages) => {
+        if (index === 0 || message.isSystemMessage === "true") {
+          return false
+        }
+    
+        const prevMessage = messages[index - 1]
+    
+        if (prevMessage.from.nickname !== message.from.nickname || prevMessage.isSystemMessage === "true") {
+          return false
+        }
+    
+        return true
+    }
+
     render() {
         const messages = this.props.chat.messages
         const chat = this.props.chat
@@ -190,7 +204,7 @@ export default class ChatMessages extends React.Component<Props> {
                         {this.isMessageFirstOfDate(message, index) && (
                             <ChatDateDivider key={message.created} date={message.created} />
                         )}
-                        <ChatMessage key={message.id} message={message} />
+                        <ChatMessage isGroup={this.isGroup(message, index, messages)} key={message.id} message={message} />
                     </React.Fragment>
                 )
 

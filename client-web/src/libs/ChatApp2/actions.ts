@@ -10,7 +10,8 @@ import { getHistory } from "./xmpp/xmppRequests/getHistory";
 const getState = useChatStore.getState
 const log = console.log
 
-const MESSAGES_COUNT = 15
+export const MESSAGES_COUNT = 15
+export const CHAT_ROOMS_PAGE_SIZE = 10;
 
 export function bootstrapChatWithUser(user: ModelMeUser) {
     getState().doBootstraped(user)
@@ -262,4 +263,14 @@ export function actionNotifyAboutNewMessage(chatId: string, messageId: string) {
             // TODO actionOpenChat
         };
     }, 100)
+}
+
+export function actionLoadMoreChatRooms() {
+    const state = getState()
+
+    if (state.loadingRooms) {
+        return
+    }
+
+    state.doLoadMoreChatRooms()
 }

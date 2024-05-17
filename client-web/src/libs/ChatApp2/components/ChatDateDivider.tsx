@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon'
 
-import "./ChatAppEmbedded.scss"
+import "./ChatDateDivider.scss"
 
 type Props = {
     date: string

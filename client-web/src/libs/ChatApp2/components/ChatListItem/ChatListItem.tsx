@@ -1,6 +1,7 @@
 import { actionOpenChat } from "../../actions"
 import { ModelChat } from "../../models"
 import getChatLastMessage from "../../utils/getChatLastMessage"
+import { Ava } from "../Ava/Ava"
 
 import './ChatListItem.scss'
 
@@ -18,7 +19,18 @@ export function ChatListItem({chat, selected}: Props) {
     }
 
     const renderThumb = () => {
-        return chat.thumbnail === "none" ? null : <img src={chat.thumbnail} />
+        let content;
+        if (chat.thumbnail === "none") {
+            let title = chat.title.split(' ')
+            
+            if (title.length === 3) {
+                title = [title[0], title[2]]
+            }
+            content = (<Ava name={title.join(' ')} />)
+        } else {
+            content = (<img src={chat.thumbnail} />)
+        }
+        return content
     }
 
     const renderUnread = () => {
@@ -42,9 +54,11 @@ export function ChatListItem({chat, selected}: Props) {
                 <div className="ChatListItem__title">
                     { chat.title }
                 </div>
-                <div className="ChatListItem__last">
-                    {/* {lastMessage.text} */}
-                </div>
+                {lastMessage && (
+                    <div className="ChatListItem__last">
+                        {lastMessage.text}
+                    </div>
+                )}
                 {renderUnread()}
             </div>
         </div>

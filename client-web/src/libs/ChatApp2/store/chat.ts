@@ -28,6 +28,7 @@ export interface ChatSliceInterface extends ModelState {
   doOpenChat: (chatId: string) => void;
   doLoadMoreMessages: (chatId: string) => void;
   doLoadedMoreMessages: (chatId: string, messages: Array<ModelChatMessage>) => void;
+  doLoadMoreChatRooms: () => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -41,6 +42,7 @@ export const createChatSlice: ImmerStateCreator<
   chatId: null,
   chatList: null,
   me: null,
+  loadingRooms: false,
   doBootstraped: (user: ModelMeUser) => set((s) => {s.me = user}),
   doConnect: () => set(s => {s.connection = 'connecting'}),
   doDisconnected: () => set(s => {s.connection = 'disconnected'}),
@@ -174,5 +176,8 @@ export const createChatSlice: ImmerStateCreator<
     }
 
     set(s => {s.chatList = setChat(s.chatList, newChat)})
+  },
+  doLoadMoreChatRooms: () => {
+    set(s => s.loadingRooms = true)
   }
 });

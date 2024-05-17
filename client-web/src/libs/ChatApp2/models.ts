@@ -80,4 +80,5 @@ export interface ModelState {
     // only for widget
     visible: boolean;
     focused: boolean;
+    loadingRooms: boolean;
 }
