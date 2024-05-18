@@ -53,6 +53,9 @@ export function getHistory(room: string, max: number, before: string | null): Pr
                 parsedEl.mainMessage = parseJSON(parsedEl.mainMessage)
               }
 
+              // TEMP
+              parsedEl.emojis = ['1f600', '1f603']
+
               parsedMessges.push(parsedEl)
             }
           }

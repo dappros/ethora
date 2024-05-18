@@ -41,6 +41,7 @@ export interface ModelChatMessage {
     },
     status?: 'queued' | 'failed'
     isMe?: boolean;
+    emojis?: Array<string>
 }
 
 export interface ModelChat {

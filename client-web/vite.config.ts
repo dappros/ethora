@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     outDir: "build",
   },
-  // define: {
-  //   global: "globalThis",
-  // },
+  define: {
+    global: "globalThis",
+  },
 })

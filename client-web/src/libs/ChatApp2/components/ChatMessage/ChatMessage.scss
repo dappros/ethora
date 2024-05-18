@@ -43,6 +43,7 @@
 
     .Message__container_outer {
         display: flex;
+        position: relative;
     }
 
     .Message__avatar {
@@ -58,8 +59,15 @@
         max-width: 50%;
         border-radius: 20px;
         min-width: 300px;
-        overflow: hidden;
+        // overflow-x: hidden;
         word-wrap: break-word;
+
+        
+        .Emoji__row {
+            display: flex;
+            position: absolute;
+            bottom: -19px;
+        }
     }
 
     &__status {
@@ -86,5 +94,7 @@
             background-image: url('../img/time-black.svg');
         }
     }
+
+
 
 }

@@ -3,6 +3,7 @@ import cn from "classnames"
 
 import "./ChatMessage.scss"
 import { Ava } from "../Ava/Ava"
+import { Emoji } from "../Emoji/Emoji"
 
 interface Props {
     message: ModelChatMessage
@@ -45,6 +46,23 @@ export function ChatMessage({message, isGroup}: Props) {
         )
     }
 
+    const renderEmojies = () => {
+        let emojies;
+        if (message.emojis && message.emojis.length) {
+            emojies = message.emojis.map((code, index) => {
+                return (
+                    <Emoji key={`${code}${index}`} code={code} />
+                )
+            })
+        }
+
+        return (
+            <div className="Emoji__row">
+                {emojies}
+            </div>
+        )
+    }
+
     let content;
 
     if (message.dataAttrs.isSystemMessage === "true") {
@@ -65,7 +83,9 @@ export function ChatMessage({message, isGroup}: Props) {
                     {!isGroup && (<div>{ `${message.dataAttrs.senderFirstName} ${message.dataAttrs.senderLastName}` }</div>)}
                     {message.text}
                     {renderStatus()}
+                    {renderEmojies()}
                 </div>
+
             </div>
         )
     }
