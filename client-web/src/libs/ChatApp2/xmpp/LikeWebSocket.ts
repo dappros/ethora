@@ -38,9 +38,14 @@ export class LikeWebSocket {
     onStanza(stanza: Element) {
         // if we have direct archived child it is not getHistory request
         if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('archived')) {
-            // handling stanza id who includes : in different place
-            if (stanza.attrs['id'].includes(":")) {
-                return
+            const dataTag = stanza.getChild("data")
+            if (dataTag && dataTag.attrs['senderJID']) {
+                let senderResource = dataTag.attrs['senderJID'].split('/')[1]
+
+                // do not process messages from the same resource
+                if (senderResource === this.client.jid.getResource()) {
+                    return;
+                }
             }
 
             const parsed = this.realtimeMessageParser(stanza)
