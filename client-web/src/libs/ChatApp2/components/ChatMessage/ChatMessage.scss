@@ -50,6 +50,7 @@
     }
 
     .Message__container {
+        position: relative;
         display: flex;
         flex-direction: column;
         padding: 25px;
@@ -59,6 +60,31 @@
         min-width: 300px;
         overflow: hidden;
         word-wrap: break-word;
+    }
+
+    &__status {
+        position: absolute;
+        z-index: 1;
+        right: 14px;
+        bottom: 7px;
+
+        width: 16px;
+        height: 16px;
+
+        vertical-align: top;
+
+        opacity: 0.56;
+        background-image: url('../img/double-check-black.svg');
+
+        &_read {
+            opacity: 1;
+            background-image: url('../img/double-check-blue.svg');
+        }
+
+        &_queued {
+            opacity: 0.56;
+            background-image: url('../img/time-black.svg');
+        }
     }
 
 }

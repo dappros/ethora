@@ -27,6 +27,24 @@ export function ChatMessage({message, isGroup}: Props) {
         return message.dataAttrs.isSystemMessage === "true"
     }
 
+    const renderStatus = () => {
+        const { status } = message;
+
+        if (!hasSatus()) {
+            return
+        }
+
+        let class_name = 'ChatMessage__status';
+
+        if (status === 'queued') {
+            class_name += ' ChatMessage__status_queued';
+        }
+
+        return (
+            <span className={ class_name }/>
+        )
+    }
+
     let content;
 
     if (message.dataAttrs.isSystemMessage === "true") {
@@ -46,6 +64,7 @@ export function ChatMessage({message, isGroup}: Props) {
                 <div className="Message__container">
                     {!isGroup && (<div>{ `${message.dataAttrs.senderFirstName} ${message.dataAttrs.senderLastName}` }</div>)}
                     {message.text}
+                    {renderStatus()}
                 </div>
             </div>
         )

@@ -29,6 +29,7 @@ export interface ChatSliceInterface extends ModelState {
   doLoadMoreMessages: (chatId: string) => void;
   doLoadedMoreMessages: (chatId: string, messages: Array<ModelChatMessage>) => void;
   doLoadMoreChatRooms: () => void;
+  doSending: (chatId: string) => void;
 }
 
 export const createChatSlice: ImmerStateCreator<
@@ -59,7 +60,7 @@ export const createChatSlice: ImmerStateCreator<
       hasUnread: false
     }
 
-    set((s) => s.chatList = setChat(chatList, newChat))
+    set((s) => {s.chatList = setChat(chatList, newChat)})
   },
   doReceivedNewMessage: (message: ModelChatMessage) => {
     const state = get()
@@ -82,7 +83,7 @@ export const createChatSlice: ImmerStateCreator<
         messages: oldChat.messages.concat([message])
       }
 
-      set((s) => s.chatList = setChat(state.chatList, newChat))
+      set((s) => {s.chatList = setChat(state.chatList, newChat)})
     }
   },
   doQueueMessage: (quequeMessage: ModelChatMessage) => {
@@ -97,7 +98,7 @@ export const createChatSlice: ImmerStateCreator<
       messages: newMessages
     }
 
-    set(s => s.chatList = setChat(s.chatList, newChat))
+    set(s => {s.chatList = setChat(s.chatList, newChat)})
   },
   doDequeueSuccessfulMessage: (queueMessage: ModelChatMessage, message: ModelChatMessage) => {
     const state = get()
@@ -114,7 +115,18 @@ export const createChatSlice: ImmerStateCreator<
       sending: false
     }
 
-    set(s => s.chatList = setChat(s.chatList, newChat))
+    set(s => {s.chatList = setChat(s.chatList, newChat)})
+  },
+  doSending: (chatId: string) => {
+    const state = get()
+    const oldChat = getChat(state.chatList, chatId)
+
+    const newChat: ModelChat = {
+      ...oldChat,
+      sending: true
+    }
+
+    set(s => {s.chatList = setChat(s.chatList, newChat)})
   },
   doDequeueFailedMessage: (queueMessage: ModelChatMessage) => {
     const state = get()
@@ -135,7 +147,7 @@ export const createChatSlice: ImmerStateCreator<
       sending: false
     }
 
-    set(s => s.chatList = setChat(s.chatList, newChat))
+    set(s => {s.chatList = setChat(s.chatList, newChat)})
   },
   doResynced: (chatList: Array<ModelChat>) => {
     set((s) => ({
@@ -178,6 +190,6 @@ export const createChatSlice: ImmerStateCreator<
     set(s => {s.chatList = setChat(s.chatList, newChat)})
   },
   doLoadMoreChatRooms: () => {
-    set(s => s.loadingRooms = true)
+    set(s => {s.loadingRooms = true})
   }
 });

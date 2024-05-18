@@ -1,4 +1,4 @@
-import xmpp, { Client } from "@xmpp/client";
+import xmpp, { Client, xml } from "@xmpp/client";
 import { Element } from "ltx";
 import { parseJSON } from "../utils/parseJson";
 
@@ -31,13 +31,18 @@ export class LikeWebSocket {
             this.onmessage({ status: 'online' })
             this.initPresence()
         })
-        this.client.on('stanza', this.onStanza)
+        this.client.on('stanza', this.onStanza.bind(this))
         this.client.start()
     }
 
     onStanza(stanza: Element) {
         // if we have direct archived child it is not getHistory request
         if (stanza.is("message") && stanza.attrs["type"] === 'groupchat' && stanza.getChild('archived')) {
+            // handling stanza id who includes : in different place
+            if (stanza.attrs['id'].includes(":")) {
+                return
+            }
+
             const parsed = this.realtimeMessageParser(stanza)
             if (parsed) {
                 const data = {
@@ -58,7 +63,7 @@ export class LikeWebSocket {
     }
 
     initPresence() {
-
+        this.client.send(xml("presence"))
     }
 
     parseMucFromAttr(from) {
@@ -93,6 +98,23 @@ export class LikeWebSocket {
 
             return parsedEl
         }
+    }
+
+    presence(rooms: string[]) {
+        rooms
+            .map((el) => `${el}/${this.client.jid?.getLocal()}`)
+            .forEach((to) => {
+                this.client.send(
+                    xml(
+                        "presence",
+                        {
+                            from: this.client.jid?.toString(),
+                            to
+                        },
+                        xml("x", "http://jabber.org/protocol/muc")
+                    )
+                )
+            })
     }
 
     createTimeoutPromise(ms, unsubscribe) {

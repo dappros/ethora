@@ -1,4 +1,5 @@
 import { ModelChat, ModelChatMessage } from "../../models";
+import { ws } from "../../ws";
 import { getHistory } from "../xmppRequests/getHistory";
 import { GetRoomsResp, getRooms } from "../xmppRequests/getRooms";
 
@@ -8,7 +9,7 @@ export async function chatList() {
 
     for (let room of rooms) {
         const messages = await getHistory(room.jid, 1, null)
-
+        ws.presence([room.jid])
         const chat: ModelChat = {
             id: room.jid,
             allLoaded: false,

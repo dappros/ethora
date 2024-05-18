@@ -116,7 +116,7 @@ export default class ChatInput extends React.Component<Props> {
         }
     }
 
-    on_send_button_click = () => {
+    on_send_button_click = async () => {
         const input = trim_input(this.state.input);
         if (!input) {
             return;

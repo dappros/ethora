@@ -6,6 +6,7 @@ import getMessage from "./utils/getMessage";
 import { wsConnect } from "./ws";
 import { chatList } from "./xmpp/xmppCombinedRequests/chatList";
 import { getHistory } from "./xmpp/xmppRequests/getHistory";
+import { sendTextMessage } from "./xmpp/xmppRequests/sendTextMessage";
 
 const getState = useChatStore.getState
 const log = console.log
@@ -125,7 +126,6 @@ let queueMessageId = 0;
 
 export function actionPostMessage(chatId: string, text: string) {
     const store = getState()
-    const chat = getChat(store.chatList, chatId)
 
     const queueMessage: ModelChatMessage = {
         id: `queue-${ queueMessageId++ }`,
@@ -158,40 +158,32 @@ export function actionPostMessage(chatId: string, text: string) {
 
 export function actionQueueMessage(queueMessage: ModelChatMessage) {
     getState().doQueueMessage(queueMessage)
-    actionPostMessageFromQueue(queueMessage.from.chatId)
+    return actionPostMessageFromQueue(queueMessage.from.chatId)
 }
 
-export function actionPostMessageFromQueue(chatId: string) {
-    const state = getState()
 
+export function actionPostMessageFromQueue(chatId: string) {
+    console.log('actionPostMessageFromQueue')
+    const state = getState()
     const chat = getChat(state.chatList, chatId)
 
-    if (!chat.sending) {
-        const queueMessage = chat.messages.find(item => item.status === 'queued')
+    const queueMessage = chat.messages.find(item => item.status === 'queued')
 
-        if (queueMessage) {
-            chat.sending = true
+    if (queueMessage) {
+        return sendPostQueueMessage(queueMessage)
+            .then((message: ModelChatMessage) => {
+                state.doDequeueSuccessfulMessage(queueMessage, message)
+            })
+            .catch((e) => {
+                console.log('catch ', e)
+                state.doDequeueFailedMessage(queueMessage)
 
-            return sendPostQueueMessage(queueMessage)
-                .then((message: ModelChatMessage) => {
-                    state.doDequeueSuccessfulMessage(queueMessage, message)
-                })
-                .catch(() => {
-                    state.doDequeueFailedMessage(queueMessage)
-
-                    return actionPostMessageFromQueue(chatId)
-                })
-        }
+                return actionPostMessageFromQueue(chatId)
+            })
     }
 
-    return Promise.resolve();
-
     function sendPostQueueMessage(queueMessage: ModelChatMessage) {
-        const chatId = queueMessage.from.chatId
-        const state = getState()
-
-        // TODO xmpp awaitSend
-        return Promise.resolve(queueMessage)
+        return sendTextMessage(queueMessage)
     }
 }
 
