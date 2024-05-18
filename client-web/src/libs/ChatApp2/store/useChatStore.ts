@@ -9,8 +9,8 @@ export const useChatStore = create(immer<ChatSliceInterface>(
 
 declare global {
   interface Window {
-    useChatStore?: any;
+    useChatStore2?: any;
   }
 }
 
-window.useChatStore = useChatStore
+window.useChatStore2 = useChatStore
