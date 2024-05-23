@@ -5,6 +5,7 @@ import getChatFirstMessage from "./utils/getChatFirstMessage";
 import getMessage from "./utils/getMessage";
 import { wsConnect } from "./ws";
 import { chatList } from "./xmpp/xmppCombinedRequests/chatList";
+import { presenceWithList } from "./xmpp/xmppCombinedRequests/presenceWithList";
 import { getHistory } from "./xmpp/xmppRequests/getHistory";
 import { sendTextMessage } from "./xmpp/xmppRequests/sendTextMessage";
 
@@ -20,6 +21,32 @@ export function bootstrapChatWithUser(user: ModelMeUser) {
     actionConnect().then(() => {
         actionResync()
     })
+}
+
+export function bootstrapChatForFrame(user: ModelMeUser, chats: Array<string>) {
+    getState().doBootstraped(user)
+    actionConnect().then(() => {
+        actionRsyncWithChatList(chats)
+    })
+}
+
+export function actionRsyncWithChatList(chats: Array<string>) {
+    const store = getState()
+
+    if (store.resyncing) {
+        return store.resyncing
+    }
+
+    const promise = presenceWithList(chats)
+        .then((chatList: Array<ModelChat>) => {
+            store.doResynced(chatList)
+            const newState = getState()
+            if (chatList.length > 0) {
+                actionOpenChat(newState.chatList[0].id)
+            }
+        })
+
+    store.doResync(promise)
 }
 
 export function actionConnect() {
