@@ -25,7 +25,7 @@ import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
 import { walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
-import { bootstrapChatWithUser } from "../libs/ChatApp2/actions"
+import { bootstrapChatWithUser } from "ethora-chat-pkg"
 
 const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {
@@ -155,13 +155,16 @@ const AppTopNav = () => {
 
   useEffect(() => {
     // xmpp.init(user.walletAddress, user?.xmppPassword as string)
-    bootstrapChatWithUser({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      xmppPassword: user.xmppPassword,
-      xmppUsername: walletToUsername(user.walletAddress),
-      walletAddress: user.walletAddress
-    })
+    bootstrapChatWithUser(
+      "wss://dev.dxmpp.com:5443/ws",
+      {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        walletAddress: user.walletAddress,
+        xmppPassword: user.xmppPassword,
+        xmppUsername: walletToUsername(user.walletAddress),
+      }
+    )
   }, [])
 
   const navigateToLatestMetaRoom = async () => {
