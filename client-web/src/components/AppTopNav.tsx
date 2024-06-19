@@ -172,7 +172,7 @@ const AppTopNav = () => {
         xmppPassword: user.xmppPassword,
         xmppUsername: walletToUsername(user.walletAddress),
       },
-      service: "wss://dev.dxmpp.com:5443/ws",
+      service: "wss://xmpp.ethoradev.com:5443/ws",
       canCreateRooms: true,
       canLeaveRooms: true,
       langOptions: {
