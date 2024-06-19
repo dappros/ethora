@@ -25,7 +25,7 @@ import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
 import { walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
-import { bootstrapChatWithUser } from "ethora-chat-pkg"
+import { bootstrapChatWithUser } from "../../comp/dist/main"
 
 const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {
@@ -164,28 +164,28 @@ const AppTopNav = () => {
       xmppUsername: walletToUsername(user.walletAddress),
     })
 
-    // bootstrapChatWithUser({
-    //   user: {
-    //     firstName: user.firstName,
-    //     lastName: user.lastName,
-    //     walletAddress: user.walletAddress,
-    //     xmppPassword: user.xmppPassword,
-    //     xmppUsername: walletToUsername(user.walletAddress),
-    //   },
-    //   service: "wss://xmpp.ethoradev.com:5443/ws",
-    //   canCreateRooms: true,
-    //   canLeaveRooms: true,
-    //   canPostFiles: false,
-    //   langOptions: {
-    //     languages: [
-    //       { iso639_1: 'es', name: 'Spanish' },
-    //       { iso639_1: 'en', name: 'English' },
-    //       { iso639_1: 'pt', name: 'Portuguese' },
-    //       { iso639_1: 'ht', name: 'Haitian' },
-    //       { iso639_1: 'zh', name: 'Chinese' }
-    //     ],
-    //   }
-    // })
+    bootstrapChatWithUser({
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        walletAddress: user.walletAddress,
+        xmppPassword: user.xmppPassword,
+        xmppUsername: walletToUsername(user.walletAddress),
+      },
+      service: "wss://xmpp.ethoradev.com:5443/ws",
+      canCreateRooms: true,
+      canLeaveRooms: true,
+      canPostFiles: false,
+      langOptions: {
+        languages: [
+          { iso639_1: 'es', name: 'Spanish' },
+          { iso639_1: 'en', name: 'English' },
+          { iso639_1: 'pt', name: 'Portuguese' },
+          { iso639_1: 'ht', name: 'Haitian' },
+          { iso639_1: 'zh', name: 'Chinese' }
+        ],
+      }
+    })
   }, [])
 
   const navigateToLatestMetaRoom = async () => {
