@@ -175,6 +175,7 @@ const AppTopNav = () => {
       service: "wss://xmpp.ethoradev.com:5443/ws",
       canCreateRooms: true,
       canLeaveRooms: true,
+      canPostFiles: false,
       langOptions: {
         languages: [
           { iso639_1: 'es', name: 'Spanish' },

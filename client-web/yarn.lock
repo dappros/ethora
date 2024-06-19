@@ -4505,10 +4505,10 @@ ethers@^5.7.1:
     "@ethersproject/web" "5.7.1"
     "@ethersproject/wordlists" "5.7.0"
 
-ethora-chat-pkg@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/ethora-chat-pkg/-/ethora-chat-pkg-1.0.4.tgz#e1b4d158984d47200fb24954e74e55ec9c52e96b"
-  integrity sha512-4zJaQkthUYeClznOJXUOe1RNt3II+JWkpnK4327C8W8RhFHz5gNEO5yGOYdXgxv1xDm3L1me0F5cfn+sdr3mRQ==
+ethora-chat-pkg@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/ethora-chat-pkg/-/ethora-chat-pkg-1.0.6.tgz#34a8b5c21d102f41462a07d39f086f9313758876"
+  integrity sha512-cc60S5mjqKYkBEsILQy2m4fZGFJF2EaN/EhoPUf/AcOhkfAdgMXs+9bd2IZ2bPx+1zXC6j1sj/r4R3ysvUe8jQ==
   dependencies:
     "@headlessui/react" "^2.0.4"
     "@heroicons/react" "^2.1.3"
