@@ -1,5 +1,5 @@
 import { Box, Container } from "@mui/material"
-import {ChatAppEmbeded} from "ethora-chat-pkg"
+import { ChatAppEmbeded } from "ethora-chat-pkg"
 
 export function ChatWrapper() {
   return (

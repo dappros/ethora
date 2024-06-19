@@ -155,16 +155,36 @@ const AppTopNav = () => {
 
   useEffect(() => {
     // xmpp.init(user.walletAddress, user?.xmppPassword as string)
-    bootstrapChatWithUser(
-      "wss://dev.dxmpp.com:5443/ws",
-      {
+
+    console.log("123 ", {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      walletAddress: user.walletAddress,
+      xmppPassword: user.xmppPassword,
+      xmppUsername: walletToUsername(user.walletAddress),
+    })
+
+    bootstrapChatWithUser({
+      user: {
         firstName: user.firstName,
         lastName: user.lastName,
         walletAddress: user.walletAddress,
         xmppPassword: user.xmppPassword,
         xmppUsername: walletToUsername(user.walletAddress),
+      },
+      service: "wss://dev.dxmpp.com:5443/ws",
+      canCreateRooms: true,
+      canLeaveRooms: true,
+      langOptions: {
+        languages: [
+          { iso639_1: 'es', name: 'Spanish' },
+          { iso639_1: 'en', name: 'English' },
+          { iso639_1: 'pt', name: 'Portuguese' },
+          { iso639_1: 'ht', name: 'Haitian' },
+          { iso639_1: 'zh', name: 'Chinese' }
+        ],
       }
-    )
+    })
   }, [])
 
   const navigateToLatestMetaRoom = async () => {

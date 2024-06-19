@@ -28,3 +28,4 @@ yarn-error.log*
 .env
 .env-local
 /.ready
+comp
