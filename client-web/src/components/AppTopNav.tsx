@@ -139,7 +139,7 @@ const AppTopNav = () => {
     // setLoading(false);
   }
   useEffect(() => {
-    getAcl()
+    // getAcl()
   }, [apps.length, user.walletAddress])
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
