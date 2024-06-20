@@ -125,22 +125,24 @@ const AppTopNav = () => {
   }
   const getAcl = async () => {
     // setLoading(true);
+    setACL(mockAcl)
 
-    try {
-      if (user?.ACL?.ownerAccess) {
-        setACL(mockAcl)
-        return
-      }
-      const res = await getMyAcl()
-      setACL({ result: res.data.result })
-    } catch (error) {
-      console.log(error)
-    }
+    // try {
+    //   if (user?.ACL?.ownerAccess) {
+    //     setACL(mockAcl)
+    //     return
+    //   }
+    //   const res = await getMyAcl()
+    //   setACL({ result: res.data.result })
+    // } catch (error) {
+    //   console.log(error)
+    // }
     // setLoading(false);
   }
   useEffect(() => {
-    // getAcl()
+    getAcl()
   }, [apps.length, user.walletAddress])
+
   useEffect(() => {
     getBalance(user.walletAddress).then((resp) => {
       setBalance(resp.data.balance)
