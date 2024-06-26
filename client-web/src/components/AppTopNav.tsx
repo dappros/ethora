@@ -25,7 +25,7 @@ import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
 import { walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
-import { bootstrapChatWithUser } from "../../comp/dist/main"
+import { bootstrapChatWithUser } from "ethora-chat-pkg"
 
 const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {

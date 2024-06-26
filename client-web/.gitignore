@@ -29,3 +29,5 @@ yarn-error.log*
 .env-local
 /.ready
 comp
+
+./build

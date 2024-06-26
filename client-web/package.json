@@ -32,7 +32,7 @@
     "date-fns": "^2.29.3",
     "dompurify": "^3.0.3",
     "ethers": "^5.7.1",
-    "ethora-chat-pkg": "^1.0.6",
+    "ethora-chat-pkg": "^1.0.8",
     "firebase": "^9.12.1",
     "formik": "^2.2.9",
     "immer": "^10.0.2",

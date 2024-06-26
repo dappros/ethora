@@ -8,7 +8,8 @@ import { Web3ReactProvider } from "@web3-react/core"
 import { providers } from "ethers"
 // import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import { config } from "./config"
-import "../comp/dist/style.css"
+
+import "ethora-chat-pkg/dist/style.css"
 
 const root = ReactDOM.createRoot(document.querySelector("#root") as HTMLElement)
 
