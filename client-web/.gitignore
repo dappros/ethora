@@ -28,3 +28,5 @@ yarn-error.log*
 .env
 .env-local
 /.ready
+
+client-web/build
