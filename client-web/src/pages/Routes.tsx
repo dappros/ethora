@@ -118,6 +118,7 @@ export const Routes = () => {
   useEffect(() => {
     getAppConfig()
   }, [])
+  
   useEffect(() => {
     if (appConfig.appToken) {
       getDefaultChats()
@@ -127,7 +128,7 @@ export const Routes = () => {
   useEffect(() => {
     if (user.walletAddress) {
       checkNotificationsStatus()
-      getDocuments(user.walletAddress)
+      // getDocuments(user.walletAddress)
     }
   }, [user])
 

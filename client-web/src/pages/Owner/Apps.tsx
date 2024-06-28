@@ -73,6 +73,8 @@ function Apps({
     offset: number
   }>()
 
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+
   const [showDelete, setShowDelete] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [page, setPage] = useState(0)
@@ -90,7 +92,7 @@ function Apps({
   const [order, setOrder] = useState<"asc" | "desc">("asc")
   const [orderBy, setOrderBy] = useState<CellId>("displayName")
 
-  const handleRequestSort = (property: CellId) => {
+  const handleRequestSort_ = (property: CellId) => {
     const isAsc = orderBy === property && order === "asc"
     setOrder(isAsc ? "desc" : "asc")
     setOrderBy(property)
@@ -147,10 +149,31 @@ function Apps({
     setCurrentPageApps(sortedApps)
   }
 
+  const toggleOrder = () => {
+    if (order === 'asc') {
+      setOrder('desc')
+      return 'desc'
+    } else {
+      setOrder('asc')
+      return 'asc'
+    }
+  }
+
+  const handleRequestSort = async (property: CellId) => {
+    if (property === "chats") {
+      return
+    }
+    
+    const order = toggleOrder()
+    setOrderBy(property)
+    console.log({property, page, order, orderBy})
+    await getUserApps(itemsPerPage * page, order, property)
+  }
+
   const { showSnackbar } = useSnackbar()
 
   useEffect(() => {
-    getUserApps()
+    getUserApps(itemsPerPage * page, order, orderBy)
   }, [])
 
   useEffect(() => {
@@ -159,10 +182,10 @@ function Apps({
     }
   }, [currentPageApps])
 
-  const getUserApps = async (offset: number = 0) => {
+  const getUserApps = async (offset: number, order: 'asc' | 'desc', orderBy: string) => {
     setIsLoading(true)
     try {
-      const apps = await getApps(offset)
+      const apps = await getApps(offset, orderBy, order)
       const notNullApps = apps.data.apps.filter((a) => !!a)
       setCurrentPageApps(notNullApps)
       setApps(notNullApps)
@@ -186,9 +209,9 @@ function Apps({
 
   const onPagination = useCallback(
     async (event: ChangeEvent<unknown>, tablePage: number) => {
-      const offset = tablePage * 10
+      console.log({tablePage})
       setPage(tablePage)
-      await getUserApps(offset)
+      await getUserApps(itemsPerPage * tablePage, order, orderBy)
     },
     [pagination, getUserApps, currentPageApps]
   )
@@ -199,10 +222,6 @@ function Apps({
     setShowEdit(true)
   }
 
-  const onRotateJwt = (app: any) => {
-    setCurrentApp(app)
-    setShowRotate(true)
-  }
   const onAddApp = () => {
     if (!user.isAgreeWithTerms) {
       setCompanyModalOpen(true)
@@ -210,11 +229,7 @@ function Apps({
     }
     setOpen(true)
   }
-  //  useEffect(() => {
-  //     if(user.homeScreen === 'appCreate') {
-  //       onAddApp()
-  //     }
-  //   }, [user.homeScreen])
+
   return (
     <TableContainer component={Paper} style={{ margin: "0 auto" }}>
       <Box style={{ display: "flex", alignItems: "center" }}>
@@ -354,12 +369,12 @@ function Apps({
               ))
             )}
             <TablePagination
-              count={pagination?.total || 10}
-              rowsPerPage={10}
+              count={pagination?.total || itemsPerPage}
+              rowsPerPage={itemsPerPage}
               page={page}
               onPageChange={onPagination}
-              showFirstButton={!isLoading}
-              showLastButton={!isLoading}
+              showFirstButton={false}
+              showLastButton={false}
               labelRowsPerPage=""
               sx={{
                 "& .MuiSelect-select": {

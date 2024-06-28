@@ -2,14 +2,22 @@ import { TableHead, TableRow, TableCell, Tooltip, Box } from "@mui/material"
 import InfoIcon from "@mui/icons-material/Info"
 import { FC } from "react"
 
+    // displayName => displayName
+    // users => totalRegistered
+    // sessions => totalSessions
+    // api => totalApiCalls
+    // files => totalFiles
+    // web3 => totalTransactions
+    // createdAt => createdAt
+
 export type CellId =
   | "displayName"
-  | "users"
-  | "sessions"
+  | "totalRegistered"
+  | "totalSessions"
   | "chats"
-  | "api"
-  | "files"
-  | "web3"
+  | "totalApiCalls"
+  | "totalFiles"
+  | "totalTransactions"
   | "createdAt"
   | "actions"
 
@@ -33,7 +41,7 @@ const headCells: readonly HeadCell[] = [
     align: "left",
   },
   {
-    id: "users",
+    id: "totalRegistered",
     numeric: true,
     disablePadding: false,
     label: "Users",
@@ -41,7 +49,7 @@ const headCells: readonly HeadCell[] = [
     align: "center",
   },
   {
-    id: "sessions",
+    id: "totalSessions",
     numeric: true,
     disablePadding: false,
 
@@ -58,7 +66,7 @@ const headCells: readonly HeadCell[] = [
     align: "center",
   },
   {
-    id: "api",
+    id: "totalApiCalls",
     numeric: true,
     disablePadding: false,
     label: "API",
@@ -66,7 +74,7 @@ const headCells: readonly HeadCell[] = [
     align: "center",
   },
   {
-    id: "files",
+    id: "totalFiles",
     numeric: true,
     disablePadding: false,
     label: "Files",
@@ -74,7 +82,7 @@ const headCells: readonly HeadCell[] = [
     align: "center",
   },
   {
-    id: "web3",
+    id: "totalTransactions",
     numeric: true,
     disablePadding: false,
     label: "Web3",

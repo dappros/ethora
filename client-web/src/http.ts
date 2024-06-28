@@ -599,9 +599,10 @@ export function loginOwner(email: string, password: string) {
   })
 }
 
-export function getApps(offset?: number) {
-  return offset ? httpWithAuth().get(`/apps/?offset=${offset}`) : httpWithAuth().get("/apps")
+export function getApps(offset: number, orderBy: string, order: string) {
+  return httpWithAuth().get(`/apps/?offset=${offset}&orderBy=${orderBy}&order=${order}`)
 }
+
 export function changeUserDefaults(appId: string, data: IUserDefaults) {
   return httpWithAuth().put("/apps/user-defaults/" + appId, data)
 }
