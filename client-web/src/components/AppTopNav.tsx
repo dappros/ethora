@@ -184,7 +184,6 @@ const AppTopNav = () => {
           { iso639_1: 'en', name: 'English' },
           { iso639_1: 'pt', name: 'Portuguese' },
           { iso639_1: 'ht', name: 'Haitian' },
-          { iso639_1: 'zh', name: 'Chinese' }
         ],
       }
     })
