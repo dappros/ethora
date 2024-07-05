@@ -21,7 +21,7 @@ Ethora is a feature rich low-code app engine. It helps you to build a profession
 There is a plethora of functionalities beyond that, all fully customizable so you choose what features and experience your users have.
 
 To buld your app with Ethora, simply:<br />
-(1) clone this repo OR use our [web builder](#app-builder)<br />
+(1) clone this repo OR use our [web builder](#app-builder) you may access via https://ethora.ethoradev.com/signIn?signUpPlan=free<br />
 (2) change app name, logo, colors, things like Firebase ID (optional)<br />
 🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
