@@ -13,12 +13,29 @@ Mobile (React Native) 📱 + Web (React.js) 💻 web3 🌐 social 💬 platform 
 
 [ iOS/Android | social sign-on | wallet | ERC-20/NFT | messaging/push/calls | gamification ]
 
-Simply:<br />
+Ethora is a feature rich low-code app engine. It helps you to build a professional feature packed iOS/Android or Web app for your project in no time. The most popular functionalities of Ethora are:
+* **Digital Wallet** - users can easily store, display, exchange documents and digital assets, protected by a cryptographic key pair
+* **Chat/messaging** - powerful messaging infrastructure supporting cross-platform 1:1 and group chats
+* **AI bots** - seamless integration with AI bots for assistance, LLM-powered data processing and more
+
+There is a plethora of functionalities beyond that, all fully customizable so you choose what features and experience your users have.
+
+To buld your app with Ethora, simply:<br />
 (1) clone this repo OR use our [web builder](#app-builder)<br />
 (2) change app name, logo, colors, things like Firebase ID (optional)<br />
 🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
-Coding experience is optional. React Native and React.js developers can make deeper changes altering or extending any of the functionalities. 
+Coding experience is optional. Javascript / Typescript / React coding experience will be useful to make advanced modifications or build your own functionalities.
+
+---
+### 📣 Project update - 5th July 2024 📣
+
+An alpha version of Ethora Chat Component has been released. 
+
+Ethora Chat Component is an npm package that allows developers to quickly implement a chat room as a simple building block.
+It combines the benefits of accessing the powerful features of Ethora platform with simplicity of a simple application. 
+The Chat Component will be completed by the end of July. 
+Read more in Ethora Forum: https://forum.ethora.com/topic/9-ethora-nmp-package-chat-component-alpha-version/#comment-9
 
 ---
 
