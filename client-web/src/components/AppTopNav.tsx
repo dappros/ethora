@@ -178,14 +178,14 @@ const AppTopNav = () => {
       canCreateRooms: true,
       canLeaveRooms: true,
       canPostFiles: false,
-      // langOptions: {
-      //   languages: [
-      //     { iso639_1: 'es', name: 'Spanish' },
-      //     { iso639_1: 'en', name: 'English' },
-      //     { iso639_1: 'pt', name: 'Portuguese' },
-      //     { iso639_1: 'ht', name: 'Haitian' },
-      //   ],
-      // }
+      langOptions: {
+        languages: [
+          { iso639_1: 'en', name: 'English' },
+          { iso639_1: 'es', name: 'Spanish' },
+          { iso639_1: 'pt', name: 'Portuguese' },
+          { iso639_1: 'ht', name: 'Haitian' },
+        ],
+      }
     })
   }, [])
 
