@@ -118,7 +118,7 @@ export const Routes = () => {
   useEffect(() => {
     getAppConfig()
   }, [])
-  
+
   useEffect(() => {
     if (appConfig.appToken) {
       getDefaultChats()
@@ -183,16 +183,16 @@ export const Routes = () => {
   }
   return (
     <Suspense fallback={<FullPageSpinner />}>
-      {!user.firstName && <AppTopNavAuth />}
+      {/* {!user.firstName && <AppTopNavAuth />}
       {user.firstName && user.xmppPassword && <AppTopNav />}
-      {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
-      <Helmet>
+      {user.firstName && !user.xmppPassword && <AppTopNavOwner />} */}
+      {/* <Helmet>
         <title>{appConfig.displayName || "Dappros Platform"}</title>
         <meta
           property="og:title"
           content={appConfig.displayName || "Dappros Platform"}
         />
-      </Helmet>
+      </Helmet> */}
       <Switch>
         <Route path={["/signIn/"]} exact>
           <Signon />

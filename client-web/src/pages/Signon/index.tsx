@@ -26,8 +26,18 @@ import {
 import { signInWithGoogle } from "../../services/firebase"
 import { useSnackbar } from "../../context/SnackbarContext"
 import { ForgotPasswordModal } from "../../components/ForgotPasswordModal"
-import { Alert, AlertTitle, Typography } from "@mui/material"
+import {
+  Alert,
+  AlertTitle,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material"
 import xmpp from "../../xmpp"
+import Wrapper from "./Auth/Wrapper"
+import LogoContent from "./Auth/LogoContent"
+import ReviewContent from "./Auth/ReviewContent"
+import SignUpForm from "./Auth/SignUpForm"
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser)
@@ -235,6 +245,11 @@ export default function Signon() {
     setLoading(false)
   }
 
+  const theme = useTheme()
+
+  const isTablet = useMediaQuery(theme.breakpoints.down(1108))
+  const isMobile = useMediaQuery(theme.breakpoints.down(731))
+
   const isGoogleLoginAvailable = () => {
     return !!config.firebaseWebConfigString
   }
@@ -244,147 +259,189 @@ export default function Signon() {
   }
 
   return (
-    <Box sx={{ backgroundColor: config.loginBackgroundColor || "white" }}>
-      <Container
-        maxWidth="xl"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "calc(100vh - 68px)",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {!!signUpPlan && (
-          <Alert severity={"info"}>
-            <AlertTitle>Account Owners</AlertTitle>
-            In order to create and manage your App(s), you need to create your
-            own account first. You can use one of your social accounts or create
-            a new custom account using e-mail and password.
-          </Alert>
-        )}
+    // <Box sx={{ backgroundColor: config.loginBackgroundColor || "white" }}>
+    //   <Container
+    //     maxWidth="xl"
+    //     style={{
+    //       display: "flex",
+    //       flexDirection: "column",
+    //       height: "calc(100vh - 68px)",
+    //       justifyContent: "center",
+    //       alignItems: "center",
+    //     }}
+    //   >
+    //     {!!signUpPlan && (
+    //       <Alert severity={"info"}>
+    //         <AlertTitle>Account Owners</AlertTitle>
+    //         In order to create and manage your App(s), you need to create your
+    //         own account first. You can use one of your social accounts or create
+    //         a new custom account using e-mail and password.
+    //       </Alert>
+    //     )}
+    //     <Box
+    //       sx={{ marginTop: 5 }}
+    //       style={{
+    //         display: "flex",
+    //         maxWidth: "300px",
+    //         flexDirection: "column",
+    //         alignItems: "center",
+    //         justifyContent: "center",
+    //       }}
+    //     >
+    //       {config.logoImage && (
+    //         <img
+    //           src={config.logoImage}
+    //           style={{ width: "100%", height: 200, marginBottom: 10 }}
+    //         />
+    //       )}
+    //       {facebookSignIn && (
+    //         <FacebookLogin
+    //           appId="1172938123281314"
+    //           autoLoad={false}
+    //           fields="name,email,picture"
+    //           onClick={() => {}}
+    //           callback={onFacebookClick}
+    //           icon={<FacebookIcon style={{ marginRight: 10 }} />}
+    //           buttonStyle={{
+    //             display: "flex",
+    //             justifyContent: "flex-start",
+    //             alignItems: "center",
+    //             fontSize: 16,
+    //             padding: 5,
+    //             borderRadius: 4,
+    //             width: "100%",
+    //             margin: "3px 0",
+    //             fontFamily: "Roboto,Helvetica,Arial,sans-serif",
+    //             fontWeight: 500,
+    //             textTransform: "none",
+    //             paddingLeft: 20,
+    //           }}
+    //           textButton={"Sign In with facebook"}
+    //           containerStyle={{ padding: 0, width: "100%" }}
+    //         />
+    //       )}
+    //       {googleSignIn && isGoogleLoginAvailable() && (
+    //         <Button
+    //           onClick={onGoogleClick}
+    //           sx={{ margin: 1 }}
+    //           fullWidth
+    //           id="googleLogin"
+    //           variant="contained"
+    //           startIcon={<GoogleIcon />}
+    //           style={{
+    //             backgroundColor: "white",
+    //             color: "rgba(0,0,0,0.6)",
+    //             textTransform: "none",
+    //             fontSize: "16px",
+    //           }}
+    //         >
+    //           Sign In with Google
+    //         </Button>
+    //       )}
+    //       {metamaskSignIn && (
+    //         <Button
+    //           sx={{ margin: 1 }}
+    //           fullWidth
+    //           variant="contained"
+    //           id="metamaskLogin"
+    //           onClick={() => onMetamaskLogin()}
+    //           startIcon={<DiamondIcon />}
+    //           style={{
+    //             backgroundColor: "#d9711a",
+    //             textTransform: "none",
+    //             fontSize: "16px",
+    //           }}
+    //         >
+    //           Sign In with Metamask
+    //         </Button>
+    //       )}
+
+    //       {regularLoginEmail && (
+    //         <Button
+    //           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
+    //           fullWidth
+    //           variant="contained"
+    //           id="regularLogin"
+    //           onClick={() => setOpenEmail(true)}
+    //         >
+    //           Sign In with E-mail
+    //         </Button>
+    //       )}
+    //       <Typography
+    //         sx={{
+    //           fontSize: "12px",
+    //           textDecoration: "underline",
+    //           cursor: "pointer",
+    //         }}
+    //       >
+    //         <span onClick={() => setShowForgotPasswordModal(true)}>
+    //           Forgot password?
+    //         </span>
+    //       </Typography>
+    //     </Box>
+
+    //     <MetamaskModal
+    //       updateUser={updateUserInfo}
+    //       open={showMetamask}
+    //       setOpen={setShowMetamask}
+    //     />
+    //     <EmailModal
+    //       updateUser={updateUserInfo}
+    //       open={openEmail}
+    //       setOpen={setOpenEmail}
+    //     />
+    //     <UsernameModal
+    //       updateUser={updateUserInfo}
+    //       open={openUsername}
+    //       setOpen={setOpenUsername}
+    //     />
+    //     <ForgotPasswordModal
+    //       open={showForgotPasswordModal}
+    //       onClose={() => setShowForgotPasswordModal(false)}
+    //     />
+    //   </Container>
+    // </Box>
+
+    <Wrapper>
+      {!isTablet && !isMobile && (
         <Box
-          sx={{ marginTop: 5 }}
-          style={{
+          sx={{
+            width: "50%",
             display: "flex",
-            maxWidth: "300px",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            height: "100%",
+            justifyContent: !isMobile ? "space-evenly" : "start",
+            flex: !isMobile ? 1 : 0,
           }}
         >
-          {config.logoImage && (
-            <img
-              src={config.logoImage}
-              style={{ width: "100%", height: 200, marginBottom: 10 }}
-            />
-          )}
-          {facebookSignIn && (
-            <FacebookLogin
-              appId="1172938123281314"
-              autoLoad={false}
-              fields="name,email,picture"
-              onClick={() => {}}
-              callback={onFacebookClick}
-              icon={<FacebookIcon style={{ marginRight: 10 }} />}
-              buttonStyle={{
-                display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                fontSize: 16,
-                padding: 5,
-                borderRadius: 4,
-                width: "100%",
-                margin: "3px 0",
-                fontFamily: "Roboto,Helvetica,Arial,sans-serif",
-                fontWeight: 500,
-                textTransform: "none",
-                paddingLeft: 20,
-              }}
-              textButton={"Sign In with facebook"}
-              containerStyle={{ padding: 0, width: "100%" }}
-            />
-          )}
-          {googleSignIn && isGoogleLoginAvailable() && (
-            <Button
-              onClick={onGoogleClick}
-              sx={{ margin: 1 }}
-              fullWidth
-              id="googleLogin"
-              variant="contained"
-              startIcon={<GoogleIcon />}
-              style={{
-                backgroundColor: "white",
-                color: "rgba(0,0,0,0.6)",
-                textTransform: "none",
-                fontSize: "16px",
-              }}
-            >
-              Sign In with Google
-            </Button>
-          )}
-          {metamaskSignIn && (
-            <Button
-              sx={{ margin: 1 }}
-              fullWidth
-              variant="contained"
-              id="metamaskLogin"
-              onClick={() => onMetamaskLogin()}
-              startIcon={<DiamondIcon />}
-              style={{
-                backgroundColor: "#d9711a",
-                textTransform: "none",
-                fontSize: "16px",
-              }}
-            >
-              Sign In with Metamask
-            </Button>
-          )}
-
-          {regularLoginEmail && (
-            <Button
-              sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
-              fullWidth
-              variant="contained"
-              id="regularLogin"
-              onClick={() => setOpenEmail(true)}
-            >
-              Sign In with E-mail
-            </Button>
-          )}
-          <Typography
-            sx={{
-              fontSize: "12px",
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
-          >
-            <span onClick={() => setShowForgotPasswordModal(true)}>
-              Forgot password?
-            </span>
-          </Typography>
+          <LogoContent />
+          <ReviewContent />
         </Box>
-
-        <MetamaskModal
-          updateUser={updateUserInfo}
-          open={showMetamask}
-          setOpen={setShowMetamask}
+      )}
+      <Box
+        sx={{
+          width: isTablet ? "100%" : "50%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          gap: isMobile ? "16px" : "98px",
+          justifyContent: "center",
+        }}
+      >
+        {isTablet && <LogoContent isMobile />}
+        <SignUpForm
+          loading={loading}
+          isMobile={!isMobile && !isTablet}
+          signUpWithGoogle={onGoogleClick}
+          signUpWithApple={function (): void {
+            console.log("Function not implemented.")
+          }}
+          signUpWithFacebook={() => console.log("Function not implemented.")}
+          signUpWithMetamask={onMetamaskLogin}
         />
-        <EmailModal
-          updateUser={updateUserInfo}
-          open={openEmail}
-          setOpen={setOpenEmail}
-        />
-        <UsernameModal
-          updateUser={updateUserInfo}
-          open={openUsername}
-          setOpen={setOpenUsername}
-        />
-        <ForgotPasswordModal
-          open={showForgotPasswordModal}
-          onClose={() => setShowForgotPasswordModal(false)}
-        />
-      </Container>
-    </Box>
+        {isTablet && !isMobile && <ReviewContent />}
+      </Box>
+    </Wrapper>
   )
 }

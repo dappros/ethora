@@ -1,27 +1,46 @@
-import React, { useState } from "react";
-import { Box, Typography, Skeleton } from "@mui/material";
+import React, { useState } from "react"
+import { Box, Typography, Skeleton } from "@mui/material"
 
-import CustomStepper from "./Steps/Stepper";
-import FirstStep from "./Steps/FirstStep";
-import SecondStep from "./Steps/SecondStep";
-import ThirdStep from "./Steps/ThirdStep";
+import CustomStepper from "./Steps/Stepper"
+import FirstStep from "./Steps/FirstStep"
+import SecondStep from "./Steps/SecondStep"
+import ThirdStep from "./Steps/ThirdStep"
+import BackButton from "./BackButton"
 
-interface LoginFormProps {
-  loading: boolean;
+interface SignUpFormProps {
+  loading: boolean
+  isMobile?: boolean
+  signUpWithGoogle: () => void
+  signUpWithApple: () => void
+  signUpWithFacebook: () => void
+  signUpWithMetamask: () => void
 }
 
-const steps = {
-  0: <FirstStep />,
-  1: <SecondStep />,
-  2: <ThirdStep />,
-};
+const SignUpForm: React.FC<SignUpFormProps> = ({
+  loading = false,
+  isMobile = false,
+  signUpWithGoogle,
+  signUpWithApple,
+  signUpWithFacebook,
+  signUpWithMetamask,
+}) => {
+  const [activeStep, setActiveStep] = useState(0)
 
-const StepComponent = ({ step }) => {
-  return steps[step] || <div>Step not found</div>;
-};
+  const steps = [
+    <FirstStep
+      signUpWithGoogle={signUpWithGoogle}
+      signUpWithApple={signUpWithApple}
+      signUpWithFacebook={signUpWithFacebook}
+      signUpWithMetamask={signUpWithMetamask}
+      setStep={setActiveStep}
+    />,
+    <SecondStep />,
+    <ThirdStep />,
+  ]
 
-const LoginForm: React.FC<LoginFormProps> = ({ loading = false }) => {
-  const [activeStep, setActiveStep] = useState(0);
+  const StepComponent = ({ step }) => {
+    return steps[step] || <div>Step not found</div>
+  }
 
   return (
     <Box
@@ -30,25 +49,38 @@ const LoginForm: React.FC<LoginFormProps> = ({ loading = false }) => {
         borderRadius: "24px",
         backgroundColor: "white",
         boxShadow: "0px 4px 35px 0px #00000014",
-        py: "40px",
+        py: "24px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
         minWidth: "455px",
+        width: "100%",
+        minHeight: "598px",
       }}
     >
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
+      <Box
         sx={{
-          fontFamily: "Varela Round",
-          fontWeight: 400,
-          fontSize: "34px",
+          position: "relative",
+          width: "100%",
         }}
       >
-        Sign Up
-      </Typography>
+        {activeStep > 0 && (
+          <BackButton onPress={() => setActiveStep((prev) => prev - 1)} />
+        )}
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            fontFamily: "Varela Round",
+            fontWeight: 400,
+            fontSize: "34px",
+            color: activeStep === 2 ? "#0052CD" : "#141414",
+          }}
+        >
+          Sign Up
+        </Typography>
+      </Box>
       <CustomStepper step={activeStep} />
       {loading ? (
         <>
@@ -109,7 +141,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ loading = false }) => {
         </Typography>
       </Typography>
     </Box>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default SignUpForm

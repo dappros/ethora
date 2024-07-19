@@ -1,18 +1,21 @@
-import { Box, Icon, Rating, Typography } from "@mui/material";
-import Logo from "../../assets/logo.tsx";
-import React from "react";
+import { Box, Icon, Rating, Typography } from "@mui/material"
+import React from "react"
+import Logo from "../Icons/logo"
 
-interface LogoContentProps {}
+interface LogoContentProps {
+  isMobile?: boolean
+}
 
-const LogoContent: React.FC<LogoContentProps> = ({}) => {
+const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: "48px",
-        textAlign: "left",
-        flex: 1,
+        gap: !isMobile ? "48px" : "24px",
+        textAlign: !isMobile ? "left" : "center",
+        flex: !isMobile ? 1 : 0,
+        width: "100%",
       }}
     >
       <Box
@@ -20,8 +23,9 @@ const LogoContent: React.FC<LogoContentProps> = ({}) => {
           display: "flex",
           flexDirection: "row",
           gap: "16px",
-          textAlign: "left",
+          textAlign: isMobile ? "center" : "left",
           alignItems: "center",
+          justifyContent: isMobile ? "center" : "start",
         }}
       >
         <Logo />
@@ -36,18 +40,20 @@ const LogoContent: React.FC<LogoContentProps> = ({}) => {
           Ethora
         </Typography>
       </Box>
-      <Typography
-        sx={{
-          fontFamily: "Varela Round",
-          fontWeight: 400,
-          fontSize: "48px",
-          color: "white",
-        }}
-      >
-        Empower your community
-      </Typography>
+      {!isMobile && (
+        <Typography
+          sx={{
+            fontFamily: "Varela Round",
+            fontWeight: 400,
+            fontSize: "48px",
+            color: "white",
+          }}
+        >
+          Empower your community
+        </Typography>
+      )}
     </Box>
-  );
-};
+  )
+}
 
-export default LogoContent;
+export default LogoContent

@@ -1,6 +1,6 @@
-import React from "react";
-import { TextField, TextFieldProps } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import React from "react"
+import { TextField, TextFieldProps } from "@mui/material"
+import { styled } from "@mui/material/styles"
 
 interface CustomInputProps extends Omit<TextFieldProps, "variant"> {}
 
@@ -22,7 +22,16 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: "8px 16px",
     minHeight: "32px",
   },
-}));
+  "& .MuiFormHelperText-root": {
+    position: "absolute",
+    bottom: -20,
+    right: 0,
+    fontSize: 12,
+    color: theme.palette.error.main,
+    margin: 0,
+  },
+  position: "relative",
+}))
 
 const CustomInput: React.FC<CustomInputProps> = ({ placeholder, ...props }) => {
   return (
@@ -32,7 +41,7 @@ const CustomInput: React.FC<CustomInputProps> = ({ placeholder, ...props }) => {
       inputProps={{ style: { minWidth: "40px" } }}
       {...props}
     />
-  );
-};
+  )
+}
 
-export default CustomInput;
+export default CustomInput
