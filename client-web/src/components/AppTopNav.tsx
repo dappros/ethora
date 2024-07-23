@@ -178,6 +178,8 @@ const AppTopNav = () => {
       canCreateRooms: true,
       canLeaveRooms: true,
       canPostFiles: false,
+      isMessageMenuEnabled: true,
+      isChatListEnabled: true,
       langOptions: {
         languages: [
           { iso639_1: 'en', name: 'English' },
