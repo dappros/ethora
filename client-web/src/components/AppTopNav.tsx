@@ -14,6 +14,7 @@ import {
   getMyAcl,
   httpWithAuth,
   subscribeForPushNotifications,
+  uploadFile,
 } from "../http"
 import xmpp from "../xmpp"
 import { TActiveRoomFilter, useStoreState } from "../store"
@@ -25,7 +26,7 @@ import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
 import { walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
-import { bootstrapChatWithUser } from "../../comp/dist/main"
+import { bootstrapChatWithUser, chatEE } from "../../comp/dist/main"
 
 const coinImg = "/coin.png"
 function firstLetersFromName(fN: string, lN: string) {
@@ -156,16 +157,6 @@ const AppTopNav = () => {
   }, [firebaseAppId])
 
   useEffect(() => {
-    // xmpp.init(user.walletAddress, user?.xmppPassword as string)
-
-    console.log("123 ", {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      walletAddress: user.walletAddress,
-      xmppPassword: user.xmppPassword,
-      xmppUsername: walletToUsername(user.walletAddress),
-    })
-
     bootstrapChatWithUser({
       user: {
         firstName: user.firstName,
@@ -177,7 +168,7 @@ const AppTopNav = () => {
       service: "wss://xmpp.ethoradev.com:5443/ws",
       canCreateRooms: true,
       canLeaveRooms: true,
-      canPostFiles: false,
+      canPostFiles: true,
       isMessageMenuEnabled: true,
       isChatListEnabled: true,
       langOptions: {
@@ -189,6 +180,23 @@ const AppTopNav = () => {
         ],
       }
     })
+
+    function processFileUpload () {
+      console.log("processFileUpload")
+
+      const formData = new FormData()
+      formData.append("files", arguments[0])
+      uploadFile(formData).then((fileUploadResponse) => {
+        console.log({fileUploadResponse})
+        chatEE.trigger("file-upload-success", fileUploadResponse.data)
+      })
+    }
+
+    chatEE.on("file-upload", processFileUpload)
+
+    return () => {
+      chatEE.off("file-upload", processFileUpload)
+    }
   }, [])
 
   const navigateToLatestMetaRoom = async () => {

@@ -28,9 +28,7 @@ if (config.DISABLE_STRICT) {
   root.render(
     <Web3ReactProvider getLibrary={getLibrary}>
       <CssBaseline />
-      <React.StrictMode>
         <App />
-      </React.StrictMode>
     </Web3ReactProvider>
   )
 }
