@@ -14,6 +14,7 @@ import {
   getMyAcl,
   httpWithAuth,
   subscribeForPushNotifications,
+  transferCoin,
   uploadFile,
 } from "../http"
 import xmpp from "../xmpp"
@@ -169,6 +170,7 @@ const AppTopNav = () => {
       canCreateRooms: true,
       canLeaveRooms: true,
       canPostFiles: true,
+      canSendCoins: true,
       isMessageMenuEnabled: true,
       isChatListEnabled: true,
       langOptions: {
@@ -178,7 +180,9 @@ const AppTopNav = () => {
           { iso639_1: 'pt', name: 'Portuguese' },
           { iso639_1: 'ht', name: 'Haitian' },
         ],
-      }
+      },
+      coinsAmount: 100,
+      isThreadsEnabled: false
     })
 
     function processFileUpload () {
@@ -192,10 +196,25 @@ const AppTopNav = () => {
       })
     }
 
+    async function processSendCoinds() {
+      console.log("processSendCoinds ", arguments)
+      const {to, value, roomJid, messageId} = arguments[0]
+      console.log(roomJid)
+      try {
+        const {data: tranferResult } = await transferCoin("ERC20", "Dappros Platform Token", value, to, roomJid, messageId)
+        chatEE.trigger("send-coins-success")
+        console.log({tranferResult})
+      } catch (error) {
+
+      }
+    }
+
     chatEE.on("file-upload", processFileUpload)
+    chatEE.on("send-coins", processSendCoinds)
 
     return () => {
       chatEE.off("file-upload", processFileUpload)
+      chatEE.off("send-coins", processSendCoinds)
     }
   }, [])
 

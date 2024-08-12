@@ -730,13 +730,27 @@ export function transferCoin(
   tokenId: string,
   tokenName: string,
   amount: number,
-  toWallet: string
+  toWallet: string,
+  roomJid?: string,
+  messageId?: string,
 ) {
   const path = "tokens/transfer"
   const user = useStoreState.getState().user
+  let body: any = {
+    tokenId, tokenName, amount, toWallet
+  }
+
+  if (roomJid) {
+    body.roomJid = roomJid
+  }
+
+  if (messageId) {
+    body.receiverMessageId = messageId
+  }
+
   return http.post<ITokenTransferResponse>(
     path,
-    { tokenId, tokenName, amount, toWallet },
+    body,
     {
       headers: { Authorization: user.token },
     }
