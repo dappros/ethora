@@ -246,6 +246,9 @@ export interface IConfig {
   displayName: string
   domainName: string
   logoImage: string
+  systemChatAccount: {
+    jid: string
+  }
 }
 
 // chats types for tabs

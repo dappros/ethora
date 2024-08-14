@@ -93,8 +93,8 @@ const mockAcl = {
 const AppTopNav = () => {
   const user = useStoreState((state) => state.user)
   const apps = useStoreState((state) => state.apps)
-  const userId = useStoreState((state) => state.user._id)
   const setACL = useStoreState((state) => state.setACL)
+  const config = useStoreState((state) => state.config)
   const history = useHistory()
   const location = useLocation()
   const mainCoinBalance = useStoreState((state) =>
@@ -182,7 +182,8 @@ const AppTopNav = () => {
         ],
       },
       coinsAmount: 100,
-      isThreadsEnabled: false
+      isThreadsEnabled: false,
+      systemMessagesJid: config.systemChatAccount.jid
     })
 
     function processFileUpload () {
