@@ -725,6 +725,42 @@ class XmppService {
       .filter(bookmark => bookmark.jid !== jid)
     await this.setBookmarks(bookmarks)
   }
+
+  async saveChatJson(json) {
+    const stanza = xml(
+      "iq",
+      {
+        id: "privateXml",
+        type: "set",
+      },
+      xml(
+        "query",
+        { xmlns: "jabber:iq:private" },
+        xml("chatjson", { xmlns: "chatjson:store", value: json })
+      )
+    )
+
+    console.log("---> ", stanza.toString())
+
+    this.client.send(stanza)
+  }
+
+  async getChatJson() {
+    const stanza = xml(
+      "iq",
+      {
+        id: "privateXml",
+        type: "get",
+      },
+      xml(
+        "query",
+        { xmlns: "jabber:iq:private" },
+        xml("chatjson", { xmlns: "chatjson:store" })
+      )
+    )
+
+    this.client.send(stanza)
+  }
 }
 
 XmppService.createTimeoutPromise = function (ms, unsubscribe) {

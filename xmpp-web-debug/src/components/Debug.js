@@ -22,6 +22,7 @@ export default function Debug() {
   const [bookmarkName, setBookmarkName] = useState("");
   const [bookmarkNick, setBookmarkNick] = useState("");
   const [bookmarkPassword, setBookmarkPassword] = useState("");
+  const [chatJson, setChatJson] = useState("");
 
   const onLogin = () => {
     xmppService.connect(username, password);
@@ -42,6 +43,14 @@ export default function Debug() {
     setLastName(lastName);
     xmppService.lastName = lastName;
   };
+
+  const onSaveChatJson = () => {
+    xmppService.saveChatJson(chatJson)
+  }
+
+  const onGetChatJson = () => {
+    xmppService.getChatJson()
+  }
 
   return (
     <div style={{ padding: "20px" }}>
@@ -472,6 +481,15 @@ export default function Debug() {
           </div>
           <div>
             <button onClick={() => xmppService.removeBookmark(bookmarkJid)}>remove Bookmark</button>
+          </div>
+        </div>
+        <div style={{ paddingTop: "10px"}}>
+          <div>
+            <textarea placeholder="chat JSON" value={chatJson} type="text" onChange={(e) => setChatJson(e.target.value)} />
+          </div>
+          <div>
+            <button onClick={onSaveChatJson}>Save</button>
+            <button onClick={onGetChatJson}>Get</button>
           </div>
         </div>
       </div>
