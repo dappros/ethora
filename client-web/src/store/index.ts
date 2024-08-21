@@ -2,9 +2,9 @@ import create from "zustand"
 import { immer } from "zustand/middleware/immer"
 import { persist, devtools } from "zustand/middleware"
 import * as http from "../http"
-import { stat } from "node:fs"
 import type { Stripe } from "stripe"
 import { IDefaultChatRoom, THomeScreen } from "../http"
+import { coinsMainName } from "../config/config"
 
 // type used for User profile details
 export type TUser = {
@@ -345,6 +345,7 @@ interface IStore {
   activeRoomFilter: TActiveRoomFilter
   setActiveRoomFilter: (filter: TActiveRoomFilter) => void
   deleteMessage: (messageId: number) => void
+  setCoinsBalance: (value: number) => void
 }
 
 const _useStore = create<IStore>()(
@@ -449,6 +450,16 @@ const _useStore = create<IStore>()(
           documents: [],
           blackList: [],
           activeRoomFilter: "official",
+          setCoinsBalance(value) {
+            set((state) => {
+              const i = state.balance.findIndex((el) => el.tokenName === coinsMainName)
+              let newBalances = state.balance.concat([])
+              let main = JSON.parse(JSON.stringify(state.balance[i]))
+              main.balance = value.toString()
+              newBalances[i] = main
+              state.balance = newBalances
+            })
+          },
           setShowHeaderError(value) {
             set((state) => {
               state.showHeaderError = value

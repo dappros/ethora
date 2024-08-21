@@ -25,7 +25,7 @@ import { coinsMainName, defaultMetaRoom, ROOMS_FILTERS } from "../config/config"
 import { Menu } from "./Menu"
 import { DOMAIN } from "../constants"
 import { getFirebaseMesagingToken } from "../services/firebaseMessaging"
-import { walletToUsername } from "../utils/walletManipulation"
+import { usernameToWallet, walletToUsername } from "../utils/walletManipulation"
 import defUserImage from "../assets/images/def-ava.png"
 import { bootstrapChatWithUser, chatEE } from "../../comp/dist/main"
 
@@ -95,6 +95,7 @@ const AppTopNav = () => {
   const apps = useStoreState((state) => state.apps)
   const setACL = useStoreState((state) => state.setACL)
   const config = useStoreState((state) => state.config)
+  const setCoinsBalance = useStoreState((state) => state.setCoinsBalance)
   const history = useHistory()
   const location = useLocation()
   const mainCoinBalance = useStoreState((state) =>
@@ -181,7 +182,7 @@ const AppTopNav = () => {
           { iso639_1: 'ht', name: 'Haitian' },
         ],
       },
-      coinsAmount: 100,
+      coinsAmount: Number(mainCoinBalance.balance),
       isThreadsEnabled: false,
       systemMessagesJid: config.systemChatAccount.jid
     })
@@ -198,7 +199,6 @@ const AppTopNav = () => {
     }
 
     async function processSendCoinds() {
-      console.log("processSendCoinds ", arguments)
       const {to, value, roomJid, messageId} = arguments[0]
       console.log(roomJid)
       try {
@@ -210,12 +210,30 @@ const AppTopNav = () => {
       }
     }
 
+    function processCoinsReceived() {
+      console.log("processCoinsReceived:arguments ", arguments)
+      const {amount} = arguments[0]
+      setCoinsBalance(Number(mainCoinBalance.balance) + Number(amount))
+    }
+
+    function processOpenProfile() {
+      console.log("processOpenProfile ", arguments[0])
+      const {nickname} = arguments[0]
+      const walletAddress = usernameToWallet(nickname)
+
+      history.push(`/profile/${walletAddress}`)
+    }
+
     chatEE.on("file-upload", processFileUpload)
     chatEE.on("send-coins", processSendCoinds)
+    chatEE.on("coins-received", processCoinsReceived)
+    chatEE.on("open-profile", processOpenProfile)
 
     return () => {
       chatEE.off("file-upload", processFileUpload)
       chatEE.off("send-coins", processSendCoinds)
+      chatEE.off("coins-received", processCoinsReceived)
+      chatEE.off("open-profile", processOpenProfile)
     }
   }, [])
 
