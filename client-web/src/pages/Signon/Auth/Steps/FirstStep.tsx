@@ -10,6 +10,7 @@ import CustomButton from "../Button"
 import CustomInput from "../Input"
 import { registerByEmail } from "../../../../http"
 import { useSnackbar } from "../../../../context/SnackbarContext"
+import FacebookLogin from "react-facebook-login"
 
 const validate = (values: { email: string; firstName: any; lastName: any }) => {
   const errors: Record<string, string> = {}
@@ -112,7 +113,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-            helperText={formik.touched.firstName && formik.errors.firstName}
+            // helperText={formik.touched.firstName && formik.errors.firstName}
           />
           <CustomInput
             placeholder="Last Name"
@@ -123,7 +124,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-            helperText={formik.touched.lastName && formik.errors.lastName}
+            // helperText={formik.touched.lastName && formik.errors.lastName}
           />
         </Box>
         <CustomInput

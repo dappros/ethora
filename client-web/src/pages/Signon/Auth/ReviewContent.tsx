@@ -1,6 +1,5 @@
-import { Box, Icon, Rating, Typography } from "@mui/material";
-import Logo from "../../assets/logo.tsx";
-import React from "react";
+import { Avatar, Box, Rating, Typography } from "@mui/material"
+import React from "react"
 
 interface ReviewContentProps {}
 
@@ -34,8 +33,15 @@ const ReviewContent: React.FC<ReviewContentProps> = ({}) => {
           experience. I can spin up a new app within minutes, and it's
           feature-rich, engaging and production-ready from day one. Love it!"
         </Typography>
-        <Box>
-          <Icon />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 2,
+            alignItems: "center",
+          }}
+        >
+          <Avatar>J</Avatar>
           <Box>
             <Typography>James A Palmer</Typography>
             <Typography>Serial entrepreneur</Typography>
@@ -43,7 +49,7 @@ const ReviewContent: React.FC<ReviewContentProps> = ({}) => {
         </Box>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default ReviewContent;
+export default ReviewContent
