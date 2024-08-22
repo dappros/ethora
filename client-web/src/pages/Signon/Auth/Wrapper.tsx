@@ -1,9 +1,9 @@
-import React, { ReactNode } from "react";
-import { Box, useMediaQuery } from "@mui/material";
-import { useTheme, Theme } from "@mui/system";
+import React, { ReactNode } from "react"
+import { Box, useMediaQuery } from "@mui/material"
+import { useTheme, Theme } from "@mui/system"
 
 interface WrapperProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const Background = () => (
@@ -36,12 +36,12 @@ const Background = () => (
       }}
     />
   </Box>
-);
+)
 
 const Wrapper: React.FC<WrapperProps> = ({ children }) => {
-  const theme: Theme = useTheme();
-  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+  const theme: Theme = useTheme()
+  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
 
   return (
     <Box
@@ -51,10 +51,10 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
         height: "100vh",
         width: "100vw",
         color: "#141414",
+        backgroundColor: "#0052CD0D",
       }}
       className="responsiveWrapper"
     >
-      <Background />
       <Box
         sx={{
           position: "absolute",
@@ -72,7 +72,7 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
         {children}
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Wrapper;
+export default Wrapper

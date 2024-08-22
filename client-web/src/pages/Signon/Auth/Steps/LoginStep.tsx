@@ -28,7 +28,7 @@ const LoginStep: React.FC<FirstStepProps> = ({}) => {
         <CustomInput fullWidth placeholder={"Email"} type="email" />
         <CustomInput fullWidth placeholder={"Email"} type="password" />
         <CustomButton fullWidth variant="contained" color="primary">
-          Sign Ip
+          Sign In
         </CustomButton>
       </Box>
       <Box

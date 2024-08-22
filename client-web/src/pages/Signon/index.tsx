@@ -410,12 +410,10 @@ export default function Signon() {
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            justifyContent: !isMobile ? "space-evenly" : "start",
-            flex: !isMobile ? 1 : 0,
+            justifyContent: "center",
           }}
         >
           <LogoContent />
-          <ReviewContent />
         </Box>
       )}
       <Box

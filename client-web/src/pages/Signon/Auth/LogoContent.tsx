@@ -1,6 +1,6 @@
 import { Box, Icon, Rating, Typography } from "@mui/material"
 import React from "react"
-import Logo from "../Icons/logo"
+import LogoAndText from "../Icons/logoAndText"
 
 interface LogoContentProps {
   isMobile?: boolean
@@ -16,6 +16,8 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
         textAlign: !isMobile ? "left" : "center",
         flex: !isMobile ? 1 : 0,
         width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <Box
@@ -23,22 +25,12 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
           display: "flex",
           flexDirection: "row",
           gap: "16px",
-          textAlign: isMobile ? "center" : "left",
+          textAlign: isMobile ? "center" : "start",
           alignItems: "center",
-          justifyContent: isMobile ? "center" : "start",
+          justifyContent: "start",
         }}
       >
-        <Logo />
-        <Typography
-          sx={{
-            fontFamily: "Varela Round",
-            fontWeight: 400,
-            fontSize: "48px",
-            color: "white",
-          }}
-        >
-          Ethora
-        </Typography>
+        <LogoAndText />
       </Box>
       {!isMobile && (
         <Typography
@@ -46,7 +38,8 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
             fontFamily: "Varela Round",
             fontWeight: 400,
             fontSize: "48px",
-            color: "white",
+            color: "#141414",
+            textAlign: "center",
           }}
         >
           Empower your community
