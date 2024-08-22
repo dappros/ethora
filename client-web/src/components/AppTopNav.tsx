@@ -4,20 +4,18 @@ import Box from "@mui/material/Box"
 import Toolbar from "@mui/material/Toolbar"
 import IconButton from "@mui/material/IconButton"
 
-import { Link, useHistory, useLocation } from "react-router-dom"
+import { Link, useHistory, useLocation, useParams } from "react-router-dom"
 
 import ExploreIcon from "@mui/icons-material/Explore"
 import GroupIcon from "@mui/icons-material/Group"
 import StarRateIcon from "@mui/icons-material/StarRate"
 import {
   getBalance,
-  getMyAcl,
   httpWithAuth,
   subscribeForPushNotifications,
   transferCoin,
   uploadFile,
 } from "../http"
-import xmpp from "../xmpp"
 import { TActiveRoomFilter, useStoreState } from "../store"
 
 import { Badge } from "@mui/material"
@@ -91,6 +89,7 @@ const mockAcl = {
   ],
 }
 const AppTopNav = () => {
+  const params = useParams() as { roomJID: string }
   const user = useStoreState((state) => state.user)
   const apps = useStoreState((state) => state.apps)
   const setACL = useStoreState((state) => state.setACL)
@@ -187,24 +186,24 @@ const AppTopNav = () => {
       systemMessagesJid: config.systemChatAccount.jid
     })
 
-    function processFileUpload () {
+    function processFileUpload() {
       console.log("processFileUpload")
 
       const formData = new FormData()
       formData.append("files", arguments[0])
       uploadFile(formData).then((fileUploadResponse) => {
-        console.log({fileUploadResponse})
+        console.log({ fileUploadResponse })
         chatEE.trigger("file-upload-success", fileUploadResponse.data)
       })
     }
 
     async function processSendCoinds() {
-      const {to, value, roomJid, messageId} = arguments[0]
+      const { to, value, roomJid, messageId } = arguments[0]
       console.log(roomJid)
       try {
-        const {data: tranferResult } = await transferCoin("ERC20", "Dappros Platform Token", value, to, roomJid, messageId)
+        const { data: tranferResult } = await transferCoin("ERC20", "Dappros Platform Token", value, to, roomJid, messageId)
         chatEE.trigger("send-coins-success")
-        console.log({tranferResult})
+        console.log({ tranferResult })
       } catch (error) {
 
       }
@@ -212,13 +211,13 @@ const AppTopNav = () => {
 
     function processCoinsReceived() {
       console.log("processCoinsReceived:arguments ", arguments)
-      const {amount} = arguments[0]
+      const { amount } = arguments[0]
       setCoinsBalance(Number(mainCoinBalance.balance) + Number(amount))
     }
 
     function processOpenProfile() {
       console.log("processOpenProfile ", arguments[0])
-      const {nickname} = arguments[0]
+      const { nickname } = arguments[0]
       const walletAddress = usernameToWallet(nickname)
 
       history.push(`/profile/${walletAddress}`)
@@ -234,6 +233,18 @@ const AppTopNav = () => {
       chatEE.off("send-coins", processSendCoinds)
       chatEE.off("coins-received", processCoinsReceived)
       chatEE.off("open-profile", processOpenProfile)
+    }
+  }, [])
+
+  useEffect(() => {
+    function onChatOpened() {
+      const { chatId } = arguments[0]
+      history.replace(`/chat/${chatId.split("@")[0]}`)
+    }
+    chatEE.on("chat-opened", onChatOpened)
+
+    return () => {
+      chatEE.off("chat-opened", onChatOpened)
     }
   }, [])
 
