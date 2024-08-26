@@ -38,6 +38,8 @@ import Wrapper from "./Auth/Wrapper"
 import LogoContent from "./Auth/LogoContent"
 import ReviewContent from "./Auth/ReviewContent"
 import SignUpForm from "./Auth/SignUpForm"
+import SignInForm from "./Auth/SignInForm"
+import Flipper from "./Flipper"
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser)
@@ -52,6 +54,7 @@ export default function Signon() {
   const [openUsername, setOpenUsername] = useState(false)
   const [showMetamask, setShowMetamask] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [flip, setFlip] = useState(false)
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false)
   const { showSnackbar } = useSnackbar()
   const signUpPlan = new URLSearchParams(search).get("signUpPlan")
@@ -59,6 +62,12 @@ export default function Signon() {
   const onMetamaskLogin = () => {
     activate(injected)
   }
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const action = queryParams.get("action")
+    setFlip(action === "signUp")
+  }, [location.search])
 
   useEffect(() => {
     const type = query.get("type")
@@ -247,8 +256,7 @@ export default function Signon() {
 
   const theme = useTheme()
 
-  const isTablet = useMediaQuery(theme.breakpoints.down(1108))
-  const isMobile = useMediaQuery(theme.breakpoints.down(731))
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down(1024))
 
   const isGoogleLoginAvailable = () => {
     return !!config.firebaseWebConfigString
@@ -403,42 +411,36 @@ export default function Signon() {
     // </Box>
 
     <Wrapper>
-      {!isTablet && !isMobile && (
-        <Box
-          sx={{
-            width: "50%",
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            justifyContent: "center",
-          }}
-        >
-          <LogoContent />
-        </Box>
-      )}
       <Box
         sx={{
-          width: isTablet ? "100%" : "50%",
           height: "100%",
+          width: "100%",
           display: "flex",
-          flexDirection: "column",
           flex: 1,
-          gap: isMobile ? "16px" : "98px",
+          flexDirection: isMobileDevice ? "column" : "row",
+          gap: "16px",
           justifyContent: "center",
+          alignItems: "center",
+          minWidth: "566px",
         }}
       >
-        {isTablet && <LogoContent isMobile />}
-        <SignUpForm
-          loading={loading}
-          isMobile={!isMobile && !isTablet}
-          signUpWithGoogle={onGoogleClick}
-          signUpWithApple={function (): void {
-            console.log("Function not implemented.")
-          }}
-          signUpWithFacebook={() => console.log("Function not implemented.")}
-          signUpWithMetamask={onMetamaskLogin}
+        <LogoContent isMobile={isMobileDevice} />
+        <Flipper
+          front={<SignInForm loading={loading} />}
+          back={
+            <SignUpForm
+              loading={loading}
+              isMobile={isMobileDevice}
+              signUpWithGoogle={onGoogleClick}
+              signUpWithApple={function (): void {
+                console.log("Function not implemented.")
+              }}
+              signUpWithFacebook={onFacebookClick}
+              signUpWithMetamask={onMetamaskLogin}
+            />
+          }
+          flip={flip}
         />
-        {isTablet && !isMobile && <ReviewContent />}
       </Box>
     </Wrapper>
   )

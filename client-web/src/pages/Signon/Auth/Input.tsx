@@ -27,8 +27,11 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     bottom: -20,
     right: 0,
     fontSize: 12,
-    color: theme.palette.error.main,
+    color: "#8C8C8C",
     margin: 0,
+  },
+  "& .MuiFormHelperText-root.Mui-error": {
+    color: theme.palette.error.main,
   },
   position: "relative",
 }))

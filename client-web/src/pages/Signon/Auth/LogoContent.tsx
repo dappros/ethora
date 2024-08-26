@@ -11,23 +11,19 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
     <Box
       sx={{
         display: "flex",
-        flexDirection: "column",
-        gap: !isMobile ? "48px" : "24px",
-        textAlign: !isMobile ? "left" : "center",
-        flex: !isMobile ? 1 : 0,
         width: "100%",
+        flexDirection: "column",
+        textAlign: "left",
+        minWidth: "221px",
         justifyContent: "center",
-        alignItems: "center",
+        gap: "40px",
       }}
     >
       <Box
         sx={{
           display: "flex",
           flexDirection: "row",
-          gap: "16px",
           textAlign: isMobile ? "center" : "start",
-          alignItems: "center",
-          justifyContent: "start",
         }}
       >
         <LogoAndText />
@@ -39,7 +35,11 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
             fontWeight: 400,
             fontSize: "48px",
             color: "#141414",
-            textAlign: "center",
+            textAlign: "left",
+            lineHeight: "56px",
+            height: "112px",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           Empower your community

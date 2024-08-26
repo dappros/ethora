@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react"
 import { Box, useMediaQuery } from "@mui/material"
 import { useTheme, Theme } from "@mui/system"
+import "./Wrapper.scss"
+import Circles from "../Icons/circles"
 
 interface WrapperProps {
   children: ReactNode
@@ -47,26 +49,19 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
     <Box
       sx={{
         display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        width: "100vw",
         color: "#141414",
-        backgroundColor: "#0052CD0D",
       }}
       className="responsiveWrapper"
     >
       <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
           display: "flex",
+          width: "100%",
+          height: "100%",
+          gap: "24px",
           alignItems: "center",
-          justifyContent: "space-evenly",
-          width: "calc(100% - 192px)",
-          height: "calc(100% - 192px)",
-          gap: "10.75%",
+          justifyContent: "center",
+          flexDirection: "column",
         }}
       >
         {children}
