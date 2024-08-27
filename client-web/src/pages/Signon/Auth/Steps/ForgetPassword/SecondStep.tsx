@@ -1,9 +1,9 @@
 import { Box, Checkbox, Typography } from "@mui/material"
 import React from "react"
-import CustomInput from "../Input"
-import CustomButton from "../Button"
+import CustomInput from "../../Input"
+import CustomButton from "../../Button"
 import { Google as GoogleIcon } from "@mui/icons-material"
-import SkeletonLoader from "../../SkeletonLoader"
+import SkeletonLoader from "../../../SkeletonLoader"
 
 interface SecondStepProps {
   loading: boolean
@@ -27,7 +27,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
             color: "#141414",
           }}
         >
-          Confirm your email address
+          Check your email address
         </Typography>
         <Typography
           sx={{

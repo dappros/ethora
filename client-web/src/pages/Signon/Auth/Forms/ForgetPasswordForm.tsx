@@ -2,29 +2,17 @@ import React, { useState } from "react"
 import { Box, Typography } from "@mui/material"
 
 import { useLocation, useHistory } from "react-router-dom"
-import FirstStep from "./Steps/FirstStep"
-import SecondStep from "./Steps/SecondStep"
-import ThirdStep from "./Steps/ThirdStep"
-import BackButton from "./BackButton"
-import CustomStepper from "./Steps/Stepper"
+import BackButton from "../BackButton"
+import CustomStepper from "../Steps/Stepper"
+import FirstStep from "../Steps/ForgetPassword/FirstStep"
+import SecondStep from "../Steps/ForgetPassword/SecondStep"
+import ThirdStep from "../Steps/ForgetPassword/ThirdStep"
 
 interface SignUpFormProps {
   loading: boolean
-  isMobile?: boolean
-  signUpWithGoogle: () => void
-  signUpWithApple: () => void
-  signUpWithFacebook: (info: any) => void
-  signUpWithMetamask: () => void
 }
 
-const SignUpForm: React.FC<SignUpFormProps> = ({
-  loading = false,
-  isMobile = false,
-  signUpWithGoogle,
-  signUpWithApple,
-  signUpWithFacebook,
-  signUpWithMetamask,
-}) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({ loading = false }) => {
   const [activeStep, setActiveStep] = useState(0)
 
   const location = useLocation()
@@ -37,14 +25,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   }
 
   const steps = [
-    <FirstStep
-      signUpWithGoogle={signUpWithGoogle}
-      signUpWithApple={signUpWithApple}
-      signUpWithFacebook={signUpWithFacebook}
-      signUpWithMetamask={signUpWithMetamask}
-      setStep={setActiveStep}
-      loading={loading}
-    />,
+    <FirstStep setStep={setActiveStep} loading={loading} />,
     <SecondStep loading={loading} />,
     <ThirdStep loading={loading} />,
   ]

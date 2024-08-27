@@ -1,13 +1,13 @@
 import { Box, Checkbox, Typography } from "@mui/material"
 import React from "react"
-import CustomInput from "../Input"
-import CustomButton from "../Button"
+import CustomInput from "../../Input"
+import CustomButton from "../../Button"
 import {
   Google as GoogleIcon,
   Facebook as FacebookIcon,
   Apple as AppleIcon,
 } from "@mui/icons-material"
-import SkeletonLoader from "../../SkeletonLoader"
+import SkeletonLoader from "../../../SkeletonLoader"
 
 interface ThirdStepProps {
   loading: boolean

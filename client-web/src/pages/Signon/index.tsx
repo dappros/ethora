@@ -37,8 +37,8 @@ import xmpp from "../../xmpp"
 import Wrapper from "./Auth/Wrapper"
 import LogoContent from "./Auth/LogoContent"
 import ReviewContent from "./Auth/ReviewContent"
-import SignUpForm from "./Auth/SignUpForm"
-import SignInForm from "./Auth/SignInForm"
+import SignUpForm from "./Auth/Forms/SignUpForm"
+import SignInForm from "./Auth/Forms/SignInForm"
 import Flipper from "./Flipper"
 
 export default function Signon() {

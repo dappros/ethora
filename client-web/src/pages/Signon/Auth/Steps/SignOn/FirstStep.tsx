@@ -1,16 +1,16 @@
 import React, { Dispatch, SetStateAction, useState } from "react"
 import { Box, Typography } from "@mui/material"
 import { useFormik } from "formik"
-import GoogleIcon from "../../Icons/socials/googleIcon"
-import FacebookIcon from "../../Icons/socials/facebookIcon"
-import AppleIcon from "../../Icons/socials/appleIcon"
-import MetamaskIcon from "../../Icons/socials/metamaskIcon"
-import CustomButton from "../Button"
-import CustomInput from "../Input"
-import { registerByEmail } from "../../../../http"
-import { useSnackbar } from "../../../../context/SnackbarContext"
+import GoogleIcon from "../../../Icons/socials/googleIcon"
+import FacebookIcon from "../../../Icons/socials/facebookIcon"
+import AppleIcon from "../../../Icons/socials/appleIcon"
+import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
+import CustomButton from "../../Button"
+import CustomInput from "../../Input"
+import { registerByEmail } from "../../../../../http"
+import { useSnackbar } from "../../../../../context/SnackbarContext"
 import FacebookLogin from "react-facebook-login"
-import SkeletonLoader from "../../SkeletonLoader"
+import SkeletonLoader from "../../../SkeletonLoader"
 
 const validate = (values: { email: string; firstName: any; lastName: any }) => {
   const errors: Record<string, string> = {}
@@ -23,10 +23,14 @@ const validate = (values: { email: string; firstName: any; lastName: any }) => {
 
   if (!values.firstName) {
     errors.firstName = "Required"
+  } else if (values.firstName.length < 2) {
+    errors.firstName = "First name must be at least 2 characters"
   }
 
   if (!values.lastName) {
     errors.lastName = "Required"
+  } else if (values.lastName.length < 2) {
+    errors.lastName = "Last name must be at least 2 characters"
   }
 
   return errors

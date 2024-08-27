@@ -1,25 +1,27 @@
 import React from "react"
 import { Box, Typography } from "@mui/material"
-import CustomInput from "../Input"
-import CustomButton from "../Button"
-import GoogleIcon from "../../Icons/socials/googleIcon"
-import FacebookIcon from "../../Icons/socials/facebookIcon"
-import AppleIcon from "../../Icons/socials/appleIcon"
-import MetamaskIcon from "../../Icons/socials/metamaskIcon"
+import CustomInput from "../../Input"
+import CustomButton from "../../Button"
+import GoogleIcon from "../../../Icons/socials/googleIcon"
+import FacebookIcon from "../../../Icons/socials/facebookIcon"
+import AppleIcon from "../../../Icons/socials/appleIcon"
+import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
 import { useFormik } from "formik"
-import { TLoginSuccessResponse, loginUsername } from "../../../../http"
+import { TLoginSuccessResponse, loginUsername } from "../../../../../http"
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {}
 
   if (!values.email) {
     errors.email = "Required"
+  } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(values.email)) {
+    errors.email = "Invalid email address"
   }
 
   if (!values.password) {
     errors.password = "Required"
-  } else if (values.password.length <= 2) {
-    errors.password = "Must be 2 characters or more"
+  } else if (values.password.length < 8) {
+    errors.password = "Password must be at least 8 characters"
   }
 
   return errors
