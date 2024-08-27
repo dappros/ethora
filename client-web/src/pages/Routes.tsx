@@ -136,6 +136,7 @@ export const Routes = () => {
     setLoading(true)
     try {
       const res = await http.getConfig()
+      // add here handle for sign in options.
       const firebaseConfig = getFirebaseConfigFromString(
         res.data.result.firebaseWebConfigString
       )
@@ -198,6 +199,7 @@ export const Routes = () => {
           <Signon />
         </Route>
         <Route path="/regularSignIn" component={RegularSignIn} />
+        <Route path="/forgetPassword" component={RegularSignIn} />
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />

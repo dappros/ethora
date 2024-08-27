@@ -5,7 +5,7 @@ import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
 import { useWeb3React } from "@web3-react/core"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import FacebookLogin from "react-facebook-login"
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { injected } from "../../connector"
@@ -40,6 +40,7 @@ import ReviewContent from "./Auth/ReviewContent"
 import SignUpForm from "./Auth/Forms/SignUpForm"
 import SignInForm from "./Auth/Forms/SignInForm"
 import Flipper from "./Flipper"
+import ForgetPasswordForm from "./Auth/Forms/ForgetPasswordForm"
 
 export default function Signon() {
   const setUser = useStoreState((state) => state.setUser)
@@ -55,6 +56,7 @@ export default function Signon() {
   const [showMetamask, setShowMetamask] = useState(false)
   const [loading, setLoading] = useState(false)
   const [flip, setFlip] = useState(false)
+
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false)
   const { showSnackbar } = useSnackbar()
   const signUpPlan = new URLSearchParams(search).get("signUpPlan")
@@ -62,12 +64,6 @@ export default function Signon() {
   const onMetamaskLogin = () => {
     activate(injected)
   }
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    const action = queryParams.get("action")
-    setFlip(action === "signUp")
-  }, [location.search])
 
   useEffect(() => {
     const type = query.get("type")
@@ -255,8 +251,37 @@ export default function Signon() {
   }
 
   const theme = useTheme()
-
   const isMobileDevice = useMediaQuery(theme.breakpoints.down(1024))
+
+  const components = useMemo(() => {
+    return {
+      register: (
+        <SignUpForm
+          loading={loading}
+          isMobile={isMobileDevice}
+          signUpWithGoogle={onGoogleClick}
+          signUpWithApple={function (): void {
+            console.log("Function not implemented.")
+          }}
+          signUpWithFacebook={onFacebookClick}
+          signUpWithMetamask={onMetamaskLogin}
+        />
+      ),
+      forget: <ForgetPasswordForm loading={loading} />,
+    }
+  }, [])
+  const [flipComponent, setFlipComponent] = useState<React.ReactNode>(
+    components.register
+  )
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const action = queryParams.get("action")
+    setFlipComponent(
+      action === "forgetPassword" ? components.forget : components.register
+    )
+    setFlip(action === "signUp" || action === "forgetPassword")
+  }, [location.search])
 
   const isGoogleLoginAvailable = () => {
     return !!config.firebaseWebConfigString
@@ -427,18 +452,7 @@ export default function Signon() {
         <LogoContent isMobile={isMobileDevice} />
         <Flipper
           front={<SignInForm loading={loading} />}
-          back={
-            <SignUpForm
-              loading={loading}
-              isMobile={isMobileDevice}
-              signUpWithGoogle={onGoogleClick}
-              signUpWithApple={function (): void {
-                console.log("Function not implemented.")
-              }}
-              signUpWithFacebook={onFacebookClick}
-              signUpWithMetamask={onMetamaskLogin}
-            />
-          }
+          back={flipComponent}
           flip={flip}
         />
       </Box>

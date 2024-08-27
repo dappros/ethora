@@ -8,11 +8,13 @@ import FirstStep from "../Steps/ForgetPassword/FirstStep"
 import SecondStep from "../Steps/ForgetPassword/SecondStep"
 import ThirdStep from "../Steps/ForgetPassword/ThirdStep"
 
-interface SignUpFormProps {
+interface ForgetPasswordFormProps {
   loading: boolean
 }
 
-const SignUpForm: React.FC<SignUpFormProps> = ({ loading = false }) => {
+const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
+  loading = false,
+}) => {
   const [activeStep, setActiveStep] = useState(0)
 
   const location = useLocation()
@@ -114,4 +116,4 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ loading = false }) => {
   )
 }
 
-export default SignUpForm
+export default ForgetPasswordForm

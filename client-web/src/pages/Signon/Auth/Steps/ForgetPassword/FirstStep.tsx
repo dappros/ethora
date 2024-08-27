@@ -36,6 +36,7 @@ const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
     validate,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       setSubmitting(true)
+      //TODO change to proper reset
       try {
         const resp = await registerByEmail(
           values.email,
@@ -46,7 +47,7 @@ const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
         resetForm()
         showSnackbar(
           "success",
-          "Check your e-mail to finish signing up for Ethora"
+          "Check your e-mail to finish resetting password"
         )
         setStep((prev) => prev + 1)
       } catch (error) {

@@ -8,6 +8,7 @@ import AppleIcon from "../../../Icons/socials/appleIcon"
 import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
 import { useFormik } from "formik"
 import { TLoginSuccessResponse, loginUsername } from "../../../../../http"
+import { useLocation, useHistory } from "react-router-dom"
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {}
@@ -35,6 +36,9 @@ type TProperties = {
 const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
   const [disableSubmit, setDisableSubmit] = React.useState(false)
   const [httpError, setHttpError] = React.useState("")
+
+  const location = useLocation()
+  const history = useHistory()
 
   const formik = useFormik({
     initialValues: {
@@ -64,6 +68,15 @@ const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
         })
     },
   })
+
+  const setForgetQuery = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault()
+    const params = new URLSearchParams(location.search)
+    params.set("action", "forgetPassword")
+    history.push({ search: params.toString() })
+  }
 
   return (
     <Box
@@ -103,14 +116,16 @@ const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
           helperText={formik.touched.password && formik.errors.password}
         />
         <Typography
-          component="a"
-          href="/forgot-password"
           style={{
             textDecoration: "underline",
             color: "#0052CD",
             fontSize: "14px",
             display: "inline",
+            cursor: "pointer",
           }}
+          onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+            setForgetQuery(e)
+          }
         >
           Forgot password ?
         </Typography>
