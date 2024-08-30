@@ -7,6 +7,7 @@ import { useLocation, useHistory } from "react-router-dom"
 interface SignInFormProps {
   loading: boolean
   isMobile?: boolean
+  config: string[]
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({
@@ -16,14 +17,14 @@ const SignInForm: React.FC<SignInFormProps> = ({
   const location = useLocation()
   const history = useHistory()
 
-  const setSignInQuery = () => {
+  const setSignUpQuery = () => {
     const params = new URLSearchParams(location.search)
     params.set("action", "signUp")
     history.push({ search: params.toString() })
   }
 
   const handleSignIn = () => {
-    setSignInQuery()
+    setSignUpQuery()
   }
 
   return (
@@ -32,15 +33,15 @@ const SignInForm: React.FC<SignInFormProps> = ({
         padding: "16px",
         borderRadius: "24px",
         backgroundColor: "white",
-        boxShadow: "0px 4px 35px 0px #00000014",
-        p: "24px 40px",
+        boxShadow: isMobile ? "none" : "0px 4px 35px 0px #00000014",
+        p: isMobile ? "0px" : "24px 40px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
         minWidth: "455px",
         width: "100%",
-        maxWidth: "568px",
-        minHeight: "588px",
+        maxWidth: isMobile ? "486px" : "100%",
+        maxHeight: isMobile ? "540px" : "1000px",
       }}
     >
       <Box

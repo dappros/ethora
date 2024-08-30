@@ -4,9 +4,13 @@ import { IconButton } from "@mui/material"
 
 interface BackButtonProps {
   onPress: () => void
+  buttonColor?: string
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ onPress }) => {
+const BackButton: React.FC<BackButtonProps> = ({
+  onPress,
+  buttonColor = "#8C8C8C",
+}) => {
   const hadleClick = (event: any): void => {
     event.preventDefault()
     onPress?.()
@@ -24,7 +28,7 @@ const BackButton: React.FC<BackButtonProps> = ({ onPress }) => {
         height: "24px",
       }}
     >
-      <KeyboardBackspaceIcon sx={{ color: "#8C8C8C" }} />
+      <KeyboardBackspaceIcon sx={{ color: buttonColor }} />
     </IconButton>
   )
 }

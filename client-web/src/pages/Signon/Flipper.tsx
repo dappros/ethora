@@ -5,9 +5,15 @@ interface FlipperProps {
   front: React.ReactNode
   back: React.ReactNode
   flip: boolean
+  isMobile: boolean
 }
 
-const Flipper: React.FC<FlipperProps> = ({ front, back, flip }) => {
+const Flipper: React.FC<FlipperProps> = ({
+  front,
+  back,
+  flip,
+  isMobile = false,
+}) => {
   return (
     <motion.div
       style={{
@@ -28,7 +34,7 @@ const Flipper: React.FC<FlipperProps> = ({ front, back, flip }) => {
           willChange: "transform",
           position: "relative",
           display: "flex",
-          alignItems: "center",
+          alignItems: isMobile ? "start" : "center",
         }}
       >
         <motion.div
@@ -36,6 +42,9 @@ const Flipper: React.FC<FlipperProps> = ({ front, back, flip }) => {
             width: "100%",
             backfaceVisibility: "hidden",
             position: "absolute",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isMobile ? "center" : "start",
           }}
         >
           {front}
@@ -46,6 +55,9 @@ const Flipper: React.FC<FlipperProps> = ({ front, back, flip }) => {
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
             position: "absolute",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: isMobile ? "center" : "start",
           }}
         >
           {back}

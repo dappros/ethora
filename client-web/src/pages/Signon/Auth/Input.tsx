@@ -22,6 +22,9 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: "8px 16px",
     minHeight: "32px",
   },
+  "& .MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline": {
+    border: `1px solid #F44336`,
+  },
   "& .MuiFormHelperText-root": {
     position: "absolute",
     bottom: -20,

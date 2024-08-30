@@ -3,15 +3,16 @@ import { Box, Typography } from "@mui/material"
 import { useFormik } from "formik"
 import CustomButton from "../../Button"
 import CustomInput from "../../Input"
-import { registerByEmail } from "../../../../../http"
+import { postForgotPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import SkeletonLoader from "../../../SkeletonLoader"
+import { useHistory } from "react-router"
 
-const validate = (values: { email: string; firstName: any; lastName: any }) => {
+const validate = (values: { email: string }) => {
   const errors: Record<string, string> = {}
 
   if (!values.email) {
-    errors.email = "Required"
+    errors.email = "Required field"
   } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address"
   }
@@ -26,29 +27,25 @@ interface FirstStepProps {
 
 const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
   const { showSnackbar } = useSnackbar()
+  const history = useHistory()
 
   const formik = useFormik({
     initialValues: {
       email: "",
-      firstName: "",
-      lastName: "",
     },
     validate,
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       setSubmitting(true)
       //TODO change to proper reset
       try {
-        const resp = await registerByEmail(
-          values.email,
-          values.firstName,
-          values.lastName
-        )
+        const resp = await postForgotPassword(values.email)
         console.log(resp)
         resetForm()
         showSnackbar(
           "success",
           "Check your e-mail to finish resetting password"
         )
+        setEmailQuery(values.email)
         setStep((prev) => prev + 1)
       } catch (error) {
         if (
@@ -70,6 +67,12 @@ const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
       setSubmitting(false)
     },
   })
+
+  const setEmailQuery = (email: string) => {
+    const params = new URLSearchParams(location.search)
+    params.set("email", email)
+    history.push({ search: params.toString() })
+  }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>

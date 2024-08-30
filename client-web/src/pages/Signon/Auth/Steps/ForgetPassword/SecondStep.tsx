@@ -1,15 +1,21 @@
-import { Box, Checkbox, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import React from "react"
-import CustomInput from "../../Input"
 import CustomButton from "../../Button"
-import { Google as GoogleIcon } from "@mui/icons-material"
 import SkeletonLoader from "../../../SkeletonLoader"
+import { resendForgotPassword } from "../../../../../http"
 
 interface SecondStepProps {
   loading: boolean
 }
 
 const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
+  const queryParams = new URLSearchParams(location.search)
+  const email = queryParams.get("email")
+
+  const handleResendEmail = (): void => {
+    resendForgotPassword(email)
+  }
+
   return (
     <SkeletonLoader loading={loading}>
       <Box
@@ -37,7 +43,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
             color: "#8C8C8C",
           }}
         >
-          We`ve sent an email to email@gmail.com
+          We`ve sent an email to {email ? email : "your email"}
         </Typography>
         <Box component="ul" sx={{ paddingLeft: "20px", margin: 0 }}>
           <Typography
@@ -77,7 +83,11 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
           >
             Still can`t find the email?
           </Typography>
-          <CustomButton fullWidth aria-label="custom">
+          <CustomButton
+            fullWidth
+            aria-label="custom"
+            onClick={handleResendEmail}
+          >
             Resend Email
           </CustomButton>
         </Box>

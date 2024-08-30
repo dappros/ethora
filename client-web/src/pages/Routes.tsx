@@ -105,10 +105,10 @@ export const Routes = () => {
       // }
       return "/profile/" + user.walletAddress
     }
-    return "/signIn"
+    return "/auth"
   }
   if (
-    history.location.pathname !== "/signIn" &&
+    history.location.pathname !== "/auth" &&
     history.location.pathname !== "/" &&
     !user.walletAddress
   ) {
@@ -195,9 +195,10 @@ export const Routes = () => {
         />
       </Helmet> */}
       <Switch>
-        <Route path={["/signIn/"]} exact>
+        <Route path={["/auth/"]} exact>
           <Signon />
         </Route>
+        {/* should be removed */}
         <Route path="/regularSignIn" component={RegularSignIn} />
         <Route path="/forgetPassword" component={RegularSignIn} />
 

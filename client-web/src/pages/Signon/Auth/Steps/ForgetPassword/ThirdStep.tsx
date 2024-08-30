@@ -1,5 +1,5 @@
 import { Box, Checkbox, Typography } from "@mui/material"
-import React from "react"
+import React, { useState } from "react"
 import CustomInput from "../../Input"
 import CustomButton from "../../Button"
 import {
@@ -8,12 +8,78 @@ import {
   Apple as AppleIcon,
 } from "@mui/icons-material"
 import SkeletonLoader from "../../../SkeletonLoader"
+import { useFormik } from "formik"
+import { useSnackbar } from "../../../../../context/SnackbarContext"
+
+const validate = (values: { newPassword: string; repeatPassword: string }) => {
+  const errors: Record<string, string> = {}
+
+  if (!values.newPassword) {
+    errors.newPassword = "Required field"
+  } else if (values.newPassword.length < 8) {
+    errors.newPassword = "Password must be at least 8 characters"
+  }
+
+  if (!values.repeatPassword) {
+    errors.repeatPassword = "Required field"
+  } else if (values.repeatPassword !== values.newPassword) {
+    errors.repeatPassword = "Passwords don't match"
+  }
+
+  return errors
+}
 
 interface ThirdStepProps {
   loading: boolean
 }
 
 const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
+  const { showSnackbar } = useSnackbar()
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const formik = useFormik({
+    initialValues: {
+      newPassword: "",
+      repeatPassword: "",
+    },
+    validate,
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      setSubmitting(true)
+      try {
+        // const resp = await registerByEmail(
+        //   values.email,
+        //   values.firstName,
+        //   values.lastName
+        // )
+        // console.log(resp)
+        resetForm()
+        showSnackbar(
+          "success",
+          "Check your e-mail to finish signing up for Ethora"
+        )
+        // setStep((prev) => prev + 1)/
+        //redirect to home
+      } catch (error) {
+        if (
+          error.response &&
+          error.response.status === 400 &&
+          error.response.data.errors
+        ) {
+          const errors = []
+
+          for (const e of error.response.data.errors) {
+            if (e.msg) {
+              errors.push(e.msg)
+            }
+          }
+          setErrorMessage(errors.join(", "))
+          showSnackbar("error", errors.join(", "))
+        }
+        showSnackbar("error", error.response.data.error)
+      }
+      setSubmitting(false)
+    },
+  })
   return (
     <SkeletonLoader loading={loading}>
       <Box
@@ -28,6 +94,7 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
           noValidate
           autoComplete="off"
           sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+          onSubmit={formik.handleSubmit}
         >
           <Typography
             sx={{
@@ -49,18 +116,34 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
             }}
           >
             <CustomInput
-              placeholder={"Enter temporary password"}
-              sx={{ flex: 1, width: "100%" }}
-              helperText={
-                "You can find temporary password in the verification email."
+              placeholder="Enter New Password"
+              name="newPassword"
+              type="password"
+              value={formik.values.newPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.newPassword && Boolean(formik.errors.newPassword)
               }
-            />
-            <CustomInput
-              placeholder={"Enter Your Password"}
+              helperText={
+                formik.touched.newPassword && formik.errors.newPassword
+              }
               sx={{ flex: 1, width: "100%" }}
             />
             <CustomInput
-              placeholder={"Repeat Your Password"}
+              placeholder="Repeat New Password"
+              name="repeatPassword"
+              type="password"
+              value={formik.values.repeatPassword}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.repeatPassword &&
+                Boolean(formik.errors.repeatPassword)
+              }
+              helperText={
+                formik.touched.repeatPassword && formik.errors.repeatPassword
+              }
               sx={{ flex: 1, width: "100%" }}
             />
           </Box>

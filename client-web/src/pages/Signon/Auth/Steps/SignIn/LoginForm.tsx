@@ -7,20 +7,21 @@ import FacebookIcon from "../../../Icons/socials/facebookIcon"
 import AppleIcon from "../../../Icons/socials/appleIcon"
 import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
 import { useFormik } from "formik"
-import { TLoginSuccessResponse, loginUsername } from "../../../../../http"
+import { TLoginSuccessResponse, loginEmail } from "../../../../../http"
 import { useLocation, useHistory } from "react-router-dom"
+import { useSnackbar } from "../../../../../context/SnackbarContext"
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {}
 
   if (!values.email) {
-    errors.email = "Required"
+    errors.email = "Required field"
   } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address"
   }
 
   if (!values.password) {
-    errors.password = "Required"
+    errors.password = "Required field"
   } else if (values.password.length < 8) {
     errors.password = "Password must be at least 8 characters"
   }
@@ -29,16 +30,15 @@ const validate = (values: Record<string, string>) => {
 }
 
 type TProperties = {
-  closeModal: () => void
   updateUser: (data: TLoginSuccessResponse) => void
 }
 
-const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
+const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
   const [disableSubmit, setDisableSubmit] = React.useState(false)
-  const [httpError, setHttpError] = React.useState("")
 
   const location = useLocation()
   const history = useHistory()
+  const { showSnackbar } = useSnackbar()
 
   const formik = useFormik({
     initialValues: {
@@ -46,21 +46,22 @@ const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
       password: "",
     },
     validate,
-    onSubmit: (values) => {
+    onSubmit: async (values, { resetForm }) => {
       setDisableSubmit(true)
-      loginUsername(values.email, values.password)
+      loginEmail(values.email, values.password)
         .then((result) => {
           updateUser(result.data)
-          closeModal()
+          resetForm()
         })
         .catch((error) => {
           console.error(error)
-          setHttpError("HTTP Error")
+          showSnackbar("error", "HTTP Error")
+
           if (
             error.response &&
             (error.response.status === 404 || error.response.status === 401)
           ) {
-            setHttpError("Wrong credentials")
+            showSnackbar("error", "Wrong credentials")
           }
         })
         .finally(() => {
@@ -129,11 +130,6 @@ const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
         >
           Forgot password ?
         </Typography>
-        {httpError && (
-          <Typography sx={{ color: "error.main" }} component="p">
-            {httpError}
-          </Typography>
-        )}
       </Box>
       <Box
         sx={{
@@ -150,6 +146,7 @@ const LoginStep: React.FC<TProperties> = ({ closeModal, updateUser }) => {
           type="submit"
           disabled={disableSubmit}
           loading={disableSubmit}
+          onClick={() => formik.submitForm()}
         >
           Sign In
         </CustomButton>

@@ -246,6 +246,7 @@ export interface IConfig {
   displayName: string
   domainName: string
   logoImage: string
+  signonOptions?: string[]
 }
 
 // chats types for tabs

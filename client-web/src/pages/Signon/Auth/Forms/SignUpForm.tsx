@@ -15,6 +15,7 @@ interface SignUpFormProps {
   signUpWithApple: () => void
   signUpWithFacebook: (info: any) => void
   signUpWithMetamask: () => void
+  config: string[]
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
@@ -59,16 +60,15 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         padding: "16px",
         borderRadius: "24px",
         backgroundColor: "white",
-        boxShadow: "0px 4px 35px 0px #00000014",
-        p: "24px 40px",
+        boxShadow: isMobile ? "none" : "0px 4px 35px 0px #00000014",
+        p: isMobile ? "0px" : "24px 40px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
         minWidth: "455px",
         width: "100%",
-        maxWidth: "568px",
-        minHeight: "588px",
-        justifyContent: "space-between",
+        maxWidth: isMobile ? "486px" : "568px",
+        maxHeight: isMobile ? "540px" : "1000px",
       }}
     >
       <Box

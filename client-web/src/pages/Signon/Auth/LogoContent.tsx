@@ -24,6 +24,7 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
           display: "flex",
           flexDirection: "row",
           textAlign: isMobile ? "center" : "start",
+          justifyContent: isMobile ? "center" : "start",
         }}
       >
         <LogoAndText />

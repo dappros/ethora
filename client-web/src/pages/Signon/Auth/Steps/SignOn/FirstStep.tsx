@@ -11,24 +11,27 @@ import { registerByEmail } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import FacebookLogin from "react-facebook-login"
 import SkeletonLoader from "../../../SkeletonLoader"
+import { useHistory } from "react-router"
+
+const getAuthButtons = () => {}
 
 const validate = (values: { email: string; firstName: any; lastName: any }) => {
   const errors: Record<string, string> = {}
 
   if (!values.email) {
-    errors.email = "Required"
+    errors.email = "Required field"
   } else if (!/^[\w%+.-]+@[\d.a-z-]+\.[a-z]{2,4}$/i.test(values.email)) {
     errors.email = "Invalid email address"
   }
 
   if (!values.firstName) {
-    errors.firstName = "Required"
+    errors.firstName = "Required field"
   } else if (values.firstName.length < 2) {
     errors.firstName = "First name must be at least 2 characters"
   }
 
   if (!values.lastName) {
-    errors.lastName = "Required"
+    errors.lastName = "Required field"
   } else if (values.lastName.length < 2) {
     errors.lastName = "Last name must be at least 2 characters"
   }
@@ -54,7 +57,15 @@ const FirstStep: React.FC<FirstStepProps> = ({
   loading,
 }) => {
   const { showSnackbar } = useSnackbar()
+  const history = useHistory()
+
   const [errorMessage, setErrorMessage] = useState("")
+
+  const setEmailQuery = (email: string) => {
+    const params = new URLSearchParams(location.search)
+    params.set("email", email)
+    history.push({ search: params.toString() })
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -77,6 +88,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
           "success",
           "Check your e-mail to finish signing up for Ethora"
         )
+        setEmailQuery(values.email)
         setStep((prev) => prev + 1)
       } catch (error) {
         if (
@@ -122,7 +134,11 @@ const FirstStep: React.FC<FirstStepProps> = ({
               error={
                 formik.touched.firstName && Boolean(formik.errors.firstName)
               }
-              helperText={formik.touched.firstName && formik.errors.firstName}
+              helperText={
+                formik.touched.firstName && formik.errors.firstName
+                  ? String(formik.errors.firstName)
+                  : ""
+              }
             />
             <CustomInput
               placeholder="Last Name"
@@ -133,7 +149,11 @@ const FirstStep: React.FC<FirstStepProps> = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-              helperText={formik.touched.lastName && formik.errors.lastName}
+              helperText={
+                formik.touched.lastName && formik.errors.lastName
+                  ? String(formik.errors.lastName)
+                  : ""
+              }
             />
           </Box>
           <CustomInput

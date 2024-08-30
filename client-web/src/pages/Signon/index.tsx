@@ -265,9 +265,12 @@ export default function Signon() {
           }}
           signUpWithFacebook={onFacebookClick}
           signUpWithMetamask={onMetamaskLogin}
+          config={config.signonOptions || []}
         />
       ),
-      forget: <ForgetPasswordForm loading={loading} />,
+      forget: (
+        <ForgetPasswordForm loading={loading} isMobile={isMobileDevice} />
+      ),
     }
   }, [])
   const [flipComponent, setFlipComponent] = useState<React.ReactNode>(
@@ -278,7 +281,9 @@ export default function Signon() {
     const queryParams = new URLSearchParams(location.search)
     const action = queryParams.get("action")
     setFlipComponent(
-      action === "forgetPassword" ? components.forget : components.register
+      action !== "signUp" && action === "forgetPassword"
+        ? components.forget
+        : components.register
     )
     setFlip(action === "signUp" || action === "forgetPassword")
   }, [location.search])
@@ -443,7 +448,7 @@ export default function Signon() {
           display: "flex",
           flex: 1,
           flexDirection: isMobileDevice ? "column" : "row",
-          gap: "16px",
+          gap: isMobileDevice ? "20px" : "16px",
           justifyContent: "center",
           alignItems: "center",
           minWidth: "566px",
@@ -451,9 +456,16 @@ export default function Signon() {
       >
         <LogoContent isMobile={isMobileDevice} />
         <Flipper
-          front={<SignInForm loading={loading} />}
+          front={
+            <SignInForm
+              loading={loading}
+              config={config.signonOptions || []}
+              isMobile={isMobileDevice}
+            />
+          }
           back={flipComponent}
           flip={flip}
+          isMobile={isMobileDevice}
         />
       </Box>
     </Wrapper>

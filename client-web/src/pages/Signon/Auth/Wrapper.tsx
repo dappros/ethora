@@ -42,14 +42,15 @@ const Background = () => (
 
 const Wrapper: React.FC<WrapperProps> = ({ children }) => {
   const theme: Theme = useTheme()
-  const isTabletOrMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down(1024))
 
   return (
     <Box
       sx={{
         display: "flex",
         color: "#141414",
+        padding: isMobileDevice ? "24px 0px" : "5.5% 10%",
+        backgroundImage: isMobileDevice ? "none !important" : "inherit",
       }}
       className="responsiveWrapper"
     >
