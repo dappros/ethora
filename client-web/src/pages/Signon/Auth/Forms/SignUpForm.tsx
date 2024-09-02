@@ -28,13 +28,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 }) => {
   const [activeStep, setActiveStep] = useState(0)
 
-  const location = useLocation()
   const history = useHistory()
 
   const setSignUnQuery = () => {
-    const params = new URLSearchParams(location.search)
-    params.set("action", "signIn")
-    history.push({ search: params.toString() })
+    history.push("login")
   }
 
   const steps = [
@@ -67,7 +64,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         gap: "24px",
         minWidth: "455px",
         width: "100%",
-        maxWidth: isMobile ? "486px" : "568px",
+        maxWidth: isMobile ? "486px" : "100%",
         maxHeight: isMobile ? "540px" : "1000px",
       }}
     >

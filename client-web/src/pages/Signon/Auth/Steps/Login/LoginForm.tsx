@@ -74,9 +74,7 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault()
-    const params = new URLSearchParams(location.search)
-    params.set("action", "forgetPassword")
-    history.push({ search: params.toString() })
+    history.push("forgetPassword")
   }
 
   return (

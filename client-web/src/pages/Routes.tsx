@@ -2,7 +2,6 @@ import React, { useEffect, useState, Suspense, useRef } from "react"
 import { Redirect, Route, Switch, useHistory } from "react-router"
 
 import { useStoreState } from "../store"
-import { getMyAcl } from "../http"
 import { FullPageSpinner } from "../components/FullPageSpinner"
 import {
   checkNotificationsStatus,
@@ -10,7 +9,6 @@ import {
   sendBrowserNotification,
 } from "../utils"
 import { MintNft } from "./MintNft/MintNft"
-import { RegularSignIn } from "./Signon/RegularSignIn"
 import { configDocuments } from "../config/config"
 import { Snackbar } from "../components/Snackbar"
 import AuthRoute from "../components/AuthRoute"
@@ -24,16 +22,14 @@ import NewChat from "./NewChat/NewChat"
 
 import AppBuilder from "./AppBuilder/AppBuilder"
 import { AppEdit } from "./AppEdit/AppEdit"
-import AppTopNav from "../components/AppTopNav"
-import AppTopNavAuth from "../components/AppTopNavAuth"
-import AppTopNavOwner from "../components/AppTopNavOwner"
 import { firebase } from "../services/firebase"
 import { onMessageListener } from "../services/firebaseMessaging"
 import { Box, Typography } from "@mui/material"
-import { useSnackbar } from "../context/SnackbarContext"
-import { Helmet } from "react-helmet"
 
 import Owner from "./Owner"
+import Register from "./Signon/Auth/Register"
+import ForgetPassword from "./Signon/Auth/ForgetPassword"
+import LoginComponent from "./Signon/Auth/Login"
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"))
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
@@ -105,10 +101,10 @@ export const Routes = () => {
       // }
       return "/profile/" + user.walletAddress
     }
-    return "/auth"
+    return "/login"
   }
   if (
-    history.location.pathname !== "/auth" &&
+    history.location.pathname !== "/login" &&
     history.location.pathname !== "/" &&
     !user.walletAddress
   ) {
@@ -195,12 +191,11 @@ export const Routes = () => {
         />
       </Helmet> */}
       <Switch>
-        <Route path={["/auth/"]} exact>
-          <Signon />
+        <Route path={["/login/"]} exact>
+          <LoginComponent />
         </Route>
-        {/* should be removed */}
-        <Route path="/regularSignIn" component={RegularSignIn} />
-        <Route path="/forgetPassword" component={RegularSignIn} />
+        <Route path="/register" component={Register} />
+        <Route path="/forgetPassword" component={ForgetPassword} />
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />

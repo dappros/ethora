@@ -33,9 +33,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
   }
 
   const setQuery = (query: string) => {
-    const params = new URLSearchParams(location.search)
-    params.set("action", query)
-    history.push({ search: params.toString() })
+    history.push(query)
   }
 
   return (
@@ -51,7 +49,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
         gap: "24px",
         minWidth: "455px",
         width: "100%",
-        maxWidth: isMobile ? "486px" : "568px",
+        maxWidth: isMobile ? "486px" : "100%",
         maxHeight: isMobile ? "540px" : "1000px",
         minHeight: isMobile ? "0px" : "588px",
         justifyContent: "space-between",

@@ -14,13 +14,10 @@ const SignInForm: React.FC<SignInFormProps> = ({
   loading = false,
   isMobile = false,
 }) => {
-  const location = useLocation()
   const history = useHistory()
 
   const setSignUpQuery = () => {
-    const params = new URLSearchParams(location.search)
-    params.set("action", "signUp")
-    history.push({ search: params.toString() })
+    history.push("register")
   }
 
   const handleSignIn = () => {
