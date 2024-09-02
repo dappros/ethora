@@ -8,7 +8,7 @@ import AppleIcon from "../../../Icons/socials/appleIcon"
 import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
 import { useFormik } from "formik"
 import { TLoginSuccessResponse, loginEmail } from "../../../../../http"
-import { useLocation, useHistory } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 
 const validate = (values: Record<string, string>) => {
@@ -31,12 +31,17 @@ const validate = (values: Record<string, string>) => {
 
 type TProperties = {
   updateUser: (data: TLoginSuccessResponse) => void
+  signInWithGoogle: () => void
+  signInWithMetamask: () => void
 }
 
-const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
+const LoginStep: React.FC<TProperties> = ({
+  updateUser,
+  signInWithGoogle,
+  signInWithMetamask,
+}) => {
   const [disableSubmit, setDisableSubmit] = React.useState(false)
 
-  const location = useLocation()
   const history = useHistory()
   const { showSnackbar } = useSnackbar()
 
@@ -83,6 +88,7 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
         display: "flex",
         flexDirection: "column",
         gap: "24px",
+        minWidth: "320px",
       }}
     >
       <Box
@@ -90,7 +96,12 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
         onSubmit={formik.handleSubmit}
         noValidate
         autoComplete="off"
-        sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          flexWrap: "wrap",
+        }}
       >
         <CustomInput
           fullWidth
@@ -153,7 +164,12 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
         >
           or
         </Typography>
-        <CustomButton fullWidth variant="outlined" startIcon={<GoogleIcon />}>
+        <CustomButton
+          fullWidth
+          variant="outlined"
+          startIcon={<GoogleIcon />}
+          onClick={signInWithGoogle}
+        >
           Continue with Google
         </CustomButton>
       </Box>
@@ -164,7 +180,11 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
         <CustomButton variant="outlined" aria-label="apple">
           <AppleIcon />
         </CustomButton> */}
-        <CustomButton variant="outlined" aria-label="metamask">
+        <CustomButton
+          variant="outlined"
+          aria-label="metamask"
+          onClick={signInWithMetamask}
+        >
           <MetamaskIcon />
         </CustomButton>
       </Box>

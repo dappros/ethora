@@ -11,7 +11,7 @@ import { signInWithGoogle } from "../../../../services/firebase"
 import * as http from "../../../../http"
 import { FullPageSpinner } from "../../../../components/FullPageSpinner"
 import xmpp from "../../../../xmpp"
-import SignInForm from "../Forms/SignInForm"
+import SignInForm from "../Forms/LoginForm"
 
 export default function LoginComponent() {
   const setUser = useStoreState((state) => state.setUser)
@@ -81,8 +81,6 @@ export default function LoginComponent() {
           res.credential.accessToken,
           loginType
         )
-        const user = loginRes.data.user
-
         updateUserInfo(loginRes.data)
         history.push("/organizations")
       } else {
@@ -91,8 +89,6 @@ export default function LoginComponent() {
           res.credential.accessToken,
           loginType
         )
-        const user = loginRes.data.user
-
         updateUserInfo(loginRes.data)
       }
     } catch (error) {
@@ -210,9 +206,7 @@ export default function LoginComponent() {
           flex: 1,
           flexDirection: isMobileDevice ? "column" : "row",
           gap: isMobileDevice ? "20px" : "16px",
-          justifyContent: "center",
           alignItems: "center",
-          minWidth: "566px",
         }}
       >
         <LogoContent isMobile={isMobileDevice} />
@@ -220,6 +214,9 @@ export default function LoginComponent() {
           loading={loading}
           config={config.signonOptions || []}
           isMobile={isMobileDevice}
+          updateUser={updateUserInfo}
+          signInWithGoogle={onGoogleClick}
+          signInWithMetamask={onMetamaskLogin}
         />
       </Box>
     </Wrapper>

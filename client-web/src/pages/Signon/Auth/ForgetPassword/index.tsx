@@ -118,9 +118,7 @@ export default function ForgetPassword() {
           flex: 1,
           flexDirection: isMobileDevice ? "column" : "row",
           gap: isMobileDevice ? "20px" : "16px",
-          justifyContent: "center",
           alignItems: "center",
-          minWidth: "566px",
         }}
       >
         <LogoContent isMobile={isMobileDevice} />

@@ -3,14 +3,15 @@ import { Box, Typography } from "@mui/material"
 
 import { useLocation, useHistory } from "react-router-dom"
 import BackButton from "../BackButton"
-import CustomStepper from "../Steps/Stepper"
-import FirstStep from "../Steps/Register/FirstStep"
-import SecondStep from "../Steps/Register/SecondStep"
-import ThirdStep from "../Steps/Register/ThirdStep"
+import CustomStepper from "../Stepper"
+import FirstStep from "../Register/Steps/FirstStep"
+import SecondStep from "../Register/Steps/SecondStep"
+import ThirdStep from "../Register/Steps/ThirdStep"
 
 interface SignUpFormProps {
   loading: boolean
   isMobile?: boolean
+  isSmallDevice?: boolean
   signUpWithGoogle: () => void
   signUpWithApple: () => void
   signUpWithFacebook: (info: any) => void
@@ -21,6 +22,7 @@ interface SignUpFormProps {
 const SignUpForm: React.FC<SignUpFormProps> = ({
   loading = false,
   isMobile = false,
+  isSmallDevice = false,
   signUpWithGoogle,
   signUpWithApple,
   signUpWithFacebook,
@@ -42,6 +44,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
       signUpWithMetamask={signUpWithMetamask}
       setStep={setActiveStep}
       loading={loading}
+      isSmallDevice={isSmallDevice}
     />,
     <SecondStep loading={loading} />,
     <ThirdStep loading={loading} />,
@@ -58,14 +61,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         borderRadius: "24px",
         backgroundColor: "white",
         boxShadow: isMobile ? "none" : "0px 4px 35px 0px #00000014",
-        p: isMobile ? "0px" : "24px 40px",
+        p: isMobile ? "0px 16px" : "24px 40px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
-        minWidth: "455px",
+        minWidth: "300px",
         width: "100%",
         maxWidth: isMobile ? "486px" : "100%",
-        maxHeight: isMobile ? "540px" : "1000px",
+        maxHeight: isMobile ? "732px" : "1000px",
+        height: "100%",
+        justifyContent: "space-between",
       }}
     >
       <Box
@@ -73,7 +78,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          height: "100%",
           gap: "16px",
         }}
       >

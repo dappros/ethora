@@ -1,18 +1,10 @@
-import DiamondIcon from "@mui/icons-material/Diamond"
-import FacebookIcon from "@mui/icons-material/Facebook"
-import GoogleIcon from "@mui/icons-material/Google"
 import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import Container from "@mui/material/Container"
 import { useWeb3React } from "@web3-react/core"
 import { useEffect, useMemo, useState } from "react"
-import FacebookLogin from "react-facebook-login"
 import { useHistory, useLocation, useParams } from "react-router-dom"
 import { injected } from "../../connector"
 import * as http from "../../http"
 import { useStoreState } from "../../store"
-import { useQuery } from "../../utils"
-import { EmailModal } from "./EmailModal"
 import { MetamaskModal } from "./MetamaskModal"
 import { UsernameModal } from "./UsernameModal"
 import { FullPageSpinner } from "../../components/FullPageSpinner"
@@ -25,20 +17,12 @@ import {
 } from "../../config/config"
 import { signInWithGoogle } from "../../services/firebase"
 import { useSnackbar } from "../../context/SnackbarContext"
-import { ForgotPasswordModal } from "../../components/ForgotPasswordModal"
-import {
-  Alert,
-  AlertTitle,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material"
+import { useMediaQuery, useTheme } from "@mui/material"
 import xmpp from "../../xmpp"
 import Wrapper from "./Auth/Wrapper"
 import LogoContent from "./Auth/LogoContent"
-import ReviewContent from "./Auth/ReviewContent"
-import SignUpForm from "./Auth/Forms/SignUpForm"
-import SignInForm from "./Auth/Forms/SignInForm"
+import SignUpForm from "./Auth/Forms/RegisterForm"
+import SignInForm from "./Auth/Forms/LoginForm"
 import Flipper from "./Flipper"
 import ForgetPasswordForm from "./Auth/Forms/ForgetPasswordForm"
 
@@ -47,42 +31,19 @@ export default function Signon() {
   const user = useStoreState((state) => state.user)
   const config = useStoreState((state) => state.config)
 
-  const query = useQuery()
   const history = useHistory()
   const { search } = useLocation()
   const { active, account, library, activate } = useWeb3React()
-  const [openEmail, setOpenEmail] = useState(false)
-  const [openUsername, setOpenUsername] = useState(false)
   const [showMetamask, setShowMetamask] = useState(false)
   const [loading, setLoading] = useState(false)
   const [flip, setFlip] = useState(false)
 
-  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false)
   const { showSnackbar } = useSnackbar()
   const signUpPlan = new URLSearchParams(search).get("signUpPlan")
 
   const onMetamaskLogin = () => {
     activate(injected)
   }
-
-  useEffect(() => {
-    const type = query.get("type")
-    if (type) {
-      switch (type) {
-        case "username": {
-          setOpenUsername(true)
-          break
-        }
-        case "email": {
-          setOpenEmail(true)
-          break
-        }
-        default: {
-          break
-        }
-      }
-    }
-  }, [query])
 
   useEffect(() => {
     console.log("active", active)

@@ -3,11 +3,11 @@ import { Box, Typography } from "@mui/material"
 
 import { useHistory } from "react-router-dom"
 import BackButton from "../BackButton"
-import CustomStepper from "../Steps/Stepper"
-import FirstStep from "../Steps/ForgetPassword/FirstStep"
-import SecondStep from "../Steps/ForgetPassword/SecondStep"
-import ThirdStep from "../Steps/ForgetPassword/ThirdStep"
+import FirstStep from "../ForgetPassword/Steps/FirstStep"
+import SecondStep from "../ForgetPassword/Steps/SecondStep"
+import ThirdStep from "../ForgetPassword/Steps/ThirdStep"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
+import CustomStepper from "../Stepper"
 
 interface ForgetPasswordFormProps {
   loading: boolean
@@ -39,27 +39,27 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
   return (
     <Box
       sx={{
+        minHeight: isMobile ? "0px" : "588px",
+        justifyContent: "space-between",
         padding: "16px",
         borderRadius: "24px",
         backgroundColor: "white",
         boxShadow: isMobile ? "none" : "0px 4px 35px 0px #00000014",
-        p: isMobile ? "0px" : "24px 40px",
+        p: isMobile ? "0px 16px" : "24px 40px",
         display: "flex",
         flexDirection: "column",
         gap: "24px",
-        minWidth: "455px",
+        minWidth: "300px",
         width: "100%",
         maxWidth: isMobile ? "486px" : "100%",
-        maxHeight: isMobile ? "540px" : "1000px",
-        minHeight: isMobile ? "0px" : "588px",
-        justifyContent: "space-between",
+        maxHeight: isMobile ? "632px" : "1000px",
+        height: "100%",
       }}
     >
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
           height: "100%",
           gap: "16px",
         }}

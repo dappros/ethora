@@ -7,7 +7,7 @@ import { useSnackbar } from "../../../../context/SnackbarContext"
 import { injected } from "../../../../connector"
 import Wrapper from "../Wrapper"
 import LogoContent from "../LogoContent"
-import SignUpForm from "../Forms/SignUpForm"
+import SignUpForm from "../Forms/RegisterForm"
 import { signInWithGoogle } from "../../../../services/firebase"
 import * as http from "../../../../http"
 import { FullPageSpinner } from "../../../../components/FullPageSpinner"
@@ -195,6 +195,7 @@ export default function Register() {
 
   const theme = useTheme()
   const isMobileDevice = useMediaQuery(theme.breakpoints.down(1024))
+  const isSmallDevice = useMediaQuery(theme.breakpoints.down(512))
 
   if (loading) {
     return <FullPageSpinner />
@@ -210,15 +211,15 @@ export default function Register() {
           flex: 1,
           flexDirection: isMobileDevice ? "column" : "row",
           gap: isMobileDevice ? "20px" : "16px",
-          justifyContent: "center",
+          justifyContent: isMobileDevice ? "start" : "center",
           alignItems: "center",
-          minWidth: "566px",
         }}
       >
         <LogoContent isMobile={isMobileDevice} />
         <SignUpForm
           loading={loading}
           isMobile={isMobileDevice}
+          isSmallDevice={isSmallDevice}
           signUpWithGoogle={onGoogleClick}
           signUpWithApple={function (): void {
             console.log("Function not implemented.")

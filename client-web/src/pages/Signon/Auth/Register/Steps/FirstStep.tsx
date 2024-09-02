@@ -46,6 +46,7 @@ interface FirstStepProps {
   signUpWithMetamask: () => void
   setStep: Dispatch<SetStateAction<number>>
   loading: boolean
+  isSmallDevice?: boolean
 }
 
 const FirstStep: React.FC<FirstStepProps> = ({
@@ -54,7 +55,8 @@ const FirstStep: React.FC<FirstStepProps> = ({
   signUpWithFacebook,
   signUpWithMetamask,
   setStep,
-  loading,
+  loading = false,
+  isSmallDevice = false,
 }) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
@@ -113,16 +115,36 @@ const FirstStep: React.FC<FirstStepProps> = ({
   })
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+        minWidth: "320px",
+      }}
+    >
       <SkeletonLoader loading={loading}>
         <Box
           component="form"
           noValidate
           autoComplete="off"
-          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+            flexWrap: "wrap",
+          }}
           onSubmit={formik.handleSubmit}
         >
-          <Box sx={{ display: "flex", minWidth: "328px", gap: 3, flex: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              minWidth: "320px",
+              gap: 3,
+              flex: 1,
+              flexWrap: isSmallDevice ? "wrap" : "nowrap",
+            }}
+          >
             <CustomInput
               placeholder="First Name"
               name="firstName"
@@ -204,7 +226,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
                 gap: "8px",
                 color: "#8C8C8C",
                 flexWrap: "wrap",
-                minWidth: "486px",
+                maxWidth: "486px",
                 fontSize: "14px",
               }}
             >
@@ -213,6 +235,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
                 sx={{
                   fontSize: "inherit",
                   color: "inherit",
+                  flexWrap: "wrap",
                 }}
               >
                 By clicking the 'Sign Up' button, you agree to our
@@ -288,7 +311,11 @@ const FirstStep: React.FC<FirstStepProps> = ({
           >
             <AppleIcon />
           </CustomButton> */}
-          <CustomButton variant="outlined" aria-label="metamask">
+          <CustomButton
+            variant="outlined"
+            aria-label="metamask"
+            onClick={signUpWithMetamask}
+          >
             <MetamaskIcon />
           </CustomButton>
         </Box>
