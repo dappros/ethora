@@ -247,13 +247,13 @@ const FirstStep: React.FC<FirstStepProps> = ({
           </CustomButton>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-          <CustomButton
+          {/* <CustomButton
             variant="outlined"
             aria-label="facebook"
             onClick={signUpWithFacebook}
           >
             <FacebookIcon />
-          </CustomButton>
+          </CustomButton> */}
           {/* <FacebookLogin
             aria-label="facebook"
             appId="1172938123281314"
@@ -281,13 +281,13 @@ const FirstStep: React.FC<FirstStepProps> = ({
             textButton={""}
             containerStyle={{ flex: 1, width: "100%" }}
           /> */}
-          <CustomButton
+          {/* <CustomButton
             variant="outlined"
             aria-label="apple"
             onClick={signUpWithApple}
           >
             <AppleIcon />
-          </CustomButton>
+          </CustomButton> */}
           <CustomButton variant="outlined" aria-label="metamask">
             <MetamaskIcon />
           </CustomButton>

@@ -158,12 +158,12 @@ const LoginStep: React.FC<TProperties> = ({ updateUser }) => {
         </CustomButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-        <CustomButton variant="outlined" aria-label="facebook">
+        {/* <CustomButton variant="outlined" aria-label="facebook">
           <FacebookIcon />
         </CustomButton>
         <CustomButton variant="outlined" aria-label="apple">
           <AppleIcon />
-        </CustomButton>
+        </CustomButton> */}
         <CustomButton variant="outlined" aria-label="metamask">
           <MetamaskIcon />
         </CustomButton>

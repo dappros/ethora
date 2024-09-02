@@ -2,11 +2,11 @@ import React, { useState } from "react"
 import { Box, Typography } from "@mui/material"
 
 import { useLocation, useHistory } from "react-router-dom"
-import FirstStep from "../Steps/SignOn/FirstStep"
-import SecondStep from "../Steps/SignOn/SecondStep"
-import ThirdStep from "../Steps/SignOn/ThirdStep"
 import BackButton from "../BackButton"
 import CustomStepper from "../Steps/Stepper"
+import FirstStep from "../Steps/Register/FirstStep"
+import SecondStep from "../Steps/Register/SecondStep"
+import ThirdStep from "../Steps/Register/ThirdStep"
 
 interface SignUpFormProps {
   loading: boolean

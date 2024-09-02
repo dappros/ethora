@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { Box, Typography, Skeleton } from "@mui/material"
 
-import LoginStep from "../Steps/SignIn/LoginForm"
 import { useLocation, useHistory } from "react-router-dom"
+import LoginStep from "../Steps/Login/LoginForm"
 
 interface SignInFormProps {
   loading: boolean
