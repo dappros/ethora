@@ -408,6 +408,67 @@ export function loginSignature(
   )
 }
 
+export function agreeWithTerms(company: string) {
+  return httpWithAuth().post("/users/terms-and-conditions", {
+    isAgreeWithTerms: true,
+    company,
+  })
+}
+
+//forgot password functions
+export async function postForgotPassword(email: string) {
+  const appToken = useStoreState.getState().config.appToken
+
+  return await http.post<TLoginSuccessResponse>(
+    "/users/forgot",
+    {
+      email,
+    },
+    { headers: { Authorization: appToken } }
+  )
+}
+
+export async function resetPassword(password: string) {
+  const appToken = useStoreState.getState().config.appToken
+
+  return await http.post<TLoginSuccessResponse>(
+    "/users/reset",
+    {
+      password,
+    },
+    { headers: { Authorization: appToken } }
+  )
+}
+
+//register functions
+export async function setPermanentPasswordWithTempPassword(
+  tempPassword: string,
+  password: string
+) {
+  const appToken = useStoreState.getState().config.appToken
+
+  return await http.post<TLoginSuccessResponse>(
+    "/users/set-permanent-password-with-temp-password",
+    {
+      tempPassword,
+      password,
+    },
+    { headers: { Authorization: appToken } }
+  )
+}
+
+export async function resendLink(email: string) {
+  const appToken = useStoreState.getState().config.appToken
+
+  return await http.post<TLoginSuccessResponse>(
+    "/users/resendLink",
+    {
+      email,
+    },
+    { headers: { Authorization: appToken } }
+  )
+}
+
 export function registerByEmail(
   email: string,
   firstName: string,
@@ -433,49 +494,29 @@ export function registerByEmail(
   })
 }
 
-export function loginEmail(email: string, password: string) {
+export function registerSocial(
+  idToken: string,
+  accessToken: string,
+  authToken: string,
+  loginType: string,
+  signUpPlan?: string
+) {
   const appToken = useStoreState.getState().config.appToken
 
-  return http.post<TLoginSuccessResponse>(
-    "/users/login-with-email",
+  return http.post(
+    "/users",
     {
-      email,
-      password,
-    },
-    { headers: { Authorization: appToken } }
-  )
-}
-export function agreeWithTerms(company: string) {
-  return httpWithAuth().post("/users/terms-and-conditions", {
-    isAgreeWithTerms: true,
-    company,
-  })
-}
-
-export function postForgotPassword(email: string) {
-  const appToken = useStoreState.getState().config.appToken
-
-  return http.post<TLoginSuccessResponse>(
-    "/users/forgot",
-    {
-      email,
+      idToken,
+      accessToken,
+      loginType,
+      authToken: authToken,
+      signupPlan: signUpPlan,
     },
     { headers: { Authorization: appToken } }
   )
 }
 
-export function resendForgotPassword(email: string) {
-  const appToken = useStoreState.getState().config.appToken
-
-  return http.post<TLoginSuccessResponse>(
-    "/users/forgot",
-    {
-      email,
-    },
-    { headers: { Authorization: appToken } }
-  )
-}
-
+//login functions
 export function loginSocial(
   idToken: string,
   accessToken: string,
@@ -491,6 +532,19 @@ export function loginSocial(
       accessToken,
       loginType,
       authToken,
+    },
+    { headers: { Authorization: appToken } }
+  )
+}
+
+export async function loginWithEmail(email: string, password: string) {
+  const appToken = useStoreState.getState().config.appToken
+
+  return await http.post<TLoginSuccessResponse>(
+    "/users/login-with-email",
+    {
+      email,
+      password,
     },
     { headers: { Authorization: appToken } }
   )
@@ -557,27 +611,6 @@ export function updateUserAcl(userId: string, appid: string, body: IAclBody) {
   )
 }
 
-export function registerSocial(
-  idToken: string,
-  accessToken: string,
-  authToken: string,
-  loginType: string,
-  signUpPlan?: string
-) {
-  const appToken = useStoreState.getState().config.appToken
-
-  return http.post(
-    "/users",
-    {
-      idToken,
-      accessToken,
-      loginType,
-      authToken: authToken,
-      signupPlan: signUpPlan,
-    },
-    { headers: { Authorization: appToken } }
-  )
-}
 export function uploadFile(formData: FormData) {
   const user = useStoreState.getState().user
   return http.post("/files", formData, {

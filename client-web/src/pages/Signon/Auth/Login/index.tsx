@@ -69,12 +69,11 @@ export default function LoginComponent() {
         res.user.providerData[0].email
       )
       if (emailExist.data.success) {
-        await http.registerSocial(
+        await http.loginSocial(
           res.idToken,
           res.credential.accessToken,
           "",
-          loginType,
-          signUpPlan
+          loginType
         )
         const loginRes = await http.loginSocial(
           res.idToken,

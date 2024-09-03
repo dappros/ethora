@@ -1,15 +1,12 @@
-import { Box, Checkbox, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import React, { useState } from "react"
 import CustomInput from "../../Input"
 import CustomButton from "../../Button"
-import {
-  Google as GoogleIcon,
-  Facebook as FacebookIcon,
-  Apple as AppleIcon,
-} from "@mui/icons-material"
 import SkeletonLoader from "../../../SkeletonLoader"
 import { useFormik } from "formik"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
+import { resetPassword } from "../../../../../http"
+import { useHistory } from "react-router"
 
 const validate = (values: { newPassword: string; repeatPassword: string }) => {
   const errors: Record<string, string> = {}
@@ -35,7 +32,7 @@ interface ThirdStepProps {
 
 const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
   const { showSnackbar } = useSnackbar()
-  const [errorMessage, setErrorMessage] = useState("")
+  const history = useHistory()
 
   const formik = useFormik({
     initialValues: {
@@ -46,19 +43,11 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       setSubmitting(true)
       try {
-        // const resp = await registerByEmail(
-        //   values.email,
-        //   values.firstName,
-        //   values.lastName
-        // )
-        // console.log(resp)
+        const resp = await resetPassword(values.newPassword)
         resetForm()
-        showSnackbar(
-          "success",
-          "Check your e-mail to finish signing up for Ethora"
-        )
+        showSnackbar("success", "Password wassuccessfully reset")
         // setStep((prev) => prev + 1)/
-        //redirect to home
+        history.replace("/login")
       } catch (error) {
         if (
           error.response &&
@@ -72,7 +61,6 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
               errors.push(e.msg)
             }
           }
-          setErrorMessage(errors.join(", "))
           showSnackbar("error", errors.join(", "))
         }
         showSnackbar("error", error.response.data.error)
@@ -147,7 +135,13 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
               sx={{ flex: 1, width: "100%" }}
             />
           </Box>
-          <CustomButton fullWidth variant="contained" color="primary">
+          <CustomButton
+            fullWidth
+            variant="contained"
+            color="primary"
+            disabled={formik.isSubmitting}
+            loading={formik.isSubmitting}
+          >
             Reset password
           </CustomButton>
         </Box>

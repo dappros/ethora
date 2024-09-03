@@ -196,6 +196,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
             variant="contained"
             color="primary"
             loading={formik.isSubmitting}
+            disabled={formik.isSubmitting}
           >
             Sign Up
           </CustomButton>

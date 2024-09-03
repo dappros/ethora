@@ -10,12 +10,10 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import CustomStepper from "../Stepper"
 
 interface ForgetPasswordFormProps {
-  loading: boolean
   isMobile: boolean
 }
 
 const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
-  loading = false,
   isMobile,
 }) => {
   const [activeStep, setActiveStep] = useState(0)
@@ -29,9 +27,9 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
   }, [history.location.pathname])
 
   const steps = [
-    <FirstStep setStep={setActiveStep} loading={loading} />,
-    <SecondStep loading={loading} />,
-    <ThirdStep loading={loading} />,
+    <FirstStep setStep={setActiveStep} />,
+    <SecondStep />,
+    <ThirdStep />,
   ]
 
   const StepComponent = ({ step }) => {
@@ -50,7 +48,6 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
   return (
     <Box
       sx={{
-        minHeight: isMobile ? "0px" : "588px",
         justifyContent: "space-between",
         padding: "16px",
         borderRadius: "24px",
@@ -62,8 +59,8 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
         gap: "24px",
         minWidth: "300px",
         width: "100%",
-        maxWidth: isMobile ? "486px" : "100%",
-        maxHeight: isMobile ? "632px" : "1000px",
+        maxHeight: isMobile ? "732px" : "588px",
+        minHeight: isMobile ? "inherit" : "588px",
         height: "100%",
       }}
     >

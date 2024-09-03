@@ -7,7 +7,7 @@ import FacebookIcon from "../../../Icons/socials/facebookIcon"
 import AppleIcon from "../../../Icons/socials/appleIcon"
 import MetamaskIcon from "../../../Icons/socials/metamaskIcon"
 import { useFormik } from "formik"
-import { TLoginSuccessResponse, loginEmail } from "../../../../../http"
+import { TLoginSuccessResponse, loginWithEmail } from "../../../../../http"
 import { useHistory } from "react-router-dom"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 
@@ -40,8 +40,6 @@ const LoginStep: React.FC<TProperties> = ({
   signInWithGoogle,
   signInWithMetamask,
 }) => {
-  const [disableSubmit, setDisableSubmit] = React.useState(false)
-
   const history = useHistory()
   const { showSnackbar } = useSnackbar()
 
@@ -51,9 +49,9 @@ const LoginStep: React.FC<TProperties> = ({
       password: "",
     },
     validate,
-    onSubmit: async (values, { resetForm }) => {
-      setDisableSubmit(true)
-      loginEmail(values.email, values.password)
+    onSubmit: async (values, { resetForm, setSubmitting }) => {
+      setSubmitting(true)
+      loginWithEmail(values.email, values.password)
         .then((result) => {
           updateUser(result.data)
           resetForm()
@@ -68,9 +66,10 @@ const LoginStep: React.FC<TProperties> = ({
           ) {
             showSnackbar("error", "Wrong credentials")
           }
+          setSubmitting(false)
         })
         .finally(() => {
-          setDisableSubmit(false)
+          setSubmitting(false)
         })
     },
   })
@@ -153,8 +152,8 @@ const LoginStep: React.FC<TProperties> = ({
           variant="contained"
           color="primary"
           type="submit"
-          disabled={disableSubmit}
-          loading={disableSubmit}
+          disabled={formik.isSubmitting}
+          loading={formik.isSubmitting}
           onClick={() => formik.submitForm()}
         >
           Sign In

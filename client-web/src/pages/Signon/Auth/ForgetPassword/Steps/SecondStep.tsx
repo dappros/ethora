@@ -1,8 +1,10 @@
 import { Box, Typography } from "@mui/material"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import CustomButton from "../../Button"
 import SkeletonLoader from "../../../SkeletonLoader"
-import { resendForgotPassword } from "../../../../../http"
+import { useHistory } from "react-router"
+import { postForgotPassword } from "../../../../../http"
+import { useSnackbar } from "../../../../../context/SnackbarContext"
 
 interface SecondStepProps {
   loading: boolean
@@ -11,9 +13,30 @@ interface SecondStepProps {
 const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
   const queryParams = new URLSearchParams(location.search)
   const email = queryParams.get("email")
+  const { showSnackbar } = useSnackbar()
 
-  const handleResendEmail = (): void => {
-    resendForgotPassword(email)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const history = useHistory()
+
+  useEffect(() => {
+    if (!email || email === "") {
+      history.replace("/resetPassword")
+    }
+  }, [])
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    await postForgotPassword(email)
+      .then(() => {
+        showSnackbar("success", "Check your e-mail to reach reset link")
+      })
+      .catch(() => {
+        showSnackbar("error", "There is an error with resending email")
+      })
+      .finally(() => {
+        setIsSubmitting(false)
+      })
   }
 
   return (
@@ -43,7 +66,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
             color: "#8C8C8C",
           }}
         >
-          We`ve sent an email to {email ? email : "your email"}
+          We’ve sent an email to {email ? email : "your email"}
         </Typography>
         <Box component="ul" sx={{ paddingLeft: "20px", margin: 0 }}>
           <Typography
@@ -81,12 +104,14 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
               width: "100%",
             }}
           >
-            Still can`t find the email?
+            Still can’t find the email?
           </Typography>
           <CustomButton
             fullWidth
             aria-label="custom"
-            onClick={handleResendEmail}
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            disabled={isSubmitting}
           >
             Resend Email
           </CustomButton>

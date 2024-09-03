@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Typography } from "@mui/material"
 
 import { useLocation, useHistory } from "react-router-dom"
@@ -36,6 +36,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
     history.push("login")
   }
 
+  useEffect(() => {
+    if (history.location.pathname.includes("tempPassword")) {
+      setActiveStep(2)
+    }
+  }, [])
+
   const steps = [
     <FirstStep
       signUpWithGoogle={signUpWithGoogle}
@@ -68,7 +74,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         minWidth: "300px",
         width: "100%",
         maxWidth: isMobile ? "486px" : "100%",
-        maxHeight: isMobile ? "732px" : "1000px",
+        maxHeight: isMobile ? "732px" : "588px",
+        minHeight: isMobile ? "inherit" : "588px",
         height: "100%",
         justifyContent: "space-between",
       }}

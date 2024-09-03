@@ -5,7 +5,6 @@ import CustomButton from "../../Button"
 import CustomInput from "../../Input"
 import { postForgotPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
-import SkeletonLoader from "../../../SkeletonLoader"
 import { useHistory } from "react-router"
 
 const validate = (values: { email: string }) => {
@@ -22,10 +21,9 @@ const validate = (values: { email: string }) => {
 
 interface FirstStepProps {
   setStep: Dispatch<SetStateAction<number>>
-  loading: boolean
 }
 
-const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
+const FirstStep: React.FC<FirstStepProps> = ({ setStep }) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
 
@@ -76,48 +74,47 @@ const FirstStep: React.FC<FirstStepProps> = ({ setStep, loading }) => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      <SkeletonLoader loading={loading}>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-          onSubmit={formik.handleSubmit}
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+        onSubmit={formik.handleSubmit}
+      >
+        <Typography
+          sx={{
+            textAlign: "left",
+            fontSize: "16px",
+            fontWeight: 400,
+            color: "#8C8C8C",
+          }}
         >
-          <Typography
-            sx={{
-              textAlign: "left",
-              fontSize: "16px",
-              fontWeight: 400,
-              color: "#8C8C8C",
-            }}
-          >
-            Please, enter your email, and we will send you a link to reset your
-            password.
-          </Typography>
-          <CustomInput
-            fullWidth
-            placeholder="Email"
-            name="email"
-            id="email"
-            type="email"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-          <CustomButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            loading={formik.isSubmitting}
-          >
-            Send Email
-          </CustomButton>
-        </Box>
-      </SkeletonLoader>
+          Please, enter your email, and we will send you a link to reset your
+          password.
+        </Typography>
+        <CustomInput
+          fullWidth
+          placeholder="Email"
+          name="email"
+          id="email"
+          type="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+        />
+        <CustomButton
+          type="submit"
+          fullWidth
+          variant="contained"
+          color="primary"
+          loading={formik.isSubmitting}
+          disabled={formik.isSubmitting}
+        >
+          Send Email
+        </CustomButton>
+      </Box>
     </Box>
   )
 }

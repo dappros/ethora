@@ -1,6 +1,5 @@
-import { useWeb3React } from "@web3-react/core"
 import { useEffect, useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { useMediaQuery, useTheme, Box } from "@mui/material"
 import { useStoreState } from "../../../../store"
 import Wrapper from "../Wrapper"
@@ -15,38 +14,6 @@ export default function ForgetPassword() {
   const user = useStoreState((state) => state.user)
 
   const history = useHistory()
-  const { active, account, library } = useWeb3React()
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    console.log("active", active)
-    if (active) {
-      console.log(active, account)
-
-      if (account && !user.firstName) {
-        http
-          .checkExtWallet(account)
-          .then(async (result) => {
-            console.log("login user")
-            const signer = library.getSigner()
-            const message = "Login"
-            const signature = await signer.signMessage(message)
-            const resp = await http.loginSignature(account, signature, message)
-            updateUserInfo(resp.data)
-            // history.push(`/profile/${user.defaultWallet.walletAddress}`);
-          })
-          .catch((error) => {
-            console.log(error)
-            if (error.response && error.response.status === 404) {
-              console.log("registering user")
-              // setShowMetamask(true)
-            } else {
-              console.log("other errors")
-            }
-          })
-      }
-    }
-  }, [active, account])
 
   useEffect(() => {
     if (user.firstName && user.xmppPassword) {
@@ -104,10 +71,6 @@ export default function ForgetPassword() {
   const theme = useTheme()
   const isMobileDevice = useMediaQuery(theme.breakpoints.down(1024))
 
-  if (loading) {
-    return <FullPageSpinner />
-  }
-
   return (
     <Wrapper>
       <Box
@@ -122,7 +85,7 @@ export default function ForgetPassword() {
         }}
       >
         <LogoContent isMobile={isMobileDevice} />
-        <ForgetPasswordForm loading={loading} isMobile={isMobileDevice} />
+        <ForgetPasswordForm isMobile={isMobileDevice} />
       </Box>
     </Wrapper>
   )

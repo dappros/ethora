@@ -1,7 +1,10 @@
 import { Box, Typography } from "@mui/material"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import CustomButton from "../../Button"
 import SkeletonLoader from "../../../SkeletonLoader"
+import { resendLink } from "../../../../../http"
+import { useSnackbar } from "../../../../../context/SnackbarContext"
+import { useHistory } from "react-router"
 
 interface SecondStepProps {
   loading: boolean
@@ -10,6 +13,29 @@ interface SecondStepProps {
 const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
   const queryParams = new URLSearchParams(location.search)
   const email = queryParams.get("email")
+  const { showSnackbar } = useSnackbar()
+  const history = useHistory()
+
+  useEffect(() => {
+    if (!email || email === "") {
+      history.replace("/register")
+    }
+  }, [])
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleResend = () => {
+    setIsSubmitting(true)
+    resendLink(email)
+      .then(() => {
+        showSnackbar("success", "Email has been resent")
+        setIsSubmitting(false)
+      })
+      .catch((err) => {
+        setIsSubmitting(false)
+        showSnackbar("error", "An error occured")
+      })
+  }
 
   return (
     <SkeletonLoader loading={loading}>
@@ -78,7 +104,13 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
           >
             Still can`t find the email?
           </Typography>
-          <CustomButton fullWidth aria-label="custom">
+          <CustomButton
+            fullWidth
+            aria-label="custom"
+            onClick={handleResend}
+            disabled={isSubmitting}
+            loading={isSubmitting}
+          >
             Resend Email
           </CustomButton>
         </Box>

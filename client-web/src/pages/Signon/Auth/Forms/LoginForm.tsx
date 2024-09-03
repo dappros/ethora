@@ -41,7 +41,8 @@ const SignInForm: React.FC<SignInFormProps> = ({
         minWidth: "300px",
         width: "100%",
         maxWidth: isMobile ? "486px" : "100%",
-        maxHeight: isMobile ? "632px" : "1000px",
+        maxHeight: isMobile ? "732px" : "588px",
+        minHeight: isMobile ? "inherit" : "588px",
         height: "100%",
         justifyContent: "space-between",
       }}
