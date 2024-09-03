@@ -205,7 +205,7 @@ export const Routes = () => {
           component={ForgetPassword}
           exact
         />
-        <Route path={"/tempPassword/"} component={LoginComponent} exact />
+        <Route path={"/tempPassword/"} component={Register} exact />
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />
