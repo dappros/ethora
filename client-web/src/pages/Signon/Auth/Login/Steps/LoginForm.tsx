@@ -79,7 +79,7 @@ const LoginStep: React.FC<TProperties> = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault()
-    history.push("forgetPassword")
+    history.push("resetPassword")
   }
 
   return (

@@ -195,7 +195,12 @@ export const Routes = () => {
           <LoginComponent />
         </Route>
         <Route path="/register" component={Register} />
-        <Route path="/forgetPassword" component={ForgetPassword} />
+        <Route path="/resetPassword" component={ForgetPassword} />
+        <Route
+          path={"/resetPassword/:token"}
+          component={ForgetPassword}
+          exact
+        />
 
         <AuthRoute path="/chat/:roomJID" component={ChatInRoom} />
         <AuthRoute path="/chatDetails/:roomJID" component={ChatRoomDetails} />
@@ -218,7 +223,6 @@ export const Routes = () => {
           <Profile />
         </Route>
         <Route path={"/explorer"} component={Explorer} exact />
-        <Route path={"/resetPassword/:token"} component={ResetPassword} exact />
         <Route
           path={"/tempPassword/"}
           component={ChangeTemporaryPassword}

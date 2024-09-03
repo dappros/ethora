@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Typography } from "@mui/material"
 
 import { useHistory } from "react-router-dom"
@@ -22,6 +22,12 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
 
   const history = useHistory()
 
+  useEffect(() => {
+    if (history.location.pathname.split("/")?.[2]?.length > 0) {
+      setActiveStep(2)
+    }
+  }, [history.location.pathname])
+
   const steps = [
     <FirstStep setStep={setActiveStep} loading={loading} />,
     <SecondStep loading={loading} />,
@@ -34,6 +40,11 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
 
   const setQuery = (query: string) => {
     history.push(query)
+  }
+
+  const handleBackButtonClick = () => {
+    setActiveStep((prev) => prev - 1)
+    history.replace("/resetPassword")
   }
 
   return (
@@ -70,9 +81,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
             width: "100%",
           }}
         >
-          {activeStep > 0 && (
-            <BackButton onPress={() => setActiveStep((prev) => prev - 1)} />
-          )}
+          {activeStep > 0 && <BackButton onPress={handleBackButtonClick} />}
           <Typography
             variant="h4"
             align="center"

@@ -1,6 +1,6 @@
 import { useWeb3React } from "@web3-react/core"
 import { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
+import { useHistory, useParams } from "react-router-dom"
 import { useMediaQuery, useTheme, Box } from "@mui/material"
 import { useStoreState } from "../../../../store"
 import Wrapper from "../Wrapper"
