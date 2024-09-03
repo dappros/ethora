@@ -28,6 +28,13 @@ To buld your app with Ethora, simply:<br />
 Coding experience is optional. Javascript / Typescript / React coding experience will be useful to make advanced modifications or build your own functionalities.
 
 ---
+### 📣 Project update - 3rd September 2024 📣
+
+Finally we are updating our web version design. Enjoy the new login / sign on screens and new look of the Admin dashboard. The whole look of the web version is being updated too.
+Follow the updates in our forum: https://forum.ethora.com/forum/16-updates-and-announcements/
+
+
+---
 ### 📣 Project update - 5th July 2024 📣
 
 An alpha version of Ethora Chat Component has been released. 
