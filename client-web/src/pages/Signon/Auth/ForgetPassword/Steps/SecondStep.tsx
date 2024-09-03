@@ -6,11 +6,9 @@ import { useHistory } from "react-router"
 import { postForgotPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 
-interface SecondStepProps {
-  loading: boolean
-}
+interface SecondStepProps {}
 
-const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
+const SecondStep: React.FC<SecondStepProps> = ({}) => {
   const queryParams = new URLSearchParams(location.search)
   const email = queryParams.get("email")
   const { showSnackbar } = useSnackbar()
@@ -40,84 +38,82 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
   }
 
   return (
-    <SkeletonLoader loading={loading}>
-      <Box
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+      }}
+    >
+      <Typography
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "24px",
+          textAlign: "left",
+          fontSize: "24px",
+          fontWeight: 400,
+          color: "#141414",
         }}
       >
+        Check your email address
+      </Typography>
+      <Typography
+        sx={{
+          textAlign: "left",
+          fontSize: "16px",
+          fontWeight: 400,
+          color: "#8C8C8C",
+        }}
+      >
+        We’ve sent an email to {email ? email : "your email"}
+      </Typography>
+      <Box component="ul" sx={{ paddingLeft: "20px", margin: 0 }}>
         <Typography
-          sx={{
-            textAlign: "left",
-            fontSize: "24px",
-            fontWeight: 400,
-            color: "#141414",
-          }}
-        >
-          Check your email address
-        </Typography>
-        <Typography
+          component="li"
           sx={{
             textAlign: "left",
             fontSize: "16px",
             fontWeight: 400,
-            color: "#8C8C8C",
+            color: "#141414",
+            marginBottom: "8px",
           }}
         >
-          We’ve sent an email to {email ? email : "your email"}
+          Just click on the link in the email to continue the registration
+          process.
         </Typography>
-        <Box component="ul" sx={{ paddingLeft: "20px", margin: 0 }}>
-          <Typography
-            component="li"
-            sx={{
-              textAlign: "left",
-              fontSize: "16px",
-              fontWeight: 400,
-              color: "#141414",
-              marginBottom: "8px",
-            }}
-          >
-            Just click on the link in the email to continue the registration
-            process.
-          </Typography>
-          <Typography
-            component="li"
-            sx={{
-              textAlign: "left",
-              fontSize: "16px",
-              fontWeight: 400,
-              color: "#141414",
-            }}
-          >
-            If you don’t see it, check your spam folder.
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <Typography
-            sx={{
-              textAlign: "center",
-              fontSize: "14px",
-              fontWeight: 400,
-              color: "#8C8C8C",
-              width: "100%",
-            }}
-          >
-            Still can’t find the email?
-          </Typography>
-          <CustomButton
-            fullWidth
-            aria-label="custom"
-            onClick={handleSubmit}
-            loading={isSubmitting}
-            disabled={isSubmitting}
-          >
-            Resend Email
-          </CustomButton>
-        </Box>
+        <Typography
+          component="li"
+          sx={{
+            textAlign: "left",
+            fontSize: "16px",
+            fontWeight: 400,
+            color: "#141414",
+          }}
+        >
+          If you don’t see it, check your spam folder.
+        </Typography>
       </Box>
-    </SkeletonLoader>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <Typography
+          sx={{
+            textAlign: "center",
+            fontSize: "14px",
+            fontWeight: 400,
+            color: "#8C8C8C",
+            width: "100%",
+          }}
+        >
+          Still can’t find the email?
+        </Typography>
+        <CustomButton
+          fullWidth
+          aria-label="custom"
+          onClick={handleSubmit}
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        >
+          Resend Email
+        </CustomButton>
+      </Box>
+    </Box>
   )
 }
 

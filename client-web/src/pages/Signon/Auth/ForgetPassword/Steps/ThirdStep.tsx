@@ -2,7 +2,6 @@ import { Box, Typography } from "@mui/material"
 import React, { useState } from "react"
 import CustomInput from "../../Input"
 import CustomButton from "../../Button"
-import SkeletonLoader from "../../../SkeletonLoader"
 import { useFormik } from "formik"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import { resetPassword } from "../../../../../http"
@@ -26,11 +25,9 @@ const validate = (values: { newPassword: string; repeatPassword: string }) => {
   return errors
 }
 
-interface ThirdStepProps {
-  loading: boolean
-}
+interface ThirdStepProps {}
 
-const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
+const ThirdStep: React.FC<ThirdStepProps> = ({}) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
 
@@ -69,84 +66,80 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
     },
   })
   return (
-    <SkeletonLoader loading={loading}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+      }}
+    >
       <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "24px",
-        }}
+        component="form"
+        noValidate
+        autoComplete="off"
+        sx={{ display: "flex", flexDirection: "column", gap: 3 }}
+        onSubmit={formik.handleSubmit}
       >
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-          sx={{ display: "flex", flexDirection: "column", gap: 3 }}
-          onSubmit={formik.handleSubmit}
+        <Typography
+          sx={{
+            textAlign: "left",
+            fontSize: "24px",
+            fontWeight: 400,
+            color: "#141414",
+          }}
         >
-          <Typography
-            sx={{
-              textAlign: "left",
-              fontSize: "24px",
-              fontWeight: 400,
-              color: "#141414",
-            }}
-          >
-            Set your new password
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              minWidth: "328px",
-              gap: 3,
-              flex: 1,
-              flexDirection: "column",
-            }}
-          >
-            <CustomInput
-              placeholder="Enter New Password"
-              name="newPassword"
-              type="password"
-              value={formik.values.newPassword}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.newPassword && Boolean(formik.errors.newPassword)
-              }
-              helperText={
-                formik.touched.newPassword && formik.errors.newPassword
-              }
-              sx={{ flex: 1, width: "100%" }}
-            />
-            <CustomInput
-              placeholder="Repeat New Password"
-              name="repeatPassword"
-              type="password"
-              value={formik.values.repeatPassword}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={
-                formik.touched.repeatPassword &&
-                Boolean(formik.errors.repeatPassword)
-              }
-              helperText={
-                formik.touched.repeatPassword && formik.errors.repeatPassword
-              }
-              sx={{ flex: 1, width: "100%" }}
-            />
-          </Box>
-          <CustomButton
-            fullWidth
-            variant="contained"
-            color="primary"
-            disabled={formik.isSubmitting}
-            loading={formik.isSubmitting}
-          >
-            Reset password
-          </CustomButton>
+          Set your new password
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            minWidth: "328px",
+            gap: 3,
+            flex: 1,
+            flexDirection: "column",
+          }}
+        >
+          <CustomInput
+            placeholder="Enter New Password"
+            name="newPassword"
+            type="password"
+            value={formik.values.newPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.newPassword && Boolean(formik.errors.newPassword)
+            }
+            helperText={formik.touched.newPassword && formik.errors.newPassword}
+            sx={{ flex: 1, width: "100%" }}
+          />
+          <CustomInput
+            placeholder="Repeat New Password"
+            name="repeatPassword"
+            type="password"
+            value={formik.values.repeatPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.repeatPassword &&
+              Boolean(formik.errors.repeatPassword)
+            }
+            helperText={
+              formik.touched.repeatPassword && formik.errors.repeatPassword
+            }
+            sx={{ flex: 1, width: "100%" }}
+          />
         </Box>
+        <CustomButton
+          fullWidth
+          variant="contained"
+          color="primary"
+          disabled={formik.isSubmitting}
+          loading={formik.isSubmitting}
+        >
+          Reset password
+        </CustomButton>
       </Box>
-    </SkeletonLoader>
+    </Box>
   )
 }
 

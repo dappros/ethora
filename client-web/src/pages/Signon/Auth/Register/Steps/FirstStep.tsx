@@ -12,8 +12,7 @@ import { useSnackbar } from "../../../../../context/SnackbarContext"
 import FacebookLogin from "react-facebook-login"
 import SkeletonLoader from "../../../SkeletonLoader"
 import { useHistory } from "react-router"
-
-const getAuthButtons = () => {}
+import { useStoreState } from "../../../../../store"
 
 const validate = (values: { email: string; firstName: any; lastName: any }) => {
   const errors: Record<string, string> = {}
@@ -60,8 +59,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
 }) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
-
-  const [errorMessage, setErrorMessage] = useState("")
+  const config = useStoreState((state) => state.config)
 
   const setEmailQuery = (email: string) => {
     const params = new URLSearchParams(location.search)
@@ -105,7 +103,6 @@ const FirstStep: React.FC<FirstStepProps> = ({
               errors.push(e.msg)
             }
           }
-          setErrorMessage(errors.join(", "))
           showSnackbar("error", errors.join(", "))
         }
         showSnackbar("error", error.response.data.error)
@@ -256,19 +253,23 @@ const FirstStep: React.FC<FirstStepProps> = ({
               </Typography>
             </Box>
           </Box>
-          <Typography
-            sx={{ width: "100%", textAlign: "center", color: "#8C8C8C" }}
-          >
-            or
-          </Typography>
-          <CustomButton
-            fullWidth
-            variant="outlined"
-            startIcon={<GoogleIcon />}
-            onClick={signUpWithGoogle}
-          >
-            Continue with Google
-          </CustomButton>
+          {config?.signonOptions.length > 0 && (
+            <Typography
+              sx={{ width: "100%", textAlign: "center", color: "#8C8C8C" }}
+            >
+              or
+            </Typography>
+          )}
+          {config?.signonOptions.includes("google") && (
+            <CustomButton
+              fullWidth
+              variant="outlined"
+              startIcon={<GoogleIcon />}
+              onClick={signUpWithGoogle}
+            >
+              Continue with Google
+            </CustomButton>
+          )}
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
           {/* <CustomButton
@@ -312,13 +313,15 @@ const FirstStep: React.FC<FirstStepProps> = ({
           >
             <AppleIcon />
           </CustomButton> */}
-          <CustomButton
-            variant="outlined"
-            aria-label="metamask"
-            onClick={signUpWithMetamask}
-          >
-            <MetamaskIcon />
-          </CustomButton>
+          {config?.signonOptions.includes("metamask") && (
+            <CustomButton
+              variant="outlined"
+              aria-label="metamask"
+              onClick={signUpWithMetamask}
+            >
+              <MetamaskIcon />
+            </CustomButton>
+          )}
         </Box>
       </SkeletonLoader>
     </Box>

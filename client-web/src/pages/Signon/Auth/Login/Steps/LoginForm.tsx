@@ -10,6 +10,7 @@ import { useFormik } from "formik"
 import { TLoginSuccessResponse, loginWithEmail } from "../../../../../http"
 import { useHistory } from "react-router-dom"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
+import { useStoreState } from "../../../../../store"
 
 const validate = (values: Record<string, string>) => {
   const errors: Record<string, string> = {}
@@ -42,6 +43,7 @@ const LoginStep: React.FC<TProperties> = ({
 }) => {
   const history = useHistory()
   const { showSnackbar } = useSnackbar()
+  const config = useStoreState((state) => state.config)
 
   const formik = useFormik({
     initialValues: {
@@ -158,19 +160,23 @@ const LoginStep: React.FC<TProperties> = ({
         >
           Sign In
         </CustomButton>
-        <Typography
-          sx={{ width: "100%", textAlign: "center", color: "#8C8C8C" }}
-        >
-          or
-        </Typography>
-        <CustomButton
-          fullWidth
-          variant="outlined"
-          startIcon={<GoogleIcon />}
-          onClick={signInWithGoogle}
-        >
-          Continue with Google
-        </CustomButton>
+        {config?.signonOptions.length > 0 && (
+          <Typography
+            sx={{ width: "100%", textAlign: "center", color: "#8C8C8C" }}
+          >
+            or
+          </Typography>
+        )}
+        {config?.signonOptions.includes("google") && (
+          <CustomButton
+            fullWidth
+            variant="outlined"
+            startIcon={<GoogleIcon />}
+            onClick={signInWithGoogle}
+          >
+            Continue with Google
+          </CustomButton>
+        )}
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
         {/* <CustomButton variant="outlined" aria-label="facebook">
@@ -179,13 +185,15 @@ const LoginStep: React.FC<TProperties> = ({
         <CustomButton variant="outlined" aria-label="apple">
           <AppleIcon />
         </CustomButton> */}
-        <CustomButton
-          variant="outlined"
-          aria-label="metamask"
-          onClick={signInWithMetamask}
-        >
-          <MetamaskIcon />
-        </CustomButton>
+        {config?.signonOptions.includes("metamask") && (
+          <CustomButton
+            variant="outlined"
+            aria-label="metamask"
+            onClick={signInWithMetamask}
+          >
+            <MetamaskIcon />
+          </CustomButton>
+        )}
       </Box>
     </Box>
   )

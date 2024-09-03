@@ -16,7 +16,6 @@ interface SignUpFormProps {
   signUpWithApple: () => void
   signUpWithFacebook: (info: any) => void
   signUpWithMetamask: () => void
-  config: string[]
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({
