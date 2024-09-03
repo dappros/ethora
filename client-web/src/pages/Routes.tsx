@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Suspense, useRef } from "react"
 import { Redirect, Route, Switch, useHistory } from "react-router"
+import { Helmet } from "react-helmet"
 
 import { useStoreState } from "../store"
 import { FullPageSpinner } from "../components/FullPageSpinner"
@@ -30,6 +31,9 @@ import Owner from "./Owner"
 import Register from "./Signon/Auth/Register"
 import ForgetPassword from "./Signon/Auth/ForgetPassword"
 import LoginComponent from "./Signon/Auth/Login"
+import AppTopNavAuth from "../components/AppTopNavAuth"
+import AppTopNav from "../components/AppTopNav"
+import AppTopNavOwner from "../components/AppTopNavOwner"
 
 const ChatInRoom = React.lazy(() => import("./ChatInRoom"))
 const ChatRoomDetails = React.lazy(() => import("./ChatRoomDetails"))
@@ -180,16 +184,16 @@ export const Routes = () => {
   }
   return (
     <Suspense fallback={<FullPageSpinner />}>
-      {/* {!user.firstName && <AppTopNavAuth />}
+      {!user.firstName && <AppTopNavAuth />}
       {user.firstName && user.xmppPassword && <AppTopNav />}
-      {user.firstName && !user.xmppPassword && <AppTopNavOwner />} */}
-      {/* <Helmet>
+      {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
+      <Helmet>
         <title>{appConfig.displayName || "Dappros Platform"}</title>
         <meta
           property="og:title"
           content={appConfig.displayName || "Dappros Platform"}
         />
-      </Helmet> */}
+      </Helmet>
       <Switch>
         <Route path={["/login/"]} exact>
           <LoginComponent />
