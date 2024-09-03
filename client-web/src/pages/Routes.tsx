@@ -184,7 +184,7 @@ export const Routes = () => {
   }
   return (
     <Suspense fallback={<FullPageSpinner />}>
-      {user.firstName && <AppTopNavAuth />}
+      {/* {user.firstName && <AppTopNavAuth />} */}
       {user.firstName && user.xmppPassword && <AppTopNav />}
       {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
       <Helmet>
