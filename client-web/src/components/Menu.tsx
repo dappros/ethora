@@ -214,7 +214,10 @@ export const Menu: React.FC<IMenu> = ({}) => {
                 }
                 return (
                   <MenuItem
-                    onClick={() => onMenuItemClick(item.id, element.name)}
+                    onClick={() => {
+                      onMenuItemClick(item.id, element.name)
+                      handleCloseUserMenu()
+                    }}
                     key={item.id + item.name}
                   >
                     <Typography textAlign="center">{item.name}</Typography>
