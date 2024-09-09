@@ -72,7 +72,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         gap: "24px",
         minWidth: "300px",
         width: "100%",
-        maxWidth: isMobile ? "486px" : "100%",
+        maxWidth: isMobile ? "486px" : "600px",
         maxHeight: isMobile ? "732px" : "588px",
         minHeight: isMobile ? "inherit" : "588px",
         height: "100%",

@@ -62,6 +62,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
         maxHeight: isMobile ? "732px" : "588px",
         minHeight: isMobile ? "inherit" : "588px",
         height: "100%",
+        maxWidth: isMobile ? "486px" : "600px",
       }}
     >
       <Box
