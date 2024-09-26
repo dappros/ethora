@@ -160,7 +160,7 @@ const LoginStep: React.FC<TProperties> = ({
         >
           Sign In
         </CustomButton>
-        {config?.signonOptions.length > 0 && (
+        {config?.signonOptions.length > 1 && (
           <Typography
             sx={{ width: "100%", textAlign: "center", color: "#8C8C8C" }}
           >
