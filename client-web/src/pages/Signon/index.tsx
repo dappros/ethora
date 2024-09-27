@@ -419,15 +419,9 @@ export default function Signon() {
               loading={loading}
               config={config.signonOptions || []}
               isMobile={isMobileDevice}
-              updateUser={function (data: http.TLoginSuccessResponse): void {
-                throw new Error("Function not implemented.")
-              }}
-              signInWithGoogle={function (): void {
-                throw new Error("Function not implemented.")
-              }}
-              signInWithMetamask={function (): void {
-                throw new Error("Function not implemented.")
-              }}
+              updateUser={updateUserInfo}
+              signInWithGoogle={onGoogleClick}
+              signInWithMetamask={onMetamaskLogin}
             />
           }
           back={flipComponent}
