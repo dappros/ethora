@@ -40,10 +40,9 @@ const ThirdStep: React.FC<ThirdStepProps> = ({}) => {
     onSubmit: async (values, { resetForm, setSubmitting }) => {
       setSubmitting(true)
       try {
-        const resp = await resetPassword(values.newPassword)
+        await resetPassword(values.newPassword)
         resetForm()
-        showSnackbar("success", "Password wassuccessfully reset")
-        // setStep((prev) => prev + 1)/
+        showSnackbar("success", "Password was successfully reset")
         history.replace("/login")
       } catch (error) {
         if (
@@ -130,11 +129,12 @@ const ThirdStep: React.FC<ThirdStepProps> = ({}) => {
           />
         </Box>
         <CustomButton
+          type="submit"
           fullWidth
           variant="contained"
           color="primary"
-          disabled={formik.isSubmitting}
           loading={formik.isSubmitting}
+          disabled={formik.isSubmitting}
         >
           Reset password
         </CustomButton>
