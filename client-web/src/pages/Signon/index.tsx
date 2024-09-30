@@ -86,7 +86,7 @@ export default function Signon() {
       const emailExist = await http.checkEmailExist(
         res.user.providerData[0].email
       )
-      if (emailExist.data.success) {
+      if (!emailExist.data.success) {
         await http.registerSocial(
           res.idToken,
           res.credential.accessToken,
@@ -141,7 +141,7 @@ export default function Signon() {
     }
   }, [user])
   const updateUserInfo = async (loginData: http.TLoginSuccessResponse) => {
-    const res = await http.getUserCompany(loginData.token)
+    // const res = await http.getUserCompany(loginData.token)
     setUser({
       _id: loginData.user._id,
       firstName: loginData.user.firstName,
@@ -161,7 +161,7 @@ export default function Signon() {
       stripeCustomerId: loginData.user.stripeCustomerId,
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
-      company: res.data.result,
+      // company: res.data.result,
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     })

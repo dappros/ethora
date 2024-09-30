@@ -123,7 +123,7 @@ export default function Register() {
     }
   }, [user])
   const updateUserInfo = async (loginData: http.TLoginSuccessResponse) => {
-    const res = await http.getUserCompany(loginData.token)
+    // const res = await http.getUserCompany(loginData.token)
     setUser({
       _id: loginData.user._id,
       firstName: loginData.user.firstName,
@@ -143,7 +143,7 @@ export default function Register() {
       stripeCustomerId: loginData.user.stripeCustomerId,
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
-      company: res.data.result,
+      // company: res.data.result,
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     })
