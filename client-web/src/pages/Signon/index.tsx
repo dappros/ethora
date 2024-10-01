@@ -1,20 +1,11 @@
 import Box from "@mui/material/Box"
 import { useWeb3React } from "@web3-react/core"
 import { useEffect, useMemo, useState } from "react"
-import { useHistory, useLocation, useParams } from "react-router-dom"
+import { useHistory, useLocation } from "react-router-dom"
 import { injected } from "../../connector"
 import * as http from "../../http"
 import { useStoreState } from "../../store"
-import { MetamaskModal } from "./MetamaskModal"
-import { UsernameModal } from "./UsernameModal"
 import { FullPageSpinner } from "../../components/FullPageSpinner"
-import {
-  facebookSignIn,
-  googleSignIn,
-  metamaskSignIn,
-  regularLogin,
-  regularLoginEmail,
-} from "../../config/config"
 import { signInWithGoogle } from "../../services/firebase"
 import { useSnackbar } from "../../context/SnackbarContext"
 import { useMediaQuery, useTheme } from "@mui/material"
@@ -59,11 +50,8 @@ export default function Signon() {
             const message = "Login"
             const signature = await signer.signMessage(message)
             const resp = await http.loginSignature(account, signature, message)
-            const user = resp.data.user
 
             updateUserInfo(resp.data)
-
-            // history.push(`/profile/${user.defaultWallet.walletAddress}`);
           })
           .catch((error) => {
             console.log(error)
@@ -128,10 +116,6 @@ export default function Signon() {
         history.push(`/payments`)
         return
       }
-      // if (lastAuthUrl.current) {
-      //   history.push(lastAuthUrl.current);
-      //   return;
-      // }
       history.push(`/home`)
       return
     }
@@ -141,7 +125,6 @@ export default function Signon() {
     }
   }, [user])
   const updateUserInfo = async (loginData: http.TLoginSuccessResponse) => {
-    // const res = await http.getUserCompany(loginData.token)
     setUser({
       _id: loginData.user._id,
       firstName: loginData.user.firstName,
@@ -161,7 +144,6 @@ export default function Signon() {
       stripeCustomerId: loginData.user.stripeCustomerId,
       paymentMethods: loginData.paymentMethods,
       subscriptions: loginData.subscriptions,
-      // company: res.data.result,
       appId: loginData.user.appId,
       homeScreen: loginData.user.homeScreen,
     })
@@ -246,158 +228,11 @@ export default function Signon() {
     setFlip(action === "signUp" || action === "forgetPassword")
   }, [location.search])
 
-  const isGoogleLoginAvailable = () => {
-    return !!config.firebaseWebConfigString
-  }
-
   if (loading) {
     return <FullPageSpinner />
   }
 
   return (
-    // <Box sx={{ backgroundColor: config.loginBackgroundColor || "white" }}>
-    //   <Container
-    //     maxWidth="xl"
-    //     style={{
-    //       display: "flex",
-    //       flexDirection: "column",
-    //       height: "calc(100vh - 68px)",
-    //       justifyContent: "center",
-    //       alignItems: "center",
-    //     }}
-    //   >
-    //     {!!signUpPlan && (
-    //       <Alert severity={"info"}>
-    //         <AlertTitle>Account Owners</AlertTitle>
-    //         In order to create and manage your App(s), you need to create your
-    //         own account first. You can use one of your social accounts or create
-    //         a new custom account using e-mail and password.
-    //       </Alert>
-    //     )}
-    //     <Box
-    //       sx={{ marginTop: 5 }}
-    //       style={{
-    //         display: "flex",
-    //         maxWidth: "300px",
-    //         flexDirection: "column",
-    //         alignItems: "center",
-    //         justifyContent: "center",
-    //       }}
-    //     >
-    //       {config.logoImage && (
-    //         <img
-    //           src={config.logoImage}
-    //           style={{ width: "100%", height: 200, marginBottom: 10 }}
-    //         />
-    //       )}
-    //       {facebookSignIn && (
-    //         <FacebookLogin
-    //           appId="1172938123281314"
-    //           autoLoad={false}
-    //           fields="name,email,picture"
-    //           onClick={() => {}}
-    //           callback={onFacebookClick}
-    //           icon={<FacebookIcon style={{ marginRight: 10 }} />}
-    //           buttonStyle={{
-    //             display: "flex",
-    //             justifyContent: "flex-start",
-    //             alignItems: "center",
-    //             fontSize: 16,
-    //             padding: 5,
-    //             borderRadius: 4,
-    //             width: "100%",
-    //             margin: "3px 0",
-    //             fontFamily: "Roboto,Helvetica,Arial,sans-serif",
-    //             fontWeight: 500,
-    //             textTransform: "none",
-    //             paddingLeft: 20,
-    //           }}
-    //           textButton={"Sign In with facebook"}
-    //           containerStyle={{ padding: 0, width: "100%" }}
-    //         />
-    //       )}
-    //       {googleSignIn && isGoogleLoginAvailable() && (
-    //         <Button
-    //           onClick={onGoogleClick}
-    //           sx={{ margin: 1 }}
-    //           fullWidth
-    //           id="googleLogin"
-    //           variant="contained"
-    //           startIcon={<GoogleIcon />}
-    //           style={{
-    //             backgroundColor: "white",
-    //             color: "rgba(0,0,0,0.6)",
-    //             textTransform: "none",
-    //             fontSize: "16px",
-    //           }}
-    //         >
-    //           Sign In with Google
-    //         </Button>
-    //       )}
-    //       {metamaskSignIn && (
-    //         <Button
-    //           sx={{ margin: 1 }}
-    //           fullWidth
-    //           variant="contained"
-    //           id="metamaskLogin"
-    //           onClick={() => onMetamaskLogin()}
-    //           startIcon={<DiamondIcon />}
-    //           style={{
-    //             backgroundColor: "#d9711a",
-    //             textTransform: "none",
-    //             fontSize: "16px",
-    //           }}
-    //         >
-    //           Sign In with Metamask
-    //         </Button>
-    //       )}
-
-    //       {regularLoginEmail && (
-    //         <Button
-    //           sx={{ margin: 1, textTransform: "none", fontSize: "16px" }}
-    //           fullWidth
-    //           variant="contained"
-    //           id="regularLogin"
-    //           onClick={() => setOpenEmail(true)}
-    //         >
-    //           Sign In with E-mail
-    //         </Button>
-    //       )}
-    //       <Typography
-    //         sx={{
-    //           fontSize: "12px",
-    //           textDecoration: "underline",
-    //           cursor: "pointer",
-    //         }}
-    //       >
-    //         <span onClick={() => setShowForgotPasswordModal(true)}>
-    //           Forgot password?
-    //         </span>
-    //       </Typography>
-    //     </Box>
-
-    //     <MetamaskModal
-    //       updateUser={updateUserInfo}
-    //       open={showMetamask}
-    //       setOpen={setShowMetamask}
-    //     />
-    //     <EmailModal
-    //       updateUser={updateUserInfo}
-    //       open={openEmail}
-    //       setOpen={setOpenEmail}
-    //     />
-    //     <UsernameModal
-    //       updateUser={updateUserInfo}
-    //       open={openUsername}
-    //       setOpen={setOpenUsername}
-    //     />
-    //     <ForgotPasswordModal
-    //       open={showForgotPasswordModal}
-    //       onClose={() => setShowForgotPasswordModal(false)}
-    //     />
-    //   </Container>
-    // </Box>
-
     <Wrapper>
       <Box
         sx={{

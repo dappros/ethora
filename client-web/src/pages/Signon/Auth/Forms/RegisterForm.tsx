@@ -7,6 +7,7 @@ import CustomStepper from "../Stepper"
 import FirstStep from "../Register/Steps/FirstStep"
 import SecondStep from "../Register/Steps/SecondStep"
 import ThirdStep from "../Register/Steps/ThirdStep"
+import { useStoreState } from "../../../../store"
 
 interface SignUpFormProps {
   loading: boolean
@@ -30,6 +31,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
   const [activeStep, setActiveStep] = useState(0)
 
   const history = useHistory()
+  const config = useStoreState((state) => state.config)
 
   const setSignUnQuery = () => {
     history.push("login")
@@ -112,7 +114,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
             Sign Up
           </Typography>
         </Box>
-        <CustomStepper step={activeStep} />
+        <CustomStepper
+          step={activeStep}
+          color={config?.primaryColor ? config.primaryColor : "#0052CD"}
+        />
         <StepComponent step={activeStep} />
       </Box>
       <Typography
@@ -126,7 +131,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         <Typography
           style={{
             textDecoration: "underline",
-            color: "#0052CD",
+            color: config?.primaryColor ? config.primaryColor : "#0052CD",
             display: "inline",
             fontSize: "14px",
             cursor: "pointer",

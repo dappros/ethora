@@ -5,6 +5,7 @@ import SkeletonLoader from "../../../SkeletonLoader"
 import { resendLink } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import { useHistory } from "react-router"
+import { useStoreState } from "../../../../../store"
 
 interface SecondStepProps {
   loading: boolean
@@ -15,6 +16,7 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
   const email = queryParams.get("email")
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
+  const config = useStoreState((state) => state.config)
 
   useEffect(() => {
     if (!email || email === "") {
@@ -110,6 +112,11 @@ const SecondStep: React.FC<SecondStepProps> = ({ loading }) => {
             onClick={handleResend}
             disabled={isSubmitting}
             loading={isSubmitting}
+            style={{
+              backgroundColor: config?.primaryColor
+                ? config.primaryColor
+                : "#0052CD",
+            }}
           >
             Resend Email
           </CustomButton>

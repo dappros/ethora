@@ -1,12 +1,15 @@
-import { Box, Icon, Rating, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import React from "react"
 import LogoAndText from "../Icons/logoAndText"
+import { useStoreState } from "../../../store"
 
 interface LogoContentProps {
   isMobile?: boolean
 }
 
 const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
+  const config = useStoreState((state) => state.config)
+
   return (
     <Box
       sx={{
@@ -27,7 +30,7 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
           justifyContent: isMobile ? "center" : "start",
         }}
       >
-        <LogoAndText />
+        <LogoAndText color={config.primaryColor} />
       </Box>
       {!isMobile && (
         <Typography

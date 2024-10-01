@@ -7,6 +7,7 @@ import SkeletonLoader from "../../../SkeletonLoader"
 import { setPermanentPasswordWithTempPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import { useHistory } from "react-router"
+import { useStoreState } from "../../../../../store"
 
 interface ThirdStepProps {
   loading: boolean
@@ -38,6 +39,7 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
 
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
+  const config = useStoreState((state) => state.config)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search)
@@ -156,6 +158,11 @@ const ThirdStep: React.FC<ThirdStepProps> = ({ loading }) => {
             type="submit"
             disabled={formik.isSubmitting || !formik.isValid}
             loading={formik.isSubmitting}
+            style={{
+              backgroundColor: config?.primaryColor
+                ? config.primaryColor
+                : "#0052CD",
+            }}
           >
             Set Password
           </CustomButton>

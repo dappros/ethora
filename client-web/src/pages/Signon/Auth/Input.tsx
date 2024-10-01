@@ -1,10 +1,11 @@
 import React from "react"
 import { TextField, TextFieldProps } from "@mui/material"
 import { styled } from "@mui/material/styles"
+import { useStoreState } from "../../../store"
 
 interface CustomInputProps extends Omit<TextFieldProps, "variant"> {}
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)(({ theme, config }) => ({
   "& .MuiInputBase-root": {
     borderRadius: 16,
     fontSize: 16,
@@ -16,7 +17,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: "8px 16px",
   },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-    border: "1px solid #0052CD",
+    border: `1px solid ${config.primaryColor || "#0052CD"}`,
   },
   "& .MuiInputBase-input": {
     padding: "8px 16px",
@@ -41,11 +42,14 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }))
 
 const CustomInput: React.FC<CustomInputProps> = ({ placeholder, ...props }) => {
+  const config = useStoreState((state) => state.config)
+
   return (
     <StyledTextField
       variant="outlined"
       placeholder={placeholder}
       inputProps={{ style: { minWidth: "40px" } }}
+      config={config} // Pass config to StyledTextField
       {...props}
     />
   )

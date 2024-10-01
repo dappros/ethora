@@ -194,6 +194,11 @@ const FirstStep: React.FC<FirstStepProps> = ({
             color="primary"
             loading={formik.isSubmitting}
             disabled={formik.isSubmitting}
+            style={{
+              backgroundColor: config?.primaryColor
+                ? config.primaryColor
+                : "#0052CD",
+            }}
           >
             Sign Up
           </CustomButton>
@@ -243,7 +248,7 @@ const FirstStep: React.FC<FirstStepProps> = ({
                 href="/terms"
                 sx={{
                   textDecoration: "underline",
-                  color: "#0052CD",
+                  color: config?.primaryColor ? config.primaryColor : "#0052CD",
                   fontSize: "inherit",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
@@ -266,6 +271,13 @@ const FirstStep: React.FC<FirstStepProps> = ({
               variant="outlined"
               startIcon={<GoogleIcon />}
               onClick={signUpWithGoogle}
+              style={{
+                borderColor: config?.primaryColor
+                  ? config.primaryColor
+                  : "#0052CD",
+
+                color: config?.primaryColor ? config.primaryColor : "#0052CD",
+              }}
             >
               Continue with Google
             </CustomButton>
@@ -318,8 +330,18 @@ const FirstStep: React.FC<FirstStepProps> = ({
               variant="outlined"
               aria-label="metamask"
               onClick={signUpWithMetamask}
+              style={{
+                backgroundColor: config?.primaryColor
+                  ? config.primaryColor
+                  : "#0052CD",
+                borderColor: config?.secondaryColor
+                  ? config.secondaryColor
+                  : "#0052CD",
+                color: "white",
+              }}
             >
               <MetamaskIcon />
+              {config?.signonOptions.length < 8 && "Continue with Metamask"}
             </CustomButton>
           )}
         </Box>

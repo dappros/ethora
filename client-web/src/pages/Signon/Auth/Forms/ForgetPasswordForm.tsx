@@ -8,6 +8,7 @@ import SecondStep from "../ForgetPassword/Steps/SecondStep"
 import ThirdStep from "../ForgetPassword/Steps/ThirdStep"
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace"
 import CustomStepper from "../Stepper"
+import { useStoreState } from "../../../../store"
 
 interface ForgetPasswordFormProps {
   isMobile: boolean
@@ -17,6 +18,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
   isMobile,
 }) => {
   const [activeStep, setActiveStep] = useState(0)
+  const config = useStoreState((state) => state.config)
 
   const history = useHistory()
 
@@ -96,7 +98,10 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
             Forgot Password
           </Typography>
         </Box>
-        <CustomStepper step={activeStep} />
+        <CustomStepper
+          step={activeStep}
+          color={config?.primaryColor ? config.primaryColor : "#0052CD"}
+        />
         <StepComponent step={activeStep} />
       </Box>
       <Box
@@ -118,10 +123,14 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
           }}
           onClick={() => setQuery("signIn")}
         >
-          <KeyboardBackspaceIcon sx={{ color: "#0052CD" }} />
+          <KeyboardBackspaceIcon
+            sx={{
+              color: config?.primaryColor ? config.primaryColor : "#0052CD",
+            }}
+          />
           <Typography
             style={{
-              color: "#0052CD",
+              color: config?.primaryColor ? config.primaryColor : "#0052CD",
               display: "inline",
               fontSize: "16px",
               lineHeight: "24px",
@@ -141,7 +150,7 @@ const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({
           <Typography
             style={{
               textDecoration: "underline",
-              color: "#0052CD",
+              color: config?.primaryColor ? config.primaryColor : "#0052CD",
               display: "inline",
               fontSize: "14px",
               cursor: "pointer",

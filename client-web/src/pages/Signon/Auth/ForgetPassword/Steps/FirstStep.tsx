@@ -6,6 +6,7 @@ import CustomInput from "../../Input"
 import { postForgotPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import { useHistory } from "react-router"
+import { useStoreState } from "../../../../../store"
 
 const validate = (values: { email: string }) => {
   const errors: Record<string, string> = {}
@@ -26,6 +27,7 @@ interface FirstStepProps {
 const FirstStep: React.FC<FirstStepProps> = ({ setStep }) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
+  const config = useStoreState((state) => state.config)
 
   const formik = useFormik({
     initialValues: {
@@ -111,6 +113,11 @@ const FirstStep: React.FC<FirstStepProps> = ({ setStep }) => {
           color="primary"
           loading={formik.isSubmitting}
           disabled={formik.isSubmitting}
+          style={{
+            backgroundColor: config?.primaryColor
+              ? config.primaryColor
+              : "#0052CD",
+          }}
         >
           Send Email
         </CustomButton>

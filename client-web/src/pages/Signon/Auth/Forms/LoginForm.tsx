@@ -4,6 +4,7 @@ import { Box, Typography } from "@mui/material"
 import { useHistory } from "react-router-dom"
 import LoginStep from "../Login/Steps/LoginForm"
 import { TLoginSuccessResponse } from "../../../../http"
+import { useStoreState } from "../../../../store"
 
 interface SignInFormProps {
   loading: boolean
@@ -22,6 +23,8 @@ const SignInForm: React.FC<SignInFormProps> = ({
   signInWithMetamask,
 }) => {
   const history = useHistory()
+
+  const config = useStoreState((state) => state.config)
 
   const setSignUpQuery = () => {
     history.push("register")
@@ -81,7 +84,7 @@ const SignInForm: React.FC<SignInFormProps> = ({
         <Typography
           style={{
             textDecoration: "underline",
-            color: "#0052CD",
+            color: config?.primaryColor ? config.primaryColor : "#0052CD",
             fontSize: "14px",
             display: "inline",
             cursor: "pointer",

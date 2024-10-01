@@ -6,6 +6,7 @@ import { useFormik } from "formik"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
 import { resetPassword } from "../../../../../http"
 import { useHistory } from "react-router"
+import { useStoreState } from "../../../../../store"
 
 const validate = (values: { newPassword: string; repeatPassword: string }) => {
   const errors: Record<string, string> = {}
@@ -30,6 +31,7 @@ interface ThirdStepProps {}
 const ThirdStep: React.FC<ThirdStepProps> = ({}) => {
   const { showSnackbar } = useSnackbar()
   const history = useHistory()
+  const config = useStoreState((state) => state.config)
 
   const formik = useFormik({
     initialValues: {
@@ -135,6 +137,11 @@ const ThirdStep: React.FC<ThirdStepProps> = ({}) => {
           color="primary"
           loading={formik.isSubmitting}
           disabled={formik.isSubmitting}
+          style={{
+            backgroundColor: config?.primaryColor
+              ? config.primaryColor
+              : "#0052CD",
+          }}
         >
           Reset password
         </CustomButton>

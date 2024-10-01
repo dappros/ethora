@@ -129,7 +129,7 @@ const LoginStep: React.FC<TProperties> = ({
         <Typography
           style={{
             textDecoration: "underline",
-            color: "#0052CD",
+            color: config?.primaryColor ? config.primaryColor : "#0052CD",
             fontSize: "14px",
             display: "inline",
             cursor: "pointer",
@@ -157,6 +157,11 @@ const LoginStep: React.FC<TProperties> = ({
           disabled={formik.isSubmitting}
           loading={formik.isSubmitting}
           onClick={() => formik.submitForm()}
+          style={{
+            backgroundColor: config?.primaryColor
+              ? config.primaryColor
+              : "#0052CD",
+          }}
         >
           Sign In
         </CustomButton>
@@ -173,6 +178,13 @@ const LoginStep: React.FC<TProperties> = ({
             variant="outlined"
             startIcon={<GoogleIcon />}
             onClick={signInWithGoogle}
+            style={{
+              borderColor: config?.primaryColor
+                ? config.primaryColor
+                : "#0052CD",
+
+              color: config?.primaryColor ? config.primaryColor : "#0052CD",
+            }}
           >
             Continue with Google
           </CustomButton>
@@ -190,8 +202,18 @@ const LoginStep: React.FC<TProperties> = ({
             variant="outlined"
             aria-label="metamask"
             onClick={signInWithMetamask}
+            style={{
+              backgroundColor: config?.primaryColor
+                ? config.primaryColor
+                : "#0052CD",
+              borderColor: config?.secondaryColor
+                ? config.secondaryColor
+                : "#0052CD",
+              color: "white",
+            }}
           >
             <MetamaskIcon />
+            {config?.signonOptions.length < 8 && "Continue with Metamask"}
           </CustomButton>
         )}
       </Box>

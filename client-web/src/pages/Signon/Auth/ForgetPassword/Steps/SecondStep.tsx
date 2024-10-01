@@ -5,6 +5,7 @@ import SkeletonLoader from "../../../SkeletonLoader"
 import { useHistory } from "react-router"
 import { postForgotPassword } from "../../../../../http"
 import { useSnackbar } from "../../../../../context/SnackbarContext"
+import { useStoreState } from "../../../../../store"
 
 interface SecondStepProps {}
 
@@ -12,6 +13,7 @@ const SecondStep: React.FC<SecondStepProps> = ({}) => {
   const queryParams = new URLSearchParams(location.search)
   const email = queryParams.get("email")
   const { showSnackbar } = useSnackbar()
+  const config = useStoreState((state) => state.config)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -109,6 +111,11 @@ const SecondStep: React.FC<SecondStepProps> = ({}) => {
           onClick={handleSubmit}
           loading={isSubmitting}
           disabled={isSubmitting}
+          style={{
+            backgroundColor: config?.primaryColor
+              ? config.primaryColor
+              : "#0052CD",
+          }}
         >
           Resend Email
         </CustomButton>
