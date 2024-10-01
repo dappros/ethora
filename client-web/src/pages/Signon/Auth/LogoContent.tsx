@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material"
-import React from "react"
+import React, { useState } from "react"
 import LogoAndText from "../Icons/logoAndText"
 import { useStoreState } from "../../../store"
 
@@ -9,6 +9,7 @@ interface LogoContentProps {
 
 const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
   const config = useStoreState((state) => state.config)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <Box
@@ -30,7 +31,15 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
           justifyContent: isMobile ? "center" : "start",
         }}
       >
-        <LogoAndText color={config.primaryColor} />
+        {config.logoImage && config.logoImage !== "" && !imageError ? (
+          <img
+            alt="logoImage"
+            src={config.logoImage}
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <LogoAndText />
+        )}
       </Box>
       {!isMobile && (
         <Typography
@@ -46,7 +55,7 @@ const LogoContent: React.FC<LogoContentProps> = ({ isMobile = false }) => {
             overflowWrap: "break-word",
           }}
         >
-          Empower your community
+          {config?.appTagline ? config.appTagline : "Empower your community"}
         </Typography>
       )}
     </Box>
