@@ -21,9 +21,11 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
         color: "#141414",
         padding: isMobileDevice ? "24px 0px" : "5.5% 10%",
         backgroundImage: isMobileDevice ? "none !important" : "",
-        backgroundColor: config?.primaryColor
-          ? hexToRGBA(config.primaryColor)
-          : hexToRGBA("#0052CD"),
+        backgroundColor: !isMobileDevice
+          ? config?.primaryColor
+            ? hexToRGBA(config.primaryColor)
+            : hexToRGBA("#0052CD")
+          : "white",
       }}
       className="responsiveWrapper"
     >
