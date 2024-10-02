@@ -74,7 +74,7 @@ export default function Signon() {
       const emailExist = await http.checkEmailExist(
         res.user.providerData[0].email
       )
-      if (!emailExist.data.success) {
+      if (emailExist.data.success) {
         await http.registerSocial(
           res.idToken,
           res.credential.accessToken,
