@@ -32,7 +32,7 @@ Coding experience is optional. Javascript / Typescript / React coding experience
 ### 📣 Project update - 11th October 2024 📣
 
 Finally we have released our **NPM** package, **Ethora Chat Component**. 
-It makes building your Ethora app like 100x times easier as compared to digging through the complex mono-repo of the full super-app code here. 
+It makes building your first app like 100x times easier as compared to digging through the complex mono-repo of the full Ethora enginer code here. 
 NPM Chat Component will drastically reduce the learning curver allowing developers to launch their first chat room powered with many of the additional Ethora engine features, in under 5 minutes!
 
 Check it out at: https://www.npmjs.com/package/@ethora/chat-component
