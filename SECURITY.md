@@ -6,8 +6,9 @@ Supported Ethora versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 24.10   | :white_check_mark: |
 | 23.06   | :white_check_mark: |
-| 22.07   | :white_check_mark: |
+| 22.07   | :x:                |
 | Older   | :x:                |
 
 ## Reporting a Vulnerability
