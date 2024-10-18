@@ -41,7 +41,6 @@ import {
   getUserRoomsStanza,
   presenceStanza,
   retrieveOtherUserVcard,
-  subscribeStanza,
   subscribeToRoom,
   updateVCard,
   vcardRetrievalRequest,
@@ -356,13 +355,10 @@ export class ChatStore {
 
   //function to start a new xmpp connection
   xmppConnect = (username: string, password: string) => {
-    runInAction(() => {
-      this.xmpp = client({
-        service: this.stores.apiStore.xmppDomains.SERVICE,
-        domain: this.stores.apiStore.xmppDomains.DOMAIN,
-        username,
-        password,
-      });
+    this.xmpp = client({
+      service: "wss://xmpp.ethoradev.com:5443/ws",
+      username: username,
+      password: password,
     });
     this.xmpp.start().catch(console.log);
   };
@@ -1061,20 +1057,17 @@ export class ChatStore {
           let jid =
             stanza?.children[0]?.children[0]?.children[0]?.children[3]?.attrs
               ?.jid;
-          subscribeStanza(xmppUsername, jid, this.xmpp);
           presenceStanza(xmppUsername, jid, this.xmpp);
         }
 
         //response to invite request
         if (stanza?.children[2]?.children[0]?.name === "invite") {
           const jid = stanza.children[3].attrs.jid;
-          subscribeStanza(xmppUsername, jid, this.xmpp);
         }
 
         //response to invite request
         if (stanza?.children[2]?.children[0]?.name === XMPP_TYPES.invite) {
           const jid = stanza.children[3].attrs.jid;
-          subscribeStanza(xmppUsername, jid, this.xmpp);
           getUserRoomsStanza(xmppUsername, this.xmpp);
         }
 
@@ -1255,7 +1248,6 @@ export class ChatStore {
       this.xmpp.send(xml("presence"));
 
       //subscribe to default chats mentioned in the config
-      this.subscribeToDefaultChats();
 
       //set online status true in the mobx store
       runInAction(() => {
@@ -1263,13 +1255,10 @@ export class ChatStore {
       });
 
       //subscribe to meta rooms
-      this.subscribeToMetaRooms();
 
       //get blacklist
-      getBlackList(xmppUsername, this.xmpp);
 
       //retrive user vcard details for profile
-      vcardRetrievalRequest(xmppUsername, this.xmpp);
 
       //get list of rooms user subscribed to.
       getUserRoomsStanza(xmppUsername, this.xmpp);

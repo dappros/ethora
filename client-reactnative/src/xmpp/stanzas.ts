@@ -11,7 +11,6 @@ export const subscribeStanza = (from: string, to: string, xmpp: any) => {
   const subscribe = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       to: to,
       type: "set",
       id: XMPP_TYPES.newSubscription,
@@ -33,7 +32,6 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
   const presence = xml(
     "presence",
     {
-      from: from + "@" + DOMAIN,
       to: to + "/" + from,
       id: XMPP_TYPES.roomPresence,
     },
@@ -49,7 +47,6 @@ export const getUserRoomsStanza = (
     "iq",
     {
       type: "get",
-      from: manipulatedWalletAddress + "@" + DOMAIN,
       id: XMPP_TYPES.getUserRooms,
     },
     xml("query", { xmlns: "ns:getrooms" })
@@ -65,8 +62,6 @@ export const blacklistUser = (
   const stanza = xml(
     "iq",
     {
-      from: manipulatedWalletAddress + "@" + DOMAIN,
-
       type: "set",
       id: XMPP_TYPES.addToBlackList,
     },
@@ -87,7 +82,6 @@ export const removeUserFromBlackList = (
   const stanza = xml(
     "iq",
     {
-      from: manipulatedWalletAddress + "@" + DOMAIN,
       type: "set",
       id: XMPP_TYPES.removeFromBlackList,
     },
@@ -104,7 +98,6 @@ export const getBlackList = (manipulatedWalletAddress: string, xmpp: any) => {
   const stanza = xml(
     "iq",
     {
-      from: manipulatedWalletAddress + "@" + DOMAIN,
       type: "get",
       id: XMPP_TYPES.getBlackList,
     },
@@ -283,7 +276,6 @@ export const subscribeToRoom = (
   const message = xml(
     "iq",
     {
-      from: manipulatedWalletAddress + "@" + DOMAIN,
       to: roomJID,
       type: "set",
       id: XMPP_TYPES.newSubscription,
@@ -308,7 +300,6 @@ export const unsubscribeFromChatXmpp = (
   const message = xml(
     "iq",
     {
-      from: manipulatedWalletAddress + "@" + DOMAIN,
       to: jid,
       type: "set",
       id: XMPP_TYPES.unsubscribeFromRoom,
@@ -332,7 +323,6 @@ export const leaveRoomXmpp = (
   xmpp: any
 ) => {
   const presence = xml("presence", {
-    from: manipulatedWalletAddress + "@" + DOMAIN,
     to: jid + "/" + username,
     type: "unavailable",
   });
