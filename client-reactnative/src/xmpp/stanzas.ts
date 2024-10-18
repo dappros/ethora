@@ -32,6 +32,7 @@ export const presenceStanza = (from: string, to: string, xmpp: any) => {
   const presence = xml(
     "presence",
     {
+      from: xmpp.jid?.toString(),
       to: to + "/" + from,
       id: XMPP_TYPES.roomPresence,
     },
@@ -127,13 +128,11 @@ export const sendMessageStanza = (
     {
       id: XMPP_TYPES.sendMessage,
       type: "groupchat",
-      from: from + "@" + DOMAIN,
       to: to,
     },
     xml("body", {}, messageText),
     xml("data", {
       xmlns: "http://" + DOMAIN,
-      senderJID: from + "@" + DOMAIN,
       ...data,
     })
   );
@@ -156,7 +155,6 @@ export const sendReplaceMessageStanza = (
   const message = xml(
     "message",
     {
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.replaceMessage,
       type: "groupchat",
       to: to,
@@ -210,7 +208,6 @@ export const fetchRosterlist = (
   const message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: CONFERENCEDOMAIN_WITHOUT,
       type: "get",
       id: stanzaId,
@@ -357,7 +354,6 @@ export const get_list_of_subscribers = (
   let message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       type: "get",
       id: XMPP_TYPES.participants,
@@ -376,7 +372,6 @@ export const roomConfigurationForm = (
   const message = xml(
     "iq",
     {
-      from: user_jid + "@" + DOMAIN,
       id: "create2",
       to: chat_jid,
       type: "set",
@@ -412,7 +407,6 @@ export const getRoomInfo = (
   const message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       id: XMPP_TYPES.roomInfo,
       to: chat_jid,
       type: "get",
@@ -431,7 +425,6 @@ export const getChatLinkInfo = (
   const message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       id: XMPP_TYPES.chatLinkInfo,
       to: chat_jid,
       type: "get",
@@ -457,7 +450,6 @@ export const isComposing = async (
   const message = xml(
     "message",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       id: XMPP_TYPES.isComposing,
       type: "groupchat",
@@ -482,7 +474,6 @@ export const botStanza = (from: string, to: string, data: any, xmpp: any) => {
     {
       id: XMPP_TYPES.botStanza,
       type: "groupchat",
-      from: from + "@" + DOMAIN,
       to: to,
     },
     xml("body", {}, ""),
@@ -510,7 +501,6 @@ export const pausedComposing = async (
   const message = xml(
     "message",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       id: XMPP_TYPES.pausedComposing,
       type: "groupchat",
@@ -543,7 +533,6 @@ export const activeChatState = async (
   const message = xml(
     "message",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       id: XMPP_TYPES.pausedComposing,
       type: "groupchat",
@@ -571,7 +560,6 @@ export const commonDiscover = (
   const message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       id: XMPP_TYPES.commonDiscover,
       type: "get",
@@ -600,7 +588,6 @@ export const discoverProfileSupport = (
     "iq",
     {
       type: "get",
-      from: walletAddress + "@" + DOMAIN,
       to: chat_jid,
       id: "iq1",
     },
@@ -622,7 +609,6 @@ export const vcardRetrievalRequest = (walletAddress: string, xmpp: any) => {
   const message = xml(
     "iq",
     {
-      from: walletAddress + "@" + DOMAIN,
       id: XMPP_TYPES.vCardRequest,
       type: "get",
     },
@@ -645,7 +631,6 @@ export const setRoomImage = (
   const message = xml(
     "iq",
     {
-      from: userJid,
       id:
         type === "icon"
           ? XMPP_TYPES.setRoomImage
@@ -672,7 +657,6 @@ export const deleteMessageStanza = (
   const stanza = xml(
     "message",
     {
-      from: from,
       to: roomJid,
       id: XMPP_TYPES.deleteMessage,
       type: "groupchat",
@@ -719,7 +703,6 @@ export const retrieveOtherUserVcard = (
   const message = xml(
     "iq",
     {
-      from: username + "@" + DOMAIN,
       id: XMPP_TYPES.otherUserVCardRequest,
       to: userJID + "@" + DOMAIN,
       type: "get",
@@ -735,7 +718,6 @@ export const createNewRoom = (from: string, to: string, xmpp: any) => {
     "presence",
     {
       id: XMPP_TYPES.createRoom,
-      from: from + "@" + DOMAIN,
       to: to + CONFERENCEDOMAIN + "/" + from,
     },
     xml("x", "http://jabber.org/protocol/muc")
@@ -748,7 +730,6 @@ export const setOwner = (from: string, to: string, xmpp: any) => {
     "iq",
     {
       to: to + CONFERENCEDOMAIN,
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.setOwner,
       type: "set",
     },
@@ -767,7 +748,6 @@ export const roomConfig = (
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.roomConfig,
       to: to + CONFERENCEDOMAIN,
       type: "set",
@@ -808,7 +788,7 @@ export const sendInvite = (
 ) => {
   const stanza = xml(
     "message",
-    { from: from + "@" + DOMAIN, to: to },
+    { to: to },
     xml(
       "x",
       "http://jabber.org/protocol/muc#user",
@@ -843,7 +823,6 @@ export const banUser = (
     {
       id: "ban_user",
       to: to,
-      from: from + "@" + DOMAIN,
       type: "set",
     },
     xml(
@@ -879,7 +858,6 @@ export const banUserr = (
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       type: "set",
       id: XMPP_TYPES.ban,
     },
@@ -915,7 +893,6 @@ export const unbanUser = (
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       type: "set",
       id: XMPP_TYPES.unBan,
     },
@@ -939,7 +916,6 @@ export const getListOfBannedUserInRoom = (
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       type: "set",
       id: XMPP_TYPES.getBannedUserListOfRoom,
     },
@@ -968,7 +944,6 @@ export const assignModerator = (from: string, to: string, xmpp: any) => {
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.assignModerator,
       to: to,
       type: "set",
@@ -1002,7 +977,6 @@ export const unAssignModerator = (from: string, to: string, xmpp: any) => {
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.unAssignModerator,
       to: to,
       type: "set",
@@ -1031,7 +1005,6 @@ export const getRoomMemberInfo = (from: string, to: string, xmpp: any) => {
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       type: "get",
       id: XMPP_TYPES.roomMemberInfo,
     },
@@ -1054,7 +1027,6 @@ export const changeRoomDescription = (
   const message = xml(
     "iq",
     {
-      from: from + "@" + DOMAIN,
       id: XMPP_TYPES.changeRoomDescription,
       to: to,
       type: "set",
