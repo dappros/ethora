@@ -12,7 +12,7 @@ const ChatScreen = observer(({ route }: any) => {
 
   const { chatJid, chatName } = route.params;
   const room: roomListProps = chatStore.roomList.find(
-    (item) => item.jid === chatJid
+    (item) => item.jid === chatJid,
   ) || {
     avatar: "",
     counter: 0,

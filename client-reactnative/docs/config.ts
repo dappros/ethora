@@ -748,7 +748,7 @@ export interface IxmppEndpoints {
 
 const xmppEndpoints: IxmppEndpoints = {
   DEV: {
-    DOMAIN: "dev.dxmpp.com",
+    DOMAIN: "xmpp.ethoradev.com",
     SERVICE: "wss://dev.dxmpp.com:5443/ws",
     CONFERENCEDOMAIN: "@conference.dev.dxmpp.com",
     CONFERENCEDOMAIN_WITHOUT: "conference.dev.dxmpp.com",

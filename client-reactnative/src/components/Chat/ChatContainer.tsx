@@ -5,12 +5,15 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
+  Dimensions,
   Image,
   ImageBackground,
+  Modal,
   NativeModules,
   Platform,
   Pressable,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
@@ -134,6 +137,7 @@ interface ISystemMessage {
   transactionId: string;
 }
 //interfaces and types
+const { height, width } = Dimensions.get("window");
 
 //styles
 const styles = StyleSheet.create({
@@ -195,6 +199,42 @@ const styles = StyleSheet.create({
   activityIndicatorContainerStyle: {
     backgroundColor: "transparent",
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "flex-end", // Опции появляются внизу экрана
+    alignItems: "center",
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  selectedMessageContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  selectedMessageText: {
+    fontSize: 16,
+    color: "black",
+  },
+  optionsContainer: {
+    backgroundColor: "white",
+    width: width,
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: "center",
+  },
+  optionText: {
+    fontSize: 18,
+    padding: 10,
+    color: "blue",
+  },
 });
 //styles
 
@@ -216,13 +256,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const { loginStore, debugStore, chatStore, walletStore, apiStore } =
     useStores();
   //mobx stores
-
-  console.log(
-    "loginStore.initialData.xmppUsername", loginStore.initialData.xmppUsername);
-  console.log("apiStore.xmppDomains.DOMAIN", apiStore.xmppDomains.DOMAIN);
-  console.log("loginStore.initialData.username", loginStore.initialData);
-  console.log("loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName", loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName);
-
 
   //local states
   const [recording, setRecording] = useState<boolean>(false);
@@ -277,7 +310,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const giftedRef = useRef(null);
   const navigation = useNavigation<HomeStackNavigationProp>();
   const manipulatedWalletAddress: string = underscoreManipulation(
-    loginStore.initialData.walletAddress
+    loginStore.initialData.walletAddress,
   );
   const { tokenTransferSuccess } = walletStore;
   const debouncedChatText = useDebounce(text, 500);
@@ -325,7 +358,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       .map((_, i) =>
         arr
           .slice(i * blockSize, (i + 1) * blockSize)
-          .reduce((sum: number, val: number) => sum + Math.abs(val), 0)
+          .reduce((sum: number, val: number) => sum + Math.abs(val), 0),
       );
 
     return res;
@@ -358,7 +391,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     const result = await audioRecorderPlayer.startRecorder(
       path,
       audioSet,
-      true
+      true,
     );
     console.log(result, "fileResult");
   };
@@ -389,7 +422,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         filesApiURL,
         data,
         loginStore.userToken,
-        setFileUploadProgress
+        setFileUploadProgress,
       );
       setFileUploadProgress(0);
 
@@ -399,7 +432,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           response.data.results,
           roomDetails,
           chatStore.xmpp,
-          waveform
+          waveform,
         );
       }
     } catch (error) {
@@ -413,7 +446,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     mediaListArray: IMediaProps[],
     roomDetail: roomListProps,
     xmpp: any,
-    waveForm?: any
+    waveForm?: any,
   ) => {
     mediaListArray.map(async (item) => {
       // console.log(item.duration, 'masdedia messsdfsdfage');
@@ -442,7 +475,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         manipulatedWalletAddress,
         roomDetail.jid,
         data,
-        xmpp
+        xmpp,
       );
     });
   };
@@ -454,7 +487,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to scroll to the top of the list of messages
   const scrollToParentMessage = (currentMessage: any) => {
     const parentIndex = messages.findIndex(
-      (item) => item._id === currentMessage?.mainMessage?.id
+      (item) => item._id === currentMessage?.mainMessage?.id,
     );
 
     //@ts-ignore
@@ -467,7 +500,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   //handle to pick attachment and send
   const sendAttachment = async (
     userToken: string,
-    roomDetail: roomListProps
+    roomDetail: roomListProps,
   ) => {
     const xmpp = chatStore.xmpp;
     const filesApiURL = apiStore.defaultUrl + fileUpload;
@@ -488,7 +521,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         filesApiURL,
         data,
         userToken,
-        setFileUploadProgress
+        setFileUploadProgress,
       );
       setFileUploadProgress(0);
 
@@ -543,13 +576,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         messageText as string,
         onTapMessageObject?._id as string,
         data,
-        chatStore.xmpp
+        chatStore.xmpp,
       );
       setIsEditing(false);
     } else {
       const parsedext = parseValue(
         messageText as string,
-        partTypes as any
+        partTypes as any,
       ).plainText;
       const matches = Array.from(matchAll(messageText ?? "", mentionRegEx));
       matches.forEach((match: any) =>
@@ -557,15 +590,15 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           manipulatedWalletAddress,
           roomDetails.jid,
           match[4],
-          chatStore.xmpp
-        )
+          chatStore.xmpp,
+        ),
       );
       sendMessageStanza(
         manipulatedWalletAddress,
         roomDetails.jid,
         parsedext,
         data,
-        chatStore.xmpp
+        chatStore.xmpp,
       );
     }
   };
@@ -579,7 +612,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         chatJID,
         loginStore.initialData.walletAddress,
         navigation,
-        chatStore.xmpp
+        chatStore.xmpp,
       );
     } else {
       showToast("error", "Error", "Invalid QR", "top");
@@ -610,7 +643,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       manipulatedWalletAddress,
       roomDetails.jid,
       data,
-      chatStore.xmpp
+      chatStore.xmpp,
     );
     setIsNftItemGalleryVisible(false);
   };
@@ -667,7 +700,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
               onTapMessageObject?.user._id as string,
               onTapMessageObject?.roomJid as string,
               onTapMessageObject?._id as string,
-              chatStore.xmpp
+              chatStore.xmpp,
             );
             onClose();
           },
@@ -677,7 +710,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-      ]
+      ],
     );
   };
 
@@ -691,7 +724,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         manipulatedWalletAddress,
         roomDetails.jid,
         fullName,
-        chatStore.xmpp
+        chatStore.xmpp,
       );
     }, 2000);
   };
@@ -700,33 +733,44 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const onMediaMessagePress = (
     type: TCombinedMimeType | undefined,
     url: string | undefined,
-    message: IMessage
+    message: IMessage,
   ) => {
     setMediaModal({ open: true, type, url, message });
   };
 
-  const handleOnLongPress = (message: IMessage) => {
-    if (message.user._id.includes(manipulatedWalletAddress)) {
-      return;
-    }
-    if (
-      !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
-    ) {
-      const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0];
-      const walletFromJid = reverseUnderScoreManipulation(jid);
+  const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-      setDataForLongTapModal({
-        name: message.user.name,
-        message_id: message._id,
-        senderName:
-          loginStore.initialData.firstName +
-          " " +
-          loginStore.initialData.lastName,
-        walletFromJid: walletFromJid,
-        chatJid: roomDetails.jid,
-        open: true,
-      });
-    }
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedMessage(null);
+  };
+
+  const handleOnLongPress = (message: IMessage) => {
+    console.log("message one", message);
+    setSelectedMessage(message);
+    setModalVisible(true);
+    // if (message.user._id.includes(manipulatedWalletAddress)) {
+    //   return;
+    // }
+    // if (
+    //   !message.user._id.includes(apiStore.xmppDomains.CONFERENCEDOMAIN_WITHOUT)
+    // ) {
+    //   const jid = message.user._id.split("@" + apiStore.xmppDomains.DOMAIN)[0];
+    //   const walletFromJid = reverseUnderScoreManipulation(jid);
+
+    //   setDataForLongTapModal({
+    //     name: message.user.name,
+    //     message_id: message._id,
+    //     senderName:
+    //       loginStore.initialData.firstName +
+    //       " " +
+    //       loginStore.initialData.lastName,
+    //     walletFromJid: walletFromJid,
+    //     chatJid: roomDetails.jid,
+    //     open: true,
+    //   });
+    // }
   };
 
   //handle to open other user profile when clicked on their avatar in the chat screen
@@ -823,7 +867,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         roomDetails.jid,
         messageText,
         data,
-        chatStore.xmpp
+        chatStore.xmpp,
       );
     },
     [
@@ -835,7 +879,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       manipulatedWalletAddress,
       roomDetails.jid,
       roomDetails.name,
-    ]
+    ],
   );
 
   //local functions
@@ -1095,7 +1139,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
       <View style={styles.suggestionsContainer}>
         {defaultBotsList
           .filter((one) =>
-            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
+            one.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()),
           )
           .map((one) => (
             <Pressable
@@ -1369,8 +1413,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           onSend={(messageString) => handleSendMessage(messageString)}
           user={{
-            _id: loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
-            name: loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName,
+            _id:
+              loginStore.initialData.xmppUsername +
+              "@" +
+              apiStore.xmppDomains.DOMAIN,
+            name: loginStore.initialData.username,
           }}
           // inverted={true}
           alwaysShowSend
@@ -1401,6 +1448,41 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             backgroundColor: "#E8EDF2",
           }}
         />
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={closeModal} // Закрываем модалку при нажатии кнопки "Назад"
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            onPress={closeModal}
+            activeOpacity={1}
+          >
+            {/* Затемненный фон */}
+            <View style={styles.background} />
+
+            {/* Выбранное сообщение */}
+            <View style={styles.selectedMessageContainer}>
+              <Text style={styles.selectedMessageText}>
+                {selectedMessage ? selectedMessage.text : ""}
+              </Text>
+            </View>
+
+            {/* Опции для сообщения */}
+            <View style={styles.optionsContainer}>
+              <TouchableOpacity onPress={() => console.log("Ответить")}>
+                <Text style={styles.optionText}>Ответить</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => console.log("Копировать")}>
+                <Text style={styles.optionText}>Копировать</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={closeModal}>
+                <Text style={styles.optionText}>Отменить</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </Modal>
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
           isModalVisible={isNftItemGalleryVisible}
