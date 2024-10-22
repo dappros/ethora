@@ -146,7 +146,7 @@ export const createMessageObject = (messageDetails = []) => {
     if (item.name === "data") {
       message.user.name =
         item.attrs.senderFirstName + " " + item.attrs.senderLastName;
-      message.user._id = item.attrs.senderJID;
+      message.user._id = item.attrs.senderJID.split("/")?.[0];
       const isSystem = item.attrs.isSystemMessage === "true";
       message.system = isSystem;
       message.tokenAmount = +item.attrs?.tokenAmount || 0;
