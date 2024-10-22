@@ -217,6 +217,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     useStores();
   //mobx stores
 
+  console.log(
+    "loginStore.initialData.xmppUsername", loginStore.initialData.xmppUsername);
+  console.log("apiStore.xmppDomains.DOMAIN", apiStore.xmppDomains.DOMAIN);
+  console.log("loginStore.initialData.username", loginStore.initialData);
+  console.log("loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName", loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName);
+
+
   //local states
   const [recording, setRecording] = useState<boolean>(false);
   const [fileUploadProgress, setFileUploadProgress] = useState<number>(0);
@@ -1362,11 +1369,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           onSend={(messageString) => handleSendMessage(messageString)}
           user={{
-            _id:
-              loginStore.initialData.xmppUsername +
-              "@" +
-              apiStore.xmppDomains.DOMAIN,
-            name: loginStore.initialData.username,
+            _id: loginStore.initialData.xmppUsername + '@' + apiStore.xmppDomains.DOMAIN,
+            name: loginStore.initialData.firstName + ' ' + loginStore.initialData.lastName,
           }}
           // inverted={true}
           alwaysShowSend
