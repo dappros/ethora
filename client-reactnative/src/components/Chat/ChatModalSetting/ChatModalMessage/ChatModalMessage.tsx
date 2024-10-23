@@ -5,16 +5,16 @@ import { IMessage } from "../../../../stores/chatStore";
 
 interface ChatModalMessageProps {
   selectedMessage: IMessage;
+  isUser: boolean;
 }
 
 const ChatModalMessage: FC<ChatModalMessageProps> = (props) => {
-  const { selectedMessage } = props;
+  const { selectedMessage, isUser } = props;
 
   const renderAvatar = useMemo(() => {
     const nameParts = selectedMessage.user.name.split(" ");
     const initials = nameParts.map((part) => part[0]).join("");
 
-    console.log("initials", initials);
     return (
       <Avatar
         source={
@@ -48,7 +48,12 @@ const ChatModalMessage: FC<ChatModalMessageProps> = (props) => {
     <View style={styles.modalMessageInfo}>
       <View>{renderAvatar}</View>
 
-      <View style={styles.modalMessage}>
+      <View
+        style={{
+          ...styles.modalMessage,
+          backgroundColor: isUser ? "#C9E0FA" : "#FFFFFF",
+        }}
+      >
         <Text style={styles.modalMessageName}>{selectedMessage.user.name}</Text>
         <Text style={styles.modalMessageText}>{selectedMessage.text}</Text>
         <View style={styles.modalMessageDate}>{renderDateMessage}</View>
@@ -64,7 +69,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalMessage: {
-    backgroundColor: "#FFFFFF",
     marginLeft: 10,
     padding: 8,
     borderRadius: 8,

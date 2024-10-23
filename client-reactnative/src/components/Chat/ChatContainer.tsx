@@ -250,6 +250,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [initialLoadCompleted, setInitialLoadCompleted] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isUser, setIsUser] = useState<boolean | null>(null);
   const [mediaModal, setMediaModal] = useState<{
     open: boolean;
     url: string | undefined;
@@ -737,9 +738,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const handleOnLongPress = (message: IMessage) => {
-    console.log("chatStore", message.user._id);
-    console.log("message", message._id);
-    console.log("loginStore", loginStore.initialData._id);
+    const jid = message.user._id.split("@")[0];
+    setIsUser(loginStore.initialData.xmppUsername === jid);
     setSelectedMessage(message);
     measureMessagePosition(message._id);
     setModalVisible(true);
@@ -1447,6 +1447,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           closeModal={closeModal}
           reactionModalPosition={reactionModalPosition}
           setSelectedMessage={setSelectedMessage}
+          isModerator={chatStore.checkIsModerator(roomDetails.jid)}
+          setIsUser={setIsUser}
+          isUser={isUser}
         />
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
