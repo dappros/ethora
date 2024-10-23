@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo } from "react";
+import React, { ReactElement, useMemo, useRef } from "react";
 import {
   Dimensions,
   Modal,
@@ -7,7 +7,6 @@ import {
   View,
   Text,
 } from "react-native";
-import MessageBody from "../MessageBody";
 import { IMessage } from "../../../stores/chatStore";
 import { options } from "./options";
 import ChatModalMessage from "./ChatModalMessage/ChatModalMessage";
@@ -31,6 +30,9 @@ export const ChatModalSetting = (
     closeModal,
     reactionModalPosition,
   } = props;
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(height)).current;
 
   const textModal = useMemo((): ReactElement | null => {
     if (!selectedMessage) {
@@ -83,18 +85,6 @@ export const ChatModalSetting = (
                   <Icon />
                 </TouchableOpacity>
               ))}
-              {/* <TouchableOpacity onPress={() => console.log("Ответить")}>
-                <Text style={styles.optionText}>Ответить</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => console.log("Копировать")}>
-                <Text style={styles.optionText}>Копировать</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={closeModal}>
-                <Text style={styles.optionText}>Отменить</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={closeModal}>
-                <Text style={styles.optionText}>Отменить</Text>
-              </TouchableOpacity> */}
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -117,7 +107,6 @@ const styles = StyleSheet.create({
   },
   selectedContainer: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
   },
   selectedMessageText: {

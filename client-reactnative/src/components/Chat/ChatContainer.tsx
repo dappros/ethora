@@ -737,7 +737,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const handleOnLongPress = (message: IMessage) => {
-    // console.log("message one", message);
+    console.log("chatStore", message.user._id);
+    console.log("message", message._id);
+    console.log("loginStore", loginStore.initialData._id);
     setSelectedMessage(message);
     measureMessagePosition(message._id);
     setModalVisible(true);
@@ -1028,28 +1030,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     );
   };
 
-  const getMessagePosition = (messageId) => {
-    const messageRef = messageRefs.current[messageId];
-    const handle = findNodeHandle(messageRef);
-
-    if (handle) {
-      UIManager.measure(handle, (x, y, width, height, pageX, pageY) => {
-        Alert.alert(
-          `Message ${messageId} position:`,
-          `Left (on screen): ${pageX}, Top (on screen): ${pageY}`,
-        );
-        console.log(`Message ${messageId} position on screen:`);
-        console.log("Left (relative to parent):", x);
-        console.log("Top (relative to parent):", y);
-        console.log("Absolute Left (on screen):", pageX);
-        console.log("Absolute Top (on screen):", pageY);
-      });
-    }
-  };
-
   //component to render message body
   const renderMessage = (messageProps) => {
-    console.log("messageProps", messageProps.position);
     return <MessageBody {...messageProps} />;
   };
 
@@ -1491,7 +1473,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             chatStore.toggleMetaNavigation(false);
           }}
         />
-        <ChatMediaModal
+        {/* <ChatMediaModal
           url={mediaModal.url}
           //@ts-ignore
           type={mediaModal.type}
@@ -1499,18 +1481,18 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           open={!isAudioMimetype(mediaModal.type) && mediaModal.open}
           messageData={mediaModal.message}
-        />
+        /> */}
         <QRModal
           open={showQrModal}
           onClose={() => setShowQrModal(false)}
           title={"Chatroom"}
           link={roomDetails.jid}
         />
-        <ChatLongTapModal
+        {/* <ChatLongTapModal
           open={dataForLongTapModal.open}
           onClose={closeLongTapModal}
           dataForTransfer={dataForLongTapModal}
-        />
+        /> */}
       </View>
     </>
   );
