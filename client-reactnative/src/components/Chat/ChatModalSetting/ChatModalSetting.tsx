@@ -20,7 +20,6 @@ import ChatModalMessage from "./ChatModalMessage/ChatModalMessage";
 
 interface ChatModalSettingProps {
   selectedMessage: IMessage | null;
-  isModalVisible?: boolean;
   closeModal?: () => void;
   setSelectedMessage: (prop: IMessage | null) => void;
   setIsUser: (props: boolean | null) => void;
@@ -51,6 +50,9 @@ export const ChatModalSetting = (
         return false;
       }
       if (isUser && option.isUser) {
+        return false;
+      }
+      if (!isUser && option.IsEdit) {
         return false;
       }
       return true;

@@ -44,7 +44,7 @@ export const options = [
     name: "Edit",
     icon: Edit,
     color: "#000000",
-    isUser: false,
+    IsEdit: true,
   },
   {
     id: "delete",

@@ -249,7 +249,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [showInChannel, setShowInChannel] = useState<boolean>(false);
   const [initialLoadCompleted, setInitialLoadCompleted] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
-  const [isModalVisible, setModalVisible] = useState(false);
   const [isUser, setIsUser] = useState<boolean | null>(null);
   const [mediaModal, setMediaModal] = useState<{
     open: boolean;
@@ -732,17 +731,11 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     }
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedMessage(null);
-  };
-
   const handleOnLongPress = (message: IMessage) => {
     const jid = message.user._id.split("@")[0];
     setIsUser(loginStore.initialData.xmppUsername === jid);
     setSelectedMessage(message);
     measureMessagePosition(message._id);
-    setModalVisible(true);
     // if (message.user._id.includes(manipulatedWalletAddress)) {
     //   return;
     // }
@@ -1443,8 +1436,6 @@ const ChatContainer = observer((props: ChatContainerProps) => {
         />
         <ChatModalSetting
           selectedMessage={selectedMessage}
-          isModalVisible={isModalVisible}
-          closeModal={closeModal}
           reactionModalPosition={reactionModalPosition}
           setSelectedMessage={setSelectedMessage}
           isModerator={chatStore.checkIsModerator(roomDetails.jid)}
