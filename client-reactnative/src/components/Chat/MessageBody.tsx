@@ -1,115 +1,103 @@
-/*
-Copyright 2019-2022 (c) Dappros Ltd, registered in England & Wales, registration number 11455432. All rights reserved.
-You may not use this file except in compliance with the License.
-You may obtain a copy of the License at https://github.com/dappros/ethora/blob/main/LICENSE.
-Note: linked open-source libraries and components may be subject to their own licenses.
-*/
-
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useMemo } from "react";
 import { View, ViewPropTypes, StyleSheet } from "react-native";
-
 import { Avatar, Day, utils, SystemMessage } from "react-native-gifted-chat";
 import { textStyles } from "../../../docs/config";
 import Bubble from "./MessageBubble";
-
 const { isSameUser, isSameDay } = utils;
-export default class Message extends React.Component {
-  shouldComponentUpdate(nextProps) {
-    const next = nextProps.currentMessage;
-    const current = this.props.currentMessage;
-
-    const nextPropsPreviousMessage = nextProps.previousMessage;
+const Message = (props) => {
+  const {
+    currentMessage,
+    nextMessage,
+    previousMessage,
+    renderBubble,
+    renderDay,
+    renderSystemMessage,
+    position,
+    containerStyle,
+    inverted,
+  } = props;
+  const shouldRender = useMemo(() => {
+    const next = currentMessage;
+    const current = previousMessage;
     if (next.tokenAmount !== current.tokenAmount) return true;
-
     if (next.numberOfReplies !== current.numberOfReplies) return true;
-
     if (next.text !== current.text) return true;
-
     return false;
-  }
-  getInnerComponentProps() {
-    const { containerStyle, ...props } = this.props;
+  }, [currentMessage, previousMessage]);
+  const getInnerComponentProps = () => {
+    const { containerStyle, ...rest } = props;
     return {
-      ...props,
+      ...rest,
       isSameUser,
       isSameDay,
       containerStyle,
     };
-  }
-
-  renderDay() {
-    if (this.props.currentMessage.createdAt) {
-      const dayProps = this.getInnerComponentProps();
-      if (this.props.renderDay) {
-        return this.props.renderDay(dayProps);
+  };
+  const renderDayComponent = () => {
+    if (currentMessage.createdAt) {
+      const dayProps = getInnerComponentProps();
+      if (renderDay) {
+        return renderDay(dayProps);
       }
       return <Day {...dayProps} containerStyle={{ paddingVertical: 12 }} />;
     }
     return null;
-  }
-
-  renderBubble() {
-    const { containerStyle, ...props } = this.props;
-    if (this.props.renderBubble) {
-      return this.props.renderBubble(props);
+  };
+  const renderBubbleComponent = () => {
+    const { containerStyle, ...rest } = props;
+    if (renderBubble) {
+      return renderBubble(rest);
     }
-    // @ts-ignore
     return (
       <Bubble
         usernameStyle={{ fontFamily: textStyles.regularFont }}
-        {...props}
+        {...rest}
       />
     );
-  }
-
-  renderAvatar() {
-    const { containerStyle, ...props } = this.props;
+  };
+  const renderAvatarComponent = () => {
+    const { containerStyle, ...rest } = props;
     return (
       <View accessibilityLabel="User photo (tap to view profile)">
-        <Avatar {...props} />
+        <Avatar {...rest} />
+      </View>
+    );
+  };
+  const renderSystemMessageComponent = () => {
+    const { containerStyle, ...rest } = props;
+    if (renderSystemMessage) {
+      return renderSystemMessage(rest);
+    }
+    return <SystemMessage {...rest} textStyle={{ textAlign: "center" }} />;
+  };
+  if (!shouldRender) {
+    return null;
+  }
+  if (currentMessage) {
+    return (
+      <View accessibilityLabel="Message (long tap to interact)">
+        {renderDayComponent()}
+        {currentMessage.system ? (
+          renderSystemMessageComponent()
+        ) : (
+          <View
+            style={[
+              styles[position].container,
+              { marginBottom: 8 },
+              !inverted && { marginBottom: 2 },
+              containerStyle && containerStyle[position],
+            ]}
+          >
+            {position === "left" ? renderAvatarComponent() : null}
+            {renderBubbleComponent()}
+          </View>
+        )}
       </View>
     );
   }
-
-  renderSystemMessage() {
-    const { containerStyle, ...props } = this.props;
-    if (this.props.renderSystemMessage) {
-      return this.props.renderSystemMessage(props);
-    }
-    return <SystemMessage {...props} textStyle={{ textAlign: "center" }} />;
-  }
-
-  render() {
-    const { currentMessage, nextMessage, position, containerStyle } =
-      this.props;
-    if (currentMessage) {
-      const sameUser = isSameUser(currentMessage, nextMessage);
-      return (
-        <View accessibilityLabel="Message (long tap to interact)">
-          {this.renderDay()}
-          {currentMessage.system ? (
-            this.renderSystemMessage()
-          ) : (
-            <View
-              style={[
-                styles[position].container,
-                { marginBottom: 8 },
-                !this.props.inverted && { marginBottom: 2 },
-                containerStyle && containerStyle[position],
-              ]}
-            >
-              {this.props.position === "left" ? this.renderAvatar() : null}
-              {this.renderBubble()}
-            </View>
-          )}
-        </View>
-      );
-    }
-    return null;
-  }
-}
-
+  return null;
+};
 const styles = {
   left: StyleSheet.create({
     container: {
@@ -132,7 +120,6 @@ const styles = {
     },
   }),
 };
-
 Message.defaultProps = {
   renderAvatar: undefined,
   renderBubble: null,
@@ -148,7 +135,6 @@ Message.defaultProps = {
   inverted: true,
   shouldUpdateMessage: undefined,
 };
-
 Message.propTypes = {
   renderAvatar: PropTypes.func,
   renderBubble: PropTypes.func,
@@ -162,3 +148,4 @@ Message.propTypes = {
     right: ViewPropTypes.style,
   }),
 };
+export default Message;

@@ -181,7 +181,7 @@ const Bubble = observer((props: BubbleProps) => {
   // };
 
   const renderUsernameHandle = () => {
-    const username = currentMessage.user.name;
+    const username = currentMessage?.user?.name;
     if (username) {
       if (renderUsername) {
         return renderUsername(usernameProps);

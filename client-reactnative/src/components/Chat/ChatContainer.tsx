@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Actions, GiftedChat, Send } from "react-native-gifted-chat";
 import { AudioSendButton } from "./AudioSendButton";
 import {
@@ -6,6 +12,7 @@ import {
   Alert,
   Animated,
   Dimensions,
+  findNodeHandle,
   Image,
   ImageBackground,
   Modal,
@@ -14,6 +21,7 @@ import {
   Pressable,
   StyleSheet,
   TouchableOpacity,
+  UIManager,
 } from "react-native";
 import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
@@ -96,6 +104,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { HomeStackNavigationProp } from "../../navigation/types";
 import { TCombinedMimeType } from "../../constants/mimeTypes";
 import Toolbar from "./Toolbar";
+import { ChatModalSetting } from "./ChatModalSetting/ChatModalSetting";
 
 //interfaces and types
 export type containerType = "main" | "thread";
@@ -137,7 +146,6 @@ interface ISystemMessage {
   transactionId: string;
 }
 //interfaces and types
-const { height, width } = Dimensions.get("window");
 
 //styles
 const styles = StyleSheet.create({
@@ -199,42 +207,6 @@ const styles = StyleSheet.create({
   activityIndicatorContainerStyle: {
     backgroundColor: "transparent",
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "flex-end", // Опции появляются внизу экрана
-    alignItems: "center",
-  },
-  background: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-  },
-  selectedMessageContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  selectedMessageText: {
-    fontSize: 16,
-    color: "black",
-  },
-  optionsContainer: {
-    backgroundColor: "white",
-    width: width,
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    alignItems: "center",
-  },
-  optionText: {
-    fontSize: 18,
-    padding: 10,
-    color: "blue",
-  },
 });
 //styles
 
@@ -276,6 +248,8 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   const [showMetaNavigation, setShowMetaNavigation] = useState(true);
   const [showInChannel, setShowInChannel] = useState<boolean>(false);
   const [initialLoadCompleted, setInitialLoadCompleted] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
+  const [isModalVisible, setModalVisible] = useState(false);
   const [mediaModal, setMediaModal] = useState<{
     open: boolean;
     url: string | undefined;
@@ -297,8 +271,14 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     chatJid: "",
     open: false,
   });
+  const [reactionModalPosition, setReactionModalPosition] = useState({
+    top: 0,
+    left: 0,
+  });
+
   const { isOpen, onOpen, onClose } = useDisclose();
   //local states
+  const messageRefs = useRef({});
 
   //local variables
   const mediaButtonAnimation = new Animated.Value(1);
@@ -738,8 +718,18 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     setMediaModal({ open: true, type, url, message });
   };
 
-  const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const measureMessagePosition = (messageId) => {
+    const messageRef = messageRefs.current[messageId];
+    // console.log("measureMessagePosition", messageRef);
+    if (messageRef) {
+      messageRef.measure((x, y, width, height, pageX, pageY) => {
+        setReactionModalPosition({
+          top: pageY - height - 50,
+          left: pageX + width / 2 - 50,
+        });
+      });
+    }
+  };
 
   const closeModal = () => {
     setModalVisible(false);
@@ -747,8 +737,9 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
 
   const handleOnLongPress = (message: IMessage) => {
-    console.log("message one", message);
+    // console.log("message one", message);
     setSelectedMessage(message);
+    measureMessagePosition(message._id);
     setModalVisible(true);
     // if (message.user._id.includes(manipulatedWalletAddress)) {
     //   return;
@@ -1037,8 +1028,28 @@ const ChatContainer = observer((props: ChatContainerProps) => {
     );
   };
 
+  const getMessagePosition = (messageId) => {
+    const messageRef = messageRefs.current[messageId];
+    const handle = findNodeHandle(messageRef);
+
+    if (handle) {
+      UIManager.measure(handle, (x, y, width, height, pageX, pageY) => {
+        Alert.alert(
+          `Message ${messageId} position:`,
+          `Left (on screen): ${pageX}, Top (on screen): ${pageY}`,
+        );
+        console.log(`Message ${messageId} position on screen:`);
+        console.log("Left (relative to parent):", x);
+        console.log("Top (relative to parent):", y);
+        console.log("Absolute Left (on screen):", pageX);
+        console.log("Absolute Top (on screen):", pageY);
+      });
+    }
+  };
+
   //component to render message body
-  const renderMessage = (messageProps: IMessage) => {
+  const renderMessage = (messageProps) => {
+    console.log("messageProps", messageProps.position);
     return <MessageBody {...messageProps} />;
   };
 
@@ -1427,7 +1438,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             onSelectionChange: (e: { nativeEvent: { selection: any } }) =>
               setSelection(e.nativeEvent.selection),
           }}
-          onLongPress={(message: any) => handleOnLongPress(message)}
+          onLongPress={(message: IMessage) => handleOnLongPress(message)}
           onTap={(message: any) => onMessageBubbleTap(message)}
           handleReply={handleReply}
           // onInputTextChanged={()=>{alert('hhh')}}
@@ -1448,41 +1459,13 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             backgroundColor: "#E8EDF2",
           }}
         />
-        <Modal
-          visible={isModalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={closeModal} // Закрываем модалку при нажатии кнопки "Назад"
-        >
-          <TouchableOpacity
-            style={styles.modalOverlay}
-            onPress={closeModal}
-            activeOpacity={1}
-          >
-            {/* Затемненный фон */}
-            <View style={styles.background} />
-
-            {/* Выбранное сообщение */}
-            <View style={styles.selectedMessageContainer}>
-              <Text style={styles.selectedMessageText}>
-                {selectedMessage ? selectedMessage.text : ""}
-              </Text>
-            </View>
-
-            {/* Опции для сообщения */}
-            <View style={styles.optionsContainer}>
-              <TouchableOpacity onPress={() => console.log("Ответить")}>
-                <Text style={styles.optionText}>Ответить</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => console.log("Копировать")}>
-                <Text style={styles.optionText}>Копировать</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={closeModal}>
-                <Text style={styles.optionText}>Отменить</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </Modal>
+        <ChatModalSetting
+          selectedMessage={selectedMessage}
+          isModalVisible={isModalVisible}
+          closeModal={closeModal}
+          reactionModalPosition={reactionModalPosition}
+          setSelectedMessage={setSelectedMessage}
+        />
         <NftItemGalleryModal
           onItemPress={sendNftItemsFromGallery}
           isModalVisible={isNftItemGalleryVisible}
