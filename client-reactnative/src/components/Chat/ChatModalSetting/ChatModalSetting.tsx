@@ -23,6 +23,7 @@ interface ChatModalSettingProps {
   closeModal?: () => void;
   setSelectedMessage: (prop: IMessage | null) => void;
   setIsUser: (props: boolean | null) => void;
+  actionInteractions: (type: string) => void;
   reactionModalPosition: any;
   isModerator: boolean;
   isUser: boolean;
@@ -35,6 +36,7 @@ export const ChatModalSetting = (
     selectedMessage,
     setSelectedMessage,
     reactionModalPosition,
+    actionInteractions,
     isModerator,
     setIsUser,
     isUser,
@@ -73,8 +75,8 @@ export const ChatModalSetting = (
 
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 5,
-        tension: 30,
+        friction: 6,
+        tension: 50,
         useNativeDriver: true,
       }).start();
     }
@@ -82,6 +84,10 @@ export const ChatModalSetting = (
 
   const handleClose = () => {
     setIsClosing(true);
+
+    setIsClosing(false);
+    setIsUser(null);
+    setSelectedMessage(null);
 
     Animated.timing(fadeAnim, {
       toValue: 0,
@@ -155,7 +161,11 @@ export const ChatModalSetting = (
                       styles.option,
                       index === filteredOptions.length - 1 && styles.noBorder,
                     ]}
-                    onPress={() => console.log(option.name, index)}
+                    onPress={() => {
+                      console.log("option", option.id);
+                      actionInteractions(option.id);
+                      setSelectedMessage(null);
+                    }}
                   >
                     <Text style={{ ...styles.optionText, color: option.color }}>
                       {option.name}

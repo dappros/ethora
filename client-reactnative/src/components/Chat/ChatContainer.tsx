@@ -1298,6 +1298,29 @@ const ChatContainer = observer((props: ChatContainerProps) => {
   };
   //smaller components
 
+  const actionInteractions = (type: string) => {
+    console.log("onTapMessageObject", onTapMessageObject);
+    switch (type) {
+      case "reply":
+        handleReply(currentThreadMessage);
+        break;
+      case "thread":
+        handleReply();
+        break;
+      case "copy":
+        handleCopyText();
+        break;
+      case "delete":
+        handleDelete();
+        break;
+      case "edit":
+        handleEdit();
+        break;
+      default:
+        onClose();
+    }
+  };
+
   return (
     <>
       {/* <ImageBackground
@@ -1439,6 +1462,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           reactionModalPosition={reactionModalPosition}
           setSelectedMessage={setSelectedMessage}
           isModerator={chatStore.checkIsModerator(roomDetails.jid)}
+          actionInteractions={actionInteractions}
           setIsUser={setIsUser}
           isUser={isUser}
         />
@@ -1467,7 +1491,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             chatStore.toggleMetaNavigation(false);
           }}
         />
-        {/* <ChatMediaModal
+        <ChatMediaModal
           url={mediaModal.url}
           //@ts-ignore
           type={mediaModal.type}
@@ -1475,18 +1499,18 @@ const ChatContainer = observer((props: ChatContainerProps) => {
           //@ts-ignore
           open={!isAudioMimetype(mediaModal.type) && mediaModal.open}
           messageData={mediaModal.message}
-        /> */}
+        />
         <QRModal
           open={showQrModal}
           onClose={() => setShowQrModal(false)}
           title={"Chatroom"}
           link={roomDetails.jid}
         />
-        {/* <ChatLongTapModal
+        <ChatLongTapModal
           open={dataForLongTapModal.open}
           onClose={closeLongTapModal}
           dataForTransfer={dataForLongTapModal}
-        /> */}
+        />
       </View>
     </>
   );
