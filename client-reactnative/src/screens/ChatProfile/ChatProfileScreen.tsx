@@ -23,24 +23,21 @@ const ChatProfileScreen = () => {
 
   const imageOpacity = panY.interpolate({
     inputRange: [-hp("20%"), 0],
-    outputRange: [1, 0], // Прозрачность изображения
+    outputRange: [1, 0],
     extrapolate: "clamp",
   });
 
-  // Анимация сдвига блока с табами
   const tabsTranslateY = panY.interpolate({
     inputRange: [-hp("50%"), 0],
-    outputRange: [0, -hp("25%")], // Сдвиг блока табов
+    outputRange: [0, -hp("25%")],
     extrapolate: "clamp",
   });
 
-  // Обработка жестов
   const onGestureEvent = Animated.event(
     [{ nativeEvent: { translationY: panY } }],
     { useNativeDriver: false },
   );
 
-  // Обработка завершения жеста
   const onHandlerStateChange = (event) => {
     if (event.nativeEvent.state === State.END) {
       Animated.spring(panY, {
