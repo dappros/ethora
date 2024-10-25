@@ -1283,7 +1283,7 @@ const ChatContainer = observer((props: ChatContainerProps) => {
             roomJID={roomDetails.jid}
             title={chatStore.roomsInfoMap[roomDetails.jid]?.name}
             isQR={true}
-            onQRPressed={() => setShowQrModal(true)}
+            onQRPressed={() => navigation.navigate("ChatProfileScreen")}
             isChatRoomDetail={true}
           />
         ) : (

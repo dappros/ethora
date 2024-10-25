@@ -10,6 +10,7 @@ export const homeStackRoutes: Record<
 > = {
   RoomsListScreem: "RoomsListScreem",
   ChatScreen: "ChatScreen",
+  ChatProfileScreen: "ChatProfileScreen",
   ProfileScreen: "ProfileScreen",
   TransactionsScreen: "TransactionsScreen",
   AccountScreen: "AccountScreen",

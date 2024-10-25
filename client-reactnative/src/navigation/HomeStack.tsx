@@ -33,6 +33,8 @@ import TransactionsScreen from "../screens/Profile/TransactionsScreen";
 import { DebugScreen } from "../screens/System/DebugScreen";
 import { HomeStackParamList, HomeStackNavigationProp } from "./types";
 import { showToast } from "../components/Toast/toast";
+import ChatProfile from "../screens/ChatProfile/ChatProfile";
+import ChatProfileScreen from "../screens/ChatProfile/ChatProfileScreen";
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -249,6 +251,13 @@ export const HomeStackScreen = observer(() => {
         component={NewChatScreen}
         options={() => ({
           header: ({}) => <MainHeader />,
+        })}
+      />
+      <HomeStack.Screen
+        name={"ChatProfileScreen"}
+        component={ChatProfileScreen}
+        options={() => ({
+          header: ({}) => <></>,
         })}
       />
       <HomeStack.Screen

@@ -6,6 +6,7 @@ export type HomeStackParamList = {
   RoomsListScreem: undefined;
   ChatScreen: { chatJid: string; chatName?: string };
   ProfileScreen: { viewItems?: boolean } | undefined;
+  ChatProfileScreen: undefined;
   TransactionsScreen: undefined;
   AccountScreen: undefined;
   DebugScreen: undefined;
