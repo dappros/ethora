@@ -1,5 +1,12 @@
 import React, { useRef } from "react";
-import { Animated, Text, View, Image, StyleSheet, Dimensions } from "react-native";
+import {
+  Animated,
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
 import { PanGestureHandler, State } from "react-native-gesture-handler";
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
@@ -8,14 +15,12 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const ChatProfileScreen = () => {
   const panY = useRef(new Animated.Value(0)).current;
 
-  // Анимация высоты верхнего блока (с изображением)
   const headerHeight = panY.interpolate({
     inputRange: [-hp("50%"), 0],
-    outputRange: [hp("55%"), hp("24%")], // Уменьшение высоты изображения
+    outputRange: [hp("55%"), hp("24%")],
     extrapolate: "clamp",
   });
 
-  // Анимация прозрачности изображения
   const imageOpacity = panY.interpolate({
     inputRange: [-hp("20%"), 0],
     outputRange: [1, 0], // Прозрачность изображения
@@ -32,7 +37,7 @@ const ChatProfileScreen = () => {
   // Обработка жестов
   const onGestureEvent = Animated.event(
     [{ nativeEvent: { translationY: panY } }],
-    { useNativeDriver: false }
+    { useNativeDriver: false },
   );
 
   // Обработка завершения жеста
@@ -52,7 +57,6 @@ const ChatProfileScreen = () => {
         onHandlerStateChange={onHandlerStateChange}
       >
         <Animated.View style={{ flex: 1 }}>
-          {/* Анимированная верхняя часть с изображением */}
           <Animated.View style={[styles.header, { height: headerHeight }]}>
             <Animated.Image
               source={require("../../assets/temporary/BGExample.png")}
@@ -61,15 +65,18 @@ const ChatProfileScreen = () => {
             <Text style={styles.userName}>User Name</Text>
           </Animated.View>
 
-          {/* Фиксированный блок с вкладками */}
-          <Animated.View style={[styles.tabsContainer, { transform: [{ translateY: tabsTranslateY }] }]}>
+          <Animated.View
+            style={[
+              styles.tabsContainer,
+              { transform: [{ translateY: tabsTranslateY }] },
+            ]}
+          >
             <View style={styles.tabs}>
               <Text style={styles.tabText}>Items</Text>
               <Text style={styles.tabText}>Collections</Text>
               <Text style={styles.tabText}>Documents</Text>
             </View>
 
-            {/* Контент */}
             <View style={styles.content}>
               <Text>Legal contract 1</Text>
               <Text>Legal contract 2</Text>
