@@ -29,6 +29,15 @@ Coding experience is optional. Javascript / Typescript / React coding experience
 
 
 ---
+### 📣 Project update - 4th December 2024 📣
+
+Finally our new version of the overall platform UI is released. This affects the whole web version including chat component and Admin Screens.
+We hope you like the new look of Ethora and this inspires you to build your fascinating projects with Ethora engine! <br />
+Both old and new UI are going to remain available for you to use for a few months after which we will sunset the old version. <br />
+More details in our Community Forum: https://forum.ethora.com/topic/38-new-version-soft-launch/#comment-48
+
+
+---
 ### 📣 Project update - 11th October 2024 📣
 
 Finally we have released our **NPM** package, **Ethora Chat Component**. 
