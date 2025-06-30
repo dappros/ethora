@@ -21,7 +21,7 @@ Ethora is a feature rich low-code app engine. It helps you to build a profession
 There is a plethora of functionalities beyond that, all fully customizable so you choose what features and experience your users have.
 
 To buld your app with Ethora, simply:<br />
-(1) clone this repo OR use our [web builder](#app-builder) you may access via https://ethora.ethoradev.com/signIn?signUpPlan=free<br />
+(1) clone this repo OR use our [web builder](#app-builder) you may access via https://beta.ethora.com/register<br />
 (2) change app name, logo, colors, things like Firebase ID (optional)<br />
 🪄 get your own iOS, Android and Web apps ready to fly!<br /> 
 <br />
@@ -169,13 +169,13 @@ App Builder Demo
 <img width="800" alt="Screenshot 2023-06-08 at 09 59 55" src="https://github.com/dappros/ethora/assets/328787/0b944697-c4be-49c7-b952-c8da0d3900e1">
 
 <br>**Q: How do I create an account and play with this builder?**
-<br>A: Sign up for a Free account here: https://www.dappros.com/pricing/, sign in & go into "Apps" section of the menu. 
+<br>A: Sign up for a Free account here: https://beta.ethora.com/register, sign in & go into "Apps" section of the menu. 
 
 ---
 
 ### React.js (Web/desktop) version
 
-You can test web version here: https://ethora.ethoradev.com/
+You can test web version here: https://beta.ethora.com/register
 
 Users profile<br />
 <img width="400" alt="Screenshot 2023-05-05 at 10 17 52" src="https://user-images.githubusercontent.com/328787/236420767-1dc1b851-a0ba-4a22-b0ff-3364b3ce21ab.png">
@@ -309,7 +309,7 @@ GOVERNANCE. The project is currently governed and commercialized by Dappros Ltd 
 
 BACKEND. The server-side functionality of Ethora is provided by Dappros Platform API and DeepX RTC infrastructure. Under the bonnet, it consists of Ethereum blockchain network, an API wrapper and caching layer interacting with Ethereum nodes and S3/IPFS storage (built with Node.js, Apache Kafka, Reddit and MongoDB), as well as XMPP-based Ejabberd messaging server with our own custom-built services (such as Push Notifications, blockchain identities integration etc) built with Erlang, Mnesia, MySQL and Cassandra. 
 
-When using Ethora engine, your default backend option is to <a href="https://www.dappros.com/pricing/">sign up</a> for a free account of Dappros Platform. This provides backend infrastructure for your application(s) including Users, Wallets, Tokens, Chat/Messaging etc. You will be using Cloud option this way which is the easiest option, however self-hosted (AWS Marketplace) and dedicated infrastructure managed by us are also available. 
+When using Ethora engine, your default backend option is to <a href="https://beta.ethora.com/register">sign up</a> for a free account of Dappros Platform. This provides backend infrastructure for your application(s) including Users, Wallets, Tokens, Chat/Messaging etc. You will be using Cloud option this way which is the easiest option, however self-hosted (AWS Marketplace) and dedicated infrastructure managed by us are also available. 
 
 ## Commercial model 🛒
 
@@ -321,6 +321,6 @@ Additionally, paid enterprise level SLA, hosting and customization options are a
 
 ## Contact 💬
 
-Drop us <a href="https://www.dappros.com/contact-us/">a line</a> if you’re interested to find out more or to become a contributor to the project. 
+Drop us <a href="https://ethora.com/#contact">a line</a> if you’re interested to find out more or to become a contributor to the project. 
 
 Also feel free to submit pull requests in this Github repo!
