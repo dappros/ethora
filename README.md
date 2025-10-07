@@ -50,16 +50,8 @@
 ## 🧪 5-minute demo (widget)
 
 Add an AI chat to any site:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/ethora-chat-component@latest/dist/widget.js"></script>
-<script>
-  EthoraChatWidget.init({
-    endpoint: "https://your-backend.example.com/api/rag",
-    title: "Ask our AI Assistant"
-  });
-</script>
-```
+<img width="1518" height="294" alt="CleanShot 2025-10-07 at 16 07 58@2x" src="https://github.com/user-attachments/assets/1c547286-9bb6-449c-bdc5-8fa23d3d9449" />
+(sign up https://app.ethora.com/register to obtain your own unique code and access advanced AI settings)
 
 Use the WordPress plugin if you prefer a UI: https://github.com/dappros/ethora-wp-plugin
 
