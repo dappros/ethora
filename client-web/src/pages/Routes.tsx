@@ -187,10 +187,10 @@ export const Routes = () => {
       {user.firstName && user.xmppPassword && <AppTopNav />}
       {user.firstName && !user.xmppPassword && <AppTopNavOwner />}
       <Helmet>
-        <title>{appConfig.displayName || "Dappros Platform"}</title>
+        <title>{appConfig.displayName || "Ethora - Web3 super app engine"}</title>
         <meta
           property="og:title"
-          content={appConfig.displayName || "Dappros Platform"}
+          content={appConfig.displayName || "Ethora - Web3 super app engine"}
         />
       </Helmet>
       <Switch>
