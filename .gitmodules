@@ -1,0 +1,33 @@
+[submodule "sdk-reactjs"]
+	path = sdk-reactjs
+	url = https://github.com/dappros/ethora-chat-component.git
+[submodule "sdk-reactnative"]
+	path = sdk-reactnative
+	url = https://github.com/dappros/ethora-chat-component-rn.git
+[submodule "sdk-android"]
+	path = sdk-android
+	url = https://github.com/dappros/ethora-sdk-android.git
+[submodule "sdk-swift"]
+	path = sdk-swift
+	url = https://github.com/dappros/ethora-sdk-swift.git
+[submodule "sdk-wordpress"]
+	path = sdk-wordpress
+	url = https://github.com/dappros/ethora-wp-plugin.git
+[submodule "app-reactjs"]
+	path = app-reactjs
+	url = https://github.com/dappros/ethora-app-reactjs.git
+[submodule "playground"]
+	path = playground
+	url = https://github.com/dappros/ethora-sdk-playground.git
+[submodule "backend-integration"]
+	path = backend-integration
+	url = https://github.com/dappros/ethora-sdk-backend-integration.git
+[submodule "mcp-cli"]
+	path = mcp-cli
+	url = https://github.com/dappros/ethora-mcp-server.git
+[submodule "rag-demos"]
+	path = rag-demos
+	url = https://github.com/dappros/rag_demos.git
+[submodule "bots"]
+	path = bots
+	url = https://github.com/dappros/ethora-bots.git
