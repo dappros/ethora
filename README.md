@@ -21,6 +21,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`mcp-cli/`](mcp-cli/) | [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | MCP server for IDE/agent integration | Active |
 | [`rag-demos/`](rag-demos/) | [rag_demos](https://github.com/dappros/rag_demos) | RAG pipeline demos & examples | Active |
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
+| [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |
 | [`api/`](api/) | *(inline)* | REST API documentation (Swagger/OpenAPI) | Reference |
 | — | [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | React Native app (iOS & Android) | Legacy |
 | — | [site_crawler](https://github.com/dappros/site_crawler) | Website crawler for RAG ingestion | Active |
@@ -39,6 +40,14 @@ If you already cloned without `--recurse-submodules`:
 ```bash
 git submodule update --init --recursive
 ```
+
+### Set up credentials (recommended)
+
+```bash
+npx @ethora/setup
+```
+
+This will create an account, set up an app, and generate config files for your target SDK. You can also connect to a self-hosted server.
 
 ### Quick paths
 

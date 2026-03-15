@@ -31,3 +31,6 @@
 [submodule "bots"]
 	path = bots
 	url = https://github.com/dappros/ethora-bots.git
+[submodule "setup"]
+	path = setup
+	url = https://github.com/dappros/ethora-setup.git
