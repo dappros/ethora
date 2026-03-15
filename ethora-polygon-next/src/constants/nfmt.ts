@@ -1,3 +1,0 @@
-export default [
-  '0x930117f3d25E23Ea34519769AaC3a043AA9d09Ef'
-]
