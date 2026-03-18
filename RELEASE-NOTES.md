@@ -1,5 +1,19 @@
 # Ethora SDK — Release Notes
 
+## Legend
+
+| Tag | Meaning |
+|-----|---------|
+| **New** | Brand new feature or component |
+| **Improved** | Enhancement to existing functionality |
+| **Fixed** | Bug fix |
+| **Restored** | Previously available feature brought back |
+| **Refactored** | Code restructuring (no user-facing change) |
+| **Docs** | Documentation updates |
+| **Testing** | Test coverage additions |
+| **API** | Backend/API-facing change |
+| **Milestone** | Version or release landmark |
+
 ---
 
 ## Week 12–13 (Mar 10–18, 2026)
@@ -7,7 +21,7 @@
 ### Android SDK (`sdk-android`) — v1.0.0
 > [ethora-sdk-android](https://github.com/dappros/ethora-sdk-android) | [v1.0.0](https://github.com/dappros/ethora-sdk-android/releases/tag/v1.0.0) | Now available via [JitPack](https://jitpack.io/#dappros/ethora-sdk-android/v1.0.0)
 
-Major release addressing all client-reported issues and adding key enterprise features:
+Major release addressing all reported issues and adding key features:
 
 - **New:** JitPack distribution — install via Gradle dependency instead of manual zip/git ([`68f708f`](https://github.com/dappros/ethora-sdk-android/commit/68f708f))
 - **New:** Unread message badge support for chat rooms
@@ -101,16 +115,3 @@ New interactive CLI tool for developer onboarding — register, create apps, and
 
 ---
 
-## Legend
-
-| Tag | Meaning |
-|-----|---------|
-| **New** | Brand new feature or component |
-| **Improved** | Enhancement to existing functionality |
-| **Fixed** | Bug fix |
-| **Restored** | Previously available feature brought back |
-| **Refactored** | Code restructuring (no user-facing change) |
-| **Docs** | Documentation updates |
-| **Testing** | Test coverage additions |
-| **API** | Backend/API-facing change |
-| **Milestone** | Version or release landmark |
