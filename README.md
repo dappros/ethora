@@ -18,7 +18,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`app-reactjs/`](app-reactjs/) | [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | Full web app (React.js) — App Builder frontend | Active |
 | [`playground/`](playground/) | [ethora-sdk-playground](https://github.com/dappros/ethora-sdk-playground) | SDK testing & demo playground | Active |
 | [`backend-integration/`](backend-integration/) | [ethora-sdk-backend-integration](https://github.com/dappros/ethora-sdk-backend-integration) | Backend integration examples | Active |
-| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | MCP server for IDE/agent integration | Active |
+| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-cli](https://github.com/dappros/ethora-mcp-cli) | MCP CLI for IDE/agent integration | Active |
 | [`rag-demos/`](rag-demos/) | [rag_demos](https://github.com/dappros/rag_demos) | RAG pipeline demos & examples | Active |
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
 | [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |

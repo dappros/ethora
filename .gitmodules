@@ -24,7 +24,7 @@
 	url = https://github.com/dappros/ethora-sdk-backend-integration.git
 [submodule "mcp-cli"]
 	path = mcp-cli
-	url = https://github.com/dappros/ethora-mcp-server.git
+	url = https://github.com/dappros/ethora-mcp-cli.git
 [submodule "rag-demos"]
 	path = rag-demos
 	url = https://github.com/dappros/rag_demos.git
