@@ -1,0 +1,71 @@
+name: Bump submodules
+
+on:
+  schedule:
+    - cron: '0 */6 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-submodules-main
+  cancel-in-progress: false
+
+jobs:
+  bump-submodules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout ethora
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          submodules: false
+
+      - name: Initialize submodules
+        shell: bash
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive
+
+      - name: Move submodules to latest default branches
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | while read -r _key path; do
+            branch="$(git -C "$path" remote show origin | sed -n '/HEAD branch/s/.*: //p')"
+
+            if [ -z "${branch}" ]; then
+              echo "Could not determine default branch for submodule path: ${path}" >&2
+              exit 1
+            fi
+
+            echo "Updating ${path} -> origin/${branch}"
+            git -C "$path" fetch origin "${branch}" --prune
+            git -C "$path" checkout --detach "origin/${branch}"
+          done
+
+      - name: Configure git author
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push submodule bumps
+        shell: bash
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No submodule changes to commit."
+            exit 0
+          fi
+
+          git add .
+          git commit -F- <<EOF
+          chore: bump submodules to latest default branches
+
+          Automated update of public SDK monorepo submodule pointers to the latest commits on their remote default branches.
+          EOF
+          git push origin HEAD:main

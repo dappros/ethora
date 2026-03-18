@@ -41,6 +41,16 @@ If you already cloned without `--recurse-submodules`:
 git submodule update --init --recursive
 ```
 
+### Automatic submodule bumps
+
+This repo can update its submodule pointers automatically via `.github/workflows/bump-submodules.yml`.
+
+Behavior:
+
+- runs every 6 hours on weekdays and on manual dispatch
+- updates each submodule to the latest commit on its remote default branch
+- commits pointer bumps directly into `main`
+
 ### Set up credentials (recommended)
 
 ```bash
