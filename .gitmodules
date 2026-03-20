@@ -34,3 +34,6 @@
 [submodule "setup"]
 	path = setup
 	url = https://github.com/dappros/ethora-setup.git
+[submodule "sample-android"]
+	path = sample-android
+	url = https://github.com/dappros/ethora-sample-android.git
