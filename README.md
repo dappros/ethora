@@ -26,6 +26,21 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | — | [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | React Native app (iOS & Android) | Legacy |
 | — | [site_crawler](https://github.com/dappros/site_crawler) | Website crawler for RAG ingestion | Active |
 
+## Hosted services
+
+These public services run on the Ethora Cloud and are useful when exploring or testing the platform — no setup required.
+
+| Service | URL | What it is |
+|---------|-----|------------|
+| **Web app** | [app.chat.ethora.com](https://app.chat.ethora.com) | Sign up, create apps, get API credentials, manage chats and AI bots. |
+| **API** | [api.chat.ethora.com](https://api.chat.ethora.com) | REST API used by all SDKs. |
+| **API docs (Swagger)** | [api.chat.ethora.com/api-docs/#/](https://api.chat.ethora.com/api-docs/#/) | Live, up-to-date OpenAPI / v2 routes. |
+| **XMPP** | `wss://xmpp.chat.ethora.com:5443/ws` | Real-time messaging gateway. |
+| **SDK Playground** | [playground.chat.ethora.com](https://playground.chat.ethora.com) | Live `@ethora/chat-component` playground, code export, HTTP testing. |
+| **Uptime / status** | [uptime.chat.ethora.com](https://uptime.chat.ethora.com) | Public uptime and journey checks for the Ethora platform. |
+| **Documentation** | [docs.ethora.com](https://docs.ethora.com/) | Developer documentation portal. |
+| **QA environment** | [chat-qa.ethora.com](https://chat-qa.ethora.com) | Pre-production QA environment (use for pre-release validation only; `chat.ethora.com` remains the canonical default for everything else). |
+
 ## Getting Started
 
 ### Clone with all submodules
@@ -99,7 +114,19 @@ npm install
 
 ### Default backend
 
-Sign up for a free account at [app.ethora.com](https://app.ethora.com/register) to get API credentials. The SDKs connect to Ethora Cloud by default. Self-hosted and dedicated server options are available for enterprise customers.
+Sign up for a free account at [app.chat.ethora.com](https://app.chat.ethora.com/register) to get API credentials. The SDKs connect to Ethora Cloud by default. Self-hosted and dedicated server options are available for enterprise customers.
+
+Canonical default endpoints (used by all official SDKs unless overridden):
+
+| Purpose | Default value |
+|---------|---------------|
+| API base URL | `https://api.chat.ethora.com` |
+| API base URL (versioned) | `https://api.chat.ethora.com/v1` (legacy), `https://api.chat.ethora.com/v2` (current) |
+| Swagger / API docs | `https://api.chat.ethora.com/api-docs/#/` |
+| XMPP WebSocket | `wss://xmpp.chat.ethora.com:5443/ws` |
+| XMPP host | `xmpp.chat.ethora.com` |
+| XMPP MUC (conference) | `conference.xmpp.chat.ethora.com` |
+| Web app (sign up, admin) | `https://app.chat.ethora.com` |
 
 ## What you can build
 
@@ -136,7 +163,7 @@ We welcome issues, discussions, and PRs across the ecosystem. Each submodule has
 ## Contact
 
 - Website: https://ethora.com/
-- Try Free: https://app.ethora.com/register
+- Try Free: https://app.chat.ethora.com/register
 - Twitter/X: https://x.com/EthoraOfficial
 - LinkedIn: https://www.linkedin.com/company/ethora-official/
 
@@ -205,7 +232,7 @@ The fastest way to get your app running:
 2. Launch your web app on your subdomain
 3. Generate React Native codebases for iOS & Android
 
-Sign up: https://app.ethora.com/register
+Sign up: https://app.chat.ethora.com/register
 
 <img width="800" alt="App Builder" src="https://github.com/dappros/ethora/assets/328787/5c5b5230-e3d5-4f16-9f3a-9aae98649105">
 
