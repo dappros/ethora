@@ -26,6 +26,39 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | — | [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | React Native app (iOS & Android) | Legacy |
 | — | [site_crawler](https://github.com/dappros/site_crawler) | Website crawler for RAG ingestion | Active |
 
+## Feature coverage across SDKs
+
+> Quick glance at what each SDK supports. Full matrix with evidence: **[features/](features/)**  ·  Source: [`features/features.yaml`](features/features.yaml)
+
+| Capability | React.js | React Native | Android | iOS | WordPress |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Email/password login | ✅ | ✅ | ✅ | ✅ | — |
+| JWT / custom-token login | ✅ | ✅ | ✅ | ✅ | — |
+| OAuth / social login | ✅ | 🟡 | 🛠 | 🟡 | 🟡 |
+| Text messaging (send/edit/delete/reply) | ✅ | ✅ | ✅ | ✅ | 🟡 |
+| Reactions | ✅ | — | ✅ | ✅ | — |
+| Typing indicator | ✅ | ✅ | ✅ | ✅ | — |
+| Message history (MAM pagination) | ✅ | ✅ | ✅ | ✅ | — |
+| Images / video / files / audio | ✅ | ✅ | ✅ | ✅ | — |
+| 1:1 messaging | ✅ | ✅ | ✅ | ✅ | 🟡 |
+| Group rooms (MUC) | ✅ | ✅ | ✅ | ✅ | — |
+| Single-room (embedded widget) mode | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Unread counter | ✅ | ✅ | ✅ | ✅ | — |
+| Push notifications | ✅ | 🟡 | ✅ | ✅ | — |
+| In-app notifications | ✅ | — | 🟡 | 🟡 | — |
+| Prebuilt chat UI | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Theming | 🟡 | 🟡 | ✅ | ✅ | — |
+| Dark mode | — | — | ✅ | — | — |
+| Custom component overrides | ✅ | ✅ | ✅ | 🟡 | — |
+| Self-hosted server support | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Offline message cache | ✅ | 🟡 | ✅ | ✅ | — |
+
+Legend: ✅ Present  ·  🟡 Partial  ·  🛠 Roadmap  ·  — Absent
+
+**Coverage (present + partial×0.5) / 45 features:** React.js 73%  ·  Android 74%  ·  React Native 67%  ·  iOS 64%  ·  WordPress 13%
+
+> Last reviewed **2026-04-21** (v26.04). Monthly AI-reviewed update proposed via PR.
+
 ## Hosted services
 
 These public services run on the Ethora Cloud and are useful when exploring or testing the platform — no setup required.

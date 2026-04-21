@@ -1,0 +1,16 @@
+{
+  "name": "@ethora/features-render",
+  "version": "26.04",
+  "description": "Render Ethora SDK feature matrix from features.yaml",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

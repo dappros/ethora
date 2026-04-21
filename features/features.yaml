@@ -1,0 +1,583 @@
+# Ethora SDK Feature Matrix — source of truth
+#
+# This file drives the rendered matrices in features/README.md and features/views/.
+# See features/README.md for the human-readable output and features/scripts/ for the renderer.
+#
+# Statuses:
+#   present  — fully implemented and working
+#   partial  — partially implemented, limited scope, or config-only
+#   roadmap  — referenced in code/docs but not yet working
+#   absent   — not present
+#
+# Evidence is a file path (and optional line range) — it's a snapshot from the audit
+# date and will drift. Phase 2 will add an automated verifier.
+
+meta:
+  version: "26.04"
+  last_reviewed: "2026-04-21"
+  methodology: >
+    Statuses are based on direct code audit (file-level inspection, not just README
+    claims). Each feature has a stable ID so it survives renames. "Partial" is used
+    when a config / model / stub exists but the end-to-end flow isn't wired.
+  next_review: "2026-05-01 (monthly via CI)"
+
+sdks:
+  reactjs:
+    label: "React.js (Web)"
+    repo: "https://github.com/dappros/ethora-chat-component"
+    notes: "Flagship SDK, fullest feature coverage. Effectively the JS/TS reference."
+    order: 1
+  reactnative:
+    label: "React Native"
+    repo: "https://github.com/dappros/ethora-chat-component-rn"
+    notes: "Mobile React Native. Shares architecture with React.js but trails on reactions and notifications."
+    order: 2
+  android:
+    label: "Android (Kotlin)"
+    repo: "https://github.com/dappros/ethora-sdk-android"
+    notes: "Native Kotlin + Jetpack Compose. JitPack-distributed. No account provisioning APIs."
+    order: 3
+  swift:
+    label: "iOS (Swift)"
+    repo: "https://github.com/dappros/ethora-sdk-swift"
+    notes: "Native SwiftUI via SPM. Tracks Android closely; no logout helper or dark mode yet."
+    order: 4
+  wordpress:
+    label: "WordPress"
+    repo: "https://github.com/dappros/ethora-wp-plugin"
+    notes: "Bot-widget plugin, not a full chat SDK. Embeds a single bot-to-user widget."
+    order: 5
+
+categories:
+  - id: auth
+    label: "Authentication"
+    order: 1
+  - id: messaging
+    label: "Messaging"
+    order: 2
+  - id: media
+    label: "Media"
+    order: 3
+  - id: rooms
+    label: "Rooms"
+    order: 4
+  - id: presence
+    label: "Presence & Unread"
+    order: 5
+  - id: notifications
+    label: "Notifications"
+    order: 6
+  - id: ai
+    label: "AI / Bots"
+    order: 7
+  - id: ui
+    label: "UI"
+    order: 8
+  - id: platform
+    label: "Platform"
+    order: 9
+
+features:
+  # ── Authentication ─────────────────────────────────────────────────────────
+  - id: auth_signup_email
+    category: auth
+    label: "Email/password signup"
+    description: "Sign up a new user with email + password directly from the SDK."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/api-requests/auth.api.ts" }
+      reactnative: { status: partial, evidence: "src/components/AuthForms/Register.tsx", notes: "Form stub, not fully wired." }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: auth_login_email
+    category: auth
+    label: "Email/password login"
+    description: "Sign in with email + password."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/api-requests/auth.api.ts" }
+      reactnative: { status: present, evidence: "src/networking/api-requests/auth.api.ts:15-30" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/networking/AuthAPI.kt:19" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Networking/AuthAPI.swift:79-217" }
+      wordpress: { status: absent }
+
+  - id: auth_jwt
+    category: auth
+    label: "JWT login (bring your own token)"
+    description: "Authenticate with a pre-signed JWT from your own backend."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/api-requests/auth.api.ts (loginViaJwt)" }
+      reactnative: { status: present, evidence: "src/networking/api-requests/auth.api.ts:78-90" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/networking/AuthAPI.kt:26" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Networking/AuthAPI.swift:349-402" }
+      wordpress: { status: absent }
+
+  - id: auth_oauth
+    category: auth
+    label: "OAuth / social login"
+    description: "Sign in with Google/Apple/other OAuth providers."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/api-requests/auth.api.ts (signInWithGoogle, loginSocial)" }
+      reactnative: { status: partial, evidence: "src/networking/api-requests/auth.api.ts:32-48", notes: "Functions exist, implementation incomplete." }
+      android: { status: roadmap, evidence: "chat-core/src/main/java/com/ethora/chat/core/config/LoginConfig.kt:8", notes: "GoogleLoginConfig defined, not wired." }
+      swift: { status: partial, evidence: "Sources/XMPPChatCore/Models/Config/LoginConfig.swift", notes: "Firebase/Google only." }
+      wordpress: { status: partial, evidence: "assets/js/ethora_assistant_source.js:160-163", notes: "OAuth scopes defined, stub only." }
+
+  - id: auth_anonymous
+    category: auth
+    label: "Anonymous / guest login"
+    description: "Allow visitors to join without registering."
+    sdks:
+      reactjs: { status: absent }
+      reactnative: { status: roadmap, evidence: "src/components/AuthForms/LoginAnonym.tsx", notes: "Form stub." }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: auth_logout
+    category: auth
+    label: "Logout"
+    description: "Clear credentials and disconnect from chat."
+    sdks:
+      reactjs: { status: partial, evidence: "src/main.ts (logoutService export)", notes: "Handler exists, no explicit endpoint call." }
+      reactnative: { status: present, evidence: "src/roomStore/chatSettingsSlice.ts + src/networking/apiClient.ts:37" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/service/LogoutService.kt:72" }
+      swift: { status: absent, notes: "No dedicated logout method." }
+      wordpress: { status: partial, evidence: "assets/js/ethora_assistant_source.js:333", notes: "Stub function." }
+
+  - id: auth_token_refresh
+    category: auth
+    label: "Token refresh"
+    description: "Automatically refresh expiring auth tokens."
+    sdks:
+      reactjs: { status: present, evidence: "src/types/models/config.model.ts (refreshTokens) + xmppClient reconnect" }
+      reactnative: { status: present, evidence: "src/networking/apiClient.ts:12-40" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/networking/TokenManager.kt:37" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Networking/AuthAPI.swift:228-339" }
+      wordpress: { status: absent }
+
+  # ── Messaging ──────────────────────────────────────────────────────────────
+  - id: msg_text_send
+    category: messaging
+    label: "Send text message"
+    description: "Send a plain text message to a room."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/sendTextMessage.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/sendTextMessage.xmpp.ts + useSendMessage.tsx" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/xmpp/XMPPOperations.kt:15" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:16-69" }
+      wordpress: { status: partial, evidence: "assets/js/ethora_assistant_source.js:258-273", notes: "Basic text input, simulated response." }
+
+  - id: msg_text_edit
+    category: messaging
+    label: "Edit message"
+    description: "Modify a previously sent message."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/editMessage.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/editMessage.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/src/main/java/com/ethora/chat/core/xmpp/XMPPClient.kt (editMessage)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:148-171" }
+      wordpress: { status: absent }
+
+  - id: msg_text_delete
+    category: messaging
+    label: "Delete message"
+    description: "Remove a previously sent message."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/deleteMessage.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/deleteMessage.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../XMPPClient.kt (deleteMessage)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:128-146" }
+      wordpress: { status: absent }
+
+  - id: msg_reply
+    category: messaging
+    label: "Reply to message"
+    description: "Quote and reply to a specific message."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/sendTextMessage.xmpp.ts (isReply)" }
+      reactnative: { status: present, evidence: "src/types/types.ts:29 + src/types/messages.ts:27-29" }
+      android: { status: present, evidence: "chat-core/.../models/Message.kt:29 (reply, mainMessage)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift (isReply param)" }
+      wordpress: { status: absent }
+
+  - id: msg_reactions
+    category: messaging
+    label: "Message reactions"
+    description: "React to messages with emoji."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/sendMessageReaction.xmpp.ts" }
+      reactnative: { status: absent }
+      android: { status: present, evidence: "chat-core/.../models/Message.kt:30 (reaction Map)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:173-220" }
+      wordpress: { status: absent }
+
+  - id: msg_mentions
+    category: messaging
+    label: "@mentions"
+    description: "Tag users with @mentions in messages."
+    sdks:
+      reactjs: { status: absent }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: msg_typing
+    category: messaging
+    label: "Typing indicator"
+    description: "Show when other users are typing."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/sendTypingRequest.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/sendTypingRequest.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../XMPPOperations.kt:47 (sendTypingIndicator)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:222-248" }
+      wordpress: { status: absent }
+
+  - id: msg_read_receipts
+    category: messaging
+    label: "Read / delivery receipts"
+    description: "Track whether messages have been delivered and read."
+    sdks:
+      reactjs: { status: absent, notes: "Ack queue is internal, not user-visible." }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: msg_history_pagination
+    category: messaging
+    label: "Message history (MAM pagination)"
+    description: "Load earlier messages via XEP-0313 MAM with paging."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/getHistory.xmpp.ts (RSM)" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/getHistory.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../XMPPClient.kt (registerMAMCollector)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendGetHistory.swift" }
+      wordpress: { status: absent }
+
+  # ── Media ──────────────────────────────────────────────────────────────────
+  - id: media_image
+    category: media
+    label: "Send/receive images"
+    description: "Upload and display image messages."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/sendMediaMessage.xmpp.ts + uploadFile" }
+      reactnative: { status: present, evidence: "src/components/styled/MessageImage.tsx" }
+      android: { status: present, evidence: "chat-core/.../AuthAPI.kt:239 (uploadFile)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:71-126" }
+      wordpress: { status: absent }
+
+  - id: media_video
+    category: media
+    label: "Send/receive video"
+    description: "Upload and play back video messages."
+    sdks:
+      reactjs: { status: present, evidence: "sendMediaMessage.xmpp.ts (video mimetype)" }
+      reactnative: { status: present, evidence: "src/components/styled/VideoMessage.tsx" }
+      android: { status: present, evidence: "chat-ui/.../VideoPlayerView.kt" }
+      swift: { status: present, evidence: "sendMediaMessage supports video mimetype" }
+      wordpress: { status: absent }
+
+  - id: media_file
+    category: media
+    label: "Send/receive files"
+    description: "Upload arbitrary file attachments."
+    sdks:
+      reactjs: { status: present, evidence: "sendMediaMessage + uploadFile" }
+      reactnative: { status: present, evidence: "src/types/messages.ts:37-48 (FileAttachmentParams)" }
+      android: { status: present, evidence: "chat-core/.../AuthAPI.kt:36 (POST /files multipart)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Networking/AuthAPI.swift:467-538 (uploadFile)" }
+      wordpress: { status: absent }
+
+  - id: media_audio
+    category: media
+    label: "Audio messages"
+    description: "Record and play voice notes with waveform/duration."
+    sdks:
+      reactjs: { status: present, evidence: "sendMediaMessage (waveForm, duration)" }
+      reactnative: { status: present, evidence: "src/components/InputComponents/AudioRecorder.tsx" }
+      android: { status: present, evidence: "chat-ui/.../AudioPlayerView.kt" }
+      swift: { status: present, evidence: "MediaMessageData (duration, waveForm)" }
+      wordpress: { status: absent }
+
+  - id: media_inline_preview
+    category: media
+    label: "Inline media preview"
+    description: "Render images/video/links inline in the message stream."
+    sdks:
+      reactjs: { status: partial, notes: "locationPreview exists; explicit inline image rendering limited." }
+      reactnative: { status: present, evidence: "src/types/messages.ts:42 (imagePreview) + MessageImage.tsx" }
+      android: { status: present, evidence: "chat-core/.../Message.kt:19 (locationPreview)" }
+      swift: { status: partial, evidence: "Sources/XMPPChatUI/Components/URLPreviewCard.swift", notes: "Link previews only, not inline media." }
+      wordpress: { status: absent }
+
+  # ── Rooms ──────────────────────────────────────────────────────────────────
+  - id: room_1on1
+    category: rooms
+    label: "1:1 direct messaging"
+    description: "Private one-to-one conversations."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/createPrivateRoom.xmpp.ts" }
+      reactnative: { status: present, evidence: "XMPP direct recipient rooms" }
+      android: { status: present, evidence: "chat-core/.../RoomsAPI.kt:35 (createPrivateRoom)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/RoomOperations.swift:46-71" }
+      wordpress: { status: partial, notes: "1:1 bot-to-user widget only." }
+
+  - id: room_group
+    category: rooms
+    label: "Group chat (MUC)"
+    description: "Multi-user chat rooms via XEP-0045."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/createRoom.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/createRoom.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../XMPPClient.kt (MUC support)" }
+      swift: { status: present, evidence: "RoomOperations.swift:16-43" }
+      wordpress: { status: absent }
+
+  - id: room_single_mode
+    category: rooms
+    label: "Single-room mode"
+    description: "Pin the SDK to one pre-configured room (chat widget flow)."
+    sdks:
+      reactjs: { status: present, evidence: "config.model.ts:76 (customRooms.singleRoom)" }
+      reactnative: { status: present, evidence: "roomJID parameter (README)" }
+      android: { status: present, evidence: "disableRooms + roomJID (README)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Models/ChatConfig.swift:33 (disableRooms)" }
+      wordpress: { status: present, evidence: "Widget is single-room by design." }
+
+  - id: room_create
+    category: rooms
+    label: "Create room"
+    description: "Programmatically create a new chat room."
+    sdks:
+      reactjs: { status: present, evidence: "createRoom.xmpp.ts + createPrivateRoom.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/createRoom.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../RoomsAPI.kt:24 (createRoom)" }
+      swift: { status: present, evidence: "RoomOperations.swift (createRoom, createPrivateRoom)" }
+      wordpress: { status: absent }
+
+  - id: room_invite
+    category: rooms
+    label: "Invite users to room"
+    description: "Invite other users to an existing room."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/inviteRoomRequest.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/inviteRoomRequest.xmpp.ts" }
+      android: { status: partial, notes: "members field exists, no dedicated invite API." }
+      swift: { status: partial, notes: "Referenced in RoomOperations but incomplete." }
+      wordpress: { status: absent }
+
+  - id: room_leave
+    category: rooms
+    label: "Leave room"
+    description: "Leave a chat room."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/leaveTheRoom.xmpp.ts" }
+      reactnative: { status: present, evidence: "src/networking/xmpp/leaveTheRoom.xmpp.ts" }
+      android: { status: present, evidence: "chat-core/.../XMPPOperations.kt:36 (leaveRoom)" }
+      swift: { status: absent, notes: "No leave-room method found." }
+      wordpress: { status: absent }
+
+  - id: room_metadata
+    category: rooms
+    label: "Room metadata"
+    description: "Room name, avatar, description, title."
+    sdks:
+      reactjs: { status: present, evidence: "setRoomImage.xmpp.ts + room config files" }
+      reactnative: { status: partial, evidence: "setRoomImage (avatar only, no name/description update)" }
+      android: { status: present, evidence: "chat-core/.../models/Room.kt:39 (name, title, description, picture)" }
+      swift: { status: present, evidence: "Room model (name, avatar, description)" }
+      wordpress: { status: absent }
+
+  # ── Presence & Unread ──────────────────────────────────────────────────────
+  - id: presence_online
+    category: presence
+    label: "Online/offline presence"
+    description: "Show which users are currently online."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/xmpp/presenceInRoom.xmpp.ts" }
+      reactnative: { status: present, evidence: "presenceInRoom + xmppClient status" }
+      android: { status: present, evidence: "chat-core/.../XMPPClient.kt (presence)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/PresenceOperations.swift:13-62" }
+      wordpress: { status: absent }
+
+  - id: presence_last_seen
+    category: presence
+    label: "Last-seen timestamp"
+    description: "Show when a user was last active."
+    sdks:
+      reactjs: { status: absent }
+      reactnative: { status: present, evidence: "src/types/types.ts:63 (last_active) + ChatProfileModal.tsx" }
+      android: { status: partial, evidence: "models/RoomMember.kt:15 (lastActive)", notes: "Field present, not fully integrated." }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: unread_counter
+    category: presence
+    label: "Unread message counter"
+    description: "Track unread messages per room + total badge."
+    sdks:
+      reactjs: { status: present, evidence: "src/hooks/useUnreadMessagesCounter.ts" }
+      reactnative: { status: present, evidence: "src/roomStore/Middleware/unreadMidlleware.tsx" }
+      android: { status: present, evidence: "chat-ui/.../UnreadHook.kt (useUnread)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Store/RoomStore.swift (totalUnreadCount)" }
+      wordpress: { status: absent }
+
+  # ── Notifications ──────────────────────────────────────────────────────────
+  - id: push_fcm_apns
+    category: notifications
+    label: "Push notifications (FCM/APNS/Web Push)"
+    description: "Deliver notifications when the app is backgrounded."
+    sdks:
+      reactjs: { status: present, evidence: "src/networking/api-requests/push.api.ts + Firebase/Web Push VAPID" }
+      reactnative: { status: partial, evidence: "messages.ts:21-23 (push flag)", notes: "Protocol flag only, no FCM/APNS SDK integration." }
+      android: { status: present, evidence: "chat-core/.../push/PushNotificationManager.kt:18 (FCM)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Networking/PushAPI.swift:34 (APNS)" }
+      wordpress: { status: absent }
+
+  - id: notification_in_app
+    category: notifications
+    label: "In-app notifications"
+    description: "Show incoming-message toasts or sounds inside the app."
+    sdks:
+      reactjs: { status: present, evidence: "src/context/MessageNotificationContext.tsx" }
+      reactnative: { status: absent }
+      android: { status: partial, evidence: "chat-core/.../config/MessageNotificationConfig.kt", notes: "Config exists, integration limited." }
+      swift: { status: partial, evidence: "Sources/XMPPChatCore/Models/MessageNotification.swift", notes: "Config present, sound not wired." }
+      wordpress: { status: absent }
+
+  # ── AI / Bots ──────────────────────────────────────────────────────────────
+  - id: ai_rag_bot
+    category: ai
+    label: "RAG bot integration"
+    description: "Chat against a retrieval-augmented bot grounded in your knowledge base."
+    sdks:
+      reactjs: { status: absent, notes: "Bot lives server-side; SDKs just render messages." }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent, notes: "Widget connects to bot but no RAG config in plugin." }
+
+  - id: ai_bot_trigger
+    category: ai
+    label: "AI auto-response triggers"
+    description: "Configure when AI responds (every message / @mention / keyword)."
+    sdks:
+      reactjs: { status: absent, notes: "Configured server-side on the bot, not in SDK." }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: partial, notes: "Bot ID parameter auto-responds, no trigger config." }
+
+  - id: ai_translation
+    category: ai
+    label: "Message translation"
+    description: "Translate messages into the reader's preferred language."
+    sdks:
+      reactjs: { status: partial, evidence: "src/networking/xmpp/sendTextMessageWithTranslateTag.xmpp.ts", notes: "Send-with-translate-tag exists, config only otherwise." }
+      reactnative: { status: absent }
+      android: { status: partial, evidence: "chat-core/.../config/TranslationsConfig.kt", notes: "Config enabled with language codes." }
+      swift: { status: partial, evidence: "Sources/XMPPChatCore/Models/MessageTranslation.swift + TranslationConfig.swift" }
+      wordpress: { status: absent }
+
+  # ── UI ─────────────────────────────────────────────────────────────────────
+  - id: ui_prebuilt_component
+    category: ui
+    label: "Prebuilt chat component"
+    description: "Drop-in chat UI (room list + message stream + input)."
+    sdks:
+      reactjs: { status: present, evidence: "src/components/MainComponents (Chat, ChatRoom, MessageList, SendInput)" }
+      reactnative: { status: present, evidence: "src/components/MainComponents/Chat.tsx" }
+      android: { status: present, evidence: "chat-ui/.../EthoraChat.kt (Chat composable + RoomListView)" }
+      swift: { status: present, evidence: "Sources/XMPPChatUI/Components/ChatWrapperView.swift" }
+      wordpress: { status: present, evidence: "assets/js/ethora_assistant_source.js:200-240 (widget)" }
+
+  - id: ui_theming
+    category: ui
+    label: "Theme customization"
+    description: "Customize colors, typography, spacing."
+    sdks:
+      reactjs: { status: partial, evidence: "config.model.ts (colors.primary/secondary)", notes: "Limited — primary/secondary only." }
+      reactnative: { status: partial, evidence: "src/types/types.ts:137 (colors)", notes: "Limited palette." }
+      android: { status: present, evidence: "chat-ui/.../ChatTheme.kt (full ChatTheme + customizable colors)" }
+      swift: { status: present, evidence: "Sources/XMPPChatUI/Styling/ChatStyles.swift (ChatColors + RoomListStyles + ChatRoomStyles)" }
+      wordpress: { status: absent }
+
+  - id: ui_dark_mode
+    category: ui
+    label: "Dark mode"
+    description: "First-class dark color scheme."
+    sdks:
+      reactjs: { status: absent }
+      reactnative: { status: absent }
+      android: { status: present, evidence: "chat-ui/.../ChatTheme.kt:32 (darkChatColorScheme)" }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: ui_slots_override
+    category: ui
+    label: "Custom component overrides"
+    description: "Replace message bubble, input, scroll area with your own components."
+    sdks:
+      reactjs: { status: present, evidence: "CustomMessageComponent + CustomInputComponent + CustomComponentsContext.tsx" }
+      reactnative: { status: present, evidence: "CustomMessageComponent prop (README)" }
+      android: { status: present, evidence: "chat-core/.../models/CustomComponents.kt:80 (CustomComponents interface)" }
+      swift: { status: partial, evidence: "CustomComponentsProtocol in ChatConfig", notes: "Limited scope." }
+      wordpress: { status: absent }
+
+  - id: ui_localization
+    category: ui
+    label: "i18n / localization"
+    description: "UI string translation for app localization."
+    sdks:
+      reactjs: { status: absent, notes: "translates config exists but no i18n library integration." }
+      reactnative: { status: absent }
+      android: { status: partial, notes: "TranslationsConfig for message translation, no UI string resources." }
+      swift: { status: absent }
+      wordpress: { status: partial, evidence: "ethora-assistant-plugin.php:14 (text domain)", notes: "Text domain only, no language files." }
+
+  # ── Platform ───────────────────────────────────────────────────────────────
+  - id: platform_selfhosted
+    category: platform
+    label: "Self-hosted server support"
+    description: "Point the SDK at your own Ethora server deployment."
+    sdks:
+      reactjs: { status: present, evidence: "baseUrl + xmppSettings config" }
+      reactnative: { status: present, evidence: "README: override xmppSettings + baseUrl" }
+      android: { status: present, evidence: "chat-core/.../XMPPSettings.kt (configurable URL)" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Models/ChatConfig.swift:28 (baseUrl)" }
+      wordpress: { status: present, evidence: "readme.txt (data-bot-id parameter)" }
+
+  - id: platform_create_app
+    category: platform
+    label: "Provision new app via SDK"
+    description: "Create a new Ethora app (tenant) programmatically from the SDK."
+    sdks:
+      reactjs: { status: absent, notes: "Handled by @ethora/setup CLI, not SDKs." }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
+
+  - id: platform_offline_cache
+    category: platform
+    label: "Offline message cache"
+    description: "Persist messages locally so they're visible without network."
+    sdks:
+      reactjs: { status: present, evidence: "redux-persist with encrypted storage" }
+      reactnative: { status: partial, evidence: "src/hooks/useLocalStorage.tsx + async-storage", notes: "User data only, not full message sync." }
+      android: { status: present, evidence: "chat-core/.../persistence/ChatPersistenceManager.kt" }
+      swift: { status: present, evidence: "Sources/XMPPChatCore/Persistence/MessageCache.swift (LRU eviction)" }
+      wordpress: { status: absent }
+
+  - id: platform_e2e_encryption
+    category: platform
+    label: "End-to-end encryption"
+    description: "Messages encrypted client-side so server cannot read them."
+    sdks:
+      reactjs: { status: absent, notes: "Storage encryption is disk-only, not message-level E2E." }
+      reactnative: { status: absent }
+      android: { status: absent }
+      swift: { status: absent }
+      wordpress: { status: absent }
