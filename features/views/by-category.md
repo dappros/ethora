@@ -176,16 +176,16 @@ Show when other users are typing.
 | iOS (Swift) | ✅ Present | `Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:222-248` |
 | WordPress | — Absent | — |
 
-### Read / delivery receipts
+### Delivery status indicators
 
-Track whether messages have been delivered and read.
+Per-message status UI — single tick (sent), double tick (delivered), accent colour when read. Shows the conversation participant whether their message has made it through.
 
 | SDK | Status | Evidence / Notes |
 |---|---|---|
-| React.js (Web) | — Absent | Ack queue is internal, not user-visible. |
+| React.js (Web) | ✅ Present | `src/components/MessageBubble/Message.tsx:317-318 (DoubleTick + isPending)` |
 | React Native | — Absent | — |
 | Android (Kotlin) | — Absent | — |
-| iOS (Swift) | — Absent | — |
+| iOS (Swift) | ✅ Present | `Sources/XMPPChatUI/ChatRoom/MessageBubbleView.swift` |
 | WordPress | — Absent | — |
 
 ### Message history (MAM pagination)
@@ -548,17 +548,5 @@ Persist messages locally so they're visible without network.
 | React Native | 🟡 Partial | `src/hooks/useLocalStorage.tsx + async-storage` — User data only, not full message sync. |
 | Android (Kotlin) | ✅ Present | `chat-core/.../persistence/ChatPersistenceManager.kt` |
 | iOS (Swift) | ✅ Present | `Sources/XMPPChatCore/Persistence/MessageCache.swift (LRU eviction)` |
-| WordPress | — Absent | — |
-
-### End-to-end encryption
-
-Messages encrypted client-side so server cannot read them.
-
-| SDK | Status | Evidence / Notes |
-|---|---|---|
-| React.js (Web) | — Absent | Storage encryption is disk-only, not message-level E2E. |
-| React Native | — Absent | — |
-| Android (Kotlin) | — Absent | — |
-| iOS (Swift) | — Absent | — |
 | WordPress | — Absent | — |
 

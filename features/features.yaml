@@ -234,15 +234,15 @@ features:
       swift: { status: present, evidence: "Sources/XMPPChatCore/XMPPOperations/SendTextMessage.swift:222-248" }
       wordpress: { status: absent }
 
-  - id: msg_read_receipts
+  - id: msg_delivery_status
     category: messaging
-    label: "Read / delivery receipts"
-    description: "Track whether messages have been delivered and read."
+    label: "Delivery status indicators"
+    description: "Per-message status UI — single tick (sent), double tick (delivered), accent colour when read. Shows the conversation participant whether their message has made it through."
     sdks:
-      reactjs: { status: absent, notes: "Ack queue is internal, not user-visible." }
+      reactjs: { status: present, evidence: "src/components/MessageBubble/Message.tsx:317-318 (DoubleTick + isPending)" }
       reactnative: { status: absent }
       android: { status: absent }
-      swift: { status: absent }
+      swift: { status: present, evidence: "Sources/XMPPChatUI/ChatRoom/MessageBubbleView.swift" }
       wordpress: { status: absent }
 
   - id: msg_history_pagination
@@ -571,13 +571,3 @@ features:
       swift: { status: present, evidence: "Sources/XMPPChatCore/Persistence/MessageCache.swift (LRU eviction)" }
       wordpress: { status: absent }
 
-  - id: platform_e2e_encryption
-    category: platform
-    label: "End-to-end encryption"
-    description: "Messages encrypted client-side so server cannot read them."
-    sdks:
-      reactjs: { status: absent, notes: "Storage encryption is disk-only, not message-level E2E." }
-      reactnative: { status: absent }
-      android: { status: absent }
-      swift: { status: absent }
-      wordpress: { status: absent }

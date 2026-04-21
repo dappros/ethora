@@ -8,13 +8,13 @@ High-level capability coverage across all Ethora SDKs. Source of truth is [`feat
 
 | SDK | Present | Partial | Roadmap | Absent | Coverage |
 |---|---:|---:|---:|---:|---:|
-| **React.js (Web)** | 31 | 4 | 0 | 10 | 73% |
-| **React Native** | 27 | 6 | 1 | 11 | 67% |
-| **Android (Kotlin)** | 31 | 5 | 1 | 8 | 74% |
-| **iOS (Swift)** | 26 | 6 | 0 | 13 | 64% |
-| **WordPress** | 3 | 6 | 0 | 36 | 13% |
+| **React.js (Web)** | 32 | 4 | 0 | 8 | 77% |
+| **React Native** | 27 | 6 | 1 | 10 | 68% |
+| **Android (Kotlin)** | 31 | 5 | 1 | 7 | 76% |
+| **iOS (Swift)** | 27 | 6 | 0 | 11 | 68% |
+| **WordPress** | 3 | 6 | 0 | 35 | 14% |
 
-_Coverage = (present + partial × 0.5) / 45 features._
+_Coverage = (present + partial × 0.5) / 44 features._
 
 ## SDK overview
 
@@ -44,7 +44,7 @@ _Coverage = (present + partial × 0.5) / 45 features._
 | Message reactions | ✅ | — | ✅ | ✅ | — |
 | @mentions | — | — | — | — | — |
 | Typing indicator | ✅ | ✅ | ✅ | ✅ | — |
-| Read / delivery receipts | — | — | — | — | — |
+| Delivery status indicators | ✅ | — | — | ✅ | — |
 | Message history (MAM pagination) | ✅ | ✅ | ✅ | ✅ | — |
 | **Media** |  |  |  |  |  |
 | Send/receive images | ✅ | ✅ | ✅ | ✅ | — |
@@ -81,7 +81,6 @@ _Coverage = (present + partial × 0.5) / 45 features._
 | Self-hosted server support | ✅ | ✅ | ✅ | ✅ | ✅ |
 | Provision new app via SDK | — | — | — | — | — |
 | Offline message cache | ✅ | 🟡 | ✅ | ✅ | — |
-| End-to-end encryption | — | — | — | — | — |
 
 ## Methodology
 

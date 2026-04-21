@@ -38,6 +38,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | Text messaging (send/edit/delete/reply) | ✅ | ✅ | ✅ | ✅ | 🟡 |
 | Reactions | ✅ | — | ✅ | ✅ | — |
 | Typing indicator | ✅ | ✅ | ✅ | ✅ | — |
+| Delivery status indicators | ✅ | — | — | ✅ | — |
 | Message history (MAM pagination) | ✅ | ✅ | ✅ | ✅ | — |
 | Images / video / files / audio | ✅ | ✅ | ✅ | ✅ | — |
 | 1:1 messaging | ✅ | ✅ | ✅ | ✅ | 🟡 |
@@ -55,7 +56,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 
 Legend: ✅ Present  ·  🟡 Partial  ·  🛠 Roadmap  ·  — Absent
 
-**Coverage (present + partial×0.5) / 45 features:** React.js 73%  ·  Android 74%  ·  React Native 67%  ·  iOS 64%  ·  WordPress 13%
+**Coverage (present + partial×0.5) / 44 features:** React.js 77%  ·  Android 76%  ·  React Native 68%  ·  iOS 68%  ·  WordPress 14%
 
 > Last reviewed **2026-04-21** (v26.04). Monthly AI-reviewed update proposed via PR.
 
