@@ -16,6 +16,88 @@
 
 ---
 
+## Week 17 (Apr 16–22, 2026)
+
+### Android SDK (`sdk-android`)
+> [ethora-sdk-android](https://github.com/dappros/ethora-sdk-android) | [CHANGELOG](https://github.com/dappros/ethora-sdk-android/blob/main/CHANGELOG.md)
+
+Major feature release (Apr 21):
+
+- **New:** URL link previews in messages — new `UrlPreviewStore` renders link cards inline ([`2de87c6`](https://github.com/dappros/ethora-sdk-android/commit/2de87c6))
+- **New:** Connection state monitoring — `ConnectionStore` + `ConnectionHook` expose live connection status to host apps
+- **New:** Event dispatcher — `ChatEvents` + `ChatEventDispatcher` let host apps subscribe to chat lifecycle events
+- **Docs:** Feature documentation + Android ↔ iOS platform comparison + restructured README ([`35909da`](https://github.com/dappros/ethora-sdk-android/commit/35909da))
+- **Refactored:** Sample app extracted into [`ethora-sample-android`](https://github.com/dappros/ethora-sample-android) — SDK repo no longer tracks `sample-chat-app/` ([`86fd0a2`](https://github.com/dappros/ethora-sdk-android/commit/86fd0a2))
+- **Fixed:** Message loader + XMPP websocket edge cases, `ChatRoomView` rendering ([`9998279`](https://github.com/dappros/ethora-sdk-android/commit/9998279))
+
+### iOS SDK (`sdk-swift`)
+> [ethora-sdk-swift](https://github.com/dappros/ethora-sdk-swift) | [CHANGELOG](https://github.com/dappros/ethora-sdk-swift/blob/main/CHANGELOG.md)
+
+- **New:** `UnreadStateBridge` hook for badge propagation to host apps ([`83208b9`](https://github.com/dappros/ethora-sdk-swift/commit/83208b9))
+- **Testing:** `UnreadStateBridgeTests` added ([`83208b9`](https://github.com/dappros/ethora-sdk-swift/commit/83208b9))
+- **Docs:** Full README + INSTALLATION overhaul, new `features.md` ([`0e1605f`](https://github.com/dappros/ethora-sdk-swift/commit/0e1605f))
+- **Refactored:** API surface alignment across `AppConfig`, `AuthAPI`, `RoomsAPI`, `XMPPClient`, `MessageParser`, `ChatRoomViewModel`, `RoomListView` ([`146c52f`](https://github.com/dappros/ethora-sdk-swift/commit/146c52f))
+- **Refactored:** `Examples/` folder removed — playground moving to dedicated sample repo ([`97d54f9`](https://github.com/dappros/ethora-sdk-swift/commit/97d54f9))
+
+### Sample Android (`sample-android`)
+> [ethora-sample-android](https://github.com/dappros/ethora-sample-android) | [CHANGELOG](https://github.com/dappros/ethora-sample-android/blob/main/CHANGELOG.md)
+
+- **Refactored:** Package namespace `com.ethora.sample` → `com.ethora.samplechatapp` ([`74d0521`](https://github.com/dappros/ethora-sample-android/commit/74d0521))
+- **New:** Firebase push notifications wired — `EthoraApplication`, `EthoraFirebaseMessagingService`, AndroidManifest entries
+- **New:** `MainActivity` rewritten as full playground-style sample (881 lines)
+- **API:** `buildConfigField` schema updated — added `ETHORA_USER_JWT` + `ETHORA_ROOM_JID`, removed `ETHORA_APP_TOKEN`
+
+### Setup CLI (`@ethora/setup`) — v26.04
+> [ethora-setup](https://github.com/dappros/ethora-setup) | [CHANGELOG](https://github.com/dappros/ethora-setup/blob/main/CHANGELOG.md)
+
+- **Improved:** Server presets switched to canonical `chat.ethora.com` defaults (Cloud Production + Cloud QA) ([`5c83f05`](https://github.com/dappros/ethora-setup/commit/5c83f05))
+- **Fixed:** `MainActivity.kt` patcher generalised to accept any host — was silently no-op'ing after SDK templates moved off `ethoradev.com` ([`35d47ef`](https://github.com/dappros/ethora-setup/commit/35d47ef))
+
+---
+
+## Week 15–16 (Apr 2–15, 2026)
+
+### iOS SDK (`sdk-swift`)
+
+- **New:** SDK playground (`Examples/SDKPlayground/`) — Setup / Chat / Logs tabs for exercising SDK features ([`53a8839`](https://github.com/dappros/ethora-sdk-swift/commit/53a8839), [`c4ac7d0`](https://github.com/dappros/ethora-sdk-swift/commit/c4ac7d0))
+- **New:** Single-chat mode — `ChatWrapperView` + `UseChatWrapperInit` hook ([`7122809`](https://github.com/dappros/ethora-sdk-swift/commit/7122809))
+- **Fixed:** Push notifications rewrite completed — new `PushNotificationManager`, `PushSubscriptionService`, `PendingNotificationJidStore`, `WalletUsername` utility ([`0b44384`](https://github.com/dappros/ethora-sdk-swift/commit/0b44384))
+- **Refactored:** `XMPPClient+Connection/Handlers/Pings/Stream.swift` and `ChatRoomViewModel+Actions/History/Messages/Observers/XMPP.swift` partials consolidated into single files
+- **Improved:** `MessageLoaderQueue` reliability ([`0150fb2`](https://github.com/dappros/ethora-sdk-swift/commit/0150fb2))
+
+### Android SDK (`sdk-android`)
+
+- **New:** SDK playground in sample-chat-app — interactive `MainActivity` exercising SDK features ([`fd539c8`](https://github.com/dappros/ethora-sdk-android/commit/fd539c8))
+- **Improved:** `XMPPClient` hardened (213-line update), `XMPPSettings` extended, `IncrementalHistoryLoader` / `MessageLoader` reliability ([`97ad445`](https://github.com/dappros/ethora-sdk-android/commit/97ad445))
+- **Docs:** Push notification setup instructions added to README; `google-services.json` no longer committed — developers supply their own Firebase config ([`670c337`](https://github.com/dappros/ethora-sdk-android/commit/670c337))
+
+---
+
+## Week 13–14 (Mar 19 – Apr 1, 2026)
+
+### Android SDK (`sdk-android`)
+
+- **New:** Firebase push notifications wired through sample app — new `EthoraApplication`, `EthoraFirebaseMessagingService`, AndroidManifest entries ([`925b9d8`](https://github.com/dappros/ethora-sdk-android/commit/925b9d8))
+- **Improved:** `PushAPI` + `PushNotificationManager` updated for new registration flow
+
+### iOS SDK (`sdk-swift`)
+
+- **New:** `sendGlobalPresence` operation ([`d15067b`](https://github.com/dappros/ethora-sdk-swift/commit/d15067b))
+- **Fixed:** XMPP nickname handling ([`16eacdf`](https://github.com/dappros/ethora-sdk-swift/commit/16eacdf))
+- **Fixed:** View polish batch — message rendering, footer button, open-chat view, scroll, image viewing ([`64548b1`](https://github.com/dappros/ethora-sdk-swift/commit/64548b1), [`0f3c2eb`](https://github.com/dappros/ethora-sdk-swift/commit/0f3c2eb), [`9d79d67`](https://github.com/dappros/ethora-sdk-swift/commit/9d79d67), [`6bd509e`](https://github.com/dappros/ethora-sdk-swift/commit/6bd509e), [`b1b9488`](https://github.com/dappros/ethora-sdk-swift/commit/b1b9488))
+- **Improved:** Debug logging + docs / example app updates ([`a874a22`](https://github.com/dappros/ethora-sdk-swift/commit/a874a22))
+
+### Sample Android (`sample-android`)
+
+- **New:** Initial sample app — Ethora Android SDK quickstart ([`b6773fc`](https://github.com/dappros/ethora-sample-android/commit/b6773fc))
+- **New:** Monthly release workflow publishing `vYY.MM` tags ([`e993c24`](https://github.com/dappros/ethora-sample-android/commit/e993c24))
+
+### Setup CLI (`@ethora/setup`)
+
+- **New:** React.js SDK support — patches `config.ts` directly when a React.js clone is detected (instead of writing a separate `.env.ethora`) ([`a912550`](https://github.com/dappros/ethora-setup/commit/a912550))
+
+---
+
 ## Week 12–13 (Mar 10–18, 2026)
 
 ### Android SDK (`sdk-android`) — v1.0.0
