@@ -37,3 +37,6 @@
 [submodule "sample-android"]
 	path = sample-android
 	url = https://github.com/dappros/ethora-sample-android.git
+[submodule "sample-swift"]
+	path = sample-swift
+	url = https://github.com/dappros/ethora-sample-swift.git
