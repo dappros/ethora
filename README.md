@@ -186,6 +186,51 @@ Your App
 
 **Hosting options:** Cloud (free tier) | Self-hosted (AWS Marketplace / Docker) | Dedicated server
 
+## Testing & Quality
+
+Each SDK ships with its own automated test suite, all coordinated by a
+single cross-platform selector contract: Android Compose `testTag`
+strings, iOS SwiftUI `accessibilityIdentifier` strings, and Web
+`data-testid` attributes all use the same human-readable IDs
+(`chat_input`, `chat_send_button`, `rooms_list`, …). Renaming any
+selector is a four-repo change by design — a contract drift breaks
+four CI runs the same week instead of silently rotting in one.
+
+### Test layers
+
+| Layer | Where | What it catches |
+|-------|-------|-----------------|
+| L1 — Hermetic unit | JVM / Swift unit test, fakes for backend | Pure logic: reducers, parsers, state machines, formatters |
+| L2 — Component UI | Compose UI / SwiftUI snapshot / Vitest + RTL | Single-component rendering + interaction |
+| L3 — E2E synthetic | Maestro (mobile) / Playwright (web) against a real backend | Multi-screen flows, real network, cross-platform parity |
+| L4 — Manual | Tester on a real device | UX feel, IME quirks, real-device-only bugs |
+
+General rule: **push every test as far down the pyramid as it will
+go.** A pure reducer behaviour that can be expressed at L1 should
+never live at L2 or L3. L3 is reserved for what L1 + L2 genuinely
+cannot reach.
+
+### Per-SDK testing entry points
+
+| SDK | L1 / L2 setup + how to run | L3 flows |
+|-----|----------------------------|----------|
+| Android | [`sdk-android/README.md` → Testing](sdk-android/README.md#testing) — Compose UI test scaffold + JVM unit-test layer, Quickstart commands, AVD setup, full test inventory | [`sample-android/.maestro/`](sample-android/) |
+| iOS | [`sdk-swift/README.md`](sdk-swift/) — XCTest scaffold + `accessibilityIdentifier` markers | [`sample-swift/.maestro/`](sample-swift/) |
+| Web (chat component) | [`sdk-reactjs/README.md`](sdk-reactjs/) — Vitest + RTL setup, shared `data-testid` IDs | Playwright suite in the `ethora-app-reactjs` repo |
+| React Native | [`sdk-reactnative/README.md`](sdk-reactnative/) | (in progress) |
+
+### Cross-platform scenario catalog
+
+For the failure-mode clusters distilled from field reports and the
+recommended test layer per cluster, see
+[**QA_SCENARIOS.md**](QA_SCENARIOS.md). The catalog covers 12 areas
+(multi-room state machine, send + media orchestration, connection
+lifecycle, send-status correctness, unread counter, history + render
+parity, media upload, configuration safety, UI affordances, app
+lifecycle, auth + token state, cross-platform parity) and is updated
+when a new field bug class doesn't fit cleanly into the existing
+clusters.
+
 ## Contributing
 
 We welcome issues, discussions, and PRs across the ecosystem. Each submodule has its own issue tracker — use the relevant repository for bug reports and feature requests.
