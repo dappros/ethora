@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <Project xmlns="http://usefulinc.com/ns/doap#"
+        xmlns:foaf="http://xmlns.com/foaf/0.1/"
+        xmlns:xmpp="https://linkmauve.fr/ns/xmpp-doap#"
+        xmlns:schema="https://schema.org/">
+
+        <name>Ethora</name>
+
+        <created>2021-06-21</created>
+
+        <shortdesc xml:lang="en">Open-source chat &amp; messaging platform with AI agents / chatbots</shortdesc>
+
+        <description xml:lang="en">Ethora is an open-source XMPP-based chat &amp; messaging platform with a built-in AI agent / chatbot framework. Ships SDKs for React, native iOS/Android, React Native, and WordPress, plus an MCP server. Self-host the server (Node.js / ejabberd) or use Ethora Cloud.</description>
+
+        <homepage rdf:resource="https://ethora.com/"/>
+        <download-page rdf:resource="https://github.com/dappros/ethora/releases"/>
+        <bug-database rdf:resource="https://github.com/dappros/ethora/issues"/>
+        <support-forum rdf:resource="https://discord.gg/Sm6bAHA3ZC"/>
+
+        <license rdf:resource="https://github.com/dappros/ethora/blob/main/LICENSE"/>
+
+        <language>en</language>
+
+        <programming-language>JavaScript</programming-language>
+        <programming-language>TypeScript</programming-language>
+        <programming-language>Kotlin</programming-language>
+        <programming-language>Swift</programming-language>
+        <programming-language>PHP</programming-language>
+
+        <os>Linux</os>
+        <os>Browser</os>
+        <os>Android</os>
+        <os>iOS</os>
+
+        <category rdf:resource="https://linkmauve.fr/ns/xmpp-doap#category-server"/>
+        <category rdf:resource="https://linkmauve.fr/ns/xmpp-doap#category-library"/>
+
+        <maintainer>
+            <foaf:Person>
+                <foaf:name>Taras Filatov</foaf:name>
+                <foaf:homepage rdf:resource="https://github.com/tarasfilatov"/>
+            </foaf:Person>
+        </maintainer>
+
+        <repository>
+            <GitRepository>
+                <browse rdf:resource="https://github.com/dappros/ethora"/>
+                <location rdf:resource="https://github.com/dappros/ethora.git"/>
+            </GitRepository>
+        </repository>
+
+        <!--
+            Core XMPP. Ethora's server side is built on ejabberd, so it
+            inherits the standard XMPP core (RFC 6120 / 6121) and a wide
+            set of XEPs from ejabberd. The <implements> entries below
+            list the XEPs that Ethora's own server APIs and SDKs
+            actively rely on / surface.
+        -->
+        <implements rdf:resource="https://xmpp.org/rfcs/rfc6120.html"/>
+        <implements rdf:resource="https://xmpp.org/rfcs/rfc6121.html"/>
+
+        <!-- XEP-0030: Service Discovery -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0030.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0045: Multi-User Chat -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0045.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0085: Chat State Notifications (typing indicators) -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0085.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0184: Message Delivery Receipts -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0184.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0313: Message Archive Management -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0313.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0363: HTTP File Upload -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0363.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+        <!-- XEP-0444: Message Reactions -->
+        <implements>
+            <xmpp:SupportedXep>
+                <xmpp:xep rdf:resource="https://xmpp.org/extensions/xep-0444.html"/>
+                <xmpp:status>complete</xmpp:status>
+            </xmpp:SupportedXep>
+        </implements>
+
+    </Project>
+</rdf:RDF>
