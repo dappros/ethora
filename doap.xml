@@ -18,6 +18,8 @@
         <bug-database rdf:resource="https://github.com/dappros/ethora/issues"/>
         <support-forum rdf:resource="https://discord.gg/Sm6bAHA3ZC"/>
 
+        <schema:logo rdf:resource="https://raw.githubusercontent.com/dappros/ethora-mcp-server/main/assets/icon-400.png"/>
+
         <license rdf:resource="https://github.com/dappros/ethora/blob/main/LICENSE"/>
 
         <language>en</language>
