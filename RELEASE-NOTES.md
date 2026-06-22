@@ -16,6 +16,58 @@
 
 ---
 
+## Week 24–25 (Jun 11–21, 2026) — Theming, fonts & broadcasts
+
+**Contributors:** Taras Filatov, Roman Leshchuh, Dmytro Berberov
+**Total commits:** 39 across SDK/app repos + platform hardening | **Active repos:** 4
+
+Customization week across the SDKs: host apps gained deep control over colours, fonts and typography on both web and React Native, the Android SDK learned to render system broadcasts cleanly, and the admin panel added archive/restore plus full app/agent export-import.
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 5 commits
+
+Admin lifecycle & data portability (Phase 5b):
+
+- **New:** Archive & restore for users, with a dedicated Archived users tab — admins can take accounts out of active rotation without deleting them ([`0817aa3`](https://github.com/dappros/ethora-app-reactjs/commit/0817aa3))
+- **New:** Archive/restore plus JSON/ZIP export-import for Apps and Agents — back up or move an app or agent's full configuration ([`b521cf5`](https://github.com/dappros/ethora-app-reactjs/commit/b521cf5))
+- **Improved:** UX polish across the lifecycle / archive / import controls ([`0c74af8`](https://github.com/dappros/ethora-app-reactjs/commit/0c74af8))
+- **Improved:** New apps now opt in to a default "Main" chat on creation; tab counts shown comma-separated; chat rooms surfaced in the purge confirmation ([`b8b4b6d`](https://github.com/dappros/ethora-app-reactjs/commit/b8b4b6d), [`d39b6fc`](https://github.com/dappros/ethora-app-reactjs/commit/d39b6fc))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 18 commits / → 26.5.21
+
+Theming, fonts & platform stability:
+
+- **New:** Colour configuration from the config file — icon colours, sender-name and avatar colours, and message-date colour are all drivable from config, with a worked colour-config example ([`babcfa2`](https://github.com/dappros/ethora-chat-component-rn/commit/babcfa2), [`c0b641f`](https://github.com/dappros/ethora-chat-component-rn/commit/c0b641f), [`a1acac9`](https://github.com/dappros/ethora-chat-component-rn/commit/a1acac9), [`5df2309`](https://github.com/dappros/ethora-chat-component-rn/commit/5df2309), [`d11d862`](https://github.com/dappros/ethora-chat-component-rn/commit/d11d862))
+- **New:** Typography and input-layout configuration, configurable header height, and custom fonts on the Chat Profile title and attach-sheet hint ([`7856834`](https://github.com/dappros/ethora-chat-component-rn/commit/7856834), [`32eee85`](https://github.com/dappros/ethora-chat-component-rn/commit/32eee85), [`9c235db`](https://github.com/dappros/ethora-chat-component-rn/commit/9c235db), [`e8aad0c`](https://github.com/dappros/ethora-chat-component-rn/commit/e8aad0c))
+- **Fixed:** XMPP reconnect handling ([`322c119`](https://github.com/dappros/ethora-chat-component-rn/commit/322c119)); iOS document picker; iOS fonts & UI polish ([`1ec1175`](https://github.com/dappros/ethora-chat-component-rn/commit/1ec1175), [`ef7f49f`](https://github.com/dappros/ethora-chat-component-rn/commit/ef7f49f), [`bbcdeb0`](https://github.com/dappros/ethora-chat-component-rn/commit/bbcdeb0))
+- **Improved:** Pending-message watchdog timing tuned for slower networks ([`0742029`](https://github.com/dappros/ethora-chat-component-rn/commit/0742029))
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 11 commits / → 26.5.7
+
+Mirrors the RN theming work for web:
+
+- **New:** Background colours for own/other message bubbles and the input bar (`config.colors.ownMessageBackground` / `otherMessageBackground` / `inputBackground`), plus additional host customizations and web placeholders ([`8448ea3`](https://github.com/dappros/ethora-chat-component/commit/8448ea3), [`7769c14`](https://github.com/dappros/ethora-chat-component/commit/7769c14), [`598ff69`](https://github.com/dappros/ethora-chat-component/commit/598ff69))
+- **Improved:** `config.colors.icons` now drives the active send button, the new-chat button and other accent icon-buttons (not just chrome icons), and icon colours are locked against host CSS bleed ([`5b0f936`](https://github.com/dappros/ethora-chat-component/commit/5b0f936), [`15b12b5`](https://github.com/dappros/ethora-chat-component/commit/15b12b5))
+- **Improved:** Custom avatar colours ([`d7ca8a9`](https://github.com/dappros/ethora-chat-component/commit/d7ca8a9), [`3bbc604`](https://github.com/dappros/ethora-chat-component/commit/3bbc604))
+- **Fixed:** Unread counter no longer ramps up from `0` — the `loading` flag stays true while a room backfills history so the host can reveal the final count at once ([`7122abb`](https://github.com/dappros/ethora-chat-component/commit/7122abb), [`fb1a62a`](https://github.com/dappros/ethora-chat-component/commit/fb1a62a))
+
+### Android SDK (`sdk-android`)
+> [ethora-sdk-android](https://github.com/dappros/ethora-sdk-android) | 5 commits
+
+Broadcast / system-message rendering:
+
+- **New:** System-message broadcasts now render as a centered banner ([`c8d671e`](https://github.com/dappros/ethora-sdk-android/commit/c8d671e))
+- **Fixed:** MUC-SUB broadcasts with a bare `<item>` and any node are unwrapped correctly, and broadcasts no longer collapse onto each other ([`b2d152c`](https://github.com/dappros/ethora-sdk-android/commit/b2d152c), [`ab33ff5`](https://github.com/dappros/ethora-sdk-android/commit/ab33ff5), [`a97ffd2`](https://github.com/dappros/ethora-sdk-android/commit/a97ffd2))
+- **Fixed:** Zero read-markers no longer permanently silence the unread badge ([`f02e8a6`](https://github.com/dappros/ethora-sdk-android/commit/f02e8a6))
+
+### Platform & Infrastructure
+
+- **Improved:** Server platform hardening and deployment-reliability improvements landed this week (details kept internal).
+
+---
+
 ## Week 23–24 (Jun 1–10, 2026) — Version 26.06 ships
 
 **Contributors:** Taras Filatov, r0man31, Dmytro Berberov, Roman Leshchuh
