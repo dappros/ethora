@@ -16,6 +16,22 @@
 
 ---
 
+## Week 26 (Jun 22–28, 2026) — Audio calls & durable reactions
+
+**Contributors:** Roman Leshchuh
+**Total commits:** 5 across SDK repos | **Active repos:** 1
+
+A focused week on the React.js chat SDK: voice calling arrives as an opt-in alongside the existing video calls, and message reactions now survive a page reload by being rebuilt from chat history.
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 5 commits / 26.5.7 → 26.5.10
+
+- **New:** Opt-in audio-only calls, rendered next to the video-call button and gated behind a new `config.videoCalls.enableAudioCalls` flag (off by default). Reuses the existing call signalling, so no server change is required ([`686530b`](https://github.com/dappros/ethora-chat-component/commit/686530b), [`1b6591d`](https://github.com/dappros/ethora-chat-component/commit/1b6591d))
+- **Fixed:** Message reactions now persist across a refresh. They are archived as standalone history stanzas, so on reload they are extracted and reapplied to their target messages instead of being dropped; added test coverage for in-page merge, multi-reactor and clearing ([`33e127f`](https://github.com/dappros/ethora-chat-component/commit/33e127f))
+- **Milestone:** Published 26.5.8 → 26.5.10 ([`8ead128`](https://github.com/dappros/ethora-chat-component/commit/8ead128), [`4421639`](https://github.com/dappros/ethora-chat-component/commit/4421639))
+
+---
+
 ## Week 24–25 (Jun 11–21, 2026) — Theming, fonts & broadcasts
 
 **Contributors:** Taras Filatov, Roman Leshchuh, Dmytro Berberov
