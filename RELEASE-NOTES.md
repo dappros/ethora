@@ -16,6 +16,44 @@
 
 ---
 
+## Week 27 (Jun 29 – Jul 5, 2026) — Version 26.07 ships; web chat polish & message search
+
+**Contributors:** Roman Leshchuh, Yurii T.
+**Total commits:** ~17 across SDK/app repos + platform API & chat-server work | **Active repos:** 6
+
+- **Milestone:** **Version 26.07 rolled out.** The June development cycle shipped at the start of July — package versions bumped across the ecosystem on July 1 (`@ethora/setup` 26.07, `@ethora/mcp-server` 26.07), and platform/server work advanced onto the 26.07 iteration. Development now continues on the next monthly iteration.
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 14 commits
+
+A concentrated stability-and-polish pass on the web chat component, tightening host-configuration handling and squashing several interaction bugs:
+
+- **Fixed:** In-app notifications no longer fire for your own messages, nor for the room you are actively viewing ([`04b0044`](https://github.com/dappros/ethora-chat-component/commit/04b0044), [`8810e9b`](https://github.com/dappros/ethora-chat-component/commit/8810e9b))
+- **Fixed:** `config.disableNewChatButton` and `config.disableProfilesInteractions` are now honored — the new-chat button and the duplicate Settings / Manage Data room-menu options hide as intended (they were previously dead flags) ([`144e71b`](https://github.com/dappros/ethora-chat-component/commit/144e71b), [`774b102`](https://github.com/dappros/ethora-chat-component/commit/774b102))
+- **Fixed:** QR-join reliability — the QR code now encodes the room localpart and builds its link from `config.qrUrl` or the current origin instead of a hardcoded default, so QR joins work outside production and no longer produce a malformed JID ([`aff1dc1`](https://github.com/dappros/ethora-chat-component/commit/aff1dc1), [`d7dd9d1`](https://github.com/dappros/ethora-chat-component/commit/d7dd9d1))
+- **Fixed:** Deleting a room now leaves the MUC and clears the active room, so a public room no longer auto-rejoins ([`5d52595`](https://github.com/dappros/ethora-chat-component/commit/5d52595))
+- **Fixed:** Guarded config-colour access in the Manage Data modal and room-state destructuring when leaving a room — removes two crash paths ([`fc1487c`](https://github.com/dappros/ethora-chat-component/commit/fc1487c), [`c3c63e5`](https://github.com/dappros/ethora-chat-component/commit/c3c63e5))
+- **Improved:** Interaction and visual polish — the whole user row toggles selection (the checkbox was double-toggling), the room list is pinned to a fixed width with a reserved scrollbar gutter so it stops jumping on select, the date-separator pill uses a light chip, and the non-functional Unban placeholder is removed ([`2ab4c8b`](https://github.com/dappros/ethora-chat-component/commit/2ab4c8b), [`6612f8a`](https://github.com/dappros/ethora-chat-component/commit/6612f8a), [`31453df`](https://github.com/dappros/ethora-chat-component/commit/31453df), [`9bed4f2`](https://github.com/dappros/ethora-chat-component/commit/9bed4f2))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 1 commit
+
+- **Improved:** Mobile styling refinements ([`988d005`](https://github.com/dappros/ethora-app-reactjs/commit/988d005))
+
+### Developer tooling (`setup`, `mcp-server`)
+
+- **Milestone:** `@ethora/setup` and `@ethora/mcp-server` bumped to 26.07 ([`81da293`](https://github.com/dappros/ethora-setup/commit/81da293), [`d287159`](https://github.com/dappros/ethora-mcp-server/commit/d287159))
+
+### Platform API & AI Service
+
+- **New:** Message search for end users — an app's own users can now search their message history through the API, with sortable, direction-aware results.
+
+### Chat Server & Infrastructure
+
+- **New:** Server-side message-tracking archive hook is now compiled into the chat-server image and wired through deployment, so message activity is durably recorded on the server.
+
+---
+
 ## Week 26 (Jun 22–28, 2026) — Audio calls & durable reactions
 
 **Contributors:** Roman Leshchuh
