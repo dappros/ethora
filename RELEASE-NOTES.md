@@ -16,6 +16,117 @@
 
 ---
 
+## Week 30 (Jul 20 – 26, 2026) — Translation goes regional; compliance audit logging on the chat server
+
+**Contributors:** Roman Leshchuh, Yurii T., Borys
+**Total commits:** ~5 across SDK/app repos + ~14 platform/server | **Active repos:** 5
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 4 commits / v26.6.3
+
+- **Improved:** The language picker now works with regional language ids (`en-CA`, `es-US`, `fr-CA`), so readers in regional locales get the right translation variant ([`6677988`](https://github.com/dappros/ethora-chat-component/commit/6677988))
+- **Fixed:** Sender avatars now resolve through the live user set instead of the message's own stale copy, so photo updates show everywhere ([`08eb345`](https://github.com/dappros/ethora-chat-component/commit/08eb345))
+- **Fixed:** A translation that comes back identical to the original is no longer shown as a "translation" ([`5406622`](https://github.com/dappros/ethora-chat-component/commit/5406622))
+- **Milestone:** `@ethora/chat-component` 26.6.3 published ([`9845df9`](https://github.com/dappros/ethora-chat-component/commit/9845df9))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 1 commit (branch `2607`)
+
+- **Improved:** Chat component updated to 26.6.3 with the regional language-code alignment ([`e9d116e`](https://github.com/dappros/ethora-app-reactjs/commit/e9d116e))
+
+### Chat Server & Infrastructure
+
+- **New:** Compliance-grade audit logging for message-history access — reads of archived chat history are now tracked on the server with request/response outcome and delivered to a configurable audit endpoint. A building block for regulated deployments (healthcare, finance) that need a verifiable trail of who accessed which conversation history.
+- **Improved:** Edited messages are re-translated automatically, so readers in other languages always see the translation of the latest text, not the original version.
+- **Improved:** Self-hosted deployments can now configure the chat server's translation endpoint directly from the deployment config.
+- **Fixed:** Installer robustness — deployment data-sentinel files are written safely alongside data directories, removing an upgrade crash path.
+
+---
+
+## Week 29 (Jul 13 – 19, 2026) — AI message translation lands end-to-end
+
+**Contributors:** Roman Leshchuh, Yurii T.
+**Total commits:** ~41 across SDK/app repos + ~4 platform API | **Active repos:** 4
+
+The headline feature of the 26.08 iteration arrived this week: **real-time AI message translation**. Every participant can read the room in their own language while senders keep typing in theirs. Translations travel inside the message itself, so there is no extra round-trip on read.
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 35 commits / v26.6.0 → 26.6.1
+
+- **New:** Sender-side pre-translation — outgoing messages carry their translations inside the message stanza, and each reader resolves the right one by their full locale (e.g. `fr-CA`) with base-language fallback ([`9776215`](https://github.com/dappros/ethora-chat-component/commit/9776215), [`29d69b9`](https://github.com/dappros/ethora-chat-component/commit/29d69b9))
+- **New:** Reader controls — switch between automatic and on-demand translation from the language modal; hosts can pin the mode via `forceType`, toggle the language picker, or drive it externally ([`6f7b0d2`](https://github.com/dappros/ethora-chat-component/commit/6f7b0d2), [`00d3c7b`](https://github.com/dappros/ethora-chat-component/commit/00d3c7b), [`dc2d057`](https://github.com/dappros/ethora-chat-component/commit/dc2d057))
+- **New:** Translated messages get a real UI — quoted original with the translation emphasized ([`e26077b`](https://github.com/dappros/ethora-chat-component/commit/e26077b), [`5c69cab`](https://github.com/dappros/ethora-chat-component/commit/5c69cab))
+- **New:** Static UI localization completed — new-chat, user-selection, room-menu, profile, settings and auth surfaces all follow the language picker ([`26b869b`](https://github.com/dappros/ethora-chat-component/commit/26b869b), [`dbe1489`](https://github.com/dappros/ethora-chat-component/commit/dbe1489))
+- **New:** Edited messages are marked as edited, and the flag survives a cache restore ([`996b85f`](https://github.com/dappros/ethora-chat-component/commit/996b85f))
+- **Improved:** Send-path performance — translation taken off the send path, the per-send history-fetch storm eliminated, and persist transforms repaired so sends are fast again ([`7eb7daf`](https://github.com/dappros/ethora-chat-component/commit/7eb7daf), [`02cd49f`](https://github.com/dappros/ethora-chat-component/commit/02cd49f))
+- **Fixed:** Local cache stability — storage quota budget corrected, member rosters no longer evict the message cache, and live-only state is kept out of persistence ([`5e5baf0`](https://github.com/dappros/ethora-chat-component/commit/5e5baf0), [`34da5f9`](https://github.com/dappros/ethora-chat-component/commit/34da5f9), [`1e519f2`](https://github.com/dappros/ethora-chat-component/commit/1e519f2))
+- **Fixed:** Refresh no longer flashes the login form — the stored session is restored seamlessly ([`4a6a2ef`](https://github.com/dappros/ethora-chat-component/commit/4a6a2ef), [`06765ae`](https://github.com/dappros/ethora-chat-component/commit/06765ae))
+- **Fixed:** An incoming call no longer double-rings when the tab is open but backgrounded ([`75a2542`](https://github.com/dappros/ethora-chat-component/commit/75a2542))
+- **Fixed:** Reconnect polish — no more "Deleted User" names or raw room addresses in notifications right after reconnect ([`7ad8a6f`](https://github.com/dappros/ethora-chat-component/commit/7ad8a6f))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 6 commits (branch `2607`)
+
+- **New:** AI message translation wired into the hosted web app ([`2185e0f`](https://github.com/dappros/ethora-app-reactjs/commit/2185e0f), [`ae68728`](https://github.com/dappros/ethora-app-reactjs/commit/ae68728))
+- **Fixed:** App bootstrap repaired after the chat-component upgrade ([`324fd32`](https://github.com/dappros/ethora-app-reactjs/commit/324fd32))
+
+### Platform API & AI Service
+
+- **Fixed:** Call push notifications now reliably reach devices — the push matcher uses the full user address, so incoming-call alerts line up with stored subscriptions.
+- **Improved:** Push-subscription hygiene — device tokens that the push provider reports as dead are pruned automatically, keeping delivery lists clean.
+
+---
+
+## Week 28 (Jul 6 – 12, 2026) — Calls & performance polish; load-testing and monitoring for self-hosted
+
+**Contributors:** Roman Leshchuh, Yurii T., Taras Filatov, Borys
+**Total commits:** ~50 across SDK/app repos + ~20 platform/server | **Active repos:** 8
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 33 commits
+
+- **New:** Groundwork for multilingual chat — built-in UI string tables (en/fr/es) with a `useT` hook and `config.i18n`, plus an on-demand Translate button with a pluggable `onTranslate` callback so hosts can bring their own translation endpoint ([`97fd6b0`](https://github.com/dappros/ethora-chat-component/commit/97fd6b0), [`8ee22ab`](https://github.com/dappros/ethora-chat-component/commit/8ee22ab))
+- **New:** Online-members popover on group rooms — see who is online straight from the room list or chat header ([`1818621`](https://github.com/dappros/ethora-chat-component/commit/1818621), [`f199238`](https://github.com/dappros/ethora-chat-component/commit/f199238))
+- **Improved:** Audio calls get their own compact call card with redesigned spacing, no clipped controls, and correct sizing on mobile toolbars ([`264e636`](https://github.com/dappros/ethora-chat-component/commit/264e636), [`a85da38`](https://github.com/dappros/ethora-chat-component/commit/a85da38), [`258db67`](https://github.com/dappros/ethora-chat-component/commit/258db67))
+- **Improved:** Calls ring on any app page, with an OS-level notification when the tab is not visible ([`1bc873a`](https://github.com/dappros/ethora-chat-component/commit/1bc873a))
+- **Fixed:** Call history is reliable — the server call state is the canonical log entry, with a local "call ended" fallback so no call disappears from history ([`3495a05`](https://github.com/dappros/ethora-chat-component/commit/3495a05), [`cb89d37`](https://github.com/dappros/ethora-chat-component/commit/cb89d37))
+- **Improved:** Chat-loading performance on heavy accounts — a loading stall and duplicate presence sweeps were eliminated, with regression tests added ([`f5e23cd`](https://github.com/dappros/ethora-chat-component/commit/f5e23cd), [`6f43437`](https://github.com/dappros/ethora-chat-component/commit/6f43437), [`c4938e3`](https://github.com/dappros/ethora-chat-component/commit/c4938e3))
+- **Fixed:** Unread polish — the New Messages delimiter survives realtime sync, and per-room badges no longer flicker on refresh ([`c8dab3d`](https://github.com/dappros/ethora-chat-component/commit/c8dab3d), [`3aa9270`](https://github.com/dappros/ethora-chat-component/commit/3aa9270))
+- **Fixed:** Mobile layout pass — room list adapts to narrow widths without horizontal scroll, long 1:1 titles no longer widen rows, and in-app toasts show across the whole app ([`efbf290`](https://github.com/dappros/ethora-chat-component/commit/efbf290), [`6717857`](https://github.com/dappros/ethora-chat-component/commit/6717857), [`d39d212`](https://github.com/dappros/ethora-chat-component/commit/d39d212))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 14 commits (branches `2607`/`2606`)
+
+- **Improved:** Theming correctness — attach/mic/send icon chips and system messages no longer render as black squares under dark secondary colours, and per-name avatar colours are preserved ([`189b73e`](https://github.com/dappros/ethora-app-reactjs/commit/189b73e), [`ab328a8`](https://github.com/dappros/ethora-app-reactjs/commit/ab328a8))
+- **Fixed:** Mobile UX — flicker removed, menu-bar grey strip closed, room-list padding made responsive ([`2094de7`](https://github.com/dappros/ethora-app-reactjs/commit/2094de7), [`e0079f4`](https://github.com/dappros/ethora-app-reactjs/commit/e0079f4))
+- **Testing:** WordPress-embed network probe added to the diagnostics suite ([`d915387`](https://github.com/dappros/ethora-app-reactjs/commit/d915387))
+
+### Embeddable AI Widget (`ethora-ai-chat-widget`)
+> [ethora-ai-chat-widget](https://github.com/dappros/ethora-ai-chat-widget) | 1 commit
+
+- **Improved:** The embed script accepts `data-api-url` as an alias for `data-api-base`, matching the documented attribute ([`c2e7f8d`](https://github.com/dappros/ethora-ai-chat-widget/commit/c2e7f8d))
+
+### Developer tooling (`mcp-server`)
+> [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | 1 commit (branch `feat/ai-agents`)
+
+- **New:** AI-agents branch brought to 26.07 API parity, with the B2B AI bootstrap fixed for freshly created apps ([`364ffc2`](https://github.com/dappros/ethora-mcp-server/commit/364ffc2))
+
+### Uptime & Self-hosted Ops (`ethora-uptime`)
+> [ethora-uptime](https://github.com/dappros/ethora-uptime) | 6 commits
+
+- **New:** Built-in load-testing tool with scenarios, a metrics endpoint, and Grafana/Prometheus links in the load-testing UI ([`57c4885`](https://github.com/dappros/ethora-uptime/commit/57c4885), [`8dd8f98`](https://github.com/dappros/ethora-uptime/commit/8dd8f98))
+- **New:** TLS certificate-expiry checks — self-hosted operators get warned before certificates lapse ([`668e2a8`](https://github.com/dappros/ethora-uptime/commit/668e2a8))
+- **New:** Opt-in AI journey for synthetic monitoring, kept out of the standard B2B journey by default ([`ee2e3a7`](https://github.com/dappros/ethora-uptime/commit/ee2e3a7))
+
+### Chat Server & Infrastructure
+
+- **New:** Self-hosted monitoring stack — Grafana and Prometheus dashboards ship with the deployment, served behind authenticated access and auto-started on update.
+- **New:** Load-testing tooling wired into the server deployment, so operators can benchmark their own instance before go-live.
+- **Docs:** AWS backup and restore runbook plus a customer-facing guide for self-hosted deployments.
+- **Fixed:** Profile images are returned for chat members via the API.
+
+---
+
 ## Week 27 (Jun 29 – Jul 5, 2026) — Version 26.07 ships; web chat polish & message search
 
 **Contributors:** Roman Leshchuh, Yurii T.
