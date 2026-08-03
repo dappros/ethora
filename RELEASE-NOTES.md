@@ -16,6 +16,40 @@
 
 ---
 
+## Week 31 (Jul 27 – Aug 2, 2026) — Version 26.08 cut; secure attachments & a full compliance audit trail
+
+**Contributors:** Yurii T., Borys, Dmytro Berberov
+**Total commits:** ~7 across SDK/app repos + ~25 platform/server | **Active repos:** 8
+
+- **Milestone:** **Version 26.08 cut.** The July development cycle was tagged `v26.08` on July 31 and npm package versions rolled over on August 1 (`@ethora/setup` 26.08 ([`0ebf165`](https://github.com/dappros/ethora-setup/commit/0ebf165)), `@ethora/mcp-server` 26.08 ([`4623e93`](https://github.com/dappros/ethora-mcp-server/commit/4623e93))). Development continues on the next monthly iteration.
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 3 commits (branch `2607`)
+
+- **Improved:** Login and registration pages refreshed as part of the sitewide design pass ([`c33b5d1`](https://github.com/dappros/ethora-app-reactjs/commit/c33b5d1), [`a65adda`](https://github.com/dappros/ethora-app-reactjs/commit/a65adda))
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 1 commit
+
+- **Refactored:** Deploy-script build stamps kept out of version control across the SDK ecosystem ([`c9d41f6`](https://github.com/dappros/ethora-chat-component/commit/c9d41f6))
+
+### Platform API & AI Service
+
+- **New:** Secure chat attachments — file uploads to a chat can now be membership-gated: attachments are stored in a private bucket and streamed back only to authenticated room members via short-lived file tokens. Documented in the public API reference.
+- **New:** Compliance audit trail expanded — message edit and delete events, authentication outcomes, and archived-history reads are all persisted into the platform's audit logs, giving regulated deployments a verifiable record of what happened and who accessed what.
+- **New:** Immutable audit-log export — a scheduled job ships audit logs to a write-once (immutable) S3 bucket, a building block for HIPAA-style retention and tamper-evidence requirements.
+- **Improved:** App-wide broadcast messaging is now restricted to admin and B2B roles, following a customer feedback round.
+- **Fixed:** Image and video attachment previews no longer fail on freshly provisioned servers, and upload errors are surfaced in server logs for faster diagnosis.
+- **Refactored:** Legacy analytics count/graph routes retired.
+
+### Chat Server & Infrastructure
+
+- **New:** The chat server now reports message edit and delete events, and archived-history access, to the platform audit trail — configurable per deployment, wired automatically by the installer.
+- **Improved:** Deployment wiring for the secure-attachments flow (dedicated vhost + environment) and for per-install audit callback endpoints.
+- **Fixed:** Installer robustness on localhost and clean-machine installs — chat-server config rendering, callback URL derivation, and stateful data directories all handled safely.
+
+---
+
 ## Week 30 (Jul 20 – 26, 2026) — Translation goes regional; compliance audit logging on the chat server
 
 **Contributors:** Roman Leshchuh, Yurii T., Borys
