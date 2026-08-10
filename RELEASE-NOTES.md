@@ -16,6 +16,34 @@
 
 ---
 
+## Week 32 (Aug 3 – 9, 2026) — Unread counts land in the chat list; audit trail extends to room membership
+
+**Contributors:** Borys, Yurii T., Roman Leshchuh
+**Total commits:** ~2 across SDK/app repos + ~20 platform/server | **Active repos:** 4
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 2 commits / v26.6.10
+
+- **Milestone:** `@ethora/chat-component-rn` package version realigned to 26.6.10 for npm publishing ([`f71aae1`](https://github.com/dappros/ethora-chat-component-rn/commit/f71aae1))
+- **Improved:** Message-translation UI polish (translation bubble + language selector) and hardened "new messages" divider ordering, backed by new Jest regression suites for manual-translation mirroring and divider order; testbed app updated to exercise the flows ([`f71aae1`](https://github.com/dappros/ethora-chat-component-rn/commit/f71aae1), [`0e60e82`](https://github.com/dappros/ethora-chat-component-rn/commit/0e60e82))
+
+### Platform API & AI Service
+
+- **New:** Per-room unread message counts in the chat list — the signed-in user's room list now returns an unread count per room (computed fresh on each request, with a safety cap), building on the server-side unread-counts API shipped earlier. Chat UIs get accurate badge counts without client-side bookkeeping.
+- **New:** Compliance audit trail now covers room membership — room join and leave events, plus message creation, are persisted into the platform audit logs alongside the existing edit/delete and history-access events, completing the who-did-what picture for regulated deployments.
+- **Improved:** The website-crawler (RAG ingestion) result callback into the platform is now authenticated with a shared secret, matching the convention already used between platform services; previously silent callback failures are now surfaced in logs.
+- **Fixed:** Secure chat attachments now render correctly when embedded by the chat app across origins (resource-policy header adjusted on the token-gated file endpoint).
+- **Fixed:** The AI widget's chat binding now saves correctly for apps without a legacy bot user, so the admin panel selection no longer reverts to "None" after reload.
+- **Refactored:** Legacy built-in API monitoring retired in favour of the platform's external monitoring stack.
+
+### Chat Server & Infrastructure
+
+- **Improved:** Local development installs now enable the message- and membership-tracking modules out of the box, matching production audit-trail behaviour.
+- **Improved:** Installer and deploy hardening continues — chat-server admin commands no longer hang on interactive input, the AI database's readiness is verified with a real query before schema setup, chat-server config rendering is portable to macOS/BSD tooling, and the crawler callback secret is provisioned automatically at install time.
+- **Fixed:** Local deployment templates corrected (valid owner-email domain, correct crawler callback URL wiring).
+
+---
+
 ## Week 31 (Jul 27 – Aug 2, 2026) — Version 26.08 cut; secure attachments & a full compliance audit trail
 
 **Contributors:** Yurii T., Borys, Dmytro Berberov
