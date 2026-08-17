@@ -16,6 +16,49 @@
 
 ---
 
+## Week 33 (Aug 10 – 16, 2026) — Web Index overhaul for AI agents; push credentials go self-serve
+
+**Contributors:** Borys, Yurii T., Dmytro Berberov
+**Total commits:** ~19 across SDK/app repos + ~23 platform/server | **Active repos:** 5
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 12 commits (branch `2607`)
+
+- **New:** Web Index management for AI agents got a full workover in the admin panel — the operator now sees a crawl *start* and watches the index fill live as pages arrive (event-driven, no manual refetch) ([`9c1c606`](https://github.com/dappros/ethora-app-reactjs/commit/9c1c606), [`92b37b5`](https://github.com/dappros/ethora-app-reactjs/commit/92b37b5), [`9705ff2`](https://github.com/dappros/ethora-app-reactjs/commit/9705ff2)); you can view the stored markdown of any indexed URL ([`2f2dfb9`](https://github.com/dappros/ethora-app-reactjs/commit/2f2dfb9)), bulk-remove URLs ([`d1f1ed0`](https://github.com/dappros/ethora-app-reactjs/commit/d1f1ed0)), page through large indexes ([`cd2b4f9`](https://github.com/dappros/ethora-app-reactjs/commit/cd2b4f9)), and get a re-crawl offer when a URL is already indexed ([`34bd94e`](https://github.com/dappros/ethora-app-reactjs/commit/34bd94e))
+- **New:** Mobile push credentials are now managed from the app settings screen — upload, status check and removal for both APNs auth keys and Firebase service accounts, no support ticket needed ([`e75b14c`](https://github.com/dappros/ethora-app-reactjs/commit/e75b14c))
+- **Improved:** Chat component dependency updated with adaptive-layout fixes ([`0134420`](https://github.com/dappros/ethora-app-reactjs/commit/0134420)); login/register page fixes and general UI polish ([`71ab109`](https://github.com/dappros/ethora-app-reactjs/commit/71ab109), [`e3fbe70`](https://github.com/dappros/ethora-app-reactjs/commit/e3fbe70))
+- **Refactored:** Legacy v1 site-crawl UI removed from the admin frontend ([`dab3b78`](https://github.com/dappros/ethora-app-reactjs/commit/dab3b78))
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 5 commits / v26.6.3 → 26.6.6
+
+- **New:** File handling moved to the platform's v2 files endpoint with a configurable base URL — media previews, file/photo modals, chat-list thumbnails and unsupported-type fallbacks all updated ([`cda02e6`](https://github.com/dappros/ethora-chat-component/commit/cda02e6))
+- **Improved:** Upload fallback logic so hosts on older platform versions keep working against the previous file endpoint, backed by a new regression test suite ([`6cdbb7d`](https://github.com/dappros/ethora-chat-component/commit/6cdbb7d), [`59b6e42`](https://github.com/dappros/ethora-chat-component/commit/59b6e42))
+- **Milestone:** `@ethora/chat-component` 26.6.5 and 26.6.6 published ([`7a8b2ec`](https://github.com/dappros/ethora-chat-component/commit/7a8b2ec), [`0a469db`](https://github.com/dappros/ethora-chat-component/commit/0a469db))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 2 commits / v26.6.11
+
+- **Fixed:** Media and video message rendering hardened (video player sizing/controls) and auth/API request handling reworked, with expanded test coverage for API requests and customer-feedback fixes ([`1b3e50f`](https://github.com/dappros/ethora-chat-component-rn/commit/1b3e50f))
+- **Milestone:** `@ethora/chat-component-rn` 26.6.11 published ([`1c2516c`](https://github.com/dappros/ethora-chat-component-rn/commit/1c2516c))
+
+### Platform API & AI Service
+
+- **New:** Website crawling for agent knowledge is now fully asynchronous — the crawl endpoint answers immediately and every crawl runs on a queue as a tracked job. Crawled pages are delivered to the platform in incremental batches with progress events to the requesting operator, and crawl failures are reported instead of silently dropped.
+- **New:** Web Index API round-out — fetch a single indexed URL with its stored markdown, opt-in pagination for the sources list, duplicate-crawl detection with an explicit re-crawl path, and reindexing queued as a tracked job. The base app's assistant can crawl beyond the standard per-tenant page ceilings.
+- **New:** Push credential management API — upload, status and delete endpoints for APNs auth keys and Firebase service accounts, and Push endpoints are now documented in the public API reference.
+- **Improved:** Chat-session authentication modernized — the platform now issues short-lived signed chat tokens (JWT) for XMPP sessions, automatically re-issued when the API session refreshes, replacing static per-user chat credentials.
+- **Improved:** Background job consumers now self-heal after transient Redis connection blips, so queued work (crawls, exports, notifications) resumes without a restart.
+- **Fixed:** Chat-widget sessions now provision correctly for apps whose only bot is a modern bot instance (no legacy bot user required).
+- **Refactored:** Legacy v1 site-crawl routes and dead crawl-result handling removed.
+
+### Chat Server & Infrastructure
+
+- **New:** The chat server now accepts JWT-based (SASL) authentication with a signing secret provisioned automatically by the deploy tooling — the server-side half of the short-lived chat-token flow.
+- **Docs:** Deploy documentation covers the chunked crawl-callback flow and its batch-size tuning knobs.
+
+---
+
 ## Week 32 (Aug 3 – 9, 2026) — Unread counts land in the chat list; audit trail extends to room membership
 
 **Contributors:** Borys, Yurii T., Roman Leshchuh
