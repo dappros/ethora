@@ -18,7 +18,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`app-reactjs/`](app-reactjs/) | [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | Full web app (React.js) — App Builder frontend | Active |
 | [`playground/`](playground/) | [ethora-sdk-playground](https://github.com/dappros/ethora-sdk-playground) | SDK testing & demo playground | Active |
 | [`backend-integration/`](backend-integration/) | [ethora-sdk-backend-integration](https://github.com/dappros/ethora-sdk-backend-integration) | Backend integration examples | Active |
-| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-cli](https://github.com/dappros/ethora-mcp-cli) | MCP CLI for IDE/agent integration | Active |
+| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | MCP CLI for IDE/agent integration | Active |
 | [`rag-demos/`](rag-demos/) | [rag_demos](https://github.com/dappros/rag_demos) | RAG pipeline demos & examples | Active |
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
 | [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |
@@ -72,7 +72,7 @@ These public services run on the Ethora Cloud and are useful when exploring or t
 | **XMPP** | `wss://xmpp.chat.ethora.com:5443/ws` | Real-time messaging gateway. |
 | **SDK Playground** | [playground.chat.ethora.com](https://playground.chat.ethora.com) | Live `@ethora/chat-component` playground, code export, HTTP testing. |
 | **Uptime / status** | [uptime.chat.ethora.com](https://uptime.chat.ethora.com) | Public uptime and journey checks for the Ethora platform. |
-| **Documentation** | [docs.ethora.com](https://docs.ethora.com/) | Developer documentation portal. |
+| **Documentation** | [API docs](https://api.chat.ethora.com/api-docs/) | REST API reference. Guides and SDK docs: [ethora.com/chat-sdk](https://ethora.com/chat-sdk/) and [ethora.com/ai-sdk](https://ethora.com/ai-sdk/). |
 | **QA environment** | [chat-qa.ethora.com](https://chat-qa.ethora.com) | Pre-production QA environment (use for pre-release validation only; `chat.ethora.com` remains the canonical default for everything else). |
 
 ## Getting Started
@@ -241,7 +241,7 @@ We welcome issues, discussions, and PRs across the ecosystem. Each submodule has
 
 ## Contact
 
-- Website: https://ethora.com/
+- Website: https://ethora.com/ | [Chat SDK](https://ethora.com/chat-sdk/) | [AI SDK](https://ethora.com/ai-sdk/) | [Self-hosted chat server](https://ethora.com/chat-sdk/self-hosted-chat-server-aws/) | [Pricing](https://ethora.com/pricing)
 - Try Free: https://app.chat.ethora.com/register
 - Twitter/X: https://x.com/EthoraOfficial
 - LinkedIn: https://www.linkedin.com/company/ethora-official/
@@ -355,7 +355,7 @@ Keep busy chats tidy with thread replies.
 
 ### Authors & Governance
 
-Ethora & its server infrastructure have been developed since 2018 by [Dappros](https://www.dappros.com/) and [DeepX](http://deepxhub.com/). The team is led by Taras Filatov, a Ukrainian-born and UK-based tech entrepreneur.
+Ethora & its server infrastructure have been developed since 2018 by [Dappros](https://www.dappros.com/) and [DeepX](https://deepxhub.com/). The team is led by Taras Filatov, a Ukrainian-born and UK-based tech entrepreneur.
 
 **Backend:** Dappros Platform API & DeepX RTC: EVM chain + API/cache (Node.js, Kafka, Redis, MongoDB), IPFS/S3 storage, and XMPP Ejabberd messaging with custom services (Erlang, Mnesia, MySQL, Cassandra).
 
