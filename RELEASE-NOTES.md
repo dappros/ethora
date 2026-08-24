@@ -16,6 +16,58 @@
 
 ---
 
+## Week 34 (Aug 17 – 23, 2026) — Knowledge goes per-agent; the AI widget ships inside the app
+
+**Contributors:** Borys, Roman Leshchuh, Dmytro Berberov, Yurii T.
+**Total commits:** ~29 across SDK/app repos + ~27 platform/server | **Active repos:** 6
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 11 commits (branch `2607`)
+
+- **New:** The Knowledge panel is now scoped per agent — each AI agent sees and manages its own indexed sources, instead of one shared per-app list ([`48594ee`](https://github.com/dappros/ethora-app-reactjs/commit/48594ee))
+- **Improved:** The embeddable AI widget is now served by the web app itself and pinned as a versioned dependency instead of a committed bundle — installs no longer depend on an external widget host, and the admin preview drives the widget through its public control API ([`4f8b52c`](https://github.com/dappros/ethora-app-reactjs/commit/4f8b52c), [`fb927fe`](https://github.com/dappros/ethora-app-reactjs/commit/fb927fe), [`ea30d6c`](https://github.com/dappros/ethora-app-reactjs/commit/ea30d6c), [`67d1c8c`](https://github.com/dappros/ethora-app-reactjs/commit/67d1c8c))
+- **Fixed:** Widget bundles load as classic scripts so built embeds run everywhere ([`7cc171d`](https://github.com/dappros/ethora-app-reactjs/commit/7cc171d)); the shipped widget bundle wins over stale env configuration ([`5ad01f7`](https://github.com/dappros/ethora-app-reactjs/commit/5ad01f7)); the preview can load the widget from its dev server during development ([`6c6d2e1`](https://github.com/dappros/ethora-app-reactjs/commit/6c6d2e1))
+- **Improved:** Chat component dependency updated, session-refresh handling improved, assorted bug fixes ([`8e7e46a`](https://github.com/dappros/ethora-app-reactjs/commit/8e7e46a), [`75bd871`](https://github.com/dappros/ethora-app-reactjs/commit/75bd871), [`e8f6e77`](https://github.com/dappros/ethora-app-reactjs/commit/e8f6e77))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 7 commits / v26.6.11 → 26.6.13
+
+- **Fixed:** Secure media rendered blank in hosts that pass a login snapshot — three holes closed: the session resolver now adopts the fresher persisted session (so the file token needed by membership-gated media is present), bootstrap rotates the session *before* the first chat connect (so short-lived chat passwords are live at boot instead of dead-ending on a connection error), and the testbed folds the top-level file token into the resolved user ([`08dde9b`](https://github.com/dappros/ethora-chat-component-rn/commit/08dde9b), [`788b692`](https://github.com/dappros/ethora-chat-component-rn/commit/788b692), [`2295ca2`](https://github.com/dappros/ethora-chat-component-rn/commit/2295ca2))
+- **New:** Secure-upload fallback — when the platform doesn't serve the secure files endpoint yet, uploads retry on the legacy endpoint and remember that for the session, so the SDK works against older self-hosted platforms ([`08dde9b`](https://github.com/dappros/ethora-chat-component-rn/commit/08dde9b))
+- **Improved:** Session-refresh and file-handling logic reworked across the SDK ([`dcded7d`](https://github.com/dappros/ethora-chat-component-rn/commit/dcded7d), [`30f148a`](https://github.com/dappros/ethora-chat-component-rn/commit/30f148a), [`cf3c654`](https://github.com/dappros/ethora-chat-component-rn/commit/cf3c654))
+- **Milestone:** `@ethora/chat-component-rn` 26.6.13 published ([`6d30de4`](https://github.com/dappros/ethora-chat-component-rn/commit/6d30de4))
+
+### Embeddable AI Widget (`ai-chat-widget`)
+> [ethora-ai-chat-widget](https://github.com/dappros/ethora-ai-chat-widget) | 10 commits / v26.7.1
+
+- **New:** Public control API + embed attribute manifest — host pages can now drive the widget programmatically, and every supported embed attribute is documented in a machine-readable manifest ([`e54872b`](https://github.com/dappros/ethora-ai-chat-widget/commit/e54872b))
+- **New:** Configurable starter message greets visitors by default; roomier desktop default size; media features off by default for leaner embeds ([`8571b0c`](https://github.com/dappros/ethora-ai-chat-widget/commit/8571b0c), [`1904529`](https://github.com/dappros/ethora-ai-chat-widget/commit/1904529))
+- **Fixed:** Greeting reliability — the welcome message now survives history loads, hidden room-join notices and message ordering, and resumed visitor sessions no longer get stuck ([`cb007c1`](https://github.com/dappros/ethora-ai-chat-widget/commit/cb007c1), [`11906fb`](https://github.com/dappros/ethora-ai-chat-widget/commit/11906fb), [`28f9e73`](https://github.com/dappros/ethora-ai-chat-widget/commit/28f9e73), [`b47145e`](https://github.com/dappros/ethora-ai-chat-widget/commit/b47145e))
+- **Milestone:** Widget version 26.7.1 cut, shipped with a prebuilt embed bundle and pinned by the web app; npm package refreshed ([`9832b28`](https://github.com/dappros/ethora-ai-chat-widget/commit/9832b28), [`020391b`](https://github.com/dappros/ethora-ai-chat-widget/commit/020391b), [`4a6d4b9`](https://github.com/dappros/ethora-ai-chat-widget/commit/4a6d4b9))
+
+### Monorepo (`ethora`)
+> [ethora](https://github.com/dappros/ethora) | 1 commit
+
+- **Docs:** README links repaired — retired docs-portal links replaced, MCP server repo rename reflected, product page links refreshed ([`dad32884`](https://github.com/dappros/ethora/commit/dad32884))
+
+### Platform API & AI Service
+
+- **New:** Agent-scoped knowledge sources — indexed website sources are now tracked per AI agent instead of per app, with a migration that backfills existing installs; retrieval falls back to the app-level index when an agent has no scoped sources yet, so answers keep working through the transition
+- **New:** The chat list now returns each room's last message for the signed-in user, so clients can render conversation previews without extra requests
+- **New:** The platform's public config now exposes the install's chat-server host, so clients on self-hosted deployments auto-discover the right endpoint
+- **Improved:** Website crawling for agent knowledge hardened for large sites — deep crawls are bounded and processed in prioritized batches, browser concurrency is capped, and the crawl engine was upgraded, so indexing a big site no longer risks exhausting server memory
+- **Improved:** Chat-session token lifetimes are now configurable per install — interactive sessions default to short-lived tokens while embedded-widget visitors get long-lived ones, balancing security and visitor convenience
+- **New:** API session security strengthened with refresh-token rotation and reuse detection on the release line
+- **Docs:** Push service architecture and API documented
+
+### Chat Server & Infrastructure
+
+- **New:** Deploy tooling now runs data migrations automatically as part of install and update — schema and data changes ship with the release instead of requiring manual steps, and already-migrated hosts are detected and re-run safely when a migration is revised
+- **Improved:** Chat-token lifetime knobs wired through the deploy environment configuration
+- **Fixed:** Crawler service healthcheck corrected; installer treats an empty component directory as missing sources instead of failing part-way
+
+---
+
 ## Week 33 (Aug 10 – 16, 2026) — Web Index overhaul for AI agents; push credentials go self-serve
 
 **Contributors:** Borys, Yurii T., Dmytro Berberov
