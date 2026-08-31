@@ -16,6 +16,49 @@
 
 ---
 
+## Week 35 (Aug 24 – 30, 2026) — Encrypted-at-rest storage lands in the RN SDK; React 19 support; installs can go invite-only
+
+**Contributors:** Roman Leshchuh, Dmytro Berberov, Borys, Taras Filatov
+**Total commits:** ~25 across SDK/app repos + ~6 platform/server | **Active repos:** 5
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 4 commits / v26.6.13 → 26.7.2
+
+- **New:** Secure on-device storage across the SDK — session credentials (REST access and refresh tokens, chat password, secure-media file token) now live in the platform Keychain (iOS) / Keystore-backed encrypted preferences (Android) via the optional `expo-secure-store` peer, and the persisted message-history/room-list cache is AES-256 envelope-encrypted at rest with its key held in the same secure store. Hosts without the peer fall back gracefully (one logged warning), so nothing breaks for existing consumers; verified on device, 18 new unit tests (760 total green) ([`47a9511`](https://github.com/dappros/ethora-chat-component-rn/commit/47a9511))
+- **New:** `config.logout` — a built-in "Sign out" item in the room-list header menu with native confirm and host `onBeforeLogout`/`onAfterLogout` hooks, backed by a full teardown (XMPP, state, persisted caches); `useLogout` is now exported so hosts can build their own button on the same awaitable teardown ([`6b312db`](https://github.com/dappros/ethora-chat-component-rn/commit/6b312db))
+- **Fixed:** iOS attach sheet — the Take photo / Photo or video / Document rows now reliably open their pickers (a modal-dismiss race left them dead and jammed the document picker), and the picker opens noticeably sooner after the tap ([`6b312db`](https://github.com/dappros/ethora-chat-component-rn/commit/6b312db))
+- **Fixed:** Avatar handling — profile and new-chat avatar picking and placeholder rendering corrected ([`56cc6aa`](https://github.com/dappros/ethora-chat-component-rn/commit/56cc6aa))
+- **Milestone:** `@ethora/chat-component-rn` 26.7.1 and 26.7.2 published ([`7d3becf`](https://github.com/dappros/ethora-chat-component-rn/commit/7d3becf), [`6b312db`](https://github.com/dappros/ethora-chat-component-rn/commit/6b312db))
+
+### React.js SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 7 commits / v26.7.1 → 26.7.4
+
+- **New:** React 19 support — the package stops bundling react-dom's React 18 reconciler, so hosts on React 19 can adopt the chat component without dependency conflicts ([`eaa46bf`](https://github.com/dappros/ethora-chat-component/commit/eaa46bf))
+- **Fixed:** Media loading polish — the loading skeleton now holds while the secure-media file token is absent or rotating, and media is preloaded before the skeleton swaps out, so images no longer flash a blank gap or a broken first paint ([`27fb3fb`](https://github.com/dappros/ethora-chat-component/commit/27fb3fb), [`9cc9a48`](https://github.com/dappros/ethora-chat-component/commit/9cc9a48), [`80ee118`](https://github.com/dappros/ethora-chat-component/commit/80ee118))
+- **Milestone:** `@ethora/chat-component` 26.7.1 → 26.7.4 published ([`9848122`](https://github.com/dappros/ethora-chat-component/commit/9848122), [`99be692`](https://github.com/dappros/ethora-chat-component/commit/99be692), [`bb132b4`](https://github.com/dappros/ethora-chat-component/commit/bb132b4), [`eaa46bf`](https://github.com/dappros/ethora-chat-component/commit/eaa46bf))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | ~14 commits (branches `2607`/`2608`/`2609`)
+
+- **New:** PostHog product analytics wired into the web app, giving the team behavioural insight into the live admin/chat experience ([`937d1d1`](https://github.com/dappros/ethora-app-reactjs/commit/937d1d1))
+- **New (next release line):** UI language becomes a real per-profile setting — the picker lists the languages the install offers, persists the choice to the user's profile, and on single-language installs the picker and message translation hide entirely ([`65c9c01`](https://github.com/dappros/ethora-app-reactjs/commit/65c9c01), [`c80eed5`](https://github.com/dappros/ethora-app-reactjs/commit/c80eed5))
+- **New (next release line):** The login/registration flow honours the app's new self-service registration switch, so invite-only installs present the right door ([`f52298f`](https://github.com/dappros/ethora-app-reactjs/commit/f52298f))
+- **Fixed:** Secure-files media — the file token is forwarded to the chat component so membership-gated media renders ([`65af9a1`](https://github.com/dappros/ethora-app-reactjs/commit/65af9a1)); the web app's own token refresh no longer deadlocks on its own lock ([`f07c280`](https://github.com/dappros/ethora-app-reactjs/commit/f07c280))
+- **Improved:** Chat component dependency rolled forward across iteration branches; the frontend build now tolerates a stubbed AI widget so deploys don't fail on optional components ([`cf6f2bc`](https://github.com/dappros/ethora-app-reactjs/commit/cf6f2bc), [`d8a9a73`](https://github.com/dappros/ethora-app-reactjs/commit/d8a9a73))
+- **Milestone:** Iteration branch `2609` opened — the next release line (version 26.09, shipping with September) starts taking features
+
+### Platform API & AI Service
+
+- **New:** Per-app switch to close self-service registration — operators can now run an install invite-only, with the guard enforced at the API level, not just hidden in the UI
+- **New:** User-profile UI language — the platform stores each user's language choice, with the offered language set fixed at install time; an empty set marks a single-language install so clients can skip the picker and translation machinery
+- **Improved:** Stricter install-time configuration validation on self-hosted deployments — the platform now verifies its chat-server settings at startup instead of running with incomplete configuration
+
+### Chat Server & Infrastructure
+
+- **Improved:** Tighter default configuration for self-hosted chat-server installs — deployments now supply their own secrets rather than inheriting sample values
+
+---
+
 ## Week 34 (Aug 17 – 23, 2026) — Knowledge goes per-agent; the AI widget ships inside the app
 
 **Contributors:** Borys, Roman Leshchuh, Dmytro Berberov, Yurii T.
