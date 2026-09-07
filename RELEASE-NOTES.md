@@ -16,6 +16,50 @@
 
 ---
 
+## Week 36 (Aug 31 – Sep 6, 2026) — Version 26.09 ships; the RN SDK gets a full UI redesign; AI agents learn to share a room and to speak first
+
+**Contributors:** Dmytro Berberov, Roman Leshchuh, Yurii T., Borys Bordunov, Taras Filatov
+**Total commits:** ~16 across SDK/app repos + ~10 platform/server | **Active repos:** 5
+
+### Milestones
+
+- **Milestone:** **Version 26.09 released** — the 2608 iteration (August development) is tagged `v26.09` on the monorepo and npm packages roll to 26.09 (`@ethora/mcp-server` [`0966301`](https://github.com/dappros/ethora-mcp-server/commit/0966301)); production platform updated to the 2608 line during the week. September development continues on the `2609` iteration branches (version 26.10).
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 12 commits / v26.7.2 → 26.7.4
+
+- **New:** Chat profile screen rebuilt around the chat photo — a full-bleed hero with name, member count and round action buttons that collapses into a frosted compact bar as you scroll (parallax and collapse run on the UI thread); rooms without a picture get a flat avatar colour with initials. Below it: description and chat-type cards, an **Add Members** row for moderators, the member list with roles and a per-row remove action, **Leave** / **Report** actions (report categories post to the platform), a "…" menu with Edit / Remove photo / Delete and Leave gated on what the signed-in user may do, and a member **search** that folds into the menu when the header is collapsed ([`d8b08a9`](https://github.com/dappros/ethora-chat-component-rn/commit/d8b08a9))
+- **New:** User profile screen rebuilt on the same collapsing header — your own profile gets Account, Share, Edit, Log out and a Leave button that runs the SDK's full sign-out teardown; someone else's gets Message and Share. New **About** section and, on your own profile, **Language / Media / Documents** tabs (files come from the platform's v2 files endpoint, split by type) ([`1981077`](https://github.com/dappros/ethora-chat-component-rn/commit/1981077))
+- **New:** "Create new chat" redesigned as a full-screen modal — round picture picker, chat name, optional description, side-by-side Cancel/Create, every accent on the configured primary colour ([`1981077`](https://github.com/dappros/ethora-chat-component-rn/commit/1981077))
+- **New:** Attach sheet reworked into a Slack-style media picker — a "Photos & Videos" strip with a camera tile and the 12 most recent photos (via the optional `expo-media-library` peer), one-tap attach, "View Library" for the full gallery and "Upload a File" for documents; the grab handle now drags to dismiss ([`921cb80`](https://github.com/dappros/ethora-chat-component-rn/commit/921cb80))
+- **New:** Room-list header menu is now a bottom sheet (New Chat / Profile / Settings / Sign out) that pulls down to dismiss; `config.headerMenu: true` shows the SDK's own menu without a host callback; Settings restyled into separate cards; shared full-screen modal headers get the same card treatment ([`70b117a`](https://github.com/dappros/ethora-chat-component-rn/commit/70b117a))
+- **Improved:** Room list, headers and composer restyled — light grey list ground, floating search strip, white card headers with rounded bottom corners and soft shadow, the composer mirroring it; tapping a room's avatar now opens the chat; profile header buttons realigned with the collapsed avatar ([`c85add7`](https://github.com/dappros/ethora-chat-component-rn/commit/c85add7), [`ea20c90`](https://github.com/dappros/ethora-chat-component-rn/commit/ea20c90))
+- **Improved:** Room-list search overlay reworked (v2) with expanded regression tests, alongside session-refresh handling tweaks ([`dd87da1`](https://github.com/dappros/ethora-chat-component-rn/commit/dd87da1), [`ddcd845`](https://github.com/dappros/ethora-chat-component-rn/commit/ddcd845))
+- **Fixed:** Unread counts are no longer silently capped at one history page — when the first page is entirely unread the SDK pages further back (bounded) to find the true boundary, and flags the count as a floor when it cannot; the "typing…" indicator is cleared when the app is backgrounded or the device locks; send-message and last-viewed bookkeeping tightened ([`6386e37`](https://github.com/dappros/ethora-chat-component-rn/commit/6386e37))
+- **Fixed:** The signed-in user's description survives login (the About section can show your bio); avatars for names starting with a digit render initials; "Save to gallery" works again on Expo SDK 54+ via the media-library legacy runtime ([`1981077`](https://github.com/dappros/ethora-chat-component-rn/commit/1981077), [`921cb80`](https://github.com/dappros/ethora-chat-component-rn/commit/921cb80))
+- **Milestone:** `@ethora/chat-component-rn` 26.7.3 and 26.7.4 published ([`8273b7f`](https://github.com/dappros/ethora-chat-component-rn/commit/8273b7f), [`16e8069`](https://github.com/dappros/ethora-chat-component-rn/commit/16e8069))
+
+### Web App (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 3 commits (branches `2608`/`2609`)
+
+- **New:** Per-agent **LLM model** override in the agent Persona panel (free text with suggestions; empty keeps the platform default), and the SOUL.MD / Heartbeat panels now describe what is live — the agent self-updates its SOUL.MD and the heartbeat scheduler runs — with the schedule grammar (`every 30m`, `idle 15m`, `daily 09:00`, cron) documented inline in en/fr/es. A new diagnostics probe posts into a room with AI agents and transcribes their replies ([`c93f26d`](https://github.com/dappros/ethora-app-reactjs/commit/c93f26d))
+- **Improved:** Admin/app-management tabs now show only on the base app host — tenant app hosts present a clean end-user navigation ([`4f6b085`](https://github.com/dappros/ethora-app-reactjs/commit/4f6b085))
+- **Fixed:** Product analytics reports image uploads as images (the MIME type is read from the chat component's `metadata.fileType`) ([`3b41f42`](https://github.com/dappros/ethora-app-reactjs/commit/3b41f42))
+
+### Platform API & AI Service
+
+- **New:** **Multi-agent rooms that keep talking.** Rooms with several AI agents no longer fall silent after one exchange — response-gate counters are tracked once per message instead of once per agent, and human-pause, cooldown and spacing rules now *defer* a reply instead of dropping it (newest message wins, one pending reply per agent per room). A configurable cap bounds agent-only turns per human message, and system join/leave notices are never answered.
+- **New:** **Real room history for agents.** A per-room transcript log (30-day retention, deduplicated across agents) now feeds each agent's context window: its own turns as assistant messages, everyone else — humans and other agents — as name-attributed turns. Knowledge (RAG) excerpts are injected into the same prompt, so a persona agent stays in character while citing your sources instead of dropping into a stateless FAQ mode.
+- **New:** **Heartbeat scheduler.** Agents can now speak first: interval, idle, daily and cron schedules post a proactive turn into every room of an enabled agent, or stay quiet when the model decides there is nothing worth saying. Configured per agent in the admin panel.
+- **New:** **Per-agent models.** The agent's LLM model setting is honoured in the chat path, and the model layer handles reasoning-model parameters separately from classic ones, so different model families can be mixed across agents in one install.
+- **New:** **One-shot agent reply endpoint** — a server-to-server API call asks an agent a question and gets a single answer back over HTTP, for integrations that need an agent's judgement outside a chat room.
+- **Improved:** Operator edits to a running agent (prompt, response mode, cooldown, model, SOUL.MD) hot-apply without a restart; agent tool callbacks resolve against the install's own platform address so self-hosted installs work out of the box; the AI service README is rewritten around Agents, bot instances and multi-agent rooms.
+- **New:** **Push notification overhaul for calls and universal builds** — VoIP push notifications and subscriptions (incoming calls ring on iOS through the VoIP channel); a central push gateway delivers to devices running the universal/platform build, with delivery keys routed by build origin (platform vs tenant), owner opt-in and a daily quota for platform-key delivery; the app's public config exposes whether platform push is enabled.
+- **Improved:** Apple push delivery now goes direct to APNs over a reused connection (no third-party relay required for iOS).
+- **Improved:** Platform usage reports (daily/weekly/monthly) now exclude the platform's own synthetic monitoring traffic — synthetic apps and sessions are flagged at creation and filtered on read, with an opt-in to include them — and the emailed HTML body is capped to stay within mail-provider limits (full data continues in the CSV attachments).
+
+---
+
 ## Week 35 (Aug 24 – 30, 2026) — Encrypted-at-rest storage lands in the RN SDK; React 19 support; installs can go invite-only
 
 **Contributors:** Roman Leshchuh, Dmytro Berberov, Borys, Taras Filatov
