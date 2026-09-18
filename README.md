@@ -18,7 +18,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`app-reactjs/`](app-reactjs/) | [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | Full web app (React.js) — App Builder frontend | Active |
 | [`playground/`](playground/) | [ethora-sdk-playground](https://github.com/dappros/ethora-sdk-playground) | SDK testing & demo playground | Active |
 | [`backend-integration/`](backend-integration/) | [ethora-sdk-backend-integration](https://github.com/dappros/ethora-sdk-backend-integration) | Backend integration examples | Active |
-| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | MCP CLI for IDE/agent integration | Active |
+| [`mcp-cli/`](mcp-cli/) | [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | MCP server for AI agents and IDEs: hosted remote endpoint + stdio CLI | Active |
 | [`rag-demos/`](rag-demos/) | [rag_demos](https://github.com/dappros/rag_demos) | RAG pipeline demos & examples | Active |
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
 | [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |
@@ -140,11 +140,31 @@ cd sdk-swift
 Install the plugin from `sdk-wordpress/` or see [ethora-wp-plugin](https://github.com/dappros/ethora-wp-plugin).
 
 **Connect via MCP (IDE/AI agent):**
-```bash
-cd mcp-cli
-npm install
-# See mcp-cli/README.md
+
+There is a hosted MCP server, so nothing needs installing. Point any MCP client at the URL and sign
+in through your browser:
+
 ```
+https://mcp.chat.ethora.com/mcp/oauth
+```
+
+```bash
+# Claude Code, Cursor, VS Code and other CLI-configured clients
+claude mcp add --transport http ethora https://mcp.chat.ethora.com/mcp/oauth
+```
+
+An agent with no account can connect to `https://mcp.chat.ethora.com/mcp` without a credential and
+call the registration tool to get its own API key, with no human step.
+
+To run it yourself, against Ethora Cloud or your own deployment:
+
+```bash
+npx -y @ethora/mcp-server
+```
+
+Endpoint details, per-client setup and the full tool reference are at
+[ethora.com/ai-sdk/mcp-server](https://ethora.com/ai-sdk/mcp-server/), and the source is in
+[ethora-mcp-server](https://github.com/dappros/ethora-mcp-server).
 
 ### Default backend
 
