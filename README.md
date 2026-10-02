@@ -2,7 +2,7 @@
 
 ![GitHub stars](https://img.shields.io/github/stars/dappros/ethora) ![GitHub forks](https://img.shields.io/github/forks/dappros/ethora) ![GitHub license](https://img.shields.io/github/license/dappros/ethora)
 
-**Chat, AI and messaging SDK platform.** Add real-time messaging, AI bots, and backend services to your app in minutes.
+**Chat, messaging and conversational AI SDK platform.** Add real-time messaging, AI bots, and backend services to your app in minutes.
 
 This repository serves as the **SDK monorepo** — a single place to discover, clone, and navigate all Ethora SDKs, tools, and sample apps. Each component lives in its own focused repository, linked here as git submodules.
 
