@@ -220,7 +220,7 @@ Your App
               └── Blockchain (EVM, optional)
 ```
 
-**Hosting options:** Cloud (free tier) | Self-hosted (AWS Marketplace / Docker) | Dedicated server
+**Hosting options:** Cloud (free tier) | Self-hosted (AWS Marketplace, Docker, Helm, Cloudron and more) | Managed dedicated server with an SLA. Every option, with pricing, is on [ethora.com/get](https://ethora.com/get/).
 
 ## Testing & Quality
 

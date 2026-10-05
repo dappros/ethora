@@ -216,7 +216,7 @@ The REST room list (`GET /v1/chats/my`) is the primary source for clients; the
 <message to="<room jid>" type="groupchat" id="<client id>">
   <data xmlns="<see 6.2>" senderFirstName="Alice" senderLastName="Smith" fullName="Alice Smith"
         photo="https://.../avatar.png" senderJID="<full jid>" roomJid="<room jid>"
-        isSystemMessage="false" push="true" .../>
+        push="true" .../>
   <body>Hello</body>
 </message>
 ```
@@ -250,7 +250,7 @@ Attributes on an ordinary message:
 | `photo` | clients, bots | clients, push (image) | avatar URL. Legacy duplicate `photoURL`; media messages send only `photoURL`. |
 | `senderJID` | clients, bots | clients (sender id when `from` has no resource) | full JID of the sender |
 | `roomJid` | clients | clients | destination room |
-| `isSystemMessage` | clients (`false`), bots (`'true'` for join/leave notices) | clients (muted rendering), ai-service (never replies to them) | system notice, not a chat line |
+| `isSystemMessage` | bots and the server, `'true'` on join/leave notices and call logs only | clients (muted rendering), ai-service (never replies to them) | system notice, not a chat line. Absent on ordinary messages; older clients stamped `'false'`, which readers treat the same as absent. |
 | `push` | clients (`'true'`) | nobody today (push reads it and discards it) | reserved |
 | `mucName` | mobile clients | push (subject suffix) | room title for notification text |
 | `project` | optional | push | target app for notification routing; defaults to all |
@@ -269,7 +269,7 @@ fields of the uploaded file as returned by `POST /v1/files`: `isMediafile='true'
 of the same shape).
 
 On receipt, clients spread every `<data>` attribute onto the message object as a
-string. `isSystemMessage="false"` is the string `"false"`; compare accordingly.
+string. `isReply="false"` is the string `"false"`; compare accordingly.
 
 ### 6.3 Translation
 
@@ -508,7 +508,7 @@ Agents are XMPP users (section 2) run by the ai-service. What they read and writ
 | Aspect | Behaviour |
 |---|---|
 | Incoming | groupchat messages with a non-empty `<body>` and an `<archived>` child; `fromBot` is the presence of `<x xmlns='urn:ethora:bot' agentAddress/>`; the user's name comes from `<data fullName>` or the first/last name parts; `isSystemMessage='true'` messages are never answered; a stanza with a repeated client `id` in the same room is dropped. |
-| Outgoing | `<body>` + `<data fullName senderFirstName senderLastName senderJID photo isSystemMessage='false' quickReplies?/>` + `<x xmlns='urn:ethora:bot' agentAddress='...'/>`. A `<paused>` chatstate precedes the reply; `<composing>` is sent while generating. |
+| Outgoing | `<body>` + `<data fullName senderFirstName senderLastName senderJID photo quickReplies?/>` + `<x xmlns='urn:ethora:bot' agentAddress='...'/>`. A `<paused>` chatstate precedes the reply; `<composing>` is sent while generating. |
 | Buttons | `quickReplies='[{"name":"Yes","value":"yes"}, ...]'`, at most 6, label 40 chars, value 200 chars. Flows (`ask`/`say` steps) use the same attribute. |
 | Reactions | same stanza as section 6.4, target = archive id, values = emoji-mart ids. |
 | Join / leave | plain MUC join presence; a system notice `"<name> has joined the chat"` with `isSystemMessage='true'` unless `announceJoin` is off; greeting message or start flow after joining. Invites (`muc#user` or `jabber:x:conference`) are honoured. |
