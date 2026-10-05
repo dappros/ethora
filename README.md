@@ -2,6 +2,8 @@
 
 ![GitHub stars](https://img.shields.io/github/stars/dappros/ethora) ![GitHub forks](https://img.shields.io/github/forks/dappros/ethora) ![GitHub license](https://img.shields.io/github/license/dappros/ethora)
 
+[![Available on AWS Marketplace](https://img.shields.io/badge/AWS_Marketplace-Ethora_Core-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-xgn2obhnb5au4) [![Docker Hub](https://img.shields.io/badge/Docker_Hub-dappros-2496ED?logo=docker&logoColor=white)](https://hub.docker.com/u/dappros) [![Helm chart on Artifact Hub](https://img.shields.io/badge/Artifact_Hub-ethora--core-417598?logo=helm&logoColor=white)](https://artifacthub.io/packages/helm/ethora/ethora-core) [![Every way to get Ethora](https://img.shields.io/badge/ethora.com-%2Fget-0052CD)](https://ethora.com/get/)
+
 **Chat, messaging and conversational AI SDK platform.** Add real-time messaging, AI bots, and backend services to your app in minutes.
 
 This repository serves as the **SDK monorepo** — a single place to discover, clone, and navigate all Ethora SDKs, tools, and sample apps. Each component lives in its own focused repository, linked here as git submodules.
@@ -22,6 +24,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`rag-demos/`](rag-demos/) | [rag_demos](https://github.com/dappros/rag_demos) | RAG pipeline demos & examples | Active |
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
 | [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |
+| — | [ethora-install](https://github.com/dappros/ethora-install) | Self-hosted server installer: one-line install, Docker Compose, Helm chart, marketplace images | Active |
 | [`api/`](api/) | *(inline)* | REST API documentation (Swagger/OpenAPI) | Reference |
 | [`api/CHAT_PROTOCOL.md`](api/CHAT_PROTOCOL.md) | *(inline)* | Chat wire protocol: JIDs, XMPP stanzas and the `<data>` element, history, push, AI agents | Reference |
 | — | [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | React Native app (iOS & Android) | Legacy |
@@ -169,7 +172,7 @@ Endpoint details, per-client setup and the full tool reference are at
 
 ### Default backend
 
-Sign up for a free account at [app.chat.ethora.com](https://app.chat.ethora.com/register) to get API credentials. The SDKs connect to Ethora Cloud by default. Self-hosted and dedicated server options are available for enterprise customers.
+Sign up for a free account at [app.chat.ethora.com](https://app.chat.ethora.com/register) to get API credentials. The SDKs connect to Ethora Cloud by default. To point them at your own server, see **Run your own server** below.
 
 Canonical default endpoints (used by all official SDKs unless overridden):
 
@@ -182,6 +185,18 @@ Canonical default endpoints (used by all official SDKs unless overridden):
 | XMPP host | `xmpp.chat.ethora.com` |
 | XMPP MUC (conference) | `conference.xmpp.chat.ethora.com` |
 | Web app (sign up, admin) | `https://app.chat.ethora.com` |
+
+### Run your own server
+
+The same server behind Ethora Cloud installs on your own infrastructure in about ten minutes. On a fresh Ubuntu 22.04 or 24.04 server (2 vCPU, 4 GB RAM, ports 80 and 443 open):
+
+```bash
+curl -fsSL https://get.ethora.com | bash -s -- --domain chat.example.com --admin-email you@example.com
+```
+
+Or install from [AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-xgn2obhnb5au4), [Docker Hub](https://hub.docker.com/u/dappros) (Docker Compose, Portainer, Coolify, Dokploy), the [Helm chart](https://artifacthub.io/packages/helm/ethora/ethora-core) on Kubernetes, or the [Cloudron App Store](https://ca.cloudron.io/app/ethora). Installer, Compose files, chart source and the editions table: [dappros/ethora-install](https://github.com/dappros/ethora-install). Every channel, including a managed dedicated server with an SLA direct from Ethora, is listed at [ethora.com/get](https://ethora.com/get/).
+
+Point the SDKs at your install with `npx @ethora/setup` (choose a self-hosted profile) or by setting the API base URL and XMPP host to `api.<your root>` and `xmpp.<your root>`.
 
 ## What you can build
 
@@ -262,14 +277,16 @@ We welcome issues, discussions, and PRs across the ecosystem. Each submodule has
 
 ## Contact
 
-- Website: https://ethora.com/ | [Chat SDK](https://ethora.com/chat-sdk/) | [AI SDK](https://ethora.com/ai-sdk/) | [Self-hosted chat server](https://ethora.com/chat-sdk/self-hosted-chat-server-aws/) | [Pricing](https://ethora.com/pricing)
+- Website: https://ethora.com/ | [Chat SDK](https://ethora.com/chat-sdk/) | [AI SDK](https://ethora.com/ai-sdk/) | [Self-hosted chat server](https://ethora.com/chat-sdk/self-hosted-chat-server-aws/) | [Get Ethora](https://ethora.com/get/) | [Pricing](https://ethora.com/pricing)
 - Try Free: https://app.chat.ethora.com/register
 - Twitter/X: https://x.com/EthoraOfficial
 - LinkedIn: https://www.linkedin.com/company/ethora-official/
 
 ## License
 
-AGPL and MIT licenses. Commercial licenses available from [Dappros](https://www.dappros.com/).
+SDKs, web client and samples in this monorepo: AGPL and MIT licenses (see each repository). Commercial licenses available from [Dappros](https://www.dappros.com/).
+
+Server: Ethora Core is provided under the [Ethora Core Software License](https://ethora.com/legal/ethora-core-license/); Ethora Enterprise under the [Enterprise EULA](https://ethora.com/legal/enterprise-eula/). All legal documents: [ethora.com/legal](https://ethora.com/legal/).
 
 ---
 
