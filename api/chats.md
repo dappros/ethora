@@ -1,5 +1,11 @@
 # Working with Ethora/DP Chat server (aka RTC, Real-Time Communication module)
 
+> **Superseded.** This page describes the original (2022) chat flow: wallet-derived
+> JIDs, `senderWalletAddress` and coin tipping fields, and the first generation of
+> ejabberd plugins. The current wire format, identity scheme, history, push and
+> AI-agent behaviour are documented in [CHAT_PROTOCOL.md](CHAT_PROTOCOL.md). Keep
+> this page for historical context only.
+
 ## Ethora (Dappros Platform) client-server Chat flow
 
 **About this document**

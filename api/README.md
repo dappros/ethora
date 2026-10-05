@@ -2,7 +2,7 @@
 
 Studying this section is optional. You can build your apps using Ethora engine without having to study the API documentation.
 
-_Note: for information on interacting with our XMPP messaging server and other RTC (Real-Time Communication) components beyond those covered in the API, please refer to this manual: https://github.com/dappros/ethora/blob/main/api/chats.md_.
+_Note: the chat wire protocol (identity and JID conventions, connecting over XMPP, rooms, the message stanza and its `<data>` element, history, read state, push and AI agents) is documented in [CHAT_PROTOCOL.md](CHAT_PROTOCOL.md). The older [chats.md](chats.md) is kept for historical context._
 _For additional information regarding the Push Notifications please refer to https://github.com/dappros/ethora/blob/main/api/pushes.md_
 
 
