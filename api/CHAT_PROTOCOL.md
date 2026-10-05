@@ -419,7 +419,7 @@ Three sources exist, and the client uses them in this order:
 2. The member directory the client holds: built from the `members` arrays of
    `GET /v1/chats/my` (a preview of the most recently active members per room, 30 by
    default) and `GET /v1/chats/my/{chatName}` (full list), and kept fresh by
-   `<user-update>` headline stanzas and the members-refresh hint. This is where
+   `ethora-event` headline stanzas (below) and the members-refresh hint. This is where
    renames and avatar changes come from.
 3. A lookup for a sender outside the directory: `GET /v1/apps/users/{xmppUsername}`
    (user or B2B token) returns `firstName, lastName, profileImage, description,
@@ -428,9 +428,21 @@ Three sources exist, and the client uses them in this order:
 Fallback when all three fail is the bare localpart, which is why a client without
 step 3 shows ids like `646cc8dc..._6a8c3625...` for unknown senders.
 
-Profile changes are pushed to connected clients as
-`<message type='headline'><user-update xmppUsername firstName lastName photoURL description/></message>`
-and room changes as `<chat-update chatName title description picture usersCnt/>`.
+Profile and room changes made through the API are announced to the affected users as
+a headline message from the admin JID:
+
+```xml
+<message type="headline" to="<user bare jid>" from="<admin jid>" id="ethora-event-<ts>-<rand>">
+  <ethora-event xmlns="urn:ethora:events:1" type="user-profile-updated" ts="<ms>"
+                xmppUsername="<appId>_<userId>" uuid="<userId>" appId="<appId>"/>
+</message>
+```
+
+`type` is `user-profile-updated` (attributes `xmppUsername`, `uuid`, `appId`) or
+`chat-meta-updated` (`chatName`, `appId`). The event is a pointer, not the data: on
+receipt the client refetches the user or the room over REST. The web component
+currently listens for a different element (`<user-update>` / `<chat-update>`) that no
+server emits, so it does not act on these yet (chat-component issue #99).
 
 ## 10. Read state and mute
 
@@ -533,6 +545,9 @@ with `-${botUsername}`.
 - There is no mucsub unsubscribe in the web client; leaving a room removes the
   membership but not the subscription.
 - A ban issued by an affiliated user gets no IQ result (server-side quirk).
+- The web component does not yet consume the `ethora-event` headline (section 9), so
+  renames, avatar and room-title changes reach an open client only on the next
+  room-list reload.
 
 ## 15. Versioning
 
