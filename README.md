@@ -23,6 +23,7 @@ This repository serves as the **SDK monorepo** — a single place to discover, c
 | [`bots/`](bots/) | [ethora-bots](https://github.com/dappros/ethora-bots) | Bot framework (XMPP, LLM, automation) | Active |
 | [`setup/`](setup/) | [ethora-setup](https://github.com/dappros/ethora-setup) | CLI setup tool — `npx @ethora/setup` | Active |
 | [`api/`](api/) | *(inline)* | REST API documentation (Swagger/OpenAPI) | Reference |
+| [`api/CHAT_PROTOCOL.md`](api/CHAT_PROTOCOL.md) | *(inline)* | Chat wire protocol: JIDs, XMPP stanzas and the `<data>` element, history, push, AI agents | Reference |
 | — | [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | React Native app (iOS & Android) | Legacy |
 | — | [site_crawler](https://github.com/dappros/site_crawler) | Website crawler for RAG ingestion | Active |
 
