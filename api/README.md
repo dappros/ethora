@@ -2,8 +2,13 @@
 
 Studying this section is optional. You can build your apps using Ethora engine without having to study the API documentation.
 
-_Note: the chat wire protocol (identity and JID conventions, connecting over XMPP, rooms, the message stanza and its `<data>` element, history, read state, push and AI agents) is documented in [CHAT_PROTOCOL.md](CHAT_PROTOCOL.md). The older [chats.md](chats.md) is kept for historical context._
-_For additional information regarding the Push Notifications please refer to https://github.com/dappros/ethora/blob/main/api/pushes.md_
+Reference pages in this folder:
+
+- [CHAT_PROTOCOL.md](CHAT_PROTOCOL.md): the chat wire protocol (identity and JID conventions, connecting over XMPP, rooms, the message stanza and its `<data>` element, history, read state, push and AI agents).
+- [pushes.md](pushes.md): push notifications (operator setup per app, client registration, payload, broadcasts, calls).
+- [chats.md](chats.md): the original 2022 chat flow, kept for historical context only.
+
+The `swagger.js`, `swaggerOptions.js`, `tags.js` and `index.js` files are an August 2023 snapshot of the backend's JSDoc Swagger annotations. They are not updated; the live Swagger below is generated from the running backend and is the only current API reference.
 
 
 
@@ -21,7 +26,7 @@ This is the canonical API documentation, regenerated automatically from the runn
 
 Swagger documentation can be used interactively.
 
-You can track changes to Swagger documentation here in this repo.
+The spec itself is served at https://api.chat.ethora.com/api-docs/swagger.json.
 
 <img width="1238" alt="Ethora Swagger UI" src="https://github.com/dappros/ethora/assets/328787/3541718c-f933-4ec5-bae6-38152f97f05c">
 

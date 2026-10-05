@@ -70,10 +70,10 @@ These public services run on the Ethora Cloud and are useful when exploring or t
 | **Web app** | [app.chat.ethora.com](https://app.chat.ethora.com) | Sign up, create apps, get API credentials, manage chats and AI bots. |
 | **API** | [api.chat.ethora.com](https://api.chat.ethora.com) | REST API used by all SDKs. |
 | **API docs (Swagger)** | [api.chat.ethora.com/api-docs/#/](https://api.chat.ethora.com/api-docs/#/) | Live, up-to-date OpenAPI / v2 routes. |
-| **XMPP** | `wss://xmpp.chat.ethora.com:5443/ws` | Real-time messaging gateway. |
+| **XMPP** | `wss://xmpp.chat.ethora.com/ws` | Real-time messaging gateway (WebSocket; BOSH at `/bosh`). Wire protocol: [api/CHAT_PROTOCOL.md](api/CHAT_PROTOCOL.md). |
 | **SDK Playground** | [playground.chat.ethora.com](https://playground.chat.ethora.com) | Live `@ethora/chat-component` playground, code export, HTTP testing. |
 | **Uptime / status** | [uptime.chat.ethora.com](https://uptime.chat.ethora.com) | Public uptime and journey checks for the Ethora platform. |
-| **Documentation** | [API docs](https://api.chat.ethora.com/api-docs/) | REST API reference. Guides and SDK docs: [ethora.com/chat-sdk](https://ethora.com/chat-sdk/) and [ethora.com/ai-sdk](https://ethora.com/ai-sdk/). |
+| **Documentation** | [API docs](https://api.chat.ethora.com/api-docs/) | REST API reference. Chat protocol and push: [api/](api/). Guides and SDK docs: [ethora.com/chat-sdk](https://ethora.com/chat-sdk/) and [ethora.com/ai-sdk](https://ethora.com/ai-sdk/). |
 | **QA environment** | [chat-qa.ethora.com](https://chat-qa.ethora.com) | Pre-production QA environment (use for pre-release validation only; `chat.ethora.com` remains the canonical default for everything else). |
 
 ## Getting Started
