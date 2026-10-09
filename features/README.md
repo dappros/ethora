@@ -2,7 +2,7 @@
 
 > **Version:** 26.04  ·  **Last reviewed:** 2026-04-21  ·  Legend: ✅ Present  ·  🟡 Partial  ·  🛠 Roadmap  ·  — Absent
 
-High-level capability coverage across all Ethora SDKs. Source of truth is [`features.yaml`](features.yaml). Detailed view by category, with evidence paths: [views/by-category.md](views/by-category.md).
+High-level capability coverage across all Ethora SDKs. Source of truth is [`features.yaml`](features.yaml). Detailed view by category, with evidence paths: [views/by-category.md](views/by-category.md). Historical archive: [historical/2021-engine-feature-list.md](historical/2021-engine-feature-list.md).
 
 ## Coverage summary
 
