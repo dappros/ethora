@@ -16,6 +16,137 @@
 
 ---
 
+## Week 41 (Oct 5 – 11, 2026) — Agents get Memory, a Try-it chat and a knowledge health check; the website AI widget keeps its look on the App and lists its visitors; the React Native SDK catches up with the web and adds opt-in encrypted rooms; a Claude Code skill adds Ethora chat to an app from one prompt; Ethora Core lands on Azure Marketplace
+
+**Contributors:** Taras Filatov, Roman Leshchuh, Dmytro Berberov, Yurii T., Borys Bordunov, plus a community contribution (meichuanyi)
+**Total commits:** 96 across SDK/app repos + 123 platform/server | **Active repos:** 15
+
+### Theme
+
+The first full week on the 26.10 line went into **AI agents**. An agent's long-term notes are now called Memory, its prompt is called Instructions, and both can be tested in a **Try it** chat inside Agent Settings before anything is deployed, with the knowledge excerpts and source pages it used shown under each answer. Knowledge search combines meaning with exact keywords, so product codes and names are found; each Web or Docs index reports its health and offers a rebuild; a crawl can be stopped; a new agent can start from a public template; and the agent now knows its own name, bio and today's date. The hosted MCP server learned the same tricks in the same week.
+
+The second line was the **website AI widget**. Its appearance is now saved on the App, with a live preview, theme presets and a colour picker, and every embed picks it up without re-pasting the snippet. Anonymous visitors get their own tab under Users with the page the chat started on and the transcript, and the WordPress plugin ships the on-demand widget build.
+
+The third line was **mobile**. The React Native SDK took the web SDK's foundation in one port (history by server cursor, names looked up on demand, real member counts, a fast start for accounts with many rooms, jump-to-message windows), then added opt-in end-to-end encrypted rooms, user language and password settings, swipe actions, mute and a new voice-message player across seven npm releases.
+
+Alongside: a **Claude Code skill** that adds Ethora chat to a React or React Native app from one prompt, an **Ethora + Ollama** example for agents on a local model, and **Ethora Core on Azure Marketplace**, with every cloud image now running the same Docker Compose bundle and the Enterprise modules available as compose profiles.
+
+### Web Chat SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 18 commits / 26.9.8
+
+- **Improved:** **A fast start for users with many rooms.** The room list renders as soon as the API answers and the room joins run in the background, the open room first and then by activity; joins ask for no server history, history preload is staged (top rooms first, a small worker pool, the opened room jumps the queue), and unread counts and last messages come straight from the room list ([`aae22b7`](https://github.com/dappros/ethora-chat-component/commit/aae22b7))
+- **New:** **Names for every sender.** Senders of older messages are looked up on demand, batched and cached, with a placeholder while the lookup runs instead of a raw id ([`65276c9`](https://github.com/dappros/ethora-chat-component/commit/65276c9))
+- **Improved:** **Real member counts in big rooms.** The header and profile show the room's true user count, and the members list, @ mentions and the search sender filter load the full room directory on demand ([`159a769`](https://github.com/dappros/ethora-chat-component/commit/159a769))
+- **New:** Profile and room changes arrive as server events and refresh the UI in place ([`3d068db`](https://github.com/dappros/ethora-chat-component/commit/3d068db))
+- **Fixed:** A join in flight at a socket drop no longer blocks rooms and every history request settles; the older-history loader recovers when the cursor goes backwards; a room fills the viewport on open even when its first page is mostly read receipts; the room subtitle stays on one line on narrow screens ([`40fe72f`](https://github.com/dappros/ethora-chat-component/commit/40fe72f), [`0f11abb`](https://github.com/dappros/ethora-chat-component/commit/0f11abb), [`345bfe5`](https://github.com/dappros/ethora-chat-component/commit/345bfe5), [`85a105a`](https://github.com/dappros/ethora-chat-component/commit/85a105a))
+- **Fixed:** Ordinary messages no longer carry a redundant system-message flag ([`a3bf5e7`](https://github.com/dappros/ethora-chat-component/commit/a3bf5e7))
+- **Milestone:** **`@ethora/chat-component` 26.9.8 published** on 5 October ([`303425d`](https://github.com/dappros/ethora-chat-component/commit/303425d))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 24 commits / 26.8.6 → 26.10.1
+
+- **New:** **The web SDK's foundation, ported in one go.** History follows the server's paging cursor, unknown senders are resolved on demand, rooms show their true member count, server events refresh profiles and room details, and accounts with many rooms see their list as soon as the API answers while joins run in the background. New options `historyPreload`, `userLookupRoute` and `trustedEventSenders` ([`3f8880f`](https://github.com/dappros/ethora-chat-component-rn/commit/3f8880f), [`3f17ec6`](https://github.com/dappros/ethora-chat-component-rn/commit/3f17ec6), [`57f5005`](https://github.com/dappros/ethora-chat-component-rn/commit/57f5005))
+- **New:** **Search that reaches into messages.** With `enableMessageSearch` the chat-list search also lists matching messages under their chats, the field has a clear button, and the sender filter finds members of big rooms ([`a692354`](https://github.com/dappros/ethora-chat-component-rn/commit/a692354), [`a8e8990`](https://github.com/dappros/ethora-chat-component-rn/commit/a8e8990))
+- **New:** **Jump to an old message without paging all history.** A search hit, push or link opens a short window of the archive around the message, with a Jump to latest button; threads load their history by the same cursor ([`a3f0dce`](https://github.com/dappros/ethora-chat-component-rn/commit/a3f0dce), [`366e778`](https://github.com/dappros/ethora-chat-component-rn/commit/366e778))
+- **New:** **End-to-end encrypted rooms on mobile, opt-in.** With `config.e2ee.enabled`, rooms the app owner marks as encrypted work on iOS and Android as they do on the web: OMEMO 2 text both ways, attachments sealed on the device before upload, an "Encrypted message" action on a user's profile, and each person's devices with fingerprints and a trust mark ([`d424b38`](https://github.com/dappros/ethora-chat-component-rn/commit/d424b38), [`01b2c0a`](https://github.com/dappros/ethora-chat-component-rn/commit/01b2c0a))
+- **New:** **Language and password in Settings.** Users pick the interface language and the language messages are translated into, and can change their password on its own Settings page; both cards are off by default, and every caption in menus, dialogs and toasts now follows the chosen language ([`ff8f631`](https://github.com/dappros/ethora-chat-component-rn/commit/ff8f631))
+- **New:** **Swipe a room left for Report and Leave**, as in the messengers (`disableRoomSwipeActions` turns it off) ([`e5698d5`](https://github.com/dappros/ethora-chat-component-rn/commit/e5698d5))
+- **New:** **Mute a chat from its profile, and a new voice-message player** with a waveform ([`7c8d28e`](https://github.com/dappros/ethora-chat-component-rn/commit/7c8d28e))
+- **Improved:** **The chat says when it is not live.** The headers read "Connecting…" or "Updating…" while the connection is being set up or rooms are catching up, the connection closes when the app goes to the background so pushes keep arriving, and a lost session shows "Session expired" with a Retry ([`49823f1`](https://github.com/dappros/ethora-chat-component-rn/commit/49823f1), [`169078a`](https://github.com/dappros/ethora-chat-component-rn/commit/169078a), [`22679f5`](https://github.com/dappros/ethora-chat-component-rn/commit/22679f5))
+- **Improved:** In-app toasts follow the web client's rules (another chat, someone else, app on screen); Manage Data, Visibility, Blocked users and the shares screens were reworked and scroll ([`71980d7`](https://github.com/dappros/ethora-chat-component-rn/commit/71980d7), [`0f244cc`](https://github.com/dappros/ethora-chat-component-rn/commit/0f244cc))
+- **Fixed:** iOS videos play from the secure files host, falling back to a cached download when streaming is refused; a pending sender is no longer shown as a profile name ([`359e12f`](https://github.com/dappros/ethora-chat-component-rn/commit/359e12f), [`7598533`](https://github.com/dappros/ethora-chat-component-rn/commit/7598533))
+- **Milestone:** **`@ethora/chat-component-rn` 26.8.7 through 26.10.1 published** (seven releases, 6 to 9 October; 26.10.0 aligns the SDK with the 26.10 line) ([`184ef4a`](https://github.com/dappros/ethora-chat-component-rn/commit/184ef4a), [`425f083`](https://github.com/dappros/ethora-chat-component-rn/commit/425f083))
+
+### Web App & Admin (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 21 commits / branch 2610
+
+- **New:** **Agent Settings: Memory, Instructions and a Try it chat.** Test an agent's instructions, memory and knowledge without deploying it, with the number of knowledge excerpts and their pages under each answer; Web Index and Docs Index show a knowledge health line and offer a rebuild when stored content is not searchable; a new agent can start from a blank agent or a public template ([`193dcae`](https://github.com/dappros/ethora-app-reactjs/commit/193dcae), [`ee6c192`](https://github.com/dappros/ethora-app-reactjs/commit/ee6c192))
+- **New:** **Agents list:** category filter and tags, a clone dialog with "include knowledge", a confirmation before an agent goes public, and Stop on a running crawl ([`100471b`](https://github.com/dappros/ethora-app-reactjs/commit/100471b), [`14affb8`](https://github.com/dappros/ethora-app-reactjs/commit/14affb8))
+- **New:** **AI Widget appearance saved on the App, with a live preview.** Theme presets including the app's brand colour, a colour picker with hex input, size cards, sliders, launcher icon upload, and the agent's avatar in the preview; pinning values in the snippet is now optional ([`3022cf9`](https://github.com/dappros/ethora-app-reactjs/commit/3022cf9), [`3f7d1b2`](https://github.com/dappros/ethora-app-reactjs/commit/3f7d1b2), [`0bb1fd1`](https://github.com/dappros/ethora-app-reactjs/commit/0bb1fd1), [`8507742`](https://github.com/dappros/ethora-app-reactjs/commit/8507742))
+- **Improved:** **A simpler AI Widget tab.** Test widget on top, one agent card (picker, avatar, bio, on/off, knowledge size, conversations), the code first with appearance on its own tab, a copy that copies the snippet as written, and a drag-and-drop zone for documents ([`44ebb96`](https://github.com/dappros/ethora-app-reactjs/commit/44ebb96), [`dfbc609`](https://github.com/dappros/ethora-app-reactjs/commit/dfbc609))
+- **New:** **Users | Admins | Visitors.** Website visitors from the AI widget get their own tab: country, device, the page the chat started on, first and last seen, the transcript, and Delete ([`44eb22b`](https://github.com/dappros/ethora-app-reactjs/commit/44eb22b))
+- **New:** **Agent Flows editor checks the script while you type,** with line numbers and the error line highlighted ([`4952470`](https://github.com/dappros/ethora-app-reactjs/commit/4952470), [`dba5eba`](https://github.com/dappros/ethora-app-reactjs/commit/dba5eba))
+- **New:** **Account > Security: change email** ([`fc83ec9`](https://github.com/dappros/ethora-app-reactjs/commit/fc83ec9))
+- **New:** **Server settings page for super admins:** email delivery, feedback retention, default rooms, analytics reports, rate limits and the AI provider, each showing where its value comes from, with Reset and a note when a change waits for a restart ([`42ed201`](https://github.com/dappros/ethora-app-reactjs/commit/42ed201))
+- **New:** The License page shows the registry credential for the Enterprise module images ([`fdea78e`](https://github.com/dappros/ethora-app-reactjs/commit/fdea78e))
+- **Improved:** Short names and an empty last name are accepted in the admin forms; Profile's About, Documents, Preferences and Logout sections tidied ([`5a7fb30`](https://github.com/dappros/ethora-app-reactjs/commit/5a7fb30), [`314d936`](https://github.com/dappros/ethora-app-reactjs/commit/314d936))
+- **Fixed:** Agent Settings tabs show the saved value after a tab switch; the read-only notice no longer takes a third of the page ([`0e6019b`](https://github.com/dappros/ethora-app-reactjs/commit/0e6019b), [`808b14c`](https://github.com/dappros/ethora-app-reactjs/commit/808b14c))
+
+### Embeddable AI Widget (`ai-chat-widget`)
+> [ethora-ai-chat-widget](https://github.com/dappros/ethora-ai-chat-widget) | 4 commits
+
+- **New:** **The widget applies the appearance saved in the admin.** It reads the App's stored look before drawing the launcher (1.5 s timeout); a value on the snippet or in the URL still wins, so existing embeds behave as before ([`5fca704`](https://github.com/dappros/ethora-ai-chat-widget/commit/5fca704))
+- **New:** The session records the page the widget runs on (origin and path only) so operators can see where a chat started ([`d180d2a`](https://github.com/dappros/ethora-ai-chat-widget/commit/d180d2a))
+- **Fixed:** The bundle is built as ASCII so it renders on pages that are not UTF-8, and the PDF viewer is located relative to the script's own directory ([`e6c97ff`](https://github.com/dappros/ethora-ai-chat-widget/commit/e6c97ff), [`0cd00fd`](https://github.com/dappros/ethora-ai-chat-widget/commit/0cd00fd))
+
+### WordPress Plugin (`wp-plugin`)
+> [ethora-wp-plugin](https://github.com/dappros/ethora-wp-plugin) | 2 commits / 1.7.2 → 1.7.3
+
+- **Milestone:** **1.7.3:** the bundled widget is the current 26.10 build, which creates a visitor session the first time the launcher is hovered or opened (not on page load), resumes it for a returning visitor, and records the page the chat started on ([`0d93b29`](https://github.com/dappros/ethora-wp-plugin/commit/0d93b29), [`927708e`](https://github.com/dappros/ethora-wp-plugin/commit/927708e))
+
+### AI Assistants & MCP (`mcp-server`)
+> [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | 3 commits (on main, next npm release)
+
+- **New:** **Agent and widget tools:** `ethora-agent-try`, `ethora-agent-knowledge-get` / `-rebuild`, `ethora-source-site-crawl-cancel`, and a new widget group with `ethora-widget-appearance-get` / `-set` for the look saved on the App; `includeKnowledge` on clone, visibility and category filters on the agent list, and crawls and uploads can target a named agent ([`e3453a5`](https://github.com/dappros/ethora-mcp-server/commit/e3453a5))
+- **Improved:** In user sign-in, `ethora-agent-list` lists the account's agents unless an `appId` is passed ([`1a1f0fc`](https://github.com/dappros/ethora-mcp-server/commit/1a1f0fc))
+
+### Claude Code Skill (`chat-ethora-skill`) — new repository
+> [chat-ethora-skill](https://github.com/dappros/chat-ethora-skill) | 11 commits / MIT
+
+- **New:** **Add Ethora chat to an app from one prompt.** A Claude Code skill that detects a web (Vite, Next) or React Native project, installs the chat SDK, wraps the app, creates the chat page or screen, signs in to the Ethora admin from the terminal to create or pick an app, writes the env files, sets up users signed in automatically through the app's own backend (asking before it touches the backend), and verifies the result; works with Ethora Cloud or a self-hosted server ([`c70fd42`](https://github.com/dappros/chat-ethora-skill/commit/c70fd42), [`5a5122f`](https://github.com/dappros/chat-ethora-skill/commit/5a5122f))
+- **New:** Installs as a Claude Code plugin from its own marketplace, by cloning into `.claude/skills`, or with `npx skills` for Cursor, Codex and other agents; MIT licensed ([`0dc43b4`](https://github.com/dappros/chat-ethora-skill/commit/0dc43b4), [`4f399f6`](https://github.com/dappros/chat-ethora-skill/commit/4f399f6), [`e991839`](https://github.com/dappros/chat-ethora-skill/commit/e991839))
+- **Improved:** Directory readiness: icon and display name, documentation and privacy links, the admin password and MFA code typed only at a hidden prompt, token routes written in the backend's own language (Python, PHP, Ruby, Go, Java/Kotlin, .NET), and a 3-minute demo video ([`6b6f6de`](https://github.com/dappros/chat-ethora-skill/commit/6b6f6de), [`3a87533`](https://github.com/dappros/chat-ethora-skill/commit/3a87533), [`6688d89`](https://github.com/dappros/chat-ethora-skill/commit/6688d89), [`3cbf092`](https://github.com/dappros/chat-ethora-skill/commit/3cbf092))
+
+### Ethora + Ollama (`ollama-example`) — new repository
+> [ethora-ollama-example](https://github.com/dappros/ethora-ollama-example) | 1 commit
+
+- **New:** **Run an Ethora AI agent on a model that never leaves your machine.** A compose file that runs Ollama and pulls a CPU-friendly chat model and an embeddings model, the four environment variables that point Ethora's AI service at it, a pgvector database for knowledge, and scripts that verify the calls and test a chat ([`49f28a0`](https://github.com/dappros/ethora-ollama-example/commit/49f28a0))
+
+### Platform API & AI Service (`platform`)
+> Platform API and AI service | 54 commits (2610, with push changes also on 2609)
+
+- **New:** **Agent Memory and a sharper knowledge search.** Knowledge search combines meaning with keyword matching so exact names and product codes are found, drops near-duplicate excerpts and caps excerpts per page, and hands them to the model as reference material; a Try it endpoint answers from a test conversation and returns the sources it used; a knowledge health endpoint compares stored and searchable content, with one rebuild per agent at a time and embedding in batches.
+- **New:** **Agents know who they are.** The model is told its display name, bio and today's date; web excerpts carry their source URL so answers can cite it; a running crawl can be stopped and keeps the pages delivered so far.
+- **New:** **Agent templates, categories and clones.** A shared template stays shared until an App changes something, then the App gets its own copy (its bot is repointed, nothing else changes); agents have categories, clone with or without their knowledge, can be deleted by the App that homes them, and take their knowledge with them when deleted.
+- **New:** **The website widget's appearance is stored on the App** with a public, cached widget config endpoint; widget conversations record the page they started on, and visitors are kept out of the Users list.
+- **New:** **Change your own email** with the same proof as a password change (current password, a fresh provider sign-in or an MFA code); other sessions are ended.
+- **New:** **Server settings a super admin can change after install** (email delivery, feedback retention, default-room trimming, analytics reports, rate limits, AI provider), stored by the platform and taking precedence over the deployment values, with a note of which saved change still waits for a restart.
+- **New:** **Push notifications with the server's own keys for every app.** Keys uploaded to the base app serve every app on the install, an app with its own keys uses them, there is no daily cap, and each app has a single off switch.
+- **New:** The licence service delivers each customer's pull credential for the Enterprise module images with every heartbeat, and the License page shows it to super admins.
+- **Improved:** **One name rule everywhere:** a first name of 1 to 60 characters and an optional last name on every sign-up, create and profile route, so short and single names are accepted.
+- **Improved:** Statistics count each archived message once, with a backfill for past days; room member pages are stable and the room-list preview shows the most recently active members first; social sign-up works on apps without blockchain and social logins re-join default rooms; a refused request body answers 4xx; `GET /v1/users/my` is served.
+- **New:** Optional error reporting from the API, push and AI services to a Sentry-compatible tracker (off unless configured); log lines name their source file and line, with per-request traces moved to debug.
+- **Docs:** Agents API, widget config and crawl cancel in the API reference.
+
+### Chat Server & Deployment (`platform`)
+> Server installation, images and licence service | 69 commits
+
+- **Milestone:** **Ethora Core is live on Azure Marketplace** (8 October), joining AWS Marketplace.
+- **Improved:** **Every cloud image runs the same compose bundle.** The AWS, Azure, DigitalOcean, Vultr and Akamai images share one provisioning script and pre-pull the bundle's images; the Azure and DigitalOcean images were re-baked and verified on build 2610.16.
+- **New:** **Enterprise modules as compose profiles.** The AI service (with its pgvector database and the website chat widget), push, playground, MCP and uptime modules run from the same bundle behind `--modules`, and their images are published to private registry repositories reached with the customer's licence credential.
+- **Improved:** **Chat attachments work out of the box on every Core install:** the secure files host is now derived like the other hosts by the installer, the cloud images, the compose bundle and the Helm chart.
+- **Improved:** Release builds: build numbers from git tags, an image-export workflow for hosts without a registry token, a registry cleanup workflow, and an image build after every submodule bump.
+- **New:** Monitoring alerts for process restart loops and log levels for more log formats.
+- **Docs:** "Other ways to install" (marketplaces, Helm, platforms, Cloudron, Docker Hub) in the installer README, the chat server's Ethora modules described, Server settings in the operator notes, and team instructions for testing the full version from Docker Hub.
+
+### Monitoring (`uptime`)
+> [ethora-uptime](https://github.com/dappros/ethora-uptime) | 3 commits / branch 2610
+
+- **Improved:** Journey checks delete the agents they create before deleting their synthetic App, and the runtime image was slimmed ([`97275c7`](https://github.com/dappros/ethora-uptime/commit/97275c7), [`7ce4262`](https://github.com/dappros/ethora-uptime/commit/7ce4262))
+
+### Bots (`bots`)
+> [ethora-bots](https://github.com/dappros/ethora-bots) | 1 commit
+
+- **Docs:** The 2021-2023 bot documentation preserved in the repository ahead of the old wiki's retirement ([`538c3cc`](https://github.com/dappros/ethora-bots/commit/538c3cc))
+
+### Monorepo (`ethora`)
+> [ethora](https://github.com/dappros/ethora) | 8 commits (plus daily submodule bumps)
+
+- **Docs:** **A chat protocol reference** for client authors (server events are `<ethora-event>`), the push notifications page rewritten, and hosting options pointing at [ethora.com/get](https://ethora.com/get/) ([`33c98d8`](https://github.com/dappros/ethora/commit/33c98d8), [`7bed929`](https://github.com/dappros/ethora/commit/7bed929), [`e448975`](https://github.com/dappros/ethora/commit/e448975), [`e6c6f59`](https://github.com/dappros/ethora/commit/e6c6f59))
+- **Docs:** README "Run your own server" with distribution badges; the 2021 engine feature list archived; Week 40 release notes; a typo fix in the contributing guide from a community contributor ([`dcd6d68`](https://github.com/dappros/ethora/commit/dcd6d68), [`192cb49`](https://github.com/dappros/ethora/commit/192cb49), [`977a964`](https://github.com/dappros/ethora/commit/977a964), [`2f2a16e`](https://github.com/dappros/ethora/commit/2f2a16e))
+
+---
+
 ## Week 40 (Sep 28 – Oct 4, 2026) — Release 26.10 ships; Ethora Core is packaged for a dozen one-click platforms; the web chat SDK learns to search messages and discover public chats; a speed pass across widget, API and admin console
 
 **Contributors:** Taras Filatov, Roman Leshchuh, Dmytro Berberov, Yurii T., Borys Bordunov
