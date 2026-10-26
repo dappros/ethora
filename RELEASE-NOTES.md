@@ -16,6 +16,110 @@
 
 ---
 
+## Week 43 (Oct 19 – 25, 2026) — The Ethora app installs from the browser; pushes that can stay generic, ring a call on the web or carry a reaction; blocking reaches group chats; a PHP SDK for server integrations takes shape
+
+**Contributors:** Roman Leshchuh, Borys Bordunov, Dmytro Berberov, Yurii T., Taras Filatov
+**Total commits:** 55 across SDK/app repos + 25 in the new installable web app + 33 platform/server (excluding automated submodule bumps and install-mirror syncs) | **Active repos:** 14
+
+### Theme
+
+A quieter week by volume and a busy one for **notifications**. On the platform, an App can now choose a **generic push content mode**: every chat push then says only "New message", with no text, names or pictures, and child Apps inherit the setting from their parent, so one switch covers a whole tenant. Pushes learned three new things in the same days: a **push for a reaction** to your message (silent, rate limited per sender, never replacing the chat's message notification, and switchable per install), the **sender's avatar** next to the text the way messengers show it, and fixed texts in the **device's own language** (English, French, Spanish). The unread total behind the app badge stopped counting the message you had just read.
+
+The web chat SDK caught up on the same surface: **incoming call pushes on the web ring like on mobile**, with Answer and Decline on a sticky notification even when the tab is hidden, a "Missed call" when the ring has gone stale, and one tab acting for all of them. The React Native SDK took **incoming calls from VoIP pushes** on iOS (CallKit, never ringing twice) and from a host's call notification on Android, plus sender avatars and reaction pushes.
+
+The second line was a **new surface: the Ethora app as an installable web app (PWA)**, the same workspace, sign-in and chat flow as the mobile app, built on the web chat SDK, with web push, an unread badge on the app icon, tenant branding taken from the App's config, and an Add to Home Screen guide on iOS. **Blocking** reached group chats (Block user from a member's profile, their messages replaced by a placeholder, live and after a reload), and owners can now edit a chat's title, description and picture through the API so the change survives a refresh. A **PHP client for the Platform API's server-token surface** was started, and both SDKs and the widget moved to tagged release workflows with package checks.
+
+### Web Chat SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 14 commits (17 with release commits) / 26.10.4 → 26.10.7
+
+- **New:** **Incoming call pushes on the web.** The service worker shows a sticky "Incoming call" notification with Answer and Decline when no visible page is ringing (a hidden tab with a dead socket included); Answer opens the app and accepts the call, Decline tells the caller. A push whose call token has expired shows "Missed call" instead and never rings, several tabs ringing for one call settle on one outcome, and logout clears any held call push ([`e6bbc49`](https://github.com/dappros/ethora-chat-component/commit/e6bbc49))
+- **Improved:** **Web push taps land where they should:** a tap on a cold start keeps its target until the page is ready, a tap with the app already open focuses the existing tab without reloading it, `pushNotifications.clickPath` sets the landing path, and photo and video pushes show their thumbnail ([`e6bbc49`](https://github.com/dappros/ethora-chat-component/commit/e6bbc49))
+- **New:** **Pushes for reactions.** Adding an emoji to someone else's message asks the server for a push to its author (the quoted text is cut to 120 characters and left out of encrypted rooms); reaction pushes arrive silent and replace the chat's previous reaction notification, not its message notification ([`251c5cd`](https://github.com/dappros/ethora-chat-component/commit/251c5cd))
+- **New:** **Block a user from a group chat.** Block user sits in a member's profile, their messages in every group show as "Blocked user. Unblock to see messages.", blocked senders are excluded from unread counts, and a toast after blocking points to Settings > Privacy & Data where the list lives. The block items appear when a host sets `config.features.userBlock: true` ([`18d262d`](https://github.com/dappros/ethora-chat-component/commit/18d262d), [`cb1989a`](https://github.com/dappros/ethora-chat-component/commit/cb1989a), [`0152bee`](https://github.com/dappros/ethora-chat-component/commit/0152bee), [`229da8e`](https://github.com/dappros/ethora-chat-component/commit/229da8e))
+- **New:** **Compatibility switches for servers on an earlier release:** `config.attachments.captionMode` (`'separate'` default sends the caption as its own message, `'inline'` keeps it on the media message), `config.uploads.endpoint` (`'auto'`, `'legacy'`, `'secure'`) and `config.features.userBlock` ([`af3ff4b`](https://github.com/dappros/ethora-chat-component/commit/af3ff4b))
+- **Fixed:** **1:1 chats show the other person's photo** in the room list, the header and the chat profile instead of initials; clicking an avatar opens the profile with current details; edits to a chat's title, description and picture are saved on the server and survive a page refresh ([`b59d522`](https://github.com/dappros/ethora-chat-component/commit/b59d522), [`5b1146f`](https://github.com/dappros/ethora-chat-component/commit/5b1146f), [`3c360db`](https://github.com/dappros/ethora-chat-component/commit/3c360db), [`cc73576`](https://github.com/dappros/ethora-chat-component/commit/cc73576), [`ead1a9e`](https://github.com/dappros/ethora-chat-component/commit/ead1a9e))
+- **Fixed:** Holding a bubble while scrolling or swiping no longer opens the context menu ([`c3b86b3`](https://github.com/dappros/ethora-chat-component/commit/c3b86b3))
+- **Testing:** Render-scope tests made deterministic ([`7be3e4b`](https://github.com/dappros/ethora-chat-component/commit/7be3e4b))
+- **Milestone:** **`@ethora/chat-component` 26.10.5 (19 Oct), 26.10.6 (20 Oct) and 26.10.7 (22 Oct) published** ([`4ebc5e2`](https://github.com/dappros/ethora-chat-component/commit/4ebc5e2), [`44471db`](https://github.com/dappros/ethora-chat-component/commit/44471db), [`3168224`](https://github.com/dappros/ethora-chat-component/commit/3168224))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 13 commits / 26.10.7 → 26.10.10
+
+- **New:** **Incoming calls from VoIP pushes (iOS) and from a host's call notification (Android).** A host whose PushKit code reports the VoIP push to CallKit uses `callKitUuid(callId)`, and the SDK reports the same call under the same UUID, so the push and the chat invite never ring twice; adding an emoji to someone's message now asks the server for a reaction push to its author ([`9e45712`](https://github.com/dappros/ethora-chat-component-rn/commit/9e45712))
+- **New:** **The sender's avatar in chat pushes**, next to the text with the app icon as the small badge (on iOS as a communication notification through the SDK's notification service extension), plus a refreshed push icon ([`352339f`](https://github.com/dappros/ethora-chat-component-rn/commit/352339f))
+- **Improved:** Chat UI updates across the room list, header, album grid and media messages, and search in the chat ([`d46de1b`](https://github.com/dappros/ethora-chat-component-rn/commit/d46de1b))
+- **Infrastructure:** **Tagged release workflow, as in the web SDK:** a release script that moves the CHANGELOG's Unreleased section into the new version and tags it, CI on the release commit, a check of the npm tarball's file list, npm publish with provenance and a GitHub release with the CHANGELOG section; `npm run publish:npm` runs the same checks from a developer's machine; `npm run build` no longer starts `expo prebuild` (the script is now `prebuild:native`) ([`c89db3e`](https://github.com/dappros/ethora-chat-component-rn/commit/c89db3e), [`2fffe2a`](https://github.com/dappros/ethora-chat-component-rn/commit/2fffe2a), [`da21c68`](https://github.com/dappros/ethora-chat-component-rn/commit/da21c68), [`74f329c`](https://github.com/dappros/ethora-chat-component-rn/commit/74f329c), [`d3bcb8b`](https://github.com/dappros/ethora-chat-component-rn/commit/d3bcb8b), [`277738b`](https://github.com/dappros/ethora-chat-component-rn/commit/277738b), [`3710b27`](https://github.com/dappros/ethora-chat-component-rn/commit/3710b27))
+- **Testing:** A repeatable encrypted-messaging interop check script; lint errors on main cleared; `deleteMe` token header covered ([`d1fa054`](https://github.com/dappros/ethora-chat-component-rn/commit/d1fa054), [`365cb9f`](https://github.com/dappros/ethora-chat-component-rn/commit/365cb9f), [`07632f5`](https://github.com/dappros/ethora-chat-component-rn/commit/07632f5))
+- **Milestone:** **`@ethora/chat-component-rn` 26.10.8 (20 Oct), 26.10.9 (21 Oct) and 26.10.10 (22 Oct) published**
+
+### Ethora Mobile App (`app-react-native`)
+> [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | 4 commits / branch new-project
+
+- **New:** VoIP push notifications for incoming calls and push notifications for reactions in the Ethora mobile app; push handling fixed and the version bumped ([`9950ac7`](https://github.com/dappros/ethora-app-react-native/commit/9950ac7), [`9988339`](https://github.com/dappros/ethora-app-react-native/commit/9988339), [`c961f7f`](https://github.com/dappros/ethora-app-react-native/commit/c961f7f), [`f0bccea`](https://github.com/dappros/ethora-app-react-native/commit/f0bccea))
+
+### Ethora Web App, installable (`pwa`)
+> New surface, live at pwa.chat.ethora.com | 25 commits
+
+- **New:** **The Ethora app as an installable progressive web app,** with the same flow as the mobile app: enter a workspace (any tenant address, including a self-hosted cluster), sign in with email or Google, and chat on the web chat SDK with calls, inline translation and the built-in profile, settings and logout menu. An install banner on Android and desktop, a tap-to-expand Add to Home Screen guide on iOS, and an offline banner.
+- **New:** **Web push and an unread badge on the app icon:** the push worker comes from the chat SDK (one notification per room, incoming calls with Answer and Decline, silent reaction pushes), and the icon badge shows the unread total (muted rooms excluded) while the app runs and counts up from notifications while it is closed.
+- **New:** **Tenant branding:** a tenant App opens with its own name, logo and primary colour (the chat uses the colour too); `?workspace=` preselects a tenant, recent workspaces appear as chips, and white-label builds can set a default workspace.
+- **Improved:** On iOS the chat fills the real screen with the composer above the keyboard; back gestures and browser back close the open room; chat QR share links open the room in the app; reset-password links open the workspace's web app; Google sign-in works in the installed app and on iOS Safari.
+
+### Embeddable AI Widget (`ai-chat-widget`)
+> [ethora-ai-chat-widget](https://github.com/dappros/ethora-ai-chat-widget) | 5 commits / 26.10.1
+
+- **Milestone:** **Widget 26.10.1 released (21 Oct)** with the language picker, resizable panel and quick-reply buttons, the appearance saved in the admin's AI Widget tab, a visitor session created on first open and resumed on return, and pdf.js loaded only when a PDF is shown ([`2b27a87`](https://github.com/dappros/ethora-ai-chat-widget/commit/2b27a87))
+- **Infrastructure:** Pull-request checks, a type-check ratchet, a package check and a dry-run release that attaches the bundle, pdf.js and SHA256 checksums to the GitHub release; workflow docs ([`25e54b9`](https://github.com/dappros/ethora-ai-chat-widget/commit/25e54b9), [`0e90b9c`](https://github.com/dappros/ethora-ai-chat-widget/commit/0e90b9c), [`8ea6f88`](https://github.com/dappros/ethora-ai-chat-widget/commit/8ea6f88), [`c21e83f`](https://github.com/dappros/ethora-ai-chat-widget/commit/c21e83f))
+
+### WordPress Plugin (`wp-plugin`)
+> [ethora-wp-plugin](https://github.com/dappros/ethora-wp-plugin) | 7 commits / 1.8.0
+
+- **Milestone:** **Plugin 1.8.0 bundles widget 26.10.1** ([`fc74e9e`](https://github.com/dappros/ethora-wp-plugin/commit/fc74e9e))
+- **Docs:** **A refreshed WordPress.org listing:** six real screenshots (one of three pages crawled and indexed on the live app), a new banner and a use-case-first description ([`bad7bc5`](https://github.com/dappros/ethora-wp-plugin/commit/bad7bc5), [`8b154af`](https://github.com/dappros/ethora-wp-plugin/commit/8b154af), [`8c1a644`](https://github.com/dappros/ethora-wp-plugin/commit/8c1a644))
+- **Infrastructure:** Publishing to WordPress.org starts on a merged version change or a tag (versions already tagged are skipped) and now uploads the listing assets; the widget update step verifies checksums and takes the pdf.js files ([`c90cbf3`](https://github.com/dappros/ethora-wp-plugin/commit/c90cbf3), [`a682f5d`](https://github.com/dappros/ethora-wp-plugin/commit/a682f5d), [`f50ae32`](https://github.com/dappros/ethora-wp-plugin/commit/f50ae32))
+
+### Web App & Admin (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 5 commits / branch 2610
+
+- **New:** User blocking turned on in the web app's chat, with a toast after Unblock in Settings > Privacy & Data ([`f5824b1`](https://github.com/dappros/ethora-app-reactjs/commit/f5824b1), [`179831e`](https://github.com/dappros/ethora-app-reactjs/commit/179831e))
+- **Fixed:** Users without a profile picture can upload their first one ([`3fa0427`](https://github.com/dappros/ethora-app-reactjs/commit/3fa0427))
+- **Infrastructure:** The image can be built against a local chat SDK checkout; chat SDK bumped to 26.10.4 ([`1c684ae`](https://github.com/dappros/ethora-app-reactjs/commit/1c684ae), [`4e456e0`](https://github.com/dappros/ethora-app-reactjs/commit/4e456e0))
+
+### Platform API & Push (`platform`)
+> Platform API and push service | 19 commits across release lines 2610 and 2609
+
+- **New:** **Generic push content mode per App** (`PUT/GET /v1/push/content-mode/:appId`, `full` or `generic`). In generic mode a chat push says only "New message" with ids, no text, names or pictures, while grouping, priority and badge stay; calls are not affected. Child Apps inherit their parent's mode, so one call on a tenant's base App covers all of them.
+- **New:** **Reaction pushes:** the push names who reacted and to what, goes out silent on a separate Android channel with its own collapse key, is limited to one per sender and receiver every 10 seconds, and becomes "Someone reacted to your message" in generic mode; an install can switch reaction pushes off.
+- **New:** **The sender's avatar in chat pushes,** with a per-App switch (`/v1/push/sender-avatar/:appId`).
+- **New:** **Push texts in the device's language** (English, French, Spanish): a device can register its language, which also picks the translated message text.
+- **API:** `PATCH /v1/chats/my/:chatName` lets a chat's owner change its title, description and picture (other members' room lists refresh); `GET /v1/chats/my` returns the caller's blocked users alongside the chats.
+- **Fixed:** Unread counts no longer include the message the reader has just viewed, so push badges are no longer one too high.
+
+### Chat Server & Deployment (`platform`)
+> Chat server, installers, images and QA deployment | 12 commits
+
+- **Improved:** A blocked member's messages in group rooms are delivered live and shown as the "Blocked user" placeholder, while blocking still stops delivery in 1:1 chats.
+- **New:** `features.reaction_pushes` install setting (default on) for reaction pushes.
+- **Improved:** Release images are built weekly or on demand and only for the components that changed, with arm64 builds for the monthly stable release; the web image is built against the pinned chat SDK; QA deployment gained a web-only scope and waits for the install mirror before updating.
+
+### Server Integrations (`sdk-php`, `shopify`)
+> New, in development | 2 commits
+
+- **New:** **A PHP SDK for the Platform API's server-token surface:** it signs the server token locally from the App id and secret (no login round trip), offers typed resources for the v1 and v2 APIs, pages and batch jobs, typed errors carrying Ethora's error code and request id, and retries on rate limits and server errors.
+- **New:** **A Shopify app backend** for the chat widget: OAuth install, an embedded App Home, and the GDPR data webhooks.
+
+### Design System (`design-system`)
+> [ethora-design-system](https://github.com/dappros/ethora-design-system) | 3 commits
+
+- **Docs:** Caught up with the live website theme (tokens, partials, docs) and added eight site partials with screenshots to the catalog: FAQ accordion, short answer, migration steps, video embed, onboarding call, glossary term, case-study styles and the hero chat demo ([`ef423eb`](https://github.com/dappros/ethora-design-system/commit/ef423eb), [`bbaa30a`](https://github.com/dappros/ethora-design-system/commit/bbaa30a), [`a2e10ef`](https://github.com/dappros/ethora-design-system/commit/a2e10ef))
+
+### Monorepo (`ethora`)
+> [ethora](https://github.com/dappros/ethora) | 1 commit (plus daily submodule bumps)
+
+- **Docs:** Week 42 release notes ([`aabab62`](https://github.com/dappros/ethora/commit/aabab62))
+
+---
+
 ## Week 42 (Oct 12 – 18, 2026) — Push notifications that carry the message without showing it to anyone else; albums, captions and read receipts on web and mobile; end-to-end encrypted calls; a Server settings console for operators; websites kept fresh in an agent's knowledge
 
 **Contributors:** Roman Leshchuh, Yurii T., Taras Filatov, Borys Bordunov, Dmytro Berberov
