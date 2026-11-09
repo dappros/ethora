@@ -16,6 +16,87 @@
 
 ---
 
+## Week 45 (Nov 2 – 8, 2026) — Apps get outgoing webhooks and a send-as-user API; live updates move onto the chat connection and Centrifugo leaves the stack; agents can reply only when mentioned, per room; the MCP server publishes a server card and can hand over the App Secret
+
+**Contributors:** Borys Bordunov, Yurii T., Dmytro Berberov, Roman Leshchuh, Taras Filatov
+**Total commits:** 27 across public SDK/app repos + 63 platform/server (excluding submodule bumps and install-mirror syncs) | **Active repos:** 12
+
+### Theme
+
+A platform week. The first line is **integration**: an App can now register **outgoing webhooks** and receive a signed JSON event when a message is created, edited, deleted or left unread, when a user signs up, signs in or out, comes online or goes offline, and when a chat is created or deleted. The admin console has a **Webhooks tab** to add endpoints, pick events, send a test event, see the last delivery and rotate the signing secret. In the other direction, an integration backend can now **post a message into a chat as one of the App's users**, and clients render it exactly like a message the user typed.
+
+The second line is **one connection instead of two**. The chat server now publishes its module events to a **Redis stream** that the platform consumes (events raised while the API restarts are handled once it is back), and the admin console takes its live App statistics and crawler progress from **events on the chat connection it already has open**. That let the team **remove Centrifugo** from the API, the admin console, every deploy form and the monitoring rules: one service fewer to run on every install.
+
+The third line is **agents and the MCP server**. An agent in a group room can be set to **reply only when mentioned** (or smart, or always) for that room alone; the MCP server answers the **MCP Server Card** paths (SEP-2127) and the AI catalog, can **return the App Secret** to the App's owner on request so a script can provision an App end to end, and records usage events so the platform can see sessions and tool calls; the admin console, the consent page and the connector landing page offer **three starter prompts** for a freshly connected assistant.
+
+Smaller items: the web and React Native SDKs treat a message the server already has as delivered (no false "Failed"), the React Native SDK waits longer for the server's ping and echo while it is busy with a burst of sends (26.11.1 and 26.11.2 published), the chat server caps the time a translation may take, and archiving a user or an App now also ends their open chat sessions.
+
+### Web Chat SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 1 commit
+
+- **Fixed:** **A message the server already holds counts as delivered.** When the chat server reports a resent message as a duplicate, the bubble is marked delivered instead of failing ([`d154cf0`](https://github.com/dappros/ethora-chat-component/commit/d154cf0))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 5 commits / 26.10.12 → 26.11.2
+
+- **Fixed:** **No false "Failed" during a burst of sends.** The SDK waits longer for the server's ping reply and message echo while the server is busy with the user's own sends, so a slow moment no longer triggers a reconnect and a resend ([`c90efd1`](https://github.com/dappros/ethora-chat-component-rn/commit/c90efd1))
+- **Fixed:** A resent message that the server reports as a duplicate is shown as delivered ([`a953fab`](https://github.com/dappros/ethora-chat-component-rn/commit/a953fab))
+- **Improved:** Outgoing messages declare their language for translation only when translations are enabled for the App, the same rule as the web SDK, so an App without translation stores messages as typed ([`813aa93`](https://github.com/dappros/ethora-chat-component-rn/commit/813aa93))
+- **Milestone:** **`@ethora/chat-component-rn` 26.11.1 (3 Nov) and 26.11.2 (4 Nov) published** ([`cf2a8d1`](https://github.com/dappros/ethora-chat-component-rn/commit/cf2a8d1), [`0d04356`](https://github.com/dappros/ethora-chat-component-rn/commit/0d04356))
+
+### Web App & Admin (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 12 commits / branch 2610
+
+- **New:** **App settings > Webhooks.** List the App's webhooks with status and last delivery or error, add and edit them (URL, description, events), send a test event, enable or disable, rotate the signing secret and delete; the signing secret is shown once, after creation and after rotation; labels for the message, user, presence, unread and chat events; strings in English, French and Spanish ([`15f1818`](https://github.com/dappros/ethora-app-reactjs/commit/15f1818), [`4f69d7c`](https://github.com/dappros/ethora-app-reactjs/commit/4f69d7c), [`e12106b`](https://github.com/dappros/ethora-app-reactjs/commit/e12106b), [`b0bc1f3`](https://github.com/dappros/ethora-app-reactjs/commit/b0bc1f3), [`341eae9`](https://github.com/dappros/ethora-app-reactjs/commit/341eae9))
+- **New:** **Per-room agent reply mode.** An agent in a group room can reply only when mentioned, in smart mode or always, set for that room; the direct chat link text is neutral ([`a785309`](https://github.com/dappros/ethora-app-reactjs/commit/a785309))
+- **New:** **Starter prompts on the AI Assistants tab:** three paste-ready first prompts next to the MCP endpoint, in English, French and Spanish ([`a1c348e`](https://github.com/dappros/ethora-app-reactjs/commit/a1c348e))
+- **Improved:** **Live App statistics and crawler progress arrive on the chat connection.** The apps list updates its cards in place from server events and re-reads the list after a reconnect; the separate Centrifugo socket and its settings are gone ([`605ad66`](https://github.com/dappros/ethora-app-reactjs/commit/605ad66), [`aa2de6e`](https://github.com/dappros/ethora-app-reactjs/commit/aa2de6e))
+- **Improved:** Password reset asks for the second factor on accounts that use MFA ([`e923522`](https://github.com/dappros/ethora-app-reactjs/commit/e923522))
+- **Fixed:** Saving App settings no longer sends empty bot fields ([`7a85935`](https://github.com/dappros/ethora-app-reactjs/commit/7a85935))
+- **Infrastructure:** The image's OS package layer is rebuilt daily ([`3a38d2c`](https://github.com/dappros/ethora-app-reactjs/commit/3a38d2c))
+
+### MCP Server (`mcp-server`)
+> [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | 7 commits on main (ships with the next hosted release)
+
+- **New:** **MCP Server Card (SEP-2127) and AI catalog.** One card (registry name, version, the open, OAuth and personal-key entry points, icon, repository) answers `/mcp/server-card`, `/.well-known/mcp/server-card.json` and `/.well-known/ai-catalog.json`, with the extension media types, ETag and 304, and CORS; the discovery document points to it. ethora.com serves the same card and catalog ([`1f4a76b`](https://github.com/dappros/ethora-mcp-server/commit/1f4a76b))
+- **New:** **`ethora-app-credentials-reveal` can return the App Secret** with `secret: true` (App owner only, `confirm: true` still required), so a script can provision an App and its backend integration end to end ([`81e8cc0`](https://github.com/dappros/ethora-mcp-server/commit/81e8cc0))
+- **New:** **Usage events and starter prompts.** One event per session open and per tool call (tool, outcome, duration, client) is posted to the platform in batches, off the tool call's path; the connector landing page shows three starter prompts and the server instructions tell the model to offer them when a request is too vague to act on ([`73b0b6c`](https://github.com/dappros/ethora-mcp-server/commit/73b0b6c))
+- **Improved:** `ETHORA_MCP_DOTENV_OVERRIDE` lets the rendered `.env` file take precedence over inherited environment on hosted installs, so an edited value reaches the process on the next restart; the stdio CLI is unchanged ([`576fa02`](https://github.com/dappros/ethora-mcp-server/commit/576fa02))
+- **Infrastructure:** Placeholder values in the code and tests are built so directory scanners do not mistake them for credentials ([`be74a4c`](https://github.com/dappros/ethora-mcp-server/commit/be74a4c), [`30e4c6e`](https://github.com/dappros/ethora-mcp-server/commit/30e4c6e), [`0d4b35e`](https://github.com/dappros/ethora-mcp-server/commit/0d4b35e))
+
+### Platform API & AI Service (`platform`)
+> Platform API, AI service and push | 29 commits on release line 2610
+
+- **New:** **App webhooks.** An App admin registers HTTPS endpoints and picks events; the platform signs and delivers a JSON payload for `message.created`, `message.updated`, `message.deleted`, `message.unread` (a member's first unread message in a room, 30 seconds after it arrives, checked against the read marker, muted members skipped), `user.created`, `user.login`, `user.logout`, `user.deleted`, `user.online`, `user.offline`, `chat.created` and `chat.deleted`. `GET/POST /v2/apps/:appId/webhooks`, `PATCH/DELETE /v2/apps/:appId/webhooks/:id` and `POST .../:id/test`; the latency of every delivery is logged.
+- **New:** **Send a message on behalf of a user.** `POST /v2/apps/:appId/chats/:chatId/messages` with a server token posts into a chat as one of the App's users (`fromUserId`, `text`, optional `messageId` and `metadata`); the message comes from the user's own address, so every client shows it as the user's own, and it goes through the usual archive, last-message and push processing. The user does not need to be online.
+- **New:** **Per-room agent reply mode:** `POST /v2/bot-instances/:id/status` takes `roomResponseMode: { chatJid, responseMode }` (mentioned, smart or always); the agent-wide mode stays the default, the room setting overrides it there only, and leaving the room clears it.
+- **New:** **MCP usage events** are recorded by the platform with the assistant client's name and appear as a section in the weekly report; the OAuth consent page shows starter prompts.
+- **Improved:** **Live updates over the chat server.** App statistics (summed over five seconds) and crawler progress are sent to the App's owner as events on their chat session; the platform consumes the chat server's event stream in its jobs runner; the Centrifugo client is removed.
+- **Improved:** **Archiving a user or an App also ends their open chat sessions**, and restoring reopens access (for an App, across all its users in the background); the message archive keeps the chat server's own time as the message time and scopes duplicate detection to the App and the chat.
+- **Improved:** Invalid ids, failed validation and upload errors are answered with a 4xx status; a message sent while the AI service reconnects to the chat server no longer stops the service.
+- **Infrastructure:** The rendered `.env` takes precedence over inherited environment in the API, the AI service and the push service; images rebuild their OS package layer daily.
+
+### Chat Server & Deployment (`platform`)
+> Chat server, installers, images and monitoring | 34 commits
+
+- **New:** **Chat server events to a Redis stream.** When `redis_server` is set, the custom modules publish their events to a stream the platform consumes, instead of one HTTP request each; without it the same callbacks work as before. Callbacks to the platform no longer run on the room or session process.
+- **New:** **Presence events:** a new module reports a user's first session opening and last session closing (feeding the `user.online` / `user.offline` webhooks); edit and delete stanzas are no longer archived as messages.
+- **Improved:** **App isolation is enforced in the production configuration**, and the service directory lists only the App's own items.
+- **Improved:** **Translation never holds up a conversation:** the time a translation may take is capped (8 s by default), a message resent while its first copy is still being translated is dropped instead of reaching readers twice, the sender is told when a duplicate is dropped, and translation runs after duplicate detection (on the 2610 and 2609 lines).
+- **Fixed:** The author of a room message no longer receives a push for it.
+- **Changed:** **Centrifugo removed from every deploy form**; ejabberd is pointed at Redis for its event stream; the presence module is rendered by the installer and App webhooks are documented for operators.
+- **Improved:** Cloudron, Umbrel and CasaOS packages pinned to images 2610.71; every image rebuilds its OS package layer daily; the release-image checks fail on a missing frontend or widget value and verify the generated secrets; a local stack can be built from the checkout's own submodules.
+- **Improved:** Team members can issue their own internal test licences.
+- **New:** Monitoring alerts for AI provider failures (a rejected API key, repeated failed model calls); the core-container rules no longer expect Centrifugo.
+- **Docs:** Archiving closes API and chat access, not only sign-in.
+
+### Monorepo (`ethora`)
+> [ethora](https://github.com/dappros/ethora) | 1 commit (plus daily submodule bumps)
+
+- **Docs:** Week 44 release notes ([`96c7f0e`](https://github.com/dappros/ethora/commit/96c7f0e))
+
+---
+
 ## Week 44 (Oct 26 – Nov 1, 2026) — Version 26.11 is cut; calls go peer to peer and reach group rooms, and can be scheduled into a calendar; the Android, Swift and Flutter SDKs catch up with the web; agents write their own flows and collect submissions; Apps are isolated from each other on the chat server
 
 **Contributors:** Roman Leshchuh, Dmytro Berberov, Borys Bordunov, Yurii T., Taras Filatov
