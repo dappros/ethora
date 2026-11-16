@@ -16,6 +16,112 @@
 
 ---
 
+## Week 46 (Nov 9 – 15, 2026) — Trust & Safety arrives: account suspension, media and text moderation, an age gate and a review hub; a daily AI budget per App; agents that stick to their sources and never miss a message; restart, update and roll back a server from the admin console
+
+**Contributors:** Taras Filatov, Borys Bordunov, Yurii T., Dmytro Berberov, Roman Leshchuh
+**Total commits:** 43 across public SDK/app repos + 100 platform/server (excluding submodule bumps and install-mirror syncs) | **Active repos:** 13
+
+### Theme
+
+The week's first line is **Trust & Safety**, built across the platform, the chat server, the admin console and the web SDK in three days. An App admin can **suspend an account** (with a reason, a message to the person, an end date and an optional tenant-wide scope) without archiving it; the person sees an "Account suspended" screen with the reason and a support contact, and other people see a Suspended badge and can no longer message or call that account. An optional **moderation service** checks uploaded images and videos and room messages with open models that run on the server's own CPU, so nothing leaves the install; a server-wide policy (presets for Business, Education, Community and Adult) decides whether flagged content is blurred, held for review, hidden or refused, and an App can only make it stricter. Sensitive media arrives behind a cover with an optional **age gate**. Superadmins get a **T&S hub**: overview, quarantine cases with retention and holds, a cross-App moderation queue, suspended users, word and pattern rules, blocked sign-up domains and IP ranges.
+
+The second line is **AI spend and agent quality**. Every App now has a **daily AI token cap** and a **daily indexing allowance** (on by default, adjustable per App, shown on the Statistics page), replies carry a smaller knowledge block and a budgeted transcript, and at the cap visitors are told once that the agent cannot reply right now. Agents take **prices, policies and links only from their instructions and knowledge** (grounding, on by default), **wake when a message arrives** in their room, **answer what they missed** while asleep, are replaced by a watchdog if their chat session dies, and send a fallback line when the model provider is slow. Knowledge tags now decide what an agent may answer from.
+
+The third line is **running a server**. Server settings gained a **Status card** (version, services, disk, certificates, licence), **Restart** (now or scheduled, with a maintenance notice shown to every user) and **Update now with progress and rollback**; the admin console and the MCP server wait out a restart instead of failing. A fresh server installs with **one command**, with a ready-to-use domain suggested from its public IP.
+
+Smaller items: the widget shows a Powered by Ethora attribution (26.11.11, WordPress plugin 1.8.2), the React Native SDK 26.11.3 no longer fails a send the server is still processing, API keys can be created from a Claude or ChatGPT conversation, and the App card shows monthly active users.
+
+### Web Chat SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 5 commits on main
+
+- **New:** **Trust & Safety client.** Media the server marked sensitive shows a blurred preview with "Sensitive content. Tap to view" in the bubble, the album grid and the viewer; a tap checks the App's age gate and, when the viewer's age is unknown, asks for a date of birth once; an upload the policy refuses is withdrawn with an explanation; messages changed by a moderator show as blurred, hidden or "Removed by moderator", and a masked sender shows a neutral name ([`4e39864`](https://github.com/dappros/ethora-chat-component/commit/4e39864), [`3c96687`](https://github.com/dappros/ethora-chat-component/commit/3c96687))
+- **New:** **Blocking notice for suspended or archived accounts.** The chat and the login form give way to a notice with the reason, the administrator's message, the end date when there is one and the support contact; the SDK stops retrying API and chat connections for that account ([`d7893d7`](https://github.com/dappros/ethora-chat-component/commit/d7893d7))
+- **New:** **Suspended accounts as other people see them.** A Suspended badge and greyed avatar in message headers, member rows, profiles and the room list; in a 1:1 chat with a suspended account the composer is replaced by a notice and the call and schedule buttons are hidden ([`528035e`](https://github.com/dappros/ethora-chat-component/commit/528035e))
+- **Fixed:** Anonymous widget visitors no longer trigger a member lookup they have no token for ([`a10313b`](https://github.com/dappros/ethora-chat-component/commit/a10313b))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 2 commits / 26.11.2 → 26.11.3
+
+- **Fixed:** **A send is not marked failed while the server is still processing it** ([`260c109`](https://github.com/dappros/ethora-chat-component-rn/commit/260c109))
+- **Milestone:** **`@ethora/chat-component-rn` 26.11.3 published (11 Nov)** ([`da97643`](https://github.com/dappros/ethora-chat-component-rn/commit/da97643))
+
+### AI Chat Widget & WordPress Plugin (`ai-chat-widget`, `wp-plugin`)
+> [ethora-ai-chat-widget](https://github.com/dappros/ethora-ai-chat-widget) | 3 commits / 26.10.30 → 26.11.11 · [ethora-wp-plugin](https://github.com/dappros/ethora-wp-plugin) | 2 commits / 1.8.1 → 1.8.2
+
+- **New:** **Powered by Ethora attribution** integrated into the widget panel ([`21f7b4b`](https://github.com/dappros/ethora-ai-chat-widget/commit/21f7b4b))
+- **Improved:** The widget rejects a malformed App id up front and limits session retries, so a typo in the snippet or a short outage does not produce repeated requests ([`21f7b4b`](https://github.com/dappros/ethora-ai-chat-widget/commit/21f7b4b), [`3f83f2d`](https://github.com/dappros/ethora-ai-chat-widget/commit/3f83f2d))
+- **Milestone:** **Widget 26.11.11 released (11 Nov)** and bundled as **WordPress plugin 1.8.2** ([`bbf862b`](https://github.com/dappros/ethora-ai-chat-widget/commit/bbf862b), [`92ef8f2`](https://github.com/dappros/ethora-wp-plugin/commit/92ef8f2), [`fbb005a`](https://github.com/dappros/ethora-wp-plugin/commit/fbb005a))
+
+### Web App & Admin (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 23 commits / branch 2610
+
+- **New:** **User suspension.** Users page: a Suspended tab, Suspend per row and for a selection (reason, message to the user, internal note, optional tenant-wide scope), Unsuspend, and a Suspended badge with the details; actions show only for accounts below your own access level. A suspended person lands on an "Account suspended" screen with the reason and the support contact. App settings hold the support contact and blocked sign-up email domains ([`07b92be`](https://github.com/dappros/ethora-app-reactjs/commit/07b92be), [`85b1d2c`](https://github.com/dappros/ethora-app-reactjs/commit/85b1d2c))
+- **New:** **Trust & Safety settings.** Server settings get a Trust & Safety tab with Business / Education / Community / Adult presets and image policy levels (Off, Relaxed, Standard, Strict, Custom); App settings get per-App overrides that can only be stricter than the server; Account > Privacy & Data has an Age section (only the birth year is kept); the Suspend dialog offers what happens to the account's messages and media ([`f1c7020`](https://github.com/dappros/ethora-app-reactjs/commit/f1c7020), [`91be246`](https://github.com/dappros/ethora-app-reactjs/commit/91be246), [`1043f95`](https://github.com/dappros/ethora-app-reactjs/commit/1043f95))
+- **New:** **T&S hub for superadmins.** Overview, Quarantine (cases with retention, hold, extend, export and purge), the cross-App moderation queue, suspended users, word and pattern rules, blocked domains, blocked sign-up IPs (address or range, all Apps or one, 7 / 30 / 90 days or permanent) and settings ([`74504e3`](https://github.com/dappros/ethora-app-reactjs/commit/74504e3), [`f8b1264`](https://github.com/dappros/ethora-app-reactjs/commit/f8b1264), [`46c405e`](https://github.com/dappros/ethora-app-reactjs/commit/46c405e))
+- **New:** **Reviewer protection.** Queue and quarantine media open with no image: a plain-language summary of the signals and an optional AI description come first; Show loads the file greyscale and blurred, Show clearly is a second step; video stays muted and paused ([`3b84d32`](https://github.com/dappros/ethora-app-reactjs/commit/3b84d32), [`a1c5341`](https://github.com/dappros/ethora-app-reactjs/commit/a1c5341))
+- **New:** **Server status, restart and update from Server settings.** A Status card (version and install kind, update check, services, disk space, certificate expiry, licence contact, uptime); Restart services now or in 1, 5 or 15 minutes with Cancel; **Update now** with a progress panel and Roll back on installs that run the updater; a maintenance banner counts down for every signed-in user, and the console waits out a restart with "Reconnecting to the server..." ([`9570cec`](https://github.com/dappros/ethora-app-reactjs/commit/9570cec), [`da06a6e`](https://github.com/dappros/ethora-app-reactjs/commit/da06a6e), [`1012d34`](https://github.com/dappros/ethora-app-reactjs/commit/1012d34))
+- **New:** **Daily AI budget card** on Statistics > AI tokens: today's tokens against the App's cap, a banner while agents are paused at the cap, fields for the App's own cap and its daily website indexing allowance ([`81f6817`](https://github.com/dappros/ethora-app-reactjs/commit/81f6817), [`fa12754`](https://github.com/dappros/ethora-app-reactjs/commit/fa12754))
+- **New:** **Grounding toggle** on the agent's Instructions tab: answer business facts only from instructions and knowledge (on by default; off for persona agents) ([`3ce2a9d`](https://github.com/dappros/ethora-app-reactjs/commit/3ce2a9d))
+- **New:** **Sign in from ethora.com.** A person who completes the Get Access form on the website arrives in the web app already signed in ([`0250088`](https://github.com/dappros/ethora-app-reactjs/commit/0250088))
+- **Improved:** Agent knowledge lists mark pages and documents "Waiting to be indexed" or "Not indexed", and an upload says how many files will be indexed later ([`5a61d21`](https://github.com/dappros/ethora-app-reactjs/commit/5a61d21))
+- **Improved:** The Heartbeat panel shows whether the agent's schedule runs (rooms served, last run) or why not, with schedule examples the worker accepts ([`dda24c9`](https://github.com/dappros/ethora-app-reactjs/commit/dda24c9))
+- **Improved:** App cards show **monthly active users** ([`acc7157`](https://github.com/dappros/ethora-app-reactjs/commit/acc7157)); bulk password reset shows the set-password links and partial results ([`9d2925e`](https://github.com/dappros/ethora-app-reactjs/commit/9d2925e)); a Server settings label for the list of internal owners left out of the statistics email ([`e375099`](https://github.com/dappros/ethora-app-reactjs/commit/e375099))
+
+### MCP Server (`mcp-server`)
+> [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | 7 commits on main / 26.11.1 on npm and the MCP Registry (9 Nov)
+
+- **New:** **API keys from an assistant conversation.** `ethora-api-key-create`, `-list` and `-revoke` are offered on the OAuth connection (Claude, ChatGPT), so a script or another client can be authorised from a chat; creating a key needs the admin permission and `confirm: true`, and `ethora-status` and `ethora-help` point to the dashboard page as the way to create a key without its value passing through the conversation ([`aa346f3`](https://github.com/dappros/ethora-mcp-server/commit/aa346f3), [`1c89adf`](https://github.com/dappros/ethora-mcp-server/commit/1c89adf))
+- **New:** **`tags` on `ethora-source-doc-upload`:** documents are tagged in the upload call; the tag descriptions state the retrieval rule (an agent with tags answers only from sources carrying one of them) ([`e7b1ec7`](https://github.com/dappros/ethora-mcp-server/commit/e7b1ec7))
+- **Improved:** **Server restarts and updates.** Reads wait and retry for up to 45 seconds; writes return a clear, retryable "the server is restarting, call the tool again" result ([`5ed0353`](https://github.com/dappros/ethora-mcp-server/commit/5ed0353))
+- **Improved:** Usage events count a session as signed in once its token has validated ([`3e69371`](https://github.com/dappros/ethora-mcp-server/commit/3e69371))
+- **Docs:** CHANGELOG entries under Unreleased ([`4cd230c`](https://github.com/dappros/ethora-mcp-server/commit/4cd230c), [`63014ee`](https://github.com/dappros/ethora-mcp-server/commit/63014ee))
+
+### Installer & Self-Hosting (`ethora-install`)
+> [ethora-install](https://github.com/dappros/ethora-install) | synced from the server deploy system
+
+- **New:** **One-command install.** `get.sh` checks the server, installs Docker and git when missing, fetches the bundle, asks for domain, admin email, licence key, modules and AI key with suggestions (or serves a setup page), then installs; with no domain of your own it suggests `<public IP>.sslip.io` so HTTPS works from the first minute ([`0267192`](https://github.com/dappros/ethora-install/commit/0267192), [`40f6221`](https://github.com/dappros/ethora-install/commit/40f6221))
+- **New:** **Updater service and `update.sh`.** Update to the newest build of the release line or roll back, from the admin console or the command line; images are pinned by tag, a failure before the restart changes nothing, and the updater is on by default in the compose install ([`8073b70`](https://github.com/dappros/ethora-install/commit/8073b70), [`9cb712f`](https://github.com/dappros/ethora-install/commit/9cb712f))
+- **Improved:** While the API is restarting the proxy answers a JSON 503 with `Retry-After`, which clients use to wait; the admin console says "not installed" for modules that are not running ([`a1c23dd`](https://github.com/dappros/ethora-install/commit/a1c23dd), [`f831a5d`](https://github.com/dappros/ethora-install/commit/f831a5d))
+- **Docs:** README and deploy README match the current setup ([`b45bc3e`](https://github.com/dappros/ethora-install/commit/b45bc3e))
+
+### Design System (`design-system`)
+> [ethora-design-system](https://github.com/dappros/ethora-design-system) | 1 commit
+
+- **Improved:** Catalog synced with the live site: the onboarding-call section and current plan prices ([`41a785c`](https://github.com/dappros/ethora-design-system/commit/41a785c))
+
+### Platform API & AI Service (`platform`)
+> Platform API, AI service, moderation service and push | 73 commits on release line 2610
+
+- **New:** **User suspension.** `POST /v2/apps/:appId/users/:userId/suspend` and `/unsuspend`, plus a bulk call: a reason code, a message for the user, an internal note, an optional end date (lifted automatically) and an optional tenant scope that covers the same email in child Apps. A suspended account keeps its data; sign-in, token refresh and API calls answer `403 USER_SUSPENDED` with the reason and the App's support contact. Access levels apply (member < admin < owner < superadmin). Apps can block sign-up email domains with wildcard patterns.
+- **New:** **Moderation service (optional module).** Image and video nudity checks, text toxicity, personal-data and health-data detection, all with open models on the server's CPU; no content is sent to a third party. Image policy levels: off, relaxed, standard, strict.
+- **New:** **Media checks on upload.** Per policy an image or video is refused (`422 UPLOAD_BLOCKED_SENSITIVE`), held for review, or stored as sensitive with a blurred preview; originals of sensitive files are served to the uploader and, with the age gate on, to users who declared 18 or over. Users declare their age once (`/v2/users/me/age`); only the birth year is kept and it is never shown to other users.
+- **New:** **Message moderation and the moderation queue.** Room text messages are checked in the background and, per the App's policy, blurred or hidden with the original kept for review; App moderators list and resolve items at `/v2/apps/:appId/moderation/items`. Word and pattern rules and blocked domains are managed centrally. End-to-end encrypted rooms are not inspected.
+- **New:** **Quarantine and case review.** Deleted, held and suspension-related content can be quarantined for a retention period instead of removed; superadmins list cases, extend or hold them, export a case (transcript, media, hashes) and purge it, with an audit event for every action. Reviewers get stored signal summaries and optional generated descriptions before opening any media.
+- **New:** **Deleting a message removes its attachment** from storage (or quarantines it for a set number of days, per server setting), with a tool to apply the rule to earlier deletions.
+- **New:** **Suspended accounts as others see them.** `POST /v2/users/suspended-status` for chat clients, `suspended: true` in user data, new private chats and room adds with a suspended account are refused (`409 PEER_SUSPENDED`), and no push goes to a suspended account. **Sign-up IP blocks** (single address or range, per App or all Apps, timed or permanent) apply to every sign-up path.
+- **New:** **Daily AI token cap per App** (`GET/PATCH /v2/apps/:appId/ai-budget`): on by default at 2,000,000 tokens, with an email to the owner at 80% and at the cap; at the cap the App's agents pause until the next UTC day and a visitor's first message in a room gets one short "can't reply right now" line. **Daily indexing allowance** (default 1,000,000 tokens, covering crawled pages and uploaded documents): pages beyond it are indexed on a later day and listed as pending. Archived and deleted Apps' agents stay quiet.
+- **Improved:** **Smaller prompts per reply:** no repeated knowledge excerpts, a top-k and token budget for the knowledge block, and a token budget for the room transcript.
+- **New:** **Grounding (agent setting, on by default).** Prices, fees, policies, procedures, contact details and links come only from the agent's instructions and knowledge; a missing answer is said, not guessed, and links that appear in no source are removed from the reply.
+- **New:** **Agents wake on a message and catch up.** A message in an agent's room wakes an idle agent, which answers it from the archive; agents answer human messages they missed while asleep or while the AI service restarted; a watchdog replaces an agent's chat session if it dies; model calls have time limits and the room gets a fallback line on a timeout.
+- **New:** **Knowledge tags restrict retrieval.** An agent with tags answers only from pages and documents carrying at least one of them; tags can be set at document upload and take effect within 30 seconds, no re-indexing.
+- **New:** **Agents read the App's own system lines as context** (lesson text, narration, a scoreboard posted through the broadcast API), and a per-message `forAgent` flag decides whether a message may trigger a reply.
+- **New:** **Server settings API:** read-only status, restart with a graceful drain (immediate or scheduled, cancellable), a maintenance notice at `GET /v2/server-notice`, and updates and rollbacks through the updater service with progress.
+- **New:** **Sign in from the website:** single-use, five-minute handoff codes sign a person who just registered on ethora.com into the web app.
+- **Improved:** **OAuth connections.** The read, write and admin permissions granted on the consent page apply to every API request made with that connection (`403 INSUFFICIENT_SCOPE` otherwise); a key created through a connection lives 30 days by default; the consent page says where the person returns to; connection funnel events feed a weekly report section.
+- **Improved:** Accounts created by an admin receive a **set-password link**; token rejections say what is wrong; the Apps list returns monthly active users per App; the agent heartbeat refuses schedules the worker cannot run and reports its status; activation milestones (App created, agent created, knowledge added, first visitor answered) are kept for reporting; room replies on the newest model family send the right reasoning setting with tools.
+- **Fixed:** A malformed App id in the widget snippet answers 422 with an explanation.
+
+### Chat Server & Infrastructure (`chat-server`)
+> Chat server, deploy system and monitoring | 27 commits
+
+- **New:** **Moderation module on the chat server.** Commands to blur, hide, delete or restore one archived message, to hide, delete or mask the name on all of a user's messages, and to restore originals; people in the room see the change live.
+- **New:** **One-to-one messages and call signalling to a suspended account are refused**, and the sender is told the account is suspended; group chats are unchanged.
+- **Improved:** Deleting a media message clears its attachment references from the archive and reports the deletion to the platform, which removes or quarantines the file.
+- **Improved:** The default translation endpoint in the config template is the translation service in use; monitoring gained alerts for failing chat translation and a rejected translation key.
+- **Infrastructure:** Moderation service wired into the deploy system as an optional module (compose profile and deploy form), with operator notes for the AI caps, the pause notice and grounding, and a Trust & Safety design document; Coolify and Dokploy templates regenerated.
+
+---
+
 ## Week 45 (Nov 2 – 8, 2026) — Apps get outgoing webhooks and a send-as-user API; live updates move onto the chat connection and Centrifugo leaves the stack; agents can reply only when mentioned, per room; the MCP server publishes a server card and can hand over the App Secret
 
 **Contributors:** Borys Bordunov, Yurii T., Dmytro Berberov, Roman Leshchuh, Taras Filatov
