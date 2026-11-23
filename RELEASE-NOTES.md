@@ -16,6 +16,108 @@
 
 ---
 
+## Week 47 (Nov 16 – 22, 2026) — A new first hour: a start screen with four goals, a website assistant in one step and an App Home that shows the next step; see the assistant on your own site before installing anything; owner email reports and a conversation-completed webhook; the admin console in French and Spanish; messages that no longer wait for their translation
+
+**Contributors:** Taras Filatov, Roman Leshchuh, Dmytro Berberov, Borys Bordunov, Yurii T.
+**Total commits:** 119 across public SDK/app repos + 68 platform/server (excluding submodule bumps, install-mirror syncs and ports to the previous release line) | **Active repos:** 8
+
+### Theme
+
+The week's first line is **the first hour of a new account**. Sign-up now opens on a **start screen with four goals** (an AI assistant for my website, chat and calls in my app, a ready messenger for my team or clients, Ethora on my own server), and each goal leads to its own short path. The website path is **one step**: type the address, the assistant reads the site, and a test chat is ready. Every App has a **Home** that shows the next step for its goal from what has really happened (knowledge read, assistant tested, widget installed on the site, first visitor conversation), an **AI assistant** tab that puts knowledge, answers, look, install and a test chat on one page, and a **Conversations** tab for visitor chats, with a Requests view of bookings and contact forms.
+
+The second line is **showing it before installing it**. "Try it on your site" makes a **shareable preview link** that shows any website with the App's live assistant on top, so an owner, an agency or a reseller can show a client the result before anyone touches the site's code. Inside the App, a **Try on Website** tab shows the owner their own site with the widget.
+
+The third line is **keeping the owner informed**. Opt-in **email reports** (daily, weekly, monthly, and one per completed visitor conversation), a **`conversation.completed` webhook event**, a **Statistics CSV export**, and visitors, widget sessions and widget calls on the Statistics page.
+
+Also this week: the whole admin console is available in **French and Spanish**; **translation no longer delays a message** (it is delivered at once and the translation follows, on web 26.10.11 and React Native 26.11.4); an App can have a **welcome and sign-in screen** of its own; **members-only rooms**, with room member tools in the MCP server; per-App switches for **calls and scheduled calls**; **Sign in with Apple** configured from the deploy settings; and Trust & Safety now also covers **profile pictures**.
+
+### Web App & Admin (`app-reactjs`)
+> [ethora-app-reactjs](https://github.com/dappros/ethora-app-reactjs) | 106 commits / branch 2610
+
+- **New:** **Start screen with four goals.** AI assistant for my website, Chat and calls in my app, A ready messenger for my team or clients, Ethora on my own server, plus Connect the MCP server and Just looking around. A sign-up link can carry the goal (`?intent=`) and skip the chooser. The website goal is a single page: the address first, a name suggested from it, documents as the alternative, and a site that cannot be read still leads somewhere. The messenger goal sets a Trust & Safety preset at creation; the self-hosted goal points to the install hub in three steps ([`59e20d8`](https://github.com/dappros/ethora-app-reactjs/commit/59e20d8), [`6a38569`](https://github.com/dappros/ethora-app-reactjs/commit/6a38569), [`d01019f`](https://github.com/dappros/ethora-app-reactjs/commit/d01019f))
+- **New:** **App Home.** An App opens on a Home page that shows the next step for its goal: for a website assistant, knowledge, a tested answer, the widget installed on the site and the first visitor conversation, with live crawl progress; for the chat SDK, the App ID, the App Secret and a paste-ready snippet; for a messenger, brand, invitations and safety. Apps made before goals existed get an inferred goal that the owner can change. The header shows Live or Not on your site yet ([`901341f`](https://github.com/dappros/ethora-app-reactjs/commit/901341f), [`01ddf78`](https://github.com/dappros/ethora-app-reactjs/commit/01ddf78), [`430936d`](https://github.com/dappros/ethora-app-reactjs/commit/430936d), [`6dac6cf`](https://github.com/dappros/ethora-app-reactjs/commit/6dac6cf))
+- **New:** **AI assistant on one page, and a Conversations tab.** What the assistant knows, how it answers, how it looks, how to put it on a site and a test chat that stays in view; memory, scheduled messages, flows and chat rooms sit under Advanced. Conversations lists visitor chats as a simple list with visitor columns and message counts (table, bulk delete and technical details on request), and a **Requests** view collects the bookings and contact forms the assistants completed ([`901341f`](https://github.com/dappros/ethora-app-reactjs/commit/901341f), [`18a6d07`](https://github.com/dappros/ethora-app-reactjs/commit/18a6d07), [`e4aa599`](https://github.com/dappros/ethora-app-reactjs/commit/e4aa599), [`fe88886`](https://github.com/dappros/ethora-app-reactjs/commit/fe88886))
+- **New:** **Try it on your site.** `/try`: name a website and get a preview link that shows that site with the App's live assistant on top, the same script an operator embeds. The site is shown in a frame when it allows one and as a full-page picture when it does not; the creator sees copy link, the end date and Open this assistant; the pages are not indexed. The Install section of the assistant page offers the same as "See it on your site" ([`ed5643c`](https://github.com/dappros/ethora-app-reactjs/commit/ed5643c), [`c40c980`](https://github.com/dappros/ethora-app-reactjs/commit/c40c980))
+- **New:** **Try on Website tab.** For an App with an indexed website, the owner sees their own site with the live widget inside the admin console, linked from Home and from the Install section ([`fcd103c`](https://github.com/dappros/ethora-app-reactjs/commit/fcd103c), [`e272e3d`](https://github.com/dappros/ethora-app-reactjs/commit/e272e3d))
+- **New:** **Email reports and Statistics export.** Account > Email reports: daily, weekly and monthly digests, visitors' questions, a test email and, per App, an email when a visitor conversation completes; links in the emails open the conversation. Statistics: Export CSV for the period, totals in the sidebar, and visitors, widget sessions and widget calls as second lines ([`3534b66`](https://github.com/dappros/ethora-app-reactjs/commit/3534b66), [`fceee42`](https://github.com/dappros/ethora-app-reactjs/commit/fceee42), [`70805b7`](https://github.com/dappros/ethora-app-reactjs/commit/70805b7))
+- **New:** **Welcome and sign-in screen editor.** Settings > Appearance: a welcome image, heading and message for the App's login and register pages, split or centered layout, with live previews built from the real login page; Apps without a welcome screen keep today's page ([`eb293d7`](https://github.com/dappros/ethora-app-reactjs/commit/eb293d7), [`1bc6478`](https://github.com/dappros/ethora-app-reactjs/commit/1bc6478), [`90f81ef`](https://github.com/dappros/ethora-app-reactjs/commit/90f81ef), [`e946103`](https://github.com/dappros/ethora-app-reactjs/commit/e946103))
+- **New:** **French and Spanish across the console.** Onboarding, Trust & Safety settings and hub, quarantine review, suspension, Server settings, billing, sign-in and Account are translated, and a coverage test keeps every dictionary complete ([`62dc96a`](https://github.com/dappros/ethora-app-reactjs/commit/62dc96a), [`fe36f72`](https://github.com/dappros/ethora-app-reactjs/commit/fe36f72), [`0f6db96`](https://github.com/dappros/ethora-app-reactjs/commit/0f6db96), [`d2a29d2`](https://github.com/dappros/ethora-app-reactjs/commit/d2a29d2), [`6a9d02a`](https://github.com/dappros/ethora-app-reactjs/commit/6a9d02a))
+- **New:** **Connect an assistant by signing in.** The AI assistants page opens with a client picker (Claude, ChatGPT, Cursor, VS Code, Claude Code): sign-in steps, the connector URL, one-click Cursor and VS Code installs and the Claude Code command, with no key to copy. API keys stay available for scripts ([`363c0c9`](https://github.com/dappros/ethora-app-reactjs/commit/363c0c9))
+- **New:** **Billing page per App.** On an install where billing is switched on, an App's owner picks a plan and pays through Stripe Checkout, and a paid App shows its plan, status and usage with a Manage billing link to the Stripe Customer Portal. Self-hosted installs keep their page as before ([`0883745`](https://github.com/dappros/ethora-app-reactjs/commit/0883745), [`7a9c5c9`](https://github.com/dappros/ethora-app-reactjs/commit/7a9c5c9), [`9aa7185`](https://github.com/dappros/ethora-app-reactjs/commit/9aa7185))
+- **New:** Per-App switches for **calls and scheduled calls** under Trust & Safety, a **Respond to other bots** switch in an agent's Advanced settings, and **Join automatically** per chat and when creating one ([`8874f53`](https://github.com/dappros/ethora-app-reactjs/commit/8874f53), [`ccd234f`](https://github.com/dappros/ethora-app-reactjs/commit/ccd234f), [`7f50949`](https://github.com/dappros/ethora-app-reactjs/commit/7f50949))
+- **New:** **Help shows the latest weekly release notes** (the newest three entries of this file), and the sidebar reopens each section where the operator left it ([`0191268`](https://github.com/dappros/ethora-app-reactjs/commit/0191268), [`b1488f9`](https://github.com/dappros/ethora-app-reactjs/commit/b1488f9))
+- **New:** Trust & Safety: profile edit says why a refused profile picture was not saved, and the moderation queue shows where media outside a chat came from ([`1f1da06`](https://github.com/dappros/ethora-app-reactjs/commit/1f1da06), [`4374eaf`](https://github.com/dappros/ethora-app-reactjs/commit/4374eaf))
+- **Improved:** **A stable widget address.** The embed snippet hands out `/widget/assistant.js`, and snippets copied earlier keep loading the current widget ([`ce5d08b`](https://github.com/dappros/ethora-app-reactjs/commit/ce5d08b))
+- **Improved:** Apps list sorting for every account and an Invite a colleague button; an Unsaved changes badge with a confirmation before leaving App settings; a search box for indexed pages; a new agent from a template starts without the template's knowledge; an offer to activate an assistant right after creating a chat ([`3b87eb9`](https://github.com/dappros/ethora-app-reactjs/commit/3b87eb9), [`a314579`](https://github.com/dappros/ethora-app-reactjs/commit/a314579), [`dc129f7`](https://github.com/dappros/ethora-app-reactjs/commit/dc129f7), [`699154e`](https://github.com/dappros/ethora-app-reactjs/commit/699154e), [`4ef87bb`](https://github.com/dappros/ethora-app-reactjs/commit/4ef87bb))
+- **Improved:** Loading and phone layouts: the menu stays while a page loads, a startup screen with Retry, the Account page follows the URL, and the Agents page, tab rows and the Trust & Safety hub fit a phone ([`4950098`](https://github.com/dappros/ethora-app-reactjs/commit/4950098), [`6b3cc2f`](https://github.com/dappros/ethora-app-reactjs/commit/6b3cc2f), [`e9e0135`](https://github.com/dappros/ethora-app-reactjs/commit/e9e0135), [`c69d159`](https://github.com/dappros/ethora-app-reactjs/commit/c69d159), [`d4644d9`](https://github.com/dappros/ethora-app-reactjs/commit/d4644d9))
+- **Improved:** A readable "account setup not finished" message on every screen while an account's chat registration completes ([`d0d13f0`](https://github.com/dappros/ethora-app-reactjs/commit/d0d13f0), [`6fd3046`](https://github.com/dappros/ethora-app-reactjs/commit/6fd3046))
+- **Testing:** Typecheck, unit tests, build and the Playwright suite run on every PR into a release line; new end-to-end specs for onboarding, the AI assistant tab, the welcome screen editor and Conversations ([`61d3e82`](https://github.com/dappros/ethora-app-reactjs/commit/61d3e82), [`8554ff6`](https://github.com/dappros/ethora-app-reactjs/commit/8554ff6), [`acca642`](https://github.com/dappros/ethora-app-reactjs/commit/acca642), [`2133461`](https://github.com/dappros/ethora-app-reactjs/commit/2133461))
+
+### Web Chat SDK (`sdk-reactjs`)
+> [ethora-chat-component](https://github.com/dappros/ethora-chat-component) | 6 commits / 26.10.10 → 26.10.11
+
+- **New:** **Asynchronous translation.** A message appears at once with "Translating…" until its translation arrives, and the translation follows an edit ([`6d49dfb`](https://github.com/dappros/ethora-chat-component/commit/6d49dfb))
+- **Improved:** **Sensitive media keeps its place.** The cover takes the revealed media's box, so revealing and hiding do not move the chat; a single file's recorded width and height size the box before anything loads ([`ddb279e`](https://github.com/dappros/ethora-chat-component/commit/ddb279e), [`eaf62c6`](https://github.com/dappros/ethora-chat-component/commit/eaf62c6))
+- **Fixed:** A room the user was removed from while offline leaves the room list on the next join ([`92dc865`](https://github.com/dappros/ethora-chat-component/commit/92dc865))
+- **Milestone:** **`@ethora/chat-component` 26.10.11 published (18 Nov)**, the first npm release with the Trust & Safety client from Week 46 ([`fcac259`](https://github.com/dappros/ethora-chat-component/commit/fcac259))
+
+### React Native SDK (`sdk-reactnative`)
+> [ethora-chat-component-rn](https://github.com/dappros/ethora-chat-component-rn) | 3 commits / 26.11.3 → 26.11.4
+
+- **New:** **Asynchronous translation**, as on web: "Translating…" until the translation arrives, and the translation follows an edit ([`bace304`](https://github.com/dappros/ethora-chat-component-rn/commit/bace304))
+- **Fixed:** Save-file alerts appear in the reader's language, and the chat header subtitle is shown in full on Android ([`ef5d21c`](https://github.com/dappros/ethora-chat-component-rn/commit/ef5d21c))
+- **Milestone:** **`@ethora/chat-component-rn` 26.11.4 published (18 Nov)** ([`f846a10`](https://github.com/dappros/ethora-chat-component-rn/commit/f846a10))
+
+### React Native App (`app-react-native`)
+> [ethora-app-react-native](https://github.com/dappros/ethora-app-react-native) | 3 commits
+
+- **Improved:** Login fields stay accessible and focusable, with an updated login page ([`cd0fa35`](https://github.com/dappros/ethora-app-react-native/commit/cd0fa35), [`268a52c`](https://github.com/dappros/ethora-app-react-native/commit/268a52c))
+- **Fixed:** Spaces and invisible characters are removed from the email and workspace address before sign-in ([`58af7d4`](https://github.com/dappros/ethora-app-react-native/commit/58af7d4))
+
+### MCP Server (`mcp-server`)
+> [ethora-mcp-server](https://github.com/dappros/ethora-mcp-server) | 1 commit on main / 26.11.1 on npm and the MCP Registry
+
+- **New:** **Private rooms and room member tools.** `ethora-chat-create { membersOnly: true }` makes a members-only room that nobody joins automatically; `ethora-chat-members-add` and `ethora-chat-members-remove` add and remove people by user id or chat username, with a result per member ([`dd47a37`](https://github.com/dappros/ethora-mcp-server/commit/dd47a37))
+
+### Installer & Self-Hosting (`ethora-install`)
+> [ethora-install](https://github.com/dappros/ethora-install) | synced from the server deploy system
+
+- **New:** Translation mode and translation time limit are set in `deploy.yml` ([`5eb6a6e`](https://github.com/dappros/ethora-install/commit/5eb6a6e), [`dba326d`](https://github.com/dappros/ethora-install/commit/dba326d))
+- **New:** Preview pages under `/try/` are served without a referrer and are not indexed ([`da196da`](https://github.com/dappros/ethora-install/commit/da196da), [`8081993`](https://github.com/dappros/ethora-install/commit/8081993))
+- **New:** Billing settings in `deploy.yml` for installs that sell plans; off unless set ([`e1f7831`](https://github.com/dappros/ethora-install/commit/e1f7831), [`1402ba3`](https://github.com/dappros/ethora-install/commit/1402ba3))
+- **Improved:** An update rebuilds the moderation image only when its source changed, and widget snippets with an older script address are answered with the current widget ([`726f48a`](https://github.com/dappros/ethora-install/commit/726f48a), [`6a542d9`](https://github.com/dappros/ethora-install/commit/6a542d9))
+
+### Platform API & AI Service (`platform`)
+> Platform API, AI service, crawler and reports | 51 commits on release line 2610
+
+- **API:** **Onboarding goal and milestones.** An App carries its goal (`website`, `sdk`, `messenger`, `selfHost`), and `GET /v1/apps/:id` returns milestones (assistant tested, widget installed, first visitor conversation) with first and last time and a count. Apps made earlier get an inferred goal; an App used through the API is an SDK App
+- **API:** **Preview links.** `POST /v2/try/demos` makes a preview of a named website with the App's assistant; one per site per account, valid for 60 days, with extend and end. The server decides whether the site can be shown in a frame and takes a full-page picture when it cannot. `GET /v2/try/preview/:appId` gives the owner the same view of the App's own site; preview visits are kept out of visitor counts and milestones
+- **API:** **Owner email reports.** Daily, weekly and monthly digests of an account's Apps, off by default, sent from 07:00 in the owner's time zone, with a test email and one-click stop links
+- **API:** **`conversation.completed` webhook event** and a per-App email: a website conversation with no new message for 15 minutes; continuations are marked and previews never fire
+- **API:** **Statistics.** `GET /v1/apps/graph-statistic/:appId/csv` returns the Statistics page as CSV (a row per day and a Total row) for the App's owner or admin; the Users chart gains website visitors by first-seen day, and new daily counters record widget sessions and widget calls; the conversations list carries a message count per conversation
+- **API:** **Welcome screen fields** on the App (`welcomeTitle`, `welcomeDescription`, `welcomeImage`, fit and layout), returned by the public config
+- **API:** **Per-chat auto-join** for app chats (`autoJoin` on create and `PATCH /v1/apps/:appId/chats/:jid/defaults`) and **members-only app chats**; removing a member from a room keeps them out until they are added again
+- **API:** **Per-App switches for calls and scheduled calls** (`callsEnabled`, `scheduledCallsEnabled`), enforced on the server (`403 CALLS_DISABLED`, `403 SCHEDULING_DISABLED`)
+- **API:** **Plans per App through Stripe**, for installs with billing switched on: `GET /v2/billing`, `POST /v2/apps/:appId/billing/checkout`, `POST /v2/billing/portal`; closing an account cancels its subscriptions
+- **API:** `GET /v2/release-notes` returns the newest three weekly entries of the public release notes for the Help page; an install that makes no outbound calls returns none
+- **New:** **Sign in with Apple** on the API: Apple identity tokens are verified for the configured client ids, and a user's Apple tokens are revoked when the account is deleted
+- **New:** **Trust & Safety covers media outside a chat.** Profile pictures and direct uploads go through the moderation service; a refused upload stores nothing and appears in the moderation queue with its source (profile, upload, chat media)
+- **Improved:** **Translation.** Broadcasts are translated like chat messages (optional `langSource`), a stored message stays in step with its translations, and broadcasts and system messages carry a unique message id
+- **Improved:** **AI service.** Agents join a room without replaying its history, a turn that comes back empty is retried once, a flow run completes once, optional flow questions accept skip words in every shipped language, and each agent has a switch for answering other bots
+- **Improved:** The crawler follows links to `.php`, `.aspx`, `.jsp` and other server-rendered pages in a deep crawl
+- **Improved:** **Sign-up completes when the chat service is slow.** The account is created within seconds, its chat registration is finished in the background, and sign-in completes an account that was left waiting
+- **Improved:** The chat list answers within a time budget per part (unread counts, last messages), and an owner who created an API key but has not connected yet gets one email with the keyless connector URL and first steps
+
+### Chat Server & Infrastructure (`chat-server`)
+> Chat server and deploy system | 17 commits
+
+- **New:** **Asynchronous translation mode.** The chat server delivers a message at once and sends its translation when ready; an edited message gets a new translation. The mode and the time limit are deploy settings
+- **New:** **Sign in with Apple** credentials are set in the deploy settings for host and compose installs
+- **Improved:** Preview pages are served so that a site which allows framing can be shown inside them, and older widget script addresses keep working after an admin console update
+- **Docs:** The Trust & Safety guide gains a section on media shown outside a chat
+
+---
+
 ## Week 46 (Nov 9 – 15, 2026) — Trust & Safety arrives: account suspension, media and text moderation, an age gate and a review hub; a daily AI budget per App; agents that stick to their sources and never miss a message; restart, update and roll back a server from the admin console
 
 **Contributors:** Taras Filatov, Borys Bordunov, Yurii T., Dmytro Berberov, Roman Leshchuh
